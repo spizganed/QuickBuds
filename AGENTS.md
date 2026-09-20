@@ -18,12 +18,14 @@ the wear-state display). Only after that, other earbud models.
 
 ## Read order
 
+The PC move is done — build confirmed working, wrapper generated, device reachable — as of
+2026-09-20. `START-HERE.md` and `DeepSeek_CodeAssist_memory.md` served their purpose and are gone;
+this file is now the sole entry point for a new session.
+
 | File | What it is |
 |---|---|
-| [START-HERE.md](./START-HERE.md) | **The entry point for a new session.** Read order, PC setup, and the first task. Temporary — delete it once the move is settled. |
 | [ROADMAP.md](./ROADMAP.md) | The plan: what is next, in order, and what is done or undecided. |
 | [PROTOCOL.md](./PROTOCOL.md) | **The wire format, end to end.** Read before any protocol work. |
-| [DeepSeek_CodeAssist_memory.md](./DeepSeek_CodeAssist_memory.md) | The previous agent's memory, carried over from the phone. Absorb what is useful, then delete it — it is NOT authoritative. See the cleanup checklist below. |
 | [README.md](./README.md) | The accurate feature summary. |
 | [CREDITS.md](./CREDITS.md) | Whose reverse-engineering this stands on. Add a row when you add a constant. |
 | [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | How to capture a packet log, kept as a backup procedure. |
@@ -51,7 +53,7 @@ because the phone side had it all built in.
 
 | Need | Version / note |
 |---|---|
-| JDK | **17 or newer** — required by AGP 8.13. Set `JAVA_HOME`. |
+| JDK | **17 through 23** — required by AGP 8.13, but **Gradle 8.13 itself rejects JDK 24+** outright (fails with the bare version number as the error, e.g. `25.0.3`, no other message). Set `JAVA_HOME` to something in range. See the JDK note below if running from Android Studio. |
 | Android SDK | `platforms;android-36` (for `compileSdk 36`) and `platform-tools` (for adb). `build-tools` matching AGP. |
 | Gradle | Only to generate the wrapper (below). After that `./gradlew` is self-sufficient. |
 | adb | For deploying to the phone and reading `logcat`. |
@@ -82,14 +84,26 @@ not a stall.
 AGP 8.13.0 bundles, which warns that it cannot rewrite the newer metadata. It is a warning, not an
 error — the build succeeds. Raising the AGP version clears it.
 
-Two things were carried over from the mobile setup that are no longer load-bearing on the PC:
+**JDK gotcha, found 2026-09-20 setting this up in Android Studio's own agent terminal:** Android
+Studio's *own* bundled JBR can be too new for Gradle 8.13 — this machine's was JDK 25, and running
+`gradle wrapper` with it failed with just `25.0.3` as the error, no other detail. Android Studio also
+keeps a **second, older JBR** at `~/.jdks/jbr-<version>` (this machine had `jbr-21.0.11`) — that's the
+one Studio itself uses as the *project* JDK for Gradle sync, separate from the IDE's own runtime.
+Point `JAVA_HOME` at that one, not the IDE's bundled JBR, if the IDE's own JBR turns out to be JDK 24+.
 
-- **`app/module.toml`** is CodeAssist's project model. It is git-ignored (not in the repo) and the
-  Gradle build does not read it. It is still present in the working copy only so the on-device
-  CodeAssist build keeps working until the PC workflow is fully settled. Ignore it; delete it when
-  you are confident the phone is no longer needed.
-- **`.platform/`** is CodeAssist's own cache and settings, including the generated Gradle export
-  this repo's build files were based on. Also ignored. Nothing on the PC reads it.
+**Android Studio's own sync may have already done most of this setup for you** — check before
+reinstalling anything. On the machine this was verified on, Studio's sync had already: written a
+correct `local.properties`, installed the matching SDK platform/build-tools, and even pre-downloaded
+the exact Gradle 8.13 distribution into `~/.gradle/wrapper/dists/`, which can be pointed at directly
+(`<dist>/gradle-8.13/bin/gradle.bat wrapper --gradle-version 8.13`) to generate the wrapper without
+any network access at all.
+
+`app/module.toml` and `.platform/` — CodeAssist's project model and cache/settings from the mobile
+era — are git-ignored and were never committed, so **a fresh clone on the PC will never have them at
+all.** They only ever existed on the original phone's working copy, which was intentionally left
+alone during the move so the phone build kept working as a fallback. If you're working from a fresh
+clone, there is nothing here to clean up — this note is historical, kept only so nobody goes looking
+for files that were correctly never carried across git.
 
 ### Signing — there is none
 
@@ -277,8 +291,10 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 ## Current open items
 
-- **The hold gesture** — finish it. Confirm the `0x810C` `02 01` read on the device first; no capture
-  has ever shown a reply to it, so the shape is unknown. Then build the mode picker.
+- **The hold gesture** — finish it. The `0x810C` `02 01` read is now confirmed (2026-09-20, reply
+  `0x0007`, see PROTOCOL.md §5); the mask's bit meaning is still inferred, not proven, and the write
+  side (`0x0404` `setSupportNoiseReduction`) is untested. Confirm the mask with a membership-change
+  test, then the write, then the mode picker.
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
 - **On-call gestures** — to be added for parity (this reverses an earlier "never" decision).
@@ -366,9 +382,10 @@ a shared one hung.
 
 ## Repo hygiene
 
-- **`local/` is committed to carry the mobile working state to the PC**: `logs/` (packet captures
-  cited as evidence by PROTOCOL.md), `svgs/` (the source SVGs the wear icons were traced from, named
-  in the drawables' own headers), and `commits/` (the v1.1.0 commit message and release body).
+- **`local/` holds two folders now**: `logs/` (packet captures cited as evidence by PROTOCOL.md) and
+  `svgs/` (the source SVGs the wear icons were traced from, named in the drawables' own headers).
+  Both have lasting value and stay tracked. `local/commits/` (the v1.1.0 commit-message files) is
+  gone — obsolete once commits started being made on the PC directly.
 - **`local/notes/` and `local/NEXT-SESSION.md` are gone, on purpose** — all superseded, and their
   surviving content was folded into this file, PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md.
   **Do not recreate a notes folder or a session-plan file.** Scattered per-purpose notes are exactly
@@ -378,66 +395,6 @@ a shared one hung.
   captures (`*.log.txt`) are evidence and **are** tracked.
 - There are no committed screenshots.
 - Root docs: `README.md`, `ROADMAP.md`, `AGENTS.md`, `PROTOCOL.md`, `CREDITS.md`, `PACKET-CAPTURE.md`,
-  `LICENSE`, plus two temporary files — `START-HERE.md` and `DeepSeek_CodeAssist_memory.md`. Both are
-  listed in the cleanup checklist above and should be deleted once the move is settled.
-
-### The carried-over memory file
-
-`DeepSeek_CodeAssist_memory.md` is the private memory of the **CodeAssist/DeepSeek agent** that built
-this project on the phone. It exists only so the move to the PC did not lose anything mid-flight.
-**Read it, fold anything still useful into this file, PROTOCOL.md or your own memory, then delete
-it.** Where it disagrees with this file, PROTOCOL.md or the code, those win.
-
----
-
-## Post-move cleanup checklist
-
-The move happened, and it deliberately carried more than a PC needs. **Work through this once the PC
-build is confirmed working**, and delete what is listed. Everything here is either obsolete on the
-PC, or was only ever kept so nothing was lost mid-flight.
-
-**Do not do this before the first successful PC build** — the point of dragging the mobile material
-along was to survive a failed transfer.
-
-### Delete from the repo (safe once the build works on PC)
-
-| Item | Why it can go |
-|---|---|
-| `START-HERE.md` | Temporary bootstrap for the move. Once the build works and this checklist is done, AGENTS.md covers everything it says. **Delete this file last**, after the entries below are gone. |
-| `DeepSeek_CodeAssist_memory.md` | Temporary by design. Fold anything still useful into AGENTS.md or PROTOCOL.md first, then delete. |
-| `local/commits/` | Commit-message files, prepared because the phone's commit box was too small to paste into. Obsolete — commits are made on PC now. |
-
-**Already deleted during the move** — do not add them back: `local/notes/` (folded into AGENTS.md,
-PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md) and `local/NEXT-SESSION.md` (a mobile-era session plan,
-fully superseded).
-
-### Delete from the phone's working copy (not in the repo, so no commit needed)
-
-- **`app/module.toml`** — CodeAssist's project model, which the phone build used. **Do not delete it
-  until you are confident nothing on the phone is still being built**: while it exists, the phone can
-  still build the project. Once the PC is the only build, it is dead weight. The version it holds is
-  already duplicated authoritatively in the manifest.
-- **`.platform/`** — CodeAssist's cache, settings and generated Gradle export. Pure IDE state. The
-  only thing in it of any value was the agent memory, now copied to
-  `DeepSeek_CodeAssist_memory.md`.
-
-Both are git-ignored, so deleting them is a local action with no repo consequence.
-
-### Keep
-
-- **`local/logs/`** — real captures, referenced as evidence by PROTOCOL.md and by source comments.
-  This is the one part of `local/` that has lasting value; do not delete it.
-- **`local/svgs/`** — the source SVGs the wear-icon drawables were traced from. The drawables
-  themselves say so in their headers, so these are the provenance for that artwork.
-- All root docs.
-
-### Also worth doing in that pass
-
-- **Re-check `CREDITS.md` and `README.md` end to end.** Both were edited piecemeal across the move
-  and have not had a full read-through since.
-- **Consider whether `local/` should stay in the repo at all** once the transfer is settled. It is
-  tracked now purely to carry the workflow across; if only `logs/` and `svgs/` are worth keeping,
-  narrowing `.gitignore` to the rest is the tidy end state.
-- **Empty folders are fine and need no attention.** Git does not track them, so they do not exist in
-  a fresh clone at all. Do not add `.gitkeep` files to force one in, and do not list empty
-  directories in any doc.
+  `LICENSE`. The mobile→PC move's two temporary files, `START-HERE.md` and
+  `DeepSeek_CodeAssist_memory.md`, served their purpose and are gone — this file is the sole entry
+  point for a new session now.

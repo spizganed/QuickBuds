@@ -47,9 +47,10 @@ and it is the first thing the agent should read to know what to work on next.
 1. **Finish the hold gesture — the last broken piece of gesture configuration.** Everything else in
    "Earbud controls" works and writes to the buds. The hold is different: its stored function byte
    cannot select a mode. The mode list belongs to `setSupportNoiseReduction` (`0x0404`), read back
-   through `0x010C` payloads `02 01` / `02 03` / `02 04`. **Confirm that read on the device first** —
-   no capture has ever shown a `0x810C` answer to `02 01`, so the reply shape is unknown — then build
-   the picker on it. See PROTOCOL.md §5 and §6.
+   through `0x010C` payloads `02 01` / `02 03` / `02 04`. **The `02 01` read is now confirmed** —
+   2026-09-20, reply `0x0007`, see PROTOCOL.md §5. What's still needed before the picker: confirm the
+   mask's bit-numbering by a membership-change test (same method §6 used for the `function` enum),
+   then the write side (`0x0404`) itself, which is still `[OSS]`-only and untested on this device.
 2. **Spatial sound.** The commands exist; decide which one the firmware honours (the legacy feature
    `0x1B` vs the newer three-mode `0x0422`). Unverified today.
 3. **Codec switching (Hi-Res).** The row currently toggles only its own subtitle. Needs a capture of
@@ -152,14 +153,14 @@ Appearance and tooling:
 
 ## Build and transfer notes
 
-- **Build and run:** Gradle on PC. No CodeAssist prerequisites — the toolchain is Gradle 8.13 +
-  AGP 8.13.0 + Kotlin 2.4.0. Full setup and first-run steps are in
-  [START-HERE.md](./START-HERE.md) and [AGENTS.md](./AGENTS.md).
-- **adb over USB** pushes the `.apk` to the device and is the debugging path. Dev Tools output that
-  cannot be reached from the PC is exported to `local/logs`.
-- `local/` is on GitHub **temporarily**, to carry the mobile working state across to the PC. What is
-  in it, what has lasting value, and what to delete after the move are all in AGENTS.md →
-  *Post-move cleanup checklist*.
+- **The PC move is done** (confirmed working 2026-09-20) — Gradle 8.13 + AGP 8.13.0 + Kotlin 2.4.0,
+  no CodeAssist prerequisites. Full setup is in [AGENTS.md](./AGENTS.md), including a JDK-version
+  gotcha (Gradle 8.13 rejects JDK 24+) worth reading before the next fresh machine.
+- **adb over USB** pushes the `.apk` to the device and is the debugging path. The app's own packet
+  log can also be pulled directly with `adb pull` or `adb logcat` — no manual export needed, see
+  PACKET-CAPTURE.md's automated-pull note under Option A.
+- `local/` now holds only `logs/` and `svgs/`, both kept for their lasting value as evidence/
+  provenance — nothing left in it is temporary.
 
 **Docs:** [README.md](./README.md) is the accurate feature summary. [PROTOCOL.md](./PROTOCOL.md) is
 the wire format end to end — read it before touching anything protocol-related.

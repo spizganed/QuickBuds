@@ -165,11 +165,10 @@ Steps 9 and 10 are READ-ONLY additions, so neither can corrupt a binding.
 **If the timing of the earlier steps ever looks disturbed, these late additions are the first
 suspect** — they are the only steps here that were appended after the sequence was stable.
 
-`[GUESS]` **Step 10 is NOT settled — nothing has ever answered it.** No capture has shown a
-`0x810C` reply to payload `02 01`, so even its reply SHAPE is unknown. It is sent anyway because
-it is read-only and cheap, and it is the read that must be confirmed before the hold mode picker
-can be built (§5). Every log search so far has found no `810C` line at all, which is the whole
-reason the hold's mode list is still unwired.
+`[CAPTURE]` **Step 10 is SETTLED as of 2026-09-20 — see §5's "The hold's SWITCH LIST" for the
+reply and its decode.** This note used to say no capture had ever answered `02 01`; that stood for
+the whole time the project ran on the phone. The first reply came from `packets.log`, not a
+Wireshark capture, on the very first PC-side reconnect that happened to be logged from cold start.
 
 ### The broadcast codes reply (0x8200) is the map of what exists
 
@@ -345,11 +344,44 @@ RX  AA 0C 00 00 0C 81 05 05 00 00 01 01 08 00
 | `02 01` / `02 03` / `02 04` | **which modes the hold cycles through** (`getNoiseReductionSwitchMode`) |
 | `04 01` | intelligent noise reduction mode |
 
-**NO CAPTURE HAS EVER SHOWN A REPLY TO THE SWITCH-LIST VARIANT — `[GUESS]` beyond
-that.** `queryNoiseSwitchModes()` is sent in the init sequence, but searching every
-log in `local/logs/` finds no `0x810C` answer to `02 01`, and no `810C` line at all.
-So the reply's SHAPE is unknown, not merely unparsed. This matters for the obvious
-next question ("can we pick Low/Medium/High for the hold?") — see below.
+#### `[CAPTURE]` 2026-09-20 — the switch-list reply, ANSWERED
+
+The first-ever reply to the `02 01` variant, from `packets.log` (the app's own on-device log, not a
+Wireshark/tshark capture — `PacketLogger` writes every TX/RX line to a file in app-specific external
+storage, and that file happened to still hold the connection's init sequence):
+
+```
+TX  AA 09 00 00 0C 01 07 02 00 02 01
+RX  AA 0C 00 00 0C 81 07 05 00 00 02 01 07 00
+```
+
+Payload breakdown, by the same shape the confirmed `01 01` (current-mode) reply already uses —
+`[status][echo of the 2-byte request][answer]`:
+
+| byte(s) | value | meaning |
+|---|---|---|
+| status | `00` | success, same as every other `0x81xx` reply |
+| echo | `02 01` | the request payload, echoed back verbatim |
+| answer | `07 00` | little-endian → mask `0x0007` |
+
+The echo-of-request shape is not a guess — it is the same pattern the `01 01` reply already shows
+(`00 01 01 08 00` = status, echo `01 01`, answer `08 00`), so this is `[CAPTURE]`, high confidence.
+
+**What `0x0007` means is `[INFERRED]`, not proven.** Bits 0/1/2 are set. If this mask reuses the SET
+table's bit numbering from earlier in this section (bit 0 = Off, bit 1 = On/generic, bit 2 =
+Transparency — the `PktAncByIndex()` scheme, not the NOTIFY table's), it reads as **three tiers: Off,
+On (resolving to whatever level was last hand-set), Transparency.** That lines up with the capture
+this came from: the developer ran the hold through exactly those three stops (Medium → Transparency →
+Off — "On" resolving to Medium, the level he'd last set by hand), which is consistent with, but does
+not by itself prove, the bit-numbering theory. Earlier device sessions reported the cycle holding two
+modes once and four another time (§ "Can the app choose which ANC modes..." below), so the mask is
+expected to change with vendor-app configuration — that would be the next confirming test, the same
+method §6 used to pin down the `function` enum: change the hold's membership in the vendor app,
+re-query `02 01`, and check that the mask moves the way the bit theory predicts. **Not done yet.**
+
+This unblocks the hold mode picker's read requirement (see "Order of work" below) but the WRITE side
+(`setSupportNoiseReduction`, `0x0404`) is still `[OSS]`-only and untested — confirming the read does
+not by itself make the picker safe to build.
 
 The write side is `setSupportNoiseReduction` (`0x0404`, payload
 `[action=2][noiseType][modeMask LE]`, `OppoProtocol.LongPressNoisePayload`), and
@@ -374,10 +406,11 @@ last manually-chosen mode" behaviour is real but its CAUSE is not what it looks 
 - **And what the app currently does** — leave the hold alone and set modes manually —
   is therefore a consequence of the two gaps above, not a behaviour anyone chose.
 
-**Order of work, and why it is this order:** confirm the read (`0x010C` `02 01`) FIRST.
-A mode picker needs to know the current list and the mask encoding, and building it on a
-guessed `0x810C` shape would repeat the exact mistake §5 records three times over. The
-read is cheap and read-only, so it cannot cost anything to try.
+**Order of work, and why it is this order:** confirm the read (`0x010C` `02 01`) FIRST — **done,
+2026-09-20**, see "the switch-list reply, ANSWERED" above. What's left before a picker can be built
+safely: confirm the mask's bit-numbering theory with a membership-change test (the way §6 pinned down
+the `function` enum), then the write side (`setSupportNoiseReduction`, `0x0404`) is still
+`[OSS]`-only and completely untested on this device.
 
 ### The History of Getting This Wrong
 
@@ -756,9 +789,6 @@ first diff: one `0x00` should move, and the value it becomes is Game Mode.
 Two traps that were live at the time, kept because they generalise to any future diff — not
 just this one:
 
-The two traps that were live at the time, kept because they generalise to any future diff — not
-just this one:
-
 - **Do not diff the hold.** It offers only the ANC cycle (§6.1), so the `fn` byte
   cannot vary and a "no change" result would tell us nothing while looking like one.
 - `[USER]` **`fn` may not be 1:1 with the menu label.** "ANC on" is ambiguous on the
@@ -915,9 +945,10 @@ sessions:
 
 ## 12. Open questions
 
-- **The hold's mode list.** `0x810C` request `02 01` is sent in the init sequence, but no capture has
-  ever shown a reply, so the shape is unknown. This blocks the hold mode picker (§5). Everything else
-  about gesture configuration is settled — the `function` enum was MEASURED, see §6.
+- **The hold's mode list — reply shape known, meaning inferred.** `0x810C` request `02 01` now has a
+  confirmed reply (§5, `[CAPTURE]` 2026-09-20): `0x0007`. What the mask bits mean is `[INFERRED]` —
+  needs a membership-change test (like §6's `function`-enum method) to confirm before it's safe to
+  build the picker on. The write side (`0x0404` `setSupportNoiseReduction`) is still untested.
 - What `0x0501` / `0x0500` are.
 - Broadcast codes `0x04`, `0x08`, `0x0B`.
 - The `0x810D` batch status reply layout.
