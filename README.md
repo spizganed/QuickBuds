@@ -150,26 +150,21 @@ the next step — see [PROTOCOL.md](./PROTOCOL.md) §5 and [ROADMAP.md](./ROADMA
 
 | File | What it is |
 | --- | --- |
-| [START-HERE.md](./START-HERE.md) | Where a new agent session begins: read order, PC setup, first task. Temporary — it goes away once the move is settled. |
+| [AGENTS.md](./AGENTS.md) | The entry point for a new session — toolchain, conventions, and the mistakes already paid for. |
 | [ROADMAP.md](./ROADMAP.md) | The plan: what is next, in order, and what is already done. |
-| [AGENTS.md](./AGENTS.md) | How the project is built and worked on — toolchain, conventions, and the mistakes already paid for. |
 | [PROTOCOL.md](./PROTOCOL.md) | The wire format end to end. Read before touching anything protocol-related. |
 | [CREDITS.md](./CREDITS.md) | Whose reverse-engineering this stands on, and which parts are ours. |
 | [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | The capture procedure, kept as a backup for protocol work. |
-| [DeepSeek_CodeAssist_memory.md](./DeepSeek_CodeAssist_memory.md) | The working memory carried over from the mobile/CodeAssist era. Temporary — the current agent is absorbing it and will remove it. |
 | [LICENSE](./LICENSE) | GPL-3.0. |
 
-Everything else lives under `local/`, which is tracked while the workflow moves to the PC:
+Everything else lives under `local/`:
 
 | Path | What is in it |
 | --- | --- |
 | `local/logs/` | Packet captures handed over for analysis — cited as evidence by PROTOCOL.md. |
 | `local/svgs/` | The source SVGs the wear-icon drawables were traced from. |
-| `local/commits/` | The v1.1.0 commit message and release body, kept so nothing was lost in the move. |
 
-`local/` is tracked only to carry the mobile workflow across to the PC. Most of it is disposable once
-the PC build is confirmed — [AGENTS.md](./AGENTS.md) has a cleanup checklist. There are no committed
-screenshots.
+There are no committed screenshots.
 
 ## Credits
 

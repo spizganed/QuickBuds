@@ -197,15 +197,15 @@ it built everything up to and including v1.1.0, and none of it is needed to work
 - **decompile.com** — HeyMelody (Melody) decompilation, used as a secondary reference
 - Brave browser, Google Files, a hex editor — research and inspection
 
-Two CodeAssist artefacts still sit in the working copy. **Neither is in the repo, and neither is
-needed on the PC** — they exist only so the phone build keeps working until it is retired:
+Two CodeAssist artefacts existed on the original phone's working copy, git-ignored and never
+committed, so **a fresh clone on the PC never has them at all**:
 
 - `app/module.toml` — CodeAssist's project model (module type, source sets, dependencies, SDK
   levels, and a second copy of the version number). This is what CodeAssist built from. The Gradle
   files now in the repo were originally *generated* from it.
 - `.platform/` — CodeAssist's cache, settings and generated Gradle export. It also held the AI
-  agent's private memory, which was copied into
-  [DeepSeek_CodeAssist_memory.md](./DeepSeek_CodeAssist_memory.md) so it survived the move.
+  agent's private memory, which was copied into AGENTS.md and PROTOCOL.md before the move's temporary
+  handover file was deleted.
 
 **From the move to the PC onward**
 
