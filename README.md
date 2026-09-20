@@ -7,22 +7,22 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84.svg)]()
 
 QuickBuds talks to your earbuds directly over a classic Bluetooth RFCOMM channel and undoes
-everything the vendor app gets wrong. No HeyMelody, no Wearable app, no account, and no root,
-Shizuku or ADB needed to use it. Every packet it sends was reverse-engineered and confirmed on
-real hardware.
+everything the vendor app gets wrong. No HeyMelody, no account, and no root,
+Every packet it sends was reverse-engineered and confirmed on
+real hardware.(OnePlus Buds 4)
 
-The app was built entirely on a phone (CodeAssist + Termux) through **v1.1.0**. Development has
+The app was built entirely on a phone (CodeAssist + Termux) using DeepSeek v.4.1-fast through **v1.1.0**. Development has
 since moved to a PC with Claude Code.
 
 ## Why this exists
 
 Two frustrations with HeyMelody, specifically:
 
-1. **The UI is white-only.** No dark or OLED option, on an app you open at night.
-2. **There is no home-screen widget at all.** Checking ANC or battery meant opening the app.
+1. **The UI is white-only.** No dark or OLED option.
+2. **There is no home-screen widget at all.** Changing any of the features would require to open HeyMelody.
 
-The vendor apps are also heavy, account-bound and full of features nobody asked for. QuickBuds
-implements only what the developer actually uses, and puts a real widget in front of it.
+QuickBuds tries to match HeyMelody feature-parity, improves on it and puts a real widget in front of it.
+With heavy customization options.
 
 ## Where it is going
 
@@ -39,7 +39,7 @@ See [ROADMAP.md](./ROADMAP.md) for the ordered plan and what is already done.
 - Direct RFCOMM to the earbuds (worked UUID `0000079A-D102-11E1-9B23-00025B00A5A5`, tried with fallbacks)
 - Full init handshake, then the buds **push** battery, wearing, Game Mode and ANC changes to the
   app — no polling lag
-- ANC: Off / Transparency / Adaptive / Light / Medium / Deep, with the Smart command ready
+- ANC: Off / Transparency / Adaptive / Light / Medium / Deep / Adaptive 
 - Game Mode toggle that also follows bud-side gestures
 - Auto-retry connection logic, so a busy earbud does not end the session
 
@@ -200,7 +200,7 @@ for Baseus earbuds.
   generation) and Grok did the remaining small tasks.
 - From **v1.1.0 and the last commit of that era onward**, development moved to a PC and to
   **Claude Code**, which is where the work continues.
-- **Everything ran on free tiers.** No paid API budget was involved.
+- **Everything that was not DeepSeek run on free tiers.** 
 
 Every model involved reasoned about protocol bytes captured on real hardware. The captures and the
 on-device testing are what make the claims in [PROTOCOL.md](./PROTOCOL.md) checkable, and they are
