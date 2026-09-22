@@ -442,19 +442,30 @@ exactly — two independent `0x010C` `02 01` queries (sent on each bud's own lin
 Constants: `OpoProtocol.HOLD_MASK_BIT_OFF = 0`, `_ON = 1`, `_TRANSPARENCY = 2`, `_ADAPTIVE = 11`.
 
 **`[CAPTURE]` 2026-09-22, from wiring this into the real app and testing on-device (not HeyMelody this
-time — our own build): the mask write ALSO raises a `0x0204` subType `0x03` push**, the same family
+time — our own build): the mask write ALSO raises a `0x0204` subType `0x03` frame**, the same family
 `AncEventParser` decodes for an ANC mode change, but this one's payload is shaped like the `0x010C`
-query's answer (`02 01 <mask LE>`), not the normal 2-byte ANC bitmask. `AncEventParser` decodes it
-anyway and prints a mode name (`ANC EVT: raw=0x0807 -> ANC-Light` was observed), which is almost
-certainly **wrong** — it is reading the mask-write echo through a table built for a different shape.
-Two more things observed the same session, worth keeping: **writing a mask that excludes the buds'
-current live mode changed the live mode** (writing `0x0006` — ANC+Transparency, no Off — while the
-buds were sitting on Off moved them onto something the push reported as Light), and the same "own
-`0x0204` push" line appears whether the write actually CHANGED the mask or only re-sent the same
-value (both a `0x0006` write and a same-value re-send produced the push). **Not fixed here** — fixing
-`AncEventParser`'s mislabeling needs its own capture to find the real shape, and is out of scope for
-the hold-mask feature itself. Flagged so `ANC EVT: raw=... -> ANC-...` lines seen right after a hold
-picker save are not mistaken for a real mode-change report.
+query's answer (`02 01 <mask LE>`), not the normal 2-byte ANC bitmask (`01 01 <value LE>`).
+`AncEventParser.isAncEvent()` did not check bytes 1/2 before this fix, so it decoded the mask-write's
+own echo anyway and produced a bogus mode name (`ANC EVT: raw=0x0807 -> ANC-Light` was observed).
+
+**FIXED 2026-09-22 — THIS WAS A REAL BUG, NOT COSMETIC, AND IT COST HIM A REAL SYMPTOM.** First
+filed here as "cosmetic, a log-reading trap." It is not: the bogus mode name went through the exact
+same `onAncModeState()` path a genuine push uses, so it got written into the PERSISTED display state.
+Surfaced as: "whenever i open the app after a new apk push then UI shows current mode is ANC-Low...
+i didnt change it from OFF at all" — his earbuds were genuinely still Off (no tone, matches), the
+display was just stuck on the bogus value from this session's own hold-mask testing, and nothing
+corrected it because the current-mode QUERY reply (`0x010C` `01 01`, sent on every connect) was
+**never wired to update the display at all** — a second, older gap this exposed. Both fixed together:
+`isAncEvent()` now also requires `payload[1]==0x01 && payload[2]==0x01` (the mask-write echo's `02 01`
+now fails this), and `BudsConnectionManager` now reads the current-mode query reply on every connect
+and calls `onAncModeState()` from it too, so a reconnect self-corrects the display regardless of what
+was persisted before.
+
+**RETRACTED: "writing a mask that excludes the buds' current live mode changed the live mode."** That
+claim, made in an earlier revision of this note, rested entirely on the SAME bogus push described
+above — there is no longer any evidence the live mode changed at all, and his report (buds genuinely
+still Off, no tone) is consistent with it never having changed. Do not resurrect this claim without a
+fresh, properly-filtered capture.
 
 #### `[USER]` The hold's ANC-cycle membership is ONE shared setting, not per-bud
 
@@ -1047,8 +1058,8 @@ sessions:
   by sending `mask=0x0006` and `mask=0x0807` from our own hold picker, both acked and read back
   exactly. Implemented: `OpoProtocol.setHoldAncModes()`, `BudsConnectionManager.sendHoldAncModes()`,
   `GestureAction.holdMaskBit`. Still open: bit 1's meaning in isolation (every capture so far shows it
-  set; no test has cleared it alone), and `AncEventParser` mislabeling the mask write's own `0x0204`
-  echo as a mode change (§5, same note).
+  set; no test has cleared it alone). `AncEventParser` mislabeling the mask write's own `0x0204` echo
+  as a mode change — a real bug, not cosmetic, it corrupted the persisted ANC display — is FIXED (§5).
 - **On-call gestures — CLOSED 2026-09-22 for the bytes and the write, open for the labels.** `btn
   0x06`'s write shape is `[CAPTURE]`-confirmed (§6, "the on-call write") and re-verified by sending it
   from our own app: `act 0x02`/`0x06`, `fn 0x1D`/`0x1C`, `deviceType 0x04` for both buds, acked and

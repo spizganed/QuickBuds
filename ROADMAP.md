@@ -43,11 +43,14 @@ and it is the first thing the agent should read to know what to work on next.
 
 ## Next up, in order
 
-1. **The hold gesture — DONE, including the UI bug, awaiting his test.** Read, bit theory, and write
-   are all `[CAPTURE]`-confirmed (PROTOCOL.md §5) and the buds do cycle correctly on device (`[USER]`
-   2026-09-22: "the anc hold it actually works"). One loose end found while testing, not fixed:
-   writing a mask also raises a `0x0204` push that `AncEventParser` mislabels as an ANC mode change
-   (see PROTOCOL.md §5's `[CAPTURE]` note) — cosmetic, a log-reading trap, not a functional bug.
+1. **The hold gesture — DONE, including the UI bug and a real display bug, awaiting his test.** Read,
+   bit theory, and write are all `[CAPTURE]`-confirmed (PROTOCOL.md §5) and the buds do cycle correctly
+   on device (`[USER]` 2026-09-22: "the anc hold it actually works"). Testing it also raised a
+   `0x0204` frame that `AncEventParser` mislabeled as a real ANC mode change — first filed here as
+   "cosmetic," it was NOT: it corrupted the persisted main-screen ANC display, which is exactly what he
+   caught next ("UI shows ANC-Low... i didnt change it from OFF at all"). Fixed 2026-09-22 — see
+   PROTOCOL.md §5's `[CAPTURE]` note for both the root cause and the (previously missing) current-mode
+   query wiring that now self-corrects the display on every connect.
    **The per-bud UI bug he then caught — "u forgot to bind our app hold gesture together to both
    buds... at least in the UI" — is fixed 2026-09-22:** `GestureConfigStore` now keys `TAP_HOLD`
    storage independent of `side` (like `OnCallGesture` already did), and `GestureActivity.writeToBuds`
