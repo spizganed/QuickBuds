@@ -406,11 +406,68 @@ last manually-chosen mode" behaviour is real but its CAUSE is not what it looks 
 - **And what the app currently does** — leave the hold alone and set modes manually —
   is therefore a consequence of the two gaps above, not a behaviour anyone chose.
 
-**Order of work, and why it is this order:** confirm the read (`0x010C` `02 01`) FIRST — **done,
-2026-09-20**, see "the switch-list reply, ANSWERED" above. What's left before a picker can be built
-safely: confirm the mask's bit-numbering theory with a membership-change test (the way §6 pinned down
-the `function` enum), then the write side (`setSupportNoiseReduction`, `0x0404`) is still
-`[OSS]`-only and completely untested on this device.
+**Order of work, and why it is this order — ALL THREE STEPS ARE NOW DONE.** Confirm the read
+(`0x010C` `02 01`) FIRST — done 2026-09-20, see "the switch-list reply, ANSWERED" above. Confirm the
+mask's bit-numbering with a membership-change test — done 2026-09-22, see "THE MEMBERSHIP-CHANGE TEST,
+ANSWERED" just below. Then the write side (`setSupportNoiseReduction`, `0x0404`) — also confirmed by
+the same capture, ACKed and read back correctly. `OpoProtocol.setHoldAncModes()` and
+`BudsConnectionManager.sendHoldAncModes()` implement it; the hold picker in `GestureActivity` now
+sends it alongside the key-function bind (see `GestureAction.holdMaskBit`).
+
+#### `[CAPTURE]` 2026-09-22 — THE MEMBERSHIP-CHANGE TEST, ANSWERED
+
+An HCI capture of HeyMelody itself (Option C, PACKET-CAPTURE.md — `adb bugreport` +
+`btsnoop_hci.log` + `tshark`), taken while he added Adaptive to a 3-stop hold cycle in HeyMelody's own
+UI:
+
+```
+TX  AA 0A 00 00 04 04 <seq> 04 00 02 01 07 08     setSupportNoiseReduction: action=02 noiseType=01 mask=07 08
+RX  AA 08 00 00 04 84 <seq> 01 00 00              ack, status=00
+TX  AA 09 00 00 0C 01 <seq> 02 00 02 01           0x010C query, echo 02 01
+RX  AA 0C 00 00 0C 81 <seq> 05 00 00 02 01 07 08  mask now 07 08 (was 07 00 before this write)
+```
+
+**THIS SETTLES THE BIT THEORY: the mask is [ancPayload]'s OWN bit numbering, not a separate scheme.**
+Adding Adaptive moved the mask from `0x0007` to `0x0807` — bits 0/1/2 unchanged, bit 11 (`0x0800`)
+newly set. Bit 11 is exactly Adaptive's bit in the plain SET_ANC table (§5 above, `ancAdaptive()`).
+Off = bit 0, Transparency = bit 2 both match `ancPayload()` too; bit 1 remains the one bit with no
+independent isolation — every capture so far shows it set, consistent with it being a generic "On"
+that resolves to the last hand-set level, but no test has tried clearing it alone.
+
+**THE WRITE WORKS.** Acked (`0x8404` status `00`), and the read-back matches predicted `0x0807`
+exactly — two independent `0x010C` `02 01` queries (sent on each bud's own link) both returned it.
+`OpoProtocol.setHoldAncModes(mask)` reproduces this payload shape exactly:
+`byteArrayOf(0x02, 0x01, mask_lo, mask_hi)`.
+
+Constants: `OpoProtocol.HOLD_MASK_BIT_OFF = 0`, `_ON = 1`, `_TRANSPARENCY = 2`, `_ADAPTIVE = 11`.
+
+**`[CAPTURE]` 2026-09-22, from wiring this into the real app and testing on-device (not HeyMelody this
+time — our own build): the mask write ALSO raises a `0x0204` subType `0x03` push**, the same family
+`AncEventParser` decodes for an ANC mode change, but this one's payload is shaped like the `0x010C`
+query's answer (`02 01 <mask LE>`), not the normal 2-byte ANC bitmask. `AncEventParser` decodes it
+anyway and prints a mode name (`ANC EVT: raw=0x0807 -> ANC-Light` was observed), which is almost
+certainly **wrong** — it is reading the mask-write echo through a table built for a different shape.
+Two more things observed the same session, worth keeping: **writing a mask that excludes the buds'
+current live mode changed the live mode** (writing `0x0006` — ANC+Transparency, no Off — while the
+buds were sitting on Off moved them onto something the push reported as Light), and the same "own
+`0x0204` push" line appears whether the write actually CHANGED the mask or only re-sent the same
+value (both a `0x0006` write and a same-value re-send produced the push). **Not fixed here** — fixing
+`AncEventParser`'s mislabeling needs its own capture to find the real shape, and is out of scope for
+the hold-mask feature itself. Flagged so `ANC EVT: raw=... -> ANC-...` lines seen right after a hold
+picker save are not mistaken for a real mode-change report.
+
+#### `[USER]` The hold's ANC-cycle membership is ONE shared setting, not per-bud
+
+2026-09-22 — changing the left bud's hold cycle in HeyMelody (3-stop `On -> Transparency -> Off` to
+4-stop `On -> Transparency -> Adaptive -> Off`) changed the **right** bud's cycle to match, with no
+separate edit made on that side. So the mode list `setSupportNoiseReduction` reads/writes is a single
+device-level setting, not two independent per-bud lists — unlike the primary tap/hold BINDING
+(`fn=0x08` in the key-function table), which is stored once per side (`dev=0x01` and `dev=0x02` each
+have their own entry) and could in principle differ. Whatever side a write targets, expect both buds'
+cycles to move together; do not build per-side controls for this list. This matches the capture above
+exactly — the write's payload has no `deviceType`/side field at all, so "shared" is a property of the
+command itself, not something either app chooses. The 3-stop vs 4-stop change was subsequently
+confirmed through `0x010C` `02 01` too — see "THE MEMBERSHIP-CHANGE TEST, ANSWERED" above.
 
 ### The History of Getting This Wrong
 
@@ -650,9 +707,49 @@ firmware folds back into one `btn 0x01` slot once both halves agree. That is exa
 slide appeared to work once and then never again: the first write collapsed the shape, and
 every later write aimed at groups that no longer existed.
 
-`btn 0x06` (all `fn=0x00`) is still unexplained — the on-call hypothesis is neither
-confirmed nor refuted, and `0x02`/`0x03` turning out to be slides shows "extra group" does
-not automatically mean "on call".
+`[USER]` 2026-09-22 — **`btn 0x06` IS the on-call group.** First said from HeyMelody's own UI alone
+(it shows an on-call section below the normal gestures with exactly two rows — **double tap**
+(`None` / `Answer + end call`, one combined option, not two) and **long hold** (`None` / `Decline
+call`)) — then settled the same day by the HCI capture below.
+
+#### `[CAPTURE]` 2026-09-22 — the on-call write, from the same capture as the hold-mask test
+
+He toggled both on-call rows off/on/off in HeyMelody while an HCI capture ran (Option C,
+PACKET-CAPTURE.md). Both toggles landed cleanly, twice each:
+
+```
+TX  AA 0C 00 00 01 04 <seq> 05 00 01 04 06 02 1D   setKeyFunction: count=1 [dev=04 btn=06 act=02 fn=1D]
+RX  AA 08 00 00 01 84 <seq> 01 00 00               ack
+RX  AA 51 00 00 08 81 <seq> 4A 00 00 12 ...        0x8108 read-back: dev=0x01/btn=0x06 act=02 fn:00->1D
+                                                    AND dev=0x02/btn=0x06 act=02 fn:00->1D, same write
+```
+
+Both rows, both directions, full detail:
+
+| write payload | toggled | `act` | `fn` on/off | seen |
+|---|---|---|---|---|
+| `01 04 06 02 1D` / `01 04 06 02 00` | double tap | `0x02` | `0x1D` / `0x00` | twice |
+| `01 04 06 06 1C` / `01 04 06 06 00` | long hold | `0x06` | `0x1C` / `0x00` | twice |
+
+Every write is `count=1`, ONE entry, `deviceType=0x04` — not `0x01` or `0x02` — and every read-back
+that followed showed the SAME `fn` land on both `dev=0x01` AND `dev=0x02`, never `0x04` itself on a
+read. See `KeyFunctionParser.DEVICE_TYPE_BOTH`.
+
+**THE BYTES ARE NOW `[CAPTURE]`; ONLY THE ENGLISH LABELS STAY `[INFERRED]`.** Which `act` is double-tap
+and which is long-hold rests on the order he described the two rows in, not on an independent signal
+— unlike the primary group's `function` enum (§6.1), nothing raises an `F1` frame during a call in any
+capture taken so far, so there is no second data point to cross-check against. Implemented as
+`OpoProtocol.setOnCallDoubleTap()` (act `0x02`) / `setOnCallLongHold()` (act `0x06`) on that
+best-available reading; if a real call shows the wrong switch doing the wrong thing, swap the two
+`act` values first, not the bytes. `act 0x03` is untouched in every capture — a third slot this group
+has that HeyMelody's UI never exercised.
+
+**Also `[USER]`+`[CAPTURE]`: the on-call rows bind BOTH buds together, one shared setting — not
+per-bud** like the primary tap/hold group — now doubly confirmed, once from HeyMelody's UI and once
+from the `deviceType=0x04` write itself. This matches what the ANC-cycle hold does (§5.1), though by a
+different mechanism: the hold's mask command carries no `deviceType` field at all, while on-call's
+`0x04` is a real alias value inside the normal `deviceType` field. Do not assume the two share
+plumbing just because both are "shared, not per-bud".
 
 #### THE HOLD'S FUNCTION BYTE DOES NOT CONTROL THE CYCLE
 
@@ -945,10 +1042,20 @@ sessions:
 
 ## 12. Open questions
 
-- **The hold's mode list — reply shape known, meaning inferred.** `0x810C` request `02 01` now has a
-  confirmed reply (§5, `[CAPTURE]` 2026-09-20): `0x0007`. What the mask bits mean is `[INFERRED]` —
-  needs a membership-change test (like §6's `function`-enum method) to confirm before it's safe to
-  build the picker on. The write side (`0x0404` `setSupportNoiseReduction`) is still untested.
+- **The hold's mode list — CLOSED 2026-09-22, wired UI verified on-device.** Read, bit theory, and
+  write are all `[CAPTURE]`-confirmed (§5) — first from HeyMelody's own capture, then a second time
+  by sending `mask=0x0006` and `mask=0x0807` from our own hold picker, both acked and read back
+  exactly. Implemented: `OpoProtocol.setHoldAncModes()`, `BudsConnectionManager.sendHoldAncModes()`,
+  `GestureAction.holdMaskBit`. Still open: bit 1's meaning in isolation (every capture so far shows it
+  set; no test has cleared it alone), and `AncEventParser` mislabeling the mask write's own `0x0204`
+  echo as a mode change (§5, same note).
+- **On-call gestures — CLOSED 2026-09-22 for the bytes and the write, open for the labels.** `btn
+  0x06`'s write shape is `[CAPTURE]`-confirmed (§6, "the on-call write") and re-verified by sending it
+  from our own app: `act 0x02`/`0x06`, `fn 0x1D`/`0x1C`, `deviceType 0x04` for both buds, acked and
+  read back exactly matching HeyMelody's own bytes. Implemented: `OpoProtocol.setOnCallDoubleTap()`/
+  `setOnCallLongHold()`, the "When on call" section in `GestureActivity`. Still `[INFERRED]`: which
+  `act` is double-tap vs long-hold — needs a real call to confirm the right switch does the right
+  thing. `act 0x03` in the same group is still completely unknown.
 - What `0x0501` / `0x0500` are.
 - Broadcast codes `0x04`, `0x08`, `0x0B`.
 - The `0x810D` batch status reply layout.

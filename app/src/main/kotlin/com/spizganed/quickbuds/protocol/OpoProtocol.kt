@@ -262,6 +262,87 @@ object OpoProtocol {
      */
     fun queryNoiseSwitchModes(): ByteArray =
         buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x02, 0x01))
+
+    /**
+     * setSupportNoiseReduction — WRITE which ANC modes the hold cycles through.
+     *
+     * `[CAPTURE]` 2026-09-22, via an HCI capture of HeyMelody itself (Option C,
+     * PACKET-CAPTURE.md): he added Adaptive to a 3-stop hold cycle in HeyMelody, and the
+     * app sent `AA 0A 00 00 04 04 <seq> 04 00 02 01 07 08` — `0x0404` action `02`, noiseType
+     * `01`, then the mask `07 08` (little-endian `0x0807`). Acked (`0x8404` status `00`), and
+     * the immediate `0x010C` `02 01` read-back returned the same `07 08`, up from `07 00`
+     * (`0x0007`) beforehand.
+     *
+     * THIS CONFIRMS THE MASK REUSES [ancPayload]'S OWN BIT NUMBERING, not a separate scheme —
+     * bit 11 (`0x0800`) is exactly Adaptive's bit in the plain SET_ANC table above, and it is
+     * the only bit that moved. PROTOCOL.md §5 previously carried this as `[INFERRED]`; this
+     * capture settles it. Off = bit 0, Transparency = bit 2 (matching [ancPayload]); bit 1 is
+     * some generic "On" that resolves to whichever level was last hand-set, seen set in every
+     * capture so far and never independently isolated.
+     *
+     * A DIFFERENT COMMAND FROM [ancPayload], same command NUMBER. `0x0404`'s first payload
+     * byte selects the question: `01 01 <bits>` sets the CURRENT mode (see [ancOff] etc.),
+     * `02 01 <mask LE>` sets the cycle's MEMBERSHIP. Do not merge these two payload shapes.
+     */
+    fun setHoldAncModes(mask: Int): ByteArray = buildPacket(
+        CMD_SET_ANC,
+        payload = byteArrayOf(0x02, 0x01, (mask and 0xFF).toByte(), ((mask shr 8) and 0xFF).toByte())
+    )
+
+    /** Bits in [setHoldAncModes]'s mask — the same numbering [ancPayload] uses. `[CAPTURE]`. */
+    const val HOLD_MASK_BIT_OFF = 0
+    const val HOLD_MASK_BIT_ON = 1
+    const val HOLD_MASK_BIT_TRANSPARENCY = 2
+    const val HOLD_MASK_BIT_ADAPTIVE = 11
+
+    /**
+     * setKeyFunction write for the on-call group (`btn 0x06`) — `[CAPTURE]`, same capture as
+     * [setHoldAncModes]. HeyMelody writes ONE entry, `deviceType = 0x04`
+     * ([KeyFunctionParser.DEVICE_TYPE_BOTH]), which the buds fan out to both sides: the
+     * following `0x8108` read-back always showed the SAME `fn` on `dev=0x01` AND `dev=0x02`,
+     * never `dev=0x04` itself. See [KeyFunctionParser.BUTTON_ON_CALL] for the full capture and
+     * what is still `[INFERRED]` (which act is which UI row).
+     */
+    /**
+     * `act 0x02`, toggled `[CAPTURE]` between `fn 0x00` and `fn 0x1D` while he switched
+     * HeyMelody's on-call **double tap** row between None and Answer/end call, twice. The
+     * bytes are exactly what shipped from the vendor app; only the ENGLISH LABEL ("double
+     * tap") is `[INFERRED]` from the order he described the two rows in, not read off the
+     * wire — see [KeyFunctionParser.BUTTON_ON_CALL].
+     *
+     * Named (not inlined) so [com.spizganed.quickbuds.ui.OnCallConfigStore] can reverse-map a
+     * device reading back to a row without duplicating these numbers.
+     */
+    const val ON_CALL_ACT_DOUBLE_TAP = 0x02
+    const val ON_CALL_FN_ANSWER_END = 0x1D
+
+    /**
+     * `act 0x06`, toggled `[CAPTURE]` between `fn 0x00` and `fn 0x1C` while he switched
+     * HeyMelody's on-call **long hold** row between None and Decline call, twice. Same
+     * caveat as the double-tap pair above: the bytes are measured, the "long hold" label is
+     * `[INFERRED]`.
+     */
+    const val ON_CALL_ACT_LONG_HOLD = 0x06
+    const val ON_CALL_FN_DECLINE = 0x1C
+
+    private fun onCallPayload(act: Int, fn: Int) = byteArrayOf(
+        0x01,
+        KeyFunctionParser.DEVICE_TYPE_BOTH.toByte(),
+        KeyFunctionParser.BUTTON_ON_CALL.toByte(),
+        act.toByte(),
+        fn.toByte()
+    )
+
+    fun setOnCallDoubleTap(enabled: Boolean): ByteArray = buildPacket(
+        CMD_SET_KEY_FUNCTION,
+        payload = onCallPayload(ON_CALL_ACT_DOUBLE_TAP, if (enabled) ON_CALL_FN_ANSWER_END else 0x00)
+    )
+
+    fun setOnCallLongHold(enabled: Boolean): ByteArray = buildPacket(
+        CMD_SET_KEY_FUNCTION,
+        payload = onCallPayload(ON_CALL_ACT_LONG_HOLD, if (enabled) ON_CALL_FN_DECLINE else 0x00)
+    )
+
     fun queryEq(): ByteArray = buildPacket(CMD_QUERY_EQ)
     fun queryEqAll(): ByteArray = buildPacket(CMD_QUERY_EQ_ALL, payload = byteArrayOf(0x01, 0x05))
 

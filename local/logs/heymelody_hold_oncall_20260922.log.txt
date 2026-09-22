@@ -1,0 +1,120 @@
+HeyMelody HCI capture, 2026-09-22 — Option C method (adb bugreport + btsnoop_hci.log + tshark),
+see PACKET-CAPTURE.md. Cited as evidence in PROTOCOL.md §5 (hold ANC-cycle mask) and §6 (on-call
+btn 0x06 write). Filtered to decoded QuickBuds-protocol frames only (cmd/payload), not the raw
+btsnoop file. HeyMelody was the connected client for this capture, not QuickBuds — see
+"Option C works for HEYMELODY'S OWN TRAFFIC, not just ours" in PACKET-CAPTURE.md.
+
+Columns: <timestamp> <TX|RX> <decoded line>, TX = phone->buds, RX = buds->phone.
+------------------------------------------------------------------------------
+﻿2026-09-22T22:19:03.656957000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=94 payload=[01 01]
+2026-09-22T22:19:03.776352000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=94 payload=[00 01 01 20 00]
+2026-09-22T22:19:04.271559000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=95 payload=[]
+2026-09-22T22:19:04.419167000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=95 status=0x00 count=18 entries=18
+2026-09-22T22:19:04.476884000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=96 payload=[02 01]
+2026-09-22T22:19:04.498699000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=96 payload=[00 02 01 07 00]
+2026-09-22T22:19:19.536925000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=22 payload=[03 01]
+2026-09-22T22:19:19.562363000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=22 payload=[02 18 0C 20 C8]
+2026-09-22T22:19:21.046048000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=23 payload=[02 03 01]
+2026-09-22T22:19:21.210554000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=23 status=0x00 count=18 entries=18
+    (no diff vs previous 0x8108)
+2026-09-22T22:19:58.445978000+0200 TX SET_ANC_OR_HOLD(0x0404) seq=24 payload=[02 01 07 08]
+2026-09-22T22:19:58.479782000+0200 RX ACK(0x8404) seq=24 payload=[00]
+2026-09-22T22:19:58.486376000+0200 RX ACK(0x8404) seq=25 payload=[00]
+2026-09-22T22:19:58.521170000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=26 payload=[02 01]
+2026-09-22T22:19:58.525854000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=27 payload=[02 01]
+2026-09-22T22:19:58.547691000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=26 payload=[00 02 01 07 08]
+2026-09-22T22:19:58.560408000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=27 payload=[00 02 01 07 08]
+2026-09-22T22:22:48.032856000+0200 TX SET_KEY_FUNCTION(0x0401) seq=28 payload=[01 04 06 06 1C]
+    entry: dev=0x04 btn=0x06 act=0x06 fn=0x1C
+2026-09-22T22:22:48.395122000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=28 payload=[00]
+2026-09-22T22:22:48.407545000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=29 status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x06 fn=0x00
+      removed: dev=0x02 btn=0x06 act=0x06 fn=0x00
+      added:   dev=0x01 btn=0x06 act=0x06 fn=0x1C
+      added:   dev=0x02 btn=0x06 act=0x06 fn=0x1C
+2026-09-22T22:22:49.296912000+0200 TX SET_KEY_FUNCTION(0x0401) seq=2A payload=[01 04 06 02 1D]
+    entry: dev=0x04 btn=0x06 act=0x02 fn=0x1D
+2026-09-22T22:22:49.298154000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=2B payload=[02 03 01]
+2026-09-22T22:22:49.324187000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=2A payload=[00]
+2026-09-22T22:22:49.331876000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=2B status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x02 fn=0x00
+      removed: dev=0x02 btn=0x06 act=0x02 fn=0x00
+      added:   dev=0x01 btn=0x06 act=0x02 fn=0x1D
+      added:   dev=0x02 btn=0x06 act=0x02 fn=0x1D
+2026-09-22T22:25:59.893063000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=32 payload=[03 01]
+2026-09-22T22:25:59.983469000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=32 payload=[02 18 0C 20 5C]
+2026-09-22T22:26:01.235779000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=33 payload=[02 03 01]
+2026-09-22T22:26:01.307170000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=33 status=0x00 count=18 entries=18
+    (no diff vs previous 0x8108)
+2026-09-22T22:29:15.773076000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=A9 payload=[01 01]
+2026-09-22T22:29:16.014199000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=A9 payload=[00 01 01 20 00]
+2026-09-22T22:29:16.389144000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=AA payload=[]
+2026-09-22T22:29:16.595897000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=AB payload=[02 01]
+2026-09-22T22:29:16.672839000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=AA status=0x00 count=18 entries=18
+    (no diff vs previous 0x8108)
+2026-09-22T22:29:16.761664000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=AB payload=[00 02 01 07 08]
+2026-09-22T22:29:59.287858000+0200 TX SET_ANC_OR_HOLD(0x0404) seq=97 payload=[01 01 01]
+2026-09-22T22:29:59.588122000+0200 RX ACK(0x8404) seq=97 payload=[00]
+2026-09-22T22:29:59.674443000+0200 TX QUERY_ANC_OR_HOLD(0x010C) seq=98 payload=[02 01]
+2026-09-22T22:29:59.766686000+0200 RX RESP_ANC_OR_HOLD(0x810C) seq=98 payload=[00 02 01 07 08]
+2026-09-22T22:30:05.638227000+0200 TX SET_KEY_FUNCTION(0x0401) seq=99 payload=[01 04 06 02 00]
+    entry: dev=0x04 btn=0x06 act=0x02 fn=0x00
+2026-09-22T22:30:05.641088000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=9A payload=[02 03 01]
+2026-09-22T22:30:06.193262000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=99 payload=[00]
+2026-09-22T22:30:06.197190000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=9A status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x02 fn=0x1D
+      removed: dev=0x02 btn=0x06 act=0x02 fn=0x1D
+      added:   dev=0x01 btn=0x06 act=0x02 fn=0x00
+      added:   dev=0x02 btn=0x06 act=0x02 fn=0x00
+2026-09-22T22:30:06.723595000+0200 TX SET_KEY_FUNCTION(0x0401) seq=9B payload=[01 04 06 06 00]
+    entry: dev=0x04 btn=0x06 act=0x06 fn=0x00
+2026-09-22T22:30:06.724525000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=9C payload=[02 03 01]
+2026-09-22T22:30:07.110474000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=9B payload=[00]
+2026-09-22T22:30:07.115719000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=9C status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x06 fn=0x1C
+      removed: dev=0x02 btn=0x06 act=0x06 fn=0x1C
+      added:   dev=0x01 btn=0x06 act=0x06 fn=0x00
+      added:   dev=0x02 btn=0x06 act=0x06 fn=0x00
+2026-09-22T22:30:07.881655000+0200 TX SET_KEY_FUNCTION(0x0401) seq=9D payload=[01 04 06 02 1D]
+    entry: dev=0x04 btn=0x06 act=0x02 fn=0x1D
+2026-09-22T22:30:07.884538000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=9E payload=[02 03 01]
+2026-09-22T22:30:08.036423000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=9D payload=[00]
+2026-09-22T22:30:08.077505000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=9E status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x02 fn=0x00
+      removed: dev=0x02 btn=0x06 act=0x02 fn=0x00
+      added:   dev=0x01 btn=0x06 act=0x02 fn=0x1D
+      added:   dev=0x02 btn=0x06 act=0x02 fn=0x1D
+2026-09-22T22:30:09.034521000+0200 TX SET_KEY_FUNCTION(0x0401) seq=9F payload=[01 04 06 06 1C]
+    entry: dev=0x04 btn=0x06 act=0x06 fn=0x1C
+2026-09-22T22:30:09.035497000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=A0 payload=[02 03 01]
+2026-09-22T22:30:09.124513000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=9F payload=[00]
+2026-09-22T22:30:09.168425000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=A0 status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x06 fn=0x00
+      removed: dev=0x02 btn=0x06 act=0x06 fn=0x00
+      added:   dev=0x01 btn=0x06 act=0x06 fn=0x1C
+      added:   dev=0x02 btn=0x06 act=0x06 fn=0x1C
+2026-09-22T22:30:11.802857000+0200 TX SET_KEY_FUNCTION(0x0401) seq=A1 payload=[01 04 06 06 00]
+    entry: dev=0x04 btn=0x06 act=0x06 fn=0x00
+2026-09-22T22:30:12.098169000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=A1 payload=[00]
+2026-09-22T22:30:12.102083000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=A2 status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x06 fn=0x1C
+      removed: dev=0x02 btn=0x06 act=0x06 fn=0x1C
+      added:   dev=0x01 btn=0x06 act=0x06 fn=0x00
+      added:   dev=0x02 btn=0x06 act=0x06 fn=0x00
+2026-09-22T22:30:12.850881000+0200 TX SET_KEY_FUNCTION(0x0401) seq=A3 payload=[01 04 06 02 00]
+    entry: dev=0x04 btn=0x06 act=0x02 fn=0x00
+2026-09-22T22:30:12.851757000+0200 TX QUERY_KEY_FUNCTION(0x0108) seq=A4 payload=[02 03 01]
+2026-09-22T22:30:13.067247000+0200 RX ACK_KEY_FUNCTION(0x8401) seq=A3 payload=[00]
+2026-09-22T22:30:13.282078000+0200 RX RESP_KEY_FUNCTION(0x8108) seq=A4 status=0x00 count=18 entries=18
+    DIFF vs previous 0x8108:
+      removed: dev=0x01 btn=0x06 act=0x02 fn=0x1D
+      removed: dev=0x02 btn=0x06 act=0x02 fn=0x1D
+      added:   dev=0x01 btn=0x06 act=0x02 fn=0x00
+      added:   dev=0x02 btn=0x06 act=0x02 fn=0x00

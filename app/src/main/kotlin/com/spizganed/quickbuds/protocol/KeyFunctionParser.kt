@@ -60,23 +60,56 @@ object KeyFunctionParser {
      * (`btn=0x01` on both buds), so it is where the user's taps and holds live.
      *
      * It is NOT the only group a gesture writes to, and treating it as such was a real bug
-     * — see [BUTTON_ON_CALL_GUESS] and `writeGestureBinding()`.
+     * — see [BUTTON_ON_CALL] and `writeGestureBinding()`.
      */
     const val BUTTON_PRIMARY = 0x01
 
     /**
-     * The group we NEVER write: `btn 0x06`, believed to be the on-call bindings.
+     * `btn 0x06` — the on-call bindings. `[CAPTURE]`-confirmed 2026-09-22 (see
+     * PACKET-CAPTURE.md Option C), no longer a guess: an HCI capture of HeyMelody itself
+     * caught it writing this exact group while he toggled its on-call section on/off/on/off,
+     * twice over, with the `0x8108` read-back diffing exactly the slot he touched each time.
      *
-     * It carries its own smaller gesture list (`act 02/03/06`) and every entry in it reads
-     * `fn=0x00` = "no action", which is what an unset on-call group looks like. NO capture
-     * has ever reported an `F1` frame for it, so the guess is unconfirmed — which is exactly
-     * why a write leaves it **byte-for-byte untouched** rather than "fixing" it.
+     * Two rows exist in HeyMelody, confirmed `[USER]`: **double tap** (`None` / `Answer + end
+     * call`, one combined option) and **long hold** (`None` / `Decline call`). Measured from
+     * the capture:
      *
-     * This matters because `act 0x02` and `act 0x03` exist in BOTH `btn 0x01` and `btn 0x06`.
-     * A write that matched on (side, action) alone would silently re-bind a second, unrelated
-     * gesture — the kind of change nothing in our UI would show.
+     *     act 0x02  fn 0x00 <-> 0x1D   (toggled twice — believed double tap, see caveat below)
+     *     act 0x06  fn 0x00 <-> 0x1C   (toggled twice — believed long hold, see caveat below)
+     *
+     * `act 0x03` is untouched in every capture — a third slot this group has but HeyMelody's
+     * UI never exercised, so its meaning is still unknown.
+     *
+     * **THE BYTES ARE MEASURED; THE ENGLISH LABELS ARE `[INFERRED]`.** Unlike the primary
+     * group's `function` enum (§6, pinned down independently via a live `F1` frame per
+     * value), on-call has no such second signal — nothing raises an `F1` frame while on a
+     * call in any capture taken so far. The act-to-row mapping above rests on the order he
+     * described the two rows in, not on anything read off the wire. Writing these bytes back
+     * is still safe (they are HeyMelody's own, byte-for-byte), but if the wrong UI switch
+     * turns out to trigger the wrong result on a real call, swap the two `act` values first —
+     * that is the only place the guess could be wrong, not the bytes themselves.
+     *
+     * `act 0x02` and `act 0x03` also exist in `btn 0x01` (the primary group) with UNRELATED
+     * meanings (primary double tap / triple tap). A write that matched on (side, action)
+     * alone, ignoring the button group, would silently re-bind the wrong gesture — which is
+     * exactly why [BUTTON_PRIMARY]-scoped writes ([writeGestureBinding]) and on-call writes
+     * ([OpoProtocol.setOnCallDoubleTap], [OpoProtocol.setOnCallLongHold]) are separate code
+     * paths that never share a table diff.
      */
-    const val BUTTON_ON_CALL_GUESS = 0x06
+    const val BUTTON_ON_CALL = 0x06
+
+    /**
+     * `deviceType = 0x04` — "both buds", WRITE-ONLY. `[CAPTURE]` 2026-09-22: every on-call
+     * write HeyMelody sent used this single value instead of two separate `0x01`/`0x02`
+     * entries, and the very next `0x8108` read-back always expanded it into identical `fn`
+     * values on BOTH `dev=0x01` and `dev=0x02` — never `dev=0x04` itself on a READ.
+     *
+     * The hold's ANC-cycle membership (`setSupportNoiseReduction`, PROTOCOL.md §5) is a
+     * DIFFERENT command with no `deviceType` byte in its payload at all — its shared-both-buds
+     * behaviour is a property of that command itself, not this alias. Do not assume the two
+     * are the same mechanism.
+     */
+    const val DEVICE_TYPE_BOTH = 0x04
 
     data class Entry(
         val deviceType: Int,

@@ -8,7 +8,7 @@ local.properties
 .cxx/
 captures/
 
-# CodeAssist leftovers — NOT used on the PC build (see AGENTS.md).
+# CodeAssist leftovers — NOT used on the PC build (see CLAUDE.md).
 # module.toml is CodeAssist's own project model; the real build is Gradle now.
 # NOTE: the old `*.toml` rule was removed deliberately — it would have swallowed
 # a Gradle version catalog (gradle/libs.versions.toml).
@@ -35,7 +35,7 @@ Thumbs.db
 #                      referenced by comments in the drawables themselves
 #
 # (local/notes/, local/NEXT-SESSION.md and local/commits/ were removed once their
-# content was folded into AGENTS.md, PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md,
+# content was folded into CLAUDE.md, PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md,
 # or, for commits/, once commits started being made on the PC directly.
 # Do not add any of them back.)
 #

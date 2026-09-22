@@ -22,21 +22,22 @@ import com.spizganed.quickbuds.bluetooth.BudsService
  *   2. a Left / Right selector — the two buds are configured separately, because
  *      they can be bound to different actions
  *   3. "When not on call", then one row per gesture
+ *   4. "When on call", two rows (double tap / long hold) — added 2026-09-22, see
+ *      [OnCallGesture]. UNLIKE EVERYTHING ABOVE, this section has no Left/Right
+ *      reach: it is one shared setting for both buds (`[USER]`-confirmed), so the
+ *      side selector at the top does not affect it.
  *
  * Tapping a gesture row opens a bottom dialog listing the actions that gesture
  * may be bound to. Tap-and-hold accepts MORE THAN ONE, which makes the gesture
- * cycle through them on each use; every other gesture takes exactly one.
- *
- * ON-CALL GESTURES ARE NOT IMPLEMENTED YET. There is no "When on call" section;
- * the section header is a single string for the not-on-call case. Adding the call
- * variant is planned for HeyMelody parity (see ROADMAP.md) — when it lands, add a
- * real second section rather than an empty one, which would look like a bug.
+ * cycle through them on each use; every other gesture takes exactly one. The
+ * on-call rows are a plain two-item None/action dialog — see [showOnCallDialog].
  *
  * THE SELECTIONS ARE WRITTEN TO THE BUDS. Each save sends a `0x0401` setKeyFunction
  * write (see BudsConnectionManager.writeGestureBinding), then reads the table back
  * and diffs it, because a wrong command number fails in complete silence. The
  * `function` bytes in [GestureAction] are MEASURED, not guessed — see [GestureConfig]
- * and PROTOCOL.md §6.
+ * and PROTOCOL.md §6. The on-call writes ([OnCallGesture]) are a single small entry
+ * instead of a full-table rewrite — see BudsConnectionManager.sendOnCallDoubleTap().
  */
 class GestureActivity : Activity() {
 
@@ -46,6 +47,7 @@ class GestureActivity : Activity() {
     private lateinit var btnLeft: Button
     private lateinit var btnRight: Button
     private lateinit var gestureList: LinearLayout
+    private lateinit var onCallList: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Before super.onCreate — see ThemeRes.select.
@@ -130,6 +132,25 @@ class GestureActivity : Activity() {
         }
         column.addView(gestureList)
 
+        // --- On-call gestures, BELOW the normal list ---
+        //
+        // No Left/Right selector reads into this card — `[USER]`-confirmed 2026-09-22,
+        // these two rows are ONE shared setting for both buds, unlike everything above.
+        // See PROTOCOL.md §6 and [OnCallGesture].
+        column.addView(TextView(this).apply {
+            setText(R.string.gesture_section_on_call)
+            setTextColor(ThemeRes.color(this@GestureActivity, R.attr.appColorTextSecondary))
+            textSize = 13f
+            setPadding(dp(4f), dp(22f), 0, dp(8f))
+        })
+
+        onCallList = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = getDrawable(R.drawable.app_card_bg)
+            setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
+        }
+        column.addView(onCallList)
+
         // The status note. Deliberately below the list and in secondary colour: it
         // is information, not an error state, and it must not look like a warning
         // that something failed. It states what actually happens now — a write to the
@@ -146,7 +167,20 @@ class GestureActivity : Activity() {
         root.addView(scroll)
 
         setContentView(root)
+        // No render() here: onResume() always follows onCreate() in the Activity lifecycle and
+        // does it below — calling it twice on first open would be redundant.
+    }
 
+    /**
+     * Repaints on every return to this screen, not just on create. `[USER]` 2026-09-22: the
+     * local record this screen reads ([GestureConfigStore]/[OnCallConfigStore]) is now kept in
+     * sync with the buds' own table on every connect (see `BudsConnectionManager`'s `0x8108`/
+     * `0x010C` handling), but only `onResume` — never `onCreate` alone — catches a sync that
+     * happened while this Activity was merely backgrounded (e.g. a reconnect while the user was
+     * on another screen), since Android does not recreate an Activity just for that.
+     */
+    override fun onResume() {
+        super.onResume()
         render()
     }
 
@@ -193,12 +227,26 @@ class GestureActivity : Activity() {
      * and each failure is silent — which is exactly how slide looked "broken but sometimes
      * working" for a session. See BudsConnectionManager.writeGestureBinding().
      *
-     * THE HOLD'S EMPTY CASE SENDS NOTHING, and that is deliberate too. Measured on the
-     * device: clearing the hold's function byte to `0x00` does NOT stop the ANC cycle —
+     * THE HOLD'S EMPTY CASE SENDS NOTHING AT ALL, and that is deliberate too. Measured on
+     * the device: clearing the hold's function byte to `0x00` does NOT stop the ANC cycle —
      * the very next long press still changed the noise mode. So writing `0x00` cannot turn
      * the gesture off; all it does is make the buds' stored table disagree with what the
-     * gesture actually does. Sending nothing keeps the table honest. Turning the cycle off
-     * for real needs the separate `setSupportNoiseReduction` (`0x0404`) command — see
+     * gesture actually does. Sending nothing keeps the table honest. The mask write below
+     * could in principle be sent with an empty mask, but that value has never been tried on
+     * the device — only ADDING a bit to a non-empty mask is `[CAPTURE]`-confirmed
+     * (PROTOCOL.md §5) — so an empty selection sends neither write rather than guessing what
+     * an all-zero mask does.
+     *
+     * THE HOLD'S NON-EMPTY CASE SENDS THREE WRITES, ON PURPOSE. The key-function write binds the
+     * gesture to "cycles ANC" at all — sent for BOTH [GestureSide.LEFT] and [GestureSide.RIGHT],
+     * unlike every other gesture, because `[USER]`-confirmed 2026-09-22 the hold is a SHARED control
+     * (PROTOCOL.md §5.1) and every capture has shown both buds' key-function slots holding the same
+     * `fn`. Writing only the currently-selected side would leave the OTHER bud's table entry
+     * disagreeing with what the cycle actually does on it. A third write, to
+     * [BudsService.ACTION_SET_HOLD_MODES], carries WHICH modes are in the cycle
+     * ([GestureAction.holdMaskFor], `setSupportNoiseReduction`, `[CAPTURE]` 2026-09-22) — that
+     * command has no per-side concept at all, so there is only ever one of it. Three separate
+     * commands, kept separate here too, so a failure in any one is attributable — see
      * [GestureConfigStore] and PROTOCOL.md §5.
      */
     private fun writeToBuds(gesture: Gesture, actions: List<GestureAction>) {
@@ -207,13 +255,25 @@ class GestureActivity : Activity() {
             // corrupt the table's description of a gesture that still works.
             return
         }
-        val intent = Intent(this, BudsService::class.java).apply {
-            action = BudsService.ACTION_SET_GESTURE
-            putExtra(BudsService.EXTRA_GESTURE_DEVICE, side.deviceType)
-            putExtra(BudsService.EXTRA_GESTURE_ACTION, gesture.keyFnAction)
-            putExtra(BudsService.EXTRA_GESTURE_FUNCTION, GestureAction.functionByteFor(actions))
+
+        val sides = if (gesture == Gesture.TAP_HOLD) GestureSide.values().toList() else listOf(side)
+        for (s in sides) {
+            val intent = Intent(this, BudsService::class.java).apply {
+                action = BudsService.ACTION_SET_GESTURE
+                putExtra(BudsService.EXTRA_GESTURE_DEVICE, s.deviceType)
+                putExtra(BudsService.EXTRA_GESTURE_ACTION, gesture.keyFnAction)
+                putExtra(BudsService.EXTRA_GESTURE_FUNCTION, GestureAction.functionByteFor(actions))
+            }
+            startService(intent)
         }
-        startService(intent)
+
+        if (gesture == Gesture.TAP_HOLD) {
+            val maskIntent = Intent(this, BudsService::class.java).apply {
+                action = BudsService.ACTION_SET_HOLD_MODES
+                putExtra(BudsService.EXTRA_HOLD_MASK, GestureAction.holdMaskFor(actions))
+            }
+            startService(maskIntent)
+        }
     }
 
     /**
@@ -241,6 +301,16 @@ class GestureActivity : Activity() {
         for ((index, gesture) in gestures.withIndex()) {
             if (index > 0) gestureList.addView(SettingRowFactory.buildDivider(this))
             gestureList.addView(buildGestureRow(gesture))
+        }
+
+        // Rebuilt on every render() too, same as gestureList above, even though it does
+        // not depend on `side` — one repaint path is simpler than tracking which parts of
+        // the screen a side switch actually touches.
+        onCallList.removeAllViews()
+        val onCallGestures = OnCallGesture.values()
+        for ((index, gesture) in onCallGestures.withIndex()) {
+            if (index > 0) onCallList.addView(SettingRowFactory.buildDivider(this))
+            onCallList.addView(buildOnCallRow(gesture))
         }
     }
 
@@ -292,6 +362,69 @@ class GestureActivity : Activity() {
         ) { showActionDialog(gesture) }
 
         return row
+    }
+
+    /**
+     * One on-call row. Same [SettingRowFactory] shape as [buildGestureRow] so the section
+     * does not look like a second, different screen — but the value shown and the dialog
+     * behind it are a plain on/off, not a multi-option picker, because that is all HeyMelody
+     * itself offers here (`[USER]`, PROTOCOL.md §6).
+     */
+    private fun buildOnCallRow(gesture: OnCallGesture): View {
+        val enabled = OnCallConfigStore.isEnabled(this, gesture)
+        val summary = getString(if (enabled) gesture.enabledLabelRes else R.string.gesture_action_none)
+
+        val trailing = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        trailing.addView(SettingRowFactory.buildValue(this, summary))
+        trailing.addView(SettingRowFactory.buildChevron(this))
+
+        return SettingRowFactory.build(
+            this,
+            R.drawable.ic_bolt,
+            gesture.rowLabelRes,
+            0,
+            trailing
+        ) { showOnCallDialog(gesture) }
+    }
+
+    /** Two-item sheet (None / the one action HeyMelody offers this row), single-select. */
+    private fun showOnCallDialog(gesture: OnCallGesture) {
+        val enabled = OnCallConfigStore.isEnabled(this, gesture)
+        BottomSheetDialog(this)
+            .title(getString(gesture.rowLabelRes))
+            .items(
+                listOf(
+                    BottomSheetDialog.Item(
+                        label = getString(R.string.gesture_action_none),
+                        selected = !enabled,
+                        onClick = { setOnCall(gesture, false) }
+                    ),
+                    BottomSheetDialog.Item(
+                        label = getString(gesture.enabledLabelRes),
+                        selected = enabled,
+                        onClick = { setOnCall(gesture, true) }
+                    )
+                )
+            )
+            .show()
+    }
+
+    /**
+     * Persists and sends ONE on-call row. Same fire-and-forget shape as [writeToBuds]: the
+     * service re-reads `0x8108` and logs the diff, this screen does not wait on it.
+     */
+    private fun setOnCall(gesture: OnCallGesture, enabled: Boolean) {
+        OnCallConfigStore.setEnabled(this, gesture, enabled)
+        val intent = Intent(this, BudsService::class.java).apply {
+            action = BudsService.ACTION_SET_ON_CALL
+            putExtra(BudsService.EXTRA_ON_CALL_ROW, gesture.serviceRow)
+            putExtra(BudsService.EXTRA_ON_CALL_ENABLED, enabled)
+        }
+        startService(intent)
+        render()
     }
 
     /**
