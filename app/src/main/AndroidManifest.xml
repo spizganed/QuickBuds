@@ -69,9 +69,17 @@
         android:supportsRtl="true">
 
 
+        <!--
+          Every activity below is locked to portrait — [USER] 2026-09-22, "the app should be
+          portrait mode only no rotation." No layout in this app has a landscape variant, so an
+          allowed rotation would just stretch/reflow the existing portrait layouts, not show a
+          real landscape design. `screenOrientation` has no `<application>`-level equivalent; it
+          has to be repeated on every `<activity>`.
+        -->
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -80,23 +88,28 @@
 
         <activity
             android:name=".ui.DevToolsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.EqActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.FindBudsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.GestureActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.UpdateActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <!--
           FileProvider for the app-update flow. The downloaded APK lives in the

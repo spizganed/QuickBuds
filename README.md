@@ -1,7 +1,6 @@
 # QuickBuds
 
 > Lightweight, open-source control for OnePlus / OPPO / realme earbuds — direct RFCOMM, no bloat.
-> Repo name: **QuickBuds** (renamed from `BudsQS`; old links redirect). App name: **QuickBuds**.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84.svg)]()
@@ -150,7 +149,7 @@ the next step — see [PROTOCOL.md](./PROTOCOL.md) §5 and [ROADMAP.md](./ROADMA
 
 | File | What it is |
 | --- | --- |
-| [AGENTS.md](./AGENTS.md) | The entry point for a new session — toolchain, conventions, and the mistakes already paid for. |
+| [CLAUDE.md](./CLAUDE.md) | The entry point for a new session — toolchain, conventions, and the mistakes already paid for. |
 | [ROADMAP.md](./ROADMAP.md) | The plan: what is next, in order, and what is already done. |
 | [PROTOCOL.md](./PROTOCOL.md) | The wire format end to end. Read before touching anything protocol-related. |
 | [CREDITS.md](./CREDITS.md) | Whose reverse-engineering this stands on, and which parts are ours. |

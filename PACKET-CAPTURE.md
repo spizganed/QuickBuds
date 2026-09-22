@@ -88,6 +88,15 @@ means it's on.
 This trades Option A's speed for HCI-layer visibility, at the cost of `adb bugreport`'s latency and
 pulling a whole-system capture rather than just this app's session.
 
+**`[USER]` 2026-09-22 — save the FILTERED, decoded output to `local/logs/`, not the raw capture.**
+The bugreport zip and the raw `btsnoop_hci.log` are large, single-purpose, and not worth tracking —
+delete them once the filtered output is saved. What belongs in `local/logs/` is the readable,
+decoded transcript (timestamp, TX/RX, cmd name, payload — the same shape `tshark`'s `-T fields`
+output already gives, optionally re-decoded through the app's own command names as
+`heymelody_hold_oncall_20260922.log.txt` does), named descriptively with the date, so it is both
+cheap to keep and useful for a future diff — the same role `packets_export_*.log.txt` already
+serves for Option A captures.
+
 ## Lines worth knowing
 
 | Line | What it is |
@@ -112,11 +121,22 @@ absence of a frame.**
 Also settled by capture: `F1` `byte3` carries the resolved function, and a hold's `F1` frame still
 reports `byte3 = 0x08` even when the stored function byte has been cleared to `0x00`.
 
+**Option C works for HEYMELODY'S OWN TRAFFIC, not just ours** — confirmed 2026-09-22. He kept
+HeyMelody connected (which forces our app off the RFCOMM socket — only one client at a time) and made
+changes there while btsnoop logging ran in the background; the resulting bugreport's
+`btsnoop_hci.log` had HeyMelody's writes sitting right next to ours, same file, same format, no
+different handling needed. This is how the hold's `setSupportNoiseReduction` write and the on-call
+`btn 0x06` write were both settled in one pass (PROTOCOL.md §5 and §6) — reconnecting OUR app between
+every HeyMelody change, which the two-app exclusivity would otherwise force, was never necessary.
+**Prefer this over the app's-own-log method whenever the question is "what does HeyMelody send",**
+which no amount of reconnecting our app could ever answer on its own.
+
 ## Still open, and capturable
 
-- **Confirming the `0x810C` `02 01` mask's meaning.** The reply shape is now known (`[CAPTURE]`
-  2026-09-20, see PROTOCOL.md §5) — `0x0007`. What the bits mean is still `[INFERRED]`; needs a
-  membership-change test (change the hold's cycle in the vendor app, re-query, see which bit moves).
+- The on-call act-to-row LABELS (`0x02`/`0x06` believed double-tap/long-hold, `[INFERRED]` — see
+  PROTOCOL.md §6). The bytes are `[CAPTURE]`-confirmed; only a real call, watching which switch does
+  which thing, can confirm the English labels are the right way round.
+- `act 0x03` in the on-call group (`btn 0x06`) — a third slot HeyMelody's UI has never exercised.
 - `0x0500` / `0x0501` — empty payloads, so they cannot be gesture bindings. Seen right after ANC
   writes; possibly this firmware's alternate ANC notification.
 - Broadcast codes `0x04` / `0x08` / `0x0B`.

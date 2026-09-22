@@ -24,7 +24,7 @@ and it is the first thing the agent should read to know what to work on next.
   compileSdk 36 / minSdk 26 / targetSdk 35, Java 8, one dependency (`androidx.core:core:1.13.1`).
 - Source, docs and build files are on **GitHub**. `local/` was tracked temporarily to carry the
   mobile working state across — packet captures that PROTOCOL.md cites as evidence, the source SVGs,
-  and the v1.1.0 release notes. Most of it is disposable: see AGENTS.md → *Post-move cleanup*.
+  and the v1.1.0 release notes. Most of it is disposable: see CLAUDE.md → *Post-move cleanup*.
 
 ## Working principles
 
@@ -34,8 +34,7 @@ and it is the first thing the agent should read to know what to work on next.
   protocol — other OnePlus / OPPO / realme models first, since they share it.
 - **Who does what.** Human: device testing, git operations, publishing, design decisions.
   Agent: reverse-engineering, parsers, protocol work, code.
-- **App identity.** Package `com.spizganed.quickbuds` (final). App name **QuickBuds**, renamed from
-  BudsQS — old repo URLs redirect.
+- **App identity.** Package `com.spizganed.quickbuds` (final). App name **QuickBuds**.
 - **AI attribution** (full history in README + CREDITS): the project began on DeepSeek chat (~15% —
   first codebase, first reverse-engineering steps, basic UI/logger/widget; that widget was later
   rewritten almost entirely), then moved to the CodeAssist agent via OpenRouter running DeepSeek
@@ -44,31 +43,56 @@ and it is the first thing the agent should read to know what to work on next.
 
 ## Next up, in order
 
-1. **Finish the hold gesture — the last broken piece of gesture configuration.** Everything else in
-   "Earbud controls" works and writes to the buds. The hold is different: its stored function byte
-   cannot select a mode. The mode list belongs to `setSupportNoiseReduction` (`0x0404`), read back
-   through `0x010C` payloads `02 01` / `02 03` / `02 04`. **The `02 01` read is now confirmed** —
-   2026-09-20, reply `0x0007`, see PROTOCOL.md §5. What's still needed before the picker: confirm the
-   mask's bit-numbering by a membership-change test (same method §6 used for the `function` enum),
-   then the write side (`0x0404`) itself, which is still `[OSS]`-only and untested on this device.
-2. **Spatial sound.** The commands exist; decide which one the firmware honours (the legacy feature
+1. **The hold gesture — DONE, including the UI bug, awaiting his test.** Read, bit theory, and write
+   are all `[CAPTURE]`-confirmed (PROTOCOL.md §5) and the buds do cycle correctly on device (`[USER]`
+   2026-09-22: "the anc hold it actually works"). One loose end found while testing, not fixed:
+   writing a mask also raises a `0x0204` push that `AncEventParser` mislabels as an ANC mode change
+   (see PROTOCOL.md §5's `[CAPTURE]` note) — cosmetic, a log-reading trap, not a functional bug.
+   **The per-bud UI bug he then caught — "u forgot to bind our app hold gesture together to both
+   buds... at least in the UI" — is fixed 2026-09-22:** `GestureConfigStore` now keys `TAP_HOLD`
+   storage independent of `side` (like `OnCallGesture` already did), and `GestureActivity.writeToBuds`
+   sends the key-function bind to BOTH `dev=0x01` and `dev=0x02` for the hold, not just the active
+   tab. Verified pre-handoff (see the memory on not self-testing — this was the last time): Left and
+   Right both showed "ANC, Trans" after setting it from one side.
+2. **Sync gesture/hold/on-call config FROM THE BUDS on every connect — DONE 2026-09-22.** Was:
+   `GestureConfigStore`/`OnCallConfigStore` only ever reflected what WE last wrote, so a binding
+   changed by HeyMelody/another phone/a PC tool while disconnected stayed invisible indefinitely. Now:
+   `BudsConnectionManager`'s `0x8108` and `0x010C` `02 01` handlers call
+   `GestureConfigStore.syncFromDevice()` / `syncHoldFromDevice()` and `OnCallConfigStore.syncFromDevice()`
+   on every read (every connect, and after any write's own verify-read), overwriting the local record
+   from the buds' own table. `GestureActivity.onResume()` re-renders so a screen left open across a
+   reconnect picks it up too. The needed `functionByte -> GestureAction` reverse lookup exists now,
+   scoped through `actionsFor(gesture)` so an unrecognized byte is skipped rather than guessed at.
+   Hold specifically decodes from the MASK, not `functionByte` (all four ANC actions share `0x08`),
+   and is only synced to "unbound" when neither side's `fn` is `0x08` — a bound hold with an
+   unfamiliar/zero mask is left alone rather than guessed. **Not yet tested on-device — his rule now
+   is he tests UI changes, not the agent (see feedback memory).**
+3. **Spatial sound.** The commands exist; decide which one the firmware honours (the legacy feature
    `0x1B` vs the newer three-mode `0x0422`). Unverified today.
-3. **Codec switching (Hi-Res).** The row currently toggles only its own subtitle. Needs a capture of
+4. **Codec switching (Hi-Res).** The row currently toggles only its own subtitle. Needs a capture of
    the reference implementation to find the feature id (LHDC) before it can be wired honestly.
-4. **Find my earbuds.** The screen exists and plays the locating chime; volume and duration are not
+5. **Find my earbuds.** The screen exists and plays the locating chime; volume and duration are not
    tunable yet.
-5. **Equalizer — last in the parity chain.** Six bands (62/250/1k/4k/8k/16k Hz), ±6 dB, presets
+6. **Equalizer — last in the parity chain.** Six bands (62/250/1k/4k/8k/16k Hz), ±6 dB, presets
    (Balanced / Clear Vocals / Bass), custom presets with rename, and BassWave dynamic bass with an
    intensity slider. The screen is a placeholder today: presets are not sent to the buds.
-6. **Dual device** — expected quick. Two devices connected, with a switch.
-7. **On-call gestures** — add them. (This reverses the earlier "never" decision; parity wins.) The
-   screen currently has no on-call section at all.
-8. **Auto play/pause on wear** — two parts: (a) a switch in the UI that tells the firmware to react
+7. **Dual device** — expected quick. Two devices connected, with a switch.
+8. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
+   An HCI capture of HeyMelody caught the exact write for both rows (PROTOCOL.md §6, "the on-call
+   write"): **double tap** (`None` / `Answer + end call`) is `act 0x02`, **long hold** (`None` /
+   `Decline call`) is `act 0x06`, both bound to **both buds together as one shared setting** via
+   `deviceType 0x04`. The "When on call" section now exists in `GestureActivity`, below the normal
+   gesture list, with no Left/Right reach since the setting is shared. Re-sent from our own app (not
+   just replayed from the HeyMelody capture) — double tap toggled true/false, acked, read back exactly
+   matching HeyMelody's own bytes. **The write is confirmed; the act-to-row LABELS are still
+   `[INFERRED]` — NEXT SESSION: place a real call and confirm double tap answers/ends and long hold
+   declines, the right way round, before trusting the labels.**
+9. **Auto play/pause on wear** — two parts: (a) a switch in the UI that tells the firmware to react
    by itself (`autoPlayPauseOn` / `autoPlayPauseOff` already exist in the manager); (b) our own
    implementation on top — **pause only when both buds are out of the ear; a single bud out keeps
    playing; never auto-play, only pause.**
-9. **Golden Sound** — spike only. A one-time hearing test that probably produces an EQ profile. It
-   may be hard or impossible through this protocol; find out before promising it.
+10. **Golden Sound** — spike only. A one-time hearing test that probably produces an EQ profile. It
+    may be hard or impossible through this protocol; find out before promising it.
 
 ## The final UI
 
@@ -97,6 +121,19 @@ and it is the first thing the agent should read to know what to work on next.
   again someday.
 - **Layout report tool** — same treatment: remove or hide it from the UI, keep the logic.
 - **Other earbud models** — after parity.
+- **A build quickstart guide.** `[USER]` 2026-09-22: needed for a contributor who has nothing set up
+  yet — starting from `git clone`, not from an already-checked-out working copy the way CLAUDE.md's
+  "Build and run" section does. Copy-pasteable commands, in order: clone, JDK/SDK prerequisites,
+  generate the wrapper, `local.properties`, first `assembleDebug`. CLAUDE.md's "First run on the PC"
+  section already has most of the raw material (including the JDK-version gotcha and the
+  Android-Studio-already-did-this-for-you shortcut) — this is about surfacing it as a short, linear,
+  copy-paste path for someone who is not this project's regular dev, not re-deriving it. Likely lands
+  in README.md, since CLAUDE.md is agent working notes, not a contributor-facing doc.
+- **Redo the bud/case icons from scratch.** `[USER]` 2026-09-22: the current ones (traced into
+  `local/svgs/`, see CREDITS/ROADMAP "Done") are still bad and need a clean redraw, not a touch-up.
+  **Not previously tracked here despite being assumed scheduled — now it is.** `local/svgs/` stays
+  tracked as reference until the new set is drawn AND locked in as final; only then does it become
+  pure clutter and get removed.
 
 ## Known loose ends
 
@@ -140,7 +177,8 @@ Push and control:
 - Dev Tools screen — human-readable log, raw-hex log, Mark / Clear / Export, Reconnect / Disconnect.
 - Settings card and secondary screens (EQ, Find my earbuds, App update, chime player).
 - Gesture configuration ("Earbud controls") — writes to the buds, verified on the device; the
-  function values were measured, not guessed. The hold is the one part still open (Next up #1).
+  function values were measured, not guessed. Hold and on-call landed 2026-09-22 (see PROTOCOL.md
+  §5/§6); config now syncs from the buds on every connect instead of trusting local storage alone.
 
 Appearance and tooling:
 
@@ -150,11 +188,12 @@ Appearance and tooling:
 - PROTOCOL.md and CREDITS.md written.
 - Layout-report and screenshot-to-text tools built (both now parked — see *Parked*).
 - `local/` folder created so working material stays out of the repo root.
+- Portrait-locked, no rotation, on every activity (2026-09-22) — no screen has a landscape layout.
 
 ## Build and transfer notes
 
 - **The PC move is done** (confirmed working 2026-09-20) — Gradle 8.13 + AGP 8.13.0 + Kotlin 2.4.0,
-  no CodeAssist prerequisites. Full setup is in [AGENTS.md](./AGENTS.md), including a JDK-version
+  no CodeAssist prerequisites. Full setup is in [CLAUDE.md](./CLAUDE.md), including a JDK-version
   gotcha (Gradle 8.13 rejects JDK 24+) worth reading before the next fresh machine.
 - **adb over USB** pushes the `.apk` to the device and is the debugging path. The app's own packet
   log can also be pulled directly with `adb pull` or `adb logcat` — no manual export needed, see
@@ -165,4 +204,4 @@ Appearance and tooling:
 **Docs:** [README.md](./README.md) is the accurate feature summary. [PROTOCOL.md](./PROTOCOL.md) is
 the wire format end to end — read it before touching anything protocol-related.
 [CREDITS.md](./CREDITS.md) is whose reverse-engineering this stands on.
-[AGENTS.md](./AGENTS.md) is how the project is built and worked on.
+[CLAUDE.md](./CLAUDE.md) is how the project is built and worked on.

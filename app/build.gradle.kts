@@ -1,4 +1,4 @@
-// Plain desktop Gradle — see AGENTS.md.
+// Plain desktop Gradle — see CLAUDE.md.
 //
 // This was a CodeAssist project up to v1.1.0 (built from app/module.toml, which
 // is now retired from the repo). From here the build is ordinary Gradle.
@@ -26,7 +26,7 @@ android {
         // This project has already had the two disagree once: a build declared
         // 0.4.0 in the manifest while the release was tagged 1.0.0. Setting a
         // number here as well would reintroduce exactly that split. The manifest
-        // is the authority — see AGENTS.md.
+        // is the authority — see CLAUDE.md.
     }
 
     buildTypes {

@@ -1,5 +1,5 @@
 // Plain desktop Gradle. This project was built with CodeAssist on a phone up to
-// v1.1.0; from here it is a normal Gradle project — see AGENTS.md.
+// v1.1.0; from here it is a normal Gradle project — see CLAUDE.md.
 
 plugins {
     id("com.android.application") version "8.13.0" apply false

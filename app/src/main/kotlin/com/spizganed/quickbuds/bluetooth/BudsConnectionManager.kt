@@ -16,6 +16,8 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.OppoPacketFramer
 import com.spizganed.quickbuds.protocol.UserInteractionParser
 import com.spizganed.quickbuds.protocol.WearingStatusParser
+import com.spizganed.quickbuds.ui.GestureConfigStore
+import com.spizganed.quickbuds.ui.OnCallConfigStore
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -293,6 +295,54 @@ class BudsConnectionManager(private val context: Context) {
     fun setAutoPlayPause(on: Boolean) =
         sendRaw(if (on) OpoProtocol.autoPlayPauseOn() else OpoProtocol.autoPlayPauseOff(), "AutoPlayPause")
 
+    /**
+     * The hold's ANC-cycle membership — `setSupportNoiseReduction`, `[CAPTURE]` 2026-09-22
+     * (PROTOCOL.md §5). `mask` uses [OpoProtocol.HOLD_MASK_BIT_OFF]/`_ON`/`_TRANSPARENCY`/
+     * `_ADAPTIVE`. Verified the same way every gesture write is: re-read after a delay and log
+     * the diff, because a wrong command number here would be ignored exactly as silently as
+     * everywhere else in this protocol.
+     */
+    fun sendHoldAncModes(mask: Int) {
+        sendRaw(OpoProtocol.setHoldAncModes(mask), "Hold ANC modes -> 0x%04X".format(mask))
+        Thread {
+            try {
+                Thread.sleep(400)
+                sendRawBlocking(OpoProtocol.queryNoiseSwitchModes(), "verify hold ANC modes")
+            } catch (e: Exception) {
+                log("HOLD MODES WRITE: verify query failed: ${e.message}")
+            }
+        }.start()
+    }
+
+    /**
+     * On-call gesture writes — `btn 0x06`, `[CAPTURE]` 2026-09-22 (see
+     * [com.spizganed.quickbuds.protocol.KeyFunctionParser.BUTTON_ON_CALL]). Unlike
+     * [writeGestureBinding], these do NOT need [lastKeyFnTable]: HeyMelody's own capture shows
+     * a single-entry write here, not a whole-table rewrite, and the buds fan it out to both
+     * sides themselves. Verified the same way — re-read and let the `KEYFN DIFF:` line show
+     * what actually changed.
+     */
+    fun sendOnCallDoubleTap(enabled: Boolean) {
+        sendRaw(OpoProtocol.setOnCallDoubleTap(enabled), "On-call double tap -> $enabled")
+        verifyKeyFunctionAfterDelay()
+    }
+
+    fun sendOnCallLongHold(enabled: Boolean) {
+        sendRaw(OpoProtocol.setOnCallLongHold(enabled), "On-call long hold -> $enabled")
+        verifyKeyFunctionAfterDelay()
+    }
+
+    private fun verifyKeyFunctionAfterDelay() {
+        Thread {
+            try {
+                Thread.sleep(400)
+                sendRawBlocking(OpoProtocol.queryKeyFunction(), "verify key function")
+            } catch (e: Exception) {
+                log("ON-CALL WRITE: verify query failed: ${e.message}")
+            }
+        }.start()
+    }
+
     fun requestFullStatus() { sendRaw(OpoProtocol.queryStatus(), "manual status") }
 
     /** Timestamp of the last ANC command we flushed; see noteUnattributed(). */
@@ -339,6 +389,17 @@ class BudsConnectionManager(private val context: Context) {
     private var lastKeyFnTable: KeyFunctionParser.Table? = null
 
     /**
+     * The hold's ANC-cycle mask, as last read from `0x010C` `02 01` (`[CAPTURE]`,
+     * PROTOCOL.md §5). Bits per [OpoProtocol.HOLD_MASK_BIT_OFF] etc. Null until the first
+     * reply arrives — same "do not invent it" rule as [lastKeyFnTable], though there is
+     * nothing here that writes FROM this field; it exists purely so a UI can show the
+     * current cycle without threading its own query/response plumbing.
+     */
+    @Volatile
+    var lastHoldAncMask: Int? = null
+        private set
+
+    /**
      * Changes ONE binding on ONE bud and writes the whole table back.
      *
      * `side` is the reply's `deviceType` (0x01 left, 0x02 right) and `keyFnAction` is the
@@ -358,7 +419,7 @@ class BudsConnectionManager(private val context: Context) {
      * A hardcoded per-gesture button list was tried and it broke: aiming slide's write at
      * `btn 0x02`/`0x03` produced `NO SLOT MATCHED` on a bud whose slide sits in `btn 0x01`,
      * and aiming at `0x01` misses the split shape. So the rule is now simply "every slot
-     * this bud actually has for this action", excluding only [KeyFunctionParser.BUTTON_ON_CALL_GUESS].
+     * this bud actually has for this action", excluding only [KeyFunctionParser.BUTTON_ON_CALL].
      *
      * MEASURED BONUS: writing slide's two split groups makes the DEVICE CONSOLIDATE them
      * into `btn 0x01 act 0x05` and drop the extras. So the split shape is not permanent,
@@ -388,7 +449,7 @@ class BudsConnectionManager(private val context: Context) {
         val buttons = LinkedHashSet<Int>()
         val updated = table.entries.map { e ->
             if (e.deviceType == side && e.action == keyFnAction &&
-                e.button != KeyFunctionParser.BUTTON_ON_CALL_GUESS) {
+                e.button != KeyFunctionParser.BUTTON_ON_CALL) {
                 matched++
                 buttons.add(e.button)
                 e.copy(function = functionByte)
@@ -671,8 +732,32 @@ class BudsConnectionManager(private val context: Context) {
                 // garbled read must not cost us the table we would write back from.
                 lastKeyFnTable = table
                 log("KEYFN DIFF: ${keyFnDiff(table)}")
+
+                // Repaint the LOCAL record from the buds' own truth, not just our diagnostic
+                // log — `[USER]` 2026-09-22. This is what makes GestureActivity/on-call show
+                // what the buds actually have bound after a reconnect, even if something other
+                // than this app changed it (HeyMelody, another phone, a PC tool). See
+                // GestureConfigStore.syncFromDevice() / OnCallConfigStore.syncFromDevice().
+                GestureConfigStore.syncFromDevice(context, table)
+                OnCallConfigStore.syncFromDevice(context, table)
+                lastHoldAncMask?.let { GestureConfigStore.syncHoldFromDevice(context, table, it) }
             }
             return
+        }
+
+        // --- ANC query reply: 0x810C, carries several questions (see OpoProtocol) ---
+        // Only the hold's switch-list answer (echo `02 01`/`02 03`/`02 04`) is stateful here;
+        // the current-mode answer (echo `01 01`) is handled entirely by AncEventParser at the
+        // call site that asked for it. Shape: `[status][echo x2][mask LE]`, `[CAPTURE]` —
+        // see OpoProtocol.setHoldAncModes().
+        if (cmd == 0x810C && payload.size >= 5 &&
+            (payload[1].toInt() and 0xFF) == 0x02) {
+            lastHoldAncMask = (payload[3].toInt() and 0xFF) or ((payload[4].toInt() and 0xFF) shl 8)
+            log("HOLD MODES: mask=0x%04X".format(lastHoldAncMask))
+            // Same repaint as above, from the other direction: the mask usually arrives AFTER
+            // the key-function table in the init sequence, so this is the hook that actually
+            // fires the hold's sync in practice. See GestureConfigStore.syncHoldFromDevice().
+            lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, lastHoldAncMask!!) }
         }
 
         // --- User-interaction (button/gesture) report: 0x0204 subType 0xF1 ---

@@ -127,6 +127,16 @@ from anyone else:
   Fixed and marked in PROTOCOL.md §5.
 - Everything in the Android UI layer: the widget, the layout, the theme system,
   the LayoutReport dev tool, and the `KEYFN DIFF:` binding-diff tool.
+- **The hold's ANC-cycle mask (`setSupportNoiseReduction`, `0x0404` action `02`) is the same
+  bit numbering as `ancPayload()`**, captured 2026-09-22 via an HCI capture of HeyMelody itself
+  adding Adaptive to a hold cycle: the mask moved `0x0007 -> 0x0807`, and bit 11 is exactly
+  Adaptive's bit in the plain SET table. Write, ack and read-back all confirmed in the same
+  capture. `[OSS]` only named the payload shape (`[action][type][mask LE]`); the bit numbering
+  and the fact it works at all are ours.
+- **The on-call group (`btn 0x06`) write shape**, from the same capture session: single-entry
+  `setKeyFunction` writes, `deviceType 0x04` meaning "both buds" (a value not documented
+  anywhere, `[OSS]` or otherwise), `act 0x02`/`0x06` toggling `fn 0x00`/`0x1D`/`0x1C`. See
+  PROTOCOL.md §6.
 
 ---
 
@@ -211,7 +221,7 @@ committed, so **a fresh clone on the PC never has them at all**:
 
 - **Claude Code** — the agent doing the work
 - **Gradle 8.13** + **AGP 8.13.0** + **Kotlin 2.4.0**, on a **JDK 17 or newer**, building from the
-  committed Gradle files (the `gradlew` wrapper is generated once on the PC — see AGENTS.md)
+  committed Gradle files (the `gradlew` wrapper is generated once on the PC — see CLAUDE.md)
 - **adb over USB** — deploying to the phone and reading `logcat`
 - The **phone is still the test device**. Only the build and the agent moved.
 

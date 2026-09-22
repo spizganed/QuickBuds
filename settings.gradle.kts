@@ -1,4 +1,4 @@
-// Plain desktop Gradle — see AGENTS.md.
+// Plain desktop Gradle — see CLAUDE.md.
 
 pluginManagement {
     repositories {

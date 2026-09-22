@@ -112,8 +112,9 @@
     <string name="gesture_bud_right">Right</string>
     <string name="gesture_bud_desc">Choose which earbud to configure</string>
 
-    <!-- Section header. The call variant is deliberately absent: not implemented. -->
+    <!-- Section headers. -->
     <string name="gesture_section_not_in_call">When not on call</string>
+    <string name="gesture_section_on_call">When on call</string>
 
     <!-- Gesture names. -->
     <string name="gesture_single">Single tap</string>
@@ -121,6 +122,15 @@
     <string name="gesture_triple">Triple tap</string>
     <string name="gesture_slide">Slide</string>
     <string name="gesture_hold">Hold</string>
+
+    <!--
+      On-call gestures (btn 0x06). Shared between both buds, so this section has no
+      Left/Right selector unlike the rest of the screen — see PROTOCOL.md §6.
+    -->
+    <string name="gesture_on_call_double_tap">Double tap</string>
+    <string name="gesture_on_call_long_hold">Long hold</string>
+    <string name="gesture_on_call_answer_end">Answer / end call</string>
+    <string name="gesture_on_call_decline">Decline call</string>
 
     <!-- Actions. -->
     <string name="gesture_action_none">No action</string>
@@ -161,10 +171,12 @@
       stored on the phone only, because the `function` enum was unknown; that is no
       longer the case, so leaving it would be a plain lie on screen. The `function`
       bytes are now measured (see GestureAction) and a change IS written to the buds.
-      The second sentence stays because the hold really is a special case: all four
-      ANC modes share ONE byte, so the buds decide what the cycle contains.
+      UPDATED 2026-09-22: the second sentence used to say the buds alone decide which
+      modes the hold's ANC cycle contains. That was true only because the mask write
+      was not wired yet — it now is (see GestureAction.holdMaskBit, PROTOCOL.md §5), so
+      the sentence would be a lie again if left as it was.
     -->
-    <string name="gesture_write_note">Changes are sent to the earbuds, then read back to confirm. Tap and hold is sent as the earbuds\' own ANC cycle, so which modes it steps through is decided by the earbuds, not here.</string>
+    <string name="gesture_write_note">Changes are sent to the earbuds, then read back to confirm.</string>
 
     <!-- Misc -->
     <string name="dialog_close">Close</string>
