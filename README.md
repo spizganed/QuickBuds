@@ -156,12 +156,8 @@ the next step — see [PROTOCOL.md](./PROTOCOL.md) §5 and [ROADMAP.md](./ROADMA
 | [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | The capture procedure, kept as a backup for protocol work. |
 | [LICENSE](./LICENSE) | GPL-3.0. |
 
-Everything else lives under `local/`:
-
-| Path | What is in it |
-| --- | --- |
-| `local/logs/` | Packet captures handed over for analysis — cited as evidence by PROTOCOL.md. |
-| `local/svgs/` | The source SVGs the wear-icon drawables were traced from. |
+Packet captures and source SVGs live in a `local/` folder on the developer's machine only; it is
+not part of the repository.
 
 There are no committed screenshots.
 

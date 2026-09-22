@@ -23,8 +23,7 @@ and it is the first thing the agent should read to know what to work on next.
 - The build is plain desktop Gradle from here: **AGP 8.13.0, Kotlin 2.4.0, Gradle 8.13**,
   compileSdk 36 / minSdk 26 / targetSdk 35, Java 8, one dependency (`androidx.core:core:1.13.1`).
 - Source, docs and build files are on **GitHub**. `local/` was tracked temporarily to carry the
-  mobile working state across — packet captures that PROTOCOL.md cites as evidence, the source SVGs,
-  and the v1.1.0 release notes. Most of it is disposable: see CLAUDE.md → *Post-move cleanup*.
+  mobile working state across; since 2026-09-22 it is git-ignored and stays on the PC only.
 
 ## Working principles
 
@@ -154,8 +153,8 @@ and it is the first thing the agent should read to know what to work on next.
   in README.md, since CLAUDE.md is agent working notes, not a contributor-facing doc.
 - **Redo the bud/case icons from scratch.** `[USER]` 2026-09-22: the current ones (traced into
   `local/svgs/`, see CREDITS/ROADMAP "Done") are still bad and need a clean redraw, not a touch-up.
-  **Not previously tracked here despite being assumed scheduled — now it is.** `local/svgs/` stays
-  tracked as reference until the new set is drawn AND locked in as final; only then does it become
+  **Not previously tracked here despite being assumed scheduled — now it is.** `local/svgs/` (PC-only) stays
+  as reference until the new set is drawn AND locked in as final; only then does it become
   pure clutter and get removed.
 
 ## Known loose ends
@@ -222,7 +221,7 @@ Appearance and tooling:
   log can also be pulled directly with `adb pull` or `adb logcat` — no manual export needed, see
   PACKET-CAPTURE.md's automated-pull note under Option A.
 - `local/` now holds only `logs/` and `svgs/`, both kept for their lasting value as evidence/
-  provenance — nothing left in it is temporary.
+  provenance — nothing left in it is temporary. Git-ignored since 2026-09-22; PC-only.
 
 **Docs:** [README.md](./README.md) is the accurate feature summary. [PROTOCOL.md](./PROTOCOL.md) is
 the wire format end to end — read it before touching anything protocol-related.

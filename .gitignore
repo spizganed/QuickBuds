@@ -26,19 +26,5 @@ Thumbs.db
 # and they ARE tracked.
 *.log
 
-# ==================== local/ — tracked, lasting-value material ====================
-#
-# Everything in local/ is committed on purpose:
-#
-#   local/logs/        packet captures handed over for analysis (evidence for PROTOCOL.md)
-#   local/svgs/        the source SVGs the wear-icon drawables were traced from,
-#                      referenced by comments in the drawables themselves
-#
-# (local/notes/, local/NEXT-SESSION.md and local/commits/ were removed once their
-# content was folded into CLAUDE.md, PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md,
-# or, for commits/, once commits started being made on the PC directly.
-# Do not add any of them back.)
-#
-# Nothing here is ignored — there is no rule for it, other than the `*.log` rule
-# above. To exclude something later, add a specific pattern rather than
-# re-ignoring the whole folder.
+# local/ is PC-only working material (packet captures, source SVGs). Never committed.
+local/
