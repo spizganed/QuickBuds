@@ -746,18 +746,38 @@ class BudsConnectionManager(private val context: Context) {
         }
 
         // --- ANC query reply: 0x810C, carries several questions (see OpoProtocol) ---
-        // Only the hold's switch-list answer (echo `02 01`/`02 03`/`02 04`) is stateful here;
-        // the current-mode answer (echo `01 01`) is handled entirely by AncEventParser at the
-        // call site that asked for it. Shape: `[status][echo x2][mask LE]`, `[CAPTURE]` —
-        // see OpoProtocol.setHoldAncModes().
-        if (cmd == 0x810C && payload.size >= 5 &&
-            (payload[1].toInt() and 0xFF) == 0x02) {
-            lastHoldAncMask = (payload[3].toInt() and 0xFF) or ((payload[4].toInt() and 0xFF) shl 8)
-            log("HOLD MODES: mask=0x%04X".format(lastHoldAncMask))
-            // Same repaint as above, from the other direction: the mask usually arrives AFTER
-            // the key-function table in the init sequence, so this is the hook that actually
-            // fires the hold's sync in practice. See GestureConfigStore.syncHoldFromDevice().
-            lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, lastHoldAncMask!!) }
+        // Shape for both branches below: `[status][echo x2][value LE]`, `[CAPTURE]`.
+        if (cmd == 0x810C && payload.size >= 5) {
+            val echo1 = payload[1].toInt() and 0xFF
+            val echo2 = payload[2].toInt() and 0xFF
+            val value = (payload[3].toInt() and 0xFF) or ((payload[4].toInt() and 0xFF) shl 8)
+
+            // Current-mode answer, echo `01 01` — queried once on every connect
+            // (OpoProtocol.queryAncMode()). FIXED 2026-09-22: this used to be un-handled here
+            // entirely, on the wrong assumption that AncEventParser's PUSH path already covered
+            // it. It does not: a push only arrives on a CHANGE, so a reconnect where nothing
+            // changed since the last (possibly stale, possibly bogus) persisted value left the
+            // display wrong indefinitely — exactly what surfaced as "UI shows ANC-Low after a
+            // fresh install, buds are really Off, no tone played" and sent us looking for the
+            // real bug (a DIFFERENT one, see AncEventParser.isAncEvent()). Reading this reply
+            // corrects the display on every connect regardless of what was persisted before.
+            if (echo1 == 0x01 && echo2 == 0x01) {
+                val mode = AncEventParser.modeForRaw(value, lastAncLevelSent)
+                if (mode != null) {
+                    log("ANC QUERY: raw=0x%04X -> %s".format(value, mode))
+                    handler.post { listeners.forEach { it.onAncModeState(mode) } }
+                }
+            }
+
+            // Hold's switch-list answer, echo `02 01`/`02 03`/`02 04` — see OpoProtocol.setHoldAncModes().
+            if (echo1 == 0x02) {
+                lastHoldAncMask = value
+                log("HOLD MODES: mask=0x%04X".format(lastHoldAncMask))
+                // Same repaint as GestureConfigStore.syncFromDevice() above, from the other
+                // direction: the mask usually arrives AFTER the key-function table in the init
+                // sequence, so this is the hook that actually fires the hold's sync in practice.
+                lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, value) }
+            }
         }
 
         // --- User-interaction (button/gesture) report: 0x0204 subType 0xF1 ---

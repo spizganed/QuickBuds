@@ -45,10 +45,25 @@ object AncEventParser {
     /** 0x0204 subType: ANC mode changed on the buds. */
     const val EVT_ANC = 0x03
 
-    /** True if this 0x0204 payload is an ANC-changed event. */
+    /**
+     * True if this 0x0204 payload is a GENUINE ANC-changed event.
+     *
+     * `[CAPTURE]`-caused bug, found and fixed 2026-09-22: `setHoldAncModes()`'s write also raises
+     * a `subType 0x03` frame (PROTOCOL.md §5's `[CAPTURE]` note on this), but its payload is
+     * `03 02 01 <mask LE>` — the `0x010C` switch-list QUERY's own echo shape, not this event's.
+     * The real event is always `03 01 01 <value LE>` (see the class doc). Before this fix,
+     * `isAncEvent` only checked `payload[0] == 0x03`, so the mask-write's echo passed as a real
+     * event, its MASK got misread as an ANC raw value, and the bogus name it produced
+     * (`ANC-Light` was observed) got written into the persisted display state via
+     * `onAncModeState` — a real, user-visible bug, not the "cosmetic, log-reading trap" it was
+     * first filed as. Now checks the constant `01 01` bytes 1/2 as well, which the mask-write's
+     * `02 01` echo fails.
+     */
     fun isAncEvent(payload: ByteArray): Boolean {
-        if (payload.size < 4) return false
-        return payload[0].toInt() and 0xFF == EVT_ANC
+        if (payload.size < 5) return false
+        return payload[0].toInt() and 0xFF == EVT_ANC &&
+            payload[1].toInt() and 0xFF == 0x01 &&
+            payload[2].toInt() and 0xFF == 0x01
     }
 
     /**
