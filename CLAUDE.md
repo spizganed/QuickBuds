@@ -402,7 +402,9 @@ a shared one hung.
 
 - **`local/` holds two folders now**: `logs/` (packet captures cited as evidence by PROTOCOL.md) and
   `svgs/` (the source SVGs the wear icons were traced from, named in the drawables' own headers).
-  Both have lasting value and stay tracked. `local/commits/` (the v1.1.0 commit-message files) is
+  **`local/` is PC-only — git-ignored, never committed or pushed** (`[USER]` 2026-09-22; it was
+  tracked until then and still sits in older commits' history). Doc references to `local/logs/`
+  point at the developer's machine, not the repo. `local/commits/` (the v1.1.0 commit-message files) is
   gone — obsolete once commits started being made on the PC directly.
 - **`local/notes/` and `local/NEXT-SESSION.md` are gone, on purpose** — all superseded, and their
   surviving content was folded into this file, PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md.
