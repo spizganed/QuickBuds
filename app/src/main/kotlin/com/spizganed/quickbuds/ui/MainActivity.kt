@@ -562,7 +562,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * The buds slide inwards when the case is not drawn, and back out when it is.
      *
      * WHY translationX AND NOT A LAYOUT CHANGE:
-     * the case is `battery_case_width` (124dp) plus two 10dp margins. Removing it
+     * the case is `battery_case_width` (119dp) plus two 10dp margins. Removing it
      * from a LinearLayout would reflow the row and the buds would JUMP to their new
      * positions in one frame — there is no way to animate a LinearLayout's reflow.
      * So the case keeps its space in the layout and only its VISIBILITY changes,

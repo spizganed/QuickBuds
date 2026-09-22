@@ -82,9 +82,9 @@
     <!--
       THE WEAR ICONS — three separate drawables, copied verbatim from local/svgs/.
 
-          ic_bud_left.xml   460 x 717.456      (local/svgs/bud_left.svg)
-          ic_case.xml       856.154 x 659.929  (local/svgs/case.svg)
-          ic_bud_right.xml  460 x 717.456      (local/svgs/bud_right.svg)
+          ic_bud_left.xml   176 x 272  (local/svgs/left.svg)
+          ic_case.xml       496 x 400  (local/svgs/case.svg)
+          ic_bud_right.xml  176 x 272  (local/svgs/right.svg)
 
       The buds are tall, the case is wide, so the three CANNOT share one box. They
       share a HEIGHT: `battery_wear_height` is the common height, and each icon is
@@ -94,7 +94,7 @@
       that combination clips the artwork. The drawable's intrinsic size is stored in
       PIXELS at the screen density, so declaring 24dp x 37dp becomes 63 x 97 px at
       2.625 (37 * 2.625 = 97.125, rounded DOWN to 97). The resulting intrinsic ratio,
-      63:97 = 0.649, no longer matches the SVG's 460:717.456 = 0.641. adjustViewBounds
+      63:97 = 0.649, no longer matches the SVG's true ratio. adjustViewBounds
       then sizes the view from the DISTORTED ratio (62.1dp wide at 96dp tall) while
       the vector rasterises at the true ratio, and the difference shows up as the
       artwork being clipped at the box's bounds.
@@ -102,15 +102,15 @@
       Sizing the box explicitly from the TRUE ratio removes the mismatch. The values
       below are the source ratios applied to `battery_wear_height`:
 
-          bud   0.641 x 96 = 61.6 -> 62dp
-          case  1.297 x 96 = 124.5 -> 124dp
+          bud   0.647 x 96 = 62.1 -> 62dp
+          case  1.240 x 96 = 119.0 -> 119dp
 
       Change `battery_wear_height` and scale these three widths with it (the case
-      width is 1.297/0.641 = 2.024x the bud width).
+      width is 1.240/0.647 = 1.917x the bud width).
     -->
     <dimen name="battery_wear_height">96dp</dimen>
     <dimen name="battery_bud_width">62dp</dimen>
-    <dimen name="battery_case_width">124dp</dimen>
+    <dimen name="battery_case_width">119dp</dimen>
     <!--
       Gap between the icons. The SVGs' ink runs to their viewBox edges, so with no
       margin the three read as one touching mass; this separates them. Applied as the

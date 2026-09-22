@@ -151,11 +151,10 @@ and it is the first thing the agent should read to know what to work on next.
   Android-Studio-already-did-this-for-you shortcut) — this is about surfacing it as a short, linear,
   copy-paste path for someone who is not this project's regular dev, not re-deriving it. Likely lands
   in README.md, since CLAUDE.md is agent working notes, not a contributor-facing doc.
-- **Redo the bud/case icons from scratch.** `[USER]` 2026-09-22: the current ones (traced into
-  `local/svgs/`, see CREDITS/ROADMAP "Done") are still bad and need a clean redraw, not a touch-up.
-  **Not previously tracked here despite being assumed scheduled — now it is.** `local/svgs/` (PC-only) stays
-  as reference until the new set is drawn AND locked in as final; only then does it become
-  pure clutter and get removed.
+- **Redo the bud/case icons from scratch.** `[USER]` 2026-09-22: new set drawn
+  (`local/svgs/left|case|right.svg`, PC-only) and wired into the app's wear icons. Pending the
+  developer's on-device look before it counts as final. The launcher icon and widget preview still
+  carry the old bud art.
 
 ## Known loose ends
 

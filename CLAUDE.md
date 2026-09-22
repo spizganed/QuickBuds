@@ -393,7 +393,8 @@ a shared one hung.
   fixed colour.
 - **The case icon keeps its LED dot**, and the lid cut stays full width — no hinge bulge or opening.
 - **All icons in a set share units-per-dp and layout height**, widths taken from each icon's own true
-  ratio. The wear icons are 96dp tall with widths 62 / 124 / 62dp.
+  ratio. The wear icons are 96dp tall with widths 62 / 119 / 62dp (new set from
+  `local/svgs/left|case|right.svg`, 2026-09-22).
 - The 2026 icon work is done for the app and the launcher; **the widget preview
   (`drawable/widget_preview_buds.xml`) is a separate copy** and must be updated alongside
   `ic_launcher_foreground.xml`.
