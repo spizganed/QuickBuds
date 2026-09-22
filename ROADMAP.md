@@ -70,15 +70,35 @@ and it is the first thing the agent should read to know what to work on next.
    and is only synced to "unbound" when neither side's `fn` is `0x08` — a bound hold with an
    unfamiliar/zero mask is left alone rather than guessed. **Not yet tested on-device — his rule now
    is he tests UI changes, not the agent (see feedback memory).**
-3. **Spatial sound.** The commands exist; decide which one the firmware honours (the legacy feature
-   `0x1B` vs the newer three-mode `0x0422`). Unverified today.
-4. **Codec switching (Hi-Res).** The row currently toggles only its own subtitle. Needs a capture of
-   the reference implementation to find the feature id (LHDC) before it can be wired honestly.
+3. **Spatial sound — tomorrow's first target.** The commands exist; decide which one the firmware
+   honours (the legacy feature `0x1B` vs the newer three-mode `0x0422`). `[USER]` 2026-09-22: on his
+   device, HeyMelody's own UI offers spatial sound ("OnePlus 3D audio") as a plain **on/off**, not
+   three modes — a strong hint the legacy `0x1B` feature switch is the one this firmware honours, not
+   `0x0422`. Still `[UNCAPTURED]`: confirm which command HeyMelody actually sends with a capture before
+   wiring it, same as everything else in this protocol.
+4. **Codec switching (Hi-Res) — tomorrow's second target.** The row currently toggles only its own
+   subtitle. `[USER]` 2026-09-22, the exact observed sequence in HeyMelody: tap the switch -> a dialog
+   **warns him and asks Accept/Decline** -> on Accept, the setting is sent -> **the buds disconnect**
+   (not yet known whether the buds drop on their own once the codec write lands, or HeyMelody forces
+   the Bluetooth disconnect itself) -> he hears an audible tone -> **the buds auto-reconnect**, both
+   the audio profile and HeyMelody itself. So this is NOT a simple `0x04xx` toggle-and-done; it is a
+   whole flow, and our own UI needs to reproduce all of it, not just the write: a confirm dialog first,
+   then the write, then however the disconnect/reconnect actually happens on the wire. Plan: a `tshark`
+   capture of HeyMelody doing the switch (PACKET-CAPTURE.md Option C) should show the write itself AND
+   settle which side (bud firmware vs. HeyMelody) initiates the disconnect — that answer decides
+   whether our own app needs to force a disconnect too or can just send the write and wait.
 5. **Find my earbuds.** The screen exists and plays the locating chime; volume and duration are not
-   tunable yet.
-6. **Equalizer — last in the parity chain.** Six bands (62/250/1k/4k/8k/16k Hz), ±6 dB, presets
-   (Balanced / Clear Vocals / Bass), custom presets with rename, and BassWave dynamic bass with an
-   intensity slider. The screen is a placeholder today: presets are not sent to the buds.
+   tunable yet. `[USER]` 2026-09-22, a theory worth testing rather than assuming: the chime is likely
+   played by the **buds' own firmware**, not streamed audio from the phone — it plays at a fixed high
+   volume regardless of the phone's media volume, which streamed audio would not do. If true, "volume"
+   may not be controllable from here at all unless the trigger command itself carries a level
+   parameter. A `tshark` capture of a Find-my-earbuds trigger (same Option C method) should settle it
+   in one pass: real-time streamed audio vs. a small one-shot control-channel command.
+6. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
+   for "tomorrow" specifically — needs more exploration and would take long on its own. Six bands
+   (62/250/1k/4k/8k/16k Hz), ±6 dB, presets (Balanced / Clear Vocals / Bass), custom presets with
+   rename, and BassWave dynamic bass with an intensity slider. The screen is a placeholder today:
+   presets are not sent to the buds.
 7. **Dual device** — expected quick. Two devices connected, with a switch.
 8. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
    An HCI capture of HeyMelody caught the exact write for both rows (PROTOCOL.md §6, "the on-call
