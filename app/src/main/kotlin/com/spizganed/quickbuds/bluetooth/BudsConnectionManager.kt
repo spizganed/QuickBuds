@@ -10,6 +10,7 @@ import android.os.Looper
 import android.util.Log
 import com.spizganed.quickbuds.protocol.AncEventParser
 import com.spizganed.quickbuds.protocol.BatteryParser
+import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.GameModeParser
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
 import com.spizganed.quickbuds.protocol.OpoProtocol
@@ -78,6 +79,9 @@ class BudsConnectionManager(private val context: Context) {
 
         /** A `0x810D` status reply arrived — feature id -> value, see [featureStates]. */
         fun onFeatureStates(states: Map<Int, Int>) {}
+
+        /** Any EQ reading changed — see [eqCurrent], [eqCustom], [bassWaveLevel]. */
+        fun onEqState() {}
     }
 
     private val listeners = CopyOnWriteArrayList<Listener>()
@@ -324,6 +328,39 @@ class BudsConnectionManager(private val context: Context) {
 
     fun setDualDevice(on: Boolean) =
         sendRaw(if (on) OpoProtocol.dualDeviceOn() else OpoProtocol.dualDeviceOff(), "DualDevice")
+
+    // --- Equalizer (PROTOCOL.md §9). Read on demand by the EQ screen, re-read after every write. ---
+    @Volatile var eqCurrent: Int? = null
+        private set
+    @Volatile var eqCustom: List<EqCodec.Preset> = emptyList()
+        private set
+    @Volatile var bassWaveLevel: Int? = null
+        private set
+
+    fun refreshEq() = sendThenRead()
+
+    fun selectBuiltInEq(id: Int) = sendThenRead(OpoProtocol.setBuiltInEq(id) to "EQ built-in $id")
+
+    /** Selects AND saves a custom preset — `0x0418` is both (a band edit or rename is the same frame). */
+    fun saveCustomEq(p: EqCodec.Preset) = sendThenRead(OpoProtocol.saveCustomEq(p) to "EQ custom ${p.id} '${p.name}'")
+
+    fun setBassWaveLevel(level: Int) = sendThenRead(OpoProtocol.setBassWaveLevel(level) to "BassWave level $level")
+
+    /** Optional write, then the three EQ reads, in order on one thread. */
+    private fun sendThenRead(write: Pair<ByteArray, String>? = null) {
+        Thread {
+            try {
+                if (write != null) { sendRawBlocking(write.first, write.second); Thread.sleep(250) }
+                sendRawBlocking(OpoProtocol.queryEq(), "query EQ")
+                Thread.sleep(120)
+                sendRawBlocking(OpoProtocol.queryEqAll(), "query custom EQ")
+                Thread.sleep(120)
+                sendRawBlocking(OpoProtocol.queryBassWaveLevel(), "query BassWave level")
+            } catch (e: Exception) {
+                log("EQ: ${e.message}")
+            }
+        }.start()
+    }
 
     /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §9. */
     fun setFindTone(on: Boolean) = sendRaw(OpoProtocol.findTone(on), "Find tone -> $on")
@@ -724,7 +761,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == OpoProtocol.CMD_RESP_WEARING ||
             cmd == 0x810C ||                             // ANC query reply
             cmd == 0x810D ||                             // status query reply
-            cmd == 0x8122 ||                             // EQ query reply
+            cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
@@ -879,6 +916,21 @@ class BudsConnectionManager(private val context: Context) {
             if (mode != null) {
                 handler.post { listeners.forEach { it.onAncModeState(mode) } }
             }
+            return
+        }
+
+        // --- Equalizer replies and push, [CAPTURE] 2026-09-23 ---
+        when (cmd) {
+            0x810F -> if (payload.size >= 2 && payload[0].toInt() == 0) eqCurrent = payload[1].toInt() and 0xFF
+            0x8122 -> EqCodec.parseList(payload)?.let { eqCustom = it }
+                ?: log("EQ: could not parse custom list RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            0x8124 -> if (payload.size >= 4 && payload[0].toInt() == 0) bassWaveLevel = payload[3].toInt()
+            OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) eqCurrent = payload[0].toInt() and 0xFF
+        }
+        if (cmd == 0x810F || cmd == 0x8122 || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED) {
+            log("EQ: current=$eqCurrent bassWave=$bassWaveLevel custom=" +
+                eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
+            handler.post { listeners.forEach { it.onEqState() } }
             return
         }
 

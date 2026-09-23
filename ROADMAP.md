@@ -42,11 +42,10 @@ and it is the first thing the agent should read to know what to work on next.
 
 ## Next up, in order
 
-1. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
-   for "tomorrow" specifically — needs more exploration and would take long on its own. Six bands
-   (62/250/1k/4k/8k/16k Hz), ±6 dB, presets (Balanced / Clear Vocals / Bass), custom presets with
-   rename, and BassWave dynamic bass with an intensity slider. The screen is a placeholder today:
-   presets are not sent to the buds.
+1. **Equalizer — WIRED 2026-09-23, awaiting his test.** Built-in presets, BassWave on/off and level
+   (−5..+5), custom presets with a 6-band ±6 dB editor and rename — all from a HeyMelody capture
+   (PROTOCOL.md §9), shown from the buds' own state and re-read after every write. Not done:
+   creating / deleting custom presets (not captured).
 2. **Dual device** — expected quick. Two devices connected, with a switch.
 3. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
    An HCI capture of HeyMelody caught the exact write for both rows (PROTOCOL.md §6, "the on-call

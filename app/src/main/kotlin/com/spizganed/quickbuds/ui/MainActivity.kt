@@ -1501,7 +1501,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { spatial.performClick() }
         )
 
-        // --- 4. Equalizer (placeholder destination) ---
+        // --- 4. Equalizer ---
         addRow(
             SettingRowFactory.build(
                 this, R.drawable.ic_equalizer, R.string.row_eq_title, R.string.row_eq_sub,

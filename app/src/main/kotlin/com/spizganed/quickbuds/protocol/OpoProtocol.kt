@@ -33,6 +33,11 @@ object OpoProtocol {
     const val CMD_QUERY_STATUS = 0x010D
     const val CMD_QUERY_EQ = 0x010F
     const val CMD_QUERY_EQ_ALL = 0x0122
+    const val CMD_QUERY_BASSWAVE_LEVEL = 0x0124
+    const val CMD_SET_EQ = 0x0406
+    const val CMD_SAVE_CUSTOM_EQ = 0x0418
+    const val CMD_SET_BASSWAVE_LEVEL = 0x041B
+    const val CMD_EQ_CHANGED = 0x0504     // push: `<id>` after any EQ change
 
     // --- gesture / key-function bindings ---
     const val CMD_QUERY_KEY_FUNCTION = 0x0108  // getKeyFunction — current bindings
@@ -81,6 +86,8 @@ object OpoProtocol {
     const val FEATURE_SPATIAL_SOUND = 0x1B
     /** Hi-Res (LHDC) codec. Switching it makes the buds drop and reconnect. `[CAPTURE]` 2026-09-23. */
     const val FEATURE_HIRES_CODEC = 0x18
+    /** BassWave on/off. Level is its own command, [setBassWaveLevel]. `[CAPTURE]` 2026-09-23. */
+    const val FEATURE_BASSWAVE = 0x1D
 
     private var seqCounter = 0x01
 
@@ -351,8 +358,19 @@ object OpoProtocol {
         payload = onCallPayload(ON_CALL_ACT_LONG_HOLD, if (enabled) ON_CALL_FN_DECLINE else 0x00)
     )
 
+    // --- Equalizer, all [CAPTURE] 2026-09-23 (PROTOCOL.md §9) ---
+
+    /** Current EQ -> `0x810F` `00 <id>` (00-02 built-in, 04+ custom). */
     fun queryEq(): ByteArray = buildPacket(CMD_QUERY_EQ)
-    fun queryEqAll(): ByteArray = buildPacket(CMD_QUERY_EQ_ALL, payload = byteArrayOf(0x01, 0x05))
+    /** Custom preset list -> `0x8122`, see [EqCodec.parseList]. Empty payload, as HeyMelody sends it. */
+    fun queryEqAll(): ByteArray = buildPacket(CMD_QUERY_EQ_ALL)
+    fun setBuiltInEq(id: Int): ByteArray = buildPacket(CMD_SET_EQ, payload = byteArrayOf(id.toByte()))
+    fun saveCustomEq(p: EqCodec.Preset): ByteArray = buildPacket(CMD_SAVE_CUSTOM_EQ, payload = EqCodec.encodeSave(p))
+    /** BassWave level, signed -5..+5; `FB 05` is the range (min, max) HeyMelody sends. */
+    fun setBassWaveLevel(level: Int): ByteArray =
+        buildPacket(CMD_SET_BASSWAVE_LEVEL, payload = byteArrayOf(0xFB.toByte(), 0x05, level.toByte()))
+    /** -> `0x8124` `00 FB 05 <level>`. */
+    fun queryBassWaveLevel(): ByteArray = buildPacket(CMD_QUERY_BASSWAVE_LEVEL)
 
     /**
      * getKeyFunction (0x0108) — read the CURRENT gesture bindings.
@@ -413,8 +431,9 @@ object OpoProtocol {
         CMD_QUERY_STATUS,
         seq = 0x00,
         payload = byteArrayOf(
-            0x0B, 0x05, 0x04, 0x0B, 0x11, 0x13,
-            0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28
+            // count, then feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too.
+            0x0C, 0x05, 0x04, 0x0B, 0x11, 0x13,
+            0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D
         )
     )
 
