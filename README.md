@@ -40,7 +40,17 @@ See [ROADMAP.md](./ROADMAP.md) for the ordered plan and what is already done.
   app — no polling lag
 - ANC: Off / Transparency / Adaptive / Light / Medium / Deep / Adaptive 
 - Game Mode toggle that also follows bud-side gestures
-- Auto-retry connection logic, so a busy earbud does not end the session
+- Auto-reconnect: a dropped link (e.g. after a codec switch) is retried by itself
+- A Connect / Disconnect button in the header, with the state shown as a green or red dot
+
+**Sound**
+- **Equalizer**: the three built-in presets, up to three custom presets edited on a draggable
+  6-band curve (±6 dB) with rename / create / delete, and Bass boost with a −5…+5 level —
+  all saved on the earbuds, so HeyMelody sees the same presets
+- **High-quality audio** (Hi-Res LHDC codec) and **3D audio**, which the earbuds cannot run together;
+  switching warns first, because a codec change makes the earbuds reconnect
+- **Find my earbuds**: the earbuds' own locator tone on both buds, with a warning when they are in
+  your ears
 
 **Home-screen widget (4x2)**
 - Battery bars for Left / Case / Right, always showing last-known values
@@ -58,9 +68,9 @@ See [ROADMAP.md](./ROADMAP.md) for the ordered plan and what is already done.
 - Bindings are **written to the earbuds** through a `0x0401` setKeyFunction write, then read back
   and diffed to confirm they took — a wrong command number fails silently, so the read-back is not
   optional
-- Tap-and-hold is the one exception and is still incomplete: it is stored as the earbuds' own
-  **ANC cycle**, and which modes that cycle contains is not in the key-function table at all. See
-  *The ANC hold cycle* below
+- Tap-and-hold picks which noise modes the hold cycles through (at least one, like HeyMelody), and
+  on-call double tap / long hold are supported
+- Every binding is read back from the earbuds on connect, so changes made elsewhere show up
 
 **App and service**
 - Foreground service keeps the link alive. The notification is `IMPORTANCE_MIN` and swipeable;
@@ -69,10 +79,10 @@ See [ROADMAP.md](./ROADMAP.md) for the ordered plan and what is already done.
 - OLED Black and Dark themes. A Light theme still exists but is unmaintained — it is the source of
   several invisible-on-light bugs (white L/C/R letters), and it will either be removed or left
   untouched until the final UI lands
-- Main screen: a battery card, the ANC switcher — four circles (Off / ANC / Adaptive /
-  Transparency), where tapping ANC opens the Low/Medium/High chooser — and a settings card holding
-  Game Mode (live), Hi-Res codec, spatial audio, Equalizer, Find my earbuds, Earbud controls and
-  App update
+- Main screen: one status card (each bud and the case in a battery ring, with wear state), a
+  noise-control switcher whose highlight slides to the active mode (ANC opens Low / Medium / High),
+  and a settings card: Low latency, High-quality audio, 3D audio, Equalizer, Find my earbuds,
+  Earbud controls and App update
 - Dedicated screens: **Dev Tools**, **Equalizer**, **Find my earbuds**, **Earbud controls**,
   **App update**
 - Dialogs are the app's own **bottom sheets**, so the theme picker, the ANC chooser and the gesture
@@ -125,17 +135,10 @@ protocol-related. A few facts worth knowing up front, because each one cost real
 
 ### The ANC hold cycle
 
-Tap-and-hold is bound to a single "ANC cycle" function, and that is all the key-function table
-stores — no membership, no mode list. The developer bound the hold to two modes once and four
-another time, and the stored byte was `0x08` both times; clearing it to `0x00` did not stop the
-cycle either.
-
-That does not make the mode list unreachable. The buds hold a *changeable* list, and the protocol
-exposes it through a different command — `setSupportNoiseReduction` (`0x0404`, payload
-`[action=2][noiseType][modeMask LE]`), read back with `0x010C` payloads `02 01` / `02 03` / `02 04`.
-The app currently only *sends the read*; nothing writes it yet, and no capture has ever shown a
-`0x810C` answer to `02 01`, so the reply's shape is unknown. Confirming that read on the device is
-the next step — see [PROTOCOL.md](./PROTOCOL.md) §5 and [ROADMAP.md](./ROADMAP.md).
+Tap-and-hold is bound to one "ANC cycle" function in the key-function table; *which* modes it
+cycles through is a separate setting, `setSupportNoiseReduction` (`0x0404` action `02`, a mode
+bitmask), read back with `0x010C` `02 01`. Both are captured from HeyMelody and implemented — see
+[PROTOCOL.md](./PROTOCOL.md) §5.
 
 ## Requirements and tested setup
 

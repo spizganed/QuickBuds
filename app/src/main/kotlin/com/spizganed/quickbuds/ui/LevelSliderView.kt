@@ -47,7 +47,6 @@ class LevelSliderView(
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = accent; strokeWidth = dp(6f); strokeCap = Paint.Cap.ROUND
     }
-    private val tickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = secondary; alpha = 90 }
     private val dotFill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ThemeRes.color(context, R.attr.appColorBg) }
     private val dotRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = accent; style = Paint.Style.STROKE; strokeWidth = dp(2.5f)
@@ -69,7 +68,6 @@ class LevelSliderView(
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawLine(left, trackY, right, trackY, trackPaint)
-        for (s in min..max) canvas.drawCircle(x(s.toFloat()), trackY, dp(1.5f), tickPaint)
         canvas.drawLine(left, trackY, x(pos), trackY, fillPaint)
 
         val r = if (dragging) dp(10f) else dp(8f)
