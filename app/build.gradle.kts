@@ -1,3 +1,5 @@
+import java.util.Properties
+
 // Plain desktop Gradle — see CLAUDE.md.
 //
 // This was a CodeAssist project up to v1.1.0 (built from app/module.toml, which
@@ -8,6 +10,14 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// Release signing — `[USER]` 2026-09-23, from v2.0.0. The key and its passwords live in
+// local/keys/ (git-ignored, PC-only — BACK IT UP: the in-app updater can only install over an app
+// signed with the same key). Without that file, release builds come out unsigned, as before.
+val keyProps = Properties().apply {
+    val f = rootProject.file("local/keys/keystore.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+
 android {
     namespace = "com.spizganed.quickbuds"
     compileSdk = 36
@@ -16,21 +26,25 @@ android {
         minSdk = 26
         targetSdk = 35
 
-        // versionCode / versionName are deliberately NOT set here.
-        //
-        // They live in app/src/main/AndroidManifest.xml so there is exactly one
-        // place to edit, and so the value the release is tagged against cannot
-        // drift from the value the app reports. AGP merges the manifest's
-        // declaration into the built APK, which is what PackageManager reads.
-        //
-        // This project has already had the two disagree once: a build declared
-        // 0.4.0 in the manifest while the release was tagged 1.0.0. Setting a
-        // number here as well would reintroduce exactly that split. The manifest
-        // is the authority — see CLAUDE.md.
+        // THE ONLY PLACE the version is declared. It used to live on <application> in the manifest,
+        // where Android ignores it: every PC build up to 2026-09-23 shipped with NO version, which
+        // UpdateActivity (reads PackageManager) and bundletool ("Version code not found") both hit.
+        versionCode = 3
+        versionName = "2.0.0"
+    }
+
+    signingConfigs {
+        if (!keyProps.isEmpty) create("release") {
+            storeFile = rootProject.file(keyProps.getProperty("storeFile"))
+            storePassword = keyProps.getProperty("storePassword")
+            keyAlias = keyProps.getProperty("keyAlias")
+            keyPassword = keyProps.getProperty("keyPassword")
+        }
     }
 
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(

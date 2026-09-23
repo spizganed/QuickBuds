@@ -38,9 +38,9 @@ Plain desktop Gradle. There are no CodeAssist prerequisites or dependencies any 
 - **Toolchain:** Gradle **8.13** · Android Gradle Plugin **8.13.0** · Kotlin **2.4.0**
 - **SDK levels:** `compileSdk 36`, `minSdk 26`, `targetSdk 35`, Java 8
 - **Only dependency:** `androidx.core:core:1.13.1`
-- `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk` — **use this one.** There
-  is no signing config, so a release build comes out unsigned and will not install (see *Signing*).
-- `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release-unsigned.apk`
+- `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk` — **use this one** for device testing.
+- `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk`, **signed** with the release
+  key when `local/keys/` is present (see *Signing*)
 - `./gradlew bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`
 - Deploy with `adb install -r <apk>`. **adb over USB is the debugging path**; use `adb logcat` for
   anything the in-app logs do not show.
@@ -115,49 +115,38 @@ alone during the move so the phone build kept working as a fallback. If you're w
 clone, there is nothing here to clean up — this note is historical, kept only so nobody goes looking
 for files that were correctly never carried across git.
 
-### Signing — there is none
+### Signing — release key since v2.0.0
 
-There is **no release signing config** and no keystore in the project — the developer has decided
-not to sign yet, and sideloaded installs simply raise the usual "unknown app" / Play Protect
-warning on first install. Do not add a keystore without being asked.
+**Releases are signed** with the key in `local/keys/quickbuds-release.jks` (PKCS12, alias
+`quickbuds`, RSA 4096, valid 100 years), created 2026-09-23 at his request. Its passwords are in
+`local/keys/keystore.properties`, which `app/build.gradle.kts` reads. Both are git-ignored and
+PC-only. **He must keep a backup of both files**: the in-app updater can only install over an app
+signed with the same key, and losing it means every user has to uninstall first. Never commit
+them and never print the password.
 
-**This is the first thing that will bite on the PC.** The CodeAssist build signed its output
-in-process, so `androidRun:app:release` produced an installable APK. Plain Gradle does not: with no
-`signingConfig`, `./gradlew assembleRelease` emits **`app-release-unsigned.apk`, which Android will
-refuse to install**. Until a keystore exists, build and deploy with the **debug** variant
-(`./gradlew assembleDebug`, or `assembleRelease` only once a signing config is added) — do not
-report "the release APK is fine" without checking that it is signed.
+Without that file (a fresh clone), `assembleRelease` falls back to an unsigned APK, as before.
+Day-to-day device testing still uses `assembleDebug`, which is signed with the debug key, so
+**debug and release builds cannot be installed over each other**: switching needs an uninstall.
+v1.1.0 was signed by CodeAssist with a different key, so moving from 1.1.0 to 2.0.0 also needs one.
 
-When signing is eventually set up: the key must be kept, because **the in-app updater can only
-install over an app signed with the same key**. Losing it means every installed copy has to be
-uninstalled first.
+### Versioning — `build.gradle.kts` defaultConfig is the single source
 
-### Versioning — the manifest is the single source of truth
+`versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
+**Current: versionCode 3 / versionName 2.0.0.**
 
-`versionCode` / `versionName` are declared **only** in
-`app/src/main/AndroidManifest.xml` on `<application>`. `app/build.gradle.kts` deliberately does
-**not** set them (see the comment there), so there is exactly one place to edit and nothing to keep
-in step.
-
-This is a fix, not a preference. On the mobile setup the version was declared twice — in
-`app/module.toml` (CodeAssist's project model, now retired and not in the repo) and in the manifest
-— and the two drifted apart:
-
-- v1.0.0 declared **no version at all**.
-- A later build put **0.4.0 in the manifest** while `module.toml` said `1.0`, so the installed app
-  reported 0.4.0 while the release was tagged 1.0.0.
-
-**Current: versionCode 2 / versionName 1.1.0.** Verify what actually ships in
-`app/build/intermediates/android/release/merged-manifest/AndroidManifest.xml`, not in a source file.
-`UpdateActivity` reads the installed version through `PackageManager`, deliberately, because the
-generated build script did not always emit a `BuildConfig` (and `buildConfig` is still off — see
-`app/build.gradle.kts`).
+They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
+up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
+and `bundleRelease` failed with "Version code not found in manifest". Verify with
+`aapt2 dump badging <apk>`, not by reading a source file. `UpdateActivity` still reads the installed
+version through `PackageManager`, and `buildConfig` stays off.
 
 ### Release flow
 
-The in-app updater (`UpdateActivity`) compares the **GitHub release tag** against the installed
-version and requires an **`.apk` asset** on the release. A `.aab` alone is invisible to it, so an
-APK must be attached as well. v1.1.0 is live with `QuickBuds1.1.0.apk` attached.
+`./gradlew assembleRelease bundleRelease` gives the signed APK and AAB. Name them
+`QuickBuds<version>.apk` / `.aab` (copies kept in `local/release/v<version>/`) and attach **both** to a
+GitHub release tagged `v<version>`. The in-app updater compares the tag against the installed
+version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is not installed on
+this PC, so the release page itself is made in the browser.
 
 ## History: mobile → PC
 
