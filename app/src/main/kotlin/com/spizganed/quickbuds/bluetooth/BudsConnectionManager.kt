@@ -849,7 +849,15 @@ class BudsConnectionManager(private val context: Context) {
             }.toMap()
             featureStates = states
             log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(it.key, it.value) })
-            handler.post { listeners.forEach { it.onFeatureStates(states) } }
+            // Game mode has its own push (0x0204 subType 0x05) but none at connect time; this is
+            // the connect-time read, fed through the same path so the widget follows too.
+            val game = states[OpoProtocol.FEATURE_GAME_MODE]
+            handler.post {
+                listeners.forEach {
+                    it.onFeatureStates(states)
+                    if (game != null) it.onGameModeState(game == 1)
+                }
+            }
             return
         }
 
