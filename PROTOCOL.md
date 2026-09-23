@@ -1023,8 +1023,9 @@ is the custom EQ list, 87 bytes, decoding with nothing left over:
 | xdd | 05 | 00 | −1 | −1 | −2 | −3 | +2 | +6 |
 | reddit | 06 | **01** | +2 | −1 | 0 | +2 | +3 | −3 |
 
-Frequencies are exactly HeyMelody's six bands; gains are signed dB. `[GUESS]` flag `01` = the
-selected preset; `FA 06` unknown (constant). Built-in presets (Balanced / Clear Vocals / Bass) are not
+**`[USER]` confirmed against HeyMelody screenshots 2026-09-23:** every name and gain matches, and
+flag `01` is the SELECTED preset (reddit). Frequencies are HeyMelody's six bands; gains are signed dB,
+range ±6. `FA 06` unknown (constant). BassWave was on, level 2, at the time — not located in the reply yet. Built-in presets (Balanced / Clear Vocals / Bass) are not
 in this item. **No EQ write captured yet** — `0x0406` "set EQ" is `[OSS]` only.
 
 ### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, wired
