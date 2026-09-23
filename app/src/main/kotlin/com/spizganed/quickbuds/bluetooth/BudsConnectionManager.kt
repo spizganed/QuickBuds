@@ -339,12 +339,26 @@ class BudsConnectionManager(private val context: Context) {
 
     fun refreshEq() = sendThenRead()
 
-    fun selectBuiltInEq(id: Int) = sendThenRead(OpoProtocol.setBuiltInEq(id) to "EQ built-in $id")
+    // Each write updates the cached state FIRST, then sends and re-reads. The three replies land one
+    // by one and each repaints; without this, the replies that arrive before the new values snapped
+    // the UI back to the old ones for a moment (the slider "jump" he saw 2026-09-23).
+
+    fun selectBuiltInEq(id: Int) {
+        eqCurrent = id
+        sendThenRead(OpoProtocol.setBuiltInEq(id) to "EQ built-in $id")
+    }
 
     /** Selects AND saves a custom preset — `0x0418` is both (a band edit or rename is the same frame). */
-    fun saveCustomEq(p: EqCodec.Preset) = sendThenRead(OpoProtocol.saveCustomEq(p) to "EQ custom ${p.id} '${p.name}'")
+    fun saveCustomEq(p: EqCodec.Preset) {
+        eqCurrent = p.id
+        eqCustom = eqCustom.map { if (it.id == p.id) p else it }
+        sendThenRead(OpoProtocol.saveCustomEq(p) to "EQ custom ${p.id} '${p.name}'")
+    }
 
-    fun setBassWaveLevel(level: Int) = sendThenRead(OpoProtocol.setBassWaveLevel(level) to "BassWave level $level")
+    fun setBassWaveLevel(level: Int) {
+        bassWaveLevel = level
+        sendThenRead(OpoProtocol.setBassWaveLevel(level) to "BassWave level $level")
+    }
 
     /** Optional write, then the three EQ reads, in order on one thread. */
     private fun sendThenRead(write: Pair<ByteArray, String>? = null) {

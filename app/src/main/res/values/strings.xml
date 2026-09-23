@@ -98,8 +98,8 @@
     <string name="eq_balanced">Balanced</string>
     <string name="eq_clear_vocals">Clear Vocals</string>
     <string name="eq_bass">Bass</string>
-    <string name="eq_basswave">BassWave</string>
-    <string name="eq_basswave_sub">Dynamic bass boost</string>
+    <string name="eq_basswave">Bass boost</string>
+    <string name="eq_basswave_sub">Deeper bass that adapts to the music</string>
     <string name="eq_level">Level</string>
     <string name="eq_custom">Custom</string>
     <string name="eq_rename">Rename</string>
