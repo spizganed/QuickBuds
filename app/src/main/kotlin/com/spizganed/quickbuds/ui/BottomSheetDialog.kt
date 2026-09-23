@@ -4,10 +4,12 @@ import android.app.Activity
 import android.app.Dialog
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.text.InputFilter
 import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -96,6 +98,19 @@ class BottomSheetDialog(private val activity: Activity) {
         onConfirm = onClick
     }
 
+    private var inputInitial: String? = null
+    private var inputMaxLength = 0
+    private var inputField: EditText? = null
+
+    /** An optional one-line text field above the confirm button (e.g. a rename), with the keyboard up. */
+    fun input(initial: String, maxLength: Int) = apply {
+        inputInitial = initial
+        inputMaxLength = maxLength
+    }
+
+    /** The field's current text, trimmed; empty when there is no field. */
+    fun inputValue(): String = inputField?.text?.toString()?.trim().orEmpty()
+
     /** Dismisses the sheet if it is showing. Safe to call when it is not. */
     fun close() {
         dialog?.dismiss()
@@ -166,6 +181,27 @@ class BottomSheetDialog(private val activity: Activity) {
         }
         root.addView(scroll)
 
+        inputInitial?.let { initial ->
+            val field = EditText(activity).apply {
+                setText(initial)
+                setSelection(initial.length)
+                filters = arrayOf(InputFilter.LengthFilter(inputMaxLength))
+                isSingleLine = true
+                setTextColor(primary)
+                // The app's accent, not the platform's default blue underline.
+                backgroundTintList = android.content.res.ColorStateList.valueOf(
+                    ThemeRes.color(activity, R.attr.appColorAccent)
+                )
+                textSize = 16f
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { marginStart = dp(14f); marginEnd = dp(14f) }
+            }
+            inputField = field
+            root.addView(field)
+            field.requestFocus()
+        }
+
         confirmText?.let { label ->
             root.addView(TextView(activity).apply {
                 setText(label)
@@ -200,6 +236,11 @@ class BottomSheetDialog(private val activity: Activity) {
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
             w.setGravity(Gravity.BOTTOM)
+            // With a text field, open the keyboard and push the sheet up above it.
+            if (inputInitial != null) w.setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE or
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+            )
         }
 
         d.setOnDismissListener { dialog = null }

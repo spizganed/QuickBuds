@@ -104,6 +104,7 @@
     <string name="eq_custom">Custom</string>
     <string name="eq_rename">Rename</string>
     <string name="eq_close">Close</string>
+    <string name="eq_save">Save</string>
     <string name="eq_delete">Delete</string>
     <string name="eq_delete_confirm">Delete "%1$s"?</string>
     <string name="eq_add">+ Add custom preset</string>
