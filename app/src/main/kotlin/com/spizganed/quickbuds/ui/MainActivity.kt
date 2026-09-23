@@ -193,11 +193,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             // drawables in an ImageView, and the icon system already does this
             // elsewhere (setBudIcon) — one mechanism, not two.
             connDot.setColorFilter(colour)
-            connText.text = getString(if (connected) R.string.conn_on else R.string.conn_off)
+            // The word is the ACTION (the pill is a button); the dot and colour carry the state.
+            connText.setText(if (connected) R.string.conn_action_disconnect else R.string.conn_action_connect)
             connText.setTextColor(colour)
-            connDot.contentDescription = getString(
-                if (connected) R.string.conn_on else R.string.conn_off
-            )
+            connPill.contentDescription = getString(if (connected) R.string.conn_on else R.string.conn_off) +
+                ". " + connText.text
         }
 
         // First render: no animation. Opening the screen should not play a transition
@@ -862,6 +862,24 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         connPill = findViewById<LinearLayout>(R.id.connPill)
         connDot = findViewById<ImageView>(R.id.connDot)
         connText = findViewById<TextView>(R.id.connText)
+
+        // The pill is also THE connect/disconnect button (`[USER]` 2026-09-23, as HeyMelody has
+        // one): the dot shows the state, the word is the action. Same service actions as Dev Tools.
+        connPill.setOnClickListener {
+            val connected = lastConnShown == true
+            connText.setText(if (connected) R.string.conn_disconnecting else R.string.conn_connecting)
+            startService(
+                Intent(this, BudsService::class.java).setAction(
+                    if (connected) BudsService.ACTION_FORCE_DISCONNECT else BudsService.ACTION_FORCE_CONNECT
+                )
+            )
+            // A failed connect may not change the stored state, so nothing would repaint the
+            // pill. ponytail: fixed timeout; a real "connecting" state in the store if it matters.
+            lastConnShown = null
+            connPill.postDelayed({
+                if (lastConnShown == null) renderConnectionPill(WidgetStateStore.read(this).connected)
+            }, 25_000)
+        }
 
         ancBtnOff = findViewById<TextView>(R.id.anc_btn_off)
         ancBtnAnc = findViewById<TextView>(R.id.anc_btn_anc)

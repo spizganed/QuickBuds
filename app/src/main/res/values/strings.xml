@@ -34,6 +34,10 @@
          device name and must not crowd it out. -->
     <string name="conn_on">Connected</string>
     <string name="conn_off">Disconnected</string>
+    <string name="conn_action_connect">Connect</string>
+    <string name="conn_action_disconnect">Disconnect</string>
+    <string name="conn_connecting">Connecting…</string>
+    <string name="conn_disconnecting">Disconnecting…</string>
     <string name="conn_status_desc">Connection status</string>
 
     <!-- ==================== Redesigned home screen ==================== -->
