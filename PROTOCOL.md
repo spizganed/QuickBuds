@@ -441,6 +441,14 @@ exactly — two independent `0x010C` `02 01` queries (sent on each bud's own lin
 
 Constants: `OpoProtocol.HOLD_MASK_BIT_OFF = 0`, `_ON = 1`, `_TRANSPARENCY = 2`, `_ADAPTIVE = 11`.
 
+**`[CAPTURE]` 2026-09-23 — a SINGLE-BIT mask is valid, and it is HeyMelody's own minimum.** HeyMelody's
+hold dialog requires at least one mode and allows exactly one ("1 option selected. Touching and
+holding will not switch modes."). Set to Off-only there, our connect-time read returned
+`0C 81 .. 00 02 01 01 00` → mask `0x0001`, with the hold's `fn` still `0x08` on both buds. Our own
+write of `0x0004` (Transparency only, `AA 0B 00 00 04 04 <seq> 04 00 02 01 04 00`) read back `0x0004`,
+and HeyMelody, reconnected afterwards, showed the hold as "Transparency". An all-zero mask is still
+never observed — HeyMelody cannot produce one, so the app never sends one either.
+
 **`[CAPTURE]` 2026-09-22, from wiring this into the real app and testing on-device (not HeyMelody this
 time — our own build): the mask write ALSO raises a `0x0204` subType `0x03` frame**, the same family
 `AncEventParser` decodes for an ANC mode change, but this one's payload is shaped like the `0x010C`

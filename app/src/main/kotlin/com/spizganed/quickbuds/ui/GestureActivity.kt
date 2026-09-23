@@ -453,16 +453,11 @@ class GestureActivity : Activity() {
      * open with a Done button, because "add or remove several" cannot work if the
      * first tap dismisses it.
      *
-     * THE TAP-AND-HOLD RULE — none, or at least two — is enforced at the moment of
-     * the attempt, and the rule is mentioned ONLY then. An empty selection
-     * (unbinding the gesture) and two-or-more (a real cycle) are both allowed;
-     * exactly one is not, because a hold bound to a single action is not a cycle and
-     * would behave differently from every other gesture for no visible reason.
-     *
-     * So pressing Done with exactly one selected does NOT save and does NOT close —
-     * it surfaces the explanation in place. That is deliberate: a permanently
-     * visible hint would be noise for the majority of the time the rule is not
-     * being broken, and a disabled button would leave the user with no idea why.
+     * THE TAP-AND-HOLD RULE — at least one — matches HeyMelody (`[USER]` screenshot
+     * 2026-09-23): any single mode is allowed, the last ticked mode cannot be unticked,
+     * and with exactly one ticked the sheet shows an info note that the hold will not
+     * switch modes. Done with an empty selection (only reachable from a never-set hold)
+     * just closes without writing.
      */
     private fun showActionDialog(gesture: Gesture) {
         val options = actionsFor(gesture)
@@ -494,21 +489,15 @@ class GestureActivity : Activity() {
         sheet.title(getString(gesture.labelRes))
             .dismissOnSelect(false)
             .confirm(getString(R.string.gesture_done)) {
-                if (working.size == 1) {
-                    // The attempt. Explain, and stay open so it can be fixed.
-                    sheet.message(getString(R.string.gesture_hold_rule))
-                } else {
+                if (working.isNotEmpty()) {
                     // Persist in the declared order, not tap order, so the cycle is
                     // deterministic and matches the list the user just saw.
                     val ordered = options.filter { working.contains(it) }
                     GestureConfigStore.save(this, side, gesture, ordered)
-                    // Only reached with a VALID selection (none, or two or more), so this
-                    // is the point the hold is actually committed — the exactly-one case
-                    // above returns early without saving.
                     writeToBuds(gesture, ordered)
-                    sheet.close()
-                    render()
                 }
+                sheet.close()
+                render()
             }
 
         fun refresh() {
@@ -517,15 +506,14 @@ class GestureActivity : Activity() {
                     label = getString(action.labelRes),
                     selected = working.contains(action),
                     onClick = {
-                        if (working.contains(action)) working.remove(action)
+                        // The last ticked mode cannot be unticked — minimum one, as HeyMelody.
+                        if (working.contains(action)) { if (working.size > 1) working.remove(action) }
                         else working.add(action)
                         refresh()
                     }
                 )
             })
-            // Clears the reminder as soon as the selection becomes valid again, so
-            // it is only ever on screen while the rule is actually broken.
-            if (working.size != 1) sheet.message(null)
+            sheet.message(if (working.size == 1) getString(R.string.gesture_hold_rule) else null)
         }
 
         refresh()

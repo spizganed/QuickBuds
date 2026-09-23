@@ -307,10 +307,8 @@ object GestureConfigStore {
     fun defaultFor(gesture: Gesture): List<GestureAction> = when (gesture) {
         // TAP-AND-HOLD DEFAULTS TO NOTHING, not to a single mode.
         //
-        // It used to default to ANC alone, which the none-or-at-least-two rule now
-        // forbids — a one-item cycle is not a cycle. Of the two valid options
-        // (nothing, or a real cycle) "nothing" is the honest default: a two-mode
-        // cycle would guess which modes the user wants, and the mask write (see
+        // "Nothing" is the honest default until the buds report their own state: any
+        // preset would guess which modes the user wants, and the mask write (see
         // [GestureAction.holdMaskBit]) is real now — guessing a default membership
         // would send a write nobody asked for. Every other gesture defaults to NONE,
         // so this is also consistent.
