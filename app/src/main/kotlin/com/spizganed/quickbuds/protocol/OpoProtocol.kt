@@ -24,6 +24,7 @@ object OpoProtocol {
     const val CMD_HANDSHAKE = 0x0100
     const val CMD_QUERY_PRODUCT_ID = 0x0103
     const val CMD_QUERY_BROADCAST = 0x0200
+    const val CMD_FIND_BUDS = 0x0400
     const val CMD_SET_FEATURE = 0x0403
     const val CMD_SET_ANC = 0x0404
     const val CMD_SET_SPATIAL = 0x0422
@@ -229,6 +230,10 @@ object OpoProtocol {
 
     fun dualDeviceOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, true))
     fun dualDeviceOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, false))
+
+    /** Find my earbuds — `0x0400` `01` start / `00` stop, both buds, no side byte. `[CAPTURE]` 2026-09-23. */
+    fun findTone(on: Boolean): ByteArray =
+        buildPacket(CMD_FIND_BUDS, payload = byteArrayOf(if (on) 0x01 else 0x00))
 
     /** Any `0x0403` feature switch. Spatial (`0x1B`) and Hi-Res (`0x18`) are `[CAPTURE]` — PROTOCOL.md §9. */
     fun setFeature(featureId: Int, on: Boolean): ByteArray =

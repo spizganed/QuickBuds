@@ -78,17 +78,18 @@
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Sound profiles</string>
     <string name="row_find_title">Find my earbuds</string>
-    <string name="row_find_sub">Play a chime on one bud</string>
+    <string name="row_find_sub">Ring both earbuds</string>
     <string name="row_update_title">App update</string>
     <string name="row_update_sub">Check GitHub for a newer build</string>
 
     <!-- Find my earbuds screen. -->
     <string name="find_title">Find my earbuds</string>
-    <string name="find_hint">Tap a bud to play a locating chime on it.</string>
+    <string name="find_hint">Plays a loud tone on both earbuds at once.</string>
     <string name="find_stop">Stop</string>
-    <string name="find_playing_left">Playing on the left bud</string>
-    <string name="find_playing_right">Playing on the right bud</string>
-    <string name="find_no_hardware_tone">The earbuds have no built-in locator tone on this firmware, so a quiet chime is played from the phone.</string>
+    <string name="find_play">Play sound</string>
+    <string name="find_warn_title">Earbuds are in your ears</string>
+    <string name="find_warn_msg">The tone is loud. Take the earbuds out before playing it.</string>
+    <string name="find_warn_play">Play anyway</string>
 
     <!-- Equalizer placeholder. -->
     <string name="eq_title">Equalizer</string>
