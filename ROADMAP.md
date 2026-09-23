@@ -42,27 +42,13 @@ and it is the first thing the agent should read to know what to work on next.
 
 ## Next up, in order
 
-1. **The hold gesture — DONE, confirmed on device 2026-09-23.** Read, bit theory and write are all
-   `[CAPTURE]`-confirmed (PROTOCOL.md §5). The selection rule now matches HeyMelody: at least one mode,
-   and a single mode is allowed (with its "will not switch modes" note). A one-bit mask was written
-   from our app, read back, and shown correctly by HeyMelody.
-2. **Sync gesture/hold/on-call config FROM THE BUDS on every connect — DONE, confirmed 2026-09-23**
-   (a hold set to Off in HeyMelody showed up as Off in QuickBuds on the next connect).
-3. **Spatial sound + Hi-Res codec — WIRED 2026-09-23, awaiting his test.** Captured from HeyMelody
-   (PROTOCOL.md §9): spatial is `0x0403` feature `0x1B`, Hi-Res is feature `0x18`, they are mutually
-   exclusive, and any codec change makes the buds drop and reconnect by themselves. Both switches now
-   write the real commands (the other feature is switched off first, as HeyMelody does), a codec change
-   goes through an Accept warning, and both switches repaint from the now-decoded `0x810D` status reply.
-4. **Find my earbuds — WIRED 2026-09-23, awaiting his test.** `0x0400` `01`/`00` start/stop rings both
-   buds (PROTOCOL.md §9). One Play/Stop button, with HeyMelody's in-ear warning; the phone-side chime
-   fallback (`ChimePlayer`) is gone.
-5. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
+1. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
    for "tomorrow" specifically — needs more exploration and would take long on its own. Six bands
    (62/250/1k/4k/8k/16k Hz), ±6 dB, presets (Balanced / Clear Vocals / Bass), custom presets with
    rename, and BassWave dynamic bass with an intensity slider. The screen is a placeholder today:
    presets are not sent to the buds.
-6. **Dual device** — expected quick. Two devices connected, with a switch.
-7. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
+2. **Dual device** — expected quick. Two devices connected, with a switch.
+3. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
    An HCI capture of HeyMelody caught the exact write for both rows (PROTOCOL.md §6, "the on-call
    write"): **double tap** (`None` / `Answer + end call`) is `act 0x02`, **long hold** (`None` /
    `Decline call`) is `act 0x06`, both bound to **both buds together as one shared setting** via
@@ -72,11 +58,11 @@ and it is the first thing the agent should read to know what to work on next.
    matching HeyMelody's own bytes. **The write is confirmed; the act-to-row LABELS are still
    `[INFERRED]` — NEXT SESSION: place a real call and confirm double tap answers/ends and long hold
    declines, the right way round, before trusting the labels.**
-8. **Auto play/pause on wear** — two parts: (a) a switch in the UI that tells the firmware to react
+4. **Auto play/pause on wear** — two parts: (a) a switch in the UI that tells the firmware to react
    by itself (`autoPlayPauseOn` / `autoPlayPauseOff` already exist in the manager); (b) our own
    implementation on top — **pause only when both buds are out of the ear; a single bud out keeps
    playing; never auto-play, only pause.**
-9. **Golden Sound** — spike only. A one-time hearing test that probably produces an EQ profile. It
+5. **Golden Sound** — spike only. A one-time hearing test that probably produces an EQ profile. It
     may be hard or impossible through this protocol; find out before promising it.
 
 ## The final UI
@@ -155,6 +141,14 @@ Foundation & debugging:
 Push and control:
 
 - Wear, battery and Game Mode are all pushed by the buds; the 60s poll is only a keep-alive now.
+- 2026-09-23, all confirmed on device by him:
+  - Hold gesture: min-one-mode rule like HeyMelody; mask read/write (PROTOCOL.md §5).
+  - Gesture/hold/on-call config synced from the buds on every connect.
+  - Hi-Res codec + 3D audio switches, mutually exclusive, reconnect warning (PROTOCOL.md §9).
+  - Status reply `0x810D` decoded; Hi-Res, 3D and low latency show the buds' state on connect.
+  - Find my earbuds: the buds' own tone on both buds, in-ear warning.
+  - Header pill is the Connect/Disconnect button (green connected, red not).
+  - Reconnect after a lost link (e.g. after a codec switch) — fast and consistent.
 - ANC gesture sync — bud-side ANC changes light the app's circles and the widget.
 - Adaptive is a fourth ANC surface (main-screen circle, widget segment, Quick Settings tile), and
   its SET payload is fixed.

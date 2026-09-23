@@ -309,8 +309,6 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 ## Current open items
 
-- **Find my earbuds** — wired 2026-09-23 (`0x0400`, both buds, in-ear warning); awaiting his test.
-- **Hi-Res / spatial** — wired 2026-09-23 behind a reconnect warning (PROTOCOL.md §9); awaiting his test.
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
 - **On-call gestures** — to be added for parity (this reverses an earlier "never" decision).
@@ -331,15 +329,16 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 ### Connection robustness — known rough edges
 
-From `bluetooth/BudsConnectionManager.kt`. None of these are fixed:
+From `bluetooth/BudsConnectionManager.kt`.
 
 - The **primary UUID `00001107-...` never connects** — it burns a ~5 s timeout on every attempt, and
   the `0000079A-...` fallback is the one that works. **Trying the working UUID first would save 5 s
   per connect.** Not done.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
-- **A 14-minute gap with no reconnect attempt** was observed after `Connection lost`. Likely the
-  same cause as the post-codec-switch stall found 2026-09-23: nothing retried after a loss unless
-  Android fired ACL_CONNECTED. `reconnectAfterLoss()` now retries 5× (3/6/9/12/15 s); untested.
+- **Reconnect after a lost link — FIXED 2026-09-23, confirmed by him.** Nothing used to retry after
+  `Connection lost` unless Android fired ACL_CONNECTED (a codec switch drops our RFCOMM 2-3 times while
+  the link stays up) — likely also the old "14-minute gap". `reconnectAfterLoss()` retries 5x with
+  growing delays; a deliberate disconnect cancels it.
 
 ## Main screen structure — settled
 

@@ -89,7 +89,7 @@
 
     <!--
       Connection state colours. NOT theme-swapped, and that is on purpose: green means
-      connected and grey means not, in every theme, the same way the red accent means
+      connected and red means not, in every theme, the same way the red accent means
       "on" everywhere. A themed connection colour would change MEANING with the theme,
       which is exactly what a status indicator must not do.
 
@@ -97,5 +97,7 @@
       applied in code (ThemeRes.tint) because these drawables are vectors.
     -->
     <color name="app_conn_on">#4CAF50</color>
-    <color name="app_conn_off">#8A8A8A</color>
+    <!-- Red, not grey, since the pill became the Connect button ([USER] 2026-09-23): the
+         disconnected state is a call to action and must stand out as much as the green one. -->
+    <color name="app_conn_off">@color/app_accent</color>
 </resources>
