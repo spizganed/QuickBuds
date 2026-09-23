@@ -63,11 +63,25 @@ object EqCodec {
         return out
     }
 
-    /** `0x0418` payload — select AND save in one: `02 <tag> <id> <nameLen> <name> <bands...>`. */
-    fun encodeSave(p: Preset): ByteArray {
+    /** `0x0418` first byte. Create sends id `00` and the buds assign one; delete renumbers the rest. */
+    const val ACTION_CREATE = 0x01
+    const val ACTION_SAVE = 0x02   // select AND save in one
+    const val ACTION_DELETE = 0x03
+
+    /** The tag every captured preset carries; used for a new preset, which has none of its own yet. */
+    val DEFAULT_TAG = byteArrayOf(0xFA.toByte(), 0x06)
+    val DEFAULT_FREQS = listOf(62, 250, 1000, 4000, 8000, 16000)
+
+    /** HeyMelody's limit — its UI allows three custom presets. */
+    const val MAX_CUSTOM = 3
+
+    fun newPreset(name: String) = Preset(0, name, DEFAULT_FREQS, List(DEFAULT_FREQS.size) { 0 }, false, DEFAULT_TAG)
+
+    /** `0x0418` payload: `<action> <tag> <id> <nameLen> <name> <bandCount> <bands...>`. */
+    fun encode(action: Int, p: Preset): ByteArray {
         val name = p.name.toByteArray(Charsets.UTF_8)
         val out = ArrayList<Byte>()
-        out += 0x02
+        out += action.toByte()
         out += p.tag.toList()
         out += p.id.toByte()
         out += name.size.toByte()

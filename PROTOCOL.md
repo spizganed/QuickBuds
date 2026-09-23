@@ -1045,6 +1045,11 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
 - **`0x0418` is select + save in one.** Opening xdd for editing sent it (xdd became selected). Every
   step of a band drag sent the full preset again (1 kHz went FE -> FD -> FF -> 00), and a rename is
   the same frame with a new name (`07 "testing"`). HeyMelody re-reads `0x0122` after each.
+- **`0x0418`'s first byte is the action** (`[CAPTURE]` 2026-09-23, second EQ capture): `01` CREATE
+  (HeyMelody sent id `00`, name `Custom1`, all gains 0; the buds assign the id — ack `8418 00 06`),
+  `02` SAVE/SELECT, `03` DELETE (whole preset sent; the selection falls back to `00` Balanced).
+  **Ids are renumbered** after a delete/create (xdd went 05 -> 04), so always re-read `0x0122`.
+  HeyMelody's UI caps custom presets at **3** (`[USER]`).
 - **Built-in presets are not in the `0x0122` list**; they are ids 00-02 on `0x0406` / `0x010F`.
 - `FA 06` and `FB 05` are constant in every frame; meaning unknown (`05` may be the level max).
 

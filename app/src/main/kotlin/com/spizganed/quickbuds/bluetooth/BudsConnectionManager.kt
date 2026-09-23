@@ -352,8 +352,15 @@ class BudsConnectionManager(private val context: Context) {
     fun saveCustomEq(p: EqCodec.Preset) {
         eqCurrent = p.id
         eqCustom = eqCustom.map { if (it.id == p.id) p else it }
-        sendThenRead(OpoProtocol.saveCustomEq(p) to "EQ custom ${p.id} '${p.name}'")
+        sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_SAVE, p) to "EQ custom ${p.id} '${p.name}'")
     }
+
+    /** No local update for create/delete: the buds assign and renumber ids, so only the re-read knows. */
+    fun createCustomEq(name: String) =
+        sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_CREATE, EqCodec.newPreset(name)) to "EQ create '$name'")
+
+    fun deleteCustomEq(p: EqCodec.Preset) =
+        sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_DELETE, p) to "EQ delete ${p.id} '${p.name}'")
 
     fun setBassWaveLevel(level: Int) {
         bassWaveLevel = level
@@ -941,6 +948,8 @@ class BudsConnectionManager(private val context: Context) {
             0x8124 -> if (payload.size >= 4 && payload[0].toInt() == 0) bassWaveLevel = payload[3].toInt()
             OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) eqCurrent = payload[0].toInt() and 0xFF
         }
+        // 0x8418 ack: `00 <id>` — the id the preset now has (a created one's id comes from here).
+        if (cmd == 0x8418) log("EQ ack: RAW=[${OpoProtocol.bytesToHex(payload)}]")
         if (cmd == 0x810F || cmd == 0x8122 || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED) {
             log("EQ: current=$eqCurrent bassWave=$bassWaveLevel custom=" +
                 eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
