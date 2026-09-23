@@ -1,168 +1,92 @@
 # QuickBuds
 
-> Lightweight, open-source control for OnePlus / OPPO / realme earbuds — direct RFCOMM, no bloat.
+> Control OnePlus / OPPO / realme earbuds straight over Bluetooth. No HeyMelody, no account, no root.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android-3DDC84.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
+[![Release](https://img.shields.io/github/v/release/spizganed/QuickBuds)](https://github.com/spizganed/QuickBuds/releases/latest)
 
-QuickBuds talks to your earbuds directly over a classic Bluetooth RFCOMM channel and undoes
-everything the vendor app gets wrong. No HeyMelody, no account, and no root,
-Every packet it sends was reverse-engineered and confirmed on
-real hardware.(OnePlus Buds 4)
+QuickBuds talks to your earbuds directly over a classic Bluetooth RFCOMM channel, the same link the
+vendor app uses, and gives you everything HeyMelody does in a dark, fast UI with a real home-screen
+widget. Every command it sends was reverse-engineered and confirmed on real hardware.
 
-The app was built entirely on a phone (CodeAssist + Termux) using DeepSeek v.4.1-fast through **v1.1.0**. Development has
-since moved to a PC with Claude Code.
+## Screenshots
 
-## Why this exists
+<!--
+  Drop the PNGs into docs/screenshots/ and remove the comment markers around each <img>.
+-->
 
-Two frustrations with HeyMelody, specifically:
-
-1. **The UI is white-only.** No dark or OLED option.
-2. **There is no home-screen widget at all.** Changing any of the features would require to open HeyMelody.
-
-QuickBuds tries to match HeyMelody feature-parity, improves on it and puts a real widget in front of it.
-With heavy customization options.
-
-## Where it is going
-
-The goal is **parity with HeyMelody's functionality**, with a better UI and a widget on top. Once
-that is matched, this project's own improvements (the widget, the wear-state display) get built on
-it. Only after that does support for other earbud models come into scope — other OnePlus / OPPO /
-realme models first, since they share the protocol.
-
-See [ROADMAP.md](./ROADMAP.md) for the ordered plan and what is already done.
+| Main screen | Equalizer | Curve editor | Earbud controls | Widget |
+| :---: | :---: | :---: | :---: | :---: |
+| <!-- <img src="docs/screenshots/main.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/eq.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/eq-curve.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/controls.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/widget.png" width="200"> --> _coming soon_ |
 
 ## Features
 
-**Connection and control**
-- Direct RFCOMM to the earbuds (worked UUID `0000079A-D102-11E1-9B23-00025B00A5A5`, tried with fallbacks)
-- Full init handshake, then the buds **push** battery, wearing, Game Mode and ANC changes to the
-  app — no polling lag
-- ANC: Off / Transparency / Adaptive / Light / Medium / Deep / Adaptive 
-- Game Mode toggle that also follows bud-side gestures
-- Auto-reconnect: a dropped link (e.g. after a codec switch) is retried by itself
-- A Connect / Disconnect button in the header, with the state shown as a green or red dot
+**Noise control**
+- Off, Noise cancelling (Low / Medium / High), Adaptive and Transparency
+- Follows changes made on the earbuds themselves, instantly
 
 **Sound**
-- **Equalizer**: the three built-in presets, up to three custom presets edited on a draggable
-  6-band curve (±6 dB) with rename / create / delete, and Bass boost with a −5…+5 level —
-  all saved on the earbuds, so HeyMelody sees the same presets
-- **High-quality audio** (Hi-Res LHDC codec) and **3D audio**, which the earbuds cannot run together;
-  switching warns first, because a codec change makes the earbuds reconnect
-- **Find my earbuds**: the earbuds' own locator tone on both buds, with a warning when they are in
-  your ears
+- **Equalizer**
+  - Built-in presets: Balanced, Clear Vocals and Bass.
+  - Up to 3 custom presets, edited on a draggable 6-band curve (±6 dB). You can create, rename and delete them.
+  - Bass boost with a −5…+5 level.
+  - Everything is saved on the earbuds, so HeyMelody sees the same presets.
+- **High-quality audio (Hi-Res LHDC) and 3D audio.** The earbuds can't run both, so switching warns you first. A codec change makes the earbuds reconnect.
+- **Low latency mode** for video and games
 
-**Home-screen widget (4x2)**
-- Battery bars for Left / Case / Right, always showing last-known values
-- Wear icons that update from the buds' own pushes — milliseconds, not poll-bound
-- Bud status: **white** in ear, **grey** out of ear, **hidden** in the case. Those two colours are
-  the widget's fixed palette (`#FFFFFF` / `#8A8A8A`), not theme attributes, because the widget is
-  always dark
-- Six-segment ANC switcher (Off / Trans / Low / Med / High / Adpt) plus a Game Mode row, working
-  even with the app closed
-- Nothing to configure; it reacts as fast as the hardware reports
+**Earbud controls**
+- Single, double and triple tap, slide and hold, set **per bud**
+- Choose which noise modes the hold cycles through
+- On-call gestures: double tap to answer or end, long hold to decline
+- Read back from the earbuds on every connect, so changes made elsewhere show up
 
-**Earbud controls (per-bud gesture bindings)**
-- Bind each bud's single / double / triple tap, slide and hold **separately**, because the two buds
-  can be configured differently
-- Bindings are **written to the earbuds** through a `0x0401` setKeyFunction write, then read back
-  and diffed to confirm they took — a wrong command number fails silently, so the read-back is not
-  optional
-- Tap-and-hold picks which noise modes the hold cycles through (at least one, like HeyMelody), and
-  on-call double tap / long hold are supported
-- Every binding is read back from the earbuds on connect, so changes made elsewhere show up
+**Everything else**
+- **Find my earbuds.** Plays the earbuds' own loud tone on both buds, with a warning if they're in your ears.
+- **Live status.** Battery for each bud and the case, plus in ear / out / in case, pushed by the earbuds in real time.
+- **Home-screen widget** with battery, wear state, noise control and Low latency, working with the app closed
+- **Quick Settings tile**
+- **Connect / Disconnect** button, and automatic reconnect when the link drops
+- **OLED black and dark themes**
 
-**App and service**
-- Foreground service keeps the link alive. The notification is `IMPORTANCE_MIN` and swipeable;
-  Android 15 requires it for a `connectedDevice` service, so it cannot be removed
-- Quick Settings tile
-- OLED Black and Dark themes. A Light theme still exists but is unmaintained — it is the source of
-  several invisible-on-light bugs (white L/C/R letters), and it will either be removed or left
-  untouched until the final UI lands
-- Main screen: one status card (each bud and the case in a battery ring, with wear state), a
-  noise-control switcher whose highlight slides to the active mode (ANC opens Low / Medium / High),
-  and a settings card: Low latency, High-quality audio, 3D audio, Equalizer, Find my earbuds,
-  Earbud controls and App update
-- Dedicated screens: **Dev Tools**, **Equalizer**, **Find my earbuds**, **Earbud controls**,
-  **App update**
-- Dialogs are the app's own **bottom sheets**, so the theme picker, the ANC chooser and the gesture
-  picker match the app's palette instead of the platform's
+## Install
 
-**Diagnostics**
-- Packet logging: every sent command and every received frame, timestamped
-- Dev Tools screen with a human-readable log and a raw-hex log, hold-to-copy, Mark / Clear /
-  export-to-file, and Reconnect / Disconnect
-- A **layout report** tool that dumps the measured view tree as text, and a **Screen** tool that
-  turns a picked screenshot into ASCII / grid / colour / rows text. Both are currently slated to be
-  hidden from the UI rather than deleted
+1. Pair your earbuds in Android's Bluetooth settings first. QuickBuds connects to paired earbuds, it
+   doesn't pair them.
+2. Download `QuickBuds<version>.apk` from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest) and install it.
+3. Grant the Bluetooth permission when asked.
 
-> The main screen carries **no** log. Dev Tools owns logging; status events on the main screen are
-> silent by design, because a toast on a packet-listener path storms the UI.
+Updates can be checked from inside the app (**App update**). Nothing is checked automatically.
 
-## How it works
+> **Coming from v1.1.0?** v2.0.0 is signed with a new key. Uninstall the old version first, or
+> Android will refuse the update.
 
-```
-Widget tap / app UI
-      |
-WidgetActionReceiver  ->  BudsService  ->  BudsConnectionManager (RFCOMM)
-                                                  |
-                                     OppoPacketFramer (AA framing)
-                                                  |
-                              OpoProtocol: handshake, queries, the 0x0205 event
-                              registration, ANC / GameMode / codec / spatial builders
-                                                  |
-              WearingStatusParser / BatteryParser / GameModeParser -> state
-                                                  |
-                              WidgetStateStore -> AncWidgetProvider (refresh)
-```
+**Tested on:** OnePlus Buds 4 (firmware `B4.1-260810-1153`) · Nothing Phone (3a), Android 15.
+Other OnePlus / OPPO / realme earbuds share the protocol and will likely work, but are untested.
 
-**The protocol is documented end to end in [PROTOCOL.md](./PROTOCOL.md)** — frame layout, every
-command, the ANC tables, gestures, and the mistakes already made. Read it before touching anything
-protocol-related. A few facts worth knowing up front, because each one cost real time:
+## Roadmap
 
-- Battery is query `0x0106`; wearing is query `0x0109`. (These were written as `0x01F0`/`0x01F2`
-  for a long time, which is wrong — those are the command byte welded to its sequence value.)
-- `0x0205` makes the buds push `0x0204` events. Its payload is a **count** byte followed by event
-  ids, and getting that shape wrong fails silently: `01 01 02 02` reads as "count=1, battery only",
-  so wear events never arrive. The app sends `03 01 02 03` — battery, wearing **and ANC**; dropping
-  `03` is what made bud-side ANC gestures look silent for three captures.
-- **The SET and NOTIFY encodings for ANC are different tables** and are not supposed to agree.
-  Setting uses bit 0 = Off and bit 2 = Transparency; the buds *report* Off as bit 3 and
-  Transparency as bit 8.
-- **Adaptive's SET mask is `0x0800` (bit 11), not bit 8.** The build passed `8` once and sent
-  `01 01 00 01`, a *different mode*. Its payload is `01 01 00 08`.
-- Closing the lid with the buds docked kills the RFCOMM socket, and that is used as a lid signal.
+HeyMelody parity comes first, then this project's own ideas on top, then other earbud models. See
+[ROADMAP.md](./ROADMAP.md) for the ordered plan.
 
-### The ANC hold cycle
-
-Tap-and-hold is bound to one "ANC cycle" function in the key-function table; *which* modes it
-cycles through is a separate setting, `setSupportNoiseReduction` (`0x0404` action `02`, a mode
-bitmask), read back with `0x010C` `02 01`. Both are captured from HeyMelody and implemented — see
-[PROTOCOL.md](./PROTOCOL.md) §5.
-
-## Requirements and tested setup
-
-- Android, developed and tested on a **Nothing Phone (3a) running Android 15**
-- **OnePlus Buds 4**, firmware `B4.1-260810-1153`. Other OnePlus / OPPO / realme buds likely work,
-  since the protocol is shared, but they are untested
-- The earbuds must already be paired in system Bluetooth settings — the app connects to paired
-  buds, it does not pair them for you
-
-## Repo contents
+## For developers
 
 | File | What it is |
 | --- | --- |
-| [CLAUDE.md](./CLAUDE.md) | The entry point for a new session — toolchain, conventions, and the mistakes already paid for. |
-| [ROADMAP.md](./ROADMAP.md) | The plan: what is next, in order, and what is already done. |
-| [PROTOCOL.md](./PROTOCOL.md) | The wire format end to end. Read before touching anything protocol-related. |
-| [CREDITS.md](./CREDITS.md) | Whose reverse-engineering this stands on, and which parts are ours. |
-| [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | The capture procedure, kept as a backup for protocol work. |
-| [LICENSE](./LICENSE) | GPL-3.0. |
+| [PROTOCOL.md](./PROTOCOL.md) | **The wire format, end to end**: frames, every command, and the mistakes already made. Read it before touching protocol code. |
+| [ROADMAP.md](./ROADMAP.md) | What's next, in order, and what's done. |
+| [CLAUDE.md](./CLAUDE.md) | Toolchain, conventions and working notes. |
+| [CREDITS.md](./CREDITS.md) | Exactly what came from where. |
+| [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | How to capture a Bluetooth log from the phone. |
 
-Packet captures and source SVGs live in a `local/` folder on the developer's machine only; it is
-not part of the repository.
+**Build:** Gradle 8.13, Android Gradle Plugin 8.13, Kotlin 2.4, JDK 17–23. The only dependency is
+`androidx.core`.
 
-There are no committed screenshots.
+```bash
+./gradlew assembleDebug    # app/build/outputs/apk/debug/app-debug.apk
+```
+
+Release builds are signed only on the maintainer's machine; without the key they come out unsigned.
 
 ## Credits
 
@@ -179,35 +103,22 @@ knows about it stands on people who worked it out first and published their resu
 | [Zhaoyi-ya/OPPO-Pods-Win](https://github.com/Zhaoyi-ya/OPPO-Pods-Win) | Cross-check on which features exist per device model. |
 | [ORION2809/DevPods](https://github.com/ORION2809/DevPods) | A second implementation of the same vendor family; useful for cross-checking. |
 
-Sibling projects solving the same problem for other brands — not sources for our protocol, but
-worth knowing: [elaxptr/baseus-desktop](https://github.com/elaxptr/baseus-desktop), a Windows client
-for Baseus earbuds.
+Sibling project for another brand, not a source for ours but worth knowing:
+[elaxptr/baseus-desktop](https://github.com/elaxptr/baseus-desktop), a Windows client for Baseus earbuds.
 
-### How this was actually built
+### How it was built
 
-- The project **started on DeepSeek chat** — the first codebase, the first reverse-engineering
-  steps, the basic UI, packet logger and a basic ANC-button widget. **That first widget was later
-  rewritten almost entirely**; treat the early history as scaffolding.
-- It then moved to the **CodeAssist agent, via OpenRouter, running DeepSeek v4.1-fast**, which wrote
-  roughly **80%** of what is here now. DeepSeek chat accounts for about **15%**; Kimi, Gemini (image
-  generation) and Grok did the remaining small tasks.
-- From **v1.1.0 and the last commit of that era onward**, development moved to a PC and to
-  **Claude Code**, which is where the work continues.
-- **Everything that was not DeepSeek run on free tiers.** 
+- **Up to v1.1.0**, built entirely on a phone: CodeAssist and Termux, with DeepSeek chat (~15% — the
+  first codebase and reverse-engineering steps) and the CodeAssist agent running DeepSeek v4.1-fast
+  via OpenRouter (~80%). Kimi, Gemini and Grok did small tasks. Everything except DeepSeek ran on
+  free tiers.
+- **From v2.0.0**, built on a PC with **Claude Code**, Gradle and adb.
 
-Every model involved reasoned about protocol bytes captured on real hardware. The captures and the
-on-device testing are what make the claims in [PROTOCOL.md](./PROTOCOL.md) checkable, and they are
-the part a language model cannot supply on its own.
-
-### Tools
-
-CodeAssist (on-device IDE) · Termux · decompile.com (HeyMelody) · GitHub mobile — for everything up
-to and including v1.1.0. Now: Claude Code on a PC, with Gradle and adb.
-
-See **[CREDITS.md](./CREDITS.md)** for exactly what came from where, what is original to this
-project, and a list of previously-wrong assumptions kept on purpose.
+Every model worked from Bluetooth captures taken on real hardware, and every claim was tested on the
+device. That's what makes [PROTOCOL.md](./PROTOCOL.md) checkable. See [CREDITS.md](./CREDITS.md) for
+the full breakdown.
 
 ## License
 
 GPL-3.0. See [LICENSE](./LICENSE). Protocol references are used as documentation; check
-[CREDITS.md](./CREDITS.md) for the license of each source before copying text from it.
+[CREDITS.md](./CREDITS.md) for each source's license before copying text from it.
