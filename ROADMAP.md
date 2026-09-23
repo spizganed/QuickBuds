@@ -42,64 +42,27 @@ and it is the first thing the agent should read to know what to work on next.
 
 ## Next up, in order
 
-1. **The hold gesture — DONE, including the UI bug and a real display bug, awaiting his test.** Read,
-   bit theory, and write are all `[CAPTURE]`-confirmed (PROTOCOL.md §5) and the buds do cycle correctly
-   on device (`[USER]` 2026-09-22: "the anc hold it actually works"). Testing it also raised a
-   `0x0204` frame that `AncEventParser` mislabeled as a real ANC mode change — first filed here as
-   "cosmetic," it was NOT: it corrupted the persisted main-screen ANC display, which is exactly what he
-   caught next ("UI shows ANC-Low... i didnt change it from OFF at all"). Fixed 2026-09-22 — see
-   PROTOCOL.md §5's `[CAPTURE]` note for both the root cause and the (previously missing) current-mode
-   query wiring that now self-corrects the display on every connect.
-   **The per-bud UI bug he then caught — "u forgot to bind our app hold gesture together to both
-   buds... at least in the UI" — is fixed 2026-09-22:** `GestureConfigStore` now keys `TAP_HOLD`
-   storage independent of `side` (like `OnCallGesture` already did), and `GestureActivity.writeToBuds`
-   sends the key-function bind to BOTH `dev=0x01` and `dev=0x02` for the hold, not just the active
-   tab. Verified pre-handoff (see the memory on not self-testing — this was the last time): Left and
-   Right both showed "ANC, Trans" after setting it from one side.
-2. **Sync gesture/hold/on-call config FROM THE BUDS on every connect — DONE 2026-09-22.** Was:
-   `GestureConfigStore`/`OnCallConfigStore` only ever reflected what WE last wrote, so a binding
-   changed by HeyMelody/another phone/a PC tool while disconnected stayed invisible indefinitely. Now:
-   `BudsConnectionManager`'s `0x8108` and `0x010C` `02 01` handlers call
-   `GestureConfigStore.syncFromDevice()` / `syncHoldFromDevice()` and `OnCallConfigStore.syncFromDevice()`
-   on every read (every connect, and after any write's own verify-read), overwriting the local record
-   from the buds' own table. `GestureActivity.onResume()` re-renders so a screen left open across a
-   reconnect picks it up too. The needed `functionByte -> GestureAction` reverse lookup exists now,
-   scoped through `actionsFor(gesture)` so an unrecognized byte is skipped rather than guessed at.
-   Hold specifically decodes from the MASK, not `functionByte` (all four ANC actions share `0x08`),
-   and is only synced to "unbound" when neither side's `fn` is `0x08` — a bound hold with an
-   unfamiliar/zero mask is left alone rather than guessed. **Not yet tested on-device — his rule now
-   is he tests UI changes, not the agent (see feedback memory).**
-3. **Spatial sound — tomorrow's first target.** The commands exist; decide which one the firmware
-   honours (the legacy feature `0x1B` vs the newer three-mode `0x0422`). `[USER]` 2026-09-22: on his
-   device, HeyMelody's own UI offers spatial sound ("OnePlus 3D audio") as a plain **on/off**, not
-   three modes — a strong hint the legacy `0x1B` feature switch is the one this firmware honours, not
-   `0x0422`. Still `[UNCAPTURED]`: confirm which command HeyMelody actually sends with a capture before
-   wiring it, same as everything else in this protocol.
-4. **Codec switching (Hi-Res) — tomorrow's second target.** The row currently toggles only its own
-   subtitle. `[USER]` 2026-09-22, the exact observed sequence in HeyMelody: tap the switch -> a dialog
-   **warns him and asks Accept/Decline** -> on Accept, the setting is sent -> **the buds disconnect**
-   (not yet known whether the buds drop on their own once the codec write lands, or HeyMelody forces
-   the Bluetooth disconnect itself) -> he hears an audible tone -> **the buds auto-reconnect**, both
-   the audio profile and HeyMelody itself. So this is NOT a simple `0x04xx` toggle-and-done; it is a
-   whole flow, and our own UI needs to reproduce all of it, not just the write: a confirm dialog first,
-   then the write, then however the disconnect/reconnect actually happens on the wire. Plan: a `tshark`
-   capture of HeyMelody doing the switch (PACKET-CAPTURE.md Option C) should show the write itself AND
-   settle which side (bud firmware vs. HeyMelody) initiates the disconnect — that answer decides
-   whether our own app needs to force a disconnect too or can just send the write and wait.
-5. **Find my earbuds.** The screen exists and plays the locating chime; volume and duration are not
-   tunable yet. `[USER]` 2026-09-22, a theory worth testing rather than assuming: the chime is likely
-   played by the **buds' own firmware**, not streamed audio from the phone — it plays at a fixed high
-   volume regardless of the phone's media volume, which streamed audio would not do. If true, "volume"
-   may not be controllable from here at all unless the trigger command itself carries a level
-   parameter. A `tshark` capture of a Find-my-earbuds trigger (same Option C method) should settle it
-   in one pass: real-time streamed audio vs. a small one-shot control-channel command.
-6. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
+1. **The hold gesture — DONE, confirmed on device 2026-09-23.** Read, bit theory and write are all
+   `[CAPTURE]`-confirmed (PROTOCOL.md §5). The selection rule now matches HeyMelody: at least one mode,
+   and a single mode is allowed (with its "will not switch modes" note). A one-bit mask was written
+   from our app, read back, and shown correctly by HeyMelody.
+2. **Sync gesture/hold/on-call config FROM THE BUDS on every connect — DONE, confirmed 2026-09-23**
+   (a hold set to Off in HeyMelody showed up as Off in QuickBuds on the next connect).
+3. **Spatial sound + Hi-Res codec — WIRED 2026-09-23, awaiting his test.** Captured from HeyMelody
+   (PROTOCOL.md §9): spatial is `0x0403` feature `0x1B`, Hi-Res is feature `0x18`, they are mutually
+   exclusive, and any codec change makes the buds drop and reconnect by themselves. Both switches now
+   write the real commands (the other feature is switched off first, as HeyMelody does), a codec change
+   goes through an Accept warning, and both switches repaint from the now-decoded `0x810D` status reply.
+4. **Find my earbuds — command CAPTURED, not wired.** `0x0400` `01`/`00` start/stop, no side byte
+   (PROTOCOL.md §9). Our screen still plays a phone-side chime per bud. Next: his call on the UI
+   (one ring button for both buds vs. keeping per-side), then wire it.
+5. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
    for "tomorrow" specifically — needs more exploration and would take long on its own. Six bands
    (62/250/1k/4k/8k/16k Hz), ±6 dB, presets (Balanced / Clear Vocals / Bass), custom presets with
    rename, and BassWave dynamic bass with an intensity slider. The screen is a placeholder today:
    presets are not sent to the buds.
-7. **Dual device** — expected quick. Two devices connected, with a switch.
-8. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
+6. **Dual device** — expected quick. Two devices connected, with a switch.
+7. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
    An HCI capture of HeyMelody caught the exact write for both rows (PROTOCOL.md §6, "the on-call
    write"): **double tap** (`None` / `Answer + end call`) is `act 0x02`, **long hold** (`None` /
    `Decline call`) is `act 0x06`, both bound to **both buds together as one shared setting** via
@@ -109,11 +72,11 @@ and it is the first thing the agent should read to know what to work on next.
    matching HeyMelody's own bytes. **The write is confirmed; the act-to-row LABELS are still
    `[INFERRED]` — NEXT SESSION: place a real call and confirm double tap answers/ends and long hold
    declines, the right way round, before trusting the labels.**
-9. **Auto play/pause on wear** — two parts: (a) a switch in the UI that tells the firmware to react
+8. **Auto play/pause on wear** — two parts: (a) a switch in the UI that tells the firmware to react
    by itself (`autoPlayPauseOn` / `autoPlayPauseOff` already exist in the manager); (b) our own
    implementation on top — **pause only when both buds are out of the ear; a single bud out keeps
    playing; never auto-play, only pause.**
-10. **Golden Sound** — spike only. A one-time hearing test that probably produces an EQ profile. It
+9. **Golden Sound** — spike only. A one-time hearing test that probably produces an EQ profile. It
     may be hard or impossible through this protocol; find out before promising it.
 
 ## The final UI

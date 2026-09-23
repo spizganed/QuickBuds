@@ -33,6 +33,7 @@ import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.devtool.LayoutReport
+import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
@@ -403,6 +404,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             val binder = service as BudsService.LocalBinder
             manager = binder.getService().manager!!
             manager.addListener(this@MainActivity)
+            onFeatureStates(manager.featureStates)
             isBound = true
             connectDirectly()
         }
@@ -1406,11 +1408,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * the block above the fold is the one that gets used most, then the three rows
      * that open another screen.
      *
-     * Every row through here must be honest about what it does. Two of these rows
-     * (hi-res codec, spatial audio) are switches whose command is NOT yet verified
-     * on this firmware — they are wired to the real commands anyway, because a
-     * switch that does nothing is worse than one that fails, and the log records
-     * the attempt. See the notes on each below.
+     * Every row through here must be honest about what it does.
      */
     private fun buildFeatureRows() {
         featureList.removeAllViews()
@@ -1435,23 +1433,27 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { game.performClick() }
         )
 
-        // --- 2. Hi-Res codec ---
-        // Wired to the real feature switch (0x0403, feature 0x06-style payload) so
-        // it is not decorative. NOTE: the codec's own feature id and the meaning of
-        // 0x0114 have not been captured on this firmware, so this may be rejected
-        // by the buds. The log will say so; the switch reflects what we sent, not
-        // what the buds confirmed, until a query confirms it.
+        // --- 2. Hi-Res codec + 3. Spatial / 3D audio ---
+        // Both are 0x0403 feature switches (0x18 / 0x1B), [CAPTURE] 2026-09-23, PROTOCOL.md §9.
+        // They are mutually exclusive: turning one on while the other is on also turns the
+        // other off, in the order HeyMelody sends them. Any codec change makes the buds drop
+        // and reconnect, so those writes go through a warning first — as HeyMelody does.
+        // The switches show the BUDS' state: onFeatureStates() repaints them from 0x810D.
         val hires = SettingRowFactory.buildSwitch(this, false)
         hiresSwitch = hires
         hires.setOnCheckedChangeListener { _, isChecked ->
-            // Codec switching is NOT wired to a command: no codec set command or
-            // query reply has been captured on this firmware. Rather than send a
-            // guessed feature id, this only updates the subtitle, so the row is
-            // honest about being a preference toggle for now. See the class note
-            // in UpdateActivity for the same reasoning applied to updates.
-            hiresSubtitle?.setText(
-                if (isChecked) R.string.row_hires_sub else R.string.row_hires_sub_off
-            )
+            if (syncingFeatures) return@setOnCheckedChangeListener
+            setSwitchQuiet(hires, !isChecked)
+            val dropSpatial = isChecked && featureOn(OpoProtocol.FEATURE_SPATIAL_SOUND)
+            confirmReconnect(
+                if (dropSpatial) R.string.codec_msg_hires_drops_spatial else R.string.codec_msg_reconnect
+            ) {
+                setSwitchQuiet(hires, isChecked)
+                if (dropSpatial) manager.setFeatures(
+                    OpoProtocol.FEATURE_SPATIAL_SOUND to false, OpoProtocol.FEATURE_HIRES_CODEC to true
+                )
+                else manager.setFeatures(OpoProtocol.FEATURE_HIRES_CODEC to isChecked)
+            }
         }
         val hiresRow = SettingRowFactory.build(
             this, R.drawable.ic_hires, R.string.row_hires_title, R.string.row_hires_sub_off, hires
@@ -1459,17 +1461,21 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         hiresSubtitle = hiresRow.findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)
         addRow(hiresRow)
 
-        // --- 3. Spatial / 3D audio ---
-        // Two ways to set this exist in the protocol: the legacy feature switch
-        // (0x0403 feature 0x1B, which our builder already has) and the newer
-        // three-mode command (0x0422). Which one this firmware honours is not yet
-        // captured. The legacy one is used here because it is the symmetric
-        // on/off the switch models; 0x0422 has three states (off/fixed/tracking)
-        // and would need a different control.
         val spatial = SettingRowFactory.buildSwitch(this, false)
         spatialSwitch = spatial
         spatial.setOnCheckedChangeListener { _, isChecked ->
-            manager.setSpatialSound(isChecked)
+            if (syncingFeatures) return@setOnCheckedChangeListener
+            if (isChecked && featureOn(OpoProtocol.FEATURE_HIRES_CODEC)) {
+                setSwitchQuiet(spatial, false)
+                confirmReconnect(R.string.codec_msg_spatial_drops_hires) {
+                    setSwitchQuiet(spatial, true)
+                    manager.setFeatures(
+                        OpoProtocol.FEATURE_SPATIAL_SOUND to true, OpoProtocol.FEATURE_HIRES_CODEC to false
+                    )
+                }
+            } else {
+                manager.setFeatures(OpoProtocol.FEATURE_SPATIAL_SOUND to isChecked)
+            }
         }
         addRow(
             SettingRowFactory.build(
@@ -1514,6 +1520,38 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, UpdateActivity::class.java)) }
         )
+
+        if (::manager.isInitialized) onFeatureStates(manager.featureStates)
+    }
+
+    /** True while a switch is being set from code, so its listener does not send a write. */
+    private var syncingFeatures = false
+
+    private fun setSwitchQuiet(s: Switch, on: Boolean) {
+        syncingFeatures = true
+        s.isChecked = on
+        syncingFeatures = false
+    }
+
+    private fun featureOn(id: Int) = manager.featureStates[id] == 1
+
+    /** HeyMelody-style warning before any write that makes the buds reconnect. Dismiss = decline. */
+    private fun confirmReconnect(messageRes: Int, onAccept: () -> Unit) {
+        val sheet = BottomSheetDialog(this)
+        sheet.title(getString(R.string.codec_dialog_title))
+            .message(getString(messageRes))
+            .confirm(getString(R.string.codec_dialog_accept)) { sheet.close(); onAccept() }
+            .show()
+    }
+
+    override fun onFeatureStates(states: Map<Int, Int>) {
+        states[OpoProtocol.FEATURE_HIRES_CODEC]?.let { v ->
+            hiresSwitch?.let { setSwitchQuiet(it, v == 1) }
+            hiresSubtitle?.setText(if (v == 1) R.string.row_hires_sub else R.string.row_hires_sub_off)
+        }
+        states[OpoProtocol.FEATURE_SPATIAL_SOUND]?.let { v ->
+            spatialSwitch?.let { setSwitchQuiet(it, v == 1) }
+        }
     }
 
     /** Adds a row plus a divider, skipping the divider after the final row. */

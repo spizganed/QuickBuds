@@ -309,10 +309,8 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 ## Current open items
 
-- **The hold gesture** — finish it. The `0x810C` `02 01` read is now confirmed (2026-09-20, reply
-  `0x0007`, see PROTOCOL.md §5); the mask's bit meaning is still inferred, not proven, and the write
-  side (`0x0404` `setSupportNoiseReduction`) is untested. Confirm the mask with a membership-change
-  test, then the write, then the mode picker.
+- **Find my earbuds** — `0x0400` `01`/`00` captured (PROTOCOL.md §9), not wired; UI decision is his.
+- **Hi-Res / spatial** — wired 2026-09-23 behind a reconnect warning (PROTOCOL.md §9); awaiting his test.
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
 - **On-call gestures** — to be added for parity (this reverses an earlier "never" decision).
@@ -325,7 +323,7 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 - **Localisation** — text is in `strings.xml` but only English exists, and hardcoded strings remain in
   `MainActivity` dialogs, the Dev Tools labels and legend, and `BottomSheetDialog` callers.
 - **Undecoded families** — `0x0500`/`0x0501` (they have empty payloads, so they cannot be gesture
-  bindings), broadcast codes `0x04`/`0x08`/`0x0B`, the `0x810D` batch-status layout, the recurring
+  bindings), broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
   `F1` family (`AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`), and `02 01 08 0C 02` /
   `02 01 07 0B 02` (these carry non-multiples of ten — possibly a fine-grained battery/case field).
   Also `0x0510`, a Spatial Audio notify. **Do not guess any of these from a couple of samples.**
