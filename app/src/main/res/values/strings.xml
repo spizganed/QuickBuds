@@ -42,21 +42,28 @@
 
     <!-- ==================== Redesigned home screen ==================== -->
 
-    <!-- ANC circle labels. Short by necessity: they must fit inside 62dp.
-         The ANC circle swaps to the -L/-M/-H form once a level is selected, so
-         the current strength is visible without opening the chooser. -->
-    <string name="app_anc_off">OFF</string>
-    <string name="app_anc_anc">ANC</string>
-    <string name="app_anc_trans">TRANS</string>
-    <string name="app_anc_light">ANC-L</string>
-    <string name="app_anc_medium">ANC-M</string>
-    <string name="app_anc_high">ANC-H</string>
-    <!-- The Adaptive circle. One word, no room for more: it must fit the same
-         62dp-wide button as OFF / ANC / TRANS. -->
-    <string name="app_anc_adapt">ADAPT</string>
 
     <!-- ANC mode chooser. Title is just "ANC"; the options are the three strengths
          in plain words, not the protocol's long "Noise cancelling - Light" form. -->
+    <!-- Status card (BudsStatusView). -->
+    <string name="status_left">Left</string>
+    <string name="status_case">Case</string>
+    <string name="status_right">Right</string>
+    <string name="status_in_ear">In ear</string>
+    <string name="status_in_case">In case</string>
+    <string name="status_out">Out</string>
+
+    <!-- Noise control (AncSegmentedView). Segment labels must fit a quarter of the screen. -->
+    <string name="anc_section">Noise control</string>
+    <string name="anc_seg_off">Off</string>
+    <string name="anc_seg_anc">ANC</string>
+    <string name="anc_seg_adapt">Adaptive</string>
+    <string name="anc_seg_trans">Trans</string>
+    <string name="anc_caption_off">Noise control off</string>
+    <string name="anc_caption_level">Noise cancelling · %1$s</string>
+    <string name="anc_caption_adaptive">Adaptive noise cancelling</string>
+    <string name="anc_caption_trans">Transparency · hear your surroundings</string>
+
     <string name="anc_chooser_title">ANC</string>
     <string name="anc_mode_low">Low</string>
     <string name="anc_mode_medium">Medium</string>

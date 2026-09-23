@@ -71,7 +71,8 @@ object SettingRowFactory {
         val icon = ImageView(context).apply {
             layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
             scaleType = ImageView.ScaleType.FIT_CENTER
-            setImageDrawable(ThemeRes.tint(context, iconRes, ThemeRes.color(context, R.attr.appColorIconTint)))
+            // Accent-red row icons (redesign 2026-09-23) — the app-wide accent, not the plain icon tint.
+            setImageDrawable(ThemeRes.tint(context, iconRes, ThemeRes.color(context, R.attr.appColorAccent)))
             contentDescription = ""
             // Tagged so a theme change can retint without rebuilding the row.
             tag = iconRes
