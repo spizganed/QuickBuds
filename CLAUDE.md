@@ -309,7 +309,7 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 ## Current open items
 
-- **Find my earbuds** — `0x0400` `01`/`00` captured (PROTOCOL.md §9), not wired; UI decision is his.
+- **Find my earbuds** — wired 2026-09-23 (`0x0400`, both buds, in-ear warning); awaiting his test.
 - **Hi-Res / spatial** — wired 2026-09-23 behind a reconnect warning (PROTOCOL.md §9); awaiting his test.
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
@@ -337,7 +337,9 @@ From `bluetooth/BudsConnectionManager.kt`. None of these are fixed:
   the `0000079A-...` fallback is the one that works. **Trying the working UUID first would save 5 s
   per connect.** Not done.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
-- **A 14-minute gap with no reconnect attempt** was observed after `Connection lost`.
+- **A 14-minute gap with no reconnect attempt** was observed after `Connection lost`. Likely the
+  same cause as the post-codec-switch stall found 2026-09-23: nothing retried after a loss unless
+  Android fired ACL_CONNECTED. `reconnectAfterLoss()` now retries 5× (3/6/9/12/15 s); untested.
 
 ## Main screen structure — settled
 

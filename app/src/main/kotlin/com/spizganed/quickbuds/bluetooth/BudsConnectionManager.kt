@@ -102,6 +102,12 @@ class BudsConnectionManager(private val context: Context) {
     private var reconnectAttempts = 0
     private var pollingStarted = false
 
+    // Reconnect-after-loss state — see reconnectAfterLoss().
+    private var lastDevice: BluetoothDevice? = null
+    private var lossRetries = 0
+    private var connectedAt = 0L
+    private var pendingReconnect: Runnable? = null
+
     /**
      * Poll period for the status query (0x010D).
      *
@@ -139,6 +145,7 @@ class BudsConnectionManager(private val context: Context) {
             return
         }
         isConnecting = true
+        lastDevice = device
         log("Initiating RFCOMM connection to ${device.name}...")
         BluetoothAdapter.getDefaultAdapter()?.cancelDiscovery()
 
@@ -186,6 +193,7 @@ class BudsConnectionManager(private val context: Context) {
                 connectedThread?.start()
                 isReady = true
                 reconnectAttempts = 0
+                connectedAt = System.currentTimeMillis()
                 handler.post { listeners.forEach { it.onConnected(true) } }
                 log("Ready for commands. Running init sequence...")
                 runInitSequence()
@@ -252,7 +260,32 @@ class BudsConnectionManager(private val context: Context) {
         }, POLL_INTERVAL_SECONDS, POLL_INTERVAL_SECONDS, java.util.concurrent.TimeUnit.SECONDS)
     }
 
+    /**
+     * A link we did not close ourselves dropped — typically the buds restarting after a codec
+     * change, which drops us 2-3 times in a row while they settle (log 2026-09-23). Nothing else
+     * would reconnect: KeepAliveReceiver only fires on ACL_CONNECTED, and the buds can drop just
+     * our RFCOMM channel while the Bluetooth link itself stays up. Growing delays give them time
+     * to settle; a connection that lived 30 s starts the count over.
+     */
+    private fun reconnectAfterLoss() {
+        val device = lastDevice ?: return
+        if (System.currentTimeMillis() - connectedAt > 30_000) lossRetries = 0
+        if (lossRetries >= 5) {
+            log("Reconnect after loss: giving up after 5 tries.")
+            return
+        }
+        lossRetries++
+        val wait = 3000L * lossRetries
+        log("Reconnect after loss $lossRetries/5 in ${wait / 1000}s...")
+        val r = Runnable { if (!isConnected() && !isConnecting) connect(device) }
+        pendingReconnect = r
+        handler.postDelayed(r, wait)
+    }
+
     fun disconnect() {
+        // A deliberate disconnect must not be undone by a queued reconnect.
+        pendingReconnect?.let { handler.removeCallbacks(it) }
+        pendingReconnect = null
         isReady = false
         isConnecting = false
         connectedThread?.cancel()
@@ -291,6 +324,9 @@ class BudsConnectionManager(private val context: Context) {
 
     fun setDualDevice(on: Boolean) =
         sendRaw(if (on) OpoProtocol.dualDeviceOn() else OpoProtocol.dualDeviceOff(), "DualDevice")
+
+    /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §9. */
+    fun setFindTone(on: Boolean) = sendRaw(OpoProtocol.findTone(on), "Find tone -> $on")
 
     /** Latest `0x810D` reply as feature id -> value (PROTOCOL.md §9). Empty until the first one. */
     @Volatile var featureStates: Map<Int, Int> = emptyMap()
@@ -611,8 +647,12 @@ class BudsConnectionManager(private val context: Context) {
                         }
                     }
                 } catch (e: IOException) {
+                    // Our own disconnect() closed this socket, or a newer connection has already
+                    // replaced it — either way this thread must not tear anything down.
+                    if (cancelled || connectedThread !== this) break
                     log("Connection lost: ${e.message}")
                     disconnect()
+                    reconnectAfterLoss()
                     break
                 }
             }
@@ -627,7 +667,10 @@ class BudsConnectionManager(private val context: Context) {
             }
         }
 
+        @Volatile var cancelled = false
+
         fun cancel() {
+            cancelled = true
             try { socket.close() } catch (_: IOException) {}
         }
     }

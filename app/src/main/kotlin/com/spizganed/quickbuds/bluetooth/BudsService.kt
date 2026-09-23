@@ -157,6 +157,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                     manager?.sendHoldAncModes(mask)
                 }
             }
+            ACTION_FIND_BUDS -> {
+                val on = intent.getBooleanExtra(EXTRA_FIND_ON, false)
+                statusLog("<< FIND_BUDS: $on")
+                manager?.setFindTone(on)
+            }
             ACTION_SET_ON_CALL -> {
                 val row = intent.getStringExtra(EXTRA_ON_CALL_ROW)
                 val enabled = intent.getBooleanExtra(EXTRA_ON_CALL_ENABLED, false)
@@ -382,6 +387,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
         /** On-call gestures (`btn 0x06`). See BudsConnectionManager.sendOnCall*(). */
         const val ACTION_SET_ON_CALL = "com.spizganed.quickbuds.SET_ON_CALL"
+        const val ACTION_FIND_BUDS = "com.spizganed.quickbuds.FIND_BUDS"
+        const val EXTRA_FIND_ON = "find_on"
         const val EXTRA_ON_CALL_ROW = "on_call_row"   // "double_tap" | "long_hold"
         const val EXTRA_ON_CALL_ENABLED = "on_call_enabled"
     }

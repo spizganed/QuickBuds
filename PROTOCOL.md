@@ -1005,11 +1005,12 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
 - **Any `0x18` change drops the link** — the buds reconnect ~4 s later (fresh `0x0100` handshake).
 - `0x0422` (three-mode spatial) is **not** what this firmware's HeyMelody sends.
 
-### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, NOT WIRED
+### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, wired
 
 `TX 0400 01` / `TX 0400 00`, acked `8400 00`, alternating 3 times — matches his 3 start/stop cycles.
 No side byte in the payload. HeyMelody sent `0x0114` (reply `8114 00 08`, meaning unknown) just before
-and after the session. Not wired yet: whether it rings both buds or which one is his call.
+and after the session. `[USER]`: it rings BOTH buds at once, and HeyMelody warns first when the
+buds are in the ears (the tone is loud). `OpoProtocol.findTone()` / `FindBudsActivity` do the same.
 
 ---
 

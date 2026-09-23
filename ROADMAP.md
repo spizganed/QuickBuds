@@ -53,9 +53,9 @@ and it is the first thing the agent should read to know what to work on next.
    exclusive, and any codec change makes the buds drop and reconnect by themselves. Both switches now
    write the real commands (the other feature is switched off first, as HeyMelody does), a codec change
    goes through an Accept warning, and both switches repaint from the now-decoded `0x810D` status reply.
-4. **Find my earbuds — command CAPTURED, not wired.** `0x0400` `01`/`00` start/stop, no side byte
-   (PROTOCOL.md §9). Our screen still plays a phone-side chime per bud. Next: his call on the UI
-   (one ring button for both buds vs. keeping per-side), then wire it.
+4. **Find my earbuds — WIRED 2026-09-23, awaiting his test.** `0x0400` `01`/`00` start/stop rings both
+   buds (PROTOCOL.md §9). One Play/Stop button, with HeyMelody's in-ear warning; the phone-side chime
+   fallback (`ChimePlayer`) is gone.
 5. **Equalizer — last in the parity chain, explicitly deferred.** `[USER]` 2026-09-22: skipping this
    for "tomorrow" specifically — needs more exploration and would take long on its own. Six bands
    (62/250/1k/4k/8k/16k Hz), ±6 dB, presets (Balanced / Clear Vocals / Bass), custom presets with
