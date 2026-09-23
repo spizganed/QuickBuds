@@ -1,5 +1,6 @@
 package com.spizganed.quickbuds.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.LinearGradient
@@ -61,46 +62,59 @@ class EqCurveView(context: Context) : View(context) {
     private fun x(band: Int) =
         if (gains.size < 2) left else left + band * (right - left) / (gains.size - 1)
 
-    private fun y(gain: Int) =
+    private fun y(gain: Float) =
         top + (EqCodec.GAIN_MAX - gain) * (bottom - top) / (EqCodec.GAIN_MAX - EqCodec.GAIN_MIN)
+
+    /**
+     * What is DRAWN, per band, in fractional dB. It follows the finger exactly while dragging and
+     * glides onto the snapped value on release. Drawing the snapped int directly made the point jump
+     * between 13 fixed steps, which read as a low frame rate (2026-09-23).
+     */
+    private var pos = FloatArray(0)
+    private var settle: ValueAnimator? = null
+
+    private val curve = Path()
+    private val fill = Path()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(280f).toInt())
     }
 
-    override fun onDraw(canvas: Canvas) {
-        if (gains.isEmpty()) return
-
-        for (g in intArrayOf(EqCodec.GAIN_MAX, 0, EqCodec.GAIN_MIN)) {
-            val label = if (g > 0) "+$g dB" else "$g dB"
-            canvas.drawText(label, dp(4f), y(g) + dp(4f), scalePaint)
-        }
-        for (i in gains.indices) canvas.drawLine(x(i), top, x(i), bottom, gridPaint)
-
-        // Smooth curve: horizontal-tangent cubic between neighbours, so it never overshoots a point.
-        val curve = Path().apply {
-            moveTo(x(0), y(gains[0]))
-            for (i in 1 until gains.size) {
-                val mx = (x(i - 1) + x(i)) / 2
-                cubicTo(mx, y(gains[i - 1]), mx, y(gains[i]), x(i), y(gains[i]))
-            }
-        }
-        val fill = Path(curve).apply {
-            lineTo(x(gains.size - 1), bottom)
-            lineTo(x(0), bottom)
-            close()
-        }
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         fillPaint.shader = LinearGradient(
             0f, top, 0f, bottom,
             (accent and 0x00FFFFFF) or 0x70000000, accent and 0x00FFFFFF, Shader.TileMode.CLAMP
         )
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        if (gains.isEmpty()) return
+        if (pos.size != gains.size) pos = FloatArray(gains.size) { gains[it].toFloat() }
+
+        for (g in intArrayOf(EqCodec.GAIN_MAX, 0, EqCodec.GAIN_MIN)) {
+            val label = if (g > 0) "+$g dB" else "$g dB"
+            canvas.drawText(label, dp(4f), y(g.toFloat()) + dp(4f), scalePaint)
+        }
+        for (i in gains.indices) canvas.drawLine(x(i), top, x(i), bottom, gridPaint)
+
+        // Smooth curve: horizontal-tangent cubic between neighbours, so it never overshoots a point.
+        curve.reset()
+        curve.moveTo(x(0), y(pos[0]))
+        for (i in 1 until pos.size) {
+            val mx = (x(i - 1) + x(i)) / 2
+            curve.cubicTo(mx, y(pos[i - 1]), mx, y(pos[i]), x(i), y(pos[i]))
+        }
+        fill.set(curve)
+        fill.lineTo(x(pos.size - 1), bottom)
+        fill.lineTo(x(0), bottom)
+        fill.close()
         canvas.drawPath(fill, fillPaint)
         canvas.drawPath(curve, curvePaint)
 
         for (i in gains.indices) {
             val r = if (i == active) dp(9f) else dp(7f)
-            canvas.drawCircle(x(i), y(gains[i]), r, dotFill)
-            canvas.drawCircle(x(i), y(gains[i]), r, dotRing)
+            canvas.drawCircle(x(i), y(pos[i]), r, dotFill)
+            canvas.drawCircle(x(i), y(pos[i]), r, dotRing)
             val v = gains[i]
             canvas.drawText(if (v > 0) "+$v" else "$v", x(i), dp(22f), valuePaint)
             val f = freqs.getOrNull(i) ?: 0
@@ -112,28 +126,41 @@ class EqCurveView(context: Context) : View(context) {
         if (gains.isEmpty()) return false
         when (e.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                settle?.end()
                 active = gains.indices.minByOrNull { abs(x(it) - e.x) } ?: return false
                 // The sheet sits in a dialog; keep a vertical drag from being taken as a scroll.
                 parent?.requestDisallowInterceptTouchEvent(true)
-                setGain(e.y)
+                follow(e.y)
             }
-            MotionEvent.ACTION_MOVE -> if (active >= 0) setGain(e.y)
-            MotionEvent.ACTION_UP -> if (active >= 0) {
+            MotionEvent.ACTION_MOVE -> if (active >= 0) follow(e.y)
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (active >= 0) {
                 val band = active
                 active = -1
-                invalidate()
-                onRelease?.invoke(band, gains[band])
+                glideTo(band)
+                if (e.actionMasked == MotionEvent.ACTION_UP) onRelease?.invoke(band, gains[band])
             }
-            MotionEvent.ACTION_CANCEL -> { active = -1; invalidate() }
         }
         return true
     }
 
-    private fun setGain(py: Float) {
+    /** Point follows the finger continuously; the stored gain is the nearest whole dB. */
+    private fun follow(py: Float) {
         val span = (bottom - top) / (EqCodec.GAIN_MAX - EqCodec.GAIN_MIN)
-        val g = (EqCodec.GAIN_MAX - (py - top) / span).roundToInt()
-            .coerceIn(EqCodec.GAIN_MIN, EqCodec.GAIN_MAX)
-        if (gains[active] != g) gains[active] = g
-        invalidate()
+        val g = (EqCodec.GAIN_MAX - (py - top) / span)
+            .coerceIn(EqCodec.GAIN_MIN.toFloat(), EqCodec.GAIN_MAX.toFloat())
+        if (pos.size != gains.size) pos = FloatArray(gains.size) { gains[it].toFloat() }
+        pos[active] = g
+        gains[active] = g.roundToInt()
+        postInvalidateOnAnimation()
+    }
+
+    private fun glideTo(band: Int) {
+        val from = pos[band]
+        val to = gains[band].toFloat()
+        settle = ValueAnimator.ofFloat(from, to).apply {
+            duration = 120
+            addUpdateListener { pos[band] = it.animatedValue as Float; postInvalidateOnAnimation() }
+            start()
+        }
     }
 }

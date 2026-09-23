@@ -1,7 +1,6 @@
 package com.spizganed.quickbuds.ui
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
@@ -11,12 +10,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.IBinder
-import android.text.InputFilter
 import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -257,13 +254,13 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             gravity = Gravity.CENTER
             setPadding(0, dp(14f), 0, dp(4f))
             setOnClickListener {
-                AlertDialog.Builder(this@EqActivity)
-                    .setMessage(getString(R.string.eq_delete_confirm, p.name))
-                    .setPositiveButton(R.string.eq_delete) { _, _ ->
+                val sheet = BottomSheetDialog(this@EqActivity)
+                sheet.title(getString(R.string.eq_delete_confirm, p.name))
+                    .confirm(getString(R.string.eq_delete)) {
+                        sheet.close()
                         manager?.deleteCustomEq(p)
                         d.dismiss()
                     }
-                    .setNegativeButton(android.R.string.cancel, null)
                     .show()
             }
         })
@@ -283,23 +280,18 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun rename(p: EqCodec.Preset, onDone: (EqCodec.Preset) -> Unit) {
         // ponytail: 20-char cap is ours, not a measured firmware limit; the name length is one byte.
-        val input = EditText(this).apply {
-            setText(p.name)
-            setSelection(p.name.length)
-            filters = arrayOf(InputFilter.LengthFilter(20))
-        }
-        AlertDialog.Builder(this)
-            .setTitle(R.string.eq_rename)
-            .setView(input)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val name = input.text.toString().trim()
+        val sheet = BottomSheetDialog(this)
+        sheet.title(getString(R.string.eq_rename))
+            .input(p.name, 20)
+            .confirm(getString(R.string.eq_save)) {
+                val name = sheet.inputValue()
+                sheet.close()
                 if (name.isNotEmpty() && name != p.name) {
                     val renamed = p.withName(name)
                     manager?.saveCustomEq(renamed)
                     onDone(renamed)
                 }
             }
-            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
