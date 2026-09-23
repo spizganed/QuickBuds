@@ -1005,6 +1005,28 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
 - **Any `0x18` change drops the link** — the buds reconnect ~4 s later (fresh `0x0100` handshake).
 - `0x0422` (three-mode spatial) is **not** what this firmware's HeyMelody sends.
 
+### Equalizer — custom presets, READ side only — `[CAPTURE]` 2026-09-23 (from the codec capture)
+
+HeyMelody's bulk settings read (`TX 0x2F00`, a list of 4-byte item requests) comes back as `0x812F`
+/ `0x2F00` frames of `[id][?][len LE]` items. Item **`0x22`** (same number as `0x0122` "EQ all")
+is the custom EQ list, 87 bytes, decoding with nothing left over:
+
+```
+22 01 57 00                                  item 0x22, len 0x57
+00 03                                        ?, preset count = 3
+  <flag> FA 06 <id> <nameLen> <name> 06 [freq u16 LE, gain s8] x6
+```
+
+| name | id | flag | 62 | 250 | 1k | 4k | 8k | 16k |
+|---|---|---|---|---|---|---|---|---|
+| flat | 04 | 00 | −5 | −5 | 0 | −3 | +2 | +6 |
+| xdd | 05 | 00 | −1 | −1 | −2 | −3 | +2 | +6 |
+| reddit | 06 | **01** | +2 | −1 | 0 | +2 | +3 | −3 |
+
+Frequencies are exactly HeyMelody's six bands; gains are signed dB. `[GUESS]` flag `01` = the
+selected preset; `FA 06` unknown (constant). Built-in presets (Balanced / Clear Vocals / Bass) are not
+in this item. **No EQ write captured yet** — `0x0406` "set EQ" is `[OSS]` only.
+
 ### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, wired
 
 `TX 0400 01` / `TX 0400 00`, acked `8400 00`, alternating 3 times — matches his 3 start/stop cycles.
