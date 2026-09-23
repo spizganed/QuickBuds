@@ -44,8 +44,9 @@ and it is the first thing the agent should read to know what to work on next.
 
 1. **Equalizer — WIRED 2026-09-23, awaiting his test.** Built-in presets, BassWave on/off and level
    (−5..+5), custom presets with a 6-band ±6 dB editor and rename — all from a HeyMelody capture
-   (PROTOCOL.md §9), shown from the buds' own state and re-read after every write. Not done:
-   creating / deleting custom presets (not captured).
+   (PROTOCOL.md §9), shown from the buds' own state and re-read after every write. Custom presets:
+   create (max 3) / delete / rename, edited on a HeyMelody-style draggable curve in a sheet.
+   BassWave is labelled "Bass boost" in our UI (trademark).
 2. **Dual device** — expected quick. Two devices connected, with a switch.
 3. **On-call gestures — write DONE, verified on-device 2026-09-22, NOT YET TESTED ON A REAL CALL.**
    An HCI capture of HeyMelody caught the exact write for both rows (PROTOCOL.md §6, "the on-call

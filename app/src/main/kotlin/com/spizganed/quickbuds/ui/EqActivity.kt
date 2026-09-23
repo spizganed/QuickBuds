@@ -2,16 +2,20 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.IBinder
 import android.text.InputFilter
 import android.view.Gravity
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -31,9 +35,9 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
  *
  * The screen shows the BUDS' state, never its own guess: it binds the service, reads the EQ on
  * open, and every write is followed by a re-read ([BudsConnectionManager.sendThenRead]) that
- * repaints through [onEqState]. A custom preset's editor is shown while that preset is the
- * selected one, because `0x0418` selects and saves in the same frame — editing a preset that is not
- * selected is not something the protocol can do.
+ * repaints through [onEqState]. Tapping a custom preset selects it AND opens its editor sheet
+ * ([showEditor]), because `0x0418` selects and saves in the same frame — a preset that is not
+ * selected cannot be edited. Create / delete are the same command, action `01` / `03`.
  */
 class EqActivity : Activity(), BudsConnectionManager.Listener {
 
@@ -48,7 +52,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var bassValue: TextView
     private lateinit var customHeader: TextView
     private lateinit var customCard: LinearLayout
-    private lateinit var editorCard: LinearLayout
 
     /** True while the user holds a slider, so a re-read cannot rebuild it under their finger. */
     private var dragging = false
@@ -124,13 +127,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         customCard = card()
         root.addView(customCard)
 
-        editorCard = card().apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(14f) }
-        }
-        root.addView(editorCard)
-
         setContentView(ScrollView(this).apply { addView(root) })
         render()
     }
@@ -178,59 +174,114 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         syncing = false
 
         val custom = m?.eqCustom.orEmpty()
-        customHeader.visibility = if (custom.isEmpty()) View.GONE else View.VISIBLE
-        customCard.visibility = customHeader.visibility
         customCard.removeAllViews()
         custom.forEachIndexed { i, p ->
             if (i > 0) customCard.addView(SettingRowFactory.buildDivider(this))
-            // Selecting a custom preset IS a save of it as it stands — same frame HeyMelody sends.
-            customCard.addView(choiceRow(p.name, current == p.id) { m?.saveCustomEq(p) })
+            // Selecting a custom preset IS a save of it as it stands — same frame HeyMelody sends —
+            // so opening its editor selects it too, exactly as in HeyMelody.
+            customCard.addView(choiceRow(p.name, current == p.id) {
+                m?.saveCustomEq(p)
+                showEditor(p)
+            })
         }
-
-        renderEditor(custom.firstOrNull { it.id == current })
+        if (connected && custom.size < EqCodec.MAX_CUSTOM) {
+            if (custom.isNotEmpty()) customCard.addView(SettingRowFactory.buildDivider(this))
+            customCard.addView(actionRow(getString(R.string.eq_add)) {
+                val used = custom.map { it.name }.toSet()
+                val name = (1..9).map { "Custom$it" }.first { it !in used }
+                m?.createCustomEq(name)
+            })
+        }
+        customHeader.visibility = if (customCard.childCount == 0) View.GONE else View.VISIBLE
+        customCard.visibility = customHeader.visibility
     }
 
-    private fun renderEditor(p: EqCodec.Preset?) {
-        editorCard.removeAllViews()
-        editorCard.visibility = if (p == null) View.GONE else View.VISIBLE
-        if (p == null) return
+    /**
+     * The band editor, as a bottom sheet (HeyMelody's layout: Close / name / Rename, the curve, then
+     * Delete). Kept out of the page so the curve gets the full width and the list stays short.
+     * The sheet owns its working copy [p]; each release saves the whole preset, like HeyMelody.
+     */
+    private fun showEditor(start: EqCodec.Preset) {
+        var p = start
         val dp = { v: Float -> ThemeRes.dp(this, v) }
+        val accent = ThemeRes.color(this, R.attr.appColorAccent)
+        val d = Dialog(this).apply { requestWindowFeature(Window.FEATURE_NO_TITLE) }
 
-        val header = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14f), dp(10f), dp(14f), dp(4f))
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = getDrawable(R.drawable.dialog_sheet_bg)
+            setPadding(dp(8f), dp(14f), dp(8f), dp(18f))
         }
-        header.addView(TextView(this).apply {
+
+        val nameView = TextView(this).apply {
             text = p.name
             setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorTextPrimary))
-            textSize = 15f
+            textSize = 17f
             typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        })
-        header.addView(TextView(this).apply {
-            setText(R.string.eq_rename)
-            setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorAccent))
-            textSize = 14f
-            setPadding(dp(8f), dp(8f), 0, dp(8f))
-            setOnClickListener { rename(p) }
-        })
-        editorCard.addView(header)
-
-        p.freqs.forEachIndexed { band, freq ->
-            val value = valueText().apply { text = signed(p.gains[band]) }
-            val range = EqCodec.GAIN_MAX - EqCodec.GAIN_MIN
-            val bar = slider(range)
-            bar.progress = p.gains[band] - EqCodec.GAIN_MIN
-            bar.setOnSeekBarChangeListener(seekListener(
-                onChange = { v -> value.text = signed(v + EqCodec.GAIN_MIN) },
-                onRelease = { v -> manager?.saveCustomEq(p.withGain(band, v + EqCodec.GAIN_MIN)) }
-            ))
-            editorCard.addView(sliderRow(freqLabel(freq), bar, value))
         }
+        fun link(res: Int, onClick: () -> Unit) = TextView(this).apply {
+            setText(res)
+            setTextColor(accent)
+            textSize = 15f
+            setPadding(dp(10f), dp(10f), dp(10f), dp(10f))
+            setOnClickListener { onClick() }
+        }
+        root.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(link(R.string.eq_close) { d.dismiss() })
+            addView(nameView)
+            addView(link(R.string.eq_rename) {
+                rename(p) { renamed -> p = renamed; nameView.text = renamed.name }
+            })
+        })
+
+        root.addView(EqCurveView(this).apply {
+            freqs = p.freqs
+            gains = p.gains.toIntArray()
+            onRelease = { band, gain ->
+                p = p.withGain(band, gain)
+                manager?.saveCustomEq(p)
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(8f) }
+        })
+
+        root.addView(TextView(this).apply {
+            setText(R.string.eq_delete)
+            setTextColor(accent)
+            textSize = 15f
+            gravity = Gravity.CENTER
+            setPadding(0, dp(14f), 0, dp(4f))
+            setOnClickListener {
+                AlertDialog.Builder(this@EqActivity)
+                    .setMessage(getString(R.string.eq_delete_confirm, p.name))
+                    .setPositiveButton(R.string.eq_delete) { _, _ ->
+                        manager?.deleteCustomEq(p)
+                        d.dismiss()
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+        })
+
+        d.setContentView(root)
+        d.setCanceledOnTouchOutside(true)
+        // Same window as BottomSheetDialog, so the two sheets look like one family.
+        d.window?.let { w ->
+            w.setBackgroundDrawable(ColorDrawable(0x00000000))
+            w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            w.setDimAmount(0.45f)
+            w.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+            w.setGravity(Gravity.BOTTOM)
+        }
+        d.show()
     }
 
-    private fun rename(p: EqCodec.Preset) {
+    private fun rename(p: EqCodec.Preset, onDone: (EqCodec.Preset) -> Unit) {
         // ponytail: 20-char cap is ours, not a measured firmware limit; the name length is one byte.
         val input = EditText(this).apply {
             setText(p.name)
@@ -242,10 +293,26 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             .setView(input)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val name = input.text.toString().trim()
-                if (name.isNotEmpty() && name != p.name) manager?.saveCustomEq(p.withName(name))
+                if (name.isNotEmpty() && name != p.name) {
+                    val renamed = p.withName(name)
+                    manager?.saveCustomEq(renamed)
+                    onDone(renamed)
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    /** A plain accent-coloured action row inside a card (e.g. "Add preset"). */
+    private fun actionRow(label: String, onClick: () -> Unit) = TextView(this).apply {
+        text = label
+        setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorAccent))
+        textSize = 15f
+        gravity = Gravity.CENTER_VERTICAL
+        val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(52f))
+        setPadding(dp(14f), 0, dp(14f), 0)
+        setOnClickListener { onClick() }
     }
 
     // ---------------------------------------------------------------- listener
@@ -267,8 +334,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     // ---------------------------------------------------------------- small builders
 
     private fun signed(v: Int) = if (v > 0) "+$v" else "$v"
-
-    private fun freqLabel(hz: Int) = if (hz >= 1000) "${hz / 1000}k" else "$hz"
 
     private fun card() = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL

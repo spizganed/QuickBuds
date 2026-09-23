@@ -365,7 +365,8 @@ object OpoProtocol {
     /** Custom preset list -> `0x8122`, see [EqCodec.parseList]. Empty payload, as HeyMelody sends it. */
     fun queryEqAll(): ByteArray = buildPacket(CMD_QUERY_EQ_ALL)
     fun setBuiltInEq(id: Int): ByteArray = buildPacket(CMD_SET_EQ, payload = byteArrayOf(id.toByte()))
-    fun saveCustomEq(p: EqCodec.Preset): ByteArray = buildPacket(CMD_SAVE_CUSTOM_EQ, payload = EqCodec.encodeSave(p))
+    fun customEq(action: Int, p: EqCodec.Preset): ByteArray =
+        buildPacket(CMD_SAVE_CUSTOM_EQ, payload = EqCodec.encode(action, p))
     /** BassWave level, signed -5..+5; `FB 05` is the range (min, max) HeyMelody sends. */
     fun setBassWaveLevel(level: Int): ByteArray =
         buildPacket(CMD_SET_BASSWAVE_LEVEL, payload = byteArrayOf(0xFB.toByte(), 0x05, level.toByte()))
