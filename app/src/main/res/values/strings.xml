@@ -164,7 +164,7 @@
       action). Deliberately not a permanent hint: the sheet stays quiet until it has
       something to say.
     -->
-    <string name="gesture_hold_rule">Tap and hold cycles, so pick no action or at least two.</string>
+    <string name="gesture_hold_rule">1 option selected. Touching and holding will not switch modes.</string>
 
     <!--
       The status line, and it must stay TRUE. It used to say the selections were
