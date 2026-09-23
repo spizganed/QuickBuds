@@ -75,6 +75,9 @@ class BudsConnectionManager(private val context: Context) {
          * implementer can never be handed a mode the buds did not actually report.
          */
         fun onAncModeState(mode: String) {}
+
+        /** A `0x810D` status reply arrived — feature id -> value, see [featureStates]. */
+        fun onFeatureStates(states: Map<Int, Int>) {}
     }
 
     private val listeners = CopyOnWriteArrayList<Listener>()
@@ -289,8 +292,29 @@ class BudsConnectionManager(private val context: Context) {
     fun setDualDevice(on: Boolean) =
         sendRaw(if (on) OpoProtocol.dualDeviceOn() else OpoProtocol.dualDeviceOff(), "DualDevice")
 
-    fun setSpatialSound(on: Boolean) =
-        sendRaw(if (on) OpoProtocol.spatialSoundOn() else OpoProtocol.spatialSoundOff(), "SpatialSound")
+    /** Latest `0x810D` reply as feature id -> value (PROTOCOL.md §9). Empty until the first one. */
+    @Volatile var featureStates: Map<Int, Int> = emptyMap()
+        private set
+
+    /**
+     * `0x0403` feature writes, sent IN ORDER on one thread (HeyMelody sends spatial before
+     * codec, `[CAPTURE]` 2026-09-23), then a status query so [Listener.onFeatureStates]
+     * reports what the buds actually took. A codec change drops the link, in which case the
+     * connect sequence's own status query does that instead.
+     */
+    fun setFeatures(vararg changes: Pair<Int, Boolean>) {
+        Thread {
+            try {
+                for ((id, on) in changes) {
+                    sendRawBlocking(OpoProtocol.setFeature(id, on), "Feature 0x%02X -> %s".format(id, on))
+                }
+                Thread.sleep(400)
+                sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
+            } catch (e: Exception) {
+                log("FEATURE WRITE failed: ${e.message}")
+            }
+        }.start()
+    }
 
     fun setAutoPlayPause(on: Boolean) =
         sendRaw(if (on) OpoProtocol.autoPlayPauseOn() else OpoProtocol.autoPlayPauseOff(), "AutoPlayPause")
@@ -812,6 +836,20 @@ class BudsConnectionManager(private val context: Context) {
             if (mode != null) {
                 handler.post { listeners.forEach { it.onAncModeState(mode) } }
             }
+            return
+        }
+
+        // --- Status reply: [status][count] then [featureId][value] pairs, [CAPTURE] 2026-09-23 ---
+        if (cmd == 0x810D && payload.size >= 2 && payload[0].toInt() == 0) {
+            val count = payload[1].toInt() and 0xFF
+            val states = (0 until count).mapNotNull { i ->
+                val o = 2 + i * 2
+                if (o + 1 < payload.size) (payload[o].toInt() and 0xFF) to (payload[o + 1].toInt() and 0xFF)
+                else null
+            }.toMap()
+            featureStates = states
+            log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(it.key, it.value) })
+            handler.post { listeners.forEach { it.onFeatureStates(states) } }
             return
         }
 

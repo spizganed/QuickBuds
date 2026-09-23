@@ -968,7 +968,7 @@ feature IDs to vendor method names:
 | `0x09` | Vocal enhance | | `0x28` | **Game mode (main, newer)** |
 | `0x0B` | Hearing enhance | | `0x30` | Adaptive volume |
 | `0x11` | **Dual device** | | `0x31` | Adaptive ear |
-| `0x18` | Hi-quality audio | | `0x3A` | Sleep detection |
+| `0x18` | **Hi-Res codec (LHDC)** `[CAPTURE]` | | `0x3A` | Sleep detection |
 
 `[OSS]` **Worth knowing:** newer devices put game mode on `0x28`, older on `0x06`.
 This project uses `0x06`. If game mode misbehaves on a different model, that is
@@ -984,8 +984,32 @@ TX  AA 13 00 00 0D 01 00 0C 00 0B 05 04 0B 11 13 18 06 1B 1C 27 28
 RX  AA 17 00 00 0D 81 00 10 00 00 07 05 01 04 00 0B 01 11 01 18 01 06 00 1B 00
 ```
 
-`[GUESS]` Request reads as `count=0x0B` then feature ids. The reply looks like
-`[unknown][count=0x07][id][value]...`, and is not parsed beyond logging.
+`[CAPTURE]` 2026-09-23 — **layout confirmed**: request is `[count][featureId...]`, reply is
+`[status=00][count][featureId][value]...`. Only supported ids come back (ours asks 11, gets 7:
+`05 04 0B 11 18 06 1B`). HeyMelody asks for `05 04 0B 11 18 06 1B 1D` and gets `1D` too. Every
+toggle below moved exactly its own pair. Parsed by `BudsConnectionManager` into `featureStates`
+and logged as `FEATURES:`. `0x05`, `0x0B`, `0x1D` values seen (`01`) but unassigned here.
+
+### Spatial sound (`0x1B`) and Hi-Res codec (`0x18`) — `[CAPTURE]` 2026-09-23
+
+HeyMelody btsnoop, his actions: spatial toggled while on AAC, Hi-Res on, spatial on from Hi-Res.
+
+```
+TX 0403 1B 01 / 1B 00                   spatial on/off — acked 8403 00, no reconnect (AAC only)
+TX 0403 1B 01, TX 0403 18 00            spatial ON while Hi-Res on: spatial first, then codec off
+TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off first, then codec on
+```
+
+- **Mutually exclusive.** Hi-Res (LHDC) and spatial never coexist; HeyMelody switches the other off,
+  in the order above, behind an Accept/Decline warning.
+- **Any `0x18` change drops the link** — the buds reconnect ~4 s later (fresh `0x0100` handshake).
+- `0x0422` (three-mode spatial) is **not** what this firmware's HeyMelody sends.
+
+### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, NOT WIRED
+
+`TX 0400 01` / `TX 0400 00`, acked `8400 00`, alternating 3 times — matches his 3 start/stop cycles.
+No side byte in the payload. HeyMelody sent `0x0114` (reply `8114 00 08`, meaning unknown) just before
+and after the session. Not wired yet: whether it rings both buds or which one is his call.
 
 ---
 
@@ -1077,7 +1101,6 @@ sessions:
   thing. `act 0x03` in the same group is still completely unknown.
 - What `0x0501` / `0x0500` are.
 - Broadcast codes `0x04`, `0x08`, `0x0B`.
-- The `0x810D` batch status reply layout.
 - The `0x8205` ack layout (§4) — only one sample, and it does not obviously echo
   the request.
 - Whether `0x0404` supports the `type=2` level-setting form `01 02 <level>` (the

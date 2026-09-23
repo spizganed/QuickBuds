@@ -78,6 +78,8 @@ object OpoProtocol {
     const val FEATURE_AUTO_PLAY_PAUSE = 0x04
     const val FEATURE_DUAL_DEVICE = 0x11
     const val FEATURE_SPATIAL_SOUND = 0x1B
+    /** Hi-Res (LHDC) codec. Switching it makes the buds drop and reconnect. `[CAPTURE]` 2026-09-23. */
+    const val FEATURE_HIRES_CODEC = 0x18
 
     private var seqCounter = 0x01
 
@@ -228,8 +230,9 @@ object OpoProtocol {
     fun dualDeviceOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, true))
     fun dualDeviceOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, false))
 
-    fun spatialSoundOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_SPATIAL_SOUND, true))
-    fun spatialSoundOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_SPATIAL_SOUND, false))
+    /** Any `0x0403` feature switch. Spatial (`0x1B`) and Hi-Res (`0x18`) are `[CAPTURE]` — PROTOCOL.md §9. */
+    fun setFeature(featureId: Int, on: Boolean): ByteArray =
+        buildPacket(CMD_SET_FEATURE, payload = featurePayload(featureId, on))
 
     fun spatialOff(): ByteArray = buildPacket(CMD_SET_SPATIAL, payload = byteArrayOf(0x00))
     fun spatialFixed(): ByteArray = buildPacket(CMD_SET_SPATIAL, payload = byteArrayOf(0x01))
