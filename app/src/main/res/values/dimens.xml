@@ -48,80 +48,6 @@
     <!-- ==================== Redesigned home screen ==================== -->
 
     <!--
-      Battery card. Mirrors the home-screen widget, so its numbers stay close to the
-      widget's own rather than being scaled up for the app.
-    -->
-    <!--
-      Battery card. Mirrors the home-screen widget, so its numbers stay close to the
-      widget's own rather than being scaled up for the app.
-    -->
-    <dimen name="battery_card_padding">14dp</dimen>
-    <!--
-      Vertical padding spends height WITHOUT inflating any child. The user asked for
-      a visibly bigger box three times and the previous 18dp was not enough, so this
-      is now 24dp — the card grows by ~48dp of padding alone, which is the difference
-      that makes the box read as deliberately large rather than as a tight strip.
-    -->
-    <dimen name="battery_card_padding_v">24dp</dimen>
-
-    <!--
-      ICON SIZES — aligned so the buds and the case share a common centre line.
-
-      THE ALIGNMENT PROBLEM: the buds are portrait and the case is landscape. With a
-      40dp square bud and a 40x32 case, the two have different vertical centres once
-      the row centres them, so the case sat visibly high or low against the buds.
-
-      The fix is to give them a COMMON HEIGHT and let each fill its own width:
-          bud   40 x 40   (portrait, fills its square)
-          case  48 x 40   (landscape, fills its wider slot)
-      Both are 40dp tall, so `gravity="center_vertical"` on the row aligns them
-      exactly, and the case's greater width no longer implies a different height.
-      This is also what stops the case being clipped: its slot is now the full 40dp
-      tall, which is what the drawable's intrinsic size expects.
-    -->
-    <!--
-      THE WEAR ICONS — three separate drawables, copied verbatim from local/svgs/.
-
-          ic_bud_left.xml   176 x 272  (local/svgs/left.svg)
-          ic_case.xml       496 x 400  (local/svgs/case.svg)
-          ic_bud_right.xml  176 x 272  (local/svgs/right.svg)
-
-      The buds are tall, the case is wide, so the three CANNOT share one box. They
-      share a HEIGHT: `battery_wear_height` is the common height, and each icon is
-      given an EXPLICIT width computed from its own ratio.
-
-      WHY THE WIDTHS ARE EXPLICIT AND NOT `wrap_content + adjustViewBounds`:
-      that combination clips the artwork. The drawable's intrinsic size is stored in
-      PIXELS at the screen density, so declaring 24dp x 37dp becomes 63 x 97 px at
-      2.625 (37 * 2.625 = 97.125, rounded DOWN to 97). The resulting intrinsic ratio,
-      63:97 = 0.649, no longer matches the SVG's true ratio. adjustViewBounds
-      then sizes the view from the DISTORTED ratio (62.1dp wide at 96dp tall) while
-      the vector rasterises at the true ratio, and the difference shows up as the
-      artwork being clipped at the box's bounds.
-
-      Sizing the box explicitly from the TRUE ratio removes the mismatch. The values
-      below are the source ratios applied to `battery_wear_height`:
-
-          bud   0.647 x 96 = 62.1 -> 62dp
-          case  1.240 x 96 = 119.0 -> 119dp
-
-      Change `battery_wear_height` and scale these three widths with it (the case
-      width is 1.240/0.647 = 1.917x the bud width).
-    -->
-    <dimen name="battery_wear_height">96dp</dimen>
-    <dimen name="battery_bud_width">62dp</dimen>
-    <dimen name="battery_case_width">119dp</dimen>
-    <!--
-      Gap between the icons. The SVGs' ink runs to their viewBox edges, so with no
-      margin the three read as one touching mass; this separates them. Applied as the
-      case's start and end margin, which spaces bud : case : bud at once.
-      
-      Total icon block width = 62 + 10 + 124 + 10 + 62 = 268dp, inside the card's
-      351dp inner width, so the block still centres with room either side.
-    -->
-    <dimen name="battery_icon_gap">10dp</dimen>
-
-    <!--
       WIDGET bud column.
 
       `widget_bud_width` and `widget_bud_height` are a MATCHED PAIR: the box must
@@ -152,37 +78,6 @@
     <dimen name="widget_bud_width">48dp</dimen>
     <dimen name="widget_bud_height">75dp</dimen>
     <dimen name="widget_bud_gap">8dp</dimen>
-    <!-- Kept for the drawables' own logical size; not used for layout sizing. -->
-    <dimen name="battery_bud_size">96dp</dimen>
-    <dimen name="battery_case_height">96dp</dimen>
-    <dimen name="battery_letter_size">20dp</dimen>
-
-    <!--
-      Battery bar height. Raised so the 10 segment dividers stay legible and the
-      in-bar number has room: at 10dp the dividers were crowding the digits, which
-      was reported as "the text is hard to read". 13dp gives the numerals real
-      clearance.
-    -->
-    <dimen name="battery_bar_height">13dp</dimen>
-    <dimen name="battery_row_spacing">9dp</dimen>
-
-    <!--
-      Circular ANC buttons. Diameter is driven by the four needing to fit across
-      a 5" screen with margins: 4 x 62dp + 3 x 12dp gaps = 284dp, which leaves
-      room inside the 16dp screen padding on a 320dp-wide screen.
-    -->
-    <dimen name="anc_circle_size">62dp</dimen>
-    <dimen name="anc_circle_gap">12dp</dimen>
-    <dimen name="anc_circle_ring">2dp</dimen>
-    <dimen name="anc_circle_text_size">11sp</dimen>
-    <!--
-      ANC buttons are rounded RECTANGLES now, not circles, and stretch to fill the
-      row so there is no empty space at the left and right edges. Height is
-      independent of the old diameter; the width is driven by weight.
-    -->
-    <dimen name="anc_button_height">52dp</dimen>
-    <dimen name="anc_button_radius">14dp</dimen>
-
     <!-- Settings rows: label left, control right. -->
     <dimen name="setting_row_height">56dp</dimen>
     <dimen name="setting_row_padding_horizontal">14dp</dimen>

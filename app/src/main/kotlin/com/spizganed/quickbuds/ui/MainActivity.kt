@@ -13,14 +13,11 @@ import android.os.Bundle
 import android.os.IBinder
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -74,28 +71,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /** Last connection state shown in the pill, so a redundant notify does nothing. */
     private var lastConnShown: Boolean? = null
 
-    // Battery block
-    private lateinit var statusRowLeft: LinearLayout
-    private lateinit var statusRowCase: LinearLayout
-    private lateinit var statusRowRight: LinearLayout
-    private lateinit var statusBarLeft: ProgressBar
-    private lateinit var statusBarCase: ProgressBar
-    private lateinit var statusBarRight: ProgressBar
-    // The in-bar number labels. Normally empty: the number is drawn by the
-    // SegmentedBarDrawable itself, and these are the fallback for a bar whose
-    // drawable is not segmented. See renderBar.
-    private lateinit var statusTextLeft: TextView
-    private lateinit var statusTextCase: TextView
-    private lateinit var statusTextRight: TextView
-    private lateinit var statusBudLeft: ImageView
-    private lateinit var statusBudRight: ImageView
-    private lateinit var statusCaseIcon: ImageView
-
-    // ANC circles
-    private lateinit var ancBtnOff: TextView
-    private lateinit var ancBtnAnc: TextView
-    private lateinit var ancBtnAdapt: TextView
-    private lateinit var ancBtnTrans: TextView
+    // Status card + noise control, both custom-drawn (redesign 2026-09-23): see BudsStatusView and
+    // AncSegmentedView. They replaced two cards of ImageViews/ProgressBars and four ANC buttons.
+    private lateinit var statusView: BudsStatusView
+    private lateinit var ancView: AncSegmentedView
+    private lateinit var ancCaption: TextView
 
     // Settings rows that hold live state
     private var gameSwitch: Switch? = null
@@ -109,44 +89,14 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private val TARGET_MAC = "A8:E6:E8:92:C1:25"
     private val REQUEST_PERMISSIONS = 1001
 
-    /**
-     * Icon show/hide animation. 180ms is quick enough to feel like a response to
-     * the buds rather than a transition, and HIDDEN_SCALE is small on purpose: the
-     * buds are tall and thin, so a bigger shrink reads as a bounce. These two values
-     * are the whole tuning surface for the animation.
-     */
-    private val ICON_ANIM_MS = 180L
-    private val HIDDEN_SCALE = 0.72f
-
-    /**
-     * How far the CASE lifts as it fades. The case is wide, so a uniform shrink
-     * collapses it; a small upward drift suits its shape and separates its motion
-     * from the buds beside it. 6dp is deliberately subtle.
-     *
-     * Computed from the display density at use rather than stored in a field: a
-     * field initialiser runs before onCreate(), and reading resources there is a
-     * trap this project has been bitten by before (ThemeRes, applied first in
-     * onCreate, is the established pattern for anything resource-dependent).
-     */
-    private val caseAnimLift: Float
-        get() = -6f * resources.displayMetrics.density
-
-    /** Bud slide when the case appears/disappears. A little slower than the fade. */
-    private val SLIDE_ANIM_MS = 220L
-
     /** Card collapse/expand when the app connects or disconnects. */
     private val CARD_ANIM_MS = 240L
 
     /** Alpha for controls that cannot act without a connection. */
     private val DISABLED_ALPHA = 0.35f
 
-    /** True while the buds are closed up because the case is not drawn. */
-    private var caseGapOpen = false
-
-    // The two battery cards, referenced so they can be faded and collapsed when
-    // there is nothing to show. See setCardsVisible.
+    // The status card, faded and collapsed when there is nothing to show. See setCardsVisible.
     private lateinit var batteryCard: LinearLayout
-    private lateinit var batteryBarsCard: LinearLayout
 
     /** The ANC row and the game-mode row, greyed and disabled while disconnected. */
     private lateinit var ancRow: LinearLayout
@@ -191,7 +141,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             )
             // setColorFilter rather than a tint list: these are plain vector
             // drawables in an ImageView, and the icon system already does this
-            // elsewhere (setBudIcon) — one mechanism, not two.
+            // elsewhere — one mechanism, not two.
             connDot.setColorFilter(colour)
             // The word is the ACTION (the pill is a button); the dot and colour carry the state.
             connText.setText(if (connected) R.string.conn_action_disconnect else R.string.conn_action_connect)
@@ -260,10 +210,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         if (firstWearRender) {
             cardsHidden = !visible
             batteryCard.visibility = if (visible) View.VISIBLE else View.GONE
-            batteryBarsCard.visibility = if (visible) View.VISIBLE else View.GONE
             batteryCard.alpha = 1f
-            batteryBarsCard.alpha = 1f
-            setBarAlpha(1f)
             setControlsEnabled(visible, animate = false)
             return
         }
@@ -271,7 +218,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         if (cardsHidden == !visible) return
         cardsHidden = !visible
 
-        val cards = listOf(batteryCard, batteryBarsCard)
+        val cards = listOf(batteryCard)
 
         // The buttons below are useless without a connection: greyed AND not
         // clickable, so a tap cannot send a command that has nowhere to go. The
@@ -283,27 +230,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                 card.visibility = if (visible) View.VISIBLE else View.GONE
                 card.alpha = 1f
             }
-            setBarAlpha(1f)
             return
-        }
-
-        // The BARS are not Views — each ProgressBar draws a SegmentedBarDrawable, and
-        // view alpha on the ProgressBar alone did not fade them (the drawable paints
-        // in its own draw() and the label used a second Paint that setAlpha never
-        // touched; see SegmentedBarDrawable.setAlpha). So the bar drawables are faded
-        // explicitly alongside the card, driven by their own ValueAnimator.
-        val barTarget = if (visible) 255 else 0
-        val barFrom = if (visible) 0 else 255
-        if (animatorScale() != 0f) {
-            val barAnim = android.animation.ValueAnimator.ofInt(barFrom, barTarget)
-            barAnim.duration = CARD_ANIM_MS
-            barAnim.interpolator = DecelerateInterpolator()
-            barAnim.addUpdateListener { va ->
-                setBarAlpha((va.animatedValue as Int) / 255f)
-            }
-            barAnim.start()
-        } else {
-            setBarAlpha(if (visible) 1f else 0f)
         }
 
         cards.forEach { card ->
@@ -375,11 +302,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * sent. The game-mode switch lives in the settings rows and is disabled there.
      */
     private fun setControlsEnabled(enabled: Boolean, animate: Boolean = true) {
-        for (i in 0 until ancRow.childCount) {
-            val child = ancRow.getChildAt(i)
-            child.isEnabled = enabled
-            child.isClickable = enabled
-        }
+        ancView.isEnabled = enabled
 
         // Settings rows that talk to the buds. Left visible but inert, because unlike
         // the battery values they still mean something with nothing connected — the
@@ -465,9 +388,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * static reference object rather than competing with the two bud icons.
      */
     private fun renderWear(state: WidgetStateStore.State) {
-        applyIcon(statusBudLeft, R.drawable.ic_bud_left, budStyle(state.leftStatus))
-        applyIcon(statusBudRight, R.drawable.ic_bud_right, budStyle(state.rightStatus))
-        applyCaseIcon(state)
         // Disconnected means every battery value is unknown, so the cards hold no
         // information: collapse them and grey the controls. See setCardsVisible.
         setCardsVisible(state.connected)
@@ -478,328 +398,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     /**
-     * Puts the bud slide into its settled position WITHOUT animating.
-     *
-     * Called once, from the first render. `caseGapOpen` is initialised to match the
-     * case's actual visibility at that moment, so the first hide slides the buds and
-     * the first show slides them back — rather than the buds appearing mid-slide
-     * from wherever the flag happened to be.
-     *
-     * @param caseVisible whether the case icon will be drawn — true whenever the link
-     *        is up, since the case follows `connected` and never the lid.
-     */
-    private fun settleBudSlide(caseVisible: Boolean) {
-        caseGapOpen = !caseVisible
-        val shift = if (caseVisible) 0f else budShiftPx()
-        statusBudLeft.translationX = shift
-        statusBudRight.translationX = -shift
-    }
-
-    /** Port of AncWidgetProvider.budStyle(). Ids match the widget's own comment. */
-    private fun budStyle(status: Int): Pair<Boolean, Int> = when (status) {
-        4, 0 -> false to COLOR_IDLE      // in case -> hidden
-        3, 7 -> true to COLOR_ACTIVE     // in ear  -> white
-        else -> true to COLOR_IDLE       // out     -> grey
-    }
-
-    /**
-     * The case icon: WHITE when connected, HIDDEN when the buds are disconnected.
-     *
-     * It does NOT follow the per-bud wear states — a bud is white in ear, grey out
-     * of ear, hidden in case, but the case is the fixed object in the row, so it
-     * stays white whenever there is a link at all.
-     *
-     * It DOES follow the connection, which was a real bug: the icon was drawn white
-     * unconditionally, so a disconnected app still showed a lit case as though the
-     * buds were present. Being disconnected is exactly when the case should be
-     * absent — there is nothing to show a state for.
-     *
-     * The key includes `connected` so a reconnect repaints and a disconnect hides.
-     */
-    private fun applyCaseIcon(state: WidgetStateStore.State) {
-        // THE CASE ICON IS SHOWN WHENEVER THE LINK IS UP — it does NOT follow the lid.
-        //
-        // I briefly keyed this on `!connected || caseLidClosed` after a report that
-        // "whenever I close the case it doesn't disappear". That was wrong and he
-        // had already set the rule: the case icon stays visible no matter what.
-        //
-        // THE REASON IT CANNOT FOLLOW THE LID: the firmware does not report lid
-        // state. There is no push for it and no query that returns it — see
-        // BudsService.onConnected, where `caseLidClosed` is only INFERRED from a
-        // disconnect with a bud docked. So a lid-driven icon would be either stale
-        // or a guess, and showing a stable case is more honest than showing one that
-        // flickers on a signal we do not have. Reading the lid for real needs a
-        // request to the hardware that has not been captured yet.
-        val caseVisible = state.connected
-        val key = "case:$caseVisible"
-        if (lastWearKey[statusCaseIcon.id] == key) return
-        val wasVisible = lastWearKey[statusCaseIcon.id]?.startsWith("case:true") == true
-        lastWearKey[statusCaseIcon.id] = key
-
-        if (!caseVisible) {
-            // Disconnect: the case fades out with the buds, so the whole block
-            // empties as one gesture instead of the case blinking off first.
-            if (!firstWearRender && (wasVisible || statusCaseIcon.visibility == View.VISIBLE)) {
-                animateIcon(statusCaseIcon, show = false)
-            } else {
-                hideNow(statusCaseIcon)
-            }
-            // Once it is gone, close the gap: the buds slide together to fill the
-            // space the case was occupying. Skipped on the first render, where
-            // settleBudSlide already put them in the right place without animating.
-            if (!firstWearRender) collapseCaseGap()
-        } else {
-            setBudIcon(statusCaseIcon, R.drawable.ic_case, COLOR_ACTIVE)
-            if (statusCaseIcon.visibility != View.VISIBLE) {
-                if (firstWearRender) showNow(statusCaseIcon)
-                else animateIcon(statusCaseIcon, show = true, caseStyle = true)
-            }
-            // Make room again before the case is drawn, so the buds are already
-            // moving apart as it fades in.
-            if (!firstWearRender) expandCaseGap()
-        }
-    }
-
-    /**
-     * The buds slide inwards when the case is not drawn, and back out when it is.
-     *
-     * WHY translationX AND NOT A LAYOUT CHANGE:
-     * the case is `battery_case_width` (119dp) plus two 10dp margins. Removing it
-     * from a LinearLayout would reflow the row and the buds would JUMP to their new
-     * positions in one frame — there is no way to animate a LinearLayout's reflow.
-     * So the case keeps its space in the layout and only its VISIBILITY changes,
-     * while each bud is translated towards the centre by its own half of the freed
-     * width. That is smooth, and it means the layout never has to be measured again
-     * during the animation.
-     *
-     * The shift is half the freed space per bud, so the pair stays centred: the case
-     * width plus both gaps, halved. Measured from the resources rather than
-     * hardcoded, so changing `battery_case_width` keeps the slide correct.
-     */
-    private fun budShiftPx(): Float {
-        val caseW = resources.getDimensionPixelSize(R.dimen.battery_case_width)
-        val gap = resources.getDimensionPixelSize(R.dimen.battery_icon_gap)
-        return (caseW + gap * 2) / 2f
-    }
-
-    private fun collapseCaseGap() {
-        if (caseGapOpen) return
-        caseGapOpen = true
-        // Left bud moves right, right bud moves left: both towards the centre.
-        slideBud(statusBudLeft, budShiftPx())
-        slideBud(statusBudRight, -budShiftPx())
-    }
-
-    private fun expandCaseGap() {
-        if (!caseGapOpen) return
-        caseGapOpen = false
-        slideBud(statusBudLeft, 0f)
-        slideBud(statusBudRight, 0f)
-    }
-
-    /**
-     * Animates one bud's X translation to [target].
-     *
-     * Kept in the same animator map as the fades so a fast in-case/out-of-case
-     * flurry cancels cleanly instead of leaving a bud parked in the wrong place.
-     * No alpha or scale here: that is the fade's job, and mixing them made the two
-     * animations fight over the same view.
-     */
-    private fun slideBud(icon: ImageView, target: Float) {
-        val scale = animatorScale()
-        if (scale == 0f) {
-            icon.translationX = target
-            return
-        }
-        val anim = ObjectAnimator.ofFloat(icon, View.TRANSLATION_X, target)
-        anim.duration = SLIDE_ANIM_MS
-        anim.interpolator = DecelerateInterpolator()
-        anim.start()
-    }
-
-    /**
-     * Port of AncWidgetProvider.applyIcon(), plus the show/hide animation.
-     *
-     * The key check is the app-side addition: the widget only repaints when it is
-     * asked to, whereas this runs on every store notify, which fires per packet.
-     * Without the check the drawable was rebuilt many times a second for no visual
-     * change, which is what made the icons flicker. The KEY encodes both things that
-     * affect appearance (visible + colour), so any real change still repaints.
-     *
-     * ANIMATION: a bud going in the case fades and shrinks away, and a bud coming
-     * out of the case fades and grows back. See animateIcon — the visibility is now
-     * driven by the animation rather than set directly, because setting it first
-     * makes the view vanish before the fade can run.
-     */
-    private fun applyIcon(icon: ImageView, resId: Int, style: Pair<Boolean, Int>) {
-        val (visible, color) = style
-        val key = "${if (visible) "v" else "h"}:$color:$resId"
-        if (lastWearKey[icon.id] == key) return
-        val wasVisible = lastWearKey[icon.id]?.startsWith("v") == true
-        lastWearKey[icon.id] = key
-
-        if (visible) {
-            setBudIcon(icon, resId, color)
-            if (icon.visibility != View.VISIBLE) {
-                if (firstWearRender) showNow(icon) else animateIcon(icon, show = true)
-            }
-        } else {
-            // Disappearing: only animate when drawable content is actually on
-            // screen. On first layout (wasVisible false, never shown) we would
-            // otherwise animate a view that is already INVISIBLE, which costs a
-            // frame and does nothing.
-            if (!firstWearRender && (wasVisible || icon.visibility == View.VISIBLE)) {
-                animateIcon(icon, show = false)
-            } else {
-                hideNow(icon)
-            }
-        }
-    }
-
-    /**
-     * Fades the three bar drawables together, 0..1.
-     *
-     * WHY THE DRAWABLES AND NOT THE VIEWS: `ProgressBar.alpha` does not reach a custom
-     * drawable's paint reliably, and this one also paints a label with a SECOND Paint.
-     * Setting the alpha on the drawable itself is the only way to guarantee the track,
-     * the fill, the dividers and the number all fade as one.
-     */
-    private fun setBarAlpha(fraction: Float) {
-        val a = (fraction.coerceIn(0f, 1f) * 255).toInt()
-        listOf(statusBarLeft, statusBarCase, statusBarRight).forEach { bar ->
-            bar.progressDrawable?.let { d ->
-                // setAlpha on the Drawable fades its ink but does NOT fade a view the
-                // ProgressBar composites, so the view alpha is dropped to 0 explicitly
-                // at the bottom of the range; otherwise a fully faded bar would still
-                // occlude the card behind it.
-                d.alpha = a
-                d.invalidateSelf()
-            }
-            bar.alpha = 1f
-        }
-    }
-
-    /** Instant show, no animation — used for the first render of the screen. */
-    private fun showNow(icon: ImageView) {
-        activeIconAnims.remove(icon.id)?.cancel()
-        icon.visibility = View.VISIBLE
-        icon.alpha = 1f
-        icon.scaleX = 1f
-        icon.scaleY = 1f
-        icon.translationY = 0f
-    }
-
-    /** Instant hide, no animation — used for the first render of the screen. */
-    private fun hideNow(icon: ImageView) {
-        activeIconAnims.remove(icon.id)?.cancel()
-        icon.visibility = View.INVISIBLE
-        icon.alpha = 1f
-        icon.scaleX = 1f
-        icon.scaleY = 1f
-        icon.translationY = 0f
-    }
-
-    /**
-     * The icon show / hide animation.
-     *
-     * WHY THIS IS WRITTEN BY HAND instead of an XML anim or a ViewPropertyAnimator
-     * chain: it has to set visibility at exactly the right moment, and the two
-     * directions differ in when that is.
-     *
-     *     show  -> visible FIRST, then animate IN  (otherwise nothing is drawn)
-     *     hide  -> animate OUT, then invisible at the END (otherwise it vanishes
-     *              instantly and the fade is never seen)
-     *
-     * A ViewPropertyAnimator's withStartAction / withEndAction does express that,
-     * but it was rejected because it returns a different object per call and the
-     * "which one is running" bookkeeping gets messy when hide and show chase each
-     * other — which happens here, because wear state arrives per packet. Instead
-     * each view carries its own animator in activeIconAnims and a new run cancels
-     * and replaces the old one, so a rapid in-case/out-of-case flurry always ends
-     * in the correct final state rather than fighting.
-     *
-     * The motion is deliberately small: scale 0.72 -> 1.0 with a fade, 180ms, no
-     * overshoot. Bigger movement looked like a bounce and read as a glitch next to
-     * the static case.
-     */
-    private val activeIconAnims = HashMap<Int, AnimatorSet>()
-
-    private fun animateIcon(icon: ImageView, show: Boolean, caseStyle: Boolean = false) {
-        // Respect the system-wide animation setting (Developer options ->
-        // Animation off / 0.5x). When animations are disabled for accessibility or
-        // battery, this must be a plain visibility flip — an app is not entitled to
-        // keep animating because it thinks the motion is nice.
-        val scale = animatorScale()
-
-        if (scale == 0f) {
-            activeIconAnims.remove(icon.id)?.cancel()
-            icon.visibility = if (show) View.VISIBLE else View.INVISIBLE
-            icon.alpha = 1f
-            icon.scaleX = 1f
-            icon.scaleY = 1f
-            icon.translationY = 0f
-            return
-        }
-
-        activeIconAnims.remove(icon.id)?.cancel()
-
-        // The case is a wide object and the buds are tall and thin, so the same
-        // uniform shrink reads differently on each: 0.72 on a bud barely registers,
-        // on the case it collapses the width. The case instead fades and lifts
-        // slightly (a small Y translation) which suits its shape better and does not
-        // fight the bud motion happening beside it at the same time.
-        val toScale = if (show) 1f else HIDDEN_SCALE
-        val fromScale = if (show) HIDDEN_SCALE else 1f
-
-        if (show) {
-            icon.visibility = View.VISIBLE
-            icon.alpha = 0f
-            icon.scaleX = fromScale
-            icon.scaleY = fromScale
-            if (caseStyle) icon.translationY = caseAnimLift
-        }
-
-        val set = AnimatorSet()
-        val anims = mutableListOf<Animator>(
-            ObjectAnimator.ofFloat(icon, View.ALPHA, if (show) 1f else 0f),
-            ObjectAnimator.ofFloat(icon, View.SCALE_X, toScale),
-            ObjectAnimator.ofFloat(icon, View.SCALE_Y, toScale)
-        )
-        if (caseStyle) {
-            anims += ObjectAnimator.ofFloat(icon, View.TRANSLATION_Y, if (show) 0f else caseAnimLift)
-        }
-        set.playTogether(anims)
-        set.duration = ICON_ANIM_MS
-        set.interpolator = DecelerateInterpolator()
-        set.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                // Guards against an END from a set we already cancelled: clearing a
-                // cancelled run must not flip visibility back after a newer run has
-                // taken over.
-                if (activeIconAnims[icon.id] !== set) return
-                activeIconAnims.remove(icon.id)
-                if (!show) {
-                    icon.visibility = View.INVISIBLE
-                    // Leave it in the start state so the NEXT show begins from here
-                    // and does not flash at full size for one frame.
-                    icon.alpha = 0f
-                    icon.scaleX = HIDDEN_SCALE
-                    icon.scaleY = HIDDEN_SCALE
-                    if (caseStyle) icon.translationY = caseAnimLift
-                }
-            }
-        })
-        activeIconAnims[icon.id] = set
-        set.start()
-    }
-
-    /**
-     * Last rendered appearance per icon, keyed by view id.
-     *
-     * See applyIcon: this is what stops the per-packet repaint that caused the
-     * flicker. Keyed by id so the three icons are tracked independently.
-     */
-    /**
      * True while the FIRST render of the screen is being done, so the icons and the
      * case appear INSTANTLY instead of animating in.
      *
@@ -809,8 +407,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * Cleared at the end of the first renderWear().
      */
     private var firstWearRender = true
-
-    private val lastWearKey = HashMap<Int, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Theme selection FIRST, before super.onCreate. setTheme() is a style-id
@@ -840,23 +436,17 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         btnSettings = findViewById<ImageButton>(R.id.btnSettings)
         btnDevTools = findViewById<ImageButton>(R.id.btnDevTools)
 
-        statusRowLeft = findViewById<LinearLayout>(R.id.status_row_left)
-        statusRowCase = findViewById<LinearLayout>(R.id.status_row_case)
-        statusRowRight = findViewById<LinearLayout>(R.id.status_row_right)
-        statusBarLeft = findViewById<ProgressBar>(R.id.status_bar_left)
-        statusBarCase = findViewById<ProgressBar>(R.id.status_bar_case)
-        statusBarRight = findViewById<ProgressBar>(R.id.status_bar_right)
-        statusTextLeft = findViewById<TextView>(R.id.status_text_left)
-        statusTextCase = findViewById<TextView>(R.id.status_text_case)
-        statusTextRight = findViewById<TextView>(R.id.status_text_right)
-        statusBudLeft = findViewById<ImageView>(R.id.status_bud_left)
-        statusBudRight = findViewById<ImageView>(R.id.status_bud_right)
-        statusCaseIcon = findViewById<ImageView>(R.id.status_case_icon)
+        statusView = BudsStatusView(this)
+        findViewById<android.widget.FrameLayout>(R.id.statusSlot).addView(statusView)
+        ancView = AncSegmentedView(this, ANC_SEGMENTS.map { getString(it.second) }).apply {
+            onSegmentTapped = { onAncCircleTapped(ANC_SEGMENTS[it].first) }
+        }
+        findViewById<android.widget.FrameLayout>(R.id.ancSlot).addView(ancView)
+        ancCaption = findViewById<TextView>(R.id.ancCaption)
 
         // The two battery cards and the ANC row, for the connect/disconnect
         // collapse and the greying. See setCardsVisible / setControlsEnabled.
         batteryCard = findViewById<LinearLayout>(R.id.batteryCard)
-        batteryBarsCard = findViewById<LinearLayout>(R.id.batteryBarsCard)
         ancRow = findViewById<LinearLayout>(R.id.ancRow)
 
         connPill = findViewById<LinearLayout>(R.id.connPill)
@@ -881,20 +471,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             }, 25_000)
         }
 
-        ancBtnOff = findViewById<TextView>(R.id.anc_btn_off)
-        ancBtnAnc = findViewById<TextView>(R.id.anc_btn_anc)
-        ancBtnAdapt = findViewById<TextView>(R.id.anc_btn_adapt)
-        ancBtnTrans = findViewById<TextView>(R.id.anc_btn_trans)
-
-        // The four circles. ANC opens the chooser; Off, Adaptive and Transparency
-        // apply directly, since none of them has a sub-level to pick between.
-        ancBtnOff.setOnClickListener { onAncCircleTapped("Off") }
-        ancBtnAnc.setOnClickListener { onAncCircleTapped("ANC") }
-        ancBtnAdapt.setOnClickListener { onAncCircleTapped("Adaptive") }
-        ancBtnTrans.setOnClickListener { onAncCircleTapped("Transparency") }
-
         applyThemeTints()
-        applySegmentedBars()
         buildFeatureRows()
 
         btnSettings.setOnClickListener { showSettingsDialog() }
@@ -908,9 +485,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         renderBattery(initial)
         renderAnc(initial.ancMode)
         renderWear(initial)
-        // After the first render, put the buds where the case's state says they
-        // belong (closed up if it is disconnected) without animating the move.
-        settleBudSlide(initial.connected)
         WidgetStateStore.addListener(storeListener)
 
         checkPermissions()
@@ -1127,134 +701,36 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         btnSettings.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_settings_cog, 0xFFFFFFFF.toInt()))
     }
 
-    /**
-     * Loads a vector, tints it, and pins its bounds to the view's measured pixel
-     * size so it is rasterised at full resolution instead of being scaled from its
-     * 48dp intrinsic size. See the note in applyThemeTints.
-     */
-    private fun setBudIcon(view: ImageView, drawableRes: Int, tint: Int) {
-        val d = ThemeRes.tint(this, drawableRes, tint)
-        view.setImageDrawable(d)
-        // Post: the view may not be measured yet during onCreate. Scaling via
-        // scaleType would reintroduce the bitmap upscale, so the bounds are set
-        // against the laid-out size instead.
-        view.post {
-            val w = if (view.width > 0) view.width else ThemeRes.dp(this, 48f)
-            val h = if (view.height > 0) view.height else ThemeRes.dp(this, 48f)
-            d.setBounds(0, 0, w, h)
-        }
-    }
-
-    /**
-     * Installs the segmented battery bar on all three bars.
-     *
-     * Built in code rather than referenced from XML because it needs three theme
-     * colours at construction time, and a drawable XML cannot resolve a themed
-     * attribute into a custom Drawable class.
-     *
-     * The divider colour is the CARD colour, not the screen background, because the
-     * bars sit on the card — using the background colour would draw gaps in the
-     * wrong shade and the segments would look like misaligned slivers.
-     */
-    private fun applySegmentedBars() {
-        val track = ThemeRes.color(this, R.attr.appColorBarTrack)
-        val fill = ThemeRes.color(this, R.attr.appColorSegBgActive)
-        val divider = ThemeRes.color(this, R.attr.appColorCard)
-        val labelOnFill = ThemeRes.color(this, R.attr.appColorBarLabelOnFill)
-        val labelOnTrack = ThemeRes.color(this, R.attr.appColorBarLabelOnTrack)
-        // Corner radius is HALF THE BAR HEIGHT, which is what makes the ends read as
-        // properly rounded rather than as slightly-softened rectangles. The previous
-        // 3dp on a 10dp bar was barely visible; 5dp (10/2) gives a true semicircular
-        // cap at each end.
-        val radius = ThemeRes.dp(this, 5f).toFloat()
-        val dividerW = ThemeRes.dp(this, 1f).toFloat()
-
-        for (bar in listOf(statusBarLeft, statusBarCase, statusBarRight)) {
-            val d = SegmentedBarDrawable(
-                trackColor = track,
-                fillColor = fill,
-                dividerColor = divider,
-                segments = 10,
-                dividerWidth = dividerW,
-                cornerRadius = radius,
-                labelColorOnFill = labelOnFill,
-                labelColorOnTrack = labelOnTrack,
-                labelSizePx = ThemeRes.dp(this, 8f).toFloat()
-            )
-            d.progress = bar.progress
-            bar.progressDrawable = d
-        }
-    }
-
     // ==================== Battery block ====================
 
     private fun renderBattery(state: WidgetStateStore.State) {
-        renderBar(statusRowLeft, statusBarLeft, statusTextLeft, state.leftBattery)
-        renderBar(statusRowCase, statusBarCase, statusTextCase, state.caseBattery)
-        renderBar(statusRowRight, statusBarRight, statusTextRight, state.rightBattery)
-    }
-
-    /**
-     * One battery row.
-     *
-     * The number moved INSIDE the bar by request, so it is drawn by the bar
-     * drawable itself (see SegmentedBarDrawable.drawLabel) rather than being a
-     * separate TextView beside it. The TextView still exists and still receives the
-     * text — it is the fallback for any case where the drawable is not a
-     * SegmentedBarDrawable — but it is transparent and sits over the bar, so in
-     * practice the drawable does the drawing.
-     *
-     * An unknown level shows an empty bar with no number, rather than a "?" as
-     * before: there is no room inside a 10dp bar for a question mark plus the
-     * segment lines without it becoming unreadable.
-     */
-    private fun renderBar(row: LinearLayout, bar: ProgressBar, text: TextView, level: Int) {
-        row.visibility = View.VISIBLE
-        val clamped = if (level < 0) 0 else level
-        bar.progress = clamped
-
-        val label = if (level < 0) "" else "$level"
-        val d = bar.progressDrawable as? SegmentedBarDrawable
-        if (d != null) {
-            d.progress = clamped
-            d.setLabel(label)
-            text.text = ""
-        } else {
-            // Fallback path only; kept so a future non-segmented drawable still
-            // shows something.
-            text.text = label
-        }
+        statusView.setState(
+            state.leftBattery, state.caseBattery, state.rightBattery,
+            state.leftStatus, state.rightStatus
+        )
     }
 
     // ==================== ANC ====================
 
     /**
-     * Display label for the ANC circle, given a stored mode string.
-     *
-     * The stored strings ("ANC-Light", "ANC-Medium", "ANC-Deep") are the
-     * protocol-level names shared with the widget. The circle shows the SHORT
-     * form — ANC-L / ANC-M / ANC-H — so the current strength is visible without
-     * opening the chooser. Off, Adaptive and Transparency have their own circles
-     * and their own labels.
+     * Moves the noise-control highlight to the mode the BUDS report, and spells the mode out in the
+     * caption under it — including the ANC strength, which the old circle showed as "ANC-M".
      */
     private fun renderAnc(mode: String) {
-        // The ANC circle always reads "ANC" unless a level is actually selected,
-        // in which case it carries the level suffix.
-        if (mode in ANC_LEVELS) {
-            ancBtnAnc.text = when (mode) {
-                "ANC-Light" -> getString(R.string.app_anc_light)
-                "ANC-Medium" -> getString(R.string.app_anc_medium)
-                else -> getString(R.string.app_anc_high)
-            }
-        } else {
-            ancBtnAnc.text = getString(R.string.app_anc_anc)
+        ancView.selected = when (circleFor(mode)) {
+            "ANC" -> 1
+            "Adapt" -> 2
+            "Trans" -> 3
+            else -> 0
         }
-
-        val active = circleFor(mode)
-        styleCircle(ancBtnOff, active == "Off")
-        styleCircle(ancBtnAnc, active == "ANC")
-        styleCircle(ancBtnAdapt, active == "Adapt")
-        styleCircle(ancBtnTrans, active == "Trans")
+        ancCaption.text = when (mode) {
+            "ANC-Light" -> getString(R.string.anc_caption_level, getString(R.string.anc_mode_low))
+            "ANC-Medium" -> getString(R.string.anc_caption_level, getString(R.string.anc_mode_medium))
+            "ANC-Deep" -> getString(R.string.anc_caption_level, getString(R.string.anc_mode_high))
+            "Adaptive" -> getString(R.string.anc_caption_adaptive)
+            "Transparency" -> getString(R.string.anc_caption_trans)
+            else -> getString(R.string.anc_caption_off)
+        }
     }
 
     /**
@@ -1271,22 +747,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         "Adaptive" -> "Adapt"
         "ANC-Light", "ANC-Medium", "ANC-Deep" -> "ANC"
         else -> "Off"
-    }
-
-    private fun styleCircle(btn: TextView, active: Boolean) {
-        btn.setBackgroundResource(
-            if (active) R.drawable.anc_circle_bg_active else R.drawable.anc_circle_bg
-        )
-        // INACTIVE text is white in every theme (appColorButtonText), by request, to
-        // match the button visuals. ACTIVE text stays dark because the active fill is
-        // the light segment colour — white on that would be invisible.
-        btn.setTextColor(
-            if (active) {
-                ThemeRes.color(this, R.attr.appColorSegTextActive)
-            } else {
-                ThemeRes.color(this, R.attr.appColorButtonText)
-            }
-        )
     }
 
     private fun onAncCircleTapped(circle: String) {
@@ -1791,17 +1251,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         /** The three real noise-cancelling levels, weakest first. */
         private val ANC_LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep")
 
-        /**
-         * Icon colours, COPIED FROM THE WIDGET'S PALETTE on purpose.
-         *
-         * These are not themed. The panel mirrors the home-screen widget, and the
-         * widget is always dark regardless of the app theme — so the icons stay
-         * white/grey on the Light app theme too, which is what "match the widget"
-         * requires. Taking them from R.color.widget_* keeps that link explicit, so
-         * changing the widget palette changes this with it and the two cannot drift.
-         */
-        private val COLOR_ACTIVE = 0xFFFFFFFF.toInt()   // widget_text_primary
-        private val COLOR_IDLE = 0xFF8A8A8A.toInt()     // widget_text_secondary
+        /** Noise-control segments, left to right: the tap name onAncCircleTapped() takes, and the label. */
+        private val ANC_SEGMENTS = listOf(
+            "Off" to R.string.anc_seg_off,
+            "ANC" to R.string.anc_seg_anc,
+            "Adaptive" to R.string.anc_seg_adapt,
+            "Transparency" to R.string.anc_seg_trans
+        )
 
         /**
          * The last report MainActivity took of ITSELF, while resumed.

@@ -137,299 +137,60 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ============ 1. BATTERY CARD ============
-                 Two halves: icons on the left, labelled bars on the right.
-
-                 ICON LOGIC IS A PORT OF THE WIDGET'S (see renderWear): white in ear,
-                 grey out of ear, hidden in case. Colours are the widget's own, not
-                 themed, so this panel matches the home screen in every app theme.
-
-                 SPACING: the two buds sit at the outer edges with a gap between them
-                 for the case icon, which is why they are weighted rather than packed
-                 together. The case is centred in that gap. -->
-            <!-- ======== CARD 1: THE ICONS ONLY ======== -->
+            <!-- ============ 1. STATUS CARD (redesign 2026-09-23) ============
+                 One card: left bud, case, right bud, each in a battery ring, with the
+                 percentage and wear state under it. Drawn by BudsStatusView, added to
+                 statusSlot in code. Replaces the old icon card + separate bar card. -->
             <LinearLayout
                 android:id="@+id/batteryCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/battery_card_padding"
-                android:paddingTop="@dimen/battery_card_padding_v"
-                android:paddingBottom="@dimen/battery_card_padding_v"
-                android:background="@drawable/app_card_outline_bg"
-                android:gravity="center_horizontal">
-
-                <!-- ICON BLOCK: bud, case, bud — each from its OWN source SVG.
-
-                     The three icons are three separate drawables, each copied verbatim
-                     from its own file in local/svgs/, each on its own source viewBox:
-
-                         ic_bud_left.xml   176 x 272  (local/svgs/left.svg)
-                         ic_case.xml       496 x 400  (local/svgs/case.svg)
-                         ic_bud_right.xml  176 x 272  (local/svgs/right.svg)
-
-                     The buds are TALL and the case is WIDE, so they cannot share one
-                     box. They share a HEIGHT: `battery_wear_height` for all three, with
-                     each width given EXPLICITLY from that icon's true ratio.
-
-                     DO NOT switch these back to wrap_content + adjustViewBounds. That
-                     clips the artwork: the drawable's intrinsic size is stored in PIXELS
-                     at the screen density, so 24dp x 37dp becomes 63 x 97 px at 2.625
-                     (37 * 2.625 = 97.125, rounded down), giving an intrinsic ratio of
-                     0.649 against the SVG's 0.641. adjustViewBounds then sizes the view
-                     from the distorted ratio while the vector rasterises at the true
-                     one, and the difference clips the icon at the box bounds.
-                -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:id="@+id/status_bud_left"
-                        android:layout_width="@dimen/battery_bud_width"
-                        android:layout_height="@dimen/battery_wear_height"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_bud_left"
-                        android:contentDescription="@string/widget_battery_left" />
-
-                    <ImageView
-                        android:id="@+id/status_case_icon"
-                        android:layout_width="@dimen/battery_case_width"
-                        android:layout_height="@dimen/battery_wear_height"
-                        android:layout_marginStart="@dimen/battery_icon_gap"
-                        android:layout_marginEnd="@dimen/battery_icon_gap"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_case"
-                        android:contentDescription="@string/widget_battery_case" />
-
-                    <ImageView
-                        android:id="@+id/status_bud_right"
-                        android:layout_width="@dimen/battery_bud_width"
-                        android:layout_height="@dimen/battery_wear_height"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_bud_right"
-                        android:contentDescription="@string/widget_battery_right" />
-                </LinearLayout>
-            </LinearLayout>
-
-                <!-- ======== CARD 2: THE BARS ONLY ========
-                     A card of its own, so its padding and height are independent of the
-                     icon card above. The numbers live INSIDE the bars, so there are no
-                     numeric labels on the outside, just the L / C / R letters. -->
-            <LinearLayout
-                android:id="@+id/batteryBarsCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:padding="@dimen/battery_card_padding"
+                android:paddingTop="18dp"
+                android:paddingBottom="14dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
                 android:background="@drawable/app_card_outline_bg">
 
-                    <LinearLayout
-                        android:id="@+id/status_row_left"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/battery_row_spacing">
+                <FrameLayout
+                    android:id="@+id/statusSlot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
-                        <TextView
-                            android:layout_width="@dimen/battery_letter_size"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/widget_battery_left"
-                            android:textColor="?attr/appColorLetter"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/battery_bar_height"
-                            android:layout_weight="1"
-                            android:layout_marginStart="10dp">
-
-                            <ProgressBar
-                                android:id="@+id/status_bar_left"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:max="100"
-                                android:progress="0" />
-
-                            <TextView
-                                android:id="@+id/status_text_left"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:textColor="?attr/appColorBarLabelOnTrack"
-                                android:textSize="9sp"
-                                android:textStyle="bold" />
-                        </FrameLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/status_row_case"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/battery_row_spacing">
-
-                        <TextView
-                            android:layout_width="@dimen/battery_letter_size"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/widget_battery_case"
-                            android:textColor="?attr/appColorLetter"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/battery_bar_height"
-                            android:layout_weight="1"
-                            android:layout_marginStart="10dp">
-
-                            <ProgressBar
-                                android:id="@+id/status_bar_case"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:max="100"
-                                android:progress="0" />
-
-                            <TextView
-                                android:id="@+id/status_text_case"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:textColor="?attr/appColorBarLabelOnTrack"
-                                android:textSize="9sp"
-                                android:textStyle="bold" />
-                        </FrameLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/status_row_right"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="@dimen/battery_letter_size"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/widget_battery_right"
-                            android:textColor="?attr/appColorLetter"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/battery_bar_height"
-                            android:layout_weight="1"
-                            android:layout_marginStart="10dp">
-
-                            <ProgressBar
-                                android:id="@+id/status_bar_right"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:max="100"
-                                android:progress="0" />
-
-                            <TextView
-                                android:id="@+id/status_text_right"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:textColor="?attr/appColorBarLabelOnTrack"
-                                android:textSize="9sp"
-                                android:textStyle="bold" />
-                        </FrameLayout>
-                    </LinearLayout>
-                </LinearLayout>
-
-            <!-- ============ 2. ANC CIRCLES ============ -->
-            <!--
-              FOUR circles, one per conceptual state:
-
-                  OFF | ANC | ADAPT | TRANS
-
-              ANC is a CHOOSER, not a mode: tapping it opens the Low / Medium / High
-              sheet (see MainActivity.showAncChooser), so the three noise-cancelling
-              strengths live behind one button and the row stays four wide.
-
-              Adaptive is its OWN circle rather than a fourth entry in that sheet.
-              It is not a strength — the buds switch it in and out by themselves — so
-              listing it between Medium and High would imply it was just another
-              level. It sits next to ANC because both mean "cancelling is on".
-
-              `weightSum` MUST match the child count. It was 3 while the row held
-              three circles; a stale weightSum does not throw, it just makes every
-              button a different width than intended.
-            -->
+            <!-- ============ 2. NOISE CONTROL ============
+                 A segmented pill (AncSegmentedView, added to ancSlot in code) whose red
+                 highlight slides to the active mode, and a caption spelling the mode out.
+                 ANC opens the strength chooser. The row greys out while disconnected. -->
             <LinearLayout
                 android:id="@+id/ancRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:orientation="horizontal"
-                android:weightSum="4">
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/anc_btn_off"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/anc_button_height"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/app_anc_off"
-                    android:textSize="@dimen/anc_circle_text_size"
-                    android:textStyle="bold"
-                    android:textColor="?attr/appColorSegText"
-                    android:background="@drawable/anc_circle_bg" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:paddingBottom="8dp"
+                    android:text="@string/anc_section"
+                    android:textColor="?attr/appColorTextSecondary"
+                    android:textSize="13sp" />
+
+                <FrameLayout
+                    android:id="@+id/ancSlot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <TextView
-                    android:id="@+id/anc_btn_anc"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/anc_button_height"
-                    android:layout_weight="1"
-                    android:layout_marginStart="@dimen/anc_circle_gap"
+                    android:id="@+id/ancCaption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/app_anc_anc"
-                    android:textSize="@dimen/anc_circle_text_size"
-                    android:textStyle="bold"
-                    android:textColor="?attr/appColorSegText"
-                    android:background="@drawable/anc_circle_bg" />
-
-                <TextView
-                    android:id="@+id/anc_btn_adapt"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/anc_button_height"
-                    android:layout_weight="1"
-                    android:layout_marginStart="@dimen/anc_circle_gap"
-                    android:gravity="center"
-                    android:text="@string/app_anc_adapt"
-                    android:textSize="@dimen/anc_circle_text_size"
-                    android:textStyle="bold"
-                    android:textColor="?attr/appColorSegText"
-                    android:background="@drawable/anc_circle_bg" />
-
-                <TextView
-                    android:id="@+id/anc_btn_trans"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/anc_button_height"
-                    android:layout_weight="1"
-                    android:layout_marginStart="@dimen/anc_circle_gap"
-                    android:gravity="center"
-                    android:text="@string/app_anc_trans"
-                    android:textSize="@dimen/anc_circle_text_size"
-                    android:textStyle="bold"
-                    android:textColor="?attr/appColorSegText"
-                    android:background="@drawable/anc_circle_bg" />
+                    android:paddingTop="8dp"
+                    android:textColor="?attr/appColorTextSecondary"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <!-- ============ 3. SETTINGS ROWS ============

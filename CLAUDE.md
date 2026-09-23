@@ -340,24 +340,22 @@ From `bluetooth/BudsConnectionManager.kt`.
   the link stays up) — likely also the old "14-minute gap". `reconnectAfterLoss()` retries 5x with
   growing delays; a deliberate disconnect cancels it.
 
-## Main screen structure — settled
+## Main screen structure — redesigned 2026-09-23 (`[USER]`: "make it your own")
 
-Header (fixed: device name + dev-tools icon + settings cog) over a `ScrollView` named `mainScroll`.
-Inside it, top to bottom:
+Header (device name + Connect/Disconnect pill + dev-tools icon + settings cog) over a `ScrollView`
+named `mainScroll`. Inside it, top to bottom:
 
-1. `batteryCard` — full width, halves **equal** (`weight 1 / 1`; they were 0.8 / 1.2 until
-   2026-09-17). Left half: `status_bud_left`, a weighted frame holding `status_case_icon` and
-   `status_bud_right`. Right half (`marginStart 14dp`): rows `status_row_left` / `status_row_case` /
-   `status_row_right`, each a letter `TextView` plus a `ProgressBar` (`status_bar_*`) with a centred
-   number `TextView` (`status_text_*`) on top. The numbers are normally empty because
-   `SegmentedBarDrawable` draws the value inside the bar; the TextViews are the fallback for a
-   non-segmented bar. See `renderBar`.
-2. `batteryBarsCard` — the bars only. Splitting it from `batteryCard` was deliberate: as one grid,
-   the icon block and the bars fought over the card's height, so resizing icons moved the bars.
-3. The ANC switcher — four circles (`anc_btn_off` / `anc_btn_anc` / `anc_btn_adapt` / `anc_btn_trans`).
-   Tapping the **active** ANC circle opens the full mode chooser (`showAncChooser`), because four
-   buttons cannot represent every mode.
-4. `featureList` — the settings card, `@drawable/app_card_outline_bg`, filled at runtime by
+1. `batteryCard` — ONE card holding `BudsStatusView` (custom-drawn, added to `statusSlot` in
+   code): left bud, case, right bud, each inside a red battery ring that animates to the level, with
+   the percentage (red at <= 20%) and "Left · In ear" style label under it. In ear = white icon,
+   out = grey, in case = dimmed (no longer hidden, so nothing moves). Still collapses while
+   disconnected (`setCardsVisible`). The old two-card layout, `SegmentedBarDrawable` and the icon
+   fade/slide animations are gone.
+2. `ancRow` — "Noise control" label, `AncSegmentedView` (custom-drawn pill, red highlight slides to
+   the active mode; added to `ancSlot`) and `ancCaption` spelling the mode out, including the ANC
+   strength. Tapping ANC opens `showAncChooser` as before; the tap names go through
+   `onAncCircleTapped` via `ANC_SEGMENTS`.
+3. `featureList` — the settings card, `@drawable/app_card_outline_bg`, filled at runtime by
    `MainActivity.buildFeatureRows()`. Declared empty in XML on purpose: six near-identical row
    layouts in XML would be six places to edit, and the icons need a themed tint that XML cannot
    apply to a vector drawable. `addRow()` inserts the hairline divider before every row but the first.
@@ -385,15 +383,12 @@ a shared one hung.
 
 ## Settled design decisions — do not re-litigate
 
-- **The battery card is TWO STACKED CARDS**: `batteryCard` holds only the icons, `batteryBarsCard`
-  only the bars. An earlier single-card grid was abandoned because the icon block and the bars fought
-  over one card's height, so resizing the icons moved the bars.
-- **The L / C / R letters stay theme-aware** (`?attr/appColorLetter`). Do not "improve" them into a
-  fixed colour.
+- **Red accent across the app** (`?attr/appColorAccent`, `[USER]` 2026-09-23): settings-row icons, the
+  EQ curve and sliders, the status rings, the noise-control highlight, the Connect pill when
+  disconnected. The EQ curve / level slider / status card / noise pill share one drawn visual language.
 - **The case icon keeps its LED dot**, and the lid cut stays full width — no hinge bulge or opening.
-- **All icons in a set share units-per-dp and layout height**, widths taken from each icon's own true
-  ratio. The wear icons are 96dp tall with widths 62 / 119 / 62dp (new set from
-  `local/svgs/left|case|right.svg`, 2026-09-22).
+- **Icons keep their SVG's true ratio** (buds 176x272, case 496x400). `BudsStatusView` fits each into
+  its ring by that ratio; the widget still uses its own sized boxes.
 - The 2026 icon work is done for the app and the launcher; **the widget preview
   (`drawable/widget_preview_buds.xml`) is a separate copy** and must be updated alongside
   `ic_launcher_foreground.xml`.
