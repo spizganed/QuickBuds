@@ -1028,6 +1028,26 @@ flag `01` is the SELECTED preset (reddit). Frequencies are HeyMelody's six bands
 range ±6. `FA 06` unknown (constant). BassWave was on, level 2, at the time — not located in the reply yet. Built-in presets (Balanced / Clear Vocals / Bass) are not
 in this item. **No EQ write captured yet** — `0x0406` "set EQ" is `[OSS]` only.
 
+### Equalizer — WRITE side — `[CAPTURE]` 2026-09-23 (HeyMelody, his actions in order)
+
+```
+TX 0406 00 / 01 / 02        select built-in: Balanced / Clear Vocals / Bass   ack 8406 00
+RX 0504 <mode>              push: EQ mode changed (built-in or custom id)
+TX 010F  ->  810F 00 <id>   current EQ: 00-02 built-in, 04-06 custom (reddit = 06)
+TX 0122  ->  8122 00 <count> <presets...>   custom list, same layout as item 0x22 above
+TX 0418 02 FA 06 <id> <nameLen> <name> 06 [freq,gain]x6   ack 8418 00 <id>
+                            select / edit / rename a custom preset — the WHOLE preset every time
+TX 0403 1D 00 / 1D 01       BassWave off / on (feature 0x1D, also in the 0x810D reply)
+TX 041B FB 05 <level>       BassWave level; he set 5 = max           ack 841B 00
+TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
+```
+
+- **`0x0418` is select + save in one.** Opening xdd for editing sent it (xdd became selected). Every
+  step of a band drag sent the full preset again (1 kHz went FE -> FD -> FF -> 00), and a rename is
+  the same frame with a new name (`07 "testing"`). HeyMelody re-reads `0x0122` after each.
+- **Built-in presets are not in the `0x0122` list**; they are ids 00-02 on `0x0406` / `0x010F`.
+- `FA 06` and `FB 05` are constant in every frame; meaning unknown (`05` may be the level max).
+
 ### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, wired
 
 `TX 0400 01` / `TX 0400 00`, acked `8400 00`, alternating 3 times — matches his 3 start/stop cycles.
