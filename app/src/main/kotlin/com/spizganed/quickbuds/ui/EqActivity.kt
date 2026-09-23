@@ -17,7 +17,6 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
-import android.widget.SeekBar
 import android.widget.Switch
 import android.widget.TextView
 import com.spizganed.quickbuds.R
@@ -44,14 +43,10 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var notConnected: TextView
     private lateinit var builtInCard: LinearLayout
     private lateinit var bassSwitch: Switch
-    private lateinit var bassSliderRow: LinearLayout
-    private lateinit var bassSlider: SeekBar
-    private lateinit var bassValue: TextView
+    private lateinit var bassSlider: LevelSliderView
     private lateinit var customHeader: TextView
     private lateinit var customCard: LinearLayout
 
-    /** True while the user holds a slider, so a re-read cannot rebuild it under their finger. */
-    private var dragging = false
     private var syncing = false
 
     private val connection = object : ServiceConnection {
@@ -99,22 +94,20 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         bassSwitch = SettingRowFactory.buildSwitch(this, false)
         bassSwitch.setOnCheckedChangeListener { _, on ->
             if (!syncing) manager?.setFeatures(OpoProtocol.FEATURE_BASSWAVE to on)
-            bassSliderRow.visibility = if (on) View.VISIBLE else View.GONE
+            bassSlider.visibility = if (on) View.VISIBLE else View.GONE
         }
         bassCard.addView(
             SettingRowFactory.build(
                 this, R.drawable.ic_equalizer, R.string.eq_basswave, R.string.eq_basswave_sub, bassSwitch
             ) { bassSwitch.performClick() }
         )
-        bassValue = valueText()
-        bassSlider = slider(10)
-        bassSlider.setOnSeekBarChangeListener(seekListener(
-            onChange = { v -> bassValue.text = signed(v - 5) },
-            onRelease = { v -> manager?.setBassWaveLevel(v - 5) }
-        ))
-        bassSliderRow = sliderRow(getString(R.string.eq_level), bassSlider, bassValue)
-        bassSliderRow.visibility = View.GONE
-        bassCard.addView(bassSliderRow)
+        bassSlider = LevelSliderView(this, -5, 5, getString(R.string.eq_weak), getString(R.string.eq_strong)).apply {
+            onRelease = { manager?.setBassWaveLevel(it) }
+            visibility = View.GONE
+            val pad = ThemeRes.dp(this@EqActivity, 8f)
+            setPadding(pad, 0, pad, pad)
+        }
+        bassCard.addView(bassSlider)
         root.addView(bassCard.apply {
             (layoutParams as? LinearLayout.LayoutParams)?.topMargin = dp(14f)
         })
@@ -144,7 +137,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     // ---------------------------------------------------------------- rendering
 
     private fun render() {
-        if (dragging) return
+        // Never rebuild under a finger: a re-read landing mid-drag would yank the knob back.
+        if (bassSlider.dragging) return
         val m = manager
         val connected = m?.isConnected() == true
         notConnected.visibility = if (connected) View.GONE else View.VISIBLE
@@ -163,11 +157,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         syncing = true
         val bassOn = m?.featureStates?.get(OpoProtocol.FEATURE_BASSWAVE) == 1
         bassSwitch.isChecked = bassOn
-        bassSliderRow.visibility = if (bassOn) View.VISIBLE else View.GONE
-        m?.bassWaveLevel?.let {
-            bassSlider.progress = it + 5
-            bassValue.text = signed(it)
-        }
+        bassSlider.visibility = if (bassOn) View.VISIBLE else View.GONE
+        m?.bassWaveLevel?.let { bassSlider.value = it }
         syncing = false
 
         val custom = m?.eqCustom.orEmpty()
@@ -325,8 +316,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     // ---------------------------------------------------------------- small builders
 
-    private fun signed(v: Int) = if (v > 0) "+$v" else "$v"
-
     private fun card() = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
         background = getDrawable(R.drawable.app_card_bg)
@@ -367,42 +356,4 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             })
         }
     }
-
-    private fun valueText() = TextView(this).apply {
-        setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorTextPrimary))
-        textSize = 14f
-        gravity = Gravity.END
-        layoutParams = LinearLayout.LayoutParams(ThemeRes.dp(this@EqActivity, 36f), LinearLayout.LayoutParams.WRAP_CONTENT)
-    }
-
-    private fun slider(max: Int) = SeekBar(this).apply {
-        this.max = max
-        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-    }
-
-    private fun sliderRow(label: String, bar: SeekBar, value: TextView) = LinearLayout(this).apply {
-        val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(14f), dp(6f), dp(14f), dp(6f))
-        addView(TextView(this@EqActivity).apply {
-            text = label
-            setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorTextSecondary))
-            textSize = 13f
-            layoutParams = LinearLayout.LayoutParams(dp(44f), LinearLayout.LayoutParams.WRAP_CONTENT)
-        })
-        addView(bar)
-        addView(value)
-    }
-
-    /** Sends on RELEASE only — one write per gesture, not one per step as HeyMelody does. */
-    private fun seekListener(onChange: (Int) -> Unit, onRelease: (Int) -> Unit) =
-        object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(s: SeekBar, v: Int, fromUser: Boolean) = onChange(v)
-            override fun onStartTrackingTouch(s: SeekBar) { dragging = true }
-            override fun onStopTrackingTouch(s: SeekBar) {
-                dragging = false
-                onRelease(s.progress)
-            }
-        }
 }
