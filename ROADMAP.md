@@ -83,8 +83,17 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Replace the connect retry timers with system Bluetooth state.** Listen for Android's own
   "device connected" (A2DP/headset) broadcasts and connect RFCOMM when the audio link comes up,
   instead of 5 s retries. Also try the UUID that works first (the primary UUID always burns ~5 s).
-- **Make sure phone audio is connected when our app connects.** Question. This may need extra
-  permissions or a hidden API. Check what is possible and report back first.
+- **Connect pill drives phone audio too (HeyMelody's "device sync").** Open, answered 2026-09-24
+  (btsnoop + bugreport logcat of HeyMelody's own Connect/Disconnect, Android 16):
+  - **Disconnect** sends nothing to the buds. HeyMelody calls `BluetoothHeadset.disconnect()` and
+    `BluetoothA2dp.disconnect()` by reflection, the stack closes the profiles and drops the ACL.
+    Phone audio goes fully off.
+  - **Connect** calls `BluetoothA2dp.connect()` (accepted). Its `BluetoothHeadset.connect()` threw,
+    but the system brought HFP up by itself ~10 s later. Then HeyMelody opens SPP on `0000079A-...`
+    directly.
+  - Timing: music back ~2 s after Connect, HFP (calls) ~10 s, brought up by the system. The
+    Headset refusal is a privilege check, not a target-SDK one (HeyMelody targets 36+ and still
+    gets it), so expect the same for us. A2DP alone is enough.
 
 ## Docs cleanup
 
