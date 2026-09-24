@@ -46,7 +46,9 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
   - Under the presets: an accent picker to swap the red for any colour.
   - A custom palette editor: pick each palette colour (black, the greys, white, the accent) with a
     hex/colour picker. Selected colours sit in slots next to the picker. Up to 3 saved custom
-    palettes, each renameable. He has reference screenshots of the picker he wants.
+    palettes, each renameable. Reference: `local/refernce_hex_picker/unnamed.png` (htmlcolorcodes.com
+    picker): a saturation/brightness square, a hue slider, and a swatch plus `#HEX` field. Our
+    palette slots (1–5) sit next to it, in place of that site's shade strip.
   - The palette should also apply to the widget where possible.
 - **Hide the Dev Tools button** from the main screen (switch).
 - **Background service on/off**, for users who do not want it.
@@ -73,10 +75,8 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## Connection and battery
 
-- **What sends a request every ~3 s?** Question. He saw it in the logs. The code only has a 60 s
-  keep-alive. It may be the buds' own pushes or a screen that is open. Needs a log sample.
-- **60 s keep-alive: drop it or stretch it to 300 s.** The buds push battery themselves, and he has
-  never lost a connection.
+- **Keep-alive: drop it entirely?** Open. It is now 300 s. Dropping it needs a long session
+  without it, to prove the link does not go stale.
 - **Replace the connect retry timers with system Bluetooth state.** Listen for Android's own
   "device connected" (A2DP/headset) broadcasts and connect RFCOMM when the audio link comes up,
   instead of 5 s retries. Also try the UUID that works first (the primary UUID always burns ~5 s).

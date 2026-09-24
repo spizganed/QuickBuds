@@ -104,7 +104,7 @@ class BudsConnectionManager(private val context: Context) {
     private var isReady = false
     private var isConnecting = false
     private var reconnectAttempts = 0
-    private var pollingStarted = false
+    private var pollTask: java.util.concurrent.ScheduledFuture<*>? = null
 
     // Reconnect-after-loss state — see reconnectAfterLoss().
     private var lastDevice: BluetoothDevice? = null
@@ -115,10 +115,10 @@ class BudsConnectionManager(private val context: Context) {
     /**
      * Poll period for the status query (0x010D).
      *
-     * Why 60s and not 5s: every wear change is now PUSHED by the buds as 0x0204
+     * Why 300s: every wear change is now PUSHED by the buds as 0x0204
      * subtype 02, so the poll no longer drives any UI update we care about
      * instantly. At 5s we were sending ~12 packets/minute, i.e. constantly
-     * waking the radio for nothing. 60s keeps a sensible safety-net refresh.
+     * waking the radio for nothing. Battery is pushed too, so 300s is only a keep-alive.
      *
      * The wear query (0x0109) is deliberately NOT polled any more — push covers
      * it fully. See pollStatusOnce below.
@@ -129,7 +129,7 @@ class BudsConnectionManager(private val context: Context) {
      * link going stale. If battery proves to push on change (needs a long
      * capture to confirm), this can be widened much further or dropped.
      */
-    private val POLL_INTERVAL_SECONDS = 60L
+    private val POLL_INTERVAL_SECONDS = 300L
 
     private var lastLeft: BatteryParser.Info? = null
     private var lastRight: BatteryParser.Info? = null
@@ -247,12 +247,10 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     private fun startBatteryPolling() {
-        if (pollingStarted) {
-            log("Polling already running, not starting a second poller.")
-            return
-        }
-        pollingStarted = true
-        pollExecutor.scheduleWithFixedDelay({
+        // One poller per connection: disconnect() cancels it. Before 2026-09-24 only a flag was
+        // reset, so every reconnect stacked another task (~80 seen, polling several times a second).
+        pollTask?.cancel(false)
+        pollTask = pollExecutor.scheduleWithFixedDelay({
             if (isReady) {
                 try {
                     // Status query only. The wear query (0x0109) is intentionally
@@ -295,12 +293,8 @@ class BudsConnectionManager(private val context: Context) {
         connectedThread?.cancel()
         connectedThread = null
         bluetoothSocket = null
-        // Clear the poll-latch so the NEXT connection starts a fresh poller.
-        // Without this, pollingStarted stayed true for the process lifetime and
-        // startBatteryPolling() short-circuited on every reconnect ("Polling
-        // already running"), silently depending on the previous session's
-        // executor still being alive. Seen in packets_export_20260916_133141.
-        pollingStarted = false
+        pollTask?.cancel(false)
+        pollTask = null
         handler.post { listeners.forEach { it.onConnected(false) } }
         log("Disconnected")
     }

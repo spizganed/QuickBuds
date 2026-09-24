@@ -5,8 +5,10 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 ## Connection and push
 
 - Packet logging: every received `AA` frame and every sent command, timestamped.
-- Wear, battery, ANC and Game Mode are pushed by the buds (PROTOCOL.md). The 60 s poll is only a
-  keep-alive.
+- Wear, battery, ANC and Game Mode are pushed by the buds (PROTOCOL.md). The status poll is only a
+  keep-alive, every 300 s.
+- Poll storm fixed 2026-09-24: every reconnect used to stack another poller (~80 seen, several polls
+  a second). There is now one poller per connection, and disconnect cancels it.
 - Reconnect after a lost link (e.g. after a codec switch): fast and consistent.
 - Status reply `0x810D` decoded: Hi-Res, 3D audio and low latency show the buds' own state on connect.
 - Gesture, hold and on-call config are read from the buds on every connect.
