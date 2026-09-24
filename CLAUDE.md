@@ -18,9 +18,7 @@ the wear-state display). Only after that, other earbud models.
 
 ## Read order
 
-The PC move is done — build confirmed working, wrapper generated, device reachable — as of
-2026-09-20. `START-HERE.md` and `DeepSeek_CodeAssist_memory.md` served their purpose and are gone;
-this file is now the sole entry point for a new session.
+This file is the entry point for a new session.
 
 | File | What it is |
 |---|---|
@@ -34,7 +32,7 @@ this file is now the sole entry point for a new session.
 
 ## Build and run
 
-Plain desktop Gradle. There are no CodeAssist prerequisites or dependencies any more.
+Plain desktop Gradle.
 
 - **Toolchain:** Gradle **9.6.0** · Android Gradle Plugin **9.4.0** · Kotlin **2.4.0** (since 2026-09-25).
   AGP 9 compiles Kotlin itself: there is no `org.jetbrains.kotlin.android` plugin (AGP 9 rejects
@@ -67,58 +65,15 @@ Plain desktop Gradle. There are no CodeAssist prerequisites or dependencies any 
 
 ### Environment you need
 
-Everything below is a one-time PC setup. Nothing here was recorded anywhere before the move,
-because the phone side had it all built in.
+One-time setup.
 
 | Need | Version / note |
 |---|---|
-| JDK | **17+**, built with JBR 21. (Gradle 8.13, used until 2026-09-25, rejected JDK 24+ with just the bare version number, e.g. `25.0.3`, as the error.) See the JDK note below if running from Android Studio. |
+| JDK | **17+**, built with JBR 21. Point `JAVA_HOME` at Android Studio's `~/.jdks/jbr-21*`, not the IDE's own bundled JBR. |
 | Android SDK | `platforms;android-37.0` (for `compileSdk 37`) and `platform-tools` (for adb). `build-tools` matching AGP. |
-| Gradle | Only to generate the wrapper (below). After that `./gradlew` is self-sufficient. |
+| Gradle | None — the committed `./gradlew` wrapper downloads it. |
 | adb | For deploying to the phone and reading `logcat`. |
 | kotlin-stdlib | **No** manual install — it comes with the Kotlin Gradle plugin. The only app dependency is `androidx.core:core:1.13.1`. |
-
-### First run on the PC
-
-The build files are committed, but **the wrapper scripts are not yet generated** — this project
-never had a `gradlew` (CodeAssist drove the build itself), so the first step on the PC is to create
-them once:
-
-```bash
-gradle wrapper --gradle-version 8.13     # writes gradlew, gradlew.bat, gradle-wrapper.jar
-./gradlew assembleDebug                  # first real build
-```
-
-Set `sdk.dir` in a local `local.properties` (or export `ANDROID_HOME`). `local.properties` is
-git-ignored — never commit it.
-
-The wrapper JAR and scripts **should be committed** afterwards, so nobody needs a local Gradle
-install or a matching Gradle version again. **Commit them as a follow-up, and note in the commit
-that they are generated.** They are the one piece of the build that is not yet in the repo.
-
-**The first build also downloads a lot** — Gradle, AGP, and the Kotlin plugin. That is expected,
-not a stall.
-
-**JDK gotcha, found 2026-09-20 setting this up in Android Studio's own agent terminal:** Android
-Studio's *own* bundled JBR can be too new for Gradle 8.13 — this machine's was JDK 25, and running
-`gradle wrapper` with it failed with just `25.0.3` as the error, no other detail. Android Studio also
-keeps a **second, older JBR** at `~/.jdks/jbr-<version>` (this machine had `jbr-21.0.11`) — that's the
-one Studio itself uses as the *project* JDK for Gradle sync, separate from the IDE's own runtime.
-Point `JAVA_HOME` at that one, not the IDE's bundled JBR, if the IDE's own JBR turns out to be JDK 24+.
-
-**Android Studio's own sync may have already done most of this setup for you** — check before
-reinstalling anything. On the machine this was verified on, Studio's sync had already: written a
-correct `local.properties`, installed the matching SDK platform/build-tools, and even pre-downloaded
-the exact Gradle 8.13 distribution into `~/.gradle/wrapper/dists/`, which can be pointed at directly
-(`<dist>/gradle-8.13/bin/gradle.bat wrapper --gradle-version 8.13`) to generate the wrapper without
-any network access at all.
-
-`app/module.toml` and `.platform/` — CodeAssist's project model and cache/settings from the mobile
-era — are git-ignored and were never committed, so **a fresh clone on the PC will never have them at
-all.** They only ever existed on the original phone's working copy, which was intentionally left
-alone during the move so the phone build kept working as a fallback. If you're working from a fresh
-clone, there is nothing here to clean up — this note is historical, kept only so nobody goes looking
-for files that were correctly never carried across git.
 
 ### Signing — release key since v2.0.0
 
@@ -132,7 +87,7 @@ them and never print the password.
 Without that file (a fresh clone), `assembleRelease` falls back to an unsigned APK, as before.
 Device testing uses `assembleRelease` too. **Debug and release builds cannot be installed over
 each other**, and switching needs an uninstall.
-v1.1.0 was signed by CodeAssist with a different key, so moving from 1.1.0 to 2.0.0 also needs one.
+v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs one.
 
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
@@ -152,16 +107,6 @@ version through `PackageManager`, and `buildConfig` stays off.
 GitHub release tagged `v<version>`. The in-app updater compares the tag against the installed
 version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is not installed on
 this PC, so the release page itself is made in the browser.
-
-## History: mobile → PC
-
-Everything up to and including **v1.1.0** (commit `2875262`) was written on a **mobile-only
-workflow** — Nothing Phone (3a), CodeAssist IDE, Termux, GitHub mobile. Work has since moved to
-**Claude Code on a PC**, with Gradle and adb. Attribution: DeepSeek chat (~15% — first codebase,
-first RE steps), the CodeAssist agent via OpenRouter on DeepSeek v4.1-fast (~80% of the current
-code), Kimi / Gemini / Grok for small tasks, then Claude Code from here on.
-
-**Some habits below are CodeAssist artefacts. They are marked, and they do not apply on PC.**
 
 ## Protocol work — the rules that were paid for
 
@@ -256,10 +201,8 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 ## Working with the developer
 
 - **He handles device testing and design decisions.** The agent handles reverse-engineering, parsers,
-  protocol work and code — and, since the PC move, git operations including commit and push. The
-  phone-era rule reserving all git operations for him was a CodeAssist limitation, not a standing
-  preference — it does **not** carry forward. **The one thing that does carry forward: ask before
-  every push, every time**, whether he says "commit" or the agent proposes it — a standing "yes" to
+  protocol work and code, including git commits. **Ask before every push, every time**, whether he
+  says "commit" or the agent proposes it — a standing "yes" to
   push once is not a standing "yes" forever.
 - **Revert first, reason after.** When he reports a regression and asks for a revert, do the revert,
   then investigate. Arguing has cost a whole session before.
@@ -269,23 +212,6 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
   their PROTOCOL.md entry.
 - **Do not mark roadmap items with release versions.** Releases happen when he feels the app is
   ready, not on a schedule.
-
-## CodeAssist-era notes — do NOT carry these forward
-
-These were real limits of the old environment only. On PC, with Gradle and a normal source tree,
-they are historical:
-
-- `search_text` did not index Markdown, so docs had to be read with the file reader.
-- `project_diagnostics` reported **false errors** on nested classes named `Result`/`State`
-  (`BatteryParser`, `EarStatusParser`, `WearingStatusParser`, `WidgetStateStore.write`). The build
-  was always fine; do not chase these.
-- There was no `assemble` task: the only build tasks were `bundle:app:release` and
-  `androidRun:app:release`. On PC, use Gradle's own tasks.
-- `get_diagnostics` could report "No diagnostics" for a file that did not compile (a missing import
-  across packages). After a cross-package change, always run the compiler.
-- `noteUnattributed` blanket-excluded cmd `0x0204`, so an undecoded `0x0204` subType printed nothing.
-  That hid the ANC push frame for three captures and produced a confident, wrong claim that ANC has
-  no push event.
 
 ## Dev tools inside the app
 
@@ -399,8 +325,7 @@ a shared one hung.
   `svgs/` (the source SVGs the wear icons were traced from, named in the drawables' own headers).
   **`local/` is PC-only — git-ignored, never committed or pushed** (`[USER]` 2026-09-22; it was
   tracked until then and still sits in older commits' history). Doc references to `local/logs/`
-  point at the developer's machine, not the repo. `local/commits/` (the v1.1.0 commit-message files) is
-  gone — obsolete once commits started being made on the PC directly.
+  point at the developer's machine, not the repo.
 - **`local/notes/` and `local/NEXT-SESSION.md` are gone, on purpose** — all superseded, and their
   surviving content was folded into this file, PROTOCOL.md, ROADMAP.md and PACKET-CAPTURE.md.
   **Do not recreate a notes folder or a session-plan file.** Scattered per-purpose notes are exactly
@@ -410,6 +335,4 @@ a shared one hung.
   captures (`*.log.txt`) are evidence and **are** tracked.
 - There are no committed screenshots.
 - Root docs: `README.md`, `ROADMAP.md`, `ROADMAP-DONE.md`, `CLAUDE.md`, `PROTOCOL.md`, `CREDITS.md`, `PACKET-CAPTURE.md`,
-  `LICENSE`. The mobile→PC move's two temporary files, `START-HERE.md` and
-  `DeepSeek_CodeAssist_memory.md`, served their purpose and are gone — this file is the sole entry
-  point for a new session now.
+  `LICENSE`.
