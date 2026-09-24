@@ -73,13 +73,13 @@
     <string name="row_game_title">Low latency mode</string>
     <string name="row_game_sub">Stays in sync with video</string>
     <string name="row_hires_title">High-quality audio</string>
-    <string name="row_hires_sub">Hi-Res codec (LHDC)</string>
-    <string name="row_hires_sub_off">Using AAC</string>
+    <string name="row_hires_sub">Up to 192 kHz, 400 kbps</string>
+    <string name="row_hires_sub_off">Standard quality (48 kHz)</string>
     <string name="codec_dialog_title">Earbuds will reconnect</string>
     <string name="codec_dialog_accept">Accept</string>
-    <string name="codec_msg_reconnect">Switching the codec disconnects the earbuds for a few seconds while they reconnect.</string>
+    <string name="codec_msg_reconnect">Switching audio quality disconnects the earbuds for a few seconds while they reconnect.</string>
     <string name="codec_msg_hires_drops_spatial">High-quality audio doesn\'t work with 3D audio. Turning it on turns 3D audio off, and the earbuds will disconnect for a few seconds.</string>
-    <string name="codec_msg_spatial_drops_hires">3D audio doesn\'t work with high-quality audio. Turning it on switches to the standard codec, and the earbuds will disconnect for a few seconds.</string>
+    <string name="codec_msg_spatial_drops_hires">3D audio doesn\'t work with high-quality audio. Turning it on switches to standard quality, and the earbuds will disconnect for a few seconds.</string>
     <string name="row_spatial_title">3D audio</string>
     <string name="row_spatial_sub">Spatial sound with head tracking</string>
     <string name="row_eq_title">Equalizer</string>
@@ -107,15 +107,20 @@
     <string name="eq_bass">Bass</string>
     <string name="eq_basswave">Bass boost</string>
     <string name="eq_basswave_sub">Deeper bass that adapts to the music</string>
-    <string name="eq_weak">Weak</string>
-    <string name="eq_strong">Strong</string>
     <string name="eq_custom">Custom</string>
     <string name="eq_rename">Rename</string>
+    <string name="eq_edit">Edit preset</string>
     <string name="eq_close">Close</string>
     <string name="eq_save">Save</string>
     <string name="eq_delete">Delete</string>
     <string name="eq_delete_confirm">Delete "%1$s"?</string>
-    <string name="eq_add">+ Add custom preset</string>
+    <string name="eq_add">New</string>
+    <string name="eq_import">Import</string>
+    <string name="eq_import_title">Paste a preset copied from QuickBuds</string>
+    <string name="eq_import_confirm">Import</string>
+    <string name="eq_import_bad">Not a QuickBuds preset</string>
+    <string name="eq_copy">Copy as text</string>
+    <string name="eq_copied">Preset copied</string>
 
     <!-- App update. -->
     <string name="update_title">App update</string>

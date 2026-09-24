@@ -35,8 +35,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Smart auto-pause.** Open. Pause only when **both** buds are out; one bud out keeps playing; never
   auto-play. Built on the wear pushes in our background service. Meant to be used with the firmware
   auto-pause switched off.
-- **EQ preset import/export.** Open. Export a custom preset as plain text to the clipboard, and
-  import it from pasted text.
 - **Reorder and hide the main-screen rows.** Open. Hold to drag a row into a new order, unlocked by a
   switch in Settings so nothing moves by accident. Rows can also be hidden (e.g. Hi-Res codec, if it
   stays on permanently).
@@ -114,4 +112,3 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - Removing the foreground-service notification: Android 15 requires it for a `connectedDevice` service.
 - Committing logs or debug documents.
 - Marking roadmap items with a release version.
-- Red outlines on the cards and sheets: tried on device 2026-09-25, rejected.

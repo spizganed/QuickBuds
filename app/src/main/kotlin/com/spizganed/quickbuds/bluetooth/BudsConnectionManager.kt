@@ -167,16 +167,18 @@ class BudsConnectionManager(private val context: Context) {
         }
     }
 
-    fun connect(device: BluetoothDevice) {
+    fun connect(device: BluetoothDevice, withAudio: Boolean = false) {
         if (isConnecting || isConnected()) {
             log("Already connecting/connected, ignoring.")
             return
         }
         isConnecting = true
         lastDevice = device
-        // Every connect — pill, ACL receiver, retries, reconnect after loss — brings phone audio
-        // up too. A no-op when it is already connected.
-        setPhoneAudio(device, on = true)
+        // Only a connect the user asked for (the pill) brings phone audio up. An automatic one —
+        // ACL receiver, retries, reconnect after loss — leaves audio to Android: asking for A2DP
+        // while the system is auto-connecting it is the suspected cause of audio getting stuck
+        // (reported 2026-09-25, not yet confirmed from a log).
+        if (withAudio) setPhoneAudio(device, on = true)
         log("Initiating RFCOMM connection to ${device.name}...")
         context.getSystemService(BluetoothManager::class.java)?.adapter?.cancelDiscovery()
 

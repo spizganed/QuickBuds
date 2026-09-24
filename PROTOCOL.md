@@ -984,7 +984,7 @@ feature IDs to vendor method names:
 | `0x09` | Vocal enhance | | `0x28` | **Game mode (main, newer)** |
 | `0x0B` | Hearing enhance | | `0x30` | Adaptive volume |
 | `0x11` | **Dual device** | | `0x31` | Adaptive ear |
-| `0x18` | **Hi-Res codec (LHDC)** `[CAPTURE]` | | `0x3A` | Sleep detection |
+| `0x18` | **Hi-Res (LHDC 96/192 kHz, 400 kbps)** `[CAPTURE]` | | `0x3A` | Sleep detection |
 
 `[OSS]` **Worth knowing:** newer devices put game mode on `0x28`, older on `0x06`.
 This project uses `0x06`. If game mode misbehaves on a different model, that is
@@ -1020,6 +1020,18 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
   in the order above, behind an Accept/Decline warning.
 - **Any `0x18` change drops the link** — the buds reconnect ~4 s later (fresh `0x0100` handshake).
 - `0x0422` (three-mode spatial) is **not** what this firmware's HeyMelody sends.
+- **`0x18` is a quality switch, not a codec switch** `[CAPTURE]` (phone `dumpsys bluetooth_manager`,
+  2026-09-25, same session, music playing). The codec is LHDC V5 either way; the phone picks it.
+  What changes is what the buds advertise for LHDC V5:
+
+  | | `0x18` = 01 (Hi-Res on) | `0x18` = 00 (off) |
+  |---|---|---|
+  | Sample rates offered | 44.1 / 48 / 96 / 192 kHz | 44.1 / 48 kHz |
+  | LHDC ABR bitrate cap | 400 kbps | 256 kbps |
+  | Stream the phone chose | 48 kHz / 24-bit | 48 kHz / 24-bit |
+
+  AAC and SBC are offered in both states. No LDAC on these buds. The phone's own per-device HD-audio
+  switch is a separate, system-side setting.
 
 ### Equalizer — custom presets, READ side only — `[CAPTURE]` 2026-09-23 (from the codec capture)
 

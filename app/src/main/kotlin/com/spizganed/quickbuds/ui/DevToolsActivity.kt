@@ -205,6 +205,7 @@ class DevToolsActivity : Activity() {
             startService(
                 Intent(this, com.spizganed.quickbuds.bluetooth.BudsService::class.java)
                     .setAction(com.spizganed.quickbuds.bluetooth.BudsService.ACTION_FORCE_CONNECT)
+                    .putExtra(com.spizganed.quickbuds.bluetooth.BudsService.EXTRA_WITH_AUDIO, true)
             )
             showInLog("reconnect requested (FORCE_CONNECT)")
         }

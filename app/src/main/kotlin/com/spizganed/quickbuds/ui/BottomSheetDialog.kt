@@ -236,6 +236,7 @@ class BottomSheetDialog(private val activity: Activity) {
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
             w.setGravity(Gravity.BOTTOM)
+            w.setWindowAnimations(R.style.SheetAnimation)
             // With a text field, open the keyboard and push the sheet up above it.
             // ADJUST_RESIZE is deprecated in favour of hand-written IME-inset handling, but it
             // still works for a dialog window, and the replacement would need retesting.

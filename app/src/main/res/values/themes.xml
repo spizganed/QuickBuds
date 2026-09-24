@@ -190,4 +190,10 @@
 
     <!-- Kept so a stale reference lands on OLED instead of the light platform default. -->
     <style name="Theme.App" parent="Theme.App.OLED" />
+
+    <!-- Window animation for the bottom sheets (BottomSheetDialog, the EQ editor). -->
+    <style name="SheetAnimation">
+        <item name="android:windowEnterAnimation">@anim/sheet_in</item>
+        <item name="android:windowExitAnimation">@anim/sheet_out</item>
+    </style>
 </resources>

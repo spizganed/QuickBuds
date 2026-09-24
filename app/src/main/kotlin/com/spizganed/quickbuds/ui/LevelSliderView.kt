@@ -11,15 +11,13 @@ import kotlin.math.roundToInt
 
 /**
  * A stepped horizontal slider in [EqCurveView]'s visual language: accent track fill, a ringed
- * knob, the value above the knob, and end labels under the track. Like the curve, the knob follows
+ * knob and the value above the knob. Like the curve, the knob follows
  * the finger continuously and glides onto the nearest step on release; [onRelease] fires once.
  */
 class LevelSliderView(
     context: Context,
     private val min: Int,
-    private val max: Int,
-    private val startLabel: String,
-    private val endLabel: String
+    private val max: Int
 ) : View(context) {
 
     var onRelease: ((Int) -> Unit)? = null
@@ -54,7 +52,6 @@ class LevelSliderView(
     private val valuePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = accent; textSize = dp(14f); textAlign = Paint.Align.CENTER; isFakeBoldText = true
     }
-    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = secondary; textSize = dp(12f) }
 
     private val left get() = dp(22f)
     private val right get() = width - dp(22f)
@@ -63,7 +60,7 @@ class LevelSliderView(
     private fun x(v: Float) = left + (v - min) * (right - left) / (max - min)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(78f).toInt())
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(58f).toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -74,12 +71,6 @@ class LevelSliderView(
         canvas.drawCircle(x(pos), trackY, r, dotFill)
         canvas.drawCircle(x(pos), trackY, r, dotRing)
         canvas.drawText(if (value > 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
-
-        val by = height - dp(6f)
-        labelPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText(startLabel, left - dp(6f), by, labelPaint)
-        labelPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText(endLabel, right + dp(6f), by, labelPaint)
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
