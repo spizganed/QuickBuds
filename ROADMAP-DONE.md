@@ -27,6 +27,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - On-call gestures: the write is verified. The labels still need a real call (see ROADMAP.md).
 - Equalizer: built-in presets, Bass boost with level, up to 3 custom presets on a draggable curve
   with rename and delete (PROTOCOL.md §9).
+- EQ preset copy / import as text (`QB-EQ:<gains>:<name>`), via the clipboard.
 - Hi-Res codec and 3D audio switches (mutually exclusive, with a reconnect warning), and low latency.
 - Find my earbuds: the buds' own tone on both buds, with an in-ear warning.
 - In-app updater from GitHub releases.
@@ -37,7 +38,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Wear and case icons traced verbatim from `local/svgs/` (confirmed as the newest design 2026-09-24);
   adaptive launcher icon.
 - Portrait-locked on every screen.
-- Switch knobs turn red when on; settings-row icons stay red to match; row chevrons centred (2026-09-25).
+- Switch knobs turn red when on; row icons, chevrons and header icons all red on grey chips; chevrons centred.
+- Device name in the header shows only while connected, fading in on connect.
 
 ## Tooling and release
 

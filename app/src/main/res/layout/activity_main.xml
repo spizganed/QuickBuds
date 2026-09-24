@@ -75,7 +75,6 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="@drawable/header_icon_bg"
-            android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
             android:paddingStart="12dp"

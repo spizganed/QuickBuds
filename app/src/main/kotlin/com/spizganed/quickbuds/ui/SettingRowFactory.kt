@@ -147,6 +147,8 @@ object SettingRowFactory {
         sw.trackTintList = null
         // Keep the switch from stealing the row's ripple when the row is clickable.
         sw.isFocusable = true
+        // No press halo: the stock ripple drew a see-through circle twice the knob's size.
+        sw.background = null
         return sw
     }
 
@@ -172,7 +174,7 @@ object SettingRowFactory {
             setPadding(dp(6f), dp(6f), dp(6f), dp(6f))
             background = context.getDrawable(R.drawable.header_icon_bg)
             setImageDrawable(
-                ThemeRes.tint(context, R.drawable.ic_chevron_right, ThemeRes.color(context, R.attr.appColorTextSecondary))
+                ThemeRes.tint(context, R.drawable.ic_chevron_right, ThemeRes.color(context, R.attr.appColorAccent))
             )
             contentDescription = ""
         }

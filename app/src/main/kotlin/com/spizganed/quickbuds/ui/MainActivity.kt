@@ -13,8 +13,10 @@ import android.os.Bundle
 import android.os.IBinder
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -211,12 +213,19 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             cardsHidden = !visible
             batteryCard.visibility = if (visible) View.VISIBLE else View.GONE
             batteryCard.alpha = 1f
+            deviceNameText.alpha = if (visible) 1f else 0f
             setControlsEnabled(visible, animate = false)
             return
         }
 
         if (cardsHidden == !visible) return
         cardsHidden = !visible
+
+        // The device name only shows while connected: it fades and slides in on connect.
+        // Alpha, not GONE, so the pill beside it never moves.
+        deviceNameText.translationX = if (visible) -ThemeRes.dp(this, 12f).toFloat() else 0f
+        deviceNameText.animate().alpha(if (visible) 1f else 0f).translationX(0f)
+            .setDuration(if (visible) 350L else 200L).start()
 
         val cards = listOf(batteryCard)
 
@@ -450,6 +459,16 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         ancRow = findViewById<LinearLayout>(R.id.ancRow)
 
         connPill = findViewById<LinearLayout>(R.id.connPill)
+        // No ripple: the pill sinks a little under the finger and springs back, like a real button.
+        connPill.setOnTouchListener { v, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.92f).scaleY(0.92f)
+                    .setInterpolator(DecelerateInterpolator()).setDuration(90).start()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> v.animate().scaleX(1f).scaleY(1f)
+                    .setInterpolator(OvershootInterpolator(3f)).setDuration(260).start()
+            }
+            false
+        }
         connDot = findViewById<ImageView>(R.id.connDot)
         connText = findViewById<TextView>(R.id.connText)
 
@@ -461,7 +480,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             startService(
                 Intent(this, BudsService::class.java).setAction(
                     if (connected) BudsService.ACTION_FORCE_DISCONNECT else BudsService.ACTION_FORCE_CONNECT
-                )
+                ).putExtra(BudsService.EXTRA_WITH_AUDIO, true)
             )
             // A failed connect may not change the stored state, so nothing would repaint the
             // pill. ponytail: fixed timeout; a real "connecting" state in the store if it matters.
@@ -693,12 +712,12 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * by renderWear(); do not set them here.
      *
      * The header frames keep the widget's dark chip in EVERY theme (see
-     * header_icon_bg), so their glyphs stay white regardless of appColorIconTint —
-     * otherwise the cog and dev-tools icons would turn black on a dark chip.
+     * header_icon_bg), so their glyphs take the accent, like the EQ and row-chevron buttons —
+     * never appColorIconTint, which would turn them black on a dark chip.
      */
     private fun applyThemeTints() {
-        btnDevTools.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_dev_tools, 0xFFFFFFFF.toInt()))
-        btnSettings.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_settings_cog, 0xFFFFFFFF.toInt()))
+        btnDevTools.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_dev_tools, ThemeRes.color(this, R.attr.appColorAccent)))
+        btnSettings.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_settings_cog, ThemeRes.color(this, R.attr.appColorAccent)))
     }
 
     // ==================== Battery block ====================
@@ -1178,7 +1197,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             return
         }
         val device = adapter.getRemoteDevice(TARGET_MAC)
-        manager.connect(device)
+        manager.connect(device, withAudio = true)
     }
 
     /**

@@ -97,7 +97,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                     statusLog("[SVC] FORCE_CONNECT: connecting...")
                     try {
                         val device = getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
-                        if (device != null) manager?.connect(device)
+                        if (device != null) manager?.connect(device, intent.getBooleanExtra(EXTRA_WITH_AUDIO, false))
                     } catch (e: Exception) {
                         statusLog("[SVC] Force connect failed: ${e.message}")
                     }
@@ -371,6 +371,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     companion object {
         const val ACTION_FORCE_CONNECT = "com.spizganed.quickbuds.FORCE_CONNECT"
+        /** On FORCE_CONNECT: true when the user asked (pill), so phone audio is brought up too. */
+        const val EXTRA_WITH_AUDIO = "with_audio"
         const val ACTION_FORCE_DISCONNECT = "com.spizganed.quickbuds.FORCE_DISCONNECT"
         const val ACTION_WIDGET_COMMAND = "com.spizganed.quickbuds.WIDGET_COMMAND"
         const val EXTRA_WIDGET_ACTION = "widget_action"
