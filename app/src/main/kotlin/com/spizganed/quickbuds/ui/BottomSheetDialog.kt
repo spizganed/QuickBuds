@@ -237,6 +237,9 @@ class BottomSheetDialog(private val activity: Activity) {
             )
             w.setGravity(Gravity.BOTTOM)
             // With a text field, open the keyboard and push the sheet up above it.
+            // ADJUST_RESIZE is deprecated in favour of hand-written IME-inset handling, but it
+            // still works for a dialog window, and the replacement would need retesting.
+            @Suppress("DEPRECATION")
             if (inputInitial != null) w.setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE or
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE

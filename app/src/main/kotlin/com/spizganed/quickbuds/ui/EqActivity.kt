@@ -177,7 +177,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             customCard.addView(actionRow(getString(R.string.eq_add)) {
                 val used = custom.map { it.name }.toSet()
                 val name = (1..9).map { "Custom$it" }.first { it !in used }
-                m?.createCustomEq(name)
+                m.createCustomEq(name)
             })
         }
         customHeader.visibility = if (customCard.childCount == 0) View.GONE else View.VISIBLE

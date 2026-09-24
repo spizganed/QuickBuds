@@ -4,7 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -96,7 +96,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 } else {
                     statusLog("[SVC] FORCE_CONNECT: connecting...")
                     try {
-                        val device = BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(TARGET_MAC)
+                        val device = getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
                         if (device != null) manager?.connect(device)
                     } catch (e: Exception) {
                         statusLog("[SVC] Force connect failed: ${e.message}")
@@ -108,7 +108,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 manager?.disconnect()
                 // Only the deliberate disconnect drops phone audio — the manager's own
                 // disconnect() also runs after a failed connect attempt.
-                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(TARGET_MAC)
+                getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
                     ?.let { manager?.setPhoneAudio(it, on = false) }
             }
             ACTION_WIDGET_COMMAND -> {
@@ -234,7 +234,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 .setSmallIcon(R.drawable.ic_stat_buds)
                 .setOngoing(false)
                 .setShowWhen(false)
-                .setPriority(Notification.PRIORITY_MIN)
                 .build()
         } else {
             @Suppress("DEPRECATION")
@@ -244,7 +243,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 .setSmallIcon(R.drawable.ic_stat_buds)
                 .setOngoing(false)
                 .setShowWhen(false)
-                .setPriority(Notification.PRIORITY_MIN)
                 .build()
         }
         startForeground(1, notification)

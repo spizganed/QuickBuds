@@ -1,7 +1,7 @@
 package com.spizganed.quickbuds.bluetooth
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothSocket
@@ -145,7 +145,7 @@ class BudsConnectionManager(private val context: Context) {
      * itself (~10 s). Connecting an already-connected profile is a no-op.
      */
     fun setPhoneAudio(device: BluetoothDevice, on: Boolean) {
-        val adapter = BluetoothAdapter.getDefaultAdapter() ?: return
+        val adapter = context.getSystemService(BluetoothManager::class.java)?.adapter ?: return
         val method = if (on) "connect" else "disconnect"
         val profiles = if (on) listOf(BluetoothProfile.A2DP)
             else listOf(BluetoothProfile.HEADSET, BluetoothProfile.A2DP)
@@ -178,7 +178,7 @@ class BudsConnectionManager(private val context: Context) {
         // up too. A no-op when it is already connected.
         setPhoneAudio(device, on = true)
         log("Initiating RFCOMM connection to ${device.name}...")
-        BluetoothAdapter.getDefaultAdapter()?.cancelDiscovery()
+        context.getSystemService(BluetoothManager::class.java)?.adapter?.cancelDiscovery()
 
         Thread {
             val uuids = listOf(
@@ -209,7 +209,7 @@ class BudsConnectionManager(private val context: Context) {
                     log("Trying RFCOMM channel 15...")
                     val m = device.javaClass.getMethod("createRfcommSocket", Int::class.javaPrimitiveType)
                     socket = m.invoke(device, 15) as BluetoothSocket
-                    socket?.connect()
+                    socket.connect()
                     log("Connected via raw channel 15")
                 } catch (e: Exception) {
                     log("Channel 15 failed: ${e.message}")
