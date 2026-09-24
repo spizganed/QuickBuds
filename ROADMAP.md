@@ -57,6 +57,9 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Widget on/off.**
 - **App update** moves here from the main screen, with an **auto-check on start** switch. The check
   runs in the background and shows one styled dialog when an update exists. It should never nag.
+  **The update screen needs a redesign** (updater confirmed working 2.0.0 → 2.1.0, 2026-09-25): it is
+  bare bones today. Add a download progress bar, the release notes, the installed and new version
+  side by side, and the main screen's card and red-accent style.
 - **About.** An in-app WebView of the GitHub README, with two buttons on top: GitHub, and a Ko-fi
   placeholder (not set up yet).
 
