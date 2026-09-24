@@ -169,61 +169,14 @@ Recorded on purpose, because a future session will otherwise re-derive them:
   for `0x01F0` finds nothing. Corrected 2026-09-22.
 - The README described the widget as **3x2**; `xml/widget_anc_info.xml` declares
   **4x2** (`targetCellWidth=4`). Corrected 2026-09-22.
-- ROADMAP's "Working principles" named **Kimi** as the AI doing the heavy logic.
-  That was never the main one — see the disclosure below. Corrected 2026-09-22.
 
 ---
 
-## How this was built — the AI disclosure
+## Tools
 
-Stated plainly because it is unusual, and because pretending otherwise would make the
-"original to this project" section above look like more than it is. **Every model below
-worked on protocol bytes captured from real hardware, and the on-device testing — not the
-model — is what makes the claims in [PROTOCOL.md](./PROTOCOL.md) checkable.**
-
-| Phase | Model | Rough share | What it did |
-|-------|-------|-------------|-------------|
-| Start | **DeepSeek chat** | ~15% | The first codebase, the first reverse-engineering steps, basic UI, packet logger, core logic, and a basic ANC-button widget. **That widget was subsequently rewritten almost entirely** — treat the early history as scaffolding, not as the current design. |
-| Main | **DeepSeek v4.1-fast**, via the CodeAssist agent + OpenRouter | ~80% | The large majority of what is here now: the protocol parsers, the widget and theme rework, the gesture configuration, the dev tools. |
-| Small tasks | Kimi chat, Gemini (image generation), Grok | ~5% | Occasional side work. Kimi was never the main model; ROADMAP said otherwise for a while. |
-| Move to PC | **Claude Code** | from v1.1.0 onward | Development moved off the phone: the Gradle build, the docs restructure (AGENTS.md, the ROADMAP rewrite) and everything after. |
-
-The three mobile-era rows account for all of it up to **v1.1.0** (commit `2875262`), and they are
-the "who wrote this" record for everything that exists today.
-
-**Everything up to the move ran on free tiers.** No paid API budget was involved.
-
-### Environment and tools
-
-The environment changed with the move, so this is split by era. **The mobile column is history** —
-it built everything up to and including v1.1.0, and none of it is needed to work on the project now.
-
-**Mobile era, up to v1.1.0**
-
-- **CodeAssist** (Tyron) — the on-device IDE the project was built in, driving the build itself from
-  a `module.toml` project model rather than Gradle
-- **Termux** — terminal, scripting, git
-- **GitHub mobile** — repo management
 - **decompile.com** — HeyMelody (Melody) decompilation, used as a secondary reference
-- Brave browser, Google Files, a hex editor — research and inspection
-
-Two CodeAssist artefacts existed on the original phone's working copy, git-ignored and never
-committed, so **a fresh clone on the PC never has them at all**:
-
-- `app/module.toml` — CodeAssist's project model (module type, source sets, dependencies, SDK
-  levels, and a second copy of the version number). This is what CodeAssist built from. The Gradle
-  files now in the repo were originally *generated* from it.
-- `.platform/` — CodeAssist's cache, settings and generated Gradle export. It also held the AI
-  agent's private memory, which was copied into AGENTS.md and PROTOCOL.md before the move's temporary
-  handover file was deleted.
-
-**From the move to the PC onward**
-
-- **Claude Code** — the agent doing the work
-- **Gradle 8.13** + **AGP 8.13.0** + **Kotlin 2.4.0**, on a **JDK 17 or newer**, building from the
-  committed Gradle files (the `gradlew` wrapper is generated once on the PC — see CLAUDE.md)
-- **adb over USB** — deploying to the phone and reading `logcat`
-- The **phone is still the test device**. Only the build and the agent moved.
+- **Gradle** + **Android Gradle Plugin** + **Kotlin** (versions in CLAUDE.md), **adb** for deploying
+  and `logcat`, Wireshark / tshark for btsnoop captures
 
 ---
 

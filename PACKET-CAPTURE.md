@@ -28,7 +28,7 @@ one. The 60-second `TX[poll status]` keep-alives in between can be left out.
 
 ### Automated pull — no MARK/Export needed at all (confirmed working, 2026-09-20)
 
-The agent can pull the same log itself, straight off the device, with no manual export step —
+The same log can be pulled straight off the device over adb, with no manual export step —
 `PacketLogger` (`bluetooth/Packet_Logger.kt`) already writes every line to two places:
 
 - **A file**, app-specific external storage, survives restarts, 512 KB dedicated ring buffer (not

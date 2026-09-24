@@ -108,15 +108,8 @@ Sibling project for another brand, not a source for ours but worth knowing:
 
 ### How it was built
 
-- **Up to v1.1.0**, built entirely on a phone: CodeAssist and Termux, with DeepSeek chat (~15% — the
-  first codebase and reverse-engineering steps) and the CodeAssist agent running DeepSeek v4.1-fast
-  via OpenRouter (~80%). Kimi, Gemini and Grok did small tasks. Everything except DeepSeek ran on
-  free tiers.
-- **From v2.0.0**, built on a PC with **Claude Code**, Gradle and adb.
-
-Every model worked from Bluetooth captures taken on real hardware, and every claim was tested on the
-device. That's what makes [PROTOCOL.md](./PROTOCOL.md) checkable. See [CREDITS.md](./CREDITS.md) for
-the full breakdown.
+Every protocol claim comes from Bluetooth captures taken on real hardware and was tested on the
+device. That's what makes [PROTOCOL.md](./PROTOCOL.md) checkable.
 
 ## License
 
