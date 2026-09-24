@@ -86,11 +86,11 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 ## Docs cleanup
 
 - Remove every mention of DeepSeek, CodeAssist, other LLMs and tools, and the mobile→PC move, from
-  all docs, the release notes and memory. Rewriting commit history would need a force push; ask
-  first.
+  all docs, the release notes and memory. Commit history stays as it is (his call, 2026-09-24).
 - README: short and aimed at users, not developers.
 - Fold CREDITS.md into a short section, at most 5 lines per referenced repo, with links.
-- LICENSE: fill in the template placeholders (app name, author, year).
+- LICENSE stays the unedited GPL-3.0 text (that is standard). Put the author and app name in the
+  README.
 - Remove overlap. Protocol facts live only in PROTOCOL.md, and each feature is described once.
 - A full human-read pass over every doc, with notes back to him.
 
