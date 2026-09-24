@@ -106,6 +106,10 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             ACTION_FORCE_DISCONNECT -> {
                 statusLog("[SVC] FORCE_DISCONNECT")
                 manager?.disconnect()
+                // Only the deliberate disconnect drops phone audio — the manager's own
+                // disconnect() also runs after a failed connect attempt.
+                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(TARGET_MAC)
+                    ?.let { manager?.setPhoneAudio(it, on = false) }
             }
             ACTION_WIDGET_COMMAND -> {
                 val widgetAction = intent.getStringExtra(EXTRA_WIDGET_ACTION)
