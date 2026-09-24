@@ -115,19 +115,12 @@ class BudsConnectionManager(private val context: Context) {
     /**
      * Poll period for the status query (0x010D).
      *
-     * Why 300s: every wear change is now PUSHED by the buds as 0x0204
-     * subtype 02, so the poll no longer drives any UI update we care about
-     * instantly. At 5s we were sending ~12 packets/minute, i.e. constantly
-     * waking the radio for nothing. Battery is pushed too, so 300s is only a keep-alive.
-     *
-     * The wear query (0x0109) is deliberately NOT polled any more — push covers
-     * it fully. See pollStatusOnce below.
+     * Only a keep-alive: wear and battery are pushed (0x0204).
      *
      * Do NOT remove the 0x010D packet outright: the reference sources describe
      * it as a FIXED packet that wakes the earbuds and likely acts as a
      * keep-alive. Widening is safe; deleting risks the buds sleeping and the
-     * link going stale. If battery proves to push on change (needs a long
-     * capture to confirm), this can be widened much further or dropped.
+     * link going stale.
      */
     private val POLL_INTERVAL_SECONDS = 300L
 
@@ -247,8 +240,7 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     private fun startBatteryPolling() {
-        // One poller per connection: disconnect() cancels it. Before 2026-09-24 only a flag was
-        // reset, so every reconnect stacked another task (~80 seen, polling several times a second).
+        // disconnect() cancels it; cancel here too so a reconnect never stacks a second one.
         pollTask?.cancel(false)
         pollTask = pollExecutor.scheduleWithFixedDelay({
             if (isReady) {
