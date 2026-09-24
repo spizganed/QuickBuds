@@ -63,7 +63,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## UI polish
 
-- A red outline on the battery card, the settings card and the custom sheets.
 - The palette today: black, two greys, white and red, so five colours. That feeds the theme editor
   above.
 - **New widget, rebuilt from scratch.** The old logic and UI are outdated. Start with a **2×2**
@@ -115,3 +114,4 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - Removing the foreground-service notification: Android 15 requires it for a `connectedDevice` service.
 - Committing logs or debug documents.
 - Marking roadmap items with a release version.
+- Red outlines on the cards and sheets: tried on device 2026-09-25, rejected.
