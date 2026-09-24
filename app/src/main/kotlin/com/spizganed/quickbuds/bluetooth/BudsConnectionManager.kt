@@ -181,9 +181,11 @@ class BudsConnectionManager(private val context: Context) {
         context.getSystemService(BluetoothManager::class.java)?.adapter?.cancelDiscovery()
 
         Thread {
+            // 079A first: it is the one that works (HeyMelody connects straight to it), while
+            // 1107 never connects on the Buds 4 and burns ~5 s. 1107 stays for other models.
             val uuids = listOf(
-                OpoProtocol.SPP_UUID_PRIMARY,
-                OpoProtocol.SPP_UUID_FALLBACK
+                OpoProtocol.SPP_UUID_FALLBACK,
+                OpoProtocol.SPP_UUID_PRIMARY
             )
             var socket: BluetoothSocket? = null
             var lastError: String? = null

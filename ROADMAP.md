@@ -82,7 +82,7 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
   without it, to prove the link does not go stale.
 - **Replace the connect retry timers with system Bluetooth state.** Listen for Android's own
   "device connected" (A2DP/headset) broadcasts and connect RFCOMM when the audio link comes up,
-  instead of 5 s retries. Also try the UUID that works first (the primary UUID always burns ~5 s).
+  instead of 5 s retries.
 
 ## Docs cleanup
 
