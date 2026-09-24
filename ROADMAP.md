@@ -16,7 +16,8 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Voice assistant gesture.** Open. HeyMelody offers it (probably on double or triple tap), and on
   his phone it opens Gemini / Google Assistant. Its function byte is missing from our list, so it
   needs a capture.
-- **Auto play/pause on wear (firmware switch).** Open. The buds handle this themselves, so we only
+- **Auto play/pause on wear (firmware switch).** Next (2026-09-26), together with smart auto-pause
+  below it on the same screen. The buds handle this themselves, so we only
   need the right TX. `autoPlayPauseOn/Off` exist in the manager but are unconfirmed.
 - **Alert-sound volume slider.** Open. Sets the volume of the buds' own prompt sounds (ANC change,
   Game Mode, …). Firmware setting, needs a capture.

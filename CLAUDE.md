@@ -334,7 +334,7 @@ From `bluetooth/BudsConnectionManager.kt`.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
 - **Only a user connect (pill, Dev Tools) asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Automatic
   connects (ACL receiver, retries, reconnect after loss) leave A2DP to the system: asking for it while
-  the system auto-connects is the suspected cause of audio stuck on auto-connect (2026-09-25, unconfirmed).
+  the system auto-connects left audio stuck on auto-connect. Fixed 2026-09-25, confirmed by him.
 - **Reconnect after a lost link — FIXED 2026-09-23, confirmed by him.** Nothing used to retry after
   `Connection lost` unless Android fired ACL_CONNECTED (a codec switch drops our RFCOMM 2-3 times while
   the link stays up) — likely also the old "14-minute gap". `reconnectAfterLoss()` retries 5x with
