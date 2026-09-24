@@ -37,7 +37,10 @@ this file is now the sole entry point for a new session.
 Plain desktop Gradle. There are no CodeAssist prerequisites or dependencies any more.
 
 - **Toolchain:** Gradle **8.13** · Android Gradle Plugin **8.13.0** · Kotlin **2.4.0**
-- **SDK levels:** `compileSdk 36`, `minSdk 26`, `targetSdk 35`, Java 8
+- **SDK levels:** `compileSdk 37`, `minSdk 26`, `targetSdk 37` (Android 17, since 2026-09-25), Java 8.
+  Target 37 makes an RFCOMM `read()` return `-1` on a dropped link instead of throwing; the
+  reader loop turns that into the normal "Connection lost" path. Android 17 also ignores the
+  portrait lock on displays wider than 600dp (tablets, foldables).
 - **Only dependency:** `androidx.core:core:1.13.1`
 - `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk`, **signed** with the release
   key when `local/keys/` is present (see *Signing*). **Use this one for all device testing** (`[USER]`
@@ -68,7 +71,7 @@ because the phone side had it all built in.
 | Need | Version / note |
 |---|---|
 | JDK | **17 through 23** — required by AGP 8.13, but **Gradle 8.13 itself rejects JDK 24+** outright (fails with the bare version number as the error, e.g. `25.0.3`, no other message). Set `JAVA_HOME` to something in range. See the JDK note below if running from Android Studio. |
-| Android SDK | `platforms;android-36` (for `compileSdk 36`) and `platform-tools` (for adb). `build-tools` matching AGP. |
+| Android SDK | `platforms;android-37.0` (for `compileSdk 37`) and `platform-tools` (for adb). `build-tools` matching AGP. |
 | Gradle | Only to generate the wrapper (below). After that `./gradlew` is self-sufficient. |
 | adb | For deploying to the phone and reading `logcat`. |
 | kotlin-stdlib | **No** manual install — it comes with the Kotlin Gradle plugin. The only app dependency is `androidx.core:core:1.13.1`. |
