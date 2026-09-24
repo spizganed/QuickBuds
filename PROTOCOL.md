@@ -23,8 +23,8 @@ Classic Bluetooth **RFCOMM / SPP**, not BLE.
 
 | UUID | Role |
 |------|------|
-| `00001107-D102-11E1-9B23-00025B00A5A5` | Tried first |
-| `0000079A-D102-11E1-9B23-00025B00A5A5` | The one that actually works on Buds 4 `[CAPTURE]` |
+| `00001107-D102-11E1-9B23-00025B00A5A5` | Tried second; never connects on Buds 4, kept for other models |
+| `0000079A-D102-11E1-9B23-00025B00A5A5` | Tried first; the one that actually works on Buds 4 `[CAPTURE]` |
 
 `[CAPTURE]` On this device the first UUID reliably fails with
 `read failed, socket might closed or timeout, read ret: -1`, and the second
