@@ -326,7 +326,11 @@ From `bluetooth/BudsConnectionManager.kt`.
 
 - The **primary UUID `00001107-...` never connects** — it burns a ~5 s timeout on every attempt, and
   the `0000079A-...` fallback is the one that works. **Trying the working UUID first would save 5 s
-  per connect.** Not done.
+  per connect.** Not done. HeyMelody itself connects straight to `079A` (bugreport 2026-09-24).
+- **The buds serve one control app at a time.** With QuickBuds connected, HeyMelody hangs on
+  "Connecting…", and QuickBuds' reconnect grabs the link back whenever HeyMelody cycles it. For a
+  HeyMelody capture, stop our service from Quick Settings → Active apps (a plain `am force-stop`
+  can be undone by our own reconnect). HeyMelody also greys out Earbud controls unless both buds are out.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
 - **Reconnect after a lost link — FIXED 2026-09-23, confirmed by him.** Nothing used to retry after
   `Connection lost` unless Android fired ACL_CONNECTED (a codec switch drops our RFCOMM 2-3 times while
