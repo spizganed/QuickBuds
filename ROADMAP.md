@@ -12,8 +12,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## Parity: firmware features still missing
 
-- **Hold → fixed ANC mode.** Next. The hold gesture sets one chosen ANC mode (default Medium,
-  user-selectable) instead of cycling through them. Needs a capture first; no guessed writes.
 - **Dual device.** Next. Parity with HeyMelody: a dual-device switch plus its own screen.
 - **Voice assistant gesture.** Open. HeyMelody offers it (probably on double or triple tap), and on
   his phone it opens Gemini / Google Assistant. Its function byte is missing from our list, so it
@@ -23,12 +21,17 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Alert-sound volume slider.** Open. Sets the volume of the buds' own prompt sounds (ANC change,
   Game Mode, …). Firmware setting, needs a capture.
 - **On-call gestures: confirm the labels.** Open. The write works. He will place a real call and
-  report which gesture answers, ends and declines.
+  report which gesture answers, ends and declines. HeyMelody itself labels on-call double tap
+  "Answer/End call" (seen 2026-09-24).
 - **Case state (open / closed / charging).** Question. Worth doing only if the firmware pushes it
   unprompted. If it only answers a request, drop it. Report what is found either way.
 
 ## Our own features
 
+- **Fixed-level hold.** Parked. Hold set to ANC only; when the hold's ANC push reports a level
+  other than the chosen one (default Medium), the service sends the chosen level. The firmware cannot
+  do this itself (PROTOCOL.md §5, tested 2026-09-24). Cost: a double tone whenever the last hand-set
+  level differs. Only worth building if a silent level-set command turns up in a capture.
 - **Smart auto-pause.** Open. Pause only when **both** buds are out; one bud out keeps playing; never
   auto-play. Built on the wear pushes in our background service. Meant to be used with the firmware
   auto-pause switched off.
