@@ -449,6 +449,22 @@ write of `0x0004` (Transparency only, `AA 0B 00 00 04 04 <seq> 04 00 02 01 04 00
 and HeyMelody, reconnected afterwards, showed the hold as "Transparency". An all-zero mask is still
 never observed — HeyMelody cannot produce one, so the app never sends one either.
 
+**`[CAPTURE]` 2026-09-24 — the mask CANNOT pin an ANC level. Level bits are silently dropped.**
+HeyMelody's hold dialog offers only Noise cancellation / Adaptive / Transparency / Off — no level.
+To test whether the firmware accepts one anyway, with the level hand-set to Deep (`0x0010`), our app
+wrote `0x0021` (bit 5 = Medium in the SET table + bit 0 = Off):
+
+```
+TX  AA 0B 00 00 04 04 0B 04 00 02 01 21 00        setSupportNoiseReduction mask=0x0021
+RX  AA 08 00 00 04 84 0B 01 00 00                 ack, status=00
+TX  AA 09 00 00 0C 01 0C 02 00 02 01              verify
+RX  AA 0C 00 00 0C 81 0C 05 00 00 02 01 01 00     mask=0x0001 — bit 5 dropped
+```
+
+**The ACK says `00` and the write still did not take** — only the read-back shows it. So the hold's
+"ANC" stop is always bit 1, the level last set by hand. A fixed-level hold has to be done app-side
+(react to the hold's ANC push, send the level), not by the mask. Restored to `0x0003` afterwards.
+
 **`[CAPTURE]` 2026-09-22, from wiring this into the real app and testing on-device (not HeyMelody this
 time — our own build): the mask write ALSO raises a `0x0204` subType `0x03` frame**, the same family
 `AncEventParser` decodes for an ANC mode change, but this one's payload is shaped like the `0x010C`
