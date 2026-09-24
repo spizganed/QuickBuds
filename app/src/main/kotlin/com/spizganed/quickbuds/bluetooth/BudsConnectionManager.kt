@@ -718,6 +718,8 @@ class BudsConnectionManager(private val context: Context) {
             while (true) {
                 try {
                     val bytes = inputStream.read(buffer)
+                    // Target 37+: a dropped RFCOMM link returns -1 instead of throwing.
+                    if (bytes < 0) throw IOException("stream closed")
                     if (bytes > 0) {
                         val frames = framer.append(buffer, bytes)
                         for (frame in frames) {

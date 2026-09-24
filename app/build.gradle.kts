@@ -20,11 +20,11 @@ val keyProps = Properties().apply {
 
 android {
     namespace = "com.spizganed.quickbuds"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
 
         // THE ONLY PLACE the version is declared. It used to live on <application> in the manifest,
         // where Android ignores it: every PC build up to 2026-09-23 shipped with NO version, which
