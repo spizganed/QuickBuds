@@ -3,6 +3,7 @@ package com.spizganed.quickbuds.bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.os.Handler
@@ -136,6 +137,36 @@ class BudsConnectionManager(private val context: Context) {
 
     fun isConnected(): Boolean = isReady && bluetoothSocket?.isConnected == true
 
+    /**
+     * Drops or restores the phone's own audio link, the way HeyMelody's Connect/Disconnect does
+     * (bugreport 2026-09-24, ROADMAP-DONE.md "Connection and push"): the hidden
+     * `connect()`/`disconnect()` on the A2DP and Headset proxies, by reflection. Headset `connect()`
+     * is refused for ordinary apps, so connecting asks A2DP only and the system brings HFP up by
+     * itself (~10 s). Connecting an already-connected profile is a no-op.
+     */
+    fun setPhoneAudio(device: BluetoothDevice, on: Boolean) {
+        val adapter = BluetoothAdapter.getDefaultAdapter() ?: return
+        val method = if (on) "connect" else "disconnect"
+        val profiles = if (on) listOf(BluetoothProfile.A2DP)
+            else listOf(BluetoothProfile.HEADSET, BluetoothProfile.A2DP)
+        for (p in profiles) {
+            adapter.getProfileProxy(context, object : BluetoothProfile.ServiceListener {
+                override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+                    try {
+                        val ok = proxy.javaClass.getMethod(method, BluetoothDevice::class.java)
+                            .invoke(proxy, device)
+                        log("Audio $method profile=$profile -> $ok")
+                    } catch (e: Exception) {
+                        log("Audio $method profile=$profile failed: ${e.cause ?: e}")
+                    } finally {
+                        adapter.closeProfileProxy(profile, proxy)
+                    }
+                }
+                override fun onServiceDisconnected(profile: Int) {}
+            }, p)
+        }
+    }
+
     fun connect(device: BluetoothDevice) {
         if (isConnecting || isConnected()) {
             log("Already connecting/connected, ignoring.")
@@ -143,6 +174,9 @@ class BudsConnectionManager(private val context: Context) {
         }
         isConnecting = true
         lastDevice = device
+        // Every connect — pill, ACL receiver, retries, reconnect after loss — brings phone audio
+        // up too. A no-op when it is already connected.
+        setPhoneAudio(device, on = true)
         log("Initiating RFCOMM connection to ${device.name}...")
         BluetoothAdapter.getDefaultAdapter()?.cancelDiscovery()
 
