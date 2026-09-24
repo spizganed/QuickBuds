@@ -136,8 +136,13 @@ object SettingRowFactory {
         sw.buttonDrawable = context.getDrawable(
             if (checked) R.drawable.app_switch_track_on else R.drawable.app_switch_track
         )
-        sw.thumbTintList = android.content.res.ColorStateList.valueOf(
-            ThemeRes.color(context, R.attr.appColorSegBgActive)
+        // Knob turns accent red when on; follows isChecked without a refresh.
+        sw.thumbTintList = android.content.res.ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(
+                ThemeRes.color(context, R.attr.appColorAccent),
+                ThemeRes.color(context, R.attr.appColorSegBgActive)
+            )
         )
         sw.trackTintList = null
         // Keep the switch from stealing the row's ripple when the row is clickable.
