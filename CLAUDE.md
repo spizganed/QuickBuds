@@ -39,9 +39,12 @@ Plain desktop Gradle. There are no CodeAssist prerequisites or dependencies any 
 - **Toolchain:** Gradle **8.13** · Android Gradle Plugin **8.13.0** · Kotlin **2.4.0**
 - **SDK levels:** `compileSdk 36`, `minSdk 26`, `targetSdk 35`, Java 8
 - **Only dependency:** `androidx.core:core:1.13.1`
-- `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk` — **use this one** for device testing.
 - `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk`, **signed** with the release
-  key when `local/keys/` is present (see *Signing*)
+  key when `local/keys/` is present (see *Signing*). **Use this one for all device testing** (`[USER]`
+  2026-09-24), including unpushed work.
+- `./gradlew assembleDebug` → debug-key APK. Do not install it on his phone: its signature clashes
+  with the release build.
+- The shell has no `JAVA_HOME`: `export JAVA_HOME=$(ls -d ~/.jdks/jbr-21* | head -1)` first.
 - `./gradlew bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`
 - Deploy with `adb install -r <apk>`. **adb over USB is the debugging path**; use `adb logcat` for
   anything the in-app logs do not show.
@@ -126,8 +129,8 @@ signed with the same key, and losing it means every user has to uninstall first.
 them and never print the password.
 
 Without that file (a fresh clone), `assembleRelease` falls back to an unsigned APK, as before.
-Day-to-day device testing still uses `assembleDebug`, which is signed with the debug key, so
-**debug and release builds cannot be installed over each other**: switching needs an uninstall.
+Device testing uses `assembleRelease` too. **Debug and release builds cannot be installed over
+each other**, and switching needs an uninstall.
 v1.1.0 was signed by CodeAssist with a different key, so moving from 1.1.0 to 2.0.0 also needs one.
 
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
