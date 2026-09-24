@@ -14,8 +14,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Gesture, hold and on-call config are read from the buds on every connect.
 - Connect/Disconnect drive phone audio too, like HeyMelody's "device sync" (2026-09-25, confirmed
   by him; faster than HeyMelody). Disconnect calls the hidden `BluetoothHeadset/A2dp.disconnect()` by
-  reflection, nothing goes to the buds. Every connect (pill, ACL receiver, retries, reconnect after
-  loss) calls `BluetoothA2dp.connect()`; `Headset.connect()` is refused for ordinary apps, and the
+  reflection, nothing goes to the buds. A user connect (pill, Dev Tools) calls
+  `BluetoothA2dp.connect()`; automatic connects leave A2DP to Android, which fixed audio getting stuck
+  on auto-connect (2026-09-25). `Headset.connect()` is refused for ordinary apps, and the
   system brings HFP up itself ~10 s later. Found in a btsnoop + bugreport of HeyMelody, 2026-09-24.
 
 ## Controls
