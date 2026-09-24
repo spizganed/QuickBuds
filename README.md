@@ -74,7 +74,7 @@ HeyMelody parity comes first, then this project's own ideas on top, then other e
 | File | What it is |
 | --- | --- |
 | [PROTOCOL.md](./PROTOCOL.md) | **The wire format, end to end**: frames, every command, and the mistakes already made. Read it before touching protocol code. |
-| [ROADMAP.md](./ROADMAP.md) | What's next, in order, and what's done. |
+| [ROADMAP.md](./ROADMAP.md) | What's next. [ROADMAP-DONE.md](./ROADMAP-DONE.md) has what's done. |
 | [CLAUDE.md](./CLAUDE.md) | Toolchain, conventions and working notes. |
 | [CREDITS.md](./CREDITS.md) | Exactly what came from where. |
 | [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | How to capture a Bluetooth log from the phone. |

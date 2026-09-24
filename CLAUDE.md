@@ -24,7 +24,8 @@ this file is now the sole entry point for a new session.
 
 | File | What it is |
 |---|---|
-| [ROADMAP.md](./ROADMAP.md) | The plan: what is next, in order, and what is done or undecided. |
+| [ROADMAP.md](./ROADMAP.md) | The live plan: next, open, questions. |
+| [ROADMAP-DONE.md](./ROADMAP-DONE.md) | What is finished. Move items there when done. |
 | [PROTOCOL.md](./PROTOCOL.md) | **The wire format, end to end.** Read before any protocol work. |
 | [README.md](./README.md) | The accurate feature summary. |
 | [CREDITS.md](./CREDITS.md) | Whose reverse-engineering this stands on. Add a row when you add a constant. |
@@ -398,7 +399,7 @@ a shared one hung.
 - Runtime `*.log` files written by the app are ignored — they are regenerated every run. Handed-over
   captures (`*.log.txt`) are evidence and **are** tracked.
 - There are no committed screenshots.
-- Root docs: `README.md`, `ROADMAP.md`, `CLAUDE.md`, `PROTOCOL.md`, `CREDITS.md`, `PACKET-CAPTURE.md`,
+- Root docs: `README.md`, `ROADMAP.md`, `ROADMAP-DONE.md`, `CLAUDE.md`, `PROTOCOL.md`, `CREDITS.md`, `PACKET-CAPTURE.md`,
   `LICENSE`. The mobile→PC move's two temporary files, `START-HERE.md` and
   `DeepSeek_CodeAssist_memory.md`, served their purpose and are gone — this file is the sole entry
   point for a new session now.
