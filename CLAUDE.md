@@ -36,7 +36,9 @@ this file is now the sole entry point for a new session.
 
 Plain desktop Gradle. There are no CodeAssist prerequisites or dependencies any more.
 
-- **Toolchain:** Gradle **8.13** · Android Gradle Plugin **8.13.0** · Kotlin **2.4.0**
+- **Toolchain:** Gradle **9.6.0** · Android Gradle Plugin **9.4.0** · Kotlin **2.4.0** (since 2026-09-25).
+  AGP 9 compiles Kotlin itself: there is no `org.jetbrains.kotlin.android` plugin (AGP 9 rejects
+  it). The root `buildscript` classpath entry for `kotlin-gradle-plugin` only pins the Kotlin version.
 - **SDK levels:** `compileSdk 37`, `minSdk 26`, `targetSdk 37` (Android 17, since 2026-09-25), Java 8.
   Target 37 makes an RFCOMM `read()` return `-1` on a dropped link instead of throwing; the
   reader loop turns that into the normal "Connection lost" path. Android 17 also ignores the
@@ -70,7 +72,7 @@ because the phone side had it all built in.
 
 | Need | Version / note |
 |---|---|
-| JDK | **17 through 23** — required by AGP 8.13, but **Gradle 8.13 itself rejects JDK 24+** outright (fails with the bare version number as the error, e.g. `25.0.3`, no other message). Set `JAVA_HOME` to something in range. See the JDK note below if running from Android Studio. |
+| JDK | **17+**, built with JBR 21. (Gradle 8.13, used until 2026-09-25, rejected JDK 24+ with just the bare version number, e.g. `25.0.3`, as the error.) See the JDK note below if running from Android Studio. |
 | Android SDK | `platforms;android-37.0` (for `compileSdk 37`) and `platform-tools` (for adb). `build-tools` matching AGP. |
 | Gradle | Only to generate the wrapper (below). After that `./gradlew` is self-sufficient. |
 | adb | For deploying to the phone and reading `logcat`. |
@@ -94,12 +96,8 @@ The wrapper JAR and scripts **should be committed** afterwards, so nobody needs 
 install or a matching Gradle version again. **Commit them as a follow-up, and note in the commit
 that they are generated.** They are the one piece of the build that is not yet in the repo.
 
-**The first build also downloads a lot** — Gradle 8.13, AGP, and the Kotlin plugin. That is expected,
+**The first build also downloads a lot** — Gradle, AGP, and the Kotlin plugin. That is expected,
 not a stall.
-
-**Expect a Kotlin-metadata warning on the first build.** Kotlin 2.4.0 is newer than the D8/R8 that
-AGP 8.13.0 bundles, which warns that it cannot rewrite the newer metadata. It is a warning, not an
-error — the build succeeds. Raising the AGP version clears it.
 
 **JDK gotcha, found 2026-09-20 setting this up in Android Studio's own agent terminal:** Android
 Studio's *own* bundled JBR can be too new for Gradle 8.13 — this machine's was JDK 25, and running
