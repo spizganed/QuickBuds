@@ -37,6 +37,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Wear and case icons traced verbatim from `local/svgs/` (confirmed as the newest design 2026-09-24);
   adaptive launcher icon.
 - Portrait-locked on every screen.
+- Switch knobs turn red when on; settings-row icons stay red to match; row chevrons centred (2026-09-25).
 
 ## Tooling and release
 

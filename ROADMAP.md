@@ -63,10 +63,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## UI polish
 
-- Switch knobs turn red (the accent) when Low latency, Hi-Res or 3D audio is on.
-- Settings-row icons go back to **white**; the red ones do not fit.
-- The arrow icons on the Equalizer, Find my earbuds, Earbud controls and App update rows look
-  off-centre. Check them.
 - A red outline on the battery card, the settings card and the custom sheets.
 - The palette today: black, two greys, white and red, so five colours. That feeds the theme editor
   above.
