@@ -28,7 +28,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
 - Dual connection: switch plus connected-device list in Earbud settings, HeyMelody's exact write
-  sequence (PROTOCOL.md §9, capture 2026-09-25).
+  sequence (PROTOCOL.md §9, capture 2026-09-25), and HeyMelody's "Add device" pairing instructions.
 - On-call gestures: the write is verified. The labels still need a real call (see ROADMAP.md).
 - Equalizer: built-in presets, Bass boost with level, up to 3 custom presets on a draggable curve
   with rename and delete (PROTOCOL.md §9).

@@ -21,7 +21,7 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
 /**
  * Dual connection, as HeyMelody has it (`[CAPTURE]` 2026-09-25, PROTOCOL.md §9): one switch
  * (`0x0403` feature `0x11`) and the devices the buds are connected to (`0x0112`, pushed as
- * `0x0204` subType `06`). "Add device" is only pairing instructions in HeyMelody, so it is left out.
+ * `0x0204` subType `06`). "Add device" is only pairing instructions, as in HeyMelody.
  */
 class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
 
@@ -86,6 +86,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         })
         deviceCard = cardView()
         root.addView(deviceCard)
+        onDevices(emptyList())
 
         setContentView(ScrollView(this).apply { addView(root) })
     }
@@ -132,6 +133,20 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
                 })
             })
         }
+        if (deviceCard.childCount > 0) deviceCard.addView(SettingRowFactory.buildDivider(this))
+        deviceCard.addView(
+            SettingRowFactory.build(
+                this, 0, R.string.dual_add_title, 0, SettingRowFactory.buildChevron(this)
+            ) { showAddDevice() }
+        )
+    }
+
+    private fun showAddDevice() {
+        val sheet = BottomSheetDialog(this)
+        sheet.title(getString(R.string.dual_add_title))
+            .message(getString(R.string.dual_add_message))
+            .confirm(getString(R.string.dual_add_ok)) { sheet.close() }
+            .show()
     }
 
     override fun onStart() {
