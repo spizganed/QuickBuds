@@ -988,42 +988,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, EqActivity::class.java)) }
         )
 
-        // --- Wear detection: firmware auto play/pause + our smart auto-pause ---
+        // --- 5. Earbud settings: gestures, wear detection, find, alert volume (option A, [USER] 2026-09-25) ---
+        // Keeps this card to what changes the sound. App update moved to the cog.
         addRow(
             SettingRowFactory.build(
-                this, R.drawable.ic_bud_left, R.string.row_wear_title, R.string.row_wear_sub,
+                this, R.drawable.ic_gesture, R.string.row_earbuds_title, R.string.row_earbuds_sub,
                 SettingRowFactory.buildChevron(this)
-            ) { startActivity(Intent(this, WearActivity::class.java)) }
-        )
-
-        // --- 5. Find my earbuds ---
-        addRow(
-            SettingRowFactory.build(
-                this, R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub,
-                SettingRowFactory.buildChevron(this)
-            ) { startActivity(Intent(this, FindBudsActivity::class.java)) }
-        )
-
-        // --- 6. Earbud controls (gesture config) ---
-        // Placed above App update, as requested. The screen it opens writes the
-        // selections to the buds and reads the table back to confirm. The `function`
-        // bytes were MEASURED rather than guessed (see GestureAction), and the write
-        // command is the WRITE_TABLE constant in OpoProtocol — do not describe its
-        // number here, because it has already been wrong once and a comment in a
-        // second file is one more place to go stale.
-        addRow(
-            SettingRowFactory.build(
-                this, R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub,
-                SettingRowFactory.buildChevron(this)
-            ) { startActivity(Intent(this, GestureActivity::class.java)) }
-        )
-
-        // --- 7. App update (never automatic; the screen enforces that) ---
-        addRow(
-            SettingRowFactory.build(
-                this, R.drawable.ic_app_update, R.string.row_update_title, R.string.row_update_sub,
-                SettingRowFactory.buildChevron(this)
-            ) { startActivity(Intent(this, UpdateActivity::class.java)) }
+            ) { startActivity(Intent(this, EarbudSettingsActivity::class.java)) }
         )
 
         if (::manager.isInitialized) onFeatureStates(manager.featureStates)
@@ -1070,7 +1041,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     // ==================== Settings dialog ====================
 
     /**
-     * The settings cog. Theme only.
+     * The settings cog: theme, and App update (moved off the main card 2026-09-25).
      *
      * RECONNECT AND DISCONNECT USED TO LIVE HERE and have moved to Dev Tools at his
      * request: they are connection plumbing, not a setting, and sitting next to
@@ -1078,7 +1049,15 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * already owns the connection diagnostics, so that is where they belong.
      */
     private fun showSettingsDialog() {
-        showThemeDialog()
+        BottomSheetDialog(this)
+            .title(getString(R.string.settings_title))
+            .items(listOf(
+                BottomSheetDialog.Item(getString(R.string.theme_title), false) { showThemeDialog() },
+                BottomSheetDialog.Item(getString(R.string.row_update_title), false) {
+                    startActivity(Intent(this, UpdateActivity::class.java))
+                }
+            ))
+            .show()
     }
 
     /**

@@ -60,7 +60,8 @@ tap "Equalizer";     shot eq
 tap "Edit preset";   shot eq-curve
 adb shell input keyevent BACK; sleep 1
 adb shell input keyevent BACK; sleep 1
-tap "Earbud controls"; shot controls
+tap "Earbud settings"; tap "Earbud gestures"; shot controls
+adb shell input keyevent BACK; sleep 1
 adb shell input keyevent BACK; sleep 1
 
 # Widget: union of every node that belongs to our RemoteViews on the home screen.

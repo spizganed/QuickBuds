@@ -14,7 +14,7 @@ widget. Every command it sends was reverse-engineered and confirmed on real hard
 
 <!-- Retaken with scripts/readme-screenshots.sh; see CLAUDE.md. -->
 
-| Main screen | Equalizer | Curve editor | Earbud controls | Widget |
+| Main screen | Equalizer | Curve editor | Earbud gestures | Widget |
 | :---: | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-curve.png" width="200"> | <img src="docs/screenshots/controls.png" width="200"> | <img src="docs/screenshots/widget.png" width="200"> |
 
@@ -33,14 +33,17 @@ widget. Every command it sends was reverse-engineered and confirmed on real hard
 - **High-quality audio (Hi-Res LHDC) and 3D audio.** The earbuds can't run both, so switching warns you first. A codec change makes the earbuds reconnect.
 - **Low latency mode** for video and games
 
-**Earbud controls**
-- Single, double and triple tap, slide and hold, set **per bud**
+**Earbud settings**
+- **Gestures:** single, double and triple tap, slide and hold, set **per bud**
 - Choose which noise modes the hold cycles through
 - On-call gestures: double tap to answer or end, long hold to decline
 - Read back from the earbuds on every connect, so changes made elsewhere show up
+- **Wear detection:** the earbuds' own auto play/pause, or our smart auto-pause that pauses only
+  when both earbuds are out and never auto-plays
+- **Find my earbuds.** Plays the earbuds' own loud tone on both buds, with a warning if they're in your ears.
+- **Alert sound volume** for the earbuds' own prompt tones
 
 **Everything else**
-- **Find my earbuds.** Plays the earbuds' own loud tone on both buds, with a warning if they're in your ears.
 - **Live status.** Battery for each bud and the case, plus in ear / out / in case, pushed by the earbuds in real time.
 - **Home-screen widget** with battery, wear state, noise control and Low latency, working with the app closed
 - **Quick Settings tile**

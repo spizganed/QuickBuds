@@ -84,6 +84,11 @@
     <string name="row_spatial_sub">Spatial sound with head tracking</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Sound profiles</string>
+    <string name="row_earbuds_title">Earbud settings</string>
+    <string name="row_earbuds_sub">Gestures, wear detection, find</string>
+    <string name="earbuds_title">Earbud settings</string>
+    <string name="earbuds_section_sounds">Sounds</string>
+    <string name="settings_title">Settings</string>
     <string name="row_wear_title">Wear detection</string>
     <string name="row_wear_sub">Pause when you take the earbuds out</string>
     <string name="row_alert_title">Alert sound volume</string>
@@ -143,13 +148,13 @@
     <string name="update_install">Install</string>
     <string name="update_failed">Could not check for updates: %1$s</string>
 
-    <!-- ==================== Earbud controls (gesture config) ==================== -->
+    <!-- ==================== Earbud gestures (gesture config) ==================== -->
 
     <!-- Home-screen row that opens this screen. Placed above App update. -->
-    <string name="row_gesture_title">Earbud controls</string>
+    <string name="row_gesture_title">Earbud gestures</string>
     <string name="row_gesture_sub">Bind taps and slides</string>
 
-    <string name="gesture_title">Earbud controls</string>
+    <string name="gesture_title">Earbud gestures</string>
 
     <!-- Bud selector. Two buttons; the selected one is highlighted. -->
     <string name="gesture_bud_left">Left</string>
@@ -159,7 +164,6 @@
     <!-- Section headers. -->
     <string name="gesture_section_not_in_call">When not on call</string>
     <string name="gesture_section_on_call">When on call</string>
-    <string name="gesture_section_sounds">Sounds</string>
 
     <!-- Gesture names. -->
     <string name="gesture_single">Single tap</string>
