@@ -22,12 +22,12 @@ This file is the entry point for a new session.
 
 | File | What it is |
 |---|---|
-| [ROADMAP.md](./ROADMAP.md) | The live plan: next, open, questions. |
-| [ROADMAP-DONE.md](./ROADMAP-DONE.md) | What is finished. Move items there when done. |
-| [PROTOCOL.md](./PROTOCOL.md) | **The wire format, end to end.** Read before any protocol work. |
+| [ROADMAP.md](./docs/ROADMAP.md) | The live plan: next, open, questions. |
+| [ROADMAP-DONE.md](./docs/ROADMAP-DONE.md) | What is finished. Move items there when done. |
+| [PROTOCOL.md](./docs/PROTOCOL.md) | **The wire format, end to end.** Read before any protocol work. |
 | [README.md](./README.md) | The accurate feature summary. |
-| [CREDITS.md](./CREDITS.md) | Whose reverse-engineering this stands on. Add a row when you add a constant. |
-| [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | How to capture a packet log, kept as a backup procedure. |
+| [CREDITS.md](./docs/CREDITS.md) | Whose reverse-engineering this stands on. Add a row when you add a constant. |
+| [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | How to capture a packet log, kept as a backup procedure. |
 | CLAUDE.md | This file — the durable reference, loaded automatically. |
 
 ## Build and run
@@ -110,7 +110,7 @@ this PC, so the release page itself is made in the browser.
 
 ## Protocol work — the rules that were paid for
 
-Use [PROTOCOL.md](./PROTOCOL.md) as the reference; it tags every claim `[VENDOR]` / `[OSS]` /
+Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VENDOR]` / `[OSS]` /
 `[CAPTURE]` / `[GUESS]`. The short version of what bites:
 
 - **Never guess a payload.** Confirming a read is cheap; a guessed write to the buds fails
@@ -231,14 +231,16 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
-- **Light theme** — either removed or left untouched until the final UI lands. It is the source of
-  invisible-on-light bugs. Do not polish it.
+- **Light theme** — the old one is the source of invisible-on-light bugs; do not polish it. It gets
+  rebuilt as the **White** preset in the theme work (docs/ROADMAP.md).
 - **Case lid state** — settled 2026-09-25: no lasting lid state exists (PROTOCOL.md §8); a close only
-  stops the reconnect retries. `ic_case.xml` stays (the status view uses it).
+  stops the reconnect retries. `ic_case.xml` stays (the status view uses it). Case charging is only
+  reported with the lid open, so it is **not shown, by decision** (PROTOCOL.md §7).
 - **Localisation** — text is in `strings.xml` but only English exists, and hardcoded strings remain in
   `MainActivity` dialogs, the Dev Tools labels and legend, and `BottomSheetDialog` callers.
-- **Undecoded families** — `0x0501` (empty payload, so not a gesture binding; its sibling `0x0500`
-  is a time request, PROTOCOL.md §9), broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
+- **`0x0500` time request / `0x0501`** — **skipped by decision** (2026-09-25): no feature depends on
+  them and no OSS client answers them (PROTOCOL.md §9). Do not raise again.
+- **Undecoded families** — broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
   `F1` family (`AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`), and `02 01 08 0C 02` /
   `02 01 07 0B 02` (these carry non-multiples of ten — possibly a fine-grained battery/case field).
   Also `0x0510`, a Spatial Audio notify. **Do not guess any of these from a couple of samples.**
@@ -342,5 +344,7 @@ a shared one hung.
   the app by visible text, so renaming a row label or `eq_edit` breaks it. It stops mobile-mcp's
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.
   `widget.png` is taken only if the widget is on the home screen, cropped to the widget alone.
-- Root docs: `README.md`, `ROADMAP.md`, `ROADMAP-DONE.md`, `CLAUDE.md`, `PROTOCOL.md`, `CREDITS.md`, `PACKET-CAPTURE.md`,
-  `LICENSE`.
+- Root holds only `README.md`, `LICENSE` and `CLAUDE.md` (it must stay in root to load automatically).
+  Every other doc lives in `docs/`: `ROADMAP.md`, `ROADMAP-DONE.md`, `PROTOCOL.md`, `CREDITS.md`,
+  `PACKET-CAPTURE.md` (`[USER]` 2026-09-25). `LICENSE` is the verbatim GPL-3.0 text; the copyright
+  notice lives in the README.
