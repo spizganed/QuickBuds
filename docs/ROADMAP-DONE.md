@@ -58,3 +58,10 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Dev Tools screen: human-readable log, raw hex log, Mark / Clear / Export, Reconnect / Disconnect.
 - Layout-report and screenshot-to-text tools (built; to be hidden, logic kept).
 - Signed release builds with a version set in one place (`app/build.gradle.kts`).
+
+## Docs
+
+- Docs moved to `docs/`; only README, LICENSE and CLAUDE.md stay in root (2026-09-25).
+- LICENSE rewritten from the official gnu.org GPL-3.0 text; GitHub detects it as `gpl-3.0`. The
+  copyright notice (author, app, GPL-3.0-or-later) is in the README (2026-09-25).
+- Account mentions removed: neither HeyMelody nor QuickBuds needs one (2026-09-25).

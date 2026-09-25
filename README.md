@@ -1,6 +1,6 @@
 # QuickBuds
 
-> Control OnePlus / OPPO / realme earbuds straight over Bluetooth. No HeyMelody, no account, no root.
+> Control OnePlus / OPPO / realme earbuds straight over Bluetooth. No HeyMelody, no root.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
@@ -69,19 +69,19 @@ Other OnePlus / OPPO / realme earbuds share the protocol and will likely work, b
 ## Roadmap
 
 HeyMelody parity comes first, then this project's own ideas on top, then other earbud models. See
-[ROADMAP.md](./ROADMAP.md) for the ordered plan.
+[ROADMAP.md](./docs/ROADMAP.md) for the ordered plan.
 
 ## For developers
 
 | File | What it is |
 | --- | --- |
-| [PROTOCOL.md](./PROTOCOL.md) | **The wire format, end to end**: frames, every command, and the mistakes already made. Read it before touching protocol code. |
-| [ROADMAP.md](./ROADMAP.md) | What's next. [ROADMAP-DONE.md](./ROADMAP-DONE.md) has what's done. |
+| [PROTOCOL.md](./docs/PROTOCOL.md) | **The wire format, end to end**: frames, every command, and the mistakes already made. Read it before touching protocol code. |
+| [ROADMAP.md](./docs/ROADMAP.md) | What's next. [ROADMAP-DONE.md](./docs/ROADMAP-DONE.md) has what's done. |
 | [CLAUDE.md](./CLAUDE.md) | Toolchain, conventions and working notes. |
-| [CREDITS.md](./CREDITS.md) | Exactly what came from where. |
-| [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) | How to capture a Bluetooth log from the phone. |
+| [CREDITS.md](./docs/CREDITS.md) | Exactly what came from where. |
+| [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | How to capture a Bluetooth log from the phone. |
 
-**Build:** Gradle 8.13, Android Gradle Plugin 8.13, Kotlin 2.4, JDK 17–23. The only dependency is
+**Build:** Gradle 9.6, Android Gradle Plugin 9.4, Kotlin 2.4, JDK 17+. The only dependency is
 `androidx.core`.
 
 ```bash
@@ -111,9 +111,14 @@ Sibling project for another brand, not a source for ours but worth knowing:
 ### How it was built
 
 Every protocol claim comes from Bluetooth captures taken on real hardware and was tested on the
-device. That's what makes [PROTOCOL.md](./PROTOCOL.md) checkable.
+device. That's what makes [PROTOCOL.md](./docs/PROTOCOL.md) checkable.
 
 ## License
 
-GPL-3.0. See [LICENSE](./LICENSE). Protocol references are used as documentation; check
-[CREDITS.md](./CREDITS.md) for each source's license before copying text from it.
+Copyright (C) 2026 spizganed
+
+QuickBuds is free software: you can redistribute it and/or modify it under the terms of the GNU
+General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. It is distributed WITHOUT ANY WARRANTY; see
+[LICENSE](./LICENSE) for the full text. Protocol references are used as documentation; check
+[CREDITS.md](./docs/CREDITS.md) for each source's license before copying text from it.
