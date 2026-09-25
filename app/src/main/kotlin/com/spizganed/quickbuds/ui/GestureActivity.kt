@@ -428,19 +428,15 @@ class GestureActivity : Activity() {
     }
 
     /**
-     * Icon per gesture. Reuses existing drawables rather than adding five new
-     * vectors: the project has no gesture glyphs, and inventing them would be
-     * guesswork about a visual language that has not been specified.
+     * Icon per gesture. Slide and hold still borrow existing drawables.
      *
-     * ALL THREE TAPS USE THE SAME FILLED DOT. They previously differed (double tap
-     * had the hollow dot), which read as if the gestures were different KINDS of
-     * thing rather than three variants of the same one. The filled dot is used for
-     * all three, by request, for consistency.
+     * One dot per tap (`[USER]` 2026-09-25) — the same dot, so the three still read as
+     * variants of one gesture. They were all a single dot before, which could not tell them apart.
      */
     private fun iconFor(gesture: Gesture): Int = when (gesture) {
-        Gesture.SINGLE_TAP -> R.drawable.ic_status_dot_filled
-        Gesture.DOUBLE_TAP -> R.drawable.ic_status_dot_filled
-        Gesture.TRIPLE_TAP -> R.drawable.ic_status_dot_filled
+        Gesture.SINGLE_TAP -> R.drawable.ic_tap_single
+        Gesture.DOUBLE_TAP -> R.drawable.ic_tap_double
+        Gesture.TRIPLE_TAP -> R.drawable.ic_tap_triple
         Gesture.SLIDE -> R.drawable.ic_chevron_right
         Gesture.TAP_HOLD -> R.drawable.ic_bolt
     }
