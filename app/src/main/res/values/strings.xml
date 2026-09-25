@@ -93,6 +93,9 @@
     <string name="dual_section_devices">Connected devices</string>
     <string name="dual_connected">Connected</string>
     <string name="dual_connected_this">Connected (this device)</string>
+    <string name="dual_add_title">Add device</string>
+    <string name="dual_add_message">Put the earbuds in the case and press and hold the pairing button for 2 seconds. Then open the Bluetooth device list on the new device and tap the name of the earbuds to pair.</string>
+    <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Earbud settings</string>
     <string name="earbuds_section_sounds">Sounds</string>
     <string name="settings_title">Settings</string>
