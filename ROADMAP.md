@@ -15,9 +15,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Time request `0x0500`.** Question. The buds ask for the time after a device connects, and
   HeyMelody answers with Unix seconds (PROTOCOL.md §9). We do not answer. What the buds use it for
   is unknown, so the effect of answering is unknown too.
-- **Voice assistant gesture.** Open. HeyMelody offers it (probably on double or triple tap), and on
-  his phone it opens Gemini / Google Assistant. Its function byte is missing from our list, so it
-  needs a capture.
 - **On-call gestures: confirm the labels.** Open. The write works. He will place a real call and
   report which gesture answers, ends and declines. HeyMelody itself labels on-call double tap
   "Answer/End call" (seen 2026-09-24).
