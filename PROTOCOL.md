@@ -970,6 +970,13 @@ needed in practice.
 | `3`, `7` | **in ear** |
 | `4` | **in case** |
 
+`[CAPTURE]` 2026-09-25 **case lid** (`local/logs/heymelody_case_lid_20260925.log.txt`): while the buds are
+reachable the case entry is always `4`. Closing the lid is announced ~1 s before the socket drops:
+the pushes fall to `0`, one bud first, then `01 00 02 00 03 00` (all zero). Seen on both closes.
+Opening the lid brings the buds back with `04 04 04`; the case battery (`03 xx` in `0x0204` subType `01`)
+is only sent then. So there is no lasting "closed" state to show, but the all-zero push tells a lid
+close apart from a lost link. Charging was not tested.
+
 `[CAPTURE]` Buds 4 query responses sometimes prepend a status byte, so
 `WearingStatusParser` tries offset 0 and offset 1 and keeps the first layout that
 yields plausible pairs.
@@ -1235,5 +1242,5 @@ sessions:
   the request.
 - Whether `0x0404` supports the `type=2` level-setting form `01 02 <level>` (the
   `[OSS]` doc mentions it for "set noise reduction info") — unverified here.
-- Case **lid** state is not reported by any command we know. The app only infers
-  it from the socket dropping. Do not claim to support it.
+- Case **lid**: no state of its own, but a close is announced by an all-zero wear push just
+  before the socket drops (§8). Case charging is untested.
