@@ -109,6 +109,7 @@ garbage rather than an error.
 | `0x010D` | `0x810D` | Feature switch status (batch) | `<count> <featureIds...>` | `[CAPTURE]` |
 | `0x010F` | `0x810F` | EQ | — | `[OSS]` |
 | `0x0122` | — | EQ all presets | `01 05` | `[OSS]` |
+| `0x0130` | `0x8130` | Alert-sound volume | — → `00 <level>` | `[CAPTURE]` see §9 |
 
 Responses are **`cmd | 0x8000`**. That is a reliable rule `[OSS]`.
 
@@ -130,6 +131,7 @@ Responses are **`cmd | 0x8000`**. That is a reliable rule `[OSS]`.
 | `0x0404` | Set ANC | `01 01 <bit>` — see §5 |
 | `0x0406` | Set EQ | `[eqMode]` `[OSS]` |
 | `0x0422` | Set spatial audio | `00` off / `01` fixed / `02` head-tracking |
+| `0x0427` | Set alert-sound volume | `[level]` 1..10, ack `8427 00 <level>` `[CAPTURE]` see §9 |
 
 Writes are acked by `0x8403` / `0x8404` with a 1-byte payload of `00` for
 success `[CAPTURE]`.
@@ -1087,6 +1089,22 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
 No side byte in the payload. HeyMelody sent `0x0114` (reply `8114 00 08`, meaning unknown) just before
 and after the session. `[USER]`: it rings BOTH buds at once, and HeyMelody warns first when the
 buds are in the ears (the tone is loud). `OpoProtocol.findTone()` / `FindBudsActivity` do the same.
+
+### Auto play/pause (`0x04`) and alert-sound volume (`0x0427`) — `[CAPTURE]` 2026-09-25, wired
+
+HeyMelody HCI capture (`local/logs/heymelody_autoplay_alertvol_20260925.log.txt`), his actions in order.
+
+- **Auto play/pause** on>off>on>off sent `0403 04 01`, `04 00`, `04 01`, `04 00`, each acked
+  `8403 00` and followed by a `0x010D` read whose `04` value flipped to match. The plain feature
+  switch, nothing special. `WearActivity` writes it through `setFeatures`.
+- **Alert-sound volume** (the buds' own prompt tones) — mid>lowest>max>lowest>max sent
+  `0427 05`, `01`, `0A`, `01`, `0A`. One byte, range **1..10**. The ack is `8427 00 <level>`, and
+  HeyMelody re-reads after every change with `0130` (empty) → `8130 00 <level>`. The value read
+  before any change was `08`. Our slider sends only on release, so each change plays one prompt.
+
+Our own **smart auto-pause** (pause only when both buds leave the ears) is not a firmware
+feature. `BudsService` sends a media pause key when the last bud goes from wearing (3/7) to
+anything else. It and the firmware switch are mutually exclusive in the UI.
 
 ---
 

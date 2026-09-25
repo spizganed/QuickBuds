@@ -16,11 +16,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Voice assistant gesture.** Open. HeyMelody offers it (probably on double or triple tap), and on
   his phone it opens Gemini / Google Assistant. Its function byte is missing from our list, so it
   needs a capture.
-- **Auto play/pause on wear (firmware switch).** Next (2026-09-26), together with smart auto-pause
-  below it on the same screen. The buds handle this themselves, so we only
-  need the right TX. `autoPlayPauseOn/Off` exist in the manager but are unconfirmed.
-- **Alert-sound volume slider.** Open. Sets the volume of the buds' own prompt sounds (ANC change,
-  Game Mode, …). Firmware setting, needs a capture.
 - **On-call gestures: confirm the labels.** Open. The write works. He will place a real call and
   report which gesture answers, ends and declines. HeyMelody itself labels on-call double tap
   "Answer/End call" (seen 2026-09-24).
@@ -33,9 +28,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
   other than the chosen one (default Medium), the service sends the chosen level. The firmware cannot
   do this itself (PROTOCOL.md §5, tested 2026-09-24). Cost: a double tone whenever the last hand-set
   level differs. Only worth building if a silent level-set command turns up in a capture.
-- **Smart auto-pause.** Open. Pause only when **both** buds are out; one bud out keeps playing; never
-  auto-play. Built on the wear pushes in our background service. Meant to be used with the firmware
-  auto-pause switched off.
 - **Reorder and hide the main-screen rows.** Open. Hold to drag a row into a new order, unlocked by a
   switch in Settings so nothing moves by accident. Rows can also be hidden (e.g. Hi-Res codec, if it
   stays on permanently).
