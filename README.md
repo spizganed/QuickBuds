@@ -40,6 +40,7 @@ widget. Every command it sends was reverse-engineered and confirmed on real hard
 - Read back from the earbuds on every connect, so changes made elsewhere show up
 - **Wear detection:** the earbuds' own auto play/pause, or our smart auto-pause that pauses only
   when both earbuds are out and never auto-plays
+- **Dual connection:** on/off, and which devices the earbuds are connected to.
 - **Find my earbuds.** Plays the earbuds' own loud tone on both buds, with a warning if they're in your ears.
 - **Alert sound volume** for the earbuds' own prompt tones
 

@@ -87,6 +87,9 @@ class BudsConnectionManager(private val context: Context) {
 
         /** The buds reported their alert-sound volume (1..10), see [alertVolume]. */
         fun onAlertVolume(level: Int) {}
+
+        /** The paired-device list changed, see [devices]. */
+        fun onDevices(list: List<PairedDevice>) {}
     }
 
     private val listeners = CopyOnWriteArrayList<Listener>()
@@ -355,8 +358,51 @@ class BudsConnectionManager(private val context: Context) {
     fun setGameMode(on: Boolean) =
         sendRaw(if (on) OpoProtocol.gameModeOn() else OpoProtocol.gameModeOff(), "GameMode")
 
-    fun setDualDevice(on: Boolean) =
-        sendRaw(if (on) OpoProtocol.dualDeviceOn() else OpoProtocol.dualDeviceOff(), "DualDevice")
+    /**
+     * Dual connection, in HeyMelody's exact order (`[CAPTURE]` 2026-09-25): `0x0403 11 xx`, a status
+     * re-read, then `0x0413 08 00 xx`. The buds answer with a `0x0204` subType `06` device list.
+     */
+    fun setDualDevice(on: Boolean) {
+        Thread {
+            try {
+                sendRawBlocking(OpoProtocol.setFeature(OpoProtocol.FEATURE_DUAL_DEVICE, on), "Dual device -> $on")
+                sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
+                sendRawBlocking(OpoProtocol.dualFollowup(on), "Dual follow-up")
+            } catch (e: Exception) {
+                log("DUAL WRITE failed: ${e.message}")
+            }
+        }.start()
+    }
+
+    /** One entry of the buds' paired-device list (`0x8112`, `0x0204` subType `06`). */
+    data class PairedDevice(val mac: String, val name: String, val connected: Boolean)
+
+    /** Latest device list, empty until read. See [refreshDevices]. */
+    @Volatile var devices: List<PairedDevice> = emptyList()
+        private set
+
+    fun refreshDevices() = sendRaw(OpoProtocol.queryDevices(), "query devices")
+
+    /**
+     * `[count]` then per device `[MAC, 6 bytes reversed][?][state][?][nameLen][name UTF-8]`.
+     * State `02` = connected, `00` = not. The two `?` bytes are undecoded (PROTOCOL.md §9).
+     */
+    private fun parseDevices(p: ByteArray, start: Int): List<PairedDevice>? {
+        if (p.size <= start) return null
+        val count = p[start].toInt() and 0xFF
+        var o = start + 1
+        val out = ArrayList<PairedDevice>()
+        repeat(count) {
+            if (o + 10 > p.size) return null
+            val mac = (5 downTo 0).joinToString(":") { "%02X".format(p[o + it]) }
+            val connected = p[o + 7].toInt() == 0x02
+            val len = p[o + 9].toInt() and 0xFF
+            if (o + 10 + len > p.size) return null
+            out += PairedDevice(mac, String(p, o + 10, len, Charsets.UTF_8), connected)
+            o += 10 + len
+        }
+        return out
+    }
 
     // --- Equalizer (PROTOCOL.md §9). Read on demand by the EQ screen, re-read after every write. ---
     @Volatile var eqCurrent: Int? = null
@@ -848,6 +894,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x810C ||                             // ANC query reply
             cmd == 0x810D ||                             // status query reply
             cmd == 0x8130 ||                             // alert volume reply
+            cmd == 0x8112 ||                             // device list reply
             cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
@@ -1020,6 +1067,20 @@ class BudsConnectionManager(private val context: Context) {
             log("EQ: current=$eqCurrent bassWave=$bassWaveLevel custom=" +
                 eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
             handler.post { listeners.forEach { it.onEqState() } }
+            return
+        }
+
+        // --- Paired devices: read reply 0x8112 `00 <list>`, or push 0x0204 subType 06 `06 <list>` ---
+        val deviceList = when {
+            cmd == 0x8112 && payload.isNotEmpty() && payload[0].toInt() == 0 -> parseDevices(payload, 1)
+            cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.isNotEmpty() && payload[0].toInt() == 0x06 ->
+                parseDevices(payload, 1)
+            else -> null
+        }
+        if (deviceList != null) {
+            devices = deviceList
+            log("DEVICES: " + deviceList.joinToString { "${it.name} ${it.mac} ${if (it.connected) "on" else "off"}" })
+            handler.post { listeners.forEach { it.onDevices(deviceList) } }
             return
         }
 

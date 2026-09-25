@@ -111,6 +111,11 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".ui.DualDeviceActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".ui.UpdateActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

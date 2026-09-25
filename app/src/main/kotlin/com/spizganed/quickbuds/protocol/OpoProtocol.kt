@@ -42,6 +42,10 @@ object OpoProtocol {
     const val CMD_SET_ALERT_VOLUME = 0x0427
     /** -> `0x8130` `00 <level>`. Empty payload, as HeyMelody sends it. */
     const val CMD_QUERY_ALERT_VOLUME = 0x0130
+    /** Paired-device list, empty payload -> `0x8112`. `[CAPTURE]` 2026-09-25, PROTOCOL.md §9. */
+    const val CMD_QUERY_DEVICES = 0x0112
+    /** Sent by HeyMelody after every dual-device toggle, meaning unknown. `[CAPTURE]` 2026-09-25. */
+    const val CMD_DUAL_FOLLOWUP = 0x0413
 
     // --- gesture / key-function bindings ---
     const val CMD_QUERY_KEY_FUNCTION = 0x0108  // getKeyFunction — current bindings
@@ -237,9 +241,6 @@ object OpoProtocol {
     fun gameModeOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_GAME_MODE, true))
     fun gameModeOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_GAME_MODE, false))
 
-    fun dualDeviceOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, true))
-    fun dualDeviceOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, false))
-
     /** Find my earbuds — `0x0400` `01` start / `00` stop, both buds, no side byte. `[CAPTURE]` 2026-09-23. */
     fun findTone(on: Boolean): ByteArray =
         buildPacket(CMD_FIND_BUDS, payload = byteArrayOf(if (on) 0x01 else 0x00))
@@ -378,6 +379,11 @@ object OpoProtocol {
     fun setAlertVolume(level: Int): ByteArray =
         buildPacket(CMD_SET_ALERT_VOLUME, payload = byteArrayOf(level.coerceIn(1, 10).toByte()))
     fun queryAlertVolume(): ByteArray = buildPacket(CMD_QUERY_ALERT_VOLUME)
+
+    fun queryDevices(): ByteArray = buildPacket(CMD_QUERY_DEVICES)
+    /** `08 00 01` after dual OFF, `08 00 00` after ON — copied from HeyMelody, not understood. */
+    fun dualFollowup(dualOn: Boolean): ByteArray =
+        buildPacket(CMD_DUAL_FOLLOWUP, payload = byteArrayOf(0x08, 0x00, if (dualOn) 0x00 else 0x01))
 
     /**
      * getKeyFunction (0x0108) — read the CURRENT gesture bindings.

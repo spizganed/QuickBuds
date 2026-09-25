@@ -1106,6 +1106,37 @@ Our own **smart auto-pause** (pause only when both buds leave the ears) is not a
 feature. `BudsService` sends a media pause key when the last bud goes from wearing (3/7) to
 anything else. It and the firmware switch are mutually exclusive in the UI.
 
+### Dual connection (`0x11`) and the device list (`0x0112`) — `[CAPTURE]` 2026-09-25, wired
+
+HeyMelody HCI capture made by the agent (`local/logs/heymelody_dual_connection_20260925.log.txt`):
+screen opened, switch off, switch on.
+
+```
+TX 0112                                   read device list (empty payload)
+RX 8112 00 02 77 da 74 70 f3 5c 12 02 00 0f "DESKTOP-8IN3GA6"
+              1b 37 61 ed b0 3c 15 02 01 12 "Nothing Phone (3a)"
+TX 0403 11 00 -> 8403 00, TX 010D (11 now 00), TX 0413 08 00 01 -> 8413 00      switch OFF
+RX 0204 06 02 ...DESKTOP... 12 00 00 ...  ...Phone... 15 02 01 ...          desktop state -> 00
+TX 0403 11 01 -> 8403 00, TX 010D (11 now 01), TX 0413 08 00 00 -> 8413 00      switch ON
+RX 0204 06 02 ...DESKTOP... 12 02 00 ...                                    desktop back, ~1.5 s
+```
+
+- **Device list** — reply `[status 00][count]`, push `0x0204` subType `06` then `[count]`; each
+  entry is `[MAC, 6 bytes reversed][?][state][?][nameLen][name UTF-8]`. State `02` = connected,
+  `00` = not; a dropped device stays in the list with `00`, and HeyMelody shows only connected
+  ones. The two `?` bytes (`12`/`15`, `00`/`01`) are undecoded — the `01` sits on this phone, but
+  one sample is not proof, so the app finds "this device" by the phone's Bluetooth name.
+- **`0x0413 08 00 xx`** follows every toggle, `01` after OFF and `00` after ON (HeyMelody also
+  sends `08 00 00` when the screen opens). Meaning unknown; `setDualDevice` replays it verbatim.
+- "Add device" in HeyMelody is only pairing instructions; tapping a device row does nothing.
+
+### Time request (`0x0500`) — `[CAPTURE]` 2026-09-25, not answered by us
+
+When the second device reconnected, the buds sent `0x0501` and `0x0500`, both empty. HeyMelody
+answered `0x0500` with `8500 00 e0 72 b6 6a`: status, then **Unix seconds, u32 LE** (`0x6AB672E0` =
+13:10:56 UTC, the frame's own time to the second), then sent `040F 01` (unknown). `0x0501` got no
+reply. QuickBuds does not answer yet.
+
 ---
 
 ## 10. Debugging: what the log lines mean
@@ -1142,8 +1173,8 @@ AA 07 00 00 00 05 02 00 00
 ```
 
 Note these are cmd `0x0501`/`0x0500` — a **different family** from
-`0x0204 subType 0x05` (game mode). They may be this firmware's alternate ANC
-notification. No payload has been observed. **Capture before writing a parser.**
+`0x0204 subType 0x05` (game mode). No payload has been observed. **`0x0500` is a time
+request** (§9, "Time request"); `0x0501` is still unknown.
 
 ---
 

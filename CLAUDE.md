@@ -237,8 +237,8 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 - **Case lid state** — keep, remove or change: undecided. `ic_case.xml` stays until then.
 - **Localisation** — text is in `strings.xml` but only English exists, and hardcoded strings remain in
   `MainActivity` dialogs, the Dev Tools labels and legend, and `BottomSheetDialog` callers.
-- **Undecoded families** — `0x0500`/`0x0501` (they have empty payloads, so they cannot be gesture
-  bindings), broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
+- **Undecoded families** — `0x0501` (empty payload, so not a gesture binding; its sibling `0x0500`
+  is a time request, PROTOCOL.md §9), broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
   `F1` family (`AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`), and `02 01 08 0C 02` /
   `02 01 07 0B 02` (these carry non-multiples of ten — possibly a fine-grained battery/case field).
   Also `0x0510`, a Spatial Audio notify. **Do not guess any of these from a couple of samples.**
@@ -284,8 +284,8 @@ named `mainScroll`. Inside it, top to bottom:
    apply to a vector drawable. `addRow()` inserts the hairline divider before every row but the first.
    **Since 2026-09-25 (`[USER]`, "option A") the card holds only what changes the sound** — low
    latency, Hi-Res, 3D audio, EQ — plus one **Earbud settings** row. That opens
-   `EarbudSettingsActivity`, the hub for the buds themselves: Earbud gestures, Wear detection, Find
-   my earbuds, and a Sounds card with the alert-volume slider. New firmware settings (dual device)
+   `EarbudSettingsActivity`, the hub for the buds themselves: Earbud gestures, Wear detection, Dual
+   connection, Find my earbuds, and a Sounds card with the alert-volume slider. New firmware settings
    go in the hub, not on the main card. App update moved to the cog's sheet.
 
 **The main screen carries no log**, by design — Dev Tools owns logging. `appendStatus()` only

@@ -19,9 +19,9 @@ import com.spizganed.quickbuds.bluetooth.BudsService
 
 /**
  * Earbud settings — the hub for everything about the buds themselves rather than the sound
- * (`[USER]` 2026-09-25, option A): gestures, wear detection, find, and the alert-sound volume.
- * It keeps the main screen to the audio controls. Firmware settings still to come (dual device)
- * belong here too.
+ * (`[USER]` 2026-09-25, option A): gestures, wear detection, dual connection, find, and the
+ * alert-sound volume. It keeps the main screen to the audio controls. New firmware settings belong
+ * here too.
  */
 class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
 
@@ -73,6 +73,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         }
         link(R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub, GestureActivity::class.java)
         link(R.drawable.ic_bud_left, R.string.row_wear_title, R.string.row_wear_sub, WearActivity::class.java)
+        link(R.drawable.ic_devices, R.string.row_dual_title, R.string.row_dual_sub, DualDeviceActivity::class.java)
         link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java)
         root.addView(card)
 
