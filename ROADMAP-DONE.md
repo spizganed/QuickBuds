@@ -11,6 +11,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   a second). There is now one poller per connection, and disconnect cancels it.
 - Reconnect after a lost link (e.g. after a codec switch): fast and consistent.
 - Status reply `0x810D` decoded: Hi-Res, 3D audio and low latency show the buds' own state on connect.
+- The last `0x810D` reply is persisted, so the switches open at the last known state instead of
+  jumping when the connect-time read lands (2026-09-25).
 - Gesture, hold and on-call config are read from the buds on every connect.
 - Connect/Disconnect drive phone audio too, like HeyMelody's "device sync" (2026-09-25, confirmed
   by him; faster than HeyMelody). Disconnect calls the hidden `BluetoothHeadset/A2dp.disconnect()` by
