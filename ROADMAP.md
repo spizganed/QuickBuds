@@ -92,8 +92,8 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
   README.
 - Remove overlap. Protocol facts live only in PROTOCOL.md, and each feature is described once.
 - A full human-read pass over every doc, with notes back to him.
-- **GitHub repo description.** Open. The About box on `spizganed/QuickBuds` is empty; set it (plus
-  topics) in the browser, since `gh` is not installed.
+- **Retake the README screenshots** once the UI and the widget are final. The current ones are
+  placeholders. Rerun `scripts/readme-screenshots.sh`.
 
 ## Later
 
