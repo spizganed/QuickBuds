@@ -15,8 +15,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Time request `0x0500`.** Question. The buds ask for the time after a device connects, and
   HeyMelody answers with Unix seconds (PROTOCOL.md §9). We do not answer. What the buds use it for
   is unknown, so the effect of answering is unknown too.
-- **Show charging.** Open. The firmware pushes the case's charge bit when it is plugged in with the lid
-  open (PROTOCOL.md §7), and the parser already decodes it, but no screen shows it. The design is his call.
 
 ## Our own features
 
