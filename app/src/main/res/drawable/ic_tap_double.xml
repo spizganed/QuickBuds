@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Double tap gesture: one dot per tap. The three tap icons share this 24x24 canvas and dot
+  radius, so the dots are the same size in all three.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 5 12 A 3 3 0 0 1 11 12 A 3 3 0 0 1 5 12 Z M 13 12 A 3 3 0 0 1 19 12 A 3 3 0 0 1 13 12 Z" />
+</vector>
