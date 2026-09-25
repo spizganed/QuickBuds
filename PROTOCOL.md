@@ -704,10 +704,14 @@ against what he reported binding (zero contradictions; two values confirmed twic
 |---|---|---|---|---|
 | `0x00` | none / unbound | | `0x08` | **ANC cycle** (the hold) |
 | `0x01` | play/pause | | `0x0A` | switch track |
-| `0x03` | voice assistant | | `0x0B` | volume up `[INFERRED]` |
+| `0x03` | voice assistant `[CAPTURE]` | | `0x0B` | volume up `[INFERRED]` |
 | `0x05` | previous track | | `0x0C` | volume down `[INFERRED]` |
 | `0x06` | next track | | `0x11` | game mode |
 | `0x07` | volume | | | |
+
+`0x03` is also confirmed from HeyMelody's own write, 2026-09-25: left double tap to Voice Assistant
+sent `0401 01 01 01 02 03` and back to None `0401 01 01 01 02 00`, each re-read as `01 01 02 03` / `00`
+(`local/logs/heymelody_voice_assistant_20260925.log.txt`).
 
 `0x0B`/`0x0C` come from **`F1` byte3 during a slide**, where the same gesture resolved
 per direction (see `byte3` in §6.1): a slot holding `0x07` (volume) reported `0x0B` going up
