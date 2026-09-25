@@ -20,6 +20,7 @@ import com.spizganed.quickbuds.protocol.UserInteractionParser
 import com.spizganed.quickbuds.protocol.WearingStatusParser
 import com.spizganed.quickbuds.ui.GestureConfigStore
 import com.spizganed.quickbuds.ui.OnCallConfigStore
+import com.spizganed.quickbuds.ui.ThemeRes
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -414,9 +415,26 @@ class BudsConnectionManager(private val context: Context) {
     /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §9. */
     fun setFindTone(on: Boolean) = sendRaw(OpoProtocol.findTone(on), "Find tone -> $on")
 
-    /** Latest `0x810D` reply as feature id -> value (PROTOCOL.md §9). Empty until the first one. */
-    @Volatile var featureStates: Map<Int, Int> = emptyMap()
-        private set
+    private val FEATURES_KEY = "lastFeatureStates"
+
+    /**
+     * Latest `0x810D` reply as feature id -> value (PROTOCOL.md §9). Persisted, so the switches
+     * open at the last known state instead of jumping when the connect-time read lands.
+     */
+    @Volatile var featureStates: Map<Int, Int> = featurePrefs().getString(FEATURES_KEY, "")!!
+        .split(',').mapNotNull { e ->
+            val kv = e.split('=')
+            val k = kv[0].toIntOrNull(); val v = kv.getOrNull(1)?.toIntOrNull()
+            if (k != null && v != null) k to v else null
+        }.toMap()
+        private set(value) {
+            field = value
+            featurePrefs().edit()
+                .putString(FEATURES_KEY, value.entries.joinToString(",") { "${it.key}=${it.value}" })
+                .apply()
+        }
+
+    private fun featurePrefs() = context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
     /**
      * `0x0403` feature writes, sent IN ORDER on one thread (HeyMelody sends spatial before

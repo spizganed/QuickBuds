@@ -57,9 +57,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## UI polish
 
-- **Switches jump on open.** Next. The main-screen switches (High-quality audio, low latency, 3D audio)
-  start at their default and flip to the real state a moment later. Persist the last known
-  `featureStates` and show them at once, then let the read confirm or correct them.
 - The palette today: black, two greys, white and red, so five colours. That feeds the theme editor
   above.
 - **New widget, rebuilt from scratch.** The old logic and UI are outdated. Start with a **2×2**
