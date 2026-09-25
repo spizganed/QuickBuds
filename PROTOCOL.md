@@ -953,6 +953,13 @@ needed in practice.
 `[CAPTURE]` Example: `... 03 01 64 02 64 03 50` → all three at `0x64` = 100, case
 `0x50` = 80.
 
+`[CAPTURE]` 2026-09-25 **case charging** (logcat, Buds 4, one bud in the case): plugging the case in
+with the lid **open** makes the buds push a fresh `0x0204` subType `01` with the charge bit set on the
+case, `03 A8` (40%, charging; it was `03 28` before), next to a wear push with no wear change. With
+the lid **closed** nothing is pushed, and a `0x0106` query returns only the bud outside the case
+(`01 01 5A`): the case and the bud inside it are silent until the lid opens. Unplugging was not
+captured.
+
 ## 8. Wearing / in-case — `0x8109` and `0x0204` subType `0x02`
 
 `[OSS]` Payload is `[count][component, status] × count`.
@@ -976,7 +983,7 @@ the pushes fall to `0`, one bud first, then `01 00 02 00 03 00` (all zero). Seen
 Opening the lid brings the buds back with `04 04 04`; the case battery (`03 xx` in `0x0204` subType `01`)
 is only sent then. So there is no lasting "closed" state to show, but the all-zero push tells a lid
 close apart from a lost link: `BudsConnectionManager` logs `Case closed` and skips the reconnect
-retries (ACL_CONNECTED reconnects when the lid opens). Charging was not tested.
+retries (ACL_CONNECTED reconnects when the lid opens). Charging: see §7.
 
 `[CAPTURE]` Buds 4 query responses sometimes prepend a status byte, so
 `WearingStatusParser` tries offset 0 and offset 1 and keeps the first layout that
@@ -1244,4 +1251,4 @@ sessions:
 - Whether `0x0404` supports the `type=2` level-setting form `01 02 <level>` (the
   `[OSS]` doc mentions it for "set noise reduction info") — unverified here.
 - Case **lid**: no state of its own, but a close is announced by an all-zero wear push just
-  before the socket drops (§8). Case charging is untested.
+  before the socket drops (§8). Case charging is reported only while the lid is open (§7).
