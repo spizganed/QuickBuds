@@ -31,6 +31,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   sequence (PROTOCOL.md §9, capture 2026-09-25), and HeyMelody's "Add device" pairing instructions.
 - Voice assistant gesture on double / triple tap, same options as HeyMelody; `0x03` confirmed
   against HeyMelody's own write (2026-09-25).
+- Case lid: a close is announced by an all-zero wear push before the link drops; the app then
+  skips its reconnect retries (capture 2026-09-25). There is no lasting lid state to show.
 - On-call gestures: write verified, and confirmed on a real call by him (2026-09-25).
 - Equalizer: built-in presets, Bass boost with level, up to 3 custom presets on a draggable curve
   with rename and delete (PROTOCOL.md §9).

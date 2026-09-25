@@ -119,6 +119,8 @@ class BudsConnectionManager(private val context: Context) {
     private var lossRetries = 0
     private var connectedAt = 0L
     private var pendingReconnect: Runnable? = null
+    /** Set by the all-zero wear push the buds send just before a lid close drops the link (PROTOCOL.md §8). */
+    @Volatile private var caseClosing = false
 
     /**
      * Poll period for the status query (0x010D).
@@ -236,6 +238,7 @@ class BudsConnectionManager(private val context: Context) {
                 isReady = true
                 reconnectAttempts = 0
                 connectedAt = System.currentTimeMillis()
+                caseClosing = false
                 handler.post { listeners.forEach { it.onConnected(true) } }
                 log("Ready for commands. Running init sequence...")
                 runInitSequence()
@@ -819,6 +822,12 @@ class BudsConnectionManager(private val context: Context) {
                     // Our own disconnect() closed this socket, or a newer connection has already
                     // replaced it — either way this thread must not tear anything down.
                     if (cancelled || connectedThread !== this) break
+                    if (caseClosing) {
+                        // The buds are off in a closed case; opening it brings ACL_CONNECTED back.
+                        log("Case closed")
+                        disconnect()
+                        break
+                    }
                     log("Connection lost: ${e.message}")
                     disconnect()
                     reconnectAfterLoss()
@@ -936,6 +945,8 @@ class BudsConnectionManager(private val context: Context) {
                 lastRightStatus = wearing.rightStatus
             }
             if (wearing.caseStatus >= 0) lastCaseStatus = wearing.caseStatus
+            caseClosing = fromEvent && wearing.caseStatus == 0 &&
+                wearing.leftStatus == 0 && wearing.rightStatus == 0
             log("WEAR ${if (fromEvent) "EVT" else "QRY"}: " +
                 "L=${wearLabel(lastLeftStatus)} " +
                 "R=${wearLabel(lastRightStatus)} " +

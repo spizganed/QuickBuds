@@ -975,7 +975,8 @@ reachable the case entry is always `4`. Closing the lid is announced ~1 s before
 the pushes fall to `0`, one bud first, then `01 00 02 00 03 00` (all zero). Seen on both closes.
 Opening the lid brings the buds back with `04 04 04`; the case battery (`03 xx` in `0x0204` subType `01`)
 is only sent then. So there is no lasting "closed" state to show, but the all-zero push tells a lid
-close apart from a lost link. Charging was not tested.
+close apart from a lost link: `BudsConnectionManager` logs `Case closed` and skips the reconnect
+retries (ACL_CONNECTED reconnects when the lid opens). Charging was not tested.
 
 `[CAPTURE]` Buds 4 query responses sometimes prepend a status byte, so
 `WearingStatusParser` tries offset 0 and offset 1 and keeps the first layout that

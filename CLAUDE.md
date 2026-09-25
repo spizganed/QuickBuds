@@ -233,7 +233,8 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
   which is not established.
 - **Light theme** — either removed or left untouched until the final UI lands. It is the source of
   invisible-on-light bugs. Do not polish it.
-- **Case lid state** — keep, remove or change: undecided. `ic_case.xml` stays until then.
+- **Case lid state** — settled 2026-09-25: no lasting lid state exists (PROTOCOL.md §8); a close only
+  stops the reconnect retries. `ic_case.xml` stays (the status view uses it).
 - **Localisation** — text is in `strings.xml` but only English exists, and hardcoded strings remain in
   `MainActivity` dialogs, the Dev Tools labels and legend, and `BottomSheetDialog` callers.
 - **Undecoded families** — `0x0501` (empty payload, so not a gesture binding; its sibling `0x0500`
@@ -254,6 +255,8 @@ From `bluetooth/BudsConnectionManager.kt`.
   HeyMelody capture, stop our service from Quick Settings → Active apps (a plain `am force-stop`
   can be undone by our own reconnect). HeyMelody also greys out Earbud controls unless both buds are out.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
+- **A lid close is not a lost link.** The buds push all-zero wear just before dropping; the manager
+  logs `Case closed` and does not retry (2026-09-25).
 - **Only a user connect (pill, Dev Tools) asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Automatic
   connects (ACL receiver, retries, reconnect after loss) leave A2DP to the system: asking for it while
   the system auto-connects left audio stuck on auto-connect. Fixed 2026-09-25, confirmed by him.
