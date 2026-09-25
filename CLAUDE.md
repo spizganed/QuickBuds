@@ -333,6 +333,10 @@ a shared one hung.
   is about the wire format.
 - Runtime `*.log` files written by the app are ignored — they are regenerated every run. Handed-over
   captures (`*.log.txt`) are evidence and **are** tracked.
-- There are no committed screenshots.
+- **README screenshots** live in `docs/screenshots/` and are retaken with
+  `scripts/readme-screenshots.sh [adb-serial]` (buds connected, Pillow installed). It taps through
+  the app by visible text, so renaming a row label or `eq_edit` breaks it. It stops mobile-mcp's
+  device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.
+  `widget.png` is taken only if the widget is on the home screen, cropped to the widget alone.
 - Root docs: `README.md`, `ROADMAP.md`, `ROADMAP-DONE.md`, `CLAUDE.md`, `PROTOCOL.md`, `CREDITS.md`, `PACKET-CAPTURE.md`,
   `LICENSE`.

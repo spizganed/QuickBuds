@@ -12,13 +12,11 @@ widget. Every command it sends was reverse-engineered and confirmed on real hard
 
 ## Screenshots
 
-<!--
-  Drop the PNGs into docs/screenshots/ and remove the comment markers around each <img>.
--->
+<!-- Retaken with scripts/readme-screenshots.sh; see CLAUDE.md. -->
 
 | Main screen | Equalizer | Curve editor | Earbud controls | Widget |
 | :---: | :---: | :---: | :---: | :---: |
-| <!-- <img src="docs/screenshots/main.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/eq.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/eq-curve.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/controls.png" width="200"> --> _coming soon_ | <!-- <img src="docs/screenshots/widget.png" width="200"> --> _coming soon_ |
+| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-curve.png" width="200"> | <img src="docs/screenshots/controls.png" width="200"> | <img src="docs/screenshots/widget.png" width="200"> |
 
 ## Features
 
