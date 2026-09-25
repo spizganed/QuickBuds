@@ -25,7 +25,8 @@ import com.spizganed.quickbuds.R
 object SettingRowFactory {
 
     /**
-     * One settings row: leading icon, title, optional subtitle, trailing control.
+     * One settings row: leading icon (none when [iconRes] is 0), title, optional subtitle,
+     * trailing control.
      *
      * @param trailing the switch / chevron / value view to place on the right.
      * @param onClick  invoked for a tap anywhere on the row. Rows with a live
@@ -68,7 +69,7 @@ object SettingRowFactory {
             if (onClick != null) setOnClickListener { onClick() }
         }
 
-        val icon = ImageView(context).apply {
+        if (iconRes != 0) row.addView(ImageView(context).apply {
             layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
             scaleType = ImageView.ScaleType.FIT_CENTER
             // Accent-red row icons (redesign 2026-09-23) — the app-wide accent, not the plain icon tint.
@@ -76,13 +77,12 @@ object SettingRowFactory {
             contentDescription = ""
             // Tagged so a theme change can retint without rebuilding the row.
             tag = iconRes
-        }
-        row.addView(icon)
+        })
 
         val textColumn = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            setPadding(dp(14f), 0, dp(10f), 0)
+            setPadding(if (iconRes != 0) dp(14f) else dp(4f), 0, dp(10f), 0)
         }
 
         textColumn.addView(TextView(context).apply {

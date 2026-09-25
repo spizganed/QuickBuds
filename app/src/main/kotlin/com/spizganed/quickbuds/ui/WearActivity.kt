@@ -81,7 +81,7 @@ class WearActivity : Activity(), BudsConnectionManager.Listener {
         }
         card.addView(
             SettingRowFactory.build(
-                this, R.drawable.ic_bud_left, R.string.wear_firmware_title, R.string.wear_firmware_sub,
+                this, 0, R.string.wear_firmware_title, R.string.wear_firmware_sub,
                 firmwareSwitch
             ) { firmwareSwitch.performClick() }
         )
@@ -95,7 +95,7 @@ class WearActivity : Activity(), BudsConnectionManager.Listener {
         }
         card.addView(
             SettingRowFactory.build(
-                this, R.drawable.ic_bud_right, R.string.wear_smart_title, R.string.wear_smart_sub,
+                this, 0, R.string.wear_smart_title, R.string.wear_smart_sub,
                 smartSwitch
             ) { smartSwitch.performClick() }
         )
