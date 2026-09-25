@@ -85,6 +85,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private var hiresSubtitle: TextView? = null
     private var spatialSwitch: Switch? = null
     private var alertSlider: LevelSliderView? = null
+    private var alertSpeaker: ((Int) -> Unit)? = null
 
     /** Last state rendered, so a redundant notify does not rebuild the UI. */
     private var lastRendered: WidgetStateStore.State? = null
@@ -1002,20 +1003,42 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
         // --- Alert-sound volume, 1..10: `0x0427`, read back with `0x0130`. [CAPTURE] 2026-09-25 ---
         // Sent on release only, so the buds play one prompt per change, not one per step.
-        val slider = LevelSliderView(this, 1, 10).apply {
-            onRelease = { manager.setAlertVolume(it) }
-            val pad = ThemeRes.dp(this@MainActivity, 8f)
-            setPadding(pad, 0, pad, pad)
+        // No numbers, as in HeyMelody: a speaker icon left of the bar, muted at the lowest step
+        // (level 1 is silent on the buds, `[USER]` 2026-09-25).
+        val speaker = ImageView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(ThemeRes.dp(this@MainActivity, 22f), ThemeRes.dp(this@MainActivity, 22f))
         }
+        val slider = LevelSliderView(this, 1, 10).apply {
+            showValue = false
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        val paintSpeaker = { level: Int ->
+            speaker.setImageDrawable(ThemeRes.tint(
+                this, if (level <= 1) R.drawable.ic_volume_off else R.drawable.ic_volume,
+                ThemeRes.color(this, R.attr.appColorAccent)
+            ))
+        }
+        slider.onChange = paintSpeaker
+        slider.onRelease = { manager.setAlertVolume(it) }
+        paintSpeaker(slider.value)
         alertSlider = slider
+        alertSpeaker = paintSpeaker
         addRow(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            addView(SettingRowFactory.build(
-                this@MainActivity, R.drawable.ic_volume, R.string.row_alert_title, R.string.row_alert_sub,
-                // Sized 0x0: a bare View at wrap_content takes all the space it is offered.
-                View(this@MainActivity).apply { layoutParams = LinearLayout.LayoutParams(0, 0) }
-            ))
-            addView(slider)
+            val pad = ThemeRes.dp(this@MainActivity, 14f)
+            setPadding(pad, pad, pad / 2, pad / 2)
+            addView(TextView(this@MainActivity).apply {
+                setText(R.string.row_alert_title)
+                setTextColor(ThemeRes.color(this@MainActivity, R.attr.appColorTextPrimary))
+                textSize = 15f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+            })
+            addView(LinearLayout(this@MainActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                addView(speaker)
+                addView(slider)
+            })
         })
 
         // --- 5. Find my earbuds ---
@@ -1055,7 +1078,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     override fun onAlertVolume(level: Int) {
-        alertSlider?.let { if (!it.dragging) it.value = level }
+        alertSlider?.let { if (!it.dragging) { it.value = level; alertSpeaker?.invoke(level) } }
     }
 
     /** True while a switch is being set from code, so its listener does not send a write. */
