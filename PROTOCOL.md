@@ -1154,7 +1154,9 @@ RX 0204 06 02 ...DESKTOP... 12 02 00 ...                                    desk
 When the second device reconnected, the buds sent `0x0501` and `0x0500`, both empty. HeyMelody
 answered `0x0500` with `8500 00 e0 72 b6 6a`: status, then **Unix seconds, u32 LE** (`0x6AB672E0` =
 13:10:56 UTC, the frame's own time to the second), then sent `040F 01` (unknown). `0x0501` got no
-reply. QuickBuds does not answer yet.
+reply. **QuickBuds does not answer it, by decision** (2026-09-25): no feature is known to depend on it,
+and no OSS client answers it either — OppoPodsManager files `0x0500`–`0x05FF` as "RequestCommandManager"
+status events and only logs them.
 
 ---
 

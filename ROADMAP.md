@@ -12,9 +12,7 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## Parity: firmware features still missing
 
-- **Time request `0x0500`.** Question. The buds ask for the time after a device connects, and
-  HeyMelody answers with Unix seconds (PROTOCOL.md §9). We do not answer. What the buds use it for
-  is unknown, so the effect of answering is unknown too.
+None known (2026-09-25). A new one needs a HeyMelody capture first.
 
 ## Our own features
 
