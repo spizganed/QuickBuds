@@ -1011,7 +1011,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         addRow(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(SettingRowFactory.build(
-                this@MainActivity, R.drawable.ic_volume, R.string.row_alert_title, R.string.row_alert_sub, View(this@MainActivity)
+                this@MainActivity, R.drawable.ic_volume, R.string.row_alert_title, R.string.row_alert_sub,
+                // Sized 0x0: a bare View at wrap_content takes all the space it is offered.
+                View(this@MainActivity).apply { layoutParams = LinearLayout.LayoutParams(0, 0) }
             ))
             addView(slider)
         })
