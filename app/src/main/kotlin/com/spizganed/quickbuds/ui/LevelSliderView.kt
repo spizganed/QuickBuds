@@ -70,7 +70,7 @@ class LevelSliderView(
         val r = if (dragging) dp(10f) else dp(8f)
         canvas.drawCircle(x(pos), trackY, r, dotFill)
         canvas.drawCircle(x(pos), trackY, r, dotRing)
-        canvas.drawText(if (value > 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
+        canvas.drawText(if (value > 0 && min < 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
