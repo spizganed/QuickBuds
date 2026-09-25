@@ -15,8 +15,8 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Time request `0x0500`.** Question. The buds ask for the time after a device connects, and
   HeyMelody answers with Unix seconds (PROTOCOL.md §9). We do not answer. What the buds use it for
   is unknown, so the effect of answering is unknown too.
-- **Case state (open / closed / charging).** Question. Worth doing only if the firmware pushes it
-  unprompted. If it only answers a request, drop it. Report what is found either way.
+- **Case charging.** Question. Does the firmware push case charging on its own? Needs a capture with
+  the case on a charger.
 
 ## Our own features
 
