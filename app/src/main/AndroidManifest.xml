@@ -101,6 +101,11 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".ui.EarbudSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".ui.WearActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

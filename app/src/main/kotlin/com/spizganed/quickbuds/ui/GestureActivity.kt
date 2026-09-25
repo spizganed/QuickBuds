@@ -1,13 +1,9 @@
 package com.spizganed.quickbuds.ui
 
 import android.app.Activity
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.IBinder
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -16,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.spizganed.quickbuds.R
-import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 
 /**
@@ -44,7 +39,7 @@ import com.spizganed.quickbuds.bluetooth.BudsService
  * and PROTOCOL.md §6. The on-call writes ([OnCallGesture]) are a single small entry
  * instead of a full-table rewrite — see BudsConnectionManager.sendOnCallDoubleTap().
  */
-class GestureActivity : Activity(), BudsConnectionManager.Listener {
+class GestureActivity : Activity() {
 
     private var side: GestureSide = GestureSide.LEFT
 
@@ -156,45 +151,6 @@ class GestureActivity : Activity(), BudsConnectionManager.Listener {
         }
         column.addView(onCallList)
 
-        // --- Sounds: alert-sound volume, 1..10: `0x0427`, read back with `0x0130`. [CAPTURE] 2026-09-25 ---
-        // Sent on release only, so the buds play one prompt per change, not one per step.
-        // No numbers, as in HeyMelody: a speaker icon left of the bar, muted at the lowest step
-        // (level 1 is silent on the buds, `[USER]` 2026-09-25).
-        column.addView(TextView(this).apply {
-            setText(R.string.gesture_section_sounds)
-            setTextColor(ThemeRes.color(this@GestureActivity, R.attr.appColorTextSecondary))
-            textSize = 13f
-            setPadding(dp(4f), dp(22f), 0, dp(8f))
-        })
-        val speaker = ImageView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
-        }
-        alertSlider = LevelSliderView(this, 1, 10).apply {
-            showValue = false
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            onChange = { paintSpeaker(speaker, it) }
-            onRelease = { manager?.setAlertVolume(it) }
-        }
-        alertSpeaker = speaker
-        paintSpeaker(speaker, alertSlider.value)
-        column.addView(LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            background = getDrawable(R.drawable.app_card_bg)
-            setPadding(dp(18f), dp(14f), dp(10f), dp(6f))
-            addView(TextView(this@GestureActivity).apply {
-                setText(R.string.row_alert_title)
-                setTextColor(ThemeRes.color(this@GestureActivity, R.attr.appColorTextPrimary))
-                textSize = 15f
-                typeface = Typeface.DEFAULT_BOLD
-            })
-            addView(LinearLayout(this@GestureActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                addView(speaker)
-                addView(alertSlider)
-            })
-        })
-
         // The status note. Deliberately below the list and in secondary colour: it
         // is information, not an error state, and it must not look like a warning
         // that something failed. It states what actually happens now — a write to the
@@ -227,60 +183,6 @@ class GestureActivity : Activity(), BudsConnectionManager.Listener {
         super.onResume()
         render()
     }
-
-    // --- Service binding, for the alert-volume slider only; gestures still go through intents ---
-    private var manager: BudsConnectionManager? = null
-    private var bound = false
-    private lateinit var alertSlider: LevelSliderView
-    private lateinit var alertSpeaker: ImageView
-
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            manager = (service as BudsService.LocalBinder).getService().manager
-            manager?.addListener(this@GestureActivity)
-            manager?.alertVolume?.let { onAlertVolume(it) }
-            manager?.refreshAlertVolume()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            manager = null
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        bound = bindService(Intent(this, BudsService::class.java), connection, Context.BIND_AUTO_CREATE)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        manager?.removeListener(this)
-        if (bound) unbindService(connection)
-        bound = false
-        manager = null
-    }
-
-    private fun paintSpeaker(view: ImageView, level: Int) {
-        view.setImageDrawable(ThemeRes.tint(
-            this, if (level <= 1) R.drawable.ic_volume_off else R.drawable.ic_volume,
-            ThemeRes.color(this, R.attr.appColorAccent)
-        ))
-    }
-
-    override fun onAlertVolume(level: Int) {
-        if (alertSlider.dragging) return
-        alertSlider.value = level
-        paintSpeaker(alertSpeaker, level)
-    }
-
-    override fun onStatus(msg: String) {}
-    override fun onConnected(connected: Boolean) {}
-    override fun onPacketReceived(bytes: ByteArray) {}
-    override fun onBattery(
-        left: Int?, case: Int?, right: Int?,
-        chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean
-    ) {}
-    override fun onBudState(state: String) {}
 
     /** A Left/Right chip. Equal width via weight, so neither label can clip. */
     private fun sideButton(labelRes: Int, onClick: () -> Unit): Button {

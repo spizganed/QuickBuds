@@ -282,6 +282,11 @@ named `mainScroll`. Inside it, top to bottom:
    `MainActivity.buildFeatureRows()`. Declared empty in XML on purpose: six near-identical row
    layouts in XML would be six places to edit, and the icons need a themed tint that XML cannot
    apply to a vector drawable. `addRow()` inserts the hairline divider before every row but the first.
+   **Since 2026-09-25 (`[USER]`, "option A") the card holds only what changes the sound** — low
+   latency, Hi-Res, 3D audio, EQ — plus one **Earbud settings** row. That opens
+   `EarbudSettingsActivity`, the hub for the buds themselves: Earbud gestures, Wear detection, Find
+   my earbuds, and a Sounds card with the alert-volume slider. New firmware settings (dual device)
+   go in the hub, not on the main card. App update moved to the cog's sheet.
 
 **The main screen carries no log**, by design — Dev Tools owns logging. `appendStatus()` only
 appends to a bounded in-memory tail. See the note above about not putting user-visible output on a

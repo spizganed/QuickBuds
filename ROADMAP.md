@@ -47,7 +47,7 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Hide the Dev Tools button** from the main screen (switch).
 - **Background service on/off**, for users who do not want it.
 - **Widget on/off.**
-- **App update** moves here from the main screen, with an **auto-check on start** switch. The check
+- **App update** is in the cog since 2026-09-25. Still to add: an **auto-check on start** switch. The check
   runs in the background and shows one styled dialog when an update exists. It should never nag.
   **The update screen needs a redesign** (updater confirmed working 2.0.0 → 2.1.0, 2026-09-25): it is
   bare bones today. Add a download progress bar, the release notes, the installed and new version

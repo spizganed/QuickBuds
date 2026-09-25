@@ -23,7 +23,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 
 - ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen, widget and Quick
   Settings tile. Changes made on the buds show up in the app.
-- Earbud controls: tap, double, triple, hold and slide per bud. The function values were measured,
+- Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
 - On-call gestures: the write is verified. The labels still need a real call (see ROADMAP.md).
 - Equalizer: built-in presets, Bass boost with level, up to 3 custom presets on a draggable curve
@@ -33,7 +33,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Find my earbuds: the buds' own tone on both buds, with an in-ear warning.
 - Wear detection screen: the firmware's auto play/pause, and our own smart auto-pause (pause only
   when both buds are out, never auto-play). The two are mutually exclusive.
-- Alert-sound volume slider (HeyMelody style, muted icon at the lowest step) in Earbud controls → Sounds (PROTOCOL.md §9).
+- Alert-sound volume slider (HeyMelody style, muted icon at the lowest step) in Earbud settings → Sounds (PROTOCOL.md §9).
 - In-app updater from GitHub releases.
 
 ## Appearance
