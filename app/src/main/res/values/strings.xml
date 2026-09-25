@@ -87,7 +87,6 @@
     <string name="row_wear_title">Wear detection</string>
     <string name="row_wear_sub">Pause when you take the earbuds out</string>
     <string name="row_alert_title">Alert sound volume</string>
-    <string name="row_alert_sub">Prompt tones for noise control and modes</string>
     <string name="wear_title">Wear detection</string>
     <string name="wear_firmware_title">Auto play/pause</string>
     <string name="wear_firmware_sub">The earbuds pause when either one is taken out and resume when it is back</string>

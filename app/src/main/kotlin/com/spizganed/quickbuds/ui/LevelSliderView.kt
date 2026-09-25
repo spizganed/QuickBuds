@@ -21,6 +21,10 @@ class LevelSliderView(
 ) : View(context) {
 
     var onRelease: ((Int) -> Unit)? = null
+    /** Fires on every step change during a drag, before [onRelease]. */
+    var onChange: ((Int) -> Unit)? = null
+    /** False = no number over the knob (HeyMelody's alert-volume bar), and a shorter view. */
+    var showValue = true
 
     /** The step value. Setting it from code while the user is not dragging moves the knob. */
     var value: Int = min
@@ -55,12 +59,12 @@ class LevelSliderView(
 
     private val left get() = dp(22f)
     private val right get() = width - dp(22f)
-    private val trackY get() = dp(40f)
+    private val trackY get() = if (showValue) dp(40f) else dp(22f)
 
     private fun x(v: Float) = left + (v - min) * (right - left) / (max - min)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(58f).toInt())
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (showValue) 58f else 44f).toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -70,7 +74,7 @@ class LevelSliderView(
         val r = if (dragging) dp(10f) else dp(8f)
         canvas.drawCircle(x(pos), trackY, r, dotFill)
         canvas.drawCircle(x(pos), trackY, r, dotRing)
-        canvas.drawText(if (value > 0 && min < 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
+        if (showValue) canvas.drawText(if (value > 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
@@ -95,7 +99,8 @@ class LevelSliderView(
 
     private fun follow(px: Float) {
         pos = (min + (px - left) * (max - min) / (right - left)).coerceIn(min.toFloat(), max.toFloat())
-        value = pos.roundToInt()
+        val step = pos.roundToInt()
+        if (step != value) { value = step; onChange?.invoke(step) }
         postInvalidateOnAnimation()
     }
 
