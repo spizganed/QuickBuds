@@ -33,7 +33,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Find my earbuds: the buds' own tone on both buds, with an in-ear warning.
 - Wear detection screen: the firmware's auto play/pause, and our own smart auto-pause (pause only
   when both buds are out, never auto-play). The two are mutually exclusive.
-- Alert-sound volume slider, 1–10, on the main screen (PROTOCOL.md §9).
+- Alert-sound volume slider (HeyMelody style, muted icon at the lowest step) in Earbud controls → Sounds (PROTOCOL.md §9).
 - In-app updater from GitHub releases.
 
 ## Appearance

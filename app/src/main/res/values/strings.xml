@@ -159,6 +159,7 @@
     <!-- Section headers. -->
     <string name="gesture_section_not_in_call">When not on call</string>
     <string name="gesture_section_on_call">When on call</string>
+    <string name="gesture_section_sounds">Sounds</string>
 
     <!-- Gesture names. -->
     <string name="gesture_single">Single tap</string>
