@@ -12,7 +12,9 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## Parity: firmware features still missing
 
-- **Dual device.** Next. Parity with HeyMelody: a dual-device switch plus its own screen.
+- **Time request `0x0500`.** Question. The buds ask for the time after a device connects, and
+  HeyMelody answers with Unix seconds (PROTOCOL.md §9). We do not answer. What the buds use it for
+  is unknown, so the effect of answering is unknown too.
 - **Voice assistant gesture.** Open. HeyMelody offers it (probably on double or triple tap), and on
   his phone it opens Gemini / Google Assistant. Its function byte is missing from our list, so it
   needs a capture.
@@ -97,7 +99,7 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - Lock-screen widget: feasibility only.
 - Hide the screenshot-to-text and layout-report tools; keep the logic.
 - A build quickstart for contributors (clone → first `assembleDebug`).
-- Undecoded families (`0x0500`/`0x0501`, broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,
+- Undecoded families (`0x0501`, broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,
   `0x0510`): see PROTOCOL.md §12. Do not guess from a couple of samples.
 
 ## Decided against — do not re-suggest

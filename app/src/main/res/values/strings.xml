@@ -85,7 +85,14 @@
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Sound profiles</string>
     <string name="row_earbuds_title">Earbud settings</string>
-    <string name="row_earbuds_sub">Gestures, wear detection, find</string>
+    <string name="row_earbuds_sub">Gestures, wear detection, dual connection, find</string>
+    <string name="row_dual_title">Dual connection</string>
+    <string name="row_dual_sub">Connect two devices at the same time</string>
+    <string name="dual_title">Dual connection</string>
+    <string name="dual_switch_sub">Stay connected to two devices over Bluetooth and switch between them freely</string>
+    <string name="dual_section_devices">Connected devices</string>
+    <string name="dual_connected">Connected</string>
+    <string name="dual_connected_this">Connected (this device)</string>
     <string name="earbuds_title">Earbud settings</string>
     <string name="earbuds_section_sounds">Sounds</string>
     <string name="settings_title">Settings</string>
