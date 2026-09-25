@@ -137,6 +137,9 @@ from anyone else:
   `setKeyFunction` writes, `deviceType 0x04` meaning "both buds" (a value not documented
   anywhere, `[OSS]` or otherwise), `act 0x02`/`0x06` toggling `fn 0x00`/`0x1D`/`0x1C`. See
   PROTOCOL.md §6.
+- **Alert-sound volume** (`0x0427` `[level]` 1..10, read `0x0130` → `00 <level>`) and the
+  confirmation that auto play/pause is plain feature `0x04`, from an HCI capture of HeyMelody
+  (2026-09-25). See PROTOCOL.md §9.
 
 ---
 

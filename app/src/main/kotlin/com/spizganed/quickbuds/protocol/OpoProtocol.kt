@@ -38,6 +38,10 @@ object OpoProtocol {
     const val CMD_SAVE_CUSTOM_EQ = 0x0418
     const val CMD_SET_BASSWAVE_LEVEL = 0x041B
     const val CMD_EQ_CHANGED = 0x0504     // push: `<id>` after any EQ change
+    /** Alert-sound (prompt) volume, `[level]` 1..10. `[CAPTURE]` 2026-09-25, PROTOCOL.md §9. */
+    const val CMD_SET_ALERT_VOLUME = 0x0427
+    /** -> `0x8130` `00 <level>`. Empty payload, as HeyMelody sends it. */
+    const val CMD_QUERY_ALERT_VOLUME = 0x0130
 
     // --- gesture / key-function bindings ---
     const val CMD_QUERY_KEY_FUNCTION = 0x0108  // getKeyFunction — current bindings
@@ -81,6 +85,7 @@ object OpoProtocol {
     const val CMD_RESP_EAR_STATUS = 0x8105
 
     const val FEATURE_GAME_MODE = 0x06
+    /** Firmware auto play/pause on wear. `04 01` / `04 00`, `[CAPTURE]` 2026-09-25. */
     const val FEATURE_AUTO_PLAY_PAUSE = 0x04
     const val FEATURE_DUAL_DEVICE = 0x11
     const val FEATURE_SPATIAL_SOUND = 0x1B
@@ -232,9 +237,6 @@ object OpoProtocol {
     fun gameModeOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_GAME_MODE, true))
     fun gameModeOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_GAME_MODE, false))
 
-    fun autoPlayPauseOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_AUTO_PLAY_PAUSE, true))
-    fun autoPlayPauseOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_AUTO_PLAY_PAUSE, false))
-
     fun dualDeviceOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, true))
     fun dualDeviceOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_DUAL_DEVICE, false))
 
@@ -372,6 +374,10 @@ object OpoProtocol {
         buildPacket(CMD_SET_BASSWAVE_LEVEL, payload = byteArrayOf(0xFB.toByte(), 0x05, level.toByte()))
     /** -> `0x8124` `00 FB 05 <level>`. */
     fun queryBassWaveLevel(): ByteArray = buildPacket(CMD_QUERY_BASSWAVE_LEVEL)
+
+    fun setAlertVolume(level: Int): ByteArray =
+        buildPacket(CMD_SET_ALERT_VOLUME, payload = byteArrayOf(level.coerceIn(1, 10).toByte()))
+    fun queryAlertVolume(): ByteArray = buildPacket(CMD_QUERY_ALERT_VOLUME)
 
     /**
      * getKeyFunction (0x0108) — read the CURRENT gesture bindings.

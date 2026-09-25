@@ -84,6 +84,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private var hiresSwitch: Switch? = null
     private var hiresSubtitle: TextView? = null
     private var spatialSwitch: Switch? = null
+    private var alertSlider: LevelSliderView? = null
 
     /** Last state rendered, so a redundant notify does not rebuild the UI. */
     private var lastRendered: WidgetStateStore.State? = null
@@ -319,6 +320,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         gameSwitch?.isEnabled = enabled
         hiresSwitch?.isEnabled = enabled
         spatialSwitch?.isEnabled = enabled
+        alertSlider?.isEnabled = enabled
 
         val target = if (enabled) 1f else DISABLED_ALPHA
         if (!animate || animatorScale() == 0f) ancRow.alpha = target
@@ -337,6 +339,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             manager = binder.getService().manager!!
             manager.addListener(this@MainActivity)
             onFeatureStates(manager.featureStates)
+            manager.alertVolume?.let { onAlertVolume(it) }
             isBound = true
             connectDirectly()
         }
@@ -913,6 +916,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         hiresSwitch = null
         hiresSubtitle = null
         spatialSwitch = null
+        alertSlider = null
 
         // --- 1. Game mode / low latency ---
         val game = SettingRowFactory.buildSwitch(this, gameModeOn)
@@ -988,6 +992,30 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, EqActivity::class.java)) }
         )
 
+        // --- Wear detection: firmware auto play/pause + our smart auto-pause ---
+        addRow(
+            SettingRowFactory.build(
+                this, R.drawable.ic_bud_left, R.string.row_wear_title, R.string.row_wear_sub,
+                SettingRowFactory.buildChevron(this)
+            ) { startActivity(Intent(this, WearActivity::class.java)) }
+        )
+
+        // --- Alert-sound volume, 1..10: `0x0427`, read back with `0x0130`. [CAPTURE] 2026-09-25 ---
+        // Sent on release only, so the buds play one prompt per change, not one per step.
+        val slider = LevelSliderView(this, 1, 10).apply {
+            onRelease = { manager.setAlertVolume(it) }
+            val pad = ThemeRes.dp(this@MainActivity, 8f)
+            setPadding(pad, 0, pad, pad)
+        }
+        alertSlider = slider
+        addRow(LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(SettingRowFactory.build(
+                this@MainActivity, R.drawable.ic_volume, R.string.row_alert_title, R.string.row_alert_sub, View(this@MainActivity)
+            ))
+            addView(slider)
+        })
+
         // --- 5. Find my earbuds ---
         addRow(
             SettingRowFactory.build(
@@ -1018,7 +1046,14 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, UpdateActivity::class.java)) }
         )
 
-        if (::manager.isInitialized) onFeatureStates(manager.featureStates)
+        if (::manager.isInitialized) {
+            onFeatureStates(manager.featureStates)
+            manager.alertVolume?.let { onAlertVolume(it) }
+        }
+    }
+
+    override fun onAlertVolume(level: Int) {
+        alertSlider?.let { if (!it.dragging) it.value = level }
     }
 
     /** True while a switch is being set from code, so its listener does not send a write. */

@@ -83,6 +83,9 @@ class BudsConnectionManager(private val context: Context) {
 
         /** Any EQ reading changed — see [eqCurrent], [eqCustom], [bassWaveLevel]. */
         fun onEqState() {}
+
+        /** The buds reported their alert-sound volume (1..10), see [alertVolume]. */
+        fun onAlertVolume(level: Int) {}
     }
 
     private val listeners = CopyOnWriteArrayList<Listener>()
@@ -262,6 +265,7 @@ class BudsConnectionManager(private val context: Context) {
                 delay(200); sendRawBlocking(OpoProtocol.registerNotifications(), "register notify")
                 delay(200); sendRawBlocking(OpoProtocol.queryStatus(), "query status")
                 delay(200); sendRawBlocking(OpoProtocol.queryAncMode(), "query anc")
+                delay(200); sendRawBlocking(OpoProtocol.queryAlertVolume(), "query alert volume")
                 delay(200); sendRawBlocking(OpoProtocol.queryBattery(), "query battery")
                 delay(200); sendRawBlocking(OpoProtocol.queryWearingStatus(), "query wearing")
                 // Read-only: reports the CURRENT gesture bindings so a capture can
@@ -434,8 +438,25 @@ class BudsConnectionManager(private val context: Context) {
         }.start()
     }
 
-    fun setAutoPlayPause(on: Boolean) =
-        sendRaw(if (on) OpoProtocol.autoPlayPauseOn() else OpoProtocol.autoPlayPauseOff(), "AutoPlayPause")
+    /** Alert-sound volume 1..10 from `0x8130` / `0x8427`, null until read. `[CAPTURE]` 2026-09-25. */
+    @Volatile var alertVolume: Int? = null
+        private set
+
+    fun refreshAlertVolume() = sendRaw(OpoProtocol.queryAlertVolume(), "query alert volume")
+
+    /** Write, then read back — as HeyMelody does after every change. */
+    fun setAlertVolume(level: Int) {
+        alertVolume = level
+        Thread {
+            try {
+                sendRawBlocking(OpoProtocol.setAlertVolume(level), "Alert volume $level")
+                Thread.sleep(250)
+                sendRawBlocking(OpoProtocol.queryAlertVolume(), "query alert volume")
+            } catch (e: Exception) {
+                log("ALERT VOLUME write failed: ${e.message}")
+            }
+        }.start()
+    }
 
     /**
      * The hold's ANC-cycle membership — `setSupportNoiseReduction`, `[CAPTURE]` 2026-09-22
@@ -808,6 +829,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == OpoProtocol.CMD_RESP_WEARING ||
             cmd == 0x810C ||                             // ANC query reply
             cmd == 0x810D ||                             // status query reply
+            cmd == 0x8130 ||                             // alert volume reply
             cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
@@ -980,6 +1002,15 @@ class BudsConnectionManager(private val context: Context) {
             log("EQ: current=$eqCurrent bassWave=$bassWaveLevel custom=" +
                 eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
             handler.post { listeners.forEach { it.onEqState() } }
+            return
+        }
+
+        // --- Alert volume: read reply 0x8130 and set ack 0x8427, both `00 <level>` ---
+        if ((cmd == 0x8130 || cmd == 0x8427) && payload.size >= 2 && payload[0].toInt() == 0) {
+            val level = payload[1].toInt() and 0xFF
+            alertVolume = level
+            log("ALERT VOLUME: $level")
+            handler.post { listeners.forEach { it.onAlertVolume(level) } }
             return
         }
 

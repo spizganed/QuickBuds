@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioManager
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
@@ -16,7 +17,9 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import android.util.Log
+import android.view.KeyEvent
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.ui.ThemeRes
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
@@ -316,6 +319,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onWearState(left: Int, right: Int, caseSt: Int) {
         val st = WidgetStateStore.read(this)
+        val wasWorn = isWorn(st.leftStatus) || isWorn(st.rightStatus)
         var changed = false
         if (left >= 0 && st.leftStatus != left) {
             st.leftStatus = left
@@ -332,6 +336,22 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             WidgetStateStore.write(this, st)
             AncWidgetProvider.refreshAll(this)
         }
+        if (wasWorn && !isWorn(st.leftStatus) && !isWorn(st.rightStatus)) smartPause()
+    }
+
+    private fun isWorn(st: Int) = st == 3 || st == 7
+
+    /**
+     * Smart auto-pause (our own, not the firmware's): pause when the LAST bud leaves an ear.
+     * One bud out keeps playing, and nothing ever auto-plays. Off unless enabled on the wear screen.
+     */
+    private fun smartPause() {
+        if (!getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_SMART_PAUSE, false)) return
+        val audio = getSystemService(AUDIO_SERVICE) as AudioManager
+        if (!audio.isMusicActive) return
+        statusLog("[SVC] Smart pause: both buds out")
+        audio.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE))
+        audio.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE))
     }
 
     /**
@@ -392,6 +412,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         /** On-call gestures (`btn 0x06`). See BudsConnectionManager.sendOnCall*(). */
         const val ACTION_SET_ON_CALL = "com.spizganed.quickbuds.SET_ON_CALL"
         const val ACTION_FIND_BUDS = "com.spizganed.quickbuds.FIND_BUDS"
+        const val PREF_SMART_PAUSE = "smart_auto_pause"
         const val EXTRA_FIND_ON = "find_on"
         const val EXTRA_ON_CALL_ROW = "on_call_row"   // "double_tap" | "long_hold"
         const val EXTRA_ON_CALL_ENABLED = "on_call_enabled"

@@ -235,9 +235,6 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 - **Light theme** — either removed or left untouched until the final UI lands. It is the source of
   invisible-on-light bugs. Do not polish it.
 - **Case lid state** — keep, remove or change: undecided. `ic_case.xml` stays until then.
-- **Auto play/pause on wear** — add the firmware switch, plus our own layer: pause **only when both
-  buds are out**, never auto-play.
-- **Alert-sound volume slider** — the last remaining "easy parity" row; the rest are in.
 - **Localisation** — text is in `strings.xml` but only English exists, and hardcoded strings remain in
   `MainActivity` dialogs, the Dev Tools labels and legend, and `BottomSheetDialog` callers.
 - **Undecoded families** — `0x0500`/`0x0501` (they have empty payloads, so they cannot be gesture

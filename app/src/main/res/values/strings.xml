@@ -84,6 +84,15 @@
     <string name="row_spatial_sub">Spatial sound with head tracking</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Sound profiles</string>
+    <string name="row_wear_title">Wear detection</string>
+    <string name="row_wear_sub">Pause when you take the earbuds out</string>
+    <string name="row_alert_title">Alert sound volume</string>
+    <string name="row_alert_sub">Prompt tones for noise control and modes</string>
+    <string name="wear_title">Wear detection</string>
+    <string name="wear_firmware_title">Auto play/pause</string>
+    <string name="wear_firmware_sub">The earbuds pause when either one is taken out and resume when it is back</string>
+    <string name="wear_smart_title">Smart auto-pause</string>
+    <string name="wear_smart_sub">Pause only when both earbuds are out. Never auto-plays. Needs the background service</string>
     <string name="row_find_title">Find my earbuds</string>
     <string name="row_find_sub">Ring both earbuds</string>
     <string name="row_update_title">App update</string>
