@@ -15,9 +15,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 - **Time request `0x0500`.** Question. The buds ask for the time after a device connects, and
   HeyMelody answers with Unix seconds (PROTOCOL.md §9). We do not answer. What the buds use it for
   is unknown, so the effect of answering is unknown too.
-- **On-call gestures: confirm the labels.** Open. The write works. He will place a real call and
-  report which gesture answers, ends and declines. HeyMelody itself labels on-call double tap
-  "Answer/End call" (seen 2026-09-24).
 - **Case state (open / closed / charging).** Question. Worth doing only if the firmware pushes it
   unprompted. If it only answers a request, drop it. Report what is found either way.
 

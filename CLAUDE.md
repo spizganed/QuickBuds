@@ -231,7 +231,6 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
-- **On-call gestures** — to be added for parity (this reverses an earlier "never" decision).
 - **Light theme** — either removed or left untouched until the final UI lands. It is the source of
   invisible-on-light bugs. Do not polish it.
 - **Case lid state** — keep, remove or change: undecided. `ic_case.xml` stays until then.
