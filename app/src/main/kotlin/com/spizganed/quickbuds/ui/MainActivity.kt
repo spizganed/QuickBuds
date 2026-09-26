@@ -345,18 +345,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // one): the dot shows the state, the word is the action. Same service actions as Dev Tools.
         connPill.setOnClickListener {
             val connected = lastConnShown == true
-            connText.setText(if (connected) R.string.conn_disconnecting else R.string.conn_connecting)
-            startService(
-                Intent(this, BudsService::class.java).setAction(
-                    if (connected) BudsService.ACTION_FORCE_DISCONNECT else BudsService.ACTION_FORCE_CONNECT
-                ).putExtra(BudsService.EXTRA_WITH_AUDIO, true)
-            )
-            // A failed connect may not change the stored state, so nothing would repaint the
-            // pill. ponytail: fixed timeout; a real "connecting" state in the store if it matters.
-            lastConnShown = null
-            connPill.postDelayed({
-                if (lastConnShown == null) renderConnectionPill(WidgetStateStore.read(this).connected)
-            }, 25_000)
+            // SPEC 3.4: disconnecting asks first; connecting does not.
+            if (connected) {
+                ConfirmDialog.show(
+                    this, getString(R.string.disconnect_title, deviceNameText.text),
+                    getString(R.string.disconnect_body), getString(R.string.conn_action_disconnect)
+                ) { toggleConnection(true) }
+            } else toggleConnection(false)
         }
 
         applyThemeTints()
@@ -376,6 +371,22 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         WidgetStateStore.addListener(storeListener)
 
         checkPermissions()
+    }
+
+    /** Sends the Connect / Disconnect service action for the header chip. */
+    private fun toggleConnection(connected: Boolean) {
+        connText.setText(if (connected) R.string.conn_disconnecting else R.string.conn_connecting)
+        startService(
+            Intent(this, BudsService::class.java).setAction(
+                if (connected) BudsService.ACTION_FORCE_DISCONNECT else BudsService.ACTION_FORCE_CONNECT
+            ).putExtra(BudsService.EXTRA_WITH_AUDIO, true)
+        )
+        // A failed connect may not change the stored state, so nothing would repaint the
+        // pill. ponytail: fixed timeout; a real "connecting" state in the store if it matters.
+        lastConnShown = null
+        connPill.postDelayed({
+            if (lastConnShown == null) renderConnectionPill(WidgetStateStore.read(this).connected)
+        }, 25_000)
     }
 
     /**
