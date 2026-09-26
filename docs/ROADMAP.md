@@ -66,10 +66,6 @@ arrows and a hide switch, not drag and drop).
 
 ## Our own features
 
-- **Fixed-level hold.** Parked. Hold set to ANC only; when the hold's ANC push reports a level
-  other than the chosen one (default Medium), the service sends the chosen level. The firmware cannot
-  do this itself (PROTOCOL.md §5, tested 2026-09-24). Cost: a double tone whenever the last hand-set
-  level differs. Only worth building if a silent level-set command turns up in a capture.
 - **New app icon.** The current one is acceptable, but a better one is welcome.
 
 ## Connection and battery
@@ -81,30 +77,31 @@ arrows and a hide switch, not drag and drop).
 
 ## Docs cleanup
 
-- README: short and aimed at users, not developers.
-- Fold CREDITS.md into a short section, at most 5 lines per referenced repo, with links.
-- Remove overlap. Protocol facts live only in PROTOCOL.md, and each feature is described once.
-- A full human-read pass over every doc, with notes back to him.
+- Done 2026-09-26: README is short and user-facing, CREDITS.md folded into its Credits section,
+  outdated Appearance notes in ROADMAP-DONE replaced.
 - **Retake the README screenshots** once the UI and the widget are final. The current ones are
   placeholders. Rerun `scripts/readme-screenshots.sh`.
 
 ## Later
 
-- Other earbud models, once parity and the items above are done.
-- Golden Sound (hearing test → EQ): spike only, may be impossible over this protocol.
-- Localisation: only English exists; hardcoded strings remain in `MainActivity` dialogs, Dev Tools
-  and `BottomSheetDialog` callers.
-- Slide up vs slide down: both are written with the same action; which is which is not established.
+- **Translations** for the Asian OPPO / OnePlus markets: started 2026-09-26 (see CLAUDE.md,
+  Localisation). Machine-drafted; a native speaker should review each language.
 
 ## Parked
 
-- Lock-screen widget: feasibility only.
+- Other earbud models, once parity and the items above are done.
+- Golden Sound (hearing test → EQ): spike only, may be impossible over this protocol.
 - Hide the screenshot-to-text and layout-report tools; keep the logic.
 - A build quickstart for contributors (clone → first `assembleDebug`).
 - Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,
   `0x0510`): see PROTOCOL.md §12. Do not guess from a couple of samples.
 
 ## Decided against — do not re-suggest
+
+- A lock-screen widget, a widget on/off switch, the Quick Settings tile (removed) and the
+  fixed-level hold ([USER] 2026-09-26).
+- Slide up vs slide down: nothing to do. The firmware maps up/down itself (volume up/down, next/prev)
+  when the slide is set through our app, exactly as with HeyMelody ([USER] 2026-09-26).
 
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.

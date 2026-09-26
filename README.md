@@ -6,9 +6,8 @@
 [![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
 [![Release](https://img.shields.io/github/v/release/spizganed/QuickBuds)](https://github.com/spizganed/QuickBuds/releases/latest)
 
-QuickBuds talks to your earbuds directly over a classic Bluetooth RFCOMM channel, the same link the
-vendor app uses, and gives you everything HeyMelody does in a dark, fast UI with a real home-screen
-widget. Every command it sends was reverse-engineered and confirmed on real hardware.
+QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app with a real
+home-screen widget.
 
 ## Screenshots
 
@@ -20,105 +19,63 @@ widget. Every command it sends was reverse-engineered and confirmed on real hard
 
 ## Features
 
-**Noise control**
-- Off, Noise cancelling (Low / Medium / High), Adaptive and Transparency
-- Follows changes made on the earbuds themselves, instantly
-
-**Sound**
-- **Equalizer**
-  - Built-in presets: Balanced, Clear Vocals and Bass.
-  - Up to 3 custom presets, edited on a draggable 6-band curve (±6 dB). You can create, rename and delete them.
-  - Bass boost with a −5…+5 level.
-  - Everything is saved on the earbuds, so HeyMelody sees the same presets.
-- **High-quality audio (Hi-Res LHDC) and 3D audio.** The earbuds can't run both, so switching warns you first. A codec change makes the earbuds reconnect.
-- **Low latency mode** for video and games
-
-**Earbud settings**
-- **Gestures:** single, double and triple tap, slide and hold, set **per bud**
-- Choose which noise modes the hold cycles through
-- On-call gestures: double tap to answer or end, long hold to decline
-- Read back from the earbuds on every connect, so changes made elsewhere show up
-- **Wear detection:** the earbuds' own auto play/pause, or our smart auto-pause that pauses only
-  when both earbuds are out and never auto-plays
-- **Dual connection:** on/off, and which devices the earbuds are connected to.
-- **Find my earbuds.** Plays the earbuds' own loud tone on both buds, with a warning if they're in your ears.
-- **Alert sound volume** for the earbuds' own prompt tones
-
-**Everything else**
-- **Live status.** Battery for each bud and the case, plus in ear / out / in case, pushed by the earbuds in real time.
-- **Home-screen widget** with battery, wear state, noise control and Low latency, working with the app closed
-- **Quick Settings tile**
-- **Connect / Disconnect** button, and automatic reconnect when the link drops
-- **OLED black and dark themes**
+- **Battery and wear status** for each bud and the case, live.
+- **Noise control:** Off, Noise cancelling (Low / Medium / High), Adaptive and Transparency. Changes
+  made on the earbuds show up instantly.
+- **Equalizer:** built-in presets, up to 3 custom 6-band presets you draw on a curve, and bass boost.
+  Saved on the earbuds.
+- **High-quality audio (LHDC), 3D audio and Low latency mode.**
+- **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
+- **Wear detection**, **Dual connection**, **Find my earbuds** and the earbuds' prompt volume.
+- **Home-screen widget** with battery, noise control and Low latency.
+- **Themes:** OLED Black, Classic Dark and White, your own accent colour, and up to 3 custom colour
+  presets. Reorder or hide the home screen rows.
+- **Update check** from inside the app, straight from GitHub releases.
 
 ## Install
 
-1. Pair your earbuds in Android's Bluetooth settings first. QuickBuds connects to paired earbuds, it
-   doesn't pair them.
-2. Download `QuickBuds<version>.apk` from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest) and install it.
-3. Grant the Bluetooth permission when asked.
+1. Pair your earbuds in Android's Bluetooth settings first. QuickBuds connects to paired earbuds; it
+   does not pair them.
+2. Download `QuickBuds<version>.apk` from the
+   [latest release](https://github.com/spizganed/QuickBuds/releases/latest) and install it.
+3. Allow the Bluetooth permission when asked.
 
-Updates can be checked from inside the app (**App update**). Nothing is checked automatically.
+> **Coming from v1.1.0?** Uninstall it first: v2.0.0 and later are signed with a new key.
 
-> **Coming from v1.1.0?** v2.0.0 is signed with a new key. Uninstall the old version first, or
-> Android will refuse the update.
-
-**Tested on:** OnePlus Buds 4 (firmware `B4.1-260810-1153`) · Nothing Phone (3a), Android 15.
-Other OnePlus / OPPO / realme earbuds share the protocol and will likely work, but are untested.
-
-## Roadmap
-
-HeyMelody parity comes first, then this project's own ideas on top, then other earbud models. See
-[ROADMAP.md](./docs/ROADMAP.md) for the ordered plan.
+**Tested on:** OnePlus Buds 4 with a Nothing Phone (3a), Android 15. Other OnePlus / OPPO / realme
+earbuds use the same protocol and will likely work, but are untested.
 
 ## For developers
 
-| File | What it is |
-| --- | --- |
-| [PROTOCOL.md](./docs/PROTOCOL.md) | **The wire format, end to end**: frames, every command, and the mistakes already made. Read it before touching protocol code. |
-| [ROADMAP.md](./docs/ROADMAP.md) | What's next. [ROADMAP-DONE.md](./docs/ROADMAP-DONE.md) has what's done. |
-| [CLAUDE.md](./CLAUDE.md) | Toolchain, conventions and working notes. |
-| [CREDITS.md](./docs/CREDITS.md) | Exactly what came from where. |
-| [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | How to capture a Bluetooth log from the phone. |
-
-**Build:** Gradle 9.6, Android Gradle Plugin 9.4, Kotlin 2.4, JDK 17+. The only dependency is
-`androidx.core`.
-
-```bash
-./gradlew assembleDebug    # app/build/outputs/apk/debug/app-debug.apk
-```
-
-Release builds are signed only on the maintainer's machine; without the key they come out unsigned.
+Start with [CLAUDE.md](./CLAUDE.md) (toolchain and conventions) and
+[PROTOCOL.md](./docs/PROTOCOL.md) (the wire format, every claim tagged with its source). The plan is
+in [ROADMAP.md](./docs/ROADMAP.md). `./gradlew assembleDebug` builds a debug APK.
 
 ## Credits
 
-### The protocol was reverse-engineered by others first
+The earbud protocol was never publicly documented. QuickBuds stands on the people who worked it out
+first; PROTOCOL.md marks every fact taken from them `[OSS]`.
 
-The OPPO / OnePlus / realme earbud protocol was never publicly documented. Everything this project
-knows about it stands on people who worked it out first and published their results:
+- [**Zhaoyi-ya/OppoPodsManager**](https://github.com/Zhaoyi-ya/OppoPodsManager): the main
+  reference. Frame layout and length encoding, most of the command table, the noise control tables,
+  the gesture entry shape and the feature IDs.
+- [**Star-ZER0/Pods-Protocol-Reverse-Engineering**](https://github.com/Star-ZER0/Pods-Protocol-Reverse-Engineering)
+  (CC-BY-SA-4.0, used as documentation): independent confirmation of the framing, and the broadcast
+  codes that proved the noise control subscription fix.
+- [Leaf-lsgtky/OppoPods](https://github.com/Leaf-lsgtky/OppoPods): early protocol work and part of
+  the framing knowledge.
+- [Zhaoyi-ya/OPPO-Pods-Win](https://github.com/Zhaoyi-ya/OPPO-Pods-Win): which features each earbud
+  model has.
+- [ORION2809/DevPods](https://github.com/ORION2809/DevPods): a second implementation to cross-check
+  against.
 
-| Project | What we owe it |
-| --- | --- |
-| [**Zhaoyi-ya/OppoPodsManager**](https://github.com/Zhaoyi-ya/OppoPodsManager) | The single biggest source. Frame layout and LEB128 length encoding, most of the command table, the ANC set and notify tables, the key-function entry shape, feature IDs. |
-| [**Star-ZER0/Pods-Protocol-Reverse-Engineering**](https://github.com/Star-ZER0/Pods-Protocol-Reverse-Engineering) | Independent confirmation of the framing, and the broadcast-codes idea that proved our ANC subscription fix was right. (CC-BY-SA-4.0 — documentation only.) |
-| [Leaf-lsgtky/OppoPods](https://github.com/Leaf-lsgtky/OppoPods) | Early OPPO earbud protocol work; origin of some of the framing knowledge. |
-| [Zhaoyi-ya/OPPO-Pods-Win](https://github.com/Zhaoyi-ya/OPPO-Pods-Win) | Cross-check on which features exist per device model. |
-| [ORION2809/DevPods](https://github.com/ORION2809/DevPods) | A second implementation of the same vendor family; useful for cross-checking. |
-
-Sibling project for another brand, not a source for ours but worth knowing:
-[elaxptr/baseus-desktop](https://github.com/elaxptr/baseus-desktop), a Windows client for Baseus earbuds.
-
-### How it was built
-
-Every protocol claim comes from Bluetooth captures taken on real hardware and was tested on the
-device. That's what makes [PROTOCOL.md](./docs/PROTOCOL.md) checkable.
+Everything else was captured on real hardware and tested on the device: the gesture values, the
+equalizer writes, the hold's noise control cycle and more (see PROTOCOL.md).
 
 ## License
 
 Copyright (C) 2026 spizganed
 
-QuickBuds is free software: you can redistribute it and/or modify it under the terms of the GNU
-General Public License as published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version. It is distributed WITHOUT ANY WARRANTY; see
-[LICENSE](./LICENSE) for the full text. Protocol references are used as documentation; check
-[CREDITS.md](./docs/CREDITS.md) for each source's license before copying text from it.
+QuickBuds is free software under the GNU General Public License v3.0 or later, distributed without
+any warranty; see [LICENSE](./LICENSE). The protocol sources above were used as documentation; check
+each one's license before copying text from it.
