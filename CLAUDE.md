@@ -63,6 +63,25 @@ Plain desktop Gradle.
   pairing/connect ports are reachable.
 - `local.properties` must contain `sdk.dir=...`; it is git-ignored and must not be committed.
 
+## Cloud sessions (Claude Code on the web)
+
+No release key exists in the cloud, so the PC signing rules above can't apply there.
+
+- SDK is at /opt/android-sdk. Create local.properties with `sdk.dir=/opt/android-sdk` if missing (never commit it).
+- **Step 0, before any UI work:** make debug builds installable next to the release app:
+  - debug buildType: `applicationIdSuffix = ".debug"`, `versionNameSuffix = "-debug"`
+  - sign debug with a committed `debug.keystore` at the repo root (standard debug credentials: storepass/keypass `android`, alias `androiddebugkey`), so every cloud session produces the same signature
+  - make sure every manifest authority (FileProvider etc.) uses `${applicationId}`, so both apps can be installed
+- Verify each step with `./gradlew assembleDebug`.
+- **Delivering a test APK:** after each finished step, copy `app/build/outputs/apk/debug/app-debug.apk` to `apk/QuickBuds-debug.apk` (overwrite), commit it together with the step, and ask before pushing, as always. `apk/` is test-only: delete it before any merge into main.
+- The debug app is a separate app: he force-stops the release app while testing it, since both would fight over the RFCOMM link.
+
+## UI revision (design/SPEC.md)
+- design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
+- **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
+- UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
+- Completed SPEC steps: none yet.
+
 ### Environment you need
 
 One-time setup.
