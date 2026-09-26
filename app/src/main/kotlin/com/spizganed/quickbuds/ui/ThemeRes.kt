@@ -85,11 +85,13 @@ object ThemeRes {
         else -> R.style.Theme_App_OLED
     }
 
-    fun builtInName(id: String): String = when (id) {
-        PaletteStore.DARK -> "Classic Dark"
-        PaletteStore.WHITE -> "White"
-        else -> "OLED Black"
-    }
+    fun builtInName(context: Context, id: String): String = context.getString(
+        when (id) {
+            PaletteStore.DARK -> R.string.theme_classic_dark
+            PaletteStore.WHITE -> R.string.theme_white
+            else -> R.string.theme_oled_black
+        }
+    )
 
     @Volatile private var cached: Palette? = null
 

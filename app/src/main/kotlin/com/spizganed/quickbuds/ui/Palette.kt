@@ -141,7 +141,7 @@ object PaletteStore {
         val theme = c.resources.newTheme().apply { applyStyle(ThemeRes.styleFor(id), true) }
         val tv = TypedValue()
         val t = ThemeRes.TOKEN_ATTRS.map { theme.resolveAttribute(it, tv, true); tv.data }
-        return Palette(id, ThemeRes.builtInName(id), true, t[0], t[1], accentOverride(c, id) ?: t[2], t[3], t[4], t[5])
+        return Palette(id, ThemeRes.builtInName(c, id), true, t[0], t[1], accentOverride(c, id) ?: t[2], t[3], t[4], t[5])
     }
 
     /** The user's accent for a built-in preset ([USER] 2026-09-26), or null for the style's own. */

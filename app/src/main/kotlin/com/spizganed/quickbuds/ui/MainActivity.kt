@@ -466,7 +466,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // that the report is reachable WITHOUT the app working, so it has to say
         // where the file is, not just what it contains.
         val header = TextView(this).apply {
-            text = "Saved to:\nDownload/QuickBudsCrash/\n\nThis message appears once. Copy or share it if you want to keep it."
+            text = getString(R.string.crash_saved_to)
             setTextColor(ThemeRes.color(this@MainActivity, R.attr.appColorTextSecondary))
             textSize = 11f
             setPadding(dp(24f), dp(12f), dp(24f), dp(6f))
@@ -495,19 +495,19 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         prefs.edit().putString(ThemeRes.KEY_LAST_SHOWN_CRASH, stamp).apply()
 
         AlertDialog.Builder(this)
-            .setTitle("QuickBuds crashed last time")
+            .setTitle(R.string.crash_title)
             .setView(scroll)
-            .setPositiveButton("Copy") { _, _ ->
+            .setPositiveButton(R.string.crash_copy) { _, _ ->
                 val clip = getSystemService(ClipboardManager::class.java)
                 clip?.setPrimaryClip(ClipData.newPlainText("QuickBuds crash", report))
-                Toast.makeText(this, "Crash report copied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.crash_copied, Toast.LENGTH_SHORT).show()
             }
-            .setNeutralButton("Share") { _, _ ->
+            .setNeutralButton(R.string.crash_share) { _, _ ->
                 startActivity(
-                    Intent.createChooser(CrashLogger.shareIntent(this, report), "Share crash report")
+                    Intent.createChooser(CrashLogger.shareIntent(this, report), getString(R.string.crash_share_title))
                 )
             }
-            .setNegativeButton("Dismiss", null)
+            .setNegativeButton(R.string.crash_dismiss, null)
             .show()
     }
 
@@ -1010,20 +1010,15 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         } else {
             // Denied. Say so once, in plain language, and point at the fix rather
             // than leaving a screen where every control silently does nothing.
-            AlertDialog.Builder(this)
-                .setTitle("Bluetooth permission needed")
-                .setMessage(
-                    "QuickBuds needs the Nearby devices permission to talk to your earbuds. " +
-                        "Grant it in Settings, then reopen the app."
+            ConfirmDialog.show(
+                this, getString(R.string.perm_title), getString(R.string.perm_body),
+                getString(R.string.perm_action), cancelRes = R.string.dialog_close
+            ) {
+                startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .setData(Uri.parse("package:$packageName"))
                 )
-                .setPositiveButton("Open settings") { _, _ ->
-                    startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData(Uri.parse("package:$packageName"))
-                    )
-                }
-                .setNegativeButton(R.string.dialog_close, null)
-                .show()
+            }
         }
     }
 

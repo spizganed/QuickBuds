@@ -84,8 +84,9 @@ arrows and a hide switch, not drag and drop).
 
 ## Later
 
-- **Translations** for the Asian OPPO / OnePlus markets: started 2026-09-26 (see CLAUDE.md,
-  Localisation). Machine-drafted; a native speaker should review each language.
+- **Translations** for the Asian OPPO / OnePlus markets: Simplified and Traditional Chinese, Hindi,
+  Indonesian, Vietnamese and Thai added 2026-09-26 (CLAUDE.md, Localisation). Machine-drafted: have a
+  native speaker review each one. More languages (Japanese, Malay, Filipino…) on request.
 
 ## Parked
 

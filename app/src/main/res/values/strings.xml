@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">QuickBuds</string>
+    <string name="app_name" translatable="false">QuickBuds</string>
 
     <!-- Device title shown before the buds report their name. -->
-    <string name="default_device_name">OnePlus Buds 4</string>
+    <string name="default_device_name" translatable="false">OnePlus Buds 4</string>
 
     <string name="widget_anc_label">ANC</string>
     <!-- Widget picker label. Without a label on the provider receiver some launchers
@@ -143,7 +143,7 @@
     <string name="update_title">App update</string>
     <string name="update_installed">Installed</string>
     <string name="update_latest">Latest</string>
-    <string name="update_unknown">—</string>
+    <string name="update_unknown" translatable="false">—</string>
     <string name="update_check">Check again</string>
     <string name="update_checking">Checking GitHub releases&#8230;</string>
     <string name="update_up_to_date">You are on the latest version.</string>
@@ -247,6 +247,16 @@
     <!-- Misc -->
     <string name="dialog_close">Close</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="crash_title">QuickBuds crashed last time</string>
+    <string name="crash_saved_to">Saved to:\nDownload/QuickBudsCrash/\n\nThis message appears once. Copy or share it if you want to keep it.</string>
+    <string name="crash_copy">Copy</string>
+    <string name="crash_copied">Crash report copied</string>
+    <string name="crash_share">Share</string>
+    <string name="crash_share_title">Share crash report</string>
+    <string name="crash_dismiss">Dismiss</string>
+    <string name="perm_title">Bluetooth permission needed</string>
+    <string name="perm_body">QuickBuds needs the Nearby devices permission to talk to your earbuds. Allow it in Settings, then reopen the app.</string>
+    <string name="perm_action">Open settings</string>
     <string name="disconnect_title">Disconnect %1$s?</string>
     <string name="disconnect_body">Audio will stop playing on this phone.</string>
     <string name="eq_done">Done</string>
@@ -278,15 +288,18 @@
     <string name="settings_about_sub">Version, licenses, GitHub</string>
     <string name="about_tagline">Control OnePlus, OPPO and realme earbuds directly over Bluetooth. No vendor app, no root.</string>
     <string name="about_version">Version %1$s</string>
-    <string name="about_kofi">Ko-fi</string>
+    <string name="about_kofi" translatable="false">Ko-fi</string>
     <string name="about_kofi_desc">Support on Ko-fi</string>
     <string name="about_github_desc">Source code on GitHub</string>
     <string name="about_license_title">License</string>
     <string name="about_license_body">QuickBuds is free software under the GNU General Public License v3.0. It builds on the open reverse-engineering work of OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win and DevPods; the full credits are on GitHub.</string>
-    <string name="about_github">GitHub</string>
+    <string name="about_github" translatable="false">GitHub</string>
     <string name="theme_builtin">Built-in</string>
+    <string name="theme_oled_black">OLED Black</string>
+    <string name="theme_classic_dark">Classic Dark</string>
+    <string name="theme_white">White</string>
     <string name="theme_accent">Accent color</string>
-    <string name="theme_accent_sub">%1$s · %2$s</string>
+    <string name="theme_accent_sub" translatable="false">%1$s · %2$s</string>
     <string name="theme_custom">Custom · %1$d of %2$d</string>
     <string name="theme_new">New preset</string>
     <string name="theme_new_sub">Starts from the current theme · %1$d slots left</string>
