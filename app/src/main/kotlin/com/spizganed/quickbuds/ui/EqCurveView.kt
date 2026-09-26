@@ -137,7 +137,7 @@ class EqCurveView(context: Context) : View(context) {
                 val band = active
                 active = -1
                 glideTo(band)
-                if (e.actionMasked == MotionEvent.ACTION_UP) onRelease?.invoke(band, gains[band])
+                if (e.actionMasked == MotionEvent.ACTION_UP) { onRelease?.invoke(band, gains[band]); Haptics.commit(this) }
             }
         }
         return true

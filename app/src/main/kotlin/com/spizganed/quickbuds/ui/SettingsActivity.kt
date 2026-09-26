@@ -35,10 +35,7 @@ class SettingsActivity : Activity() {
 
         fun toggle(icon: Int, title: Int, sub: Int, key: String, default: Boolean): LinearLayout {
             val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean(key, default))
-            sw.setOnCheckedChangeListener { v, on ->
-                prefs.edit().putBoolean(key, on).apply()
-                Haptics.commit(v)
-            }
+            sw.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(key, on).apply() }
             return SettingRowFactory.build(this, icon, title, sub, sw) { sw.performClick() }
         }
 

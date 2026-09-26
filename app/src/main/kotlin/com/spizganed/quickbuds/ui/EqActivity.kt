@@ -487,7 +487,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(52f))
             setPadding(dp(14f), 0, dp(14f), 0)
-            setOnClickListener { onClick() }
+            setOnClickListener { Haptics.commit(it); onClick() }
             addView(TextView(this@EqActivity).apply {
                 text = label
                 textSize = 15f

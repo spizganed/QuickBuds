@@ -80,7 +80,7 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
 - **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
-- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen), 6 (theme & colors, edit preset).
+- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen), 6 (theme & colors, edit preset), 7 (haptics). All SPEC steps done; awaiting his device test.
 - **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
   one style per built-in preset. `Palette.kt` holds `Palette` (tokens + derived colours) and `PaletteStore`
   (active id + up to 3 custom presets as JSON in `QuickBudsPrefs`; the old `theme` int migrates once).
@@ -108,6 +108,11 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   then, never mid-drag. Quick swatches are `@color/swatch_*` (picker choices, not app colours). Contrast
   warnings use `Palette.contrast` (WCAG 2) and never block saving. This is the first path that makes
   `ThemeRes.PaletteFactory` run, so a custom preset is where an inflation bug would show first.
+- **Haptics (step 7)**: `Haptics.commit(view)` (CONFIRM, VIRTUAL_KEY below API 30, gated on `haptics`). Hooked
+  once per kind of control: `SettingRowFactory.buildSwitch` (its `performClick`, user taps only),
+  `LevelSliderView` / `EqCurveView` / `HueSliderView` release, `AncSegmentedView` tap, ANC level pills, EQ
+  preset rows, `BottomSheetDialog` item selection, preset apply and preset colour commits. Do not add
+  it to programmatic state changes.
 
 ### Environment you need
 
