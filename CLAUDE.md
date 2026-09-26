@@ -129,7 +129,7 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   `ThemeRes.PaletteFactory` run, so a custom preset is where an inflation bug would show first.
 - **Haptics (step 7)**: `Haptics.commit(view)` (CONFIRM, VIRTUAL_KEY below API 30, gated on `haptics`). Hooked
   once per kind of control: `SettingRowFactory.buildSwitch` (its `performClick`, user taps only),
-  `LevelSliderView` / `EqCurveView` / `HueSliderView` release, `AncSegmentedView` tap, ANC level pills, EQ
+  `LevelSliderView` / `EqCurveView` / `ColorSliderView` release, `AncSegmentedView` tap, ANC level pills, EQ
   preset rows, `BottomSheetDialog` item selection, preset apply and preset colour commits. Do not add
   it to programmatic state changes.
 
@@ -387,6 +387,11 @@ cycles Off -> ANC (last home level) -> Transparency). All use the ACTIVE app pal
 `refreshAll` (PaletteStore does). Disconnected: empty state, every tap opens the app. A new id in a widget
 layout needs its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Dev Tools'
 widget logic check builds and parcels all three.
+
+**Fit ([USER] 2026-09-27, the 4x2 clipped top and bottom on his phone):** launchers give less height than
+`minHeight`, and a fixed-height stack in a `gravity="center"` column clips at both ends. In the 4x2 and 2x2 the
+rings row has weight 1 and the ring ImageView fills it with `fitCenter`, so the rings shrink instead; only the
+noise chip row is fixed. Low latency is the bolt chip (`w_chip_gamechip`) at the end of that row in every size.
 
 ### Widget tap flow
 

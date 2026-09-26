@@ -86,8 +86,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             v.setInt(R.id.w_stroke, "setColorFilter", p.outline)
             v.setOnClickPendingIntent(R.id.w_root, openApp)
 
-            // Battery rings.
-            val ringDp = when (kind) { Kind.FULL -> 38f; Kind.SMALL -> 34f; Kind.STRIP -> 30f }
+            // Battery rings. FULL / SMALL: the ImageView fills the rings row and fitCenter scales the
+            // bitmap, so this is the largest size drawn sharp. STRIP: matches the layout's 40dp box.
+            val ringDp = when (kind) { Kind.FULL -> 64f; Kind.SMALL -> 56f; Kind.STRIP -> 40f }
             val sides = listOf(
                 Triple(R.id.w_ring_left, R.id.w_pct_left, 0),
                 Triple(R.id.w_ring_case, R.id.w_pct_case, 1),
@@ -144,19 +145,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 }
             }
 
-            // Low latency.
-            if (kind == Kind.STRIP) {
-                paintChip(context, v, p, "gamechip", R.drawable.ic_bolt, 0, active = on && state.gameMode, on = on)
-                v.setOnClickPendingIntent(R.id.w_chip_gamechip, if (on) gamePI(context) else openApp)
-                v.setContentDescription(R.id.w_chip_gamechip, context.getString(R.string.row_game_title))
-            } else {
-                val active = on && state.gameMode
-                v.setInt(R.id.w_game_bg, "setColorFilter", if (active) p.accent else p.background)
-                val fg = if (!on) p.disabled else if (active) p.onAccent else p.text
-                v.setInt(R.id.w_game_icon, "setColorFilter", if (!on) p.disabled else if (active) p.onAccent else p.accent)
-                v.setTextColor(R.id.w_game_label, fg)
-                v.setOnClickPendingIntent(R.id.w_game, if (on) gamePI(context) else openApp)
-            }
+            // Low latency: a bolt chip in every size.
+            paintChip(context, v, p, "gamechip", R.drawable.ic_bolt, 0, active = on && state.gameMode, on = on)
+            v.setOnClickPendingIntent(R.id.w_chip_gamechip, if (on) gamePI(context) else openApp)
+            v.setContentDescription(R.id.w_chip_gamechip, context.getString(R.string.row_game_title))
             return v
         }
 
@@ -256,8 +248,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 when (slot) { 0 -> R.drawable.ic_bud_left; 1 -> R.drawable.ic_case; else -> R.drawable.ic_bud_right }
             )!!.mutate()
             val ratio = if (isCase) 496f / 400f else 176f / 272f
-            val boxH = px * (if (isCase) 0.40f else 0.54f)
-            val boxW = px * (if (isCase) 0.56f else 0.40f)
+            // Largest boxes whose corners still clear the ring's inner edge (radius 0.425 px).
+            val boxH = px * (if (isCase) 0.48f else 0.64f)
+            val boxW = px * (if (isCase) 0.66f else 0.44f)
             val (w, h) = if (ratio < boxW / boxH) boxH * ratio to boxH else boxW to boxW / ratio
             glyph.setTint(
                 when {
