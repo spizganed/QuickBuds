@@ -9,10 +9,10 @@ package com.spizganed.quickbuds.protocol
  * with additional framing details from
  * Star-ZER0/Pods-Protocol-Reverse-Engineering.
  *
- * READ PROTOCOL.md AT THE REPO ROOT BEFORE EDITING THIS FILE. It documents the
- * frame layout, every known command, the ANC set-vs-notify trap, and the
- * assumptions that were already proven wrong once. CREDITS.md records which
- * source each area came from; add to it when you add a constant here.
+ * READ docs/PROTOCOL.md BEFORE EDITING THIS FILE. It documents the frame layout,
+ * every known command, the ANC set-vs-notify trap, and the assumptions that were
+ * already proven wrong once. Its [OSS] tags and the README's Credits record which
+ * source each area came from; tag a new constant there when you add it here.
  *
  * Do not copy code from those projects without checking their licenses first.
  */

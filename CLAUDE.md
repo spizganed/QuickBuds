@@ -25,8 +25,7 @@ This file is the entry point for a new session.
 | [ROADMAP.md](./docs/ROADMAP.md) | The live plan: next, open, questions. |
 | [ROADMAP-DONE.md](./docs/ROADMAP-DONE.md) | What is finished. Move items there when done. |
 | [PROTOCOL.md](./docs/PROTOCOL.md) | **The wire format, end to end.** Read before any protocol work. |
-| [README.md](./README.md) | The accurate feature summary. |
-| [CREDITS.md](./docs/CREDITS.md) | Whose reverse-engineering this stands on. Add a row when you add a constant. |
+| [README.md](./README.md) | Short and user-facing: features, install, credits (CREDITS.md was folded in, 2026-09-26). New `[OSS]` sources get a line in its Credits. |
 | [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | How to capture a packet log, kept as a backup procedure. |
 | CLAUDE.md | This file — the durable reference, loaded automatically. |
 
@@ -300,8 +299,8 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 ## Current open items
 
-- **Slide up vs slide down** — both directions are written with the same action because which is
-  which is not established.
+- **Slide up vs slide down** — settled, nothing to do: the firmware maps the two directions itself
+  when the slide is set through our app, as with HeyMelody ([USER] 2026-09-26).
 - **Light theme** — replaced by the **White** preset (UI revision step 1, 2026-09-26). Check screens on
   White and on a light custom preset when changing colours.
 - **Case lid state** — settled 2026-09-25: no lasting lid state exists (PROTOCOL.md §8); a close only
@@ -424,6 +423,6 @@ a shared one hung.
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.
   `widget.png` is taken only if the widget is on the home screen, cropped to the widget alone.
 - Root holds only `README.md`, `LICENSE` and `CLAUDE.md` (it must stay in root to load automatically).
-  Every other doc lives in `docs/`: `ROADMAP.md`, `ROADMAP-DONE.md`, `PROTOCOL.md`, `CREDITS.md`,
+  Every other doc lives in `docs/`: `ROADMAP.md`, `ROADMAP-DONE.md`, `PROTOCOL.md`,
   `PACKET-CAPTURE.md` (`[USER]` 2026-09-25). `LICENSE` is the verbatim GPL-3.0 text; the copyright
   notice lives in the README.

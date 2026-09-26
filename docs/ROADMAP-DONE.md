@@ -27,7 +27,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   Changes made on the buds show up in the app.
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
-- Dual connection: switch plus connected-device list in Earbud settings, HeyMelody's exact write
+- Dual connection: switch plus connected-device list (a home screen row), HeyMelody's exact write
   sequence (PROTOCOL.md §9, capture 2026-09-25), and HeyMelody's "Add device" pairing instructions.
 - Voice assistant gesture on double / triple tap, same options as HeyMelody; `0x03` confirmed
   against HeyMelody's own write (2026-09-25).
@@ -46,12 +46,12 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 
 ## Appearance
 
-- Main screen redesign: a status-ring battery card and a sliding noise-control pill, with a red accent.
+- UI revision after design/SPEC.md (2026-09-26): six-token themes (OLED Black, Classic Dark, White),
+  an accent per built-in theme, up to 3 custom colour presets with a live preview, a full Settings
+  screen, and a home screen whose rows can be dragged and hidden. Details in CLAUDE.md.
 - Wear and case icons traced verbatim from `local/svgs/` (confirmed as the newest design 2026-09-24);
   adaptive launcher icon.
 - Portrait-locked on every screen.
-- Switch knobs turn red when on; row icons, chevrons and header icons all red on grey chips; chevrons centred.
-- Device name in the header shows only while connected, fading in on connect.
 
 ## Tooling and release
 

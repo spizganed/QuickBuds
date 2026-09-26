@@ -8,7 +8,7 @@ can re-learn the whole wire format without re-deriving it from captures.
 
 1. Every claim is marked with how we know it. `[VENDOR]` = from an official APK
    or vendor method name. `[OSS]` = from a public reverse-engineering project
-   (see `CREDITS.md`). `[CAPTURE]` = observed on our own device, with the capture
+   (see the README's Credits). `[CAPTURE]` = observed on our own device, with the capture
    in `local/logs/`. `[GUESS]` = unverified. **Never promote a claim without
    evidence, and never delete a `[GUESS]` marker to make the doc look tidy.**
 2. The test device is **OnePlus Buds 4**, firmware `B4.1-260810-1153`, Android.
@@ -1204,7 +1204,7 @@ request** (§9, "Time request"); `0x0501` is still unknown.
 This sequence is what has actually worked, and skimping on it has cost whole
 sessions:
 
-1. **Read `CREDITS.md` / the source repos first.** Three of the last four
+1. **Read the source repos (README's Credits) first.** Three of the last four
    protocol mistakes were settled for free by an existing document. Fastest path:
    `https://raw.githubusercontent.com/<owner>/<repo>/main/<path>`, file list via
    `https://api.github.com/repos/<owner>/<repo>/git/trees/main?recursive=1`.
