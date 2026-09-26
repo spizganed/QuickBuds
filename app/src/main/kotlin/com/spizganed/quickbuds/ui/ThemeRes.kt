@@ -116,10 +116,12 @@ object ThemeRes {
      */
     fun select(activity: Activity) {
         val p = palette(activity)
-        if (p.builtIn) {
+        if (p.builtIn && PaletteStore.accentOverride(activity, p.id) == null) {
             activity.setTheme(styleFor(p.id))
         } else {
-            activity.setTheme(styleFor(if (p.isLight) PaletteStore.WHITE else PaletteStore.OLED))
+            // Custom preset, or a built-in with the user's accent: its style, or the matching
+            // light/dark one, plus the preset's values at inflation time.
+            activity.setTheme(styleFor(if (p.builtIn) p.id else if (p.isLight) PaletteStore.WHITE else PaletteStore.OLED))
             activity.layoutInflater.factory2 = PaletteFactory(p)
             activity.window.setBackgroundDrawable(ColorDrawable(p.background))
             @Suppress("DEPRECATION")

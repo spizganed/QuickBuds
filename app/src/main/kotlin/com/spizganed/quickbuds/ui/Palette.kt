@@ -107,6 +107,7 @@ object PaletteStore {
 
     private const val KEY_ACTIVE = "paletteActive"
     private const val KEY_CUSTOM = "paletteCustom"
+    private const val KEY_ACCENT = "paletteAccent_"
     /** The pre-preset theme index (0 OLED, 1 Dark, 2 Light), migrated once. */
     private const val KEY_LEGACY = "theme"
 
@@ -140,7 +141,24 @@ object PaletteStore {
         val theme = c.resources.newTheme().apply { applyStyle(ThemeRes.styleFor(id), true) }
         val tv = TypedValue()
         val t = ThemeRes.TOKEN_ATTRS.map { theme.resolveAttribute(it, tv, true); tv.data }
-        return Palette(id, ThemeRes.builtInName(id), true, t[0], t[1], t[2], t[3], t[4], t[5])
+        return Palette(id, ThemeRes.builtInName(id), true, t[0], t[1], accentOverride(c, id) ?: t[2], t[3], t[4], t[5])
+    }
+
+    /** The user's accent for a built-in preset ([USER] 2026-09-26), or null for the style's own. */
+    fun accentOverride(c: Context, id: String): Int? {
+        val p = prefs(c)
+        val key = KEY_ACCENT + id
+        return if (p.contains(key)) p.getInt(key, 0) else null
+    }
+
+    /** Sets a built-in preset's accent; null (or the style's own value) removes the override. */
+    fun setAccentOverride(c: Context, id: String, color: Int?) {
+        val key = KEY_ACCENT + id
+        prefs(c).edit().remove(key).apply()
+        // Read after the removal, so this is the style's own accent.
+        val styleAccent = builtIn(c, id).accent
+        if (color != null && color != styleAccent) prefs(c).edit().putInt(key, color).apply()
+        ThemeRes.invalidate()
     }
 
     fun custom(c: Context): List<Palette> {
