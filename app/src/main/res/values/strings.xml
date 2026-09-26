@@ -105,7 +105,6 @@
     <string name="row_find_title">Find my earbuds</string>
     <string name="row_find_sub">Ring both earbuds</string>
     <string name="row_update_title">App update</string>
-    <string name="row_update_sub">Check GitHub for a newer build</string>
 
     <!-- Find my earbuds screen. -->
     <string name="find_title">Find my earbuds</string>
@@ -142,16 +141,29 @@
 
     <!-- App update. -->
     <string name="update_title">App update</string>
-    <string name="update_check">Check for updates</string>
-    <string name="update_never_auto">Nothing is checked automatically. This runs only when you press the button.</string>
+    <string name="update_installed">Installed</string>
+    <string name="update_latest">Latest</string>
+    <string name="update_unknown">—</string>
+    <string name="update_check">Check again</string>
     <string name="update_checking">Checking GitHub releases&#8230;</string>
-    <string name="update_up_to_date">You are on the latest build.</string>
-    <string name="update_available">Version %1$s is available (you have %2$s).</string>
+    <string name="update_up_to_date">You are on the latest version.</string>
+    <string name="update_available">Version %1$s is available.</string>
     <string name="update_download">Download</string>
-    <string name="update_downloading">Downloading&#8230;</string>
-    <string name="update_downloaded">Downloaded. Press Install to hand it to Android.</string>
+    <string name="update_downloading">Downloading&#8230; %1$d%%</string>
+    <string name="update_downloaded">Downloaded. Tap Install to hand it to Android.</string>
     <string name="update_install">Install</string>
     <string name="update_failed">Could not check for updates: %1$s</string>
+    <string name="update_notes">What\'s new</string>
+    <string name="update_no_notes">No release notes.</string>
+    <string name="update_permission_title">Allow installing updates</string>
+    <string name="update_permission_body">Android needs your permission to install updates from QuickBuds.</string>
+    <string name="update_permission_action">Open settings</string>
+    <string name="update_auto_title">Check on start</string>
+    <string name="update_auto_sub">Look for a new version when the app opens</string>
+    <string name="update_found_title">QuickBuds %1$s is available</string>
+    <string name="update_found_body">You have %1$s. Open the update screen to see what\'s new.</string>
+    <string name="update_found_view">View</string>
+    <string name="update_later">Later</string>
 
     <!-- ==================== Earbud gestures (gesture config) ==================== -->
 

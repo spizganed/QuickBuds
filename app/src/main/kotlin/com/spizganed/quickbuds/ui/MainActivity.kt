@@ -370,6 +370,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         WidgetStateStore.addListener(storeListener)
 
         checkPermissions()
+        UpdateChecker.maybeAutoCheck(this)
     }
 
     /** Sends the Connect / Disconnect service action for the header chip. */

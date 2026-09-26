@@ -59,7 +59,7 @@ class SettingsActivity : Activity() {
             toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true)
         )
 
-        val version = installedVersion(this)
+        val version = UpdateChecker.installed(this)
         val updateRow = link(R.drawable.ic_update, R.string.row_update_title, 0) {
             startActivity(Intent(this, UpdateActivity::class.java))
         }
@@ -67,6 +67,7 @@ class SettingsActivity : Activity() {
         section(
             R.string.settings_app,
             updateRow,
+            toggle(R.drawable.ic_update, R.string.update_auto_title, R.string.update_auto_sub, UpdateChecker.KEY_AUTO, true),
             link(R.drawable.ic_info, R.string.settings_about_title, R.string.settings_about_sub) { showAbout(version) }
         )
 
@@ -130,11 +131,5 @@ class SettingsActivity : Activity() {
         const val KEY_HAPTICS = "haptics"
         const val KEY_DEV_TOOLS_BUTTON = "devToolsButton"
         private const val GITHUB_URL = "https://github.com/spizganed/QuickBuds"
-
-        fun installedVersion(c: Context): String = try {
-            c.packageManager.getPackageInfo(c.packageName, 0).versionName ?: "?"
-        } catch (_: Exception) {
-            "?"
-        }
     }
 }

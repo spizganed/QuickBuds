@@ -105,6 +105,10 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
   Prefs: `haptics` (default on), `backgroundService` (see Connection robustness) and `devToolsButton` (default
   on, read in `MainActivity.onResume`).
+- **App update** (2026-09-26): `UpdateChecker` (GitHub latest release via `org.json`, `.apk` asset, streamed
+  download with progress) is shared by `UpdateActivity` (installed vs latest side by side, one action pill,
+  progress bar, release notes; checks on open) and the check on start (`updateAutoCheck`, default on; at most
+  every 12 h, silent on failure, one `ConfirmDialog` per new tag, never again for the same tag).
 - **Home layout** (`HomeLayoutActivity`, [USER] 2026-09-26): the main screen's own layout in an edit mode.
   Battery and noise control show live but inert; each sound settings row (low latency, Hi-Res, 3D audio,
   EQ, Dual connection, Earbud settings) is held and dragged to move (platform `startDragAndDrop`, reordered
