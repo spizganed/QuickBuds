@@ -300,15 +300,17 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
+        // SPEC 3.5 header: Rename left, name centred, Done (check) right. Every release already
+        // saved the preset, so Done only closes; there is no "saved" feedback by design.
         root.addView(LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(6f), 0, dp(6f), 0)
-            addView(iconButton(R.drawable.ic_close, R.string.eq_close) { d.dismiss() })
-            addView(nameView)
             addView(iconButton(R.drawable.ic_pencil, R.string.eq_rename) {
                 rename(p) { renamed -> p = renamed; nameView.text = renamed.name }
             })
+            addView(nameView)
+            addView(iconButton(R.drawable.ic_check, R.string.eq_done) { d.dismiss() })
         })
 
         root.addView(EqCurveView(this).apply {
@@ -323,30 +325,47 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             ).apply { topMargin = dp(8f) }
         })
 
-        // Copy and delete sit as icons in the bottom-right corner, out of the curve's way.
+        // Duplicate and Delete, 48dp, bottom right (SPEC 3.5). A long press on Duplicate still
+        // copies the preset as text, for the Import sheet on another phone.
+        val fortyEight = { v: android.view.View -> v.layoutParams = LinearLayout.LayoutParams(dp(48f), dp(48f)); v.setPadding(dp(13f), dp(13f), dp(13f), dp(13f)) }
         root.addView(LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.END
             setPadding(0, dp(10f), dp(6f), 0)
-            addView(iconButton(R.drawable.ic_copy, R.string.eq_copy) {
-                (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-                    .setPrimaryClip(ClipData.newPlainText("QuickBuds EQ", EqCodec.toText(p)))
-                Toast.makeText(this@EqActivity, R.string.eq_copied, Toast.LENGTH_SHORT).show()
+            addView(iconButton(R.drawable.ic_copy, R.string.eq_duplicate) {
+                if (shownNames.size >= EqCodec.MAX_CUSTOM) return@iconButton
+                d.dismiss()
+                val used = shownNames
+                val name = (2..9).map { "${p.name.take(18)} $it" }.firstOrNull { it !in used } ?: return@iconButton
+                pendingImport = name to p.gains
+                manager?.createCustomEq(name)
+            }.apply {
+                fortyEight(this)
+                isEnabled = shownNames.size < EqCodec.MAX_CUSTOM
+                alpha = if (isEnabled) 1f else 0.35f
+                setOnLongClickListener {
+                    (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
+                        .setPrimaryClip(ClipData.newPlainText("QuickBuds EQ", EqCodec.toText(p)))
+                    Toast.makeText(this@EqActivity, R.string.eq_copied, Toast.LENGTH_SHORT).show()
+                    true
+                }
             })
             addView(iconButton(R.drawable.ic_delete, R.string.eq_delete) {
-                val sheet = BottomSheetDialog(this@EqActivity)
-                sheet.title(getString(R.string.eq_delete_confirm, p.name))
-                    .confirm(getString(R.string.eq_delete)) {
-                        sheet.close()
-                        d.dismiss()
-                        // The row folds shut first; the delete goes out once it has.
-                        deleting += p.name
-                        val row = customRows[p.id]
-                        if (row == null) manager?.deleteCustomEq(p)
-                        else slide(row, open = false) { manager?.deleteCustomEq(p) }
-                    }
-                    .show()
-            }.apply { (layoutParams as LinearLayout.LayoutParams).marginStart = dp(10f) })
+                ConfirmDialog.show(
+                    this@EqActivity, getString(R.string.eq_delete_confirm, p.name), null,
+                    getString(R.string.eq_delete)
+                ) {
+                    d.dismiss()
+                    // The row folds shut first; the delete goes out once it has.
+                    deleting += p.name
+                    val row = customRows[p.id]
+                    if (row == null) manager?.deleteCustomEq(p)
+                    else slide(row, open = false) { manager?.deleteCustomEq(p) }
+                }
+            }.apply {
+                fortyEight(this)
+                (layoutParams as LinearLayout.LayoutParams).marginStart = dp(10f)
+            })
         })
 
         d.setContentView(root)

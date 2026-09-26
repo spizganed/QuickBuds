@@ -234,5 +234,10 @@
 
     <!-- Misc -->
     <string name="dialog_close">Close</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="disconnect_title">Disconnect %1$s?</string>
+    <string name="disconnect_body">Audio will stop playing on this phone.</string>
+    <string name="eq_done">Done</string>
+    <string name="eq_duplicate">Duplicate</string>
     <string name="theme_title">Theme</string>
 </resources>
