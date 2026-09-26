@@ -10,30 +10,30 @@
     <ImageView android:id="@+id/w_stroke" android:layout_width="match_parent" android:layout_height="match_parent"
         android:src="@drawable/widget_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
-        android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="10dp" android:paddingEnd="8dp">
+        android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="6dp" android:paddingEnd="8dp">
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="horizontal" android:gravity="center">
-            <ImageView android:id="@+id/w_ring_left" android:layout_width="40dp" android:layout_height="40dp"
+            <ImageView android:id="@+id/w_ring_left" android:layout_width="38dp" android:layout_height="38dp"
                 android:scaleType="fitCenter" />
             <TextView android:id="@+id/w_pct_left" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginStart="4dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
+                android:layout_marginStart="3dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
         </LinearLayout>
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="horizontal" android:gravity="center">
-            <ImageView android:id="@+id/w_ring_case" android:layout_width="40dp" android:layout_height="40dp"
+            <ImageView android:id="@+id/w_ring_case" android:layout_width="38dp" android:layout_height="38dp"
                 android:scaleType="fitCenter" />
             <TextView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginStart="4dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
+                android:layout_marginStart="3dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
         </LinearLayout>
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:orientation="horizontal" android:gravity="center">
-            <ImageView android:id="@+id/w_ring_right" android:layout_width="40dp" android:layout_height="40dp"
+            <ImageView android:id="@+id/w_ring_right" android:layout_width="38dp" android:layout_height="38dp"
                 android:scaleType="fitCenter" />
             <TextView android:id="@+id/w_pct_right" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginStart="4dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
+                android:layout_marginStart="3dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
         </LinearLayout>
-            <FrameLayout android:id="@+id/w_chip_cycle" android:layout_width="64dp" android:layout_height="40dp"
-                android:layout_marginStart="3dp" android:layout_marginEnd="3dp">
+            <FrameLayout android:id="@+id/w_chip_cycle" android:layout_width="56dp" android:layout_height="40dp"
+                android:layout_marginStart="2dp" android:layout_marginEnd="2dp">
                 <ImageView android:id="@+id/w_chip_cycle_bg" android:layout_width="match_parent" android:layout_height="match_parent"
                     android:src="@drawable/widget_chip" android:scaleType="fitXY" android:importantForAccessibility="no" />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
@@ -44,8 +44,8 @@
                         android:textSize="9sp" android:fontFamily="sans-serif-medium" android:maxLines="1" />
                 </LinearLayout>
             </FrameLayout>
-            <FrameLayout android:id="@+id/w_chip_gamechip" android:layout_width="40dp" android:layout_height="40dp"
-                android:layout_marginStart="3dp" android:layout_marginEnd="3dp">
+            <FrameLayout android:id="@+id/w_chip_gamechip" android:layout_width="38dp" android:layout_height="38dp"
+                android:layout_marginStart="2dp" android:layout_marginEnd="2dp">
                 <ImageView android:id="@+id/w_chip_gamechip_bg" android:layout_width="match_parent" android:layout_height="match_parent"
                     android:src="@drawable/widget_chip" android:scaleType="fitXY" android:importantForAccessibility="no" />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"

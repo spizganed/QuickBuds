@@ -87,8 +87,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             v.setOnClickPendingIntent(R.id.w_root, openApp)
 
             // Battery rings. FULL / SMALL: the ImageView fills the rings row and fitCenter scales the
-            // bitmap, so this is the largest size drawn sharp. STRIP: matches the layout's 40dp box.
-            val ringDp = when (kind) { Kind.FULL -> 64f; Kind.SMALL -> 56f; Kind.STRIP -> 40f }
+            // bitmap, so this is the largest size drawn sharp. STRIP: matches the layout's 38dp box.
+            val ringDp = when (kind) { Kind.FULL -> 64f; Kind.SMALL -> 56f; Kind.STRIP -> 38f }
             val sides = listOf(
                 Triple(R.id.w_ring_left, R.id.w_pct_left, 0),
                 Triple(R.id.w_ring_case, R.id.w_pct_case, 1),
