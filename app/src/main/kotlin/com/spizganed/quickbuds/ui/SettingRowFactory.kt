@@ -64,8 +64,10 @@ object SettingRowFactory {
             }
         }
 
-        if (leading != null) row.addView(leading, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        // Keep the leading view's own size: a plain View (the colour swatch) forced to WRAP_CONTENT
+        // takes the whole row width, squeezing the title to one letter per line.
+        if (leading != null) row.addView(leading, (leading.layoutParams as? LinearLayout.LayoutParams
+            ?: LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         ).apply { marginEnd = dp(14f) })
         if (iconRes != 0) row.addView(ImageView(context).apply {
             layoutParams = LinearLayout.LayoutParams(dp(24f), dp(24f)).apply { marginEnd = dp(14f) }
