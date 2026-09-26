@@ -102,9 +102,11 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
   Prefs: `haptics` (default on) and `devToolsButton` (default on, read in `MainActivity.onResume`). About is a
   `ConfirmDialog` with a GitHub button.
-- **Home layout** (`HomeLayoutActivity`, added after the SPEC steps at his request, 2026-09-26): up/down arrows
-  reorder the tiles, a switch hides the sound settings tile (battery and noise control are locked). Writes
-  `homeTileOrder` / `homeTileHidden`; `MainActivity.onResume` re-applies them.
+- **Home layout** (`HomeLayoutActivity`, [USER] 2026-09-26): each row of the sound settings card (low latency,
+  Hi-Res, 3D audio, EQ, Dual connection, Earbud settings) has up/down arrows and a show switch. Battery and
+  noise control stay fixed on top; tiles are not reordered. Prefs `homeRowOrder` / `homeRowHidden` by row key;
+  `MainActivity.layoutFeatureRows()` applies them on create and resume. A new row needs a key in
+  `buildFeatureRows()` AND in `HomeLayoutActivity.ROWS`.
 - **Presets (step 6)**: `ThemeActivity` (3.7, rebuilt in `onResume`) and `PresetEditActivity` (3.8).
   `PalettePreviewView` draws a mini home in ANY palette (tile or detailed). Colour edits update the preview
   live and save on commit (hue slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
@@ -325,19 +327,20 @@ From `bluetooth/BudsConnectionManager.kt`.
 
 Header (48dp: device name 19sp, status chip = Connect/Disconnect button, dev-tools icon, settings cog)
 over a `ScrollView` named `mainScroll` holding `tiles`. Each tile is an include layout whose ROOT id is
-its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList` (tile_settings).
-`MainActivity.applyTileLayout()` orders and hides them from prefs `homeTileOrder` (comma list of those
-names) and `homeTileHidden`, written by `HomeLayoutActivity`; `batteryCard` and `ancRow` can never be hidden.
+its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList` (tile_settings), in that
+fixed order. The rows inside `featureList` are ordered and hidden one by one (see Home layout above).
 
 1. `batteryCard` — `BudsStatusView`: three 104dp rings (outline track, accent arc from 12 o'clock),
    glyphs at their SVG ratio inside 42x56 / 58x42 boxes, percentage 24sp (red at <= 20%), label
-   "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case adds the accent case badge.
+   "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case adds a small accent case glyph
+   at the bud's bottom-right, with no disc behind it ([USER] 2026-09-26).
    Disconnected: same size, track only, disabled glyphs, "—", bare names.
 2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
    neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom
    sheet and the caption. The ANC segment applies the last level seen (`homeAncLevel`, default Medium).
 3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio, EQ,
-   and **Earbud settings** (`ic_earbud`), which opens `EarbudSettingsActivity`, the hub for the buds
+   **Dual connection** (also still in the hub) and **Earbud settings** (`ic_bud_left`; the SPEC's
+   `ic_earbud` rendered broken and was dropped), which opens `EarbudSettingsActivity`, the hub for the buds
    themselves. New firmware settings go in the hub, not on the main card.
 
 **Disconnected (`setConnectedUi`)**: nothing collapses. Every tile but the battery goes to alpha 0.35 and

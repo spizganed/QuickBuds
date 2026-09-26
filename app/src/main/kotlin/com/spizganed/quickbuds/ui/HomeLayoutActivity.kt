@@ -10,8 +10,9 @@ import android.widget.TextView
 import com.spizganed.quickbuds.R
 
 /**
- * Home layout (SPEC section 4): reorder the home tiles and hide the ones that may be hidden.
- * Writes the prefs MainActivity.applyTileLayout() reads; every change saves at once.
+ * Home layout: move and hide each row of the home screen's sound settings card one by one
+ * ([USER] 2026-09-26). Battery and noise control stay fixed at the top. Writes the prefs
+ * MainActivity.layoutFeatureRows() reads; every change saves at once.
  */
 class HomeLayoutActivity : Activity() {
 
@@ -23,7 +24,7 @@ class HomeLayoutActivity : Activity() {
         super.onCreate(savedInstanceState)
         val root = SettingRowFactory.screen(this)
         root.addView(SettingRowFactory.title(this, R.string.settings_layout_title))
-        root.addView(SettingRowFactory.sectionLabel(this, R.string.layout_tiles))
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.layout_rows))
         card = SettingRowFactory.card(this)
         root.addView(card)
         root.addView(TextView(this).apply {
@@ -39,35 +40,27 @@ class HomeLayoutActivity : Activity() {
         })
     }
 
-    /** Saved order, completed with any tile it does not name, in the XML order. */
-    private fun order(): MutableList<String> {
-        val saved = prefs.getString(MainActivity.KEY_TILE_ORDER, null)?.split(',').orEmpty().filter { it in TILES }
-        return (saved + TILES.keys.filter { it !in saved }).distinct().toMutableList()
-    }
-
     private fun build() {
         card.removeAllViews()
-        val order = order()
-        val hidden = prefs.getStringSet(MainActivity.KEY_TILE_HIDDEN, emptySet()).orEmpty()
-        order.forEachIndexed { i, name ->
-            val locked = name in MainActivity.LOCKED_TILES
+        val order = MainActivity.rowOrder(prefs, ROWS.keys.toList()).toMutableList()
+        val hidden = prefs.getStringSet(MainActivity.KEY_ROW_HIDDEN, emptySet()).orEmpty()
+        order.forEachIndexed { i, key ->
             val arrows = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 addView(arrow(up = true, enabled = i > 0) { move(order, i, i - 1) })
                 addView(arrow(up = false, enabled = i < order.size - 1) { move(order, i, i + 1) })
             }
-            val trailing = if (locked) null else SettingRowFactory.buildSwitch(this, name !in hidden).apply {
+            val shown = SettingRowFactory.buildSwitch(this, key !in hidden).apply {
                 setOnCheckedChangeListener { _, on ->
-                    val set = prefs.getStringSet(MainActivity.KEY_TILE_HIDDEN, emptySet()).orEmpty().toMutableSet()
-                    if (on) set.remove(name) else set.add(name)
-                    prefs.edit().putStringSet(MainActivity.KEY_TILE_HIDDEN, set).apply()
+                    val set = prefs.getStringSet(MainActivity.KEY_ROW_HIDDEN, emptySet()).orEmpty().toMutableSet()
+                    if (on) set.remove(key) else set.add(key)
+                    prefs.edit().putStringSet(MainActivity.KEY_ROW_HIDDEN, set).apply()
                 }
             }
-            val row = SettingRowFactory.build(
-                this, 0, TILES.getValue(name), if (locked) R.string.layout_locked else 0,
-                trailing, leading = arrows
-            ) { trailing?.performClick() }
+            val row = SettingRowFactory.build(this, 0, ROWS.getValue(key), 0, shown, leading = arrows) {
+                shown.performClick()
+            }
             SettingRowFactory.addRow(card, row)
         }
     }
@@ -89,16 +82,19 @@ class HomeLayoutActivity : Activity() {
 
     private fun move(order: MutableList<String>, from: Int, to: Int) {
         order.add(to, order.removeAt(from))
-        prefs.edit().putString(MainActivity.KEY_TILE_ORDER, order.joinToString(",")).apply()
+        prefs.edit().putString(MainActivity.KEY_ROW_ORDER, order.joinToString(",")).apply()
         build()
     }
 
     companion object {
-        /** Tile root id name -> label, in the XML (default) order. */
-        private val TILES = linkedMapOf(
-            "batteryCard" to R.string.layout_tile_battery,
-            "ancRow" to R.string.anc_section,
-            "featureList" to R.string.layout_tile_settings
+        /** Row key -> label, in MainActivity.buildFeatureRows() (default) order. */
+        private val ROWS = linkedMapOf(
+            "game" to R.string.row_game_title,
+            "hires" to R.string.row_hires_title,
+            "spatial" to R.string.row_spatial_title,
+            "eq" to R.string.row_eq_title,
+            "dual" to R.string.row_dual_title,
+            "earbuds" to R.string.row_earbuds_title
         )
     }
 }
