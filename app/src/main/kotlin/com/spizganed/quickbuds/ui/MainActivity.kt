@@ -527,6 +527,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     override fun onResume() {
         super.onResume()
+        // Settings › Home layout may have changed the tile order.
+        applyTileLayout()
         // Settings › Developer › Dev tools button (default on).
         btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
                 .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
