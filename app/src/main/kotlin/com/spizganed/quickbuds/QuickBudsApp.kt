@@ -1,11 +1,13 @@
 package com.spizganed.quickbuds
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import com.spizganed.quickbuds.ui.ThemeRes
@@ -55,6 +57,17 @@ class QuickBudsApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // A preset change rebuilds every open activity when it comes back to the front,
+        // because colours are applied at inflation (ThemeRes.select), not afterwards.
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityResumed(a: Activity) { if (ThemeRes.isStale(a)) a.recreate() }
+            override fun onActivityCreated(a: Activity, b: Bundle?) {}
+            override fun onActivityStarted(a: Activity) {}
+            override fun onActivityPaused(a: Activity) {}
+            override fun onActivityStopped(a: Activity) {}
+            override fun onActivitySaveInstanceState(a: Activity, b: Bundle) {}
+            override fun onActivityDestroyed(a: Activity) {}
+        })
         val previous = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {

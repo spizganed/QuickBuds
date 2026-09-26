@@ -80,7 +80,18 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
 - **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
-- Completed SPEC steps: none yet.
+- Completed SPEC steps: 1 (palette).
+- **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
+  one style per built-in preset. `Palette.kt` holds `Palette` (tokens + derived colours) and `PaletteStore`
+  (active id + up to 3 custom presets as JSON in `QuickBudsPrefs`; the old `theme` int migrates once).
+  A custom preset uses the built-in style with the matching light/dark window plus `ThemeRes.PaletteFactory`,
+  which swaps `?attr/appColor*` in inflated XML. Shape drawables are built in code (`ThemeRes.card/chip/iconButton/sheet`);
+  do not add XML shapes with `?attr` colours, the factory cannot see inside them. `QuickBudsApp` recreates any
+  activity whose preset changed, on resume.
+- Decisions ([USER] 2026-09-26): no Material Components (plain Switch/Dialog/EditText, custom rings); the
+  status chip follows SPEC (accent dot when connected, grey ring + grey "Connect" when not); the battery glyphs keep
+  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; Settings' Home layout
+  row is shown disabled and About is a simple dialog; the Dev tools button toggle defaults ON.
 
 ### Environment you need
 
@@ -335,8 +346,8 @@ a shared one hung.
 ## Settled design decisions — do not re-litigate
 
 - **Red accent across the app** (`?attr/appColorAccent`, `[USER]` 2026-09-23): settings-row icons, the
-  EQ curve and sliders, the status rings, the noise-control highlight, the Connect pill when
-  disconnected. The EQ curve / level slider / status card / noise pill share one drawn visual language.
+  EQ curve and sliders, the status rings, the noise-control highlight. (The Connect pill is no longer
+  red when disconnected: SPEC 3.2 wins, [USER] 2026-09-26.) The EQ curve / level slider / status card / noise pill share one drawn visual language.
 - **The case icon keeps its LED dot**, and the lid cut stays full width — no hinge bulge or opening.
 - **Icons keep their SVG's true ratio** (buds 176x272, case 496x400). `BudsStatusView` fits each into
   its ring by that ratio; the widget still uses its own sized boxes.

@@ -127,7 +127,7 @@ class BottomSheetDialog(private val activity: Activity) {
 
         val root = LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
-            background = activity.getDrawable(R.drawable.dialog_sheet_bg)
+            background = ThemeRes.sheet(activity)
             setPadding(dp(6f), dp(14f), dp(6f), dp(14f))
         }
 
@@ -208,8 +208,8 @@ class BottomSheetDialog(private val activity: Activity) {
                 textSize = 15f
                 typeface = Typeface.DEFAULT_BOLD
                 gravity = Gravity.CENTER
-                setTextColor(0xFFFFFFFF.toInt())
-                background = activity.getDrawable(R.drawable.dev_button_bg_active)
+                setTextColor(ThemeRes.palette(activity).onAccent)
+                background = ThemeRes.chip(activity, true)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, dp(46f)
                 ).apply {

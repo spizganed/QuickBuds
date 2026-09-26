@@ -113,7 +113,7 @@ class UpdateActivity : Activity() {
         actionButton = Button(this).apply {
             setText(R.string.update_check)
             setTextColor(ThemeRes.color(this@UpdateActivity, R.attr.appColorTextPrimary))
-            background = getDrawable(R.drawable.header_icon_bg)
+            background = ThemeRes.iconButton(context)
             setPadding(dp(24f), dp(12f), dp(24f), dp(12f))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,

@@ -297,7 +297,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = getDrawable(R.drawable.dialog_sheet_bg)
+            background = ThemeRes.sheet(context)
             setPadding(dp(8f), dp(14f), dp(8f), dp(18f))
         }
 
@@ -418,7 +418,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER
-        background = getDrawable(R.drawable.header_icon_bg)
+        background = ThemeRes.iconButton(context)
         layoutParams = LinearLayout.LayoutParams(0, dp(46f), 1f)
         addView(ImageView(this@EqActivity).apply {
             layoutParams = LinearLayout.LayoutParams(dp(20f), dp(20f))
@@ -438,7 +438,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
         layoutParams = LinearLayout.LayoutParams(dp(40f), dp(40f))
         setPadding(dp(9f), dp(9f), dp(9f), dp(9f))
-        background = getDrawable(R.drawable.header_icon_bg)
+        background = ThemeRes.iconButton(context)
         setImageDrawable(ThemeRes.tint(this@EqActivity, iconRes, ThemeRes.color(this@EqActivity, R.attr.appColorAccent)))
         contentDescription = getString(descRes)
         setOnClickListener { onClick() }
@@ -464,7 +464,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun card() = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        background = getDrawable(R.drawable.app_card_bg)
+        background = ThemeRes.card(context)
         val p = ThemeRes.dp(this@EqActivity, 4f)
         setPadding(p, p, p, p)
         layoutParams = LinearLayout.LayoutParams(

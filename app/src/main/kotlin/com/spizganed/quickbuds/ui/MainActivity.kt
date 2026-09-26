@@ -137,17 +137,12 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                 if (connected) R.drawable.ic_status_dot_filled
                 else R.drawable.ic_status_dot_empty
             )
-            val colour = ThemeRes.color(
-                this,
-                if (connected) R.color.app_conn_on else R.color.app_conn_off
-            )
-            // setColorFilter rather than a tint list: these are plain vector
-            // drawables in an ImageView, and the icon system already does this
-            // elsewhere — one mechanism, not two.
-            connDot.setColorFilter(colour)
+            // SPEC 3.1 / 3.2: accent dot + text label when connected, grey ring + grey label when not.
+            val p = ThemeRes.palette(this)
+            connDot.setColorFilter(if (connected) p.accent else p.textSecondary)
             // The word is the ACTION (the pill is a button); the dot and colour carry the state.
             connText.setText(if (connected) R.string.conn_action_disconnect else R.string.conn_action_connect)
-            connText.setTextColor(colour)
+            connText.setTextColor(if (connected) p.text else p.textSecondary)
             connPill.contentDescription = getString(if (connected) R.string.conn_on else R.string.conn_off) +
                 ". " + connText.text
         }
@@ -325,7 +320,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         else ancRow.animate().alpha(target).setDuration(CARD_ANIM_MS).start()
     }
 
-    private var currentTheme = ThemeRes.OLED
 
     private var activeAncMode: String = "Off"
     private var gameModeOn = false
@@ -422,11 +416,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // lookup and cannot fail; this replaced a runtime configuration override
         // that crashed on launch five times (see ThemeRes).
         ThemeRes.select(this)
-        // Track what we selected. onResume() compares against this to decide
-        // whether to recreate(); leaving it unassigned makes that comparison always
-        // true and puts the activity in an endless recreate loop (visible as the
-        // whole screen flickering). Do not delete this line.
-        currentTheme = ThemeRes.saved(this)
 
         super.onCreate(savedInstanceState)
 
@@ -654,17 +643,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // and the tree is no longer the one on screen, which is how the first
         // version of the report ended up always describing Dev Tools itself.
         LayoutReport.capture(this) { text -> Companion.cacheReport(text) }
-        // Rebuild only if the theme actually changed while we were away (it can be
-        // changed from another screen's settings dialog).
-        //
-        // `currentTheme` MUST be assigned in onCreate before this runs. It is not
-        // optional bookkeeping: when the assignment was dropped during the theme
-        // refactor, currentTheme kept its initialiser value (OLED = 0) while a
-        // non-OLED choice was saved, so this compared unequal on EVERY resume and
-        // called recreate() in an endless loop. The activity re-created, resumed,
-        // re-created — which the user sees as the whole screen flickering and
-        // jumping up and down several times a second.
-        if (ThemeRes.saved(this) != currentTheme) recreate()
     }
 
     override fun onPause() {
@@ -716,6 +694,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * never appColorIconTint, which would turn them black on a dark chip.
      */
     private fun applyThemeTints() {
+        connPill.background = ThemeRes.iconButton(this)
+        btnDevTools.background = ThemeRes.iconButton(this)
+        btnSettings.background = ThemeRes.iconButton(this)
+        batteryCard.background = ThemeRes.card(this)
+        featureList.background = ThemeRes.card(this)
         btnDevTools.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_dev_tools, ThemeRes.color(this, R.attr.appColorAccent)))
         btnSettings.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_settings_cog, ThemeRes.color(this, R.attr.appColorAccent)))
     }
@@ -1069,27 +1052,16 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * the activity rebuilds leaves an orphaned window on some devices.
      */
     private fun showThemeDialog() {
-        val themes = intArrayOf(ThemeRes.OLED, ThemeRes.DARK, ThemeRes.LIGHT)
+        val active = PaletteStore.activeId(this)
+        val presets = PaletteStore.builtInIds().map { PaletteStore.builtIn(this, it) } + PaletteStore.custom(this)
         BottomSheetDialog(this)
             .title(getString(R.string.theme_title))
-            .items(themes.map { t ->
-                BottomSheetDialog.Item(
-                    label = ThemeRes.label(t),
-                    selected = t == currentTheme,
-                    onClick = {
-                        ThemeRes.save(this, t)
-                        // Update currentTheme BEFORE recreating. onResume compares
-                        // the saved value against this field to decide whether to
-                        // rebuild; leaving it stale means the recreated activity
-                        // sees a difference and recreates again, forever (the
-                        // flicker bug). recreate() also re-runs onCreate, which
-                        // re-reads the same value, so this stays consistent either
-                        // way — but setting it here is what makes the intent
-                        // obvious.
-                        currentTheme = t
-                        recreate()
-                    }
-                )
+            .items(presets.map { p ->
+                BottomSheetDialog.Item(label = p.name, selected = p.id == active) {
+                    // The stale check in QuickBudsApp rebuilds every open activity on resume.
+                    PaletteStore.setActive(this, p.id)
+                    recreate()
+                }
             })
             .show()
     }

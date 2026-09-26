@@ -85,13 +85,7 @@ class DevToolsActivity : Activity() {
     private var markCount = 0
 
     // --- Theme colors (mirrors MainActivity) ---
-    private var accentColor: Int = Color.parseColor("#CC0000")
-    private var inactiveBtnColor: Int = Color.parseColor("#333333")
-    private var textColor: Int = Color.WHITE
 
-    private val THEME_OLED = 0
-    private val THEME_DARK = 1
-    private val THEME_LIGHT = 2
 
     /** Polling task that refreshes the log every 500ms. */
     private val refreshTask = object : Runnable {
@@ -175,9 +169,7 @@ class DevToolsActivity : Activity() {
         // action button below — an unbound lateinit would throw on open.
         btnReconnect = findViewById<Button>(R.id.btnReconnect)
         btnDisconnect = findViewById<Button>(R.id.btnDisconnect)
-        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
-        val theme = prefs.getInt("theme", THEME_OLED)
-        applyTheme(theme)
+        applyTheme()
 
         btnTabHuman.setOnClickListener { switchToHumanTab() }
         btnTabRaw.setOnClickListener { switchToRawTab() }
@@ -667,17 +659,13 @@ class DevToolsActivity : Activity() {
      * the rest of the app in all three themes.
      */
     private fun updateTabButtons() {
-        val activeText = 0xFFFFFFFF.toInt()
+        val activeText = ThemeRes.palette(this).onAccent
         val normalText = ThemeRes.color(this, R.attr.appColorTextPrimary)
 
-        btnTabHuman.background = getDrawable(
-            if (isHumanTab) R.drawable.dev_button_bg_active else R.drawable.dev_button_bg
-        )
+        btnTabHuman.background = ThemeRes.chip(this, isHumanTab)
         btnTabHuman.setTextColor(if (isHumanTab) activeText else normalText)
 
-        btnTabRaw.background = getDrawable(
-            if (isHumanTab) R.drawable.dev_button_bg else R.drawable.dev_button_bg_active
-        )
+        btnTabRaw.background = ThemeRes.chip(this, !isHumanTab)
         btnTabRaw.setTextColor(if (isHumanTab) normalText else activeText)
     }
 
@@ -816,26 +804,17 @@ class DevToolsActivity : Activity() {
      * Using the same resources as every other screen means this cannot drift from
      * the main screen's colours, and a palette change is one edit in one file.
      */
-    private fun applyTheme(theme: Int) {
-        // The theme was already selected by ThemeRes.select() before
-        // super.onCreate, so these resolve against the right palette. The `theme`
-        // parameter is kept because callers still pass it, but the colours are no
-        // longer derived from it here — the resources are authoritative.
-        @Suppress("UNUSED_PARAMETER")
-        val unused = theme
-
+    private fun applyTheme() {
         val bgColor = ThemeRes.color(this, R.attr.appColorBg)
         val cardColor = ThemeRes.color(this, R.attr.appColorCard)
         val txtColor = ThemeRes.color(this, R.attr.appColorTextPrimary)
         val secondary = ThemeRes.color(this, R.attr.appColorTextSecondary)
 
-        inactiveBtnColor = cardColor
-        textColor = txtColor
-
         devToolsRoot.setBackgroundColor(bgColor)
+        findViewById<android.view.View>(R.id.devActionsCard).background = ThemeRes.card(this)
         logText.setBackgroundColor(cardColor)
         logText.setTextColor(txtColor)
-        logScroll.setBackground(getDrawable(R.drawable.log_card_bg))
+        logScroll.background = ThemeRes.card(this).apply { setColor(bgColor) }
 
         // The title is now found by ID. It used to be found BY POSITION (child 0 of
         // child 0 of the root), which only worked while this screen happened to keep
@@ -857,7 +836,7 @@ class DevToolsActivity : Activity() {
             btnScreenshot, btnLayout, btnWidgetLayout, btnWidgetLogic,
             btnReconnect, btnDisconnect
         )) {
-            b.background = getDrawable(R.drawable.dev_button_bg)
+            b.background = ThemeRes.chip(this, false)
             b.setTextColor(txtColor)
         }
 

@@ -71,7 +71,7 @@ class FindBudsActivity : Activity() {
 
         playButton = Button(this).apply {
             setTextColor(ThemeRes.color(this@FindBudsActivity, R.attr.appColorTextPrimary))
-            background = getDrawable(R.drawable.header_icon_bg)
+            background = ThemeRes.iconButton(context)
             setPadding(dp(32f), dp(12f), dp(32f), dp(12f))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -94,7 +94,7 @@ class FindBudsActivity : Activity() {
             setImageDrawable(
                 ThemeRes.tint(
                     this@FindBudsActivity, iconRes,
-                    ThemeRes.color(this@FindBudsActivity, R.attr.appColorIconTint)
+                    ThemeRes.color(this@FindBudsActivity, R.attr.appColorTextPrimary)
                 )
             )
         }

@@ -133,17 +133,9 @@ object SettingRowFactory {
         sw.isChecked = checked
         sw.setText("")
         sw.showText = false
-        sw.buttonDrawable = context.getDrawable(
-            if (checked) R.drawable.app_switch_track_on else R.drawable.app_switch_track
-        )
+        sw.buttonDrawable = ThemeRes.switchTrack(context, checked)
         // Knob turns accent red when on; follows isChecked without a refresh.
-        sw.thumbTintList = android.content.res.ColorStateList(
-            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-            intArrayOf(
-                ThemeRes.color(context, R.attr.appColorAccent),
-                ThemeRes.color(context, R.attr.appColorSegBgActive)
-            )
-        )
+        sw.thumbTintList = ThemeRes.switchTints(context).first
         sw.trackTintList = null
         // Keep the switch from stealing the row's ripple when the row is clickable.
         sw.isFocusable = true
@@ -154,9 +146,7 @@ object SettingRowFactory {
 
     /** Re-applies the track drawable after the state changes. */
     fun refreshSwitch(context: Context, sw: android.widget.Switch, checked: Boolean) {
-        sw.buttonDrawable = context.getDrawable(
-            if (checked) R.drawable.app_switch_track_on else R.drawable.app_switch_track
-        )
+        sw.buttonDrawable = ThemeRes.switchTrack(context, checked)
     }
 
     /**
@@ -172,7 +162,7 @@ object SettingRowFactory {
             layoutParams = LinearLayout.LayoutParams(dp(32f), dp(32f))
             scaleType = ImageView.ScaleType.FIT_CENTER
             setPadding(dp(6f), dp(6f), dp(6f), dp(6f))
-            background = context.getDrawable(R.drawable.header_icon_bg)
+            background = ThemeRes.iconButton(context)
             setImageDrawable(
                 ThemeRes.tint(context, R.drawable.ic_chevron_right, ThemeRes.color(context, R.attr.appColorAccent))
             )
