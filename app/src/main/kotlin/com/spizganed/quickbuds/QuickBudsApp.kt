@@ -70,8 +70,8 @@ class QuickBudsApp : Application() {
             override fun onActivityPaused(a: Activity) {}
             override fun onActivityStopped(a: Activity) {
                 // Background service off: leaving the app (no activity visible) stops the service.
-                // A still-bound MainActivity keeps it alive until it is destroyed (Back or swiped
-                // away); the service closes the RFCOMM link in onDestroy.
+                // MainActivity unbinds in its own onStop, so nothing keeps it alive; the service
+                // closes the RFCOMM link in onDestroy.
                 if (--started == 0 && !BudsService.backgroundAllowed(a)) {
                     runCatching { a.applicationContext.stopService(Intent(a, BudsService::class.java)) }
                 }

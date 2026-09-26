@@ -340,7 +340,9 @@ From `bluetooth/BudsConnectionManager.kt`.
   manager's 3x5 s retry stays as the failure fallback. Confirm with logcat `KeepAlive: audio profile state=2`.
 - **Background service switch** (`BudsService.PREF_BACKGROUND`, default on, Settings › General). Off:
   `KeepAliveReceiver` and the widget receiver do not start the service, and `QuickBudsApp` calls
-  `stopService` when no activity is visible; the bound main screen keeps it until it is destroyed.
+  `stopService` when no activity is visible. `MainActivity` unbinds in `onStop` (and binds again in `onStart`) while it
+  is off, because a bound main screen kept the link up after Home, and Back no longer destroys it on Android 12+
+  (found on device 2026-09-27).
   `BudsService.onDestroy` now closes the RFCOMM link. Turning it off asks first (widget warning).
 - **Only a user connect (pill, Dev Tools) asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Automatic
   connects (ACL receiver, retries, reconnect after loss) leave A2DP to the system: asking for it while

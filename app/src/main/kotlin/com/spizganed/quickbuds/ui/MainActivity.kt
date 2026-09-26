@@ -513,16 +513,41 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     override fun onDestroy() {
         WidgetStateStore.removeListener(storeListener)
-        if (isBound) {
-            try {
-                manager.removeListener(this)
-                unbindService(serviceConnection)
-            } catch (_: IllegalArgumentException) {
-                // Already unbound (double onDestroy); nothing to do.
-            }
-            isBound = false
-        }
+        unbind()
         super.onDestroy()
+    }
+
+    /** Set when onStop let go of the service, so onStart binds again (not on the first start). */
+    private var unboundOnStop = false
+
+    override fun onStart() {
+        super.onStart()
+        if (unboundOnStop) {
+            unboundOnStop = false
+            startAndBindServiceIfPermitted()
+        }
+    }
+
+    override fun onStop() {
+        // Background service off: a bound main screen kept the service (and the link) alive after
+        // Home, and on Android 12+ Back does not destroy it either. Let go here; QuickBudsApp stops
+        // the service once no screen is visible, and onStart binds (and connects) again.
+        if (isBound && !BudsService.backgroundAllowed(this)) {
+            unbind()
+            unboundOnStop = true
+        }
+        super.onStop()
+    }
+
+    private fun unbind() {
+        if (!isBound) return
+        try {
+            manager.removeListener(this)
+            unbindService(serviceConnection)
+        } catch (_: IllegalArgumentException) {
+            // Already unbound (double onDestroy); nothing to do.
+        }
+        isBound = false
     }
 
     override fun onResume() {
