@@ -1109,7 +1109,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         private val ANC_LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep")
 
         /** Noise-control segments, left to right: the tap name onAncCircleTapped() takes, label, icon. */
-        private val ANC_SEGMENTS = listOf(
+        val ANC_SEGMENTS = listOf(
             Triple("Off", R.string.anc_seg_off, R.drawable.ic_noise_off),
             Triple("ANC", R.string.anc_seg_anc, R.drawable.ic_anc),
             Triple("Adaptive", R.string.anc_seg_adapt, R.drawable.ic_adaptive),

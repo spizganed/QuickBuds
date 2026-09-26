@@ -246,10 +246,12 @@
     <string name="settings_app">App</string>
     <string name="settings_layout_title">Home layout</string>
     <string name="settings_layout_sub">Reorder and hide rows</string>
-    <string name="layout_rows">Home screen rows</string>
-    <string name="layout_move_up">Move up</string>
-    <string name="layout_move_down">Move down</string>
-    <string name="layout_footer">Battery and noise control always stay at the top.</string>
+    <string name="layout_title">Edit layout</string>
+    <string name="layout_hint">Hold a row and drag it to move it. Tap the eye to show or hide it. Nothing changes until you tap the check.</string>
+    <string name="layout_show">Show</string>
+    <string name="layout_hide">Hide</string>
+    <string name="layout_done">Apply layout</string>
+    <string name="layout_cancel">Cancel</string>
     <string name="settings_haptics_title">Haptic feedback</string>
     <string name="settings_haptics_sub">Vibrate when a setting changes</string>
     <string name="settings_devtools_title">Dev tools button</string>
