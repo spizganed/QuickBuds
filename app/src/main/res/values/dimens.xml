@@ -43,7 +43,7 @@
     <dimen name="header_icon_button">44dp</dimen>
 
     <!-- Header title size, matched to the widget's primary label weight. -->
-    <dimen name="header_title_size">16sp</dimen>
+    <dimen name="header_title_size">19sp</dimen>
 
     <!-- ==================== Redesigned home screen ==================== -->
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home tile: noise control (SPEC 3.1). Cannot be hidden. The segmented control goes into
+     ancSlot in code; ancLevels holds the ANC strength pills, shown only in ANC. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ancRow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingBottom="9dp"
+        android:text="@string/anc_section"
+        android:textColor="?attr/appColorTextSecondary"
+        android:textSize="14sp" />
+
+    <FrameLayout
+        android:id="@+id/ancSlot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/ancLevels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+</LinearLayout>

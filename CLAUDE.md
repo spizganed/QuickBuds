@@ -80,7 +80,7 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
 - **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
-- Completed SPEC steps: 1 (palette), 2 (shared components).
+- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home).
 - **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
   one style per built-in preset. `Palette.kt` holds `Palette` (tokens + derived colours) and `PaletteStore`
   (active id + up to 3 custom presets as JSON in `QuickBudsPrefs`; the old `theme` int migrates once).
@@ -301,30 +301,29 @@ From `bluetooth/BudsConnectionManager.kt`.
   the link stays up) — likely also the old "14-minute gap". `reconnectAfterLoss()` retries 5x with
   growing delays; a deliberate disconnect cancels it.
 
-## Main screen structure — redesigned 2026-09-23 (`[USER]`: "make it your own")
+## Main screen structure — SPEC 3.1-3.3 (UI revision step 3, 2026-09-26)
 
-Header (device name + Connect/Disconnect pill + dev-tools icon + settings cog) over a `ScrollView`
-named `mainScroll`. Inside it, top to bottom:
+Header (48dp: device name 19sp, status chip = Connect/Disconnect button, dev-tools icon, settings cog)
+over a `ScrollView` named `mainScroll` holding `tiles`. Each tile is an include layout whose ROOT id is
+its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList` (tile_settings).
+`MainActivity.applyTileLayout()` orders and hides them from prefs `homeTileOrder` (comma list of those
+names) and `homeTileHidden`; `batteryCard` and `ancRow` can never be hidden. The Home layout screen that
+writes those prefs is not built yet.
 
-1. `batteryCard` — ONE card holding `BudsStatusView` (custom-drawn, added to `statusSlot` in
-   code): left bud, case, right bud, each inside a red battery ring that animates to the level, with
-   the percentage (red at <= 20%) and "Left · In ear" style label under it. In ear = white icon,
-   out = grey, in case = dimmed (no longer hidden, so nothing moves). Still collapses while
-   disconnected (`setCardsVisible`). The old two-card layout, `SegmentedBarDrawable` and the icon
-   fade/slide animations are gone.
-2. `ancRow` — "Noise control" label, `AncSegmentedView` (custom-drawn pill, red highlight slides to
-   the active mode; added to `ancSlot`) and `ancCaption` spelling the mode out, including the ANC
-   strength. Tapping ANC opens `showAncChooser` as before; the tap names go through
-   `onAncCircleTapped` via `ANC_SEGMENTS`.
-3. `featureList` — the settings card, `@drawable/app_card_outline_bg`, filled at runtime by
-   `MainActivity.buildFeatureRows()`. Declared empty in XML on purpose: six near-identical row
-   layouts in XML would be six places to edit, and the icons need a themed tint that XML cannot
-   apply to a vector drawable. `addRow()` inserts the hairline divider before every row but the first.
-   **Since 2026-09-25 (`[USER]`, "option A") the card holds only what changes the sound** — low
-   latency, Hi-Res, 3D audio, EQ — plus one **Earbud settings** row. That opens
-   `EarbudSettingsActivity`, the hub for the buds themselves: Earbud gestures, Wear detection, Dual
-   connection, Find my earbuds, and a Sounds card with the alert-volume slider. New firmware settings
-   go in the hub, not on the main card. App update moved to the cog's sheet.
+1. `batteryCard` — `BudsStatusView`: three 104dp rings (outline track, accent arc from 12 o'clock),
+   glyphs at their SVG ratio inside 42x56 / 58x42 boxes, percentage 24sp (red at <= 20%), label
+   "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case adds the accent case badge.
+   Disconnected: same size, track only, disabled glyphs, "—", bare names.
+2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
+   neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom
+   sheet and the caption. The ANC segment applies the last level seen (`homeAncLevel`, default Medium).
+3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio, EQ,
+   and **Earbud settings** (`ic_earbud`), which opens `EarbudSettingsActivity`, the hub for the buds
+   themselves. New firmware settings go in the hub, not on the main card.
+
+**Disconnected (`setConnectedUi`)**: nothing collapses. Every tile but the battery goes to alpha 0.35 and
+is disabled recursively; switches are set neutral **quietly** (`syncingFeatures`, which the game-mode
+listener also honours, or the neutral state would send a write) and repainted from the buds on connect.
 
 **The main screen carries no log**, by design — Dev Tools owns logging. `appendStatus()` only
 appends to a bounded in-memory tail. See the note above about not putting user-visible output on a
