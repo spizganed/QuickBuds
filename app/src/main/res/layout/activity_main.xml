@@ -5,11 +5,10 @@
   PAINT: nothing here carries a hardcoded colour. Colours come from the six token
   attributes (?attr/appColor*), and shapes are built in code (ThemeRes).
 
-  STRUCTURE: the header, then a scrolling column of TILES. Each tile is its own
-  include layout whose root id is the tile's stable id (batteryCard, ancRow,
-  featureList). MainActivity.applyTileLayout() orders them and hides the hidden
-  ones from prefs; the battery and noise control tiles cannot be hidden. The
-  settings rows are built in code (buildFeatureRows).
+  STRUCTURE: the header, then a scrolling column of TILES, each its own include
+  layout with a stable root id (batteryCard, ancRow, featureList). The sound
+  settings rows are built in code (buildFeatureRows) and ordered / hidden one by
+  one from Settings > Home layout (layoutFeatureRows).
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainLayout"

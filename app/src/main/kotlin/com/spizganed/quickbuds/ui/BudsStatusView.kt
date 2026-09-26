@@ -19,7 +19,7 @@ import kotlin.math.min
  *
  * Wear, from the buds' status codes (same meaning the widget uses):
  *   3 / 7 = in ear  -> glyph `text`,          label "In ear"
- *   4 / 0 = in case -> glyph `textSecondary`, label "In case", plus the accent case badge
+ *   4 / 0 = in case -> glyph `textSecondary`, label "In case", plus a small accent case glyph
  *   other known     -> glyph `textSecondary`, label "Out of ear"
  *
  * Disconnected ([connected] false) keeps exactly the same size: track-only rings, glyphs in the
@@ -49,7 +49,7 @@ class BudsStatusView(context: Context) : View(context) {
         Slot(context.getDrawable(R.drawable.ic_case)!!.mutate(), 496f / 400f, 58f, 42f),
         Slot(context.getDrawable(R.drawable.ic_bud_right)!!.mutate(), 176f / 272f, 42f, 56f)
     )
-    private val badgeIcon = context.getDrawable(R.drawable.ic_case)!!.mutate().apply { setTint(p.onAccent) }
+    private val badgeIcon = context.getDrawable(R.drawable.ic_case)!!.mutate().apply { setTint(p.accent) }
     private val names = listOf(
         context.getString(R.string.status_left),
         context.getString(R.string.status_case),
@@ -69,7 +69,6 @@ class BudsStatusView(context: Context) : View(context) {
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dp(13f); textAlign = Paint.Align.CENTER; color = p.textSecondary
     }
-    private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val arcBox = RectF()
 
     /** 104dp, shrunk only if three columns cannot fit on a very narrow screen. */
@@ -136,15 +135,12 @@ class BudsStatusView(context: Context) : View(context) {
             s.icon.setBounds((cx - iw / 2).toInt(), (cy - ih / 2).toInt(), (cx + iw / 2).toInt(), (cy + ih / 2).toInt())
             s.icon.draw(canvas)
 
-            // Case badge (SPEC 3.3): 30dp accent circle, 3dp card border, bottom-right inside the ring.
+            // Case badge: a small accent case glyph at the bud's bottom-right, inside the ring.
+            // No circle behind it ([USER] 2026-09-26, trying it without the SPEC 3.3 disc).
             if (connected && inCase) {
                 val bx = cx + dp(20f) * scale
                 val by = cy + dp(20f) * scale
-                fillPaint.color = p.card
-                canvas.drawCircle(bx, by, dp(15f) * scale, fillPaint)
-                fillPaint.color = p.accent
-                canvas.drawCircle(bx, by, dp(12f) * scale, fillPaint)
-                val gw = dp(14f) * scale
+                val gw = dp(22f) * scale
                 val gh = gw * 400f / 496f
                 badgeIcon.setBounds((bx - gw / 2).toInt(), (by - gh / 2).toInt(), (bx + gw / 2).toInt(), (by + gh / 2).toInt())
                 badgeIcon.draw(canvas)

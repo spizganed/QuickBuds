@@ -43,7 +43,6 @@ class GestureActivity : Activity() {
 
     private var side: GestureSide = GestureSide.LEFT
 
-    private lateinit var budIcon: ImageView
     private lateinit var btnLeft: Button
     private lateinit var btnRight: Button
     private lateinit var gestureList: LinearLayout
@@ -58,25 +57,6 @@ class GestureActivity : Activity() {
         val root = SettingRowFactory.screen(this)
 
         root.addView(SettingRowFactory.title(this, R.string.gesture_title))
-
-        // --- 1. The selected bud's icon ---
-        //
-        // The two bud drawables are the same artwork this project already uses on
-        // the battery card and the Find screen (his own SVGs, copied verbatim), so
-        // the icon here cannot drift from the rest of the app.
-        //
-        // The box keeps the drawable's own tall ratio. A square box would letterbox
-        // it and shrink the ink — the same trap FindBudsActivity documents.
-        budIcon = ImageView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(72f), dp(112f)).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-                topMargin = dp(18f)
-                bottomMargin = dp(14f)
-            }
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            contentDescription = getString(R.string.gesture_bud_desc)
-        }
-        root.addView(budIcon)
 
         // --- 2. Left / Right selector ---
         //
@@ -257,14 +237,6 @@ class GestureActivity : Activity() {
      * whole reason the selector exists is that they differ.
      */
     private fun render() {
-        val iconTint = ThemeRes.color(this, R.attr.appColorTextPrimary)
-        budIcon.setImageDrawable(
-            ThemeRes.tint(
-                this,
-                if (side == GestureSide.LEFT) R.drawable.ic_bud_left else R.drawable.ic_bud_right,
-                iconTint
-            )
-        )
 
         paintSideButton(btnLeft, side == GestureSide.LEFT)
         paintSideButton(btnRight, side == GestureSide.RIGHT)

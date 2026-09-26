@@ -325,7 +325,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         tiles = findViewById<LinearLayout>(R.id.tiles)
         batteryCard = findViewById<LinearLayout>(R.id.batteryCard)
         ancRow = findViewById<LinearLayout>(R.id.ancRow)
-        applyTileLayout()
 
         connPill = findViewById<LinearLayout>(R.id.connPill)
         // No ripple: the pill sinks a little under the finger and springs back, like a real button.
@@ -527,8 +526,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     override fun onResume() {
         super.onResume()
-        // Settings › Home layout may have changed the tile order.
-        applyTileLayout()
+        // Settings › Home layout may have changed the row order.
+        if (featureRows.isNotEmpty()) layoutFeatureRows()
         // Settings › Developer › Dev tools button (default on).
         btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
                 .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
@@ -675,28 +674,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         else android.graphics.Typeface.DEFAULT
     }
 
-    /**
-     * Orders the home tiles and hides the hidden ones (SPEC section 4), from prefs written by the
-     * future Home layout screen. Tiles are identified by their root id's name; the battery and
-     * noise control tiles can never be hidden. Unknown or missing names fall back to XML order.
-     */
-    private fun applyTileLayout() {
-        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
-        val byName = (0 until tiles.childCount).map { tiles.getChildAt(it) }
-            .associateBy { resources.getResourceEntryName(it.id) }
-        val order = prefs.getString(KEY_TILE_ORDER, null)?.split(',').orEmpty().filter { it in byName }.distinct()
-        val hidden = prefs.getStringSet(KEY_TILE_HIDDEN, emptySet()).orEmpty() - LOCKED_TILES
-        tiles.removeAllViews()
-        var firstShown = true
-        (order + (byName.keys - order.toSet())).forEach { name ->
-            val tile = byName.getValue(name)
-            tile.visibility = if (name in hidden) View.GONE else View.VISIBLE
-            (tile.layoutParams as? LinearLayout.LayoutParams)?.topMargin =
-                if (firstShown || name in hidden) 0 else ThemeRes.dp(this, 16f)
-            if (name !in hidden) firstShown = false
-            tiles.addView(tile)
-        }
-    }
 
     /**
      * Which circle a stored mode lights.
@@ -811,7 +788,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * Every row through here must be honest about what it does.
      */
     private fun buildFeatureRows() {
-        featureList.removeAllViews()
+        featureRows.clear()
         gameSwitch = null
         hiresSwitch = null
         hiresSubtitle = null
@@ -828,7 +805,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             if (syncingFeatures) return@setOnCheckedChangeListener
             if (isChecked != gameModeOn) toggleGameMode(isChecked)
         }
-        addRow(
+        addRow("game", 
             SettingRowFactory.build(
                 this, R.drawable.ic_bolt, R.string.row_game_title, R.string.row_game_sub, game
             ) { game.performClick() }
@@ -860,7 +837,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             this, R.drawable.ic_hires, R.string.row_hires_title, R.string.row_hires_sub_off, hires
         ) { hires.performClick() }
         hiresSubtitle = hiresRow.findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)
-        addRow(hiresRow)
+        addRow("hires", hiresRow)
 
         val spatial = SettingRowFactory.buildSwitch(this, false)
         spatialSwitch = spatial
@@ -878,30 +855,40 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                 manager.setFeatures(OpoProtocol.FEATURE_SPATIAL_SOUND to isChecked)
             }
         }
-        addRow(
+        addRow("spatial", 
             SettingRowFactory.build(
                 this, R.drawable.ic_spatial, R.string.row_spatial_title, R.string.row_spatial_sub, spatial
             ) { spatial.performClick() }
         )
 
         // --- 4. Equalizer ---
-        addRow(
+        addRow("eq", 
             SettingRowFactory.build(
                 this, R.drawable.ic_equalizer, R.string.row_eq_title, R.string.row_eq_sub,
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, EqActivity::class.java)) }
         )
 
-        // --- 5. Earbud settings: gestures, wear detection, find, alert volume (option A, [USER] 2026-09-25) ---
-        // Keeps this card to what changes the sound. App update moved to the cog.
+        // --- 5. Dual connection, on the home screen too ([USER] 2026-09-26) ---
         addRow(
+            "dual",
             SettingRowFactory.build(
-                this, R.drawable.ic_earbud, R.string.row_earbuds_title, R.string.row_earbuds_sub,
+                this, R.drawable.ic_devices, R.string.row_dual_title, R.string.row_dual_sub,
+                SettingRowFactory.buildChevron(this)
+            ) { startActivity(Intent(this, DualDeviceActivity::class.java)) }
+        )
+
+        // --- 6. Earbud settings: gestures, wear detection, find, alert volume (option A, [USER] 2026-09-25) ---
+        // Keeps this card to what changes the sound. App update moved to the cog.
+        addRow("earbuds", 
+            SettingRowFactory.build(
+                this, R.drawable.ic_bud_left, R.string.row_earbuds_title, R.string.row_earbuds_sub,
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, EarbudSettingsActivity::class.java)) }
         )
 
         if (::manager.isInitialized) onFeatureStates(manager.featureStates)
+        layoutFeatureRows()
     }
 
     /** True while a switch is being set from code, so its listener does not send a write. */
@@ -936,12 +923,29 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         }
     }
 
-    /** Adds a row plus a divider, skipping the divider after the final row. */
-    private fun addRow(row: View) {
-        if (featureList.childCount > 0) {
-            featureList.addView(SettingRowFactory.buildDivider(this))
+    /** The sound-settings rows by key, in build (default) order; laid out by [layoutFeatureRows]. */
+    private val featureRows = LinkedHashMap<String, View>()
+
+    private fun addRow(key: String, row: View) {
+        featureRows[key] = row
+    }
+
+    /**
+     * Places the rows in the order and visibility set in Settings › Home layout
+     * ([KEY_ROW_ORDER] / [KEY_ROW_HIDDEN]); unknown or new keys fall back to build order.
+     * The tile disappears when every row is hidden.
+     */
+    private fun layoutFeatureRows() {
+        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
+        val hidden = prefs.getStringSet(KEY_ROW_HIDDEN, emptySet()).orEmpty()
+        featureList.removeAllViews()
+        for (key in rowOrder(prefs, featureRows.keys.toList())) {
+            val row = featureRows[key] ?: continue
+            (row.parent as? android.view.ViewGroup)?.removeView(row)
+            if (key !in hidden) SettingRowFactory.addRow(featureList, row)
         }
-        featureList.addView(row)
+        featureList.visibility = if (featureList.childCount == 0) View.GONE else View.VISIBLE
+        setEnabledDeep(featureList, connectedUi != false)
     }
 
     // ==================== Permissions / connection ====================
@@ -1113,10 +1117,15 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         )
 
         private const val KEY_ANC_LEVEL = "homeAncLevel"
-        /** Home tile order / hidden set, by tile root id name (SPEC section 4). */
-        const val KEY_TILE_ORDER = "homeTileOrder"
-        const val KEY_TILE_HIDDEN = "homeTileHidden"
-        val LOCKED_TILES = setOf("batteryCard", "ancRow")
+        /** Home screen sound-settings rows: order and hidden set, by row key (Settings › Home layout). */
+        const val KEY_ROW_ORDER = "homeRowOrder"
+        const val KEY_ROW_HIDDEN = "homeRowHidden"
+
+        /** Saved row order, completed with any key it does not name, in [defaults] order. */
+        fun rowOrder(prefs: android.content.SharedPreferences, defaults: List<String>): List<String> {
+            val saved = prefs.getString(KEY_ROW_ORDER, null)?.split(',').orEmpty().filter { it in defaults }
+            return (saved + defaults.filter { it !in saved }).distinct()
+        }
 
         /**
          * The last report MainActivity took of ITSELF, while resumed.
