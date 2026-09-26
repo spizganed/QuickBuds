@@ -28,19 +28,11 @@ android {
         // THE ONLY PLACE the version is declared. It used to live on <application> in the manifest,
         // where Android ignores it: every PC build up to 2026-09-23 shipped with NO version, which
         // UpdateActivity (reads PackageManager) and bundletool ("Version code not found") both hit.
-        versionCode = 4
-        versionName = "2.1.0"
+        versionCode = 5
+        versionName = "3.0.0"
     }
 
     signingConfigs {
-        // Committed debug key (cloud sessions): every session builds the same signature, so a test
-        // APK installs over the previous one. Standard debug credentials, not a secret.
-        getByName("debug") {
-            storeFile = rootProject.file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
         if (!keyProps.isEmpty) create("release") {
             storeFile = rootProject.file(keyProps.getProperty("storeFile"))
             storePassword = keyProps.getProperty("storePassword")
@@ -50,12 +42,6 @@ android {
     }
 
     buildTypes {
-        // Separate package, so the debug build installs next to the release app.
-        getByName("debug") {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-            signingConfig = signingConfigs.getByName("debug")
-        }
         getByName("release") {
             signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = false

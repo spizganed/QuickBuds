@@ -67,10 +67,11 @@ Plain desktop Gradle.
 No release key exists in the cloud, so the PC signing rules above can't apply there.
 
 - SDK is at /opt/android-sdk. Create local.properties with `sdk.dir=/opt/android-sdk` if missing (never commit it).
-- **Step 0, before any UI work:** make debug builds installable next to the release app:
-  - debug buildType: `applicationIdSuffix = ".debug"`, `versionNameSuffix = "-debug"`
-  - sign debug with a committed `debug.keystore` at the repo root (standard debug credentials: storepass/keypass `android`, alias `androiddebugkey`), so every cloud session produces the same signature
-  - make sure every manifest authority (FileProvider etc.) uses `${applicationId}`, so both apps can be installed
+- **Step 0, before any UI work:** on the cloud branch only, make debug builds installable next to the release app:
+  debug buildType `applicationIdSuffix = ".debug"`, `versionNameSuffix = "-debug"`, signed with a committed
+  `debug.keystore` (standard debug credentials: storepass/keypass `android`, alias `androiddebugkey`). Manifest
+  authorities already use `${applicationId}`. **Main does not carry this** ([USER] 2026-09-27): drop the suffix,
+  the signing block and `debug.keystore` before merging, together with `apk/`.
 - Verify each step with `./gradlew assembleDebug`.
 - **Delivering a test APK:** after each finished step, copy `app/build/outputs/apk/debug/app-debug.apk` to `apk/QuickBuds-debug.apk` (overwrite), commit it together with the step, and ask before pushing, as always. `apk/` is test-only: delete it before any merge into main.
 - The debug app is a separate app: he force-stops the release app while testing it, since both would fight over the RFCOMM link.
@@ -162,7 +163,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 4 / versionName 2.1.0.**
+**Current: versionCode 5 / versionName 3.0.0.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
