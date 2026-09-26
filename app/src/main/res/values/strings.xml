@@ -8,7 +8,12 @@
     <string name="widget_anc_label">ANC</string>
     <!-- Widget picker label. Without a label on the provider receiver some launchers
          show a blank or unnamed entry, or fail the entry outright. -->
-    <string name="widget_name">Buds Quick Settings</string>
+    <string name="widget_name" translatable="false">QuickBuds</string>
+    <string name="widget_small_name">QuickBuds compact</string>
+    <string name="widget_strip_name">QuickBuds bar</string>
+    <string name="widget_short_low">L</string>
+    <string name="widget_short_med">M</string>
+    <string name="widget_short_high">H</string>
     <string name="widget_game_label">Game</string>
     <string name="widget_buds_desc">Earbuds</string>
     <string name="widget_battery_left">L</string>

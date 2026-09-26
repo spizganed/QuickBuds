@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 4x2 full widget. No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
+<!-- 4x1 bar widget. No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
      updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
-    android:minHeight="160dp"
+    android:minHeight="50dp"
     android:minResizeWidth="200dp"
-    android:minResizeHeight="130dp"
+    android:minResizeHeight="50dp"
     android:targetCellWidth="4"
-    android:targetCellHeight="2"
+    android:targetCellHeight="1"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/widget_full"
+    android:initialLayout="@layout/widget_strip"
     android:widgetCategory="home_screen" />

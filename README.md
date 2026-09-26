@@ -27,7 +27,8 @@ home-screen widget.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
 - **Wear detection**, **Dual connection**, **Find my earbuds** and the earbuds' prompt volume.
-- **Home-screen widget** with battery, noise control and Low latency.
+- **Home-screen widgets** in three sizes (2×2, 4×2, 4×1) with battery, noise control and Low latency,
+  in your theme's colours.
 - **Themes:** OLED Black, Classic Dark and White, your own accent colour, and up to 3 custom colour
   presets. Reorder or hide the home screen rows.
 - **Update check** from inside the app, straight from GitHub releases.

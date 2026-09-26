@@ -2,7 +2,11 @@
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
     <string name="widget_anc_label">ANC</string>
-    <string name="widget_name">ตั้งค่าด่วนหูฟัง</string>
+    <string name="widget_small_name">QuickBuds แบบย่อ</string>
+    <string name="widget_strip_name">QuickBuds แถบ</string>
+    <string name="widget_short_low">ต่ำ</string>
+    <string name="widget_short_med">กลาง</string>
+    <string name="widget_short_high">สูง</string>
     <string name="widget_game_label">เกม</string>
     <string name="widget_buds_desc">หูฟัง</string>
     <string name="widget_battery_left">ซ</string>

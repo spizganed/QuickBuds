@@ -2,7 +2,11 @@
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
     <string name="widget_anc_label">降噪</string>
-    <string name="widget_name">耳机快捷设置</string>
+    <string name="widget_small_name">QuickBuds 紧凑</string>
+    <string name="widget_strip_name">QuickBuds 横条</string>
+    <string name="widget_short_low">低</string>
+    <string name="widget_short_med">中</string>
+    <string name="widget_short_high">高</string>
     <string name="widget_game_label">游戏</string>
     <string name="widget_buds_desc">耳机</string>
     <string name="widget_battery_left">左</string>

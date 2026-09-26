@@ -48,7 +48,8 @@ arrows and a hide switch, not drag and drop).
      layout idea only; the look follows our own UI (cards, red accent, drawn controls).
    - This means reworking a lot of UI code: every colour has to come from the active palette, not
      from fixed theme resources.
-5. **New widget, rebuilt from scratch.** The old logic and UI are outdated. First a **2×2** (bud
+5. **New widget, rebuilt from scratch.** Built 2026-09-26 (2x2 compact, 4x2 full, 4x1 bar), awaiting
+   his test. The old logic and UI are outdated. First a **2×2** (bud
    icons, the case if it fits, the battery rings from the main screen, ANC Off / Transparency /
    Low / Medium / High), styled like the main screen. Then **2 more sizes** with their own layouts,
    which he will judge. All of them use the in-app colour scheme. Per-widget settings screens are

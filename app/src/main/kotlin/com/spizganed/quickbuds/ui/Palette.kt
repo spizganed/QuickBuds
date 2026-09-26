@@ -126,6 +126,7 @@ object PaletteStore {
     fun setActive(c: Context, id: String) {
         prefs(c).edit().putString(KEY_ACTIVE, id).apply()
         ThemeRes.invalidate()
+        com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(c)
     }
 
     /** The active preset. A dangling custom id (deleted preset) falls back to OLED Black. */
@@ -159,6 +160,7 @@ object PaletteStore {
         val styleAccent = builtIn(c, id).accent
         if (color != null && color != styleAccent) prefs(c).edit().putInt(key, color).apply()
         ThemeRes.invalidate()
+        com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(c)
     }
 
     fun custom(c: Context): List<Palette> {
@@ -191,5 +193,6 @@ object PaletteStore {
         list.forEach { arr.put(it.toJson()) }
         prefs(c).edit().putString(KEY_CUSTOM, arr.toString()).apply()
         ThemeRes.invalidate()
+        com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(c)
     }
 }

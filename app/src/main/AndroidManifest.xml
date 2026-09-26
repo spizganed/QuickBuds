@@ -193,6 +193,30 @@
         </receiver>
 
         <receiver
+            android:name=".widget.SmallWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_small_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_small_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.StripWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_strip_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_strip_info" />
+        </receiver>
+
+        <receiver
             android:name=".widget.WidgetActionReceiver"
             android:exported="true">
             <intent-filter>

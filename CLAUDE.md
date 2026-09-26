@@ -377,7 +377,18 @@ listener also honours, or the neutral state would send a write) and repainted fr
 appends to a bounded in-memory tail. See the note above about not putting user-visible output on a
 packet-listener path.
 
-## Widget flow
+## Widgets (rebuilt 2026-09-26)
+
+Three sizes in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`): **4x2 full**
+(`AncWidgetProvider`, old class name kept so placed widgets survive; `widget_full.xml`), **2x2 compact**
+(`SmallWidgetProvider`, `widget_small.xml`) and **4x1 bar** (`StripWidgetProvider`, `widget_strip.xml`; its chip
+cycles Off -> ANC (last home level) -> Transparency). All use the ACTIVE app palette: white shapes tinted with
+`ImageView.setColorFilter` (every API level) and ring bitmaps drawn per update, so a palette change calls
+`refreshAll` (PaletteStore does). Disconnected: empty state, every tap opens the app. A new id in a widget
+layout needs its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Dev Tools'
+widget logic check builds and parcels all three.
+
+### Widget tap flow
 
 ```
 Widget tap
@@ -402,9 +413,7 @@ a shared one hung.
 - **The case icon keeps its LED dot**, and the lid cut stays full width — no hinge bulge or opening.
 - **Icons keep their SVG's true ratio** (buds 176x272, case 496x400). `BudsStatusView` fits each into
   its ring by that ratio; the widget still uses its own sized boxes.
-- The 2026 icon work is done for the app and the launcher; **the widget preview
-  (`drawable/widget_preview_buds.xml`) is a separate copy** and must be updated alongside
-  `ic_launcher_foreground.xml`.
+- The 2026 icon work is done for the app and the launcher.
 
 ## Repo hygiene
 
