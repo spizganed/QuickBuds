@@ -128,7 +128,7 @@ class PresetEditActivity : Activity() {
         setStroke(dp(1f), p.outline)
     }
 
-    private fun hex(color: Int) = String.format(Locale.US, "#%06X", color and 0xFFFFFF)
+    private fun hex(color: Int) = ColorPickerView.hex(color)
 
     private fun colorRow(i: Int): View {
         val color = preset.tokens[i]
@@ -198,82 +198,15 @@ class PresetEditActivity : Activity() {
         return getString(R.string.contrast_warning, String.format(Locale.US, "%.1f", ratio), getString(surface))
     }
 
-    private fun picker(i: Int): View {
-        val color = preset.tokens[i]
-        val hsv = FloatArray(3).also { Color.colorToHSV(color, it) }
-        // A grey has no hue to move; give the slider enough saturation to be visible.
-        val sat = if (hsv[1] < 0.1f) 0.5f else hsv[1]
-        val colorAt = { hue: Float -> Color.HSVToColor(floatArrayOf(hue, sat, hsv[2])) }
-
-        val column = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16f), dp(4f), dp(16f), dp(16f))
-        }
-        column.addView(HueSliderView(this).apply {
-            hue = hsv[0]
-            thumbColor = color
-            contentDescription = getString(R.string.preset_hue)
-            onChange = { h ->
-                val c = colorAt(h)
-                thumbColor = c
-                preview.palette = preset.withToken(i, c)
-                liveSwatch?.background = swatchDrawable(c)
-                liveHex?.text = hex(c)
-            }
-            onRelease = { h -> commit(i, colorAt(h), this) }
-        })
-
-        val bottom = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(12f), 0, 0)
-        }
-        bottom.addView(EditText(this).apply {
-            setText(hex(color))
-            setTextColor(p.text)
-            textSize = 15f
-            fontFeatureSettings = "tnum"
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-            isSingleLine = true
-            filters = arrayOf(InputFilter.LengthFilter(7))
-            imeOptions = EditorInfo.IME_ACTION_DONE
-            contentDescription = getString(R.string.preset_hex)
-            background = ThemeRes.card(this@PresetEditActivity, 14f).apply { setColor(p.background) }
-            setPadding(dp(14f), 0, dp(14f), 0)
-            layoutParams = LinearLayout.LayoutParams(dp(112f), dp(44f))
-            fun apply(v: TextView) {
-                val parsed = parseHex(v.text.toString())
-                if (parsed == null) v.text = hex(preset.tokens[i]) else if (parsed != preset.tokens[i]) commit(i, parsed, v)
-            }
-            setOnEditorActionListener { v, action, _ ->
-                if (action == EditorInfo.IME_ACTION_DONE) { hideKeyboard(v); apply(v) }
-                false
-            }
-            setOnFocusChangeListener { v, focused -> if (!focused) apply(v as TextView) }
-        })
-        bottom.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        listOf(R.color.swatch_red, R.color.swatch_orange, R.color.swatch_green, R.color.swatch_blue, R.color.swatch_purple)
-            .forEachIndexed { k, res ->
-                val c = getColor(res)
-                bottom.addView(View(this).apply {
-                    background = GradientDrawable().apply {
-                        shape = GradientDrawable.OVAL
-                        setColor(c)
-                        if (c == color) setStroke(dp(2f), p.text)
-                    }
-                    layoutParams = LinearLayout.LayoutParams(dp(30f), dp(30f)).apply { if (k > 0) marginStart = dp(8f) }
-                    setOnClickListener { commit(i, c, it) }
-                })
-            }
-        column.addView(bottom)
-        return column
-    }
-
-    private fun parseHex(s: String): Int? {
-        val t = s.trim().removePrefix("#")
-        if (t.length != 6) return null
-        return t.toIntOrNull(16)?.let { it or 0xFF000000.toInt() }
-    }
+    private fun picker(i: Int): View = ColorPickerView(
+        this, preset.tokens[i],
+        onChange = { c ->
+            preview.palette = preset.withToken(i, c)
+            liveSwatch?.background = swatchDrawable(c)
+            liveHex?.text = hex(c)
+        },
+        onCommit = { c, v -> commit(i, c, v) }
+    ).apply { setPadding(dp(16f), dp(4f), dp(16f), dp(16f)) }
 
     /** One committed colour change: save, repaint the preview and the rows (warnings included). */
     private fun commit(i: Int, color: Int, v: View) {

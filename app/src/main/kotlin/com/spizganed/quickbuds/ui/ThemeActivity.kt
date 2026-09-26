@@ -25,14 +25,26 @@ class ThemeActivity : Activity() {
 
     private lateinit var root: LinearLayout
 
+    /** The built-in accent picker is open; kept across the recreate() a commit triggers. */
+    private var accentOpen = false
+
+    /** The active built-in tile, repainted live while the accent picker drags. */
+    private var activeTile: PalettePreviewView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeRes.select(this)
         super.onCreate(savedInstanceState)
+        accentOpen = savedInstanceState?.getBoolean(KEY_ACCENT_OPEN) ?: false
         root = SettingRowFactory.screen(this)
         setContentView(ScrollView(this).apply {
             setBackgroundColor(ThemeRes.color(this@ThemeActivity, R.attr.appColorBg))
             addView(root)
         })
+    }
+
+    override fun onSaveInstanceState(out: Bundle) {
+        super.onSaveInstanceState(out)
+        out.putBoolean(KEY_ACCENT_OPEN, accentOpen)
     }
 
     /** Rebuilt on every resume: the editor may have renamed, added or deleted a preset. */
@@ -53,6 +65,7 @@ class ThemeActivity : Activity() {
         val p = ThemeRes.palette(this)
         val activeId = PaletteStore.activeId(this)
         root.removeAllViews()
+        activeTile = null
         root.addView(SettingRowFactory.title(this, R.string.theme_title))
 
         // --- Built-in: 3-column grid of preview tiles ---
@@ -77,6 +90,7 @@ class ThemeActivity : Activity() {
             frame.addView(PalettePreviewView(this, detailed = false).apply {
                 palette = preset
                 active = isActive
+                if (isActive) activeTile = this
             })
             // Active: a 24dp accent check badge overlapping the top-right corner.
             if (isActive) frame.addView(ImageView(this).apply {
@@ -99,6 +113,48 @@ class ThemeActivity : Activity() {
             grid.addView(column)
         }
         root.addView(grid)
+
+        // --- Accent of the applied built-in preset ([USER] 2026-09-26) ---
+        val active = ThemeRes.palette(this)
+        if (active.builtIn) {
+            val accentCard = SettingRowFactory.card(this).apply {
+                (layoutParams as LinearLayout.LayoutParams).topMargin = dp(18f)
+            }
+            val swatch = View(this).apply {
+                background = ThemeRes.shape(this@ThemeActivity, active.accent, p.outline, 15f)
+                layoutParams = LinearLayout.LayoutParams(dp(30f), dp(30f))
+            }
+            val chevron = ImageView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
+                setImageDrawable(ThemeRes.tint(
+                    this@ThemeActivity, if (accentOpen) R.drawable.ic_chevron_down else R.drawable.ic_chevron_right, p.accent
+                ))
+            }
+            val row = SettingRowFactory.build(
+                this, 0, R.string.theme_accent, 0, chevron, leading = swatch, minHeightDp = 62f
+            ) { accentOpen = !accentOpen; build() }
+            val sub = SettingRowFactory.subtitle(this, row)
+            sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(active.accent))
+            accentCard.addView(row)
+            if (accentOpen) accentCard.addView(ColorPickerView(
+                this, active.accent,
+                onChange = { c ->
+                    swatch.background = ThemeRes.shape(this, c, p.outline, 15f)
+                    sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(c))
+                    activeTile?.palette = active.copy(accent = c)
+                },
+                onCommit = { c, v ->
+                    Haptics.commit(v)
+                    PaletteStore.setAccentOverride(this, active.id, c)
+                    // The whole app takes the new accent; this screen rebuilds with the picker open.
+                    v.post { recreate() }
+                }
+            ).apply {
+                setPadding(dp(16f), dp(4f), dp(16f), dp(16f))
+                accentCard.background = ThemeRes.card(this@ThemeActivity).apply { setColor(p.expanded) }
+            })
+            root.addView(accentCard)
+        }
 
         // --- Custom · N of 3 ---
         val custom = PaletteStore.custom(this)
@@ -153,6 +209,10 @@ class ThemeActivity : Activity() {
 
     private fun edit(id: String) {
         startActivity(Intent(this, PresetEditActivity::class.java).putExtra(PresetEditActivity.EXTRA_ID, id))
+    }
+
+    private companion object {
+        const val KEY_ACCENT_OPEN = "accentOpen"
     }
 
     /** 3x2 grid of a preset's six colours, 42dp wide, each dot outlined so dark dots stay visible. */

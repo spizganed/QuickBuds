@@ -109,8 +109,13 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   `buildFeatureRows()` AND in `HomeLayoutActivity.ROWS`.
 - **Presets (step 6)**: `ThemeActivity` (3.7, rebuilt in `onResume`) and `PresetEditActivity` (3.8).
   `PalettePreviewView` draws a mini home in ANY palette (tile or detailed). Colour edits update the preview
-  live and save on commit (hue slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
-  then, never mid-drag. Quick swatches are `@color/swatch_*` (picker choices, not app colours). Contrast
+  live and save on commit (slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
+  then, never mid-drag. The picker is `ColorPickerView`: hue, saturation and brightness `ColorSliderView`s
+  (white, black and greys need the last two, [USER] 2026-09-26), hex field, quick swatches.
+- **Built-in accent** ([USER] 2026-09-26): Theme & colors shows an "Accent color" row under the built-in
+  tiles while a built-in is active. `PaletteStore.setAccentOverride` stores it per preset
+  (`paletteAccent_<id>`; the style's own red removes it) and `builtIn()` applies it. A built-in with an
+  override goes through the custom path in `ThemeRes.select` (its own style + `PaletteFactory`). Quick swatches are `@color/swatch_*` (picker choices, not app colours). Contrast
   warnings use `Palette.contrast` (WCAG 2) and never block saving. This is the first path that makes
   `ThemeRes.PaletteFactory` run, so a custom preset is where an inflation bug would show first.
 - **Haptics (step 7)**: `Haptics.commit(view)` (CONFIRM, VIRTUAL_KEY below API 30, gated on `haptics`). Hooked

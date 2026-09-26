@@ -260,6 +260,8 @@
     <string name="about_body">Version %1$s\nLicensed under the GNU GPL v3.0.\ngithub.com/spizganed/QuickBuds</string>
     <string name="about_github">GitHub</string>
     <string name="theme_builtin">Built-in</string>
+    <string name="theme_accent">Accent color</string>
+    <string name="theme_accent_sub">%1$s · %2$s</string>
     <string name="theme_custom">Custom · %1$d of %2$d</string>
     <string name="theme_new">New preset</string>
     <string name="theme_new_sub">Starts from the current theme · %1$d slots left</string>
@@ -285,5 +287,7 @@
     <string name="token_outline">Outline</string>
     <string name="contrast_warning">%1$s:1 on %2$s · may be hard to read</string>
     <string name="preset_hue">Hue</string>
+    <string name="preset_saturation">Saturation</string>
+    <string name="preset_brightness">Brightness</string>
     <string name="preset_hex">Hex colour</string>
 </resources>
