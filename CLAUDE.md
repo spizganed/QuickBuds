@@ -344,7 +344,7 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom
    sheet and the caption. The ANC segment applies the last level seen (`homeAncLevel`, default Medium).
 3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio, EQ,
-   **Dual connection** (also still in the hub) and **Earbud settings** (`ic_bud_left`; the SPEC's
+   **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_bud_left`; the SPEC's
    `ic_earbud` rendered broken and was dropped), which opens `EarbudSettingsActivity`, the hub for the buds
    themselves. New firmware settings go in the hub, not on the main card.
 
