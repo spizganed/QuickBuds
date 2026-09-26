@@ -164,17 +164,6 @@
             android:stopWithTask="false"
             android:exported="false" />
 
-        <service
-            android:name=".ui.AncTileService"
-            android:exported="true"
-            android:icon="@drawable/ic_anc_tile"
-            android:label="QuickBuds ANC"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
-
         <receiver
             android:name=".bluetooth.KeepAliveReceiver"
             android:exported="true">

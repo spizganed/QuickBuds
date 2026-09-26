@@ -23,8 +23,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 
 ## Controls
 
-- ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen, widget and Quick
-  Settings tile. Changes made on the buds show up in the app.
+- ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen and widget.
+  Changes made on the buds show up in the app.
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
 - Dual connection: switch plus connected-device list in Earbud settings, HeyMelody's exact write

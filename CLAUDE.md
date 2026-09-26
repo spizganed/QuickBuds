@@ -229,7 +229,7 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 `OpoProtocol` builders · `AncEventParser` (buds→app names) · `LogDecoder` (SET-table log names) ·
 `BudsConnectionManager` (`sendAnc*`, `lastAncLevelSent`) · `BudsService` routing ·
 `WidgetStateStore` (state + `*IsActive()`) · `AncWidgetProvider` segments ·
-`WidgetActionReceiver` · `MainActivity` circles · `AncTileService`.
+`WidgetActionReceiver` · `MainActivity` segments. (The Quick Settings tile was removed, [USER] 2026-09-26.)
 
 ## UI conventions and traps
 
