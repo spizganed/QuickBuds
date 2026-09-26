@@ -33,6 +33,14 @@ android {
     }
 
     signingConfigs {
+        // Committed debug key (cloud sessions): every session builds the same signature, so a test
+        // APK installs over the previous one. Standard debug credentials, not a secret.
+        getByName("debug") {
+            storeFile = rootProject.file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         if (!keyProps.isEmpty) create("release") {
             storeFile = rootProject.file(keyProps.getProperty("storeFile"))
             storePassword = keyProps.getProperty("storePassword")
@@ -42,6 +50,12 @@ android {
     }
 
     buildTypes {
+        // Separate package, so the debug build installs next to the release app.
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            signingConfig = signingConfigs.getByName("debug")
+        }
         getByName("release") {
             signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = false
