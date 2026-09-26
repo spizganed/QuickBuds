@@ -88,6 +88,9 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   which swaps `?attr/appColor*` in inflated XML. Shape drawables are built in code (`ThemeRes.card/chip/iconButton/sheet`);
   do not add XML shapes with `?attr` colours, the factory cannot see inside them. `QuickBudsApp` recreates any
   activity whose preset changed, on resume.
+- **Compact sizing ([USER] 2026-09-26):** everything ~10-15% shorter than SPEC so home fits without scrolling:
+  rows 62dp (SPEC 72), colour rows 54dp, rings 90dp, segments 56dp, level pills 36dp, screen padding 16dp,
+  tile gaps 12dp. Touch targets stay >= 44dp (icon buttons, status chip).
 - Decisions ([USER] 2026-09-26): no Material Components (plain Switch/Dialog/EditText, custom rings); the
   status chip follows SPEC (accent dot when connected, grey ring + grey "Connect" when not); the battery glyphs keep
   their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; About is a simple
@@ -335,10 +338,10 @@ over a `ScrollView` named `mainScroll` holding `tiles`. Each tile is an include 
 its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList` (tile_settings), in that
 fixed order. The rows inside `featureList` are ordered and hidden one by one (see Home layout above).
 
-1. `batteryCard` — `BudsStatusView`: three 104dp rings (outline track, accent arc from 12 o'clock),
-   glyphs at their SVG ratio inside 42x56 / 58x42 boxes, percentage 24sp (red at <= 20%), label
-   "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case adds a small accent case glyph
-   at the bud's bottom-right, with no disc behind it ([USER] 2026-09-26).
+1. `batteryCard` — `BudsStatusView`: three 90dp rings (outline track, accent arc from 12 o'clock),
+   glyphs at their SVG ratio inside 42x56 / 58x42 boxes (scaled with the ring), percentage 21sp (red at
+   <= 20%), label "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case is only the grey
+   glyph and the label; the SPEC's case badge was tried and removed ([USER] 2026-09-26).
    Disconnected: same size, track only, disabled glyphs, "—", bare names.
 2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
    neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom

@@ -200,7 +200,7 @@ object ThemeRes {
     }
 
     /** SPEC screen padding (16dp sides, 20dp top/bottom) plus the system bar insets. */
-    fun screenPadding(view: View, sideDp: Float = 16f, vertDp: Float = 20f) {
+    fun screenPadding(view: View, sideDp: Float = 16f, vertDp: Float = 16f) {
         val side = dp(view.context, sideDp)
         val vert = dp(view.context, vertDp)
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
