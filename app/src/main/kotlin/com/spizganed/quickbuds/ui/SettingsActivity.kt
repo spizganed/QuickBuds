@@ -43,9 +43,9 @@ class SettingsActivity : Activity() {
             startActivity(Intent(this, ThemeActivity::class.java))
         }
         themeSubtitle = SettingRowFactory.subtitle(this, themeRow)
-        // Home layout has no screen in this pass ([USER] 2026-09-26): shown, disabled.
-        val layoutRow = link(R.drawable.ic_layout, R.string.settings_layout_title, R.string.settings_layout_sub) {}
-            .apply { isEnabled = false; alpha = 0.35f }
+        val layoutRow = link(R.drawable.ic_layout, R.string.settings_layout_title, R.string.settings_layout_sub) {
+            startActivity(Intent(this, HomeLayoutActivity::class.java))
+        }
         section(R.string.settings_appearance, themeRow, layoutRow)
 
         section(

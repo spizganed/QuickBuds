@@ -246,6 +246,13 @@
     <string name="settings_app">App</string>
     <string name="settings_layout_title">Home layout</string>
     <string name="settings_layout_sub">Reorder and hide tiles</string>
+    <string name="layout_tiles">Tiles</string>
+    <string name="layout_tile_battery">Battery</string>
+    <string name="layout_tile_settings">Sound settings</string>
+    <string name="layout_locked">Always shown</string>
+    <string name="layout_move_up">Move up</string>
+    <string name="layout_move_down">Move down</string>
+    <string name="layout_footer">The battery and noise control tiles cannot be hidden.</string>
     <string name="settings_haptics_title">Haptic feedback</string>
     <string name="settings_haptics_sub">Vibrate when a setting changes</string>
     <string name="settings_devtools_title">Dev tools button</string>

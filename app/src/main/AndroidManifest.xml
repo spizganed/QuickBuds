@@ -121,6 +121,11 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".ui.HomeLayoutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".ui.ThemeActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

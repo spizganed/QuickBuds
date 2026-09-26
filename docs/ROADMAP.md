@@ -23,8 +23,8 @@ Each step is done before the next one starts.
 test:** covers step 2 (Settings screen, with the Dev Tools button switch) and the SPEC's version of step 4
 (OLED Black / Classic Dark / White, up to 3 custom presets with hue slider, hex field and quick swatches,
 contrast warnings). Still open from step 4: auto-detect, changing the accent of a built-in preset, the
-saturation/brightness square and recent colours. Step 3: the home tiles are reorderable and hideable
-from prefs (`homeTileOrder` / `homeTileHidden`), but the Edit layout screen is not built.
+saturation/brightness square and recent colours. Step 3 is covered by Settings › Home layout (up/down
+arrows and a hide switch, not drag and drop).
 
 1. **Small fixes and small features.** Bugs and small items first. Start with a read of every doc
    for outdated information; he will report anything he finds on his own read after that.

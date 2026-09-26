@@ -90,8 +90,8 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   activity whose preset changed, on resume.
 - Decisions ([USER] 2026-09-26): no Material Components (plain Switch/Dialog/EditText, custom rings); the
   status chip follows SPEC (accent dot when connected, grey ring + grey "Connect" when not); the battery glyphs keep
-  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; Settings' Home layout
-  row is shown disabled and About is a simple dialog; the Dev tools button toggle defaults ON.
+  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; About is a simple
+  dialog; the Dev tools button toggle defaults ON.
 - **Shared components (step 2)** live in `SettingRowFactory`: `screen` (padding + system-bar insets; the app
   is edge to edge on target 35+), `title`, `sectionLabel`, `card`, `build` (row with 52dp trailing slot and an
   optional `value` before it), `buildSwitch`, `buildChevron`, `buildDivider`, `iconButton`. New screens use
@@ -101,7 +101,10 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   (`pendingImport` + `createCustomEq`); a long press on it still copies the preset as text.
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
   Prefs: `haptics` (default on) and `devToolsButton` (default on, read in `MainActivity.onResume`). About is a
-  `ConfirmDialog` with a GitHub button. Home layout is shown disabled.
+  `ConfirmDialog` with a GitHub button.
+- **Home layout** (`HomeLayoutActivity`, added after the SPEC steps at his request, 2026-09-26): up/down arrows
+  reorder the tiles, a switch hides the sound settings tile (battery and noise control are locked). Writes
+  `homeTileOrder` / `homeTileHidden`; `MainActivity.onResume` re-applies them.
 - **Presets (step 6)**: `ThemeActivity` (3.7, rebuilt in `onResume`) and `PresetEditActivity` (3.8).
   `PalettePreviewView` draws a mini home in ANY palette (tile or detailed). Colour edits update the preview
   live and save on commit (hue slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
@@ -324,8 +327,7 @@ Header (48dp: device name 19sp, status chip = Connect/Disconnect button, dev-too
 over a `ScrollView` named `mainScroll` holding `tiles`. Each tile is an include layout whose ROOT id is
 its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList` (tile_settings).
 `MainActivity.applyTileLayout()` orders and hides them from prefs `homeTileOrder` (comma list of those
-names) and `homeTileHidden`; `batteryCard` and `ancRow` can never be hidden. The Home layout screen that
-writes those prefs is not built yet.
+names) and `homeTileHidden`, written by `HomeLayoutActivity`; `batteryCard` and `ancRow` can never be hidden.
 
 1. `batteryCard` — `BudsStatusView`: three 104dp rings (outline track, accent arc from 12 o'clock),
    glyphs at their SVG ratio inside 42x56 / 58x42 boxes, percentage 24sp (red at <= 20%), label
