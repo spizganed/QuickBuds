@@ -91,7 +91,7 @@ class LevelSliderView(
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (dragging) {
                 dragging = false
                 glide()
-                if (e.actionMasked == MotionEvent.ACTION_UP) onRelease?.invoke(value)
+                if (e.actionMasked == MotionEvent.ACTION_UP) { onRelease?.invoke(value); Haptics.commit(this) }
             }
         }
         return true

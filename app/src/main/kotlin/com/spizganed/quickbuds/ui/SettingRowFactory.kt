@@ -144,7 +144,11 @@ object SettingRowFactory {
      */
     fun buildSwitch(context: Context, checked: Boolean): Switch {
         val (thumb, track) = ThemeRes.switchTints(context)
-        return Switch(context).apply {
+        // performClick runs only for a user tap (the switch itself or its row), never for a
+        // programmatic isChecked, so it is the one place a toggle's haptic belongs.
+        return object : Switch(context) {
+            override fun performClick(): Boolean = super.performClick().also { Haptics.commit(this) }
+        }.apply {
             isChecked = checked
             text = ""
             showText = false

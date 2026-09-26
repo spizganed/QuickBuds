@@ -102,6 +102,7 @@ class AncSegmentedView(
         if (e.actionMasked == MotionEvent.ACTION_UP) {
             val i = ((e.x / width) * labels.size).toInt().coerceIn(0, labels.size - 1)
             performClick()
+            Haptics.commit(this)
             onSegmentTapped?.invoke(i)
         }
         return true

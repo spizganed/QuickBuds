@@ -283,6 +283,7 @@ class BottomSheetDialog(private val activity: Activity) {
             isClickable = item.enabled
             if (item.enabled && item.onClick != null) {
                 setOnClickListener {
+                    Haptics.commit(it)
                     item.onClick.invoke()
                     if (dismissOnSelect) close()
                 }
