@@ -14,7 +14,7 @@
     attempt 2  setTheme() alone -> no crash, but colours never changed
     attempt 3  this: attributes resolve per theme, and setTheme() selects them
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <attr name="appColorBg" format="color" />
     <attr name="appColorCard" format="color" />
@@ -30,7 +30,7 @@
         <item name="android:navigationBarColor">?attr/appColorBg</item>
         <item name="android:colorAccent">?attr/appColorAccent</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
     </style>
 
     <!-- OLED Black (default). True black so the panel shuts pixels off. -->
@@ -62,7 +62,7 @@
         <item name="appColorTextSecondary">#6B6B70</item>
         <item name="appColorOutline">#DDDDE0</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
     <!-- Kept so a stale reference lands on OLED instead of the light platform default. -->
