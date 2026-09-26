@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.bluetooth.BudsService
 
 /**
  * Settings (design/SPEC.md 3.6), a full screen reached from the header cog. Same layout pattern
@@ -50,7 +51,8 @@ class SettingsActivity : Activity() {
 
         section(
             R.string.settings_general,
-            toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true)
+            toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
+            backgroundRow(prefs)
         )
         section(
             R.string.settings_developer,
@@ -75,6 +77,40 @@ class SettingsActivity : Activity() {
     }
 
     private var themeSubtitle: android.widget.TextView? = null
+
+    /**
+     * Background service switch. Turning it off asks first (the widget and the automatic reconnect
+     * need the service); Cancel puts the switch back without saving.
+     */
+    private fun backgroundRow(prefs: android.content.SharedPreferences): LinearLayout {
+        val key = BudsService.PREF_BACKGROUND
+        val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean(key, true))
+        var reverting = false
+        sw.setOnCheckedChangeListener { _, on ->
+            if (reverting) return@setOnCheckedChangeListener
+            if (on) {
+                // The service is still bound by the open main screen, so nothing needs restarting.
+                prefs.edit().putBoolean(key, true).apply()
+                return@setOnCheckedChangeListener
+            }
+            reverting = true
+            sw.isChecked = true
+            reverting = false
+            ConfirmDialog.show(
+                this, getString(R.string.settings_background_warn_title),
+                getString(R.string.settings_background_warn_body),
+                getString(R.string.settings_background_warn_action)
+            ) {
+                prefs.edit().putBoolean(key, false).apply()
+                reverting = true
+                sw.isChecked = false
+                reverting = false
+            }
+        }
+        return SettingRowFactory.build(
+            this, R.drawable.ic_power, R.string.settings_background_title, R.string.settings_background_sub, sw
+        ) { sw.performClick() }
+    }
 
     override fun onResume() {
         super.onResume()

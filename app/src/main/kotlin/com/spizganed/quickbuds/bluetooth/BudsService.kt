@@ -94,17 +94,12 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
         when (intent?.action) {
             ACTION_FORCE_CONNECT -> {
-                if (manager?.isConnected() == true) {
-                    statusLog("[SVC] FORCE_CONNECT ignored (already connected)")
-                } else {
-                    statusLog("[SVC] FORCE_CONNECT: connecting...")
-                    try {
-                        val device = getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
-                        if (device != null) manager?.connect(device, intent.getBooleanExtra(EXTRA_WITH_AUDIO, false))
-                    } catch (e: Exception) {
-                        statusLog("[SVC] Force connect failed: ${e.message}")
-                    }
-                }
+                val withAudio = intent.getBooleanExtra(EXTRA_WITH_AUDIO, false)
+                val delayMs = intent.getLongExtra(EXTRA_DELAY_MS, 0L)
+                // A delayed connect is the ACL fallback (KeepAliveReceiver): the audio-profile
+                // broadcast normally connects first, and then this finds us connected and does nothing.
+                if (delayMs > 0) handler.postDelayed({ forceConnect(withAudio) }, delayMs)
+                else forceConnect(withAudio)
             }
             ACTION_FORCE_DISCONNECT -> {
                 statusLog("[SVC] FORCE_DISCONNECT")
@@ -186,6 +181,20 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         return START_STICKY
     }
 
+    private fun forceConnect(withAudio: Boolean) {
+        if (manager?.isConnected() == true) {
+            statusLog("[SVC] FORCE_CONNECT ignored (already connected)")
+            return
+        }
+        statusLog("[SVC] FORCE_CONNECT: connecting...")
+        try {
+            val device = getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
+            if (device != null) manager?.connect(device, withAudio)
+        } catch (e: Exception) {
+            statusLog("[SVC] Force connect failed: ${e.message}")
+        }
+    }
+
     private fun executeWidgetCommand(widgetAction: String?, ancMode: String?, gameMode: Boolean) {
         val connected = manager?.isConnected() == true
         statusLog("<< executeWidgetCommand: action=$widgetAction (anc=$ancMode, game=$gameMode, connected=$connected)")
@@ -258,6 +267,10 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onDestroy() {
         statusLog("[SVC] onDestroy")
+        handler.removeCallbacksAndMessages(null)
+        // Close the RFCOMM link with the service: with the background service switched off,
+        // leaving the app stops the service, and a live socket must not outlive it.
+        try { manager?.disconnect() } catch (_: Exception) {}
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}
         try { wakeLock?.release() } catch (_: Exception) {}
@@ -413,6 +426,18 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         const val ACTION_SET_ON_CALL = "com.spizganed.quickbuds.SET_ON_CALL"
         const val ACTION_FIND_BUDS = "com.spizganed.quickbuds.FIND_BUDS"
         const val PREF_SMART_PAUSE = "smart_auto_pause"
+
+        /** Delay for a FORCE_CONNECT, in ms (the ACL fallback in KeepAliveReceiver). */
+        const val EXTRA_DELAY_MS = "delay_ms"
+
+        /**
+         * Settings › Background service (default on). Off: the service runs only while the app is
+         * open, nothing starts it from Bluetooth events, and the widget only works with the app open.
+         */
+        const val PREF_BACKGROUND = "backgroundService"
+
+        fun backgroundAllowed(c: Context) =
+            c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREF_BACKGROUND, true)
         const val EXTRA_FIND_ON = "find_on"
         const val EXTRA_ON_CALL_ROW = "on_call_row"   // "double_tap" | "long_hold"
         const val EXTRA_ON_CALL_ENABLED = "on_call_enabled"

@@ -103,8 +103,8 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   chip, EQ preset delete, and the preset delete in 3.8. EQ editor Duplicate reuses the import path
   (`pendingImport` + `createCustomEq`); a long press on it still copies the preset as text.
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
-  Prefs: `haptics` (default on) and `devToolsButton` (default on, read in `MainActivity.onResume`). About is a
-  `ConfirmDialog` with a GitHub button.
+  Prefs: `haptics` (default on), `backgroundService` (see Connection robustness) and `devToolsButton` (default
+  on, read in `MainActivity.onResume`).
 - **Home layout** (`HomeLayoutActivity`, [USER] 2026-09-26): the main screen's own layout in an edit mode.
   Battery and noise control show live but inert; each sound settings row (low latency, Hi-Res, 3D audio,
   EQ, Dual connection, Earbud settings) is held and dragged to move (platform `startDragAndDrop`, reordered
@@ -324,6 +324,15 @@ From `bluetooth/BudsConnectionManager.kt`.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
 - **A lid close is not a lost link.** The buds push all-zero wear just before dropping; the manager
   logs `Case closed` and does not retry (2026-09-25).
+- **Auto-connect follows the audio link (2026-09-26, `[USER]`-requested, awaiting his test).**
+  `KeepAliveReceiver` connects RFCOMM when A2DP or HFP reports `STATE_CONNECTED`, not on the bare ACL
+  link (the buds are not ready then, which meant a failed attempt and 5 s retries). ACL still sends a
+  FORCE_CONNECT with `EXTRA_DELAY_MS` = 8 s as a fallback; it does nothing if already connected. The
+  manager's 3x5 s retry stays as the failure fallback. Confirm with logcat `KeepAlive: audio profile state=2`.
+- **Background service switch** (`BudsService.PREF_BACKGROUND`, default on, Settings › General). Off:
+  `KeepAliveReceiver` and the widget receiver do not start the service, and `QuickBudsApp` calls
+  `stopService` when no activity is visible; the bound main screen keeps it until it is destroyed.
+  `BudsService.onDestroy` now closes the RFCOMM link. Turning it off asks first (widget warning).
 - **Only a user connect (pill, Dev Tools) asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Automatic
   connects (ACL receiver, retries, reconnect after loss) leave A2DP to the system: asking for it while
   the system auto-connects left audio stuck on auto-connect. Fixed 2026-09-25, confirmed by him.

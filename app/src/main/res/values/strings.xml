@@ -254,6 +254,11 @@
     <string name="layout_cancel">Cancel</string>
     <string name="settings_haptics_title">Haptic feedback</string>
     <string name="settings_haptics_sub">Vibrate when a setting changes</string>
+    <string name="settings_background_title">Background service</string>
+    <string name="settings_background_sub">Stay connected with the app closed</string>
+    <string name="settings_background_warn_title">Turn off the background service?</string>
+    <string name="settings_background_warn_body">QuickBuds will only stay connected while the app is open. The widget will not work properly and the earbuds will not reconnect by themselves.</string>
+    <string name="settings_background_warn_action">Turn off</string>
     <string name="settings_devtools_title">Dev tools button</string>
     <string name="settings_devtools_sub">Show dev tools in the header</string>
     <string name="settings_update_sub">Installed %1$s</string>

@@ -76,6 +76,9 @@ class WidgetActionReceiver : BroadcastReceiver() {
         }
         context.sendBroadcast(localIntent)
 
+        // Background service off: only a running service (the app is open) takes the command.
+        if (!BudsService.backgroundAllowed(context)) return
+
         try {
             val serviceIntent = Intent(context, BudsService::class.java).apply {
                 this.action = BudsService.ACTION_WIDGET_COMMAND
