@@ -105,11 +105,12 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
   Prefs: `haptics` (default on) and `devToolsButton` (default on, read in `MainActivity.onResume`). About is a
   `ConfirmDialog` with a GitHub button.
-- **Home layout** (`HomeLayoutActivity`, [USER] 2026-09-26): each row of the sound settings card (low latency,
-  Hi-Res, 3D audio, EQ, Dual connection, Earbud settings) has up/down arrows and a show switch. Battery and
-  noise control stay fixed on top; tiles are not reordered. Prefs `homeRowOrder` / `homeRowHidden` by row key;
-  `MainActivity.layoutFeatureRows()` applies them on create and resume. A new row needs a key in
-  `buildFeatureRows()` AND in `HomeLayoutActivity.ROWS`.
+- **Home layout** (`HomeLayoutActivity`, [USER] 2026-09-26): the main screen's own layout in an edit mode.
+  Battery and noise control show live but inert; each sound settings row (low latency, Hi-Res, 3D audio,
+  EQ, Dual connection, Earbud settings) is held and dragged to move (platform `startDragAndDrop`, reordered
+  live) and has an eye button (hidden rows greyed). The check applies, X/Back discards. Prefs `homeRowOrder`
+  / `homeRowHidden` by row key; `MainActivity.layoutFeatureRows()` applies them on create and resume. A new
+  row needs a key in `buildFeatureRows()` AND in `HomeLayoutActivity.ROWS` (icon, title, subtitle).
 - **Presets (step 6)**: `ThemeActivity` (3.7, rebuilt in `onResume`) and `PresetEditActivity` (3.8).
   `PalettePreviewView` draws a mini home in ANY palette (tile or detailed). Colour edits update the preview
   live and save on commit (slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
