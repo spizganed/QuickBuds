@@ -239,5 +239,20 @@
     <string name="disconnect_body">Audio will stop playing on this phone.</string>
     <string name="eq_done">Done</string>
     <string name="eq_duplicate">Duplicate</string>
-    <string name="theme_title">Theme</string>
+    <string name="theme_title">Theme &amp; colors</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_general">General</string>
+    <string name="settings_developer">Developer</string>
+    <string name="settings_app">App</string>
+    <string name="settings_layout_title">Home layout</string>
+    <string name="settings_layout_sub">Reorder and hide tiles</string>
+    <string name="settings_haptics_title">Haptic feedback</string>
+    <string name="settings_haptics_sub">Vibrate when a setting changes</string>
+    <string name="settings_devtools_title">Dev tools button</string>
+    <string name="settings_devtools_sub">Show dev tools in the header</string>
+    <string name="settings_update_sub">Installed %1$s</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_about_sub">Version, licenses, GitHub</string>
+    <string name="about_body">Version %1$s\nLicensed under the GNU GPL v3.0.\ngithub.com/spizganed/QuickBuds</string>
+    <string name="about_github">GitHub</string>
 </resources>
