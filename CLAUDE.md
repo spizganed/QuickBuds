@@ -80,7 +80,7 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
 - **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
-- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen).
+- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen), 6 (theme & colors, edit preset).
 - **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
   one style per built-in preset. `Palette.kt` holds `Palette` (tokens + derived colours) and `PaletteStore`
   (active id + up to 3 custom presets as JSON in `QuickBudsPrefs`; the old `theme` int migrates once).
@@ -102,6 +102,12 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
   Prefs: `haptics` (default on) and `devToolsButton` (default on, read in `MainActivity.onResume`). About is a
   `ConfirmDialog` with a GitHub button. Home layout is shown disabled.
+- **Presets (step 6)**: `ThemeActivity` (3.7, rebuilt in `onResume`) and `PresetEditActivity` (3.8).
+  `PalettePreviewView` draws a mini home in ANY palette (tile or detailed). Colour edits update the preview
+  live and save on commit (hue slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
+  then, never mid-drag. Quick swatches are `@color/swatch_*` (picker choices, not app colours). Contrast
+  warnings use `Palette.contrast` (WCAG 2) and never block saving. This is the first path that makes
+  `ThemeRes.PaletteFactory` run, so a custom preset is where an inflation bug would show first.
 
 ### Environment you need
 
@@ -271,8 +277,8 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
 
 - **Slide up vs slide down** — both directions are written with the same action because which is
   which is not established.
-- **Light theme** — the old one is the source of invisible-on-light bugs; do not polish it. It gets
-  rebuilt as the **White** preset in the theme work (docs/ROADMAP.md).
+- **Light theme** — replaced by the **White** preset (UI revision step 1, 2026-09-26). Check screens on
+  White and on a light custom preset when changing colours.
 - **Case lid state** — settled 2026-09-25: no lasting lid state exists (PROTOCOL.md §8); a close only
   stops the reconnect retries. `ic_case.xml` stays (the status view uses it). Case charging is only
   reported with the lid open, so it is **not shown, by decision** (PROTOCOL.md §7).
