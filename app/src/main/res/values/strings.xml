@@ -80,7 +80,7 @@
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Sound profiles</string>
     <string name="row_earbuds_title">Earbud settings</string>
-    <string name="row_earbuds_sub">Gestures, wear detection, dual connection, find</string>
+    <string name="row_earbuds_sub">Gestures, wear detection, find, sounds</string>
     <string name="row_dual_title">Dual connection</string>
     <string name="row_dual_sub">Connect two devices at the same time</string>
     <string name="dual_title">Dual connection</string>
