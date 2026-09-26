@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -68,7 +67,9 @@ class SettingsActivity : Activity() {
             R.string.settings_app,
             updateRow,
             toggle(R.drawable.ic_update, R.string.update_auto_title, R.string.update_auto_sub, UpdateChecker.KEY_AUTO, true),
-            link(R.drawable.ic_info, R.string.settings_about_title, R.string.settings_about_sub) { showAbout(version) }
+            link(R.drawable.ic_info, R.string.settings_about_title, R.string.settings_about_sub) {
+                startActivity(Intent(this, AboutActivity::class.java))
+            }
         )
 
         setContentView(ScrollView(this).apply {
@@ -118,18 +119,8 @@ class SettingsActivity : Activity() {
         themeSubtitle?.text = ThemeRes.palette(this).name
     }
 
-    private fun showAbout(version: String) {
-        ConfirmDialog.show(
-            this, getString(R.string.app_name), getString(R.string.about_body, version),
-            getString(R.string.about_github), cancelRes = R.string.dialog_close
-        ) {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_URL)))
-        }
-    }
-
     companion object {
         const val KEY_HAPTICS = "haptics"
         const val KEY_DEV_TOOLS_BUTTON = "devToolsButton"
-        private const val GITHUB_URL = "https://github.com/spizganed/QuickBuds"
     }
 }

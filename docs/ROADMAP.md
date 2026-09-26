@@ -61,8 +61,8 @@ arrows and a hide switch, not drag and drop).
 - **Hide the Dev Tools button** from the main screen (switch).
 - **Background service on/off.** Done 2026-09-26, with a warning that the widget needs it.
 - **App update:** check on start and the update screen redesign done 2026-09-26, awaiting his test.
-- **About.** An in-app WebView of the GitHub README, with two buttons on top: GitHub, and a Ko-fi
-  placeholder (not set up yet).
+- **About screen:** done 2026-09-26 (GitHub and Ko-fi buttons open the browser; Ko-fi URL is a
+  placeholder until the page exists).
 
 ## Our own features
 

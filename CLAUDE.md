@@ -93,8 +93,8 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   tile gaps 12dp. Touch targets stay >= 44dp (icon buttons, status chip).
 - Decisions ([USER] 2026-09-26): no Material Components (plain Switch/Dialog/EditText, custom rings); the
   status chip follows SPEC (accent dot when connected, grey ring + grey "Connect" when not); the battery glyphs keep
-  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; About is a simple
-  dialog; the Dev tools button toggle defaults ON.
+  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; the Dev tools
+  button toggle defaults ON.
 - **Shared components (step 2)** live in `SettingRowFactory`: `screen` (padding + system-bar insets; the app
   is edge to edge on target 35+), `title`, `sectionLabel`, `card`, `build` (row with 52dp trailing slot and an
   optional `value` before it), `buildSwitch`, `buildChevron`, `buildDivider`, `iconButton`. New screens use
@@ -105,6 +105,8 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
   Prefs: `haptics` (default on), `backgroundService` (see Connection robustness) and `devToolsButton` (default
   on, read in `MainActivity.onResume`).
+- **About** is `AboutActivity` (2026-09-26): icon, version, tagline, GitHub and Ko-fi buttons (default browser;
+  the Ko-fi URL is a placeholder until his page exists), license and a pointer to the credits.
 - **App update** (2026-09-26): `UpdateChecker` (GitHub latest release via `org.json`, `.apk` asset, streamed
   download with progress) is shared by `UpdateActivity` (installed vs latest side by side, one action pill,
   progress bar, release notes; checks on open) and the check on start (`updateAutoCheck`, default on; at most
