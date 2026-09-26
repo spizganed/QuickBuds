@@ -51,20 +51,15 @@
     <string name="status_right">Right</string>
     <string name="status_in_ear">In ear</string>
     <string name="status_in_case">In case</string>
-    <string name="status_out">Out</string>
+    <string name="status_out">Out of ear</string>
 
     <!-- Noise control (AncSegmentedView). Segment labels must fit a quarter of the screen. -->
     <string name="anc_section">Noise control</string>
     <string name="anc_seg_off">Off</string>
     <string name="anc_seg_anc">ANC</string>
     <string name="anc_seg_adapt">Adaptive</string>
-    <string name="anc_seg_trans">Trans</string>
-    <string name="anc_caption_off">Noise control off</string>
-    <string name="anc_caption_level">Noise cancelling · %1$s</string>
-    <string name="anc_caption_adaptive">Adaptive noise cancelling</string>
-    <string name="anc_caption_trans">Transparency · hear your surroundings</string>
+    <string name="anc_seg_trans">Transparency</string>
 
-    <string name="anc_chooser_title">ANC</string>
     <string name="anc_mode_low">Low</string>
     <string name="anc_mode_medium">Medium</string>
     <string name="anc_mode_high">High</string>

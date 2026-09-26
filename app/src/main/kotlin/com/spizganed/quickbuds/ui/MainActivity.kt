@@ -77,7 +77,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     // AncSegmentedView. They replaced two cards of ImageViews/ProgressBars and four ANC buttons.
     private lateinit var statusView: BudsStatusView
     private lateinit var ancView: AncSegmentedView
-    private lateinit var ancCaption: TextView
+    private lateinit var ancLevels: LinearLayout
+    private lateinit var tiles: LinearLayout
 
     // Settings rows that hold live state
     private var gameSwitch: Switch? = null
@@ -97,20 +98,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /** Alpha for controls that cannot act without a connection. */
     private val DISABLED_ALPHA = 0.35f
 
-    // The status card, faded and collapsed when there is nothing to show. See setCardsVisible.
+    // The battery tile: never dimmed, so it is the one tile setConnectedUi() skips.
     private lateinit var batteryCard: LinearLayout
 
-    /** The ANC row and the game-mode row, greyed and disabled while disconnected. */
+    /** The noise control tile. */
     private lateinit var ancRow: LinearLayout
-
-    /**
-     * True while the battery cards are hidden because the app is disconnected.
-     *
-     * Kept as state rather than read from the views because the collapse animation
-     * needs to know which direction it is going, and a View's visibility is only
-     * settled at the END of a hide.
-     */
-    private var cardsHidden = false
 
     /**
      * Renders the header connection pill: dot icon, dot colour, label text.
@@ -181,145 +173,46 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             )
         } else 1f
 
-    /**
-     * Shows or hides BOTH battery cards, and greys the controls that cannot do
-     * anything without a link.
-     *
-     * WHY THE CARDS HIDE AT ALL: disconnected, every value in them is unknown — three
-     * empty bars and three empty icons, in an outlined box. An empty box is not
-     * information, so it folds away and everything below moves up into the space.
-     *
-     * THE ANIMATION IS A FADE PLUS A HEIGHT COLLAPSE. Fading alone leaves the gap;
-     * animating height alone pops the content. Both run together over CARD_ANIM_MS:
-     * alpha 1->0 while height goes wrap-content -> 0, and the reverse to show.
-     *
-     * Height is animated by VALUE, not by layout: the view is measured once for its
-     * natural height, then that exact pixel height is animated to 0 with margins
-     * zeroed, so the siblings below follow smoothly. The final step sets GONE so the
-     * card stops taking part in layout entirely — leaving it at height 0 would keep
-     * its margins alive and leave a few dp of dead space.
-     */
-    private fun setCardsVisible(visible: Boolean) {
-        if (cardsHidden == !visible && !firstWearRender) return
-
-        // FIRST RENDER: place them directly, no animation. Opening the app should not
-        // play a collapse — nothing changed, the state was just read.
-        if (firstWearRender) {
-            cardsHidden = !visible
-            batteryCard.visibility = if (visible) View.VISIBLE else View.GONE
-            batteryCard.alpha = 1f
-            deviceNameText.alpha = if (visible) 1f else 0f
-            setControlsEnabled(visible, animate = false)
-            return
-        }
-
-        if (cardsHidden == !visible) return
-        cardsHidden = !visible
-
-        // The device name only shows while connected: it fades and slides in on connect.
-        // Alpha, not GONE, so the pill beside it never moves.
-        deviceNameText.translationX = if (visible) -ThemeRes.dp(this, 12f).toFloat() else 0f
-        deviceNameText.animate().alpha(if (visible) 1f else 0f).translationX(0f)
-            .setDuration(if (visible) 350L else 200L).start()
-
-        val cards = listOf(batteryCard)
-
-        // The buttons below are useless without a connection: greyed AND not
-        // clickable, so a tap cannot send a command that has nowhere to go. The
-        // switch rows and the ANC buttons are handled the same way.
-        setControlsEnabled(visible)
-
-        if (animatorScale() == 0f) {
-            cards.forEach { card ->
-                card.visibility = if (visible) View.VISIBLE else View.GONE
-                card.alpha = 1f
-            }
-            return
-        }
-
-        cards.forEach { card ->
-            // Measured height is only valid while VISIBLE, so measure BEFORE hiding
-            // and after showing.
-            if (visible) {
-                card.visibility = View.VISIBLE
-                card.alpha = 0f
-                card.measure(
-                    View.MeasureSpec.makeMeasureSpec(card.width, View.MeasureSpec.AT_MOST),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                )
-                val target = card.measuredHeight
-                card.layoutParams.height = 0
-                card.requestLayout()
-
-                val anim = android.animation.ValueAnimator.ofInt(0, target)
-                anim.duration = CARD_ANIM_MS
-                anim.interpolator = DecelerateInterpolator()
-                anim.addUpdateListener { va ->
-                    card.layoutParams.height = va.animatedValue as Int
-                    card.requestLayout()
-                }
-                anim.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(a: Animator) {
-                        // Hand height back to the layout so wrap_content wins again;
-                        // leaving a fixed height would break on a rotation or a
-                        // font-size change.
-                        card.layoutParams.height =
-                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-                        card.requestLayout()
-                    }
-                })
-                anim.start()
-                card.animate().alpha(1f).setDuration(CARD_ANIM_MS).start()
-            } else {
-                val start = card.height
-                card.animate().alpha(0f).setDuration(CARD_ANIM_MS).start()
-                val anim = android.animation.ValueAnimator.ofInt(start, 0)
-                anim.duration = CARD_ANIM_MS
-                anim.interpolator = DecelerateInterpolator()
-                anim.addUpdateListener { va ->
-                    card.layoutParams.height = va.animatedValue as Int
-                    card.requestLayout()
-                }
-                anim.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(a: Animator) {
-                        card.visibility = View.GONE
-                        card.layoutParams.height =
-                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-                        card.alpha = 1f
-                        card.requestLayout()
-                    }
-                })
-                anim.start()
-            }
-        }
-    }
+    /** Connection state the screen was last drawn for; null before the first render. */
+    private var connectedUi: Boolean? = null
 
     /**
-     * Enables or disables the controls that need a live link.
-     *
-     * Greyed AND non-interactive, which are two separate things in Android: alpha
-     * alone still accepts taps, and setEnabled(false) alone still looks active.
-     *
-     * The ANC buttons are TextViews with click listeners rather than Buttons, so
-     * they are handled individually; the alpha is applied to the row so the whole
-     * group greys consistently, and `isClickable` is cleared so no command can be
-     * sent. The game-mode switch lives in the settings rows and is disabled there.
+     * SPEC 3.2: disconnected, the battery tile keeps its exact size (track-only rings, "—") and
+     * every other tile is dimmed to 0.35 and made inert, recursively. Icons keep their accent
+     * (dimmed, not greyed); toggles and segments show a neutral state. Nothing collapses, so
+     * nothing jumps on connect.
      */
-    private fun setControlsEnabled(enabled: Boolean, animate: Boolean = true) {
-        ancView.isEnabled = enabled
+    private fun setConnectedUi(connected: Boolean) {
+        if (connectedUi == connected) return
+        val first = connectedUi == null
+        connectedUi = connected
+        statusView.connected = connected
+        // INVISIBLE, not GONE: the empty name keeps its space as the header's spacer.
+        deviceNameText.visibility = if (connected) View.VISIBLE else View.INVISIBLE
 
-        // Settings rows that talk to the buds. Left visible but inert, because unlike
-        // the battery values they still mean something with nothing connected — the
-        // row is where you would go to turn the feature on.
-        gameSwitch?.isEnabled = enabled
-        hiresSwitch?.isEnabled = enabled
-        spatialSwitch?.isEnabled = enabled
+        val alpha = if (connected) 1f else DISABLED_ALPHA
+        for (i in 0 until tiles.childCount) {
+            val tile = tiles.getChildAt(i)
+            if (tile === batteryCard) continue
+            setEnabledDeep(tile, connected)
+            if (first || animatorScale() == 0f) tile.alpha = alpha
+            else tile.animate().alpha(alpha).setDuration(CARD_ANIM_MS).start()
+        }
 
-        val target = if (enabled) 1f else DISABLED_ALPHA
-        if (!animate || animatorScale() == 0f) ancRow.alpha = target
-        else ancRow.animate().alpha(target).setDuration(CARD_ANIM_MS).start()
+        // Neutral switches while disconnected, set quietly so no listener sends a write.
+        // The buds' real state is repainted on connect.
+        syncingFeatures = true
+        gameSwitch?.isChecked = connected && gameModeOn
+        if (!connected) { hiresSwitch?.isChecked = false; spatialSwitch?.isChecked = false }
+        syncingFeatures = false
+        if (connected && ::manager.isInitialized) onFeatureStates(manager.featureStates)
+        renderAnc(activeAncMode)
     }
 
+    private fun setEnabledDeep(v: View, enabled: Boolean) {
+        v.isEnabled = enabled
+        if (v is android.view.ViewGroup) for (i in 0 until v.childCount) setEnabledDeep(v.getChildAt(i), enabled)
+    }
 
     private var activeAncMode: String = "Off"
     private var gameModeOn = false
@@ -357,7 +250,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         renderAnc(state.ancMode)
         renderWear(state)
         gameSwitch?.let { sw ->
-            if (sw.isChecked != state.gameMode) {
+            if (state.connected && sw.isChecked != state.gameMode) {
                 sw.isChecked = state.gameMode
             }
         }
@@ -390,25 +283,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * static reference object rather than competing with the two bud icons.
      */
     private fun renderWear(state: WidgetStateStore.State) {
-        // Disconnected means every battery value is unknown, so the cards hold no
-        // information: collapse them and grey the controls. See setCardsVisible.
-        setCardsVisible(state.connected)
+        setConnectedUi(state.connected)
         // The header pill shows the same state, with its own transition.
         renderConnectionPill(state.connected)
-        // Everything after the first pass is a real state change, so it animates.
-        firstWearRender = false
     }
-
-    /**
-     * True while the FIRST render of the screen is being done, so the icons and the
-     * case appear INSTANTLY instead of animating in.
-     *
-     * Without this, opening the app fades the icons up on every visit, which reads
-     * as a glitch rather than as a state change — the animation is meant to answer
-     * "a bud just went in the case", and nothing happened when the screen opened.
-     * Cleared at the end of the first renderWear().
-     */
-    private var firstWearRender = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Theme selection FIRST, before super.onCreate. setTheme() is a style-id
@@ -435,16 +313,19 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
         statusView = BudsStatusView(this)
         findViewById<android.widget.FrameLayout>(R.id.statusSlot).addView(statusView)
-        ancView = AncSegmentedView(this, ANC_SEGMENTS.map { getString(it.second) }).apply {
+        ancView = AncSegmentedView(
+            this, ANC_SEGMENTS.map { getString(it.second) }, ANC_SEGMENTS.map { it.third }
+        ).apply {
             onSegmentTapped = { onAncCircleTapped(ANC_SEGMENTS[it].first) }
         }
         findViewById<android.widget.FrameLayout>(R.id.ancSlot).addView(ancView)
-        ancCaption = findViewById<TextView>(R.id.ancCaption)
+        ancLevels = findViewById<LinearLayout>(R.id.ancLevels)
+        buildLevelPills()
 
-        // The two battery cards and the ANC row, for the connect/disconnect
-        // collapse and the greying. See setCardsVisible / setControlsEnabled.
+        tiles = findViewById<LinearLayout>(R.id.tiles)
         batteryCard = findViewById<LinearLayout>(R.id.batteryCard)
         ancRow = findViewById<LinearLayout>(R.id.ancRow)
+        applyTileLayout()
 
         connPill = findViewById<LinearLayout>(R.id.connPill)
         // No ripple: the pill sinks a little under the finger and springs back, like a real button.
@@ -720,19 +601,84 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * caption under it — including the ANC strength, which the old circle showed as "ANC-M".
      */
     private fun renderAnc(mode: String) {
+        if (connectedUi == false) {
+            ancView.selected = -1
+            ancLevels.visibility = View.GONE
+            return
+        }
         ancView.selected = when (circleFor(mode)) {
             "ANC" -> 1
             "Adapt" -> 2
             "Trans" -> 3
             else -> 0
         }
-        ancCaption.text = when (mode) {
-            "ANC-Light" -> getString(R.string.anc_caption_level, getString(R.string.anc_mode_low))
-            "ANC-Medium" -> getString(R.string.anc_caption_level, getString(R.string.anc_mode_medium))
-            "ANC-Deep" -> getString(R.string.anc_caption_level, getString(R.string.anc_mode_high))
-            "Adaptive" -> getString(R.string.anc_caption_adaptive)
-            "Transparency" -> getString(R.string.anc_caption_trans)
-            else -> getString(R.string.anc_caption_off)
+        // The level row shows only while ANC is on (SPEC 3.1), with the active strength outlined.
+        val level = ANC_LEVELS.indexOf(mode)
+        ancLevels.visibility = if (level >= 0) View.VISIBLE else View.GONE
+        if (level >= 0) {
+            lastAncLevel = mode
+            for (k in 0 until ancLevels.childCount) paintLevelPill(ancLevels.getChildAt(k) as TextView, k == level)
+        }
+    }
+
+    /** The ANC strength the ANC segment applies; the last one seen, Medium on a fresh install. */
+    private var lastAncLevel: String
+        get() = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(KEY_ANC_LEVEL, null)
+            ?.takeIf { it in ANC_LEVELS } ?: ANC_LEVELS[1]
+        set(v) { getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit().putString(KEY_ANC_LEVEL, v).apply() }
+
+    /** Low / Medium / High pills under the segments, replacing the old strength bottom sheet. */
+    private fun buildLevelPills() {
+        val names = intArrayOf(R.string.anc_mode_low, R.string.anc_mode_medium, R.string.anc_mode_high)
+        ANC_LEVELS.forEachIndexed { i, mode ->
+            ancLevels.addView(TextView(this).apply {
+                setText(names[i])
+                textSize = 14f
+                gravity = android.view.Gravity.CENTER
+                minWidth = ThemeRes.dp(this@MainActivity, 72f)
+                setPadding(ThemeRes.dp(this@MainActivity, 20f), 0, ThemeRes.dp(this@MainActivity, 20f), 0)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, ThemeRes.dp(this@MainActivity, 40f)
+                ).apply { if (i > 0) marginStart = ThemeRes.dp(this@MainActivity, 8f) }
+                paintLevelPill(this, false)
+                setOnClickListener { selectAnc(mode) }
+            })
+        }
+    }
+
+    private fun paintLevelPill(pill: TextView, selected: Boolean) {
+        val pal = ThemeRes.palette(this)
+        pill.background = ThemeRes.ripple(
+            this, ThemeRes.shape(
+                this, pal.background, if (selected) pal.accent else pal.outline, 20f,
+                if (selected) 1.5f else 1f
+            )
+        )
+        pill.setTextColor(if (selected) pal.text else pal.textSecondary)
+        pill.typeface = if (selected) android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
+        else android.graphics.Typeface.DEFAULT
+    }
+
+    /**
+     * Orders the home tiles and hides the hidden ones (SPEC section 4), from prefs written by the
+     * future Home layout screen. Tiles are identified by their root id's name; the battery and
+     * noise control tiles can never be hidden. Unknown or missing names fall back to XML order.
+     */
+    private fun applyTileLayout() {
+        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
+        val byName = (0 until tiles.childCount).map { tiles.getChildAt(it) }
+            .associateBy { resources.getResourceEntryName(it.id) }
+        val order = prefs.getString(KEY_TILE_ORDER, null)?.split(',').orEmpty().filter { it in byName }.distinct()
+        val hidden = prefs.getStringSet(KEY_TILE_HIDDEN, emptySet()).orEmpty() - LOCKED_TILES
+        tiles.removeAllViews()
+        var firstShown = true
+        (order + (byName.keys - order.toSet())).forEach { name ->
+            val tile = byName.getValue(name)
+            tile.visibility = if (name in hidden) View.GONE else View.VISIBLE
+            (tile.layoutParams as? LinearLayout.LayoutParams)?.topMargin =
+                if (firstShown || name in hidden) 0 else ThemeRes.dp(this, 16f)
+            if (name !in hidden) firstShown = false
+            tiles.addView(tile)
         }
     }
 
@@ -765,7 +711,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             // directly or requires the circle to already be active. Choosing which
             // strength to use is the whole point of the button, and requiring a
             // second tap on an already-lit circle was an unnecessary step.
-            "ANC" -> showAncChooser()
+            "ANC" -> selectAnc(lastAncLevel)
             "Off" -> selectAnc("Off")
             // Adaptive is a plain state, not a chooser: unlike ANC it has no
             // strengths to pick between, so the tap applies it directly.
@@ -779,48 +725,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             "Trans", "Transparency" -> selectAnc("Transparency")
             else -> PacketLogger.log("ANC TAP: unhandled circle='$circle' (no command sent)")
         }
-    }
-
-    /**
-     * Chooser for the ANC circle.
-     *
-     * Shows ONLY the three noise-cancelling levels. Off, Adaptive and Transparency
-     * are separate circles on the main screen, so they are not repeated here. The
-     * list is short by request: "low medium high".
-     *
-     * ADAPTIVE IS DELIBERATELY NOT AN OPTION HERE, even though it is an ANC state.
-     * The three entries are STRENGTHS, and Adaptive is not one — the buds raise and
-     * lower it themselves. Listing it between Medium and High would read as "a fourth
-     * strength", which is the one thing it is not. It has its own circle instead.
-     *
-     * Order is Low -> Medium -> High, matching increasing strength.
-     */
-    private fun showAncChooser() {
-        val modes = ANC_LEVELS
-        val labels = arrayOf(
-            getString(R.string.anc_mode_low),
-            getString(R.string.anc_mode_medium),
-            getString(R.string.anc_mode_high)
-        )
-        val active = modes.indexOfFirst { it == activeAncMode }
-
-        // A bottom sheet rather than an AlertDialog: it opens from the bottom, which
-        // is where the circle that launched it sits, and it uses the app's own
-        // palette instead of the platform's.
-        BottomSheetDialog(this)
-            .title(getString(R.string.anc_chooser_title))
-            .items(modes.mapIndexed { i, mode ->
-                BottomSheetDialog.Item(
-                    label = labels[i],
-                    selected = i == active,
-                    onClick = {
-                        // selectAnc() sends the command AND repaints (renderAnc +
-                        // syncWidgetState), so nothing else is needed here.
-                        selectAnc(mode)
-                    }
-                )
-            })
-            .show()
     }
 
     /**
@@ -905,6 +809,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             // isChecked too, which would echo a bud-side gesture back as a
             // command. The store listener guards against that by only writing
             // when the value actually differs.
+            if (syncingFeatures) return@setOnCheckedChangeListener
             if (isChecked != gameModeOn) toggleGameMode(isChecked)
         }
         addRow(
@@ -975,7 +880,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // Keeps this card to what changes the sound. App update moved to the cog.
         addRow(
             SettingRowFactory.build(
-                this, R.drawable.ic_settings_cog, R.string.row_earbuds_title, R.string.row_earbuds_sub,
+                this, R.drawable.ic_earbud, R.string.row_earbuds_title, R.string.row_earbuds_sub,
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, EarbudSettingsActivity::class.java)) }
         )
@@ -1004,6 +909,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     override fun onFeatureStates(states: Map<Int, Int>) {
+        // Disconnected, the switches stay neutral (SPEC 3.2); setConnectedUi repaints on connect.
+        if (connectedUi == false) return
         states[OpoProtocol.FEATURE_HIRES_CODEC]?.let { v ->
             hiresSwitch?.let { setSwitchQuiet(it, v == 1) }
             hiresSubtitle?.setText(if (v == 1) R.string.row_hires_sub else R.string.row_hires_sub_off)
@@ -1196,11 +1103,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     // ==================== BudsConnectionManager.Listener ====================
 
     override fun onConnected(connected: Boolean) {
-        // The connection state is rendered by the header pill and by the battery
-        // cards, both driven from WidgetStateStore in renderWear. This used to hide
-        // the three bar ROWS directly here, which fought the card collapse in
-        // setCardsVisible — two mechanisms animating the same thing from different
-        // sources, so one could undo the other mid-animation. Nothing to do here now.
+        // The connection state is rendered from WidgetStateStore in renderWear
+        // (header pill + setConnectedUi), so there is one source for it.
     }
 
     override fun onPacketReceived(bytes: ByteArray) {}
@@ -1229,13 +1133,19 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         /** The three real noise-cancelling levels, weakest first. */
         private val ANC_LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep")
 
-        /** Noise-control segments, left to right: the tap name onAncCircleTapped() takes, and the label. */
+        /** Noise-control segments, left to right: the tap name onAncCircleTapped() takes, label, icon. */
         private val ANC_SEGMENTS = listOf(
-            "Off" to R.string.anc_seg_off,
-            "ANC" to R.string.anc_seg_anc,
-            "Adaptive" to R.string.anc_seg_adapt,
-            "Transparency" to R.string.anc_seg_trans
+            Triple("Off", R.string.anc_seg_off, R.drawable.ic_noise_off),
+            Triple("ANC", R.string.anc_seg_anc, R.drawable.ic_anc),
+            Triple("Adaptive", R.string.anc_seg_adapt, R.drawable.ic_adaptive),
+            Triple("Transparency", R.string.anc_seg_trans, R.drawable.ic_transparency)
         )
+
+        private const val KEY_ANC_LEVEL = "homeAncLevel"
+        /** Home tile order / hidden set, by tile root id name (SPEC section 4). */
+        const val KEY_TILE_ORDER = "homeTileOrder"
+        const val KEY_TILE_HIDDEN = "homeTileHidden"
+        val LOCKED_TILES = setOf("batteryCard", "ancRow")
 
         /**
          * The last report MainActivity took of ITSELF, while resumed.

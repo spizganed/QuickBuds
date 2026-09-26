@@ -1,43 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Main screen, redesigned.
+  Main screen (design/SPEC.md 3.1 / 3.2).
 
-  PAINT: nothing here carries a hardcoded colour. Every colour comes from a theme
-  attribute (?attr/appColor*) so the OLED / Dark / Light swap is a resource
-  qualifier change rather than a view-tree recolor. The one exception is the
-  icons, which are vector drawables and therefore tinted in Kotlin (see
-  MainActivity.applyThemeTints).
+  PAINT: nothing here carries a hardcoded colour. Colours come from the six token
+  attributes (?attr/appColor*), and shapes are built in code (ThemeRes).
 
-  STRUCTURE, top to bottom:
-    1. header      - device name + dev tools + settings cog (no left button)
-    2. scroll
-       2a. battery card   - L/R bud icons + case icon, three labelled bars
-       2b. ANC row        - four circles; tapping the active one opens the
-                            mode chooser (see MainActivity.showAncChooser)
-       2c. settings card  - game mode, hi-res codec, spatial audio (switches)
-                            equalizer, find my earbuds, app update (chevrons)
-
-  The settings rows are NOT written out here. They are built in MainActivity
-  (buildFeatureRows) because each one needs live state, a themed icon tint and a
-  click handler, and duplicating six near-identical row layouts in XML would mean
-  six places to edit every time a row changes. The container (#featureList) is
-  declared empty here on purpose.
+  STRUCTURE: the header, then a scrolling column of TILES. Each tile is its own
+  include layout whose root id is the tile's stable id (batteryCard, ancRow,
+  featureList). MainActivity.applyTileLayout() orders them and hides the hidden
+  ones from prefs; the battery and noise control tiles cannot be hidden. The
+  settings rows are built in code (buildFeatureRows).
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/appColorBg"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:paddingTop="44dp"
-    android:paddingBottom="12dp">
+    android:background="?attr/appColorBg">
 
     <!-- Header. Left action intentionally absent: the redesign drops it. -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -47,6 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/default_device_name"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginEnd="8dp"
             android:textSize="@dimen/header_title_size"
             android:textStyle="bold"
             android:textColor="?attr/appColorTextPrimary" />
@@ -124,82 +111,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="16dp"
         android:fillViewport="true"
         android:scrollbars="none">
 
         <LinearLayout
+            android:id="@+id/tiles"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ============ 1. STATUS CARD (redesign 2026-09-23) ============
-                 One card: left bud, case, right bud, each in a battery ring, with the
-                 percentage and wear state under it. Drawn by BudsStatusView, added to
-                 statusSlot in code. Replaces the old icon card + separate bar card. -->
-            <LinearLayout
-                android:id="@+id/batteryCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="18dp"
-                android:paddingBottom="14dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
->
-
-                <FrameLayout
-                    android:id="@+id/statusSlot"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!-- ============ 2. NOISE CONTROL ============
-                 A segmented pill (AncSegmentedView, added to ancSlot in code) whose red
-                 highlight slides to the active mode, and a caption spelling the mode out.
-                 ANC opens the strength chooser. The row greys out while disconnected. -->
-            <LinearLayout
-                android:id="@+id/ancRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="4dp"
-                    android:paddingBottom="8dp"
-                    android:text="@string/anc_section"
-                    android:textColor="?attr/appColorTextSecondary"
-                    android:textSize="13sp" />
-
-                <FrameLayout
-                    android:id="@+id/ancSlot"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/ancCaption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:paddingTop="8dp"
-                    android:textColor="?attr/appColorTextSecondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- ============ 3. SETTINGS ROWS ============
-                 Built in code; see the class comment at the top of this file.
-                 Uses the same outlined rounded box as the battery card and the ANC
-                 buttons, so all three groups share one visual treatment. -->
-            <LinearLayout
-                android:id="@+id/featureList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="18dp"
-/>
+            <include layout="@layout/tile_battery" />
+            <include layout="@layout/tile_noise" />
+            <include layout="@layout/tile_settings" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

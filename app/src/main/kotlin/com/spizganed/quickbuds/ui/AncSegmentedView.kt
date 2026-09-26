@@ -5,27 +5,34 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import com.spizganed.quickbuds.R
 
 /**
- * Noise-control switcher (redesign 2026-09-23, replacing the four separate ANC buttons): one pill
- * track with an accent highlight that SLIDES to the active segment. A tap reports the segment index
- * through [onSegmentTapped]; the caller decides what it means (ANC opens the strength chooser).
- * The highlight only moves when [selected] is set — i.e. when the buds' state says so.
+ * Noise-control switcher (design/SPEC.md 3.1): a card-style container (22dp radius, 4dp padding)
+ * holding equal-width 64dp segments, each a 22dp icon over an 11.5sp label. The accent fill SLIDES
+ * to the active segment. A tap reports the segment index through [onSegmentTapped]; the fill only
+ * moves when [selected] is set — i.e. when the buds' state says so. [selected] = -1 is the neutral
+ * (disconnected) state: no fill.
  */
-class AncSegmentedView(context: Context, private val labels: List<String>) : View(context) {
+class AncSegmentedView(
+    context: Context,
+    private val labels: List<String>,
+    iconRes: List<Int>
+) : View(context) {
 
     var onSegmentTapped: ((Int) -> Unit)? = null
 
-    var selected: Int = 0
+    var selected: Int = -1
         set(v) {
             if (v == field) return
+            val from = field
             field = v
-            if (width == 0) { pos = v.toFloat(); invalidate(); return }
             anim?.cancel()
+            if (width == 0 || from < 0 || v < 0) { pos = v.toFloat(); invalidate(); return }
             anim = ValueAnimator.ofFloat(pos, v.toFloat()).apply {
                 duration = 220
                 interpolator = DecelerateInterpolator()
@@ -34,51 +41,59 @@ class AncSegmentedView(context: Context, private val labels: List<String>) : Vie
             }
         }
 
-    private var pos = 0f
+    private var pos = -1f
     private var anim: ValueAnimator? = null
 
     private fun dp(v: Float) = ThemeRes.dp(context, v).toFloat()
 
-    private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ThemeRes.color(context, R.attr.appColorCard)
-    }
+    private val p = ThemeRes.palette(context)
+    private val icons: List<Drawable> = iconRes.map { context.getDrawable(it)!!.mutate() }
+
+    private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.card }
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE; strokeWidth = dp(1f)
-        color = ThemeRes.color(context, R.attr.appColorOutline)
+        style = Paint.Style.STROKE; strokeWidth = dp(1f); color = p.outline
     }
-    private val pillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ThemeRes.color(context, R.attr.appColorAccent)
-    }
+    private val pillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.accent }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = dp(13f); textAlign = Paint.Align.CENTER; isFakeBoldText = true
+        textSize = dp(11.5f); textAlign = Paint.Align.CENTER
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
-    private val textOn = ThemeRes.palette(context).onAccent
-    private val textOff = ThemeRes.color(context, R.attr.appColorTextSecondary)
     private val box = RectF()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(54f).toInt())
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(72f).toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
         val h = height.toFloat()
-        val radius = h / 2
         box.set(dp(0.5f), dp(0.5f), width - dp(0.5f), h - dp(0.5f))
-        canvas.drawRoundRect(box, radius, radius, trackPaint)
-        canvas.drawRoundRect(box, radius, radius, strokePaint)
+        canvas.drawRoundRect(box, dp(22f), dp(22f), trackPaint)
+        canvas.drawRoundRect(box, dp(22f), dp(22f), strokePaint)
 
-        val inset = dp(5f)
+        val inset = dp(4f)
         val segW = (width - inset * 2) / labels.size
-        val left = inset + segW * pos
-        box.set(left, inset, left + segW, h - inset)
-        canvas.drawRoundRect(box, radius - inset, radius - inset, pillPaint)
+        if (pos >= 0f) {
+            val left = inset + segW * pos
+            box.set(left, inset, left + segW, h - inset)
+            canvas.drawRoundRect(box, dp(18f), dp(18f), pillPaint)
+        }
 
-        val baseline = h / 2 - (textPaint.descent() + textPaint.ascent()) / 2
+        val iconSize = dp(22f)
+        val iconTop = h / 2 - dp(19f)
+        val baseline = h / 2 + dp(18f)
         labels.forEachIndexed { i, label ->
-            // The label under the moving pill brightens as the pill arrives.
-            val closeness = (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)
-            textPaint.color = blend(textOff, textOn, closeness)
-            canvas.drawText(label, inset + segW * i + segW / 2, baseline, textPaint)
+            // The segment under the moving fill brightens as the fill arrives.
+            val closeness = if (pos < 0f) 0f else (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)
+            val c = Palette.blend(p.textSecondary, p.onAccent, closeness)
+            val cx = inset + segW * i + segW / 2
+            icons[i].setTint(c)
+            icons[i].setBounds(
+                (cx - iconSize / 2).toInt(), iconTop.toInt(),
+                (cx + iconSize / 2).toInt(), (iconTop + iconSize).toInt()
+            )
+            icons[i].draw(canvas)
+            textPaint.color = c
+            canvas.drawText(label, cx, baseline, textPaint)
         }
     }
 
@@ -93,9 +108,4 @@ class AncSegmentedView(context: Context, private val labels: List<String>) : Vie
     }
 
     override fun performClick(): Boolean = super.performClick()
-
-    private fun blend(a: Int, b: Int, t: Float): Int {
-        fun ch(shift: Int) = (((a shr shift) and 0xFF) + (((b shr shift) and 0xFF) - ((a shr shift) and 0xFF)) * t).toInt()
-        return (0xFF shl 24) or (ch(16) shl 16) or (ch(8) shl 8) or ch(0)
-    }
 }
