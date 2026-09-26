@@ -127,7 +127,7 @@ class GestureActivity : Activity() {
 
         gestureList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = getDrawable(R.drawable.app_card_bg)
+            background = ThemeRes.card(context)
             setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
         }
         column.addView(gestureList)
@@ -146,7 +146,7 @@ class GestureActivity : Activity() {
 
         onCallList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = getDrawable(R.drawable.app_card_bg)
+            background = ThemeRes.card(context)
             setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
         }
         column.addView(onCallList)
@@ -284,7 +284,7 @@ class GestureActivity : Activity() {
      * whole reason the selector exists is that they differ.
      */
     private fun render() {
-        val iconTint = ThemeRes.color(this, R.attr.appColorIconTint)
+        val iconTint = ThemeRes.color(this, R.attr.appColorTextPrimary)
         budIcon.setImageDrawable(
             ThemeRes.tint(
                 this,
@@ -315,14 +315,12 @@ class GestureActivity : Activity() {
     }
 
     private fun paintSideButton(button: Button, active: Boolean) {
-        button.background = getDrawable(
-            if (active) R.drawable.dev_button_bg_active else R.drawable.dev_button_bg
-        )
+        button.background = ThemeRes.chip(this, active)
         // Active chips are drawn on the accent fill, so the label has to be the
         // on-accent colour, not the theme's primary text colour — reading
         // appColorTextPrimary here would put dark text on a dark fill in OLED.
         button.setTextColor(
-            if (active) 0xFFFFFFFF.toInt()
+            if (active) ThemeRes.palette(this).onAccent
             else ThemeRes.color(this, R.attr.appColorTextPrimary)
         )
     }

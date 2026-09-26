@@ -74,7 +74,6 @@
             android:layout_height="@dimen/header_icon_button"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@drawable/header_icon_bg"
             android:clickable="true"
             android:focusable="true"
             android:paddingStart="12dp"
@@ -104,7 +103,6 @@
             android:id="@+id/btnDevTools"
             android:layout_width="@dimen/header_icon_button"
             android:layout_height="@dimen/header_icon_button"
-            android:background="@drawable/header_icon_bg"
             android:padding="7dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_dev_tools"
@@ -115,7 +113,6 @@
             android:layout_width="@dimen/header_icon_button"
             android:layout_height="@dimen/header_icon_button"
             android:layout_marginStart="8dp"
-            android:background="@drawable/header_icon_bg"
             android:padding="7dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_settings_cog"
@@ -149,7 +146,7 @@
                 android:paddingBottom="14dp"
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp"
-                android:background="@drawable/app_card_outline_bg">
+>
 
                 <FrameLayout
                     android:id="@+id/statusSlot"
@@ -202,7 +199,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="18dp"
-                android:background="@drawable/app_card_outline_bg" />
+/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

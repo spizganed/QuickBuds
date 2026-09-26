@@ -118,7 +118,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun cardView() = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        background = getDrawable(R.drawable.app_card_bg)
+        background = ThemeRes.card(context)
         val p = ThemeRes.dp(this@EarbudSettingsActivity, 4f)
         setPadding(p, p, p, p)
     }

@@ -15,7 +15,7 @@
   This is the same mechanism the main screen's battery card uses for its halves.
 
   STYLE: matches activity_main.xml — same 44dp top padding, same card
-  (@drawable/app_card_bg) and chip (@drawable/dev_button_bg) drawables, and every
+  (ThemeRes.card) and chip (ThemeRes.chip) drawables, and every
   colour read from a theme attribute (?attr/appColor*) rather than a literal. That
   is what makes the OLED / Dark / Light swap work here for free.
 
@@ -77,8 +77,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/devActionsCard"
         android:orientation="vertical"
-        android:background="@drawable/app_card_bg"
         android:padding="6dp">
 
         <LinearLayout
@@ -344,7 +344,6 @@
             android:paddingEnd="4dp"
             android:textSize="13sp"
             android:textStyle="bold"
-            android:background="@drawable/dev_button_bg"
             android:text="Human-Readable" />
 
         <Button
@@ -360,7 +359,6 @@
             android:paddingEnd="4dp"
             android:textSize="13sp"
             android:textStyle="bold"
-            android:background="@drawable/dev_button_bg"
             android:text="Raw Hex" />
     </LinearLayout>
 
@@ -378,7 +376,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@drawable/log_card_bg"
         android:padding="10dp"
         android:scrollbars="vertical">
 

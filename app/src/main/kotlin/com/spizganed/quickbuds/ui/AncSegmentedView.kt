@@ -52,7 +52,7 @@ class AncSegmentedView(context: Context, private val labels: List<String>) : Vie
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dp(13f); textAlign = Paint.Align.CENTER; isFakeBoldText = true
     }
-    private val textOn = 0xFFFFFFFF.toInt()
+    private val textOn = ThemeRes.palette(context).onAccent
     private val textOff = ThemeRes.color(context, R.attr.appColorTextSecondary)
     private val box = RectF()
 
