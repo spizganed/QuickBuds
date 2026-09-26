@@ -19,7 +19,7 @@ import kotlin.math.min
  *
  * Wear, from the buds' status codes (same meaning the widget uses):
  *   3 / 7 = in ear  -> glyph `text`,          label "In ear"
- *   4 / 0 = in case -> glyph `textSecondary`, label "In case", plus a small accent case glyph
+ *   4 / 0 = in case -> glyph `textSecondary`, label "In case" (no badge, [USER] 2026-09-26)
  *   other known     -> glyph `textSecondary`, label "Out of ear"
  *
  * Disconnected ([connected] false) keeps exactly the same size: track-only rings, glyphs in the
@@ -49,7 +49,6 @@ class BudsStatusView(context: Context) : View(context) {
         Slot(context.getDrawable(R.drawable.ic_case)!!.mutate(), 496f / 400f, 58f, 42f),
         Slot(context.getDrawable(R.drawable.ic_bud_right)!!.mutate(), 176f / 272f, 42f, 56f)
     )
-    private val badgeIcon = context.getDrawable(R.drawable.ic_case)!!.mutate().apply { setTint(p.accent) }
     private val names = listOf(
         context.getString(R.string.status_left),
         context.getString(R.string.status_case),
@@ -57,13 +56,13 @@ class BudsStatusView(context: Context) : View(context) {
     )
 
     private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE; strokeWidth = dp(7f); color = p.outline
+        style = Paint.Style.STROKE; strokeWidth = dp(6f); color = p.outline
     }
     private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE; strokeWidth = dp(7f); strokeCap = Paint.Cap.ROUND; color = p.accent
+        style = Paint.Style.STROKE; strokeWidth = dp(6f); strokeCap = Paint.Cap.ROUND; color = p.accent
     }
     private val pctPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = dp(24f); textAlign = Paint.Align.CENTER
+        textSize = dp(21f); textAlign = Paint.Align.CENTER
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -71,11 +70,11 @@ class BudsStatusView(context: Context) : View(context) {
     }
     private val arcBox = RectF()
 
-    /** 104dp, shrunk only if three columns cannot fit on a very narrow screen. */
-    private val ringSize get() = min(dp(104f), width / 3f - dp(8f))
+    /** 90dp (SPEC 104, made ~13% shorter, [USER] 2026-09-26), shrunk only if three columns cannot fit on a very narrow screen. */
+    private val ringSize get() = min(dp(90f), width / 3f - dp(8f))
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(174f).toInt())
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(148f).toInt())
     }
 
     /** Feed the current store values; rings animate only when a level actually changes. */
@@ -126,7 +125,6 @@ class BudsStatusView(context: Context) : View(context) {
             val bh = dp(s.boxH) * scale
             val (iw, ih) = if (s.iconRatio < bw / bh) bh * s.iconRatio to bh else bw to bw / s.iconRatio
             val inEar = s.status == 3 || s.status == 7
-            val inCase = i != 1 && (s.status == 4 || s.status == 0)
             s.icon.setTint(when {
                 !connected -> p.disabled
                 i == 1 || inEar -> p.text
@@ -135,20 +133,9 @@ class BudsStatusView(context: Context) : View(context) {
             s.icon.setBounds((cx - iw / 2).toInt(), (cy - ih / 2).toInt(), (cx + iw / 2).toInt(), (cy + ih / 2).toInt())
             s.icon.draw(canvas)
 
-            // Case badge: a small accent case glyph at the bud's bottom-right, inside the ring.
-            // No circle behind it ([USER] 2026-09-26, trying it without the SPEC 3.3 disc).
-            if (connected && inCase) {
-                val bx = cx + dp(20f) * scale
-                val by = cy + dp(20f) * scale
-                val gw = dp(22f) * scale
-                val gh = gw * 400f / 496f
-                badgeIcon.setBounds((bx - gw / 2).toInt(), (by - gh / 2).toInt(), (bx + gw / 2).toInt(), (by + gh / 2).toInt())
-                badgeIcon.draw(canvas)
-            }
-
             val low = connected && s.level in 0..20
             pctPaint.color = if (low) p.accent else p.text
-            canvas.drawText(pctText(s.level), cx, ring + dp(36f), pctPaint)
+            canvas.drawText(pctText(s.level), cx, ring + dp(30f), pctPaint)
 
             val wear = if (i == 1 || !connected) null else wearLabel(s.status)
             val label = if (wear == null) names[i] else "${names[i]} · $wear"
@@ -157,7 +144,7 @@ class BudsStatusView(context: Context) : View(context) {
             val room = colW - dp(6f)
             val w = labelPaint.measureText(label)
             if (w > room) labelPaint.textSize = dp(13f) * room / w
-            canvas.drawText(label, cx, ring + dp(60f), labelPaint)
+            canvas.drawText(label, cx, ring + dp(51f), labelPaint)
         }
     }
 }

@@ -653,7 +653,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                 minWidth = ThemeRes.dp(this@MainActivity, 72f)
                 setPadding(ThemeRes.dp(this@MainActivity, 20f), 0, ThemeRes.dp(this@MainActivity, 20f), 0)
                 layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, ThemeRes.dp(this@MainActivity, 40f)
+                    LinearLayout.LayoutParams.WRAP_CONTENT, ThemeRes.dp(this@MainActivity, 36f)
                 ).apply { if (i > 0) marginStart = ThemeRes.dp(this@MainActivity, 8f) }
                 paintLevelPill(this, false)
                 setOnClickListener { Haptics.commit(it); selectAnc(mode) }

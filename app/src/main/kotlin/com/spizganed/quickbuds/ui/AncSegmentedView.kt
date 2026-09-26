@@ -61,7 +61,7 @@ class AncSegmentedView(
     private val box = RectF()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(72f).toInt())
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(62f).toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -79,8 +79,8 @@ class AncSegmentedView(
         }
 
         val iconSize = dp(22f)
-        val iconTop = h / 2 - dp(19f)
-        val baseline = h / 2 + dp(18f)
+        val iconTop = h / 2 - dp(17f)
+        val baseline = h / 2 + dp(16f)
         labels.forEachIndexed { i, label ->
             // The segment under the moving fill brightens as the fill arrives.
             val closeness = if (pos < 0f) 0f else (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)

@@ -151,7 +151,7 @@ class PresetEditActivity : Activity() {
             ))
         }
         val row = SettingRowFactory.build(
-            this, 0, tokenNames[i], 0, chevron, value = hexView, minHeightDp = 62f, leading = swatch
+            this, 0, tokenNames[i], 0, chevron, value = hexView, minHeightDp = 54f, leading = swatch
         ) {
             expanded = if (expanded == i) -1 else i
             buildColors()

@@ -45,7 +45,7 @@ object SettingRowFactory {
         subtitleRes: Int,
         trailing: View?,
         value: View? = null,
-        minHeightDp: Float = 72f,
+        minHeightDp: Float = 62f,
         leading: View? = null,
         onClick: (() -> Unit)? = null
     ): LinearLayout {
@@ -57,7 +57,7 @@ object SettingRowFactory {
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             )
             minimumHeight = dp(minHeightDp)
-            setPadding(dp(16f), dp(10f), dp(16f), dp(10f))
+            setPadding(dp(16f), dp(8f), dp(16f), dp(8f))
             if (onClick != null) {
                 background = ThemeRes.ripple(context)
                 setOnClickListener { onClick() }
@@ -231,7 +231,7 @@ object SettingRowFactory {
         setTextColor(ThemeRes.color(context, R.attr.appColorTextSecondary))
         textSize = 14f
         val dp = { v: Float -> ThemeRes.dp(context, v) }
-        setPadding(dp(4f), dp(18f), 0, dp(9f))
+        setPadding(dp(4f), dp(14f), 0, dp(8f))
     }
 
     /**

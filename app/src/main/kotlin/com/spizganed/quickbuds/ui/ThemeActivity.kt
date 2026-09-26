@@ -131,7 +131,7 @@ class ThemeActivity : Activity() {
                 ))
             }
             val row = SettingRowFactory.build(
-                this, 0, R.string.theme_accent, 0, chevron, leading = swatch, minHeightDp = 62f
+                this, 0, R.string.theme_accent, 0, chevron, leading = swatch, minHeightDp = 54f
             ) { accentOpen = !accentOpen; build() }
             val sub = SettingRowFactory.subtitle(this, row)
             sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(active.accent))
@@ -175,7 +175,7 @@ class ThemeActivity : Activity() {
                 setOnClickListener { edit(preset.id) }
             }
             val row = SettingRowFactory.build(
-                this, 0, 0, 0, pencil, leading = SwatchGrid(this, preset), minHeightDp = 72f
+                this, 0, 0, 0, pencil, leading = SwatchGrid(this, preset), minHeightDp = 62f
             ) { apply(preset.id, card) }
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).text = preset.name
             SettingRowFactory.addRow(card, row)
