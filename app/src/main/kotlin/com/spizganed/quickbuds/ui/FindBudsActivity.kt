@@ -38,7 +38,7 @@ class FindBudsActivity : Activity() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(ThemeRes.color(this@FindBudsActivity, R.attr.appColorBg))
-            setPadding(dp(20f), dp(48f), dp(20f), dp(20f))
+            ThemeRes.screenPadding(this)
             gravity = Gravity.CENTER_HORIZONTAL
         }
 

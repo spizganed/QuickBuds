@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.spizganed.quickbuds.R
 import java.util.WeakHashMap
 
@@ -177,13 +180,33 @@ object ThemeRes {
     }
 
     /** The standard card: `card` fill, 1dp `outline` stroke. */
-    fun card(context: Context, radiusDp: Float = 16f): GradientDrawable {
+    fun card(context: Context, radiusDp: Float = 24f): GradientDrawable {
         val p = palette(context)
         return shape(context, p.card, p.outline, radiusDp)
     }
 
-    /** Icon button / framed control: `card` fill, `outline` stroke. */
-    fun iconButton(context: Context, radiusDp: Float = 12f): GradientDrawable = card(context, radiusDp)
+    /** Icon button / framed control: `card` fill, `outline` stroke, 14dp radius (SPEC section 2). */
+    fun iconButton(context: Context, radiusDp: Float = 14f): GradientDrawable = card(context, radiusDp)
+
+    /** Press ripple in `text` at low alpha, over [content] (or bounded by the view when null). */
+    fun ripple(context: Context, content: android.graphics.drawable.Drawable? = null): RippleDrawable {
+        val p = palette(context)
+        return RippleDrawable(
+            ColorStateList.valueOf(Palette.withAlpha(p.text, 0.12f)), content,
+            if (content == null) ColorDrawable(p.text) else null
+        )
+    }
+
+    /** SPEC screen padding (16dp sides, 20dp top/bottom) plus the system bar insets. */
+    fun screenPadding(view: View, sideDp: Float = 16f, vertDp: Float = 20f) {
+        val side = dp(view.context, sideDp)
+        val vert = dp(view.context, vertDp)
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(side + bars.left, vert + bars.top, side + bars.right, vert + bars.bottom)
+            insets
+        }
+    }
 
     /** Small chip button; the active one is an `accent` fill. */
     fun chip(context: Context, active: Boolean): GradientDrawable {
@@ -197,11 +220,6 @@ object ThemeRes {
         cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
     }
 
-    /** Toggle track, as the Switch's button drawable (see SettingRowFactory.buildSwitch). */
-    fun switchTrack(context: Context, checked: Boolean): GradientDrawable {
-        val p = palette(context)
-        return if (checked) shape(context, p.accent, null, 100f) else shape(context, p.track, null, 100f)
-    }
 
     /** Thumb / track tint lists for a platform Switch (SPEC section 1, derived colours). */
     fun switchTints(context: Context): Pair<ColorStateList, ColorStateList> {

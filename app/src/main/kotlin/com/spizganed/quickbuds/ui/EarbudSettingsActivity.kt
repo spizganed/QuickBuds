@@ -49,18 +49,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         super.onCreate(savedInstanceState)
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ThemeRes.color(this@EarbudSettingsActivity, R.attr.appColorBg))
-            setPadding(dp(16f), dp(44f), dp(16f), dp(24f))
-        }
-        root.addView(TextView(this).apply {
-            setText(R.string.earbuds_title)
-            setTextColor(ThemeRes.color(this@EarbudSettingsActivity, R.attr.appColorTextPrimary))
-            textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 0, 0, dp(16f))
-        })
+        val root = SettingRowFactory.screen(this)
+        root.addView(SettingRowFactory.title(this, R.string.earbuds_title))
 
         val card = cardView()
         fun link(icon: Int, title: Int, sub: Int, target: Class<*>) {
@@ -81,12 +71,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         // Sent on release only, so the buds play one prompt per change, not one per step.
         // No numbers, as in HeyMelody: a speaker icon left of the bar, muted at the lowest step
         // (level 1 is silent on the buds, `[USER]` 2026-09-25).
-        root.addView(TextView(this).apply {
-            setText(R.string.earbuds_section_sounds)
-            setTextColor(ThemeRes.color(this@EarbudSettingsActivity, R.attr.appColorTextSecondary))
-            textSize = 13f
-            setPadding(dp(4f), dp(22f), 0, dp(8f))
-        })
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_sounds))
         alertSpeaker = ImageView(this).apply {
             layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
         }
@@ -116,12 +101,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         setContentView(ScrollView(this).apply { addView(root) })
     }
 
-    private fun cardView() = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        background = ThemeRes.card(context)
-        val p = ThemeRes.dp(this@EarbudSettingsActivity, 4f)
-        setPadding(p, p, p, p)
-    }
+    private fun cardView() = SettingRowFactory.card(this)
 
     private fun paintSpeaker(level: Int) {
         alertSpeaker.setImageDrawable(ThemeRes.tint(

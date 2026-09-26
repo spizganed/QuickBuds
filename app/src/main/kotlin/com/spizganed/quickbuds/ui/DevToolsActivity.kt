@@ -812,6 +812,7 @@ class DevToolsActivity : Activity() {
 
         devToolsRoot.setBackgroundColor(bgColor)
         findViewById<android.view.View>(R.id.devActionsCard).background = ThemeRes.card(this)
+        ThemeRes.screenPadding(devToolsRoot)
         logText.setBackgroundColor(cardColor)
         logText.setTextColor(txtColor)
         logScroll.background = ThemeRes.card(this).apply { setColor(bgColor) }

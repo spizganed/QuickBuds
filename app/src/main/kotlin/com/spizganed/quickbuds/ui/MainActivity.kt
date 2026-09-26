@@ -359,7 +359,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         gameSwitch?.let { sw ->
             if (sw.isChecked != state.gameMode) {
                 sw.isChecked = state.gameMode
-                SettingRowFactory.refreshSwitch(this, sw, state.gameMode)
             }
         }
     }
@@ -694,11 +693,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * never appColorIconTint, which would turn them black on a dark chip.
      */
     private fun applyThemeTints() {
-        connPill.background = ThemeRes.iconButton(this)
-        btnDevTools.background = ThemeRes.iconButton(this)
-        btnSettings.background = ThemeRes.iconButton(this)
+        ThemeRes.screenPadding(mainLayout)
+        connPill.background = ThemeRes.ripple(this, ThemeRes.iconButton(this, 22f))
+        btnDevTools.background = ThemeRes.ripple(this, ThemeRes.iconButton(this))
+        btnSettings.background = ThemeRes.ripple(this, ThemeRes.iconButton(this))
         batteryCard.background = ThemeRes.card(this)
         featureList.background = ThemeRes.card(this)
+        featureList.clipToOutline = true
         btnDevTools.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_dev_tools, ThemeRes.color(this, R.attr.appColorAccent)))
         btnSettings.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_settings_cog, ThemeRes.color(this, R.attr.appColorAccent)))
     }
@@ -854,7 +855,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         manager.setGameMode(next)
         gameModeOn = next
         syncWidgetState()
-        SettingRowFactory.refreshSwitch(this, gameSwitch!!, next)
     }
 
     /**

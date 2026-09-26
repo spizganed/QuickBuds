@@ -91,18 +91,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         super.onCreate(savedInstanceState)
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ThemeRes.color(this@EqActivity, R.attr.appColorBg))
-            setPadding(dp(16f), dp(44f), dp(16f), dp(24f))
-        }
+        val root = SettingRowFactory.screen(this)
 
-        root.addView(TextView(this).apply {
-            setText(R.string.eq_title)
-            setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorTextPrimary))
-            textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
-        })
+        root.addView(SettingRowFactory.title(this, R.string.eq_title))
 
         notConnected = sectionLabel(R.string.eq_not_connected)
         root.addView(notConnected)
@@ -237,7 +228,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         // New / Import live under the card, apart from the presets themselves.
         customActions.removeAllViews()
         if (connected && custom.size < EqCodec.MAX_CUSTOM) {
-            customActions.addView(actionButton(R.drawable.ic_add, R.string.eq_add) {
+            customActions.addView(actionButton(R.drawable.ic_plus, R.string.eq_add) {
                 val used = custom.map { it.name }.toSet()
                 val name = (1..9).map { "Custom$it" }.first { it !in used }
                 manager?.createCustomEq(name)
@@ -315,7 +306,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             setPadding(dp(6f), 0, dp(6f), 0)
             addView(iconButton(R.drawable.ic_close, R.string.eq_close) { d.dismiss() })
             addView(nameView)
-            addView(iconButton(R.drawable.ic_edit, R.string.eq_rename) {
+            addView(iconButton(R.drawable.ic_pencil, R.string.eq_rename) {
                 rename(p) { renamed -> p = renamed; nameView.text = renamed.name }
             })
         })
@@ -433,16 +424,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         setOnClickListener { onClick() }
     }
 
-    /** Square framed icon button, the header cog's style, accent-tinted. */
-    private fun iconButton(iconRes: Int, descRes: Int, onClick: () -> Unit) = ImageView(this).apply {
-        val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
-        layoutParams = LinearLayout.LayoutParams(dp(40f), dp(40f))
-        setPadding(dp(9f), dp(9f), dp(9f), dp(9f))
-        background = ThemeRes.iconButton(context)
-        setImageDrawable(ThemeRes.tint(this@EqActivity, iconRes, ThemeRes.color(this@EqActivity, R.attr.appColorAccent)))
-        contentDescription = getString(descRes)
-        setOnClickListener { onClick() }
-    }
+    /** SPEC icon button (44dp, accent icon). */
+    private fun iconButton(iconRes: Int, descRes: Int, onClick: () -> Unit) =
+        SettingRowFactory.iconButton(this, iconRes, descRes, onClick)
 
     // ---------------------------------------------------------------- listener
 
@@ -462,23 +446,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     // ---------------------------------------------------------------- small builders
 
-    private fun card() = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        background = ThemeRes.card(context)
-        val p = ThemeRes.dp(this@EqActivity, 4f)
-        setPadding(p, p, p, p)
-        layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-    }
+    private fun card() = SettingRowFactory.card(this)
 
-    private fun sectionLabel(res: Int) = TextView(this).apply {
-        setText(res)
-        setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorTextSecondary))
-        textSize = 13f
-        val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
-        setPadding(dp(4f), dp(22f), 0, dp(8f))
-    }
+    private fun sectionLabel(res: Int) = SettingRowFactory.sectionLabel(this, res)
 
     /** A selectable row: accent label and a check when selected — the BottomSheetDialog look. */
     /**
@@ -524,7 +494,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                         .start()
                 }
             })
-            if (onEdit != null) addView(iconButton(R.drawable.ic_edit, R.string.eq_edit, onEdit).apply {
+            if (onEdit != null) addView(iconButton(R.drawable.ic_pencil, R.string.eq_edit, onEdit).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(34f), dp(34f)).apply { marginStart = dp(12f) }
                 setPadding(dp(8f), dp(8f), dp(8f), dp(8f))
             })

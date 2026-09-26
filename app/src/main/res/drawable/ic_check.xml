@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Tick shown on the selected row of a bottom sheet. White path, tinted per theme in
-  code (ThemeRes.tint) — a baked colour would vanish on one of the palettes.
--->
+<!-- Check: done, selected. design/SPEC.md section 5: 24x24 viewport, 2.2 stroke, round caps and joins. White, tinted at runtime. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 9.0 16.2 L 4.8 12.0 L 3.4 13.4 L 9.0 19.0 L 21.0 7.0 L 19.6 5.6 Z" />
+        android:pathData="M5,12.5l4.5,4.5L19,7"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>
