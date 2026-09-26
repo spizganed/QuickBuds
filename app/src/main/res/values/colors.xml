@@ -15,4 +15,11 @@
     <color name="widget_segment_bg_active">#FFFFFF</color>
     <color name="widget_segment_text">#8A8A8A</color>
     <color name="widget_segment_text_active">#000000</color>
+
+    <!-- Edit preset quick swatches (design/SPEC.md 3.8). Picker choices, not app colours. -->
+    <color name="swatch_red">#D71920</color>
+    <color name="swatch_orange">#E8742A</color>
+    <color name="swatch_green">#22A06B</color>
+    <color name="swatch_blue">#3B82F6</color>
+    <color name="swatch_purple">#8B5CF6</color>
 </resources>

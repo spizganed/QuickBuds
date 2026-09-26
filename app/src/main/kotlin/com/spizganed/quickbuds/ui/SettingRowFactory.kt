@@ -46,6 +46,7 @@ object SettingRowFactory {
         trailing: View?,
         value: View? = null,
         minHeightDp: Float = 72f,
+        leading: View? = null,
         onClick: (() -> Unit)? = null
     ): LinearLayout {
         val dp = { v: Float -> ThemeRes.dp(context, v) }
@@ -63,6 +64,9 @@ object SettingRowFactory {
             }
         }
 
+        if (leading != null) row.addView(leading, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { marginEnd = dp(14f) })
         if (iconRes != 0) row.addView(ImageView(context).apply {
             layoutParams = LinearLayout.LayoutParams(dp(24f), dp(24f)).apply { marginEnd = dp(14f) }
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -73,10 +77,12 @@ object SettingRowFactory {
 
         val textColumn = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
+            tag = TEXT_TAG
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
         textColumn.addView(TextView(context).apply {
-            setText(titleRes)
+            if (titleRes != 0) setText(titleRes)
+            tag = TITLE_TAG
             setTextColor(ThemeRes.color(context, R.attr.appColorTextPrimary))
             textSize = 16f
             typeface = SEMIBOLD
@@ -110,7 +116,7 @@ object SettingRowFactory {
      */
     fun subtitle(context: Context, row: LinearLayout): TextView {
         row.findViewWithTag<TextView>(SUBTITLE_TAG)?.let { return it }
-        val column = row.getChildAt(if (row.findViewWithTag<View>(ICON_TAG) != null) 1 else 0) as LinearLayout
+        val column = row.findViewWithTag<LinearLayout>(TEXT_TAG)
         return TextView(context).apply {
             setTextColor(ThemeRes.color(context, R.attr.appColorTextSecondary))
             textSize = 13f
@@ -122,6 +128,12 @@ object SettingRowFactory {
 
     /** Tag for the subtitle TextView, so callers can find and update it. */
     const val SUBTITLE_TAG = "setting_row_subtitle"
+
+    /** Tag for the title TextView (rows whose title is not a resource, e.g. a preset name). */
+    const val TITLE_TAG = "setting_row_title"
+
+    /** Tag for the title + subtitle column. */
+    const val TEXT_TAG = "setting_row_text"
 
     /** Tag for the leading icon ImageView. */
     const val ICON_TAG = "setting_row_icon"

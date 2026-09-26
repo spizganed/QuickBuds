@@ -42,7 +42,9 @@ class SettingsActivity : Activity() {
             return SettingRowFactory.build(this, icon, title, sub, sw) { sw.performClick() }
         }
 
-        val themeRow = link(R.drawable.ic_palette, R.string.theme_title, 0) { showThemeSheet() }
+        val themeRow = link(R.drawable.ic_palette, R.string.theme_title, 0) {
+            startActivity(Intent(this, ThemeActivity::class.java))
+        }
         themeSubtitle = SettingRowFactory.subtitle(this, themeRow)
         // Home layout has no screen in this pass ([USER] 2026-09-26): shown, disabled.
         val layoutRow = link(R.drawable.ic_layout, R.string.settings_layout_title, R.string.settings_layout_sub) {}
@@ -80,21 +82,6 @@ class SettingsActivity : Activity() {
     override fun onResume() {
         super.onResume()
         themeSubtitle?.text = ThemeRes.palette(this).name
-    }
-
-    // Replaced by the Theme & colors screen (SPEC 3.7) in the next step.
-    private fun showThemeSheet() {
-        val active = PaletteStore.activeId(this)
-        val presets = PaletteStore.builtInIds().map { PaletteStore.builtIn(this, it) } + PaletteStore.custom(this)
-        BottomSheetDialog(this)
-            .title(getString(R.string.theme_title))
-            .items(presets.map { p ->
-                BottomSheetDialog.Item(label = p.name, selected = p.id == active) {
-                    PaletteStore.setActive(this, p.id)
-                    recreate()
-                }
-            })
-            .show()
     }
 
     private fun showAbout(version: String) {
