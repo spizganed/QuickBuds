@@ -104,6 +104,22 @@ object SettingRowFactory {
         return row
     }
 
+    /**
+     * The row's subtitle, created empty if the row was built without one, so a caller can fill
+     * it at runtime (active preset name, installed version).
+     */
+    fun subtitle(context: Context, row: LinearLayout): TextView {
+        row.findViewWithTag<TextView>(SUBTITLE_TAG)?.let { return it }
+        val column = row.getChildAt(if (row.findViewWithTag<View>(ICON_TAG) != null) 1 else 0) as LinearLayout
+        return TextView(context).apply {
+            setTextColor(ThemeRes.color(context, R.attr.appColorTextSecondary))
+            textSize = 13f
+            setPadding(0, ThemeRes.dp(context, 2f), 0, 0)
+            tag = SUBTITLE_TAG
+            column.addView(this)
+        }
+    }
+
     /** Tag for the subtitle TextView, so callers can find and update it. */
     const val SUBTITLE_TAG = "setting_row_subtitle"
 

@@ -19,7 +19,10 @@ import com.spizganed.quickbuds.R
  */
 object ConfirmDialog {
 
-    fun show(activity: Activity, title: String, body: String?, action: String, onConfirm: () -> Unit) {
+    fun show(
+        activity: Activity, title: String, body: String?, action: String,
+        cancelRes: Int = R.string.dialog_cancel, onConfirm: () -> Unit
+    ) {
         val p = ThemeRes.palette(activity)
         val dp = { v: Float -> ThemeRes.dp(activity, v) }
         val d = Dialog(activity).apply { requestWindowFeature(Window.FEATURE_NO_TITLE) }
@@ -61,7 +64,7 @@ object ConfirmDialog {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.END
                 setPadding(0, dp(24f), 0, 0)
-                addView(pill(activity.getString(R.string.dialog_cancel), false) { d.dismiss() })
+                addView(pill(activity.getString(cancelRes), false) { d.dismiss() })
                 addView(pill(action, true) { d.dismiss(); onConfirm() })
             })
         }

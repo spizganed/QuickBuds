@@ -357,7 +357,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         applyThemeTints()
         buildFeatureRows()
 
-        btnSettings.setOnClickListener { showSettingsDialog() }
+        btnSettings.setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
         btnDevTools.setOnClickListener {
             startActivity(Intent(this, DevToolsActivity::class.java))
         }
@@ -527,6 +527,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     override fun onResume() {
         super.onResume()
+        // Settings › Developer › Dev tools button (default on).
+        btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
+                .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
         instance = this
         // Capture our own geometry while we are actually laid out, and park the
         // TEXT for Dev Tools. Doing it here (not on demand from Dev Tools) is
@@ -937,51 +940,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             featureList.addView(SettingRowFactory.buildDivider(this))
         }
         featureList.addView(row)
-    }
-
-    // ==================== Settings dialog ====================
-
-    /**
-     * The settings cog: theme, and App update (moved off the main card 2026-09-25).
-     *
-     * RECONNECT AND DISCONNECT USED TO LIVE HERE and have moved to Dev Tools at his
-     * request: they are connection plumbing, not a setting, and sitting next to
-     * "Theme" made the cog look like it might do something destructive. Dev Tools
-     * already owns the connection diagnostics, so that is where they belong.
-     */
-    private fun showSettingsDialog() {
-        BottomSheetDialog(this)
-            .title(getString(R.string.settings_title))
-            .items(listOf(
-                BottomSheetDialog.Item(getString(R.string.theme_title), false) { showThemeDialog() },
-                BottomSheetDialog.Item(getString(R.string.row_update_title), false) {
-                    startActivity(Intent(this, UpdateActivity::class.java))
-                }
-            ))
-            .show()
-    }
-
-    /**
-     * Theme picker, as a bottom sheet.
-     *
-     * Replaces an AlertDialog: that rendered as a centred platform box with stock
-     * accents, which is the mismatch this whole pass is fixing. The theme is
-     * applied by recreate(), so the sheet is dismissed first — leaving it up while
-     * the activity rebuilds leaves an orphaned window on some devices.
-     */
-    private fun showThemeDialog() {
-        val active = PaletteStore.activeId(this)
-        val presets = PaletteStore.builtInIds().map { PaletteStore.builtIn(this, it) } + PaletteStore.custom(this)
-        BottomSheetDialog(this)
-            .title(getString(R.string.theme_title))
-            .items(presets.map { p ->
-                BottomSheetDialog.Item(label = p.name, selected = p.id == active) {
-                    // The stale check in QuickBudsApp rebuilds every open activity on resume.
-                    PaletteStore.setActive(this, p.id)
-                    recreate()
-                }
-            })
-            .show()
     }
 
     // ==================== Permissions / connection ====================
