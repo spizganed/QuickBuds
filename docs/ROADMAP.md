@@ -59,8 +59,7 @@ arrows and a hide switch, not drag and drop).
 ## Settings screen contents
 
 - **Hide the Dev Tools button** from the main screen (switch).
-- **Background service on/off**, for users who do not want it.
-- **Widget on/off.**
+- **Background service on/off.** Done 2026-09-26, with a warning that the widget needs it.
 - **App update** is in the cog since 2026-09-25. Still to add: an **auto-check on start** switch. The
   check runs in the background and shows one styled dialog when an update exists. It should never
   nag. **The update screen needs a redesign** (updater confirmed working 2.0.0 → 2.1.0, 2026-09-25):
@@ -81,9 +80,8 @@ arrows and a hide switch, not drag and drop).
 
 - **Keep-alive: drop it entirely?** Open. It is now 300 s. Dropping it needs a long session
   without it, to prove the link does not go stale.
-- **Replace the connect retry timers with system Bluetooth state.** Listen for Android's own
-  "device connected" (A2DP/headset) broadcasts and connect RFCOMM when the audio link comes up,
-  instead of 5 s retries.
+- **Connect when the audio link comes up.** Done 2026-09-26, awaiting his test (CLAUDE.md,
+  Connection robustness).
 
 ## Docs cleanup
 

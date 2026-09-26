@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.ui.ThemeRes
 import java.io.File
 import java.io.PrintWriter
@@ -55,6 +56,9 @@ import java.util.Locale
  */
 class QuickBudsApp : Application() {
 
+    /** Activities currently started, for the background-service switch. */
+    private var started = 0
+
     override fun onCreate() {
         super.onCreate()
         // A preset change rebuilds every open activity when it comes back to the front,
@@ -62,9 +66,16 @@ class QuickBudsApp : Application() {
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityResumed(a: Activity) { if (ThemeRes.isStale(a)) a.recreate() }
             override fun onActivityCreated(a: Activity, b: Bundle?) {}
-            override fun onActivityStarted(a: Activity) {}
+            override fun onActivityStarted(a: Activity) { started++ }
             override fun onActivityPaused(a: Activity) {}
-            override fun onActivityStopped(a: Activity) {}
+            override fun onActivityStopped(a: Activity) {
+                // Background service off: leaving the app (no activity visible) stops the service.
+                // A still-bound MainActivity keeps it alive until it is destroyed (Back or swiped
+                // away); the service closes the RFCOMM link in onDestroy.
+                if (--started == 0 && !BudsService.backgroundAllowed(a)) {
+                    runCatching { a.applicationContext.stopService(Intent(a, BudsService::class.java)) }
+                }
+            }
             override fun onActivitySaveInstanceState(a: Activity, b: Bundle) {}
             override fun onActivityDestroyed(a: Activity) {}
         })
