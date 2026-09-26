@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget surface, WHITE on purpose: RemoteViews tints it at runtime (ImageView.setColorFilter) with
+     the active palette, which XML cannot know. See widget/WidgetRender.kt. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFFFF" />
+    <corners android:radius="24dp" />
+</shape>

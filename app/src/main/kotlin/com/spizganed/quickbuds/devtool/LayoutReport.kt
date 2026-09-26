@@ -76,7 +76,7 @@ object LayoutReport {
      * So no amount of walking an Activity's view tree can ever describe it, which is
      * why the widget had no diagnostic until now.
      *
-     * What this does instead: inflates R.layout.widget_anc directly, forces a
+     * What this does instead: inflates R.layout.widget_full directly, forces a
      * measure/layout pass at the size the launcher would use, and prints the same
      * per-view report. That is NOT the launcher's actual rendering — the real widget
      * may be resized by the user, and RemoteViews rewrites some properties — but it
@@ -123,7 +123,7 @@ object LayoutReport {
         sb.appendLine()
 
         val root = try {
-            android.view.LayoutInflater.from(context).inflate(R.layout.widget_anc, null)
+            android.view.LayoutInflater.from(context).inflate(R.layout.widget_full, null)
         } catch (e: Exception) {
             sb.appendLine("!! inflate FAILED: $e")
             return sb.toString()

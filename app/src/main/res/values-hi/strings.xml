@@ -2,7 +2,11 @@
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
     <string name="widget_anc_label">ANC</string>
-    <string name="widget_name">बड्स क्विक सेटिंग्स</string>
+    <string name="widget_small_name">QuickBuds कॉम्पैक्ट</string>
+    <string name="widget_strip_name">QuickBuds बार</string>
+    <string name="widget_short_low">कम</string>
+    <string name="widget_short_med">मध्य</string>
+    <string name="widget_short_high">उच्च</string>
     <string name="widget_game_label">गेम</string>
     <string name="widget_buds_desc">ईयरबड्स</string>
     <string name="widget_battery_left">बा</string>
