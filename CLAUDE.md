@@ -80,7 +80,7 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
 - **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
-- Completed SPEC steps: 1 (palette).
+- Completed SPEC steps: 1 (palette), 2 (shared components).
 - **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
   one style per built-in preset. `Palette.kt` holds `Palette` (tokens + derived colours) and `PaletteStore`
   (active id + up to 3 custom presets as JSON in `QuickBudsPrefs`; the old `theme` int migrates once).
@@ -92,6 +92,10 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   status chip follows SPEC (accent dot when connected, grey ring + grey "Connect" when not); the battery glyphs keep
   their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; Settings' Home layout
   row is shown disabled and About is a simple dialog; the Dev tools button toggle defaults ON.
+- **Shared components (step 2)** live in `SettingRowFactory`: `screen` (padding + system-bar insets; the app
+  is edge to edge on target 35+), `title`, `sectionLabel`, `card`, `build` (row with 52dp trailing slot and an
+  optional `value` before it), `buildSwitch`, `buildChevron`, `buildDivider`, `iconButton`. New screens use
+  these, not their own copies. SPEC section 5 icons are in `res/drawable` under the SPEC names.
 
 ### Environment you need
 

@@ -55,18 +55,9 @@ class GestureActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ThemeRes.color(this@GestureActivity, R.attr.appColorBg))
-            setPadding(dp(16f), dp(44f), dp(16f), dp(16f))
-        }
+        val root = SettingRowFactory.screen(this)
 
-        root.addView(TextView(this).apply {
-            setText(R.string.gesture_title)
-            setTextColor(ThemeRes.color(this@GestureActivity, R.attr.appColorTextPrimary))
-            textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
-        })
+        root.addView(SettingRowFactory.title(this, R.string.gesture_title))
 
         // --- 1. The selected bud's icon ---
         //
@@ -118,18 +109,9 @@ class GestureActivity : Activity() {
             orientation = LinearLayout.VERTICAL
         }
 
-        column.addView(TextView(this).apply {
-            setText(R.string.gesture_section_not_in_call)
-            setTextColor(ThemeRes.color(this@GestureActivity, R.attr.appColorTextSecondary))
-            textSize = 13f
-            setPadding(dp(4f), dp(22f), 0, dp(8f))
-        })
+        column.addView(SettingRowFactory.sectionLabel(this, R.string.gesture_section_not_in_call))
 
-        gestureList = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            background = ThemeRes.card(context)
-            setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
-        }
+        gestureList = SettingRowFactory.card(this)
         column.addView(gestureList)
 
         // --- On-call gestures, BELOW the normal list ---
@@ -137,18 +119,9 @@ class GestureActivity : Activity() {
         // No Left/Right selector reads into this card — `[USER]`-confirmed 2026-09-22,
         // these two rows are ONE shared setting for both buds, unlike everything above.
         // See PROTOCOL.md §6 and [OnCallGesture].
-        column.addView(TextView(this).apply {
-            setText(R.string.gesture_section_on_call)
-            setTextColor(ThemeRes.color(this@GestureActivity, R.attr.appColorTextSecondary))
-            textSize = 13f
-            setPadding(dp(4f), dp(22f), 0, dp(8f))
-        })
+        column.addView(SettingRowFactory.sectionLabel(this, R.string.gesture_section_on_call))
 
-        onCallList = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            background = ThemeRes.card(context)
-            setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
-        }
+        onCallList = SettingRowFactory.card(this)
         column.addView(onCallList)
 
         // The status note. Deliberately below the list and in secondary colour: it
@@ -336,12 +309,6 @@ class GestureActivity : Activity() {
         val current = GestureConfigStore.load(this, side, gesture)
         val summary = GestureConfigStore.describe(this, current)
 
-        val trailing = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-        }
-        trailing.addView(SettingRowFactory.buildValue(this, summary))
-        trailing.addView(SettingRowFactory.buildChevron(this))
 
         // NO SUBTITLE, on any gesture row.
         //
@@ -356,7 +323,8 @@ class GestureActivity : Activity() {
             iconFor(gesture),
             gesture.labelRes,
             0,
-            trailing
+            SettingRowFactory.buildChevron(this),
+            SettingRowFactory.buildValue(this, summary)
         ) { showActionDialog(gesture) }
 
         return row
@@ -372,19 +340,14 @@ class GestureActivity : Activity() {
         val enabled = OnCallConfigStore.isEnabled(this, gesture)
         val summary = getString(if (enabled) gesture.enabledLabelRes else R.string.gesture_action_none)
 
-        val trailing = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-        }
-        trailing.addView(SettingRowFactory.buildValue(this, summary))
-        trailing.addView(SettingRowFactory.buildChevron(this))
 
         return SettingRowFactory.build(
             this,
             R.drawable.ic_bolt,
             gesture.rowLabelRes,
             0,
-            trailing
+            SettingRowFactory.buildChevron(this),
+            SettingRowFactory.buildValue(this, summary)
         ) { showOnCallDialog(gesture) }
     }
 

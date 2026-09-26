@@ -52,22 +52,11 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         super.onCreate(savedInstanceState)
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ThemeRes.color(this@DualDeviceActivity, R.attr.appColorBg))
-            setPadding(dp(16f), dp(44f), dp(16f), dp(24f))
-        }
-        root.addView(TextView(this).apply {
-            setText(R.string.dual_title)
-            setTextColor(ThemeRes.color(this@DualDeviceActivity, R.attr.appColorTextPrimary))
-            textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 0, 0, dp(16f))
-        })
+        val root = SettingRowFactory.screen(this)
+        root.addView(SettingRowFactory.title(this, R.string.dual_title))
 
         dualSwitch = SettingRowFactory.buildSwitch(this, false)
         dualSwitch.setOnCheckedChangeListener { _, on ->
-            SettingRowFactory.refreshSwitch(this, dualSwitch, on)
             if (!syncing) manager?.setDualDevice(on)
         }
         root.addView(cardView().apply {
@@ -78,12 +67,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
             )
         })
 
-        root.addView(TextView(this).apply {
-            setText(R.string.dual_section_devices)
-            setTextColor(ThemeRes.color(this@DualDeviceActivity, R.attr.appColorTextSecondary))
-            textSize = 13f
-            setPadding(dp(4f), dp(22f), 0, dp(8f))
-        })
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.dual_section_devices))
         deviceCard = cardView()
         root.addView(deviceCard)
         onDevices(emptyList())
@@ -91,12 +75,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         setContentView(ScrollView(this).apply { addView(root) })
     }
 
-    private fun cardView() = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        background = ThemeRes.card(context)
-        val p = ThemeRes.dp(this@DualDeviceActivity, 4f)
-        setPadding(p, p, p, p)
-    }
+    private fun cardView() = SettingRowFactory.card(this)
 
     /**
      * The buds do not say which entry is this phone (two list bytes are still undecoded), so it

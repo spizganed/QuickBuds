@@ -53,28 +53,13 @@ class WearActivity : Activity(), BudsConnectionManager.Listener {
         super.onCreate(savedInstanceState)
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ThemeRes.color(this@WearActivity, R.attr.appColorBg))
-            setPadding(dp(16f), dp(44f), dp(16f), dp(24f))
-        }
-        root.addView(TextView(this).apply {
-            setText(R.string.wear_title)
-            setTextColor(ThemeRes.color(this@WearActivity, R.attr.appColorTextPrimary))
-            textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 0, 0, dp(16f))
-        })
+        val root = SettingRowFactory.screen(this)
+        root.addView(SettingRowFactory.title(this, R.string.wear_title))
 
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            background = ThemeRes.card(context)
-            setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
-        }
+        val card = SettingRowFactory.card(this)
 
         firmwareSwitch = SettingRowFactory.buildSwitch(this, false)
         firmwareSwitch.setOnCheckedChangeListener { _, on ->
-            SettingRowFactory.refreshSwitch(this, firmwareSwitch, on)
             if (syncing) return@setOnCheckedChangeListener
             manager?.setFeatures(OpoProtocol.FEATURE_AUTO_PLAY_PAUSE to on)
             if (on && smartSwitch.isChecked) smartSwitch.isChecked = false
@@ -89,7 +74,6 @@ class WearActivity : Activity(), BudsConnectionManager.Listener {
 
         smartSwitch = SettingRowFactory.buildSwitch(this, prefs.getBoolean(BudsService.PREF_SMART_PAUSE, false))
         smartSwitch.setOnCheckedChangeListener { _, on ->
-            SettingRowFactory.refreshSwitch(this, smartSwitch, on)
             prefs.edit().putBoolean(BudsService.PREF_SMART_PAUSE, on).apply()
             if (on && firmwareSwitch.isChecked) firmwareSwitch.isChecked = false
         }
