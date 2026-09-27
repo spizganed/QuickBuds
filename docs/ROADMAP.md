@@ -23,7 +23,12 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Done 2026-09-27: capability gating.** The buds' own `0x8100` bitmap and `0x810D` list decide
      which home rows, Earbud settings rows and connect-time queries appear (`Capabilities.kt`,
-     PROTOCOL.md §4). The product id is read and logged. Next: the model list and per-model ANC.
+     PROTOCOL.md §4). The product id is read and logged.
+   - **Done 2026-09-27: per-model noise control.** HeyMelody's `noiseReductionMode` per product id
+     (`assets/models.json`, `AncModes.kt`, PROTOCOL.md §5) sets the bits both ways and decides which
+     segments, level pills and widget modes show. Buds 4 unchanged on device; other models unverified
+     until an owner reads a write back. Open: the product-id ranges and device-name fallback below,
+     and the widget still shows its mode button on a model with no noise control. Next: the model list.
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
      Look it up in the model list; if the id is missing or unknown, match the Bluetooth device name;

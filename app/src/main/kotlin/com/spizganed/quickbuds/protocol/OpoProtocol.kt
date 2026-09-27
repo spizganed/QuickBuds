@@ -158,77 +158,23 @@ object OpoProtocol {
         buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(0x03, 0x01, 0x02, 0x03))
 
     /**
-     * SET_ANC (0x0404) payload: `01 01` then a bit field, bit `index` set.
+     * SET_ANC (0x0404): `01 01` then a little-endian bit field with bit [bit] set, `index / 8 + 1`
+     * bytes long. The bit is the mode's `protocolIndex` for the connected model ([AncModes],
+     * PROTOCOL.md §5). Buds 4: Off 0 `01 01 01`, Transparency 2 `01 01 04`, Deep 4, Medium 5,
+     * Light 6, Adaptive 11 `01 01 00 08`.
      *
-     * THE SET AND QUERY/NOTIFY ENCODINGS ARE DIFFERENT TABLES. Do not "unify" them.
-     *
-     * SET (this function) — bit indices below, sourced from OppoPodsManager
-     * `Protocol/OppoProtocol.Anc.cs` (AncOff/AncLight/AncMedium/AncDeep/
-     * AncTransparency, and PktAncByIndex which is this exact algorithm):
-     *
-     *     Off          01 01 01      (bit 0)
-     *     Transparency 01 01 04      (bit 2)
-     *     Deep         01 01 10      (bit 4)
-     *     Medium       01 01 20      (bit 5)
-     *     Light        01 01 40      (bit 6)
-     *     Smart        01 01 80      (mask 0x0080, bit 7)
-     *     Adaptive     01 01 00 08   (mask 0x0800 = bit 11, 4-byte payload)
-     *
-     * ADAPTIVE IS "BIT 11", NOT "BIT 8", AND PASSING 8 WAS A REAL BUG (fixed
-     * 2026-09-22). `ancPayload(8)` computes `byteCount = 8/8+1 = 2` and sets bit
-     * `8%8 = 0` of the SECOND mask byte, which yields `01 01 00 01` — a different mode
-     * entirely, not Adaptive. The true payload is `01 01 00 08`: the mask is little
-     * endian across the bytes after the `01 01` prefix, so `[00, 08]` is the value
-     * 0x0800, whose bit index is 11.
-     *
-     * State the fix exactly, because "Adaptive is not an index" would be WRONG:
-     * `ancPayload(11)` DOES reproduce these bytes — the helper was never the problem,
-     * the number handed to it was. 8 is simply the plausible-looking wrong answer,
-     * because the vendor's list reads like "0-7, then the next one". Verified against
-     * OppoPodsManager `Protocol/OppoProtocol.Anc.cs`, where
-     * `AncAdaptive = { 0x01, 0x01, 0x00, 0x08 }` sits alongside
-     * AncSmart/AncLight/AncMedium/AncDeep, all of which our index table reproduces
-     * correctly. The bug was inert while nothing called this function; the Adaptive
-     * button on the main screen makes it reachable, so it had to be fixed rather than
-     * left as a latent wrong packet.
-     *
-     * QUERY reply / 0x0204 subType 0x03 NOTIFY use bits 3 and 8 instead:
-     * 0x0008 Off, 0x0100 Transparency(+voice enhance off), 0x0010 Deep,
-     * 0x0020 Medium, 0x0040 Light, 0x0080 Smart, 0x0000 0x0002/0x0008 Adaptive.
-     * Those live in AncEventParser and are deliberately NOT reused here.
-     *
-     * WARNING / DO NOT REPEAT: this table was briefly "corrected" to the notify
-     * bits (Off->3, Transparency->8) on the theory that set and query must agree.
-     * They do not. That change sent the wrong bits. It is reverted.
+     * Reports (`0x810C`, `0x0204` subType 3) name the SAME tree's bits, but a mode's child where it
+     * has one (Buds 4 reports Off as bit 3, Transparency as bit 8). Setting a child bit was tried
+     * once and sent the wrong mode: SET uses the parent. Adaptive's bit is 11, not 8: `8` gives
+     * `01 01 00 01`, a different mode (fixed 2026-09-22).
      */
-    private fun ancPayload(index: Int): ByteArray {
-        val byteCount = index / 8 + 1
-        val arr = ByteArray(2 + byteCount)
+    fun anc(bit: Int): ByteArray {
+        val arr = ByteArray(2 + bit / 8 + 1)
         arr[0] = 0x01
         arr[1] = 0x01
-        arr[2 + index / 8] = (1 shl (index % 8)).toByte()
-        return arr
+        arr[2 + bit / 8] = (1 shl (bit % 8)).toByte()
+        return buildPacket(CMD_SET_ANC, payload = arr)
     }
-
-    fun ancOff(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(0))
-    fun ancOn(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(1))
-    fun ancTransparency(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(2))
-    fun ancDeep(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(4))
-    fun ancMedium(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(5))
-    fun ancLight(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(6))
-    fun ancSmart(): ByteArray = buildPacket(CMD_SET_ANC, payload = ancPayload(7))
-    /**
-     * Adaptive is written EXPLICITLY, not through [ancPayload].
-     *
-     * `ancPayload(11)` would produce these exact bytes — the bit index for mask 0x0800
-     * really is 11 — but 11 appears nowhere in the vendor's table and has to be
-     * computed from the mask, which is precisely the step that was already got wrong
-     * once here (the code passed 8 and sent `01 01 00 01`, a different mode).
-     * Spelling the four bytes matches `AncAdaptive` upstream verbatim and cannot be
-     * mis-derived. Prefer the literal; do NOT "simplify" this to `ancPayload(8)`.
-     */
-    fun ancAdaptive(): ByteArray =
-        buildPacket(CMD_SET_ANC, payload = byteArrayOf(0x01, 0x01, 0x00, 0x08))
 
     private fun featurePayload(featureId: Int, on: Boolean): ByteArray =
         byteArrayOf(featureId.toByte(), if (on) 0x01 else 0x00)
@@ -283,14 +229,14 @@ object OpoProtocol {
      * the immediate `0x010C` `02 01` read-back returned the same `07 08`, up from `07 00`
      * (`0x0007`) beforehand.
      *
-     * THIS CONFIRMS THE MASK REUSES [ancPayload]'S OWN BIT NUMBERING, not a separate scheme —
+     * THIS CONFIRMS THE MASK REUSES [anc]'S OWN BIT NUMBERING, not a separate scheme —
      * bit 11 (`0x0800`) is exactly Adaptive's bit in the plain SET_ANC table above, and it is
      * the only bit that moved. PROTOCOL.md §5 previously carried this as `[INFERRED]`; this
-     * capture settles it. Off = bit 0, Transparency = bit 2 (matching [ancPayload]); bit 1 is
+     * capture settles it. Off = bit 0, Transparency = bit 2 (matching [anc]); bit 1 is
      * some generic "On" that resolves to whichever level was last hand-set, seen set in every
      * capture so far and never independently isolated.
      *
-     * A DIFFERENT COMMAND FROM [ancPayload], same command NUMBER. `0x0404`'s first payload
+     * A DIFFERENT COMMAND FROM [anc], same command NUMBER. `0x0404`'s first payload
      * byte selects the question: `01 01 <bits>` sets the CURRENT mode (see [ancOff] etc.),
      * `02 01 <mask LE>` sets the cycle's MEMBERSHIP. Do not merge these two payload shapes.
      */
@@ -299,7 +245,7 @@ object OpoProtocol {
         payload = byteArrayOf(0x02, 0x01, (mask and 0xFF).toByte(), ((mask shr 8) and 0xFF).toByte())
     )
 
-    /** Bits in [setHoldAncModes]'s mask — the same numbering [ancPayload] uses. `[CAPTURE]`. */
+    /** Bits in [setHoldAncModes]'s mask — the same numbering [anc] uses. `[CAPTURE]`. */
     const val HOLD_MASK_BIT_OFF = 0
     const val HOLD_MASK_BIT_ON = 1
     const val HOLD_MASK_BIT_TRANSPARENCY = 2

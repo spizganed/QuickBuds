@@ -2,6 +2,7 @@ package com.spizganed.quickbuds.widget
 
 import android.content.Context
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
@@ -66,12 +67,19 @@ object WidgetSettings {
     fun enabledKeys(c: Context): Set<String> = prefs(c).getStringSet(KEY_ON, null) ?: DEFAULT_ON
     fun setEnabledKeys(c: Context, keys: Set<String>) = set(c) { it.putStringSet(KEY_ON, keys.toSet()) }
 
-    /** The checked modes, in order: what both the cycle and the list use. */
-    fun enabled(c: Context): List<Mode> = enabledKeys(c).let { on -> order(c).filter { it.key in on } }
+    /**
+     * The checked modes the connected buds have ([AncModes]), in order: what both the cycle and the
+     * list use. None checked there: every mode they have.
+     */
+    fun enabled(c: Context): List<Mode> {
+        val anc = AncModes.of(c)
+        val have = order(c).filter { anc.supports(it.store) }
+        return enabledKeys(c).let { on -> have.filter { it.key in on } }.ifEmpty { have }
+    }
 
     /** The mode after [current] among the checked ones, wrapping; the first one if [current] is not checked. */
     fun next(c: Context, current: Mode): Mode {
-        val on = enabled(c)
+        val on = enabled(c).ifEmpty { return current }
         val i = on.indexOfFirst { it.key == current.key }
         return on[(i + 1) % on.size]
     }

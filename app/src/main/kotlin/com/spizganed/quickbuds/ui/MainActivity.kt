@@ -31,6 +31,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
+import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.widget.AncWidgetProvider
@@ -313,14 +314,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
         statusView = BudsStatusView(this)
         findViewById<android.widget.FrameLayout>(R.id.statusSlot).addView(statusView)
-        ancView = AncSegmentedView(
-            this, ANC_SEGMENTS.map { getString(it.second) }, ANC_SEGMENTS.map { it.third }
-        ).apply {
-            onSegmentTapped = { onAncCircleTapped(ANC_SEGMENTS[it].first) }
-        }
-        findViewById<android.widget.FrameLayout>(R.id.ancSlot).addView(ancView)
         ancLevels = findViewById<LinearLayout>(R.id.ancLevels)
-        buildLevelPills()
+        buildAnc()
 
         tiles = findViewById<LinearLayout>(R.id.tiles)
         batteryCard = findViewById<LinearLayout>(R.id.batteryCard)
@@ -633,33 +628,43 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ancLevels.visibility = View.GONE
             return
         }
-        ancView.selected = when (circleFor(mode)) {
-            "ANC" -> 1
-            "Adapt" -> 2
-            "Trans" -> 3
-            else -> 0
-        }
-        // The level row shows only while ANC is on (SPEC 3.1), with the active strength outlined.
-        val level = ANC_LEVELS.indexOf(mode)
-        ancLevels.visibility = if (level >= 0) View.VISIBLE else View.GONE
+        ancView.selected = ancSegments.indexOfFirst { it.first == circleFor(mode) }
+        // The level row shows only while ANC is on (SPEC 3.1), with the active strength outlined,
+        // and only for buds with more than one level.
+        val level = ancModes.levels.indexOf(mode)
+        ancLevels.visibility = if (level >= 0 && ancModes.levels.size > 1) View.VISIBLE else View.GONE
         if (level >= 0) {
             lastAncLevel = mode
             for (k in 0 until ancLevels.childCount) paintLevelPill(ancLevels.getChildAt(k) as TextView, k == level)
         }
     }
 
-    /** The ANC strength the ANC segment applies; the last one seen, Medium on a fresh install. */
+    /** The ANC strength the ANC segment applies; the last one seen, else the buds' middle one. */
     private var lastAncLevel: String
         get() = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(KEY_ANC_LEVEL, null)
-            ?.takeIf { it in ANC_LEVELS } ?: ANC_LEVELS[1]
+            ?.takeIf { it in ancModes.levels } ?: ancModes.levels.getOrElse(ancModes.levels.size / 2) { AncModes.LEVELS[1] }
         set(v) { getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit().putString(KEY_ANC_LEVEL, v).apply() }
 
-    /** Low / Medium / High pills under the segments, replacing the old strength bottom sheet. */
-    private fun buildLevelPills() {
+    /** The connected model's noise modes ([AncModes]); the segments and pills show only these. */
+    private lateinit var ancModes: AncModes
+    private var ancSegments = ANC_SEGMENTS
+
+    /**
+     * The segments and the Low / Medium / High pills under them (they replaced the old strength
+     * bottom sheet), for the modes these buds have. Rebuilt when the model changes.
+     */
+    private fun buildAnc() {
+        ancModes = AncModes.of(this)
+        ancSegments = ANC_SEGMENTS.filter { if (it.first == "ANC") ancModes.levels.isNotEmpty() else ancModes.supports(it.first) }
+        ancView = AncSegmentedView(this, ancSegments.map { getString(it.second) }, ancSegments.map { it.third }).apply {
+            onSegmentTapped = { onAncCircleTapped(ancSegments[it].first) }
+        }
+        findViewById<android.widget.FrameLayout>(R.id.ancSlot).apply { removeAllViews(); addView(ancView) }
+        ancLevels.removeAllViews()
         val names = intArrayOf(R.string.anc_mode_low, R.string.anc_mode_medium, R.string.anc_mode_high)
-        ANC_LEVELS.forEachIndexed { i, mode ->
+        ancModes.levels.forEachIndexed { i, mode ->
             ancLevels.addView(TextView(this).apply {
-                setText(names[i])
+                setText(names[AncModes.LEVELS.indexOf(mode)])
                 textSize = 14f
                 gravity = android.view.Gravity.CENTER
                 minWidth = ThemeRes.dp(this@MainActivity, 72f)
@@ -697,8 +702,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * must never reach it.
      */
     private fun circleFor(mode: String): String = when (mode) {
-        "Transparency" -> "Trans"
-        "Adaptive" -> "Adapt"
+        "Transparency" -> "Transparency"
+        "Adaptive" -> "Adaptive"
         "ANC-Light", "ANC-Medium", "ANC-Deep" -> "ANC"
         else -> "Off"
     }
@@ -735,11 +740,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /**
      * Applies an ANC mode: sends the command, updates state, repaints everything.
      *
-     * Smart is deliberately NOT handled. The user does not want it, so there is no UI
-     * path that can select it and no command is sent for it. The command builder
-     * (OpoProtocol.ancSmart) and the manager's sendAncSmart remain, because the tile
-     * can still reach it and removing a protocol capability is a bigger change than
-     * this request.
+     * Smart is deliberately NOT offered. The user does not want it, so there is no UI
+     * path that can select it and no command is sent for it ([AncModes] drops it).
      *
      * ADAPTIVE, BY CONTRAST, IS HANDLED — and it is a different mode from Smart, not
      * another name for it: the buds set them with different bits (0x0800 vs 0x0080)
@@ -747,14 +749,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * one the vendor app calls Adaptive, which he now wants on the main screen.
      */
     private fun selectAnc(mode: String) {
-        when (mode) {
-            "Off" -> manager.sendAncOff()
-            "Transparency" -> manager.sendAncTransparency()
-            "ANC-Light" -> manager.sendAncLight()
-            "ANC-Medium" -> manager.sendAncMedium()
-            "ANC-Deep" -> manager.sendAncDeep()
-            "Adaptive" -> manager.sendAncAdaptive()
-        }
+        manager.sendAnc(mode)
         activeAncMode = mode
         syncWidgetState()
         renderAnc(mode)
@@ -957,9 +952,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /** Relays the rows only when what the buds support changed, not on every status poll. */
     private fun relayoutIfSupportChanged() {
         val sig = featureRows.keys.filter { rowSupported(it) }.joinToString() +
-            Capabilities.supports(this, OpoProtocol.CMD_SET_ANC)
+            Capabilities.supports(this, OpoProtocol.CMD_SET_ANC) + AncModes.of(this)
         if (sig == supportSignature) return
         supportSignature = sig
+        if (AncModes.of(this) !== ancModes) { buildAnc(); renderAnc(activeAncMode) }
         layoutFeatureRows()
     }
 
@@ -985,7 +981,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             if (key !in hidden && rowSupported(key)) SettingRowFactory.addRow(featureList, row)
         }
         featureList.visibility = if (featureList.childCount == 0) View.GONE else View.VISIBLE
-        ancRow.visibility = if (Capabilities.supports(this, OpoProtocol.CMD_SET_ANC)) View.VISIBLE else View.GONE
+        ancRow.visibility = if (Capabilities.supports(this, OpoProtocol.CMD_SET_ANC) && !AncModes.of(this).isEmpty)
+            View.VISIBLE else View.GONE
         setEnabledDeep(featureList, connectedUi != false)
     }
 
@@ -1141,9 +1138,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     companion object {
-        /** The three real noise-cancelling levels, weakest first. */
-        private val ANC_LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep")
-
         /** Noise-control segments, left to right: the tap name onAncCircleTapped() takes, label, icon. */
         val ANC_SEGMENTS = listOf(
             Triple("Off", R.string.anc_seg_off, R.drawable.ic_noise_off),

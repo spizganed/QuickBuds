@@ -19,6 +19,7 @@ import android.os.PowerManager
 import android.util.Log
 import android.view.KeyEvent
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.ui.ThemeRes
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetStateStore
@@ -205,18 +206,10 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
 
         when (widgetAction) {
-            "ANC_CYCLE" -> when (ancMode) {
-                "ANC-Deep" -> { statusLog("<< sending ANC Deep"); manager?.sendAncDeep() }
-                "ANC-Medium" -> { statusLog("<< sending ANC Medium"); manager?.sendAncMedium() }
-                "ANC-Light" -> { statusLog("<< sending ANC Light"); manager?.sendAncLight() }
-                "ANC-Smart" -> { statusLog("<< sending ANC Smart"); manager?.sendAncSmart() }
-                // Adaptive reaches here from the widget's own segment, which tags it
-                // ANC_CYCLE rather than inventing an action. It is NOT Smart: they are
-                // different bits (0x0800 vs 0x0080) and different bud states.
-                "Adaptive" -> { statusLog("<< sending ANC Adaptive"); manager?.sendAncAdaptive() }
-            }
-            "TRANS" -> { statusLog("<< sending Transparency"); manager?.sendAncTransparency() }
-            "OFF" -> { statusLog("<< sending ANC Off"); manager?.sendAncOff() }
+            // ANC_CYCLE carries a mode name (levels and Adaptive); the manager picks the model's bit.
+            "ANC_CYCLE" -> ancMode?.let { statusLog("<< sending ANC $it"); manager?.sendAnc(it) }
+            "TRANS" -> { statusLog("<< sending Transparency"); manager?.sendAnc(AncModes.TRANSPARENCY) }
+            "OFF" -> { statusLog("<< sending ANC Off"); manager?.sendAnc(AncModes.OFF) }
             "GAME_TOGGLE" -> { statusLog("<< sending Game $gameMode"); manager?.setGameMode(gameMode) }
             else -> statusLog("<< UNKNOWN widget action: '$widgetAction'")
         }

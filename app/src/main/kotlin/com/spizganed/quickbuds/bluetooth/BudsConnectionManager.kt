@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.spizganed.quickbuds.protocol.AncEventParser
+import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.BatteryParser
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.EqCodec
@@ -347,22 +348,16 @@ class BudsConnectionManager(private val context: Context) {
         log("Disconnected")
     }
 
-    fun sendAncOff() { lastAncLevelSent = null; sendRaw(OpoProtocol.ancOff(), "ANC Off") }
-    fun sendAncTransparency() { sendRaw(OpoProtocol.ancTransparency(), "ANC Trans") }
-    fun sendAncSmart() { sendRaw(OpoProtocol.ancSmart(), "ANC Smart") }
-    fun sendAncDeep() { lastAncLevelSent = "ANC-Deep"; sendRaw(OpoProtocol.ancDeep(), "ANC Deep") }
-    fun sendAncMedium() { lastAncLevelSent = "ANC-Medium"; sendRaw(OpoProtocol.ancMedium(), "ANC Medium") }
-    fun sendAncLight() { lastAncLevelSent = "ANC-Light"; sendRaw(OpoProtocol.ancLight(), "ANC Light") }
-
     /**
-     * Adaptive — a state of its own, NOT a fourth level.
-     *
-     * `lastAncLevelSent` stays null (like Off), because that field exists only to
-     * interpret the ambiguous "ANC on" stop, which reports whichever LEVEL was last
-     * used. Adaptive reports itself unambiguously as 0x0800, which AncEventParser now
-     * names outright, so there is nothing for a hint to disambiguate.
+     * Sets a noise mode by its app name ([AncModes]), with the connected model's bit. A mode the
+     * model does not have is logged and not sent: its bit would be another mode's, or nothing.
      */
-    fun sendAncAdaptive() { lastAncLevelSent = null; sendRaw(OpoProtocol.ancAdaptive(), "ANC Adaptive") }
+    fun sendAnc(mode: String) {
+        val bit = AncModes.of(context).bit(mode)
+            ?: return log("ANC: $mode is not a mode of these buds, not sent")
+        if (mode in AncModes.LEVELS) lastAncLevelSent = mode
+        sendRaw(OpoProtocol.anc(bit), "ANC $mode")
+    }
 
     fun setGameMode(on: Boolean) =
         sendRaw(if (on) OpoProtocol.gameModeOn() else OpoProtocol.gameModeOff(), "GameMode")
@@ -601,7 +596,7 @@ class BudsConnectionManager(private val context: Context) {
      * Used only to interpret the buds' subType 0x03 push when its value is the
      * ambiguous "ANC on" stop: that stop echoes whichever level was last active, so
      * the level the app just set is the best available hint. It never overrides a
-     * value we can name outright — see AncEventParser.modeForRaw().
+     * value we can name outright — see AncModes.modeForRaw().
      *
      * Deliberately a plain field rather than a WidgetStateStore read: the manager
      * has no Context, and the store is owned by the service.
@@ -945,7 +940,10 @@ class BudsConnectionManager(private val context: Context) {
             val id = Capabilities.productId(payload)
             if (id != null) {
                 featurePrefs().edit().putString(Capabilities.KEY_PRODUCT_ID, id).apply()
-                log("PRODUCT ID: $id")
+                val anc = AncModes.of(context)
+                log("PRODUCT ID: $id, ANC: " + (listOf(AncModes.OFF, AncModes.TRANSPARENCY, AncModes.ADAPTIVE) +
+                    AncModes.LEVELS).filter { anc.supports(it) }.joinToString { "$it=${anc.bit(it)}" }.ifEmpty { "none" })
+                handler.post { listeners.forEach { it.onCapabilities() } }
             }
             return
         }
@@ -1036,7 +1034,7 @@ class BudsConnectionManager(private val context: Context) {
             // real bug (a DIFFERENT one, see AncEventParser.isAncEvent()). Reading this reply
             // corrects the display on every connect regardless of what was persisted before.
             if (echo1 == 0x01 && echo2 == 0x01) {
-                val mode = AncEventParser.modeForRaw(value, lastAncLevelSent)
+                val mode = AncModes.of(context).modeForRaw(value, lastAncLevelSent)
                 if (mode != null) {
                     log("ANC QUERY: raw=0x%04X -> %s".format(value, mode))
                     handler.post { listeners.forEach { it.onAncModeState(mode) } }
@@ -1081,8 +1079,8 @@ class BudsConnectionManager(private val context: Context) {
         // so we never invent a mode the buds did not report.
         if (cmd == OpoProtocol.CMD_ACTIVE_REPORT &&
             AncEventParser.isAncEvent(payload)) {
-            val mode = AncEventParser.parseActive(payload, lastAncLevelSent)
-            log("ANC EVT: ${AncEventParser.describe(payload, lastAncLevelSent)}")
+            val mode = AncModes.of(context).modeForRaw(AncEventParser.rawValue(payload), lastAncLevelSent)
+            log("ANC EVT: ${AncEventParser.describe(payload)} -> ${mode ?: "unknown for this model"}")
             if (mode != null) {
                 handler.post { listeners.forEach { it.onAncModeState(mode) } }
             }

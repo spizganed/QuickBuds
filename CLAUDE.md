@@ -254,8 +254,8 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
 
 Adding an ANC mode means touching all of these, or the surfaces drift apart:
 
-`OpoProtocol` builders · `AncEventParser` (buds→app names) · `LogDecoder` (SET-table log names) ·
-`BudsConnectionManager` (`sendAnc*`, `lastAncLevelSent`) · `BudsService` routing ·
+`AncModes` (per-model bits from `assets/models.json`, both directions; PROTOCOL.md §5) ·
+`OpoProtocol.anc(bit)` · `BudsConnectionManager` (`sendAnc(mode)`, `lastAncLevelSent`) · `BudsService` routing ·
 `WidgetStateStore` (state + `*IsActive()`) · `WidgetSettings.MODES` (widget modes) ·
 `WidgetActionReceiver` · `MainActivity` segments. (The Quick Settings tile was removed, [USER] 2026-09-26.)
 

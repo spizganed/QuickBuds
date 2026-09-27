@@ -250,6 +250,33 @@ fewer, the firmware rejected part of the list.
 
 ## 5. ANC (noise cancelling)
 
+### Per model: one tree of bits, from HeyMelody's model list `[VENDOR]` (2026-09-27)
+
+The bits below are Buds 4's. Other models number their modes differently, so the app takes them
+from HeyMelody's per-model `noiseReductionMode` (`app/src/main/assets/models.json`, cut from the
+137-model `DeviceModels.json` to `id`, `name` and that field; `protocol/AncModes.kt`). Each entry is
+`{modeType, protocolIndex, childrenMode}`. modeType, from HeyMelody's own labels
+(`NoiseReductionItem`, ): `1` Off, `2` Transparency, `3` weak (our Light), `8` middle
+(Medium), `4` strong (Deep), `5` noise reduction (a parent of the levels, or a mode alone), `7`
+intelligent (Smart), `10` auto (Adaptive), `6` transparency with voice (**not** Adaptive, as
+OppoPods maps it).
+
+- **SET** sends a mode's own `protocolIndex` as the bit (`k0(protocolIndex)`); a level sends its
+  child's index.
+- **A report** (`0x810C`, `0x0204` subType 3) is looked up in the same tree, parents first, then
+  children (). Buds 4's Off (`protocolIndex 0`) has a child Off at `3`, Transparency (`2`)
+  one at `8`: that is the "different NOTIFY table" below. It is the same tree, reported one level down.
+- Shapes in the list: Buds 4 style (above, with or without Adaptive `11`, with or without Medium);
+  legacy `NC 0, Off 1, Transparency 2` (Nord Buds 2, Buds Ace, Enco Air4, 9 models; **Buds 4's Off
+  bytes turn ANC on there**); `Off 0, Transparency 1, Light 2, Deep 3` (Enco X, Buds Z2), plus
+  `Smart 4` on Buds Pro. `decideByEarDevice` modes (a voice transparency on 4 OPPO models) are shown
+  by HeyMelody only after a per-bud support read; we do not offer them.
+- A listed model with no `noiseReductionMode` (96 of 137, realme Buds Air 5 Pro among them) gets no
+  noise control: its bits are unknown. No product id yet = Buds 4's tree, as before detection.
+- `[CAPTURE]` Buds 4 through the table, 2026-09-27: `Off=0, Transparency=2, Adaptive=11, Light=6,
+  Medium=5, Deep=4`, and the writes are byte-identical to the old fixed builders. Other models are
+  unverified until an owner reads a write back.
+
 ### SET vs NOTIFY use DIFFERENT encodings
 
 **This is the single most important trap in this document.** They do not agree,

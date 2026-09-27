@@ -206,12 +206,9 @@ object LogDecoder {
                 // payload is printed — the hold probe used to come back as the bare words
                 // "ANC query response (0x810C)" and told us nothing.
                 //
-                // THE NOTIFY TABLE, NOT THE SET ONE. This is the single easiest mistake in
-                // this file: `ancPayloadToString()` names SET_ANC payloads, and the query
-                // reply reports the buds' state with the bits the ANC push uses (Off = bit 3,
-                // Transparency = bit 8). Feeding it through the SET table reads its constant
-                // `01 01` prefix as data and calls Transparency "Off". So the mode is decoded
-                // with AncEventParser, the same table the 0x0204 subType 0x03 push uses.
+                // The reply reports a mode's child bit (Buds 4: Off = bit 3, Transparency = bit 8),
+                // not the bit a SET sends. The bit is printed; the manager's "ANC QUERY:" line names
+                // it with the model's table (AncModes).
                 //
                 // The caveat, stated so the line is not over-trusted: for the SWITCH-LIST
                 // query (`02 01`) the reply's shape is unknown, so the name is only meaningful
@@ -281,37 +278,13 @@ object LogDecoder {
     }
 
     /**
-     * Names an ANC payload using the SET_ANC table (OpoPodsManager Anc*.cs).
-     *
-     * This is the SET encoding, which is NOT the same as the query/notify
-     * encoding used by 0x810C replies and 0x0204 subType 0x03 (see
-     * AncEventParser). Reading only byte 2 would miss Adaptive, whose bit is in
-     * the next byte, so the field is read as a little-endian int across bytes.
+     * The bit a SET_ANC payload sets. Its mode depends on the model (AncModes); the TX line's
+     * label names it. Read little endian across bytes: Adaptive's bit 11 is in the second byte.
      */
     private fun ancPayloadToString(payload: ByteArray): String {
-        if (payload.isEmpty()) return "?"
         var bits = 0
-        for (i in 2 until payload.size) {
-            bits = bits or ((payload[i].toInt() and 0xFF) shl ((i - 2) * 8))
-        }
-        return when {
-            (bits and 0x0001) != 0 -> "Off"
-            (bits and 0x0004) != 0 -> "Trans"
-            (bits and 0x0010) != 0 -> "Deep"
-            (bits and 0x0020) != 0 -> "Med"
-            (bits and 0x0040) != 0 -> "Light"
-            (bits and 0x0080) != 0 -> "Smart"
-            // Adaptive's SET mask is 0x0800, not 0x0100. The old 0x0100 was the
-            // "index 8 = bit 8" error that OpoProtocol.ancAdaptive() carried before
-            // it was fixed: the mask is little endian across the bytes AFTER the
-            // `01 01` prefix, so the real payload `01 01 00 08` reads back as 0x0800.
-            // Left at 0x0100, every Adaptive command would print as
-            // "Unknown (0x0800)" in the log — i.e. the very line you would read to
-            // check whether the Adaptive button sent the right thing.
-            (bits and 0x0800) != 0 -> "Adaptive"
-            (bits and 0x0002) != 0 -> "On"
-            else -> "Unknown (0x%04X)".format(bits)
-        }
+        for (i in 2 until payload.size) bits = bits or ((payload[i].toInt() and 0xFF) shl ((i - 2) * 8))
+        return if (bits == 0) "?" else "bit ${Integer.numberOfTrailingZeros(bits)}"
     }
 
     private fun featurePayloadToString(payload: ByteArray): String {
