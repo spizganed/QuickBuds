@@ -81,25 +81,11 @@ phone-specific piece lives outside it.
   keeps `gradlew` at 755). SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
 - The release key is in `local/keys/` here too, so `sh gradlew assembleRelease` signs as on the PC.
 
-## Cloud sessions (Claude Code on the web)
-
-No release key exists in the cloud, so the PC signing rules above can't apply there.
-
-- SDK is at /opt/android-sdk. Create local.properties with `sdk.dir=/opt/android-sdk` if missing (never commit it).
-- **Step 0, before any UI work:** on the cloud branch only, make debug builds installable next to the release app:
-  debug buildType `applicationIdSuffix = ".debug"`, `versionNameSuffix = "-debug"`, signed with a committed
-  `debug.keystore` (standard debug credentials: storepass/keypass `android`, alias `androiddebugkey`). Manifest
-  authorities already use `${applicationId}`. **Main does not carry this** ([USER] 2026-09-27): drop the suffix,
-  the signing block and `debug.keystore` before merging, together with `apk/`.
-- Verify each step with `./gradlew assembleDebug`.
-- **Delivering a test APK:** after each finished step, copy `app/build/outputs/apk/debug/app-debug.apk` to `apk/QuickBuds-debug.apk` (overwrite), commit it together with the step, and ask before pushing, as always. `apk/` is test-only: delete it before any merge into main.
-- The debug app is a separate app: he force-stops the release app while testing it, since both would fight over the RFCOMM link.
-
 ## UI revision (design/SPEC.md)
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
 - **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
-- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen), 6 (theme & colors, edit preset), 7 (haptics). All SPEC steps done; awaiting his device test.
+- Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen), 6 (theme & colors, edit preset), 7 (haptics). All SPEC steps done and shipped (3.1.0).
 - **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
   one style per built-in preset. `Palette.kt` holds `Palette` (tokens + derived colours) and `PaletteStore`
   (active id + up to 3 custom presets as JSON in `QuickBudsPrefs`; the old `theme` int migrates once).
