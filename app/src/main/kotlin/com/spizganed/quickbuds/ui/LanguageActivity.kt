@@ -18,6 +18,8 @@ import com.spizganed.quickbuds.R
  */
 class LanguageActivity : Activity() {
 
+    private var scroll: ScrollView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeRes.select(this)
         super.onCreate(savedInstanceState)
@@ -60,12 +62,11 @@ class LanguageActivity : Activity() {
         }
         root.addView(card)
 
-        val scroll = (window.decorView.findViewById<android.view.ViewGroup>(android.R.id.content)
-            .getChildAt(0) as? ScrollView)?.scrollY ?: 0
-        setContentView(ScrollView(this).apply {
-            setBackgroundColor(p.background)
-            addView(root)
-            post { scrollTo(0, scroll) }
-        })
+        // Same ScrollView, new content: it keeps its scroll position. A new ScrollView drew one
+        // frame at the top before scrolling back, which flickered on any row below the fold.
+        val scroll = this.scroll ?: ScrollView(this).also { setContentView(it); this.scroll = it }
+        scroll.setBackgroundColor(p.background)
+        scroll.removeAllViews()
+        scroll.addView(root)
     }
 }
