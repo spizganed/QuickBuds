@@ -48,8 +48,14 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      ANC order), game mode `0x06` or `0x28`, spatial three-mode `0x0422` vs on/off `0x1B`, EQ presets and
      device custom EQ, auto play/pause, dual connection. `OppoPodsManager` adds bass engine, hearing
      enhancement `0x0B`, long battery `0x17`, voice enhancement `0x09`, spine health `0x22`, game sound
-     `0x27`, find device and the capability bitmap. Neither writes gestures; ours stays Buds 4 only
-     until another model is tested.
+     `0x27`, find device and the capability bitmap. Neither writes gestures.
+   - **The model list is HeyMelody's own** (pulled from the HeyMelody APK, [USER] 2026-09-27), so which
+     features a model has is `[VENDOR]`; only the packet builders are `[OSS]`. OppoPods' `docs/` has two
+     JADX write-ups of HeyMelody (`HeyMelody_Official_App_Protocol_Findings.md`,
+     `HeyMelody_Bluetooth_Protocol_Notes.md`). Gestures on other models: HeyMelody downloads a per-model
+     `control_<id>/config.json` with each action's function codes (their Enco X3 table); our writer
+     already reads the slots from the bud, so those codes are the missing piece. Until then gestures stay
+     Buds 4 only.
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
