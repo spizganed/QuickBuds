@@ -41,9 +41,11 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
      with a confirm), the log in a normal card with TX / RX in the accent colour.
    - **One 2x2 widget with two pages** (battery and wear / noise control), swapped by a small button
-     in a corner, never by a double tap (a widget only gets single taps, so a double tap would delay
-     every tap). Page stored per widget id. Both existing 2x2 providers stay so placed widgets
-     survive; they differ only in the starting page.
+     in a corner or by a double tap: a widget setting "Switch pages with", swap button (default) or
+     double tap. A widget only gets single taps, so double tap makes every single tap wait ~400 ms;
+     say so under the option. Page stored per widget id. Both existing 2x2 providers stay so placed
+     widgets survive, keeping their names: "QuickBuds battery" starts on the battery page, "QuickBuds
+     controls" on the controls page.
 6. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
