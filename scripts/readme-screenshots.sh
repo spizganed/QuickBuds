@@ -4,7 +4,8 @@
 # Python with Pillow (`pip install pillow`) for cropping. It only OPENS screens: nothing is
 # toggled, so the buds and the app settings are left as they were.
 # Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file
-# (widget-battery / -controls / -combined / -large); sizes that are not placed are skipped.
+# (widget-battery / -controls for the 2x2 pages, widget-3x2 / -3x3 for whatever page those show);
+# sizes that are not placed are skipped.
 # Usage: scripts/readme-screenshots.sh [adb-serial]
 set -euo pipefail
 export MSYS_NO_PATHCONV=1  # Git Bash would rewrite /sdcard/... into a Windows path
@@ -72,6 +73,7 @@ adb shell pkill -f com.mobilenext.mobilecli || true
 adb shell am start -W -f 0x14000000 -n com.spizganed.quickbuds/.ui.MainActivity >/dev/null
 sleep 2
 shot main
+tap "Model";            shot models;   back
 tap "Equalizer";        shot eq
 tap "Edit preset";      shot eq-edit;  back; back
 tap "Dual connection";  shot dual;     back
@@ -101,11 +103,15 @@ ids = lambda n: {e.get("resource-id", "").split("/")[-1] for e in n.iter()}
 for n in ET.parse(sys.argv[1]).iter("node"):
     if not n.get("resource-id", "").endswith(":id/w_root"):
         continue
+    # Only the shown page is in the dump. 3x2 / 3x3 carry the model name (battery page) or the
+    # "Noise control" caption (controls page); the 3x2 is the wide one.
     have = ids(n)
-    name = ("widget-battery" if "w_bar" in have else "widget-large" if "w_mode_caption" in have
-            else "widget-combined" if "w_panel_case" in have else "widget-controls" if "w_mode" in have else None)
+    l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
+    if "w_name" in have or "w_mode_caption" in have:
+        name = "widget-3x2" if (r - l) > 1.3 * (b - t) else "widget-3x3"
+    else:
+        name = "widget-battery" if "w_bar" in have else "widget-controls" if "w_mode" in have else None
     if name:
-        l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
         print(name, l - 16, t - 16, r + 16, b + 16)
 PY
 rm -f "$OUT/.ui.xml"

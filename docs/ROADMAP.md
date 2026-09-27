@@ -91,8 +91,8 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 - Done 2026-09-26: README is short and user-facing, CREDITS.md folded into its Credits section,
   outdated Appearance notes in ROADMAP-DONE replaced.
-- **Retake the README screenshots** once the UI and the widget are final. The current ones are
-  placeholders. Rerun `scripts/readme-screenshots.sh`.
+- Done 2026-09-27: README screenshots retaken (model list and the redesigned widgets included).
+  Rerun `scripts/readme-screenshots.sh` after any visible UI change.
 
 ## Parked
 

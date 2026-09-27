@@ -13,13 +13,17 @@ home-screen widget.
 
 <!-- Retaken with scripts/readme-screenshots.sh; see CLAUDE.md. -->
 
-| Main screen | Equalizer | Curve editor | Earbud settings |
+| Main screen | Model | Equalizer | Curve editor |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-edit.png" width="200"> | <img src="docs/screenshots/earbuds.png" width="200"> |
+| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/models.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-edit.png" width="200"> |
 
-| Earbud gestures | Wear detection | Find my earbuds | Dual connection |
+| Earbud settings | Earbud gestures | Wear detection | Find my earbuds |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/gestures.png" width="200"> | <img src="docs/screenshots/wear.png" width="200"> | <img src="docs/screenshots/find.png" width="200"> | <img src="docs/screenshots/dual.png" width="200"> |
+| <img src="docs/screenshots/earbuds.png" width="200"> | <img src="docs/screenshots/gestures.png" width="200"> | <img src="docs/screenshots/wear.png" width="200"> | <img src="docs/screenshots/find.png" width="200"> |
+
+| Dual connection | | | |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/dual.png" width="200"> | | | |
 
 | Settings | Theme & colors | Edit preset | Home layout |
 | :---: | :---: | :---: | :---: |
@@ -31,16 +35,21 @@ home-screen widget.
 
 ### Widgets
 
-| Battery 2x2 | Controls 2x2 |
+Every size has a battery page and a controls page; switch with the swap button or a double tap.
+
+| 2x2, battery page | 2x2, controls page |
 | :---: | :---: |
 | <img src="docs/screenshots/widget-battery.png" width="200"> | <img src="docs/screenshots/widget-controls.png" width="200"> |
 
-| Combined 3x2 | Combined 3x3 |
+| 3x2 | 3x3 |
 | :---: | :---: |
-| <img src="docs/screenshots/widget-combined.png" width="300"> | <img src="docs/screenshots/widget-large.png" width="300"> |
+| <img src="docs/screenshots/widget-3x2.png" width="300"> | <img src="docs/screenshots/widget-3x3.png" width="300"> |
 
 ## Features
 
+- **Knows your earbuds:** reads the model from the earbuds and matches it against HeyMelody's own
+  list of OnePlus, OPPO and realme models, then shows only what that model supports. You can also
+  pick the model yourself.
 - **Battery and wear status** for each bud and the case, live.
 - **Noise control:** Off, Noise cancelling (Low / Medium / High), Adaptive and Transparency. Changes
   made on the earbuds show up instantly.
@@ -49,10 +58,11 @@ home-screen widget.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
 - **Wear detection**, **Dual connection**, **Find my earbuds** and the earbuds' prompt volume.
-- **Home-screen widgets** in three sizes (2×2, 4×2, 4×1) with battery, noise control and Low latency,
-  in your theme's colours.
+- **Home-screen widgets** in three sizes (2×2, 3×2, 3×3). Each has a battery page and a noise
+  control + Low latency page, in your theme's colours.
 - **Themes:** OLED Black, Classic Dark and White, your own accent colour, and up to 3 custom colour
   presets. Reorder or hide the home screen rows.
+- **27 languages**, switchable inside the app.
 - **Update check** from inside the app, straight from GitHub releases.
 
 ## Install
@@ -65,8 +75,8 @@ home-screen widget.
 
 > **Coming from v1.1.0?** Uninstall it first: v2.0.0 and later are signed with a new key.
 
-**Tested on:** OnePlus Buds 4 with a Nothing Phone (3a), Android 15. Other OnePlus / OPPO / realme
-earbuds use the same protocol and will likely work, but are untested.
+**Tested on:** OnePlus Buds 4 with a Nothing Phone (3a), Android 16. Other OnePlus / OPPO / realme
+earbuds use the same protocol and are detected, but are untested: reports on GitHub are welcome.
 
 ## For developers
 

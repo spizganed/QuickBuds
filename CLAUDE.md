@@ -496,7 +496,7 @@ a shared one hung.
 - Runtime `*.log` files written by the app are ignored — they are regenerated every run. Handed-over
   captures (`*.log.txt`) are evidence and **are** tracked.
 - **README screenshots** live in `docs/screenshots/` and are retaken with
-  `scripts/readme-screenshots.sh [adb-serial]` (buds connected, phone in English, Pillow installed). It
+  `scripts/readme-screenshots.sh [adb-serial]` (buds connected, phone in English, Pillow installed; on Termux `pkg install python-pillow`). It
   opens every screen by visible text (never toggles anything), so renaming a row or screen label breaks it. It stops mobile-mcp's
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.
   Widgets: each placed size on the LAST home screen page is cropped to `widget-<size>.png`.
