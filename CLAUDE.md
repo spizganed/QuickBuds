@@ -200,7 +200,8 @@ version through `PackageManager`, and `buildConfig` stays off.
 `QuickBuds<version>.apk` / `.aab` (copies kept in `local/release/v<version>/`) and attach **both** to a
 GitHub release tagged `v<version>`. The in-app updater compares the tag against the installed
 version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is not installed on
-this PC, so the release page itself is made in the browser.
+the PC (release page in the browser there); on the phone `gh` is logged in, so
+`gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"` works (v3.4.0).
 
 ## Protocol work — the rules that were paid for
 
