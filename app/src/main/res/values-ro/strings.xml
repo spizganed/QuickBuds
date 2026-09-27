@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">Widgetul 2x2 are două pagini: baterie și controlul zgomotului. Cu atingere dublă, fiecare atingere simplă așteaptă circa 0,4 s pentru o a doua.</string>
     <string name="widget_swap_desc">Schimbă pagina</string>
     <string name="language_system">Implicit sistem</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Model</string>
+    <string name="model_auto">Automat</string>
+    <string name="model_detected">Detectat: %1$s</string>
+    <string name="model_not_detected">Nedetectat încă</string>
 </resources>

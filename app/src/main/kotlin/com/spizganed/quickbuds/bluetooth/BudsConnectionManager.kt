@@ -13,6 +13,7 @@ import com.spizganed.quickbuds.protocol.AncEventParser
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.BatteryParser
 import com.spizganed.quickbuds.protocol.Capabilities
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.GameModeParser
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
@@ -194,6 +195,7 @@ class BudsConnectionManager(private val context: Context) {
         // on device 2026-09-25).
         if (withAudio) setPhoneAudio(device, on = true)
         log("Initiating RFCOMM connection to ${device.name}...")
+        rememberDeviceName(device)
         context.getSystemService(BluetoothManager::class.java)?.adapter?.cancelDiscovery()
 
         Thread {
@@ -483,6 +485,18 @@ class BudsConnectionManager(private val context: Context) {
                 .putString(FEATURES_KEY, value.entries.joinToString(",") { "${it.key}=${it.value}" })
                 .apply()
         }
+
+    /**
+     * The Bluetooth name HeyMelody matches the model list by ([ModelCatalog]). Other buds than last
+     * time: the old product id and manual pick go, so neither names the new buds until `0x8103`.
+     */
+    private fun rememberDeviceName(device: BluetoothDevice) {
+        val name = runCatching { device.name }.getOrNull() ?: return
+        val prefs = featurePrefs()
+        if (prefs.getString(ModelCatalog.KEY_DEVICE_NAME, null) == name) return
+        prefs.edit().putString(ModelCatalog.KEY_DEVICE_NAME, name)
+            .remove(Capabilities.KEY_PRODUCT_ID).remove(ModelCatalog.KEY_MANUAL).apply()
+    }
 
     private fun featurePrefs() = context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -939,9 +953,13 @@ class BudsConnectionManager(private val context: Context) {
         if (cmd == 0x8103) {
             val id = Capabilities.productId(payload)
             if (id != null) {
-                featurePrefs().edit().putString(Capabilities.KEY_PRODUCT_ID, id).apply()
+                val prefs = featurePrefs()
+                // Other buds than last time: a model picked by hand was for those.
+                val edit = prefs.edit().putString(Capabilities.KEY_PRODUCT_ID, id)
+                if (prefs.getString(Capabilities.KEY_PRODUCT_ID, null) != id) edit.remove(ModelCatalog.KEY_MANUAL)
+                edit.apply()
                 val anc = AncModes.of(context)
-                log("PRODUCT ID: $id, ANC: " + (listOf(AncModes.OFF, AncModes.TRANSPARENCY, AncModes.ADAPTIVE) +
+                log("PRODUCT ID: $id, model: ${ModelCatalog.current(context)?.name ?: "unknown"}, ANC: " + (listOf(AncModes.OFF, AncModes.TRANSPARENCY, AncModes.ADAPTIVE) +
                     AncModes.LEVELS).filter { anc.supports(it) }.joinToString { "$it=${anc.bit(it)}" }.ifEmpty { "none" })
                 handler.post { listeners.forEach { it.onCapabilities() } }
             }

@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">2x2 ウィジェットにはバッテリーとノイズコントロールの 2 ページがあります。ダブルタップでは、各タップが 2 回目を待つため約 0.4 秒遅れます。</string>
     <string name="widget_swap_desc">ページを切り替え</string>
     <string name="language_system">システムのデフォルト</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">モデル</string>
+    <string name="model_auto">自動</string>
+    <string name="model_detected">検出: %1$s</string>
+    <string name="model_not_detected">まだ検出されていません</string>
 </resources>

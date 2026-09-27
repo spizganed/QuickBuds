@@ -63,13 +63,14 @@ object Capabilities {
 
     /**
      * `0x8103` payload `00 <id, 3 bytes LE>` -> "065414". `[CAPTURE]` Buds 4 answers `00 14 54 06`
-     * (2026-09-27); `[OSS]` OppoPods `ProductIdParser` reads it the same way.
+     * (2026-09-27); `[OSS]` OppoPods `ProductIdParser` reads it the same way. Colour variants are
+     * folded into one id ([ModelCatalog.normalise]).
      */
     fun productId(payload: ByteArray): String? {
         if (payload.size != 4 || payload[0].toInt() != 0) return null
         val id = (payload[1].toInt() and 0xFF) or ((payload[2].toInt() and 0xFF) shl 8) or
             ((payload[3].toInt() and 0xFF) shl 16)
-        return "%06X".format(id)
+        return "%06X".format(ModelCatalog.normalise(id))
     }
 
     fun supports(context: Context, cmd: Int): Boolean {

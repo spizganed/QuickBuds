@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">Το widget 2x2 έχει δύο σελίδες, μπαταρία και έλεγχο θορύβου. Με το διπλό πάτημα, κάθε μονό πάτημα περιμένει περίπου 0,4 δ. μήπως ακολουθήσει δεύτερο.</string>
     <string name="widget_swap_desc">Αλλαγή σελίδας</string>
     <string name="language_system">Προεπιλογή συστήματος</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Μοντέλο</string>
+    <string name="model_auto">Αυτόματα</string>
+    <string name="model_detected">Εντοπίστηκε: %1$s</string>
+    <string name="model_not_detected">Δεν εντοπίστηκε ακόμη</string>
 </resources>

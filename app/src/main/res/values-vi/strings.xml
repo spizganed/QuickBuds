@@ -262,4 +262,10 @@
     <string name="widget_pages_hint">Tiện ích 2x2 có hai trang: pin và kiểm soát tiếng ồn. Với chạm hai lần, mỗi lần chạm đơn sẽ chờ khoảng 0,4 giây xem có lần chạm thứ hai không.</string>
     <string name="widget_swap_desc">Chuyển trang</string>
     <string name="language_system">Mặc định hệ thống</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Mẫu</string>
+    <string name="model_auto">Tự động</string>
+    <string name="model_detected">Đã nhận diện: %1$s</string>
+    <string name="model_not_detected">Chưa nhận diện</string>
 </resources>

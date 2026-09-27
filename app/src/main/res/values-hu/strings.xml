@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">A 2x2 widgetnek két oldala van: akkumulátor és zajszabályozás. Dupla koppintásnál minden egyes koppintás kb. 0,4 mp-et vár, hogy jön-e második.</string>
     <string name="widget_swap_desc">Oldal váltása</string>
     <string name="language_system">Rendszer alapértelmezése</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Modell</string>
+    <string name="model_auto">Automatikus</string>
+    <string name="model_detected">Felismerve: %1$s</string>
+    <string name="model_not_detected">Még nincs felismerve</string>
 </resources>

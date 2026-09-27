@@ -262,4 +262,10 @@
     <string name="widget_pages_hint">2x2 विजेट में दो पेज हैं: बैटरी और नॉइज़ कंट्रोल। डबल टैप चुनने पर हर एक टैप लगभग 0.4 सेकंड दूसरे टैप का इंतज़ार करता है।</string>
     <string name="widget_swap_desc">पेज बदलें</string>
     <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">मॉडल</string>
+    <string name="model_auto">स्वचालित</string>
+    <string name="model_detected">पहचाना गया: %1$s</string>
+    <string name="model_not_detected">अभी पहचाना नहीं गया</string>
 </resources>

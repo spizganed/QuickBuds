@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">Віджет 2x2 має дві сторінки: батарея і шумозаглушення. З подвійним дотиком кожен одиночний дотик чекає близько 0,4 с, чи не буде другого.</string>
     <string name="widget_swap_desc">Змінити сторінку</string>
     <string name="language_system">Як у системі</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Модель</string>
+    <string name="model_auto">Автоматично</string>
+    <string name="model_detected">Визначено: %1$s</string>
+    <string name="model_not_detected">Ще не визначено</string>
 </resources>

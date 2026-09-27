@@ -340,4 +340,12 @@
     <string name="widget_pages_hint">The 2x2 widget has two pages, battery and noise control. With double tap, every single tap on it waits about 0.4 s to see if a second one follows.</string>
     <string name="widget_swap_desc">Switch page</string>
     <string name="language_system">System default</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_brand_oneplus" translatable="false">OnePlus</string>
+    <string name="model_brand_oppo" translatable="false">OPPO</string>
+    <string name="model_title">Model</string>
+    <string name="model_auto">Automatic</string>
+    <string name="model_detected">Detected: %1$s</string>
+    <string name="model_not_detected">Not detected yet</string>
 </resources>

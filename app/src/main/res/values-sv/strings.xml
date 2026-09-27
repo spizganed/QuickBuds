@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">2x2-widgeten har två sidor, batteri och brusreglering. Med dubbeltryck väntar varje enkeltryck cirka 0,4 s för att se om ett andra följer.</string>
     <string name="widget_swap_desc">Byt sida</string>
     <string name="language_system">Systemstandard</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Modell</string>
+    <string name="model_auto">Automatiskt</string>
+    <string name="model_detected">Identifierad: %1$s</string>
+    <string name="model_not_detected">Inte identifierad än</string>
 </resources>

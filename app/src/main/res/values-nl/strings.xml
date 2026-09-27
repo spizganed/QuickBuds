@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">De 2x2-widget heeft twee pagina\'s: batterij en ruisbediening. Met dubbeltikken wacht elke enkele tik ongeveer 0,4 s of er een tweede volgt.</string>
     <string name="widget_swap_desc">Pagina wisselen</string>
     <string name="language_system">Systeemstandaard</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Model</string>
+    <string name="model_auto">Automatisch</string>
+    <string name="model_detected">Herkend: %1$s</string>
+    <string name="model_not_detected">Nog niet herkend</string>
 </resources>

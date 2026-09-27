@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">O widget 2x2 tem duas páginas: bateria e controlo de ruído. Com toque duplo, cada toque simples espera cerca de 0,4 s por um segundo.</string>
     <string name="widget_swap_desc">Trocar página</string>
     <string name="language_system">Predefinição do sistema</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Modelo</string>
+    <string name="model_auto">Automático</string>
+    <string name="model_detected">Detetado: %1$s</string>
+    <string name="model_not_detected">Ainda não detetado</string>
 </resources>

@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">May dalawang pahina ang 2x2 widget, baterya at kontrol ng ingay. Sa dobleng tap, bawat isang tap ay naghihintay nang mga 0.4 s para makita kung may kasunod na pangalawa.</string>
     <string name="widget_swap_desc">Lumipat ng pahina</string>
     <string name="language_system">Default ng system</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Modelo</string>
+    <string name="model_auto">Awtomatiko</string>
+    <string name="model_detected">Natukoy: %1$s</string>
+    <string name="model_not_detected">Hindi pa natutukoy</string>
 </resources>

@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">Widget 2x2 má dvě stránky, baterii a ovládání hluku. Při dvojitém klepnutí čeká každé jednotlivé klepnutí asi 0,4 s, zda nepřijde druhé.</string>
     <string name="widget_swap_desc">Přepnout stránku</string>
     <string name="language_system">Výchozí systémový</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Model</string>
+    <string name="model_auto">Automaticky</string>
+    <string name="model_detected">Rozpoznáno: %1$s</string>
+    <string name="model_not_detected">Zatím nerozpoznáno</string>
 </resources>

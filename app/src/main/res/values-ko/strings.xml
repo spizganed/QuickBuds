@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">2x2 위젯에는 배터리와 소음 제어, 두 페이지가 있습니다. 두 번 탭을 쓰면 한 번 탭할 때마다 두 번째 탭이 오는지 약 0.4초 기다립니다.</string>
     <string name="widget_swap_desc">페이지 전환</string>
     <string name="language_system">시스템 기본값</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">모델</string>
+    <string name="model_auto">자동</string>
+    <string name="model_detected">감지됨: %1$s</string>
+    <string name="model_not_detected">아직 감지되지 않음</string>
 </resources>

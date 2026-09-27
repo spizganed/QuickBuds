@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">Das 2x2-Widget hat zwei Seiten: Akku und Geräuschsteuerung. Mit Doppeltippen wartet jedes einfache Tippen etwa 0,4 s, ob ein zweites folgt.</string>
     <string name="widget_swap_desc">Seite wechseln</string>
     <string name="language_system">Systemstandard</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Modell</string>
+    <string name="model_auto">Automatisch</string>
+    <string name="model_detected">Erkannt: %1$s</string>
+    <string name="model_not_detected">Noch nicht erkannt</string>
 </resources>

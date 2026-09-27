@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">2x2 উইজেটে দুটি পৃষ্ঠা আছে, ব্যাটারি ও নয়েজ নিয়ন্ত্রণ। দুবার ট্যাপে প্রতিটি একক ট্যাপ দ্বিতীয়টি আসে কিনা দেখতে প্রায় 0.4 সেকেন্ড অপেক্ষা করে।</string>
     <string name="widget_swap_desc">পৃষ্ঠা বদলান</string>
     <string name="language_system">সিস্টেম ডিফল্ট</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">মডেল</string>
+    <string name="model_auto">স্বয়ংক্রিয়</string>
+    <string name="model_detected">শনাক্ত হয়েছে: %1$s</string>
+    <string name="model_not_detected">এখনও শনাক্ত হয়নি</string>
 </resources>

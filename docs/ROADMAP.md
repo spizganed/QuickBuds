@@ -27,13 +27,13 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
    - **Done 2026-09-27: per-model noise control.** HeyMelody's `noiseReductionMode` per product id
      (`assets/models.json`, `AncModes.kt`, PROTOCOL.md §5) sets the bits both ways and decides which
      segments, level pills and widget modes show. Buds 4 unchanged on device; other models unverified
-     until an owner reads a write back. Open: the product-id ranges and device-name fallback below,
-     and the widget still shows its mode button on a model with no noise control. Next: the model list.
-   - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
-     little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
-     Look it up in the model list; if the id is missing or unknown, match the Bluetooth device name;
-     if that fails, the user picks from the list (manual choice overrides). We already send `0x0103`
-     and `0x0100` in the init sequence (PROTOCOL.md §4) but ignore both replies.
+     until an owner reads a write back. Open: the widget still shows its mode button on a model with
+     no noise control.
+   - **Done 2026-09-27: detection and the model list.** `ModelCatalog` folds the colour ranges and
+     matches id and Bluetooth name as HeyMelody does (PROTOCOL.md §4). The device name under the rings
+     shows the model and opens `ModelActivity`: Automatic plus every OnePlus / OPPO model; a pick
+     overrides detection until other buds connect. Checked on device (Buds 4 detected; a manual Buds
+     Pro swapped the noise segments). Next: firmware version, then per-feature packets.
    - **Model list**: `Assets/Oplus/Data/DeviceModels.json`, HeyMelody's own per-model config.
      `whiteList` has 137 models: `id` (Buds 4 = `065414`), RFCOMM `uuid` (Buds 4 `0000079A-…`, ours),
      and a `function` map: feature flags, `noiseReductionMode` with a `protocolIndex` per ANC mode

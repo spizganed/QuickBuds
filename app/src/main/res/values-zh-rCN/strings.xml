@@ -262,4 +262,10 @@
     <string name="widget_pages_hint">2x2 小组件有两个页面：电量和降噪控制。选择双击后，每次单击都会等待约 0.4 秒，看是否有第二次点击。</string>
     <string name="widget_swap_desc">切换页面</string>
     <string name="language_system">跟随系统</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">型号</string>
+    <string name="model_auto">自动</string>
+    <string name="model_detected">已识别：%1$s</string>
+    <string name="model_not_detected">尚未识别</string>
 </resources>

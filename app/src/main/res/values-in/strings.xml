@@ -262,4 +262,10 @@
     <string name="widget_pages_hint">Widget 2x2 memiliki dua halaman: baterai dan kontrol bising. Dengan ketuk dua kali, setiap ketukan tunggal menunggu sekitar 0,4 dtk untuk ketukan kedua.</string>
     <string name="widget_swap_desc">Ganti halaman</string>
     <string name="language_system">Default sistem</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Model</string>
+    <string name="model_auto">Otomatis</string>
+    <string name="model_detected">Terdeteksi: %1$s</string>
+    <string name="model_not_detected">Belum terdeteksi</string>
 </resources>

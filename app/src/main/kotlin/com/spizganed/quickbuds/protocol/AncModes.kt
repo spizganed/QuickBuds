@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.protocol
 import android.content.Context
 import com.spizganed.quickbuds.ui.ThemeRes
 import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * The noise-control modes one model has and the `0x0404` bit of each (PROTOCOL.md §5).
@@ -101,21 +100,17 @@ class AncModes private constructor(
         @Volatile private var cached: Pair<String, AncModes>? = null
 
         /**
-         * The connected (or last connected) model's modes. No product id read yet = Buds 4, as
-         * before detection. An id HeyMelody lists without modes, or does not list, gets none:
-         * its bits are unknown and a wrong bit sets another mode silently.
+         * The connected (or last connected) model's modes ([ModelCatalog.current]). Nothing
+         * detected yet = Buds 4, as before detection. A model HeyMelody lists without modes, or a
+         * product id it does not list, gets none: its bits are unknown and a wrong bit sets another
+         * mode silently.
          */
         fun of(context: Context): AncModes {
-            val id = context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(Capabilities.KEY_PRODUCT_ID, null) ?: return BUDS4
-            cached?.let { if (it.first == id) return it.second }
-            val modes = runCatching {
-                val list = JSONObject(context.assets.open("models.json").bufferedReader().use { it.readText() })
-                    .getJSONArray("whiteList")
-                (0 until list.length()).map { list.getJSONObject(it) }.firstOrNull { it.getString("id") == id }
-                    ?.optJSONArray("noiseReductionMode")?.let { parse(it) }
-            }.getOrNull() ?: NONE
-            cached = id to modes
+            val model = ModelCatalog.current(context) ?: return if (context.getSharedPreferences(
+                    ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getString(Capabilities.KEY_PRODUCT_ID, null) == null) BUDS4 else NONE
+            cached?.let { if (it.first == model.id) return it.second }
+            val modes = runCatching { model.json.optJSONArray("noiseReductionMode")?.let { parse(it) } }.getOrNull() ?: NONE
+            cached = model.id to modes
             return modes
         }
     }

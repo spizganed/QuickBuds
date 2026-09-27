@@ -32,6 +32,7 @@ import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.protocol.AncModes
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.widget.AncWidgetProvider
@@ -309,6 +310,12 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         mainLayout = findViewById<LinearLayout>(R.id.mainLayout)
         featureList = findViewById<LinearLayout>(R.id.featureList)
         deviceNameText = findViewById<TextView>(R.id.deviceNameText)
+        deviceNameText.background = ThemeRes.ripple(this)
+        deviceNameText.setCompoundDrawablesRelative(null, null,
+            ThemeRes.tint(this, R.drawable.ic_chevron_down, ThemeRes.color(this, R.attr.appColorTextSecondary)).apply {
+                val size = ThemeRes.dp(this@MainActivity, 18f); setBounds(0, 0, size, size) }, null)
+        deviceNameText.setOnClickListener { startActivity(Intent(this, ModelActivity::class.java)) }
+        showModelName()
         btnSettings = findViewById<ImageButton>(R.id.btnSettings)
         btnDevTools = findViewById<ImageButton>(R.id.btnDevTools)
 
@@ -549,6 +556,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         super.onResume()
         // Settings › Home layout may have changed the row order.
         if (featureRows.isNotEmpty()) layoutFeatureRows()
+        // The model list may have changed the model, and with it the noise modes.
+        showModelName()
+        relayoutIfSupportChanged()
         // Settings › Developer › Dev tools button (default on).
         btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
                 .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
@@ -931,7 +941,14 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         }
     }
 
-    override fun onCapabilities() = relayoutIfSupportChanged()
+    override fun onCapabilities() { showModelName(); relayoutIfSupportChanged() }
+
+    /** The model's name from the model list; its Bluetooth name if the list has no match. */
+    private fun showModelName() {
+        deviceNameText.text = ModelCatalog.current(this)?.name
+            ?: getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(ModelCatalog.KEY_DEVICE_NAME, null)
+            ?: getString(R.string.default_device_name)
+    }
 
     /**
      * Whether the connected buds have a row's feature at all (see [Capabilities]): a `0x0403`

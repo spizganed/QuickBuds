@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">У виджета 2x2 две страницы: батарея и шумоподавление. При двойном касании каждое одиночное касание ждёт около 0,4 с, не последует ли второе.</string>
     <string name="widget_swap_desc">Сменить страницу</string>
     <string name="language_system">Как в системе</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Модель</string>
+    <string name="model_auto">Автоматически</string>
+    <string name="model_detected">Определено: %1$s</string>
+    <string name="model_not_detected">Пока не определено</string>
 </resources>

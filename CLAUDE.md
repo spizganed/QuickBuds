@@ -398,6 +398,8 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    glyphs at their SVG ratio inside 42x56 / 58x42 boxes (scaled with the ring), percentage 21sp (always `text`), label "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case is only the grey
    glyph and the label; the SPEC's case badge was tried and removed ([USER] 2026-09-26).
    Disconnected: same size, track only, disabled glyphs, "—", bare names.
+   The device name under the rings is a button: it shows `ModelCatalog.current()` (detected by product
+   id + Bluetooth name, or picked by hand) and opens `ModelActivity`, the model list.
 2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
    neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom
    sheet and the caption. The ANC segment applies the last level seen (`homeAncLevel`, default Medium).

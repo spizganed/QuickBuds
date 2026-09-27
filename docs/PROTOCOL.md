@@ -185,8 +185,16 @@ Used by `protocol/Capabilities.kt` to hide what a model does not have (2026-09-2
   `00 FF 77 5A EA 67 0E 20 07`, which lists every command the app uses and not `0x0422`/`0x012A`
   (Buds 4 does spatial through feature `0x1B`).
 - **`0x8103` is the product id:** `00` + 3 bytes little-endian. `[CAPTURE]` Buds 4: `00 14 54 06` =
-  `065414`, its id in HeyMelody's model list. `[OSS]` OppoPods reads it the same way; OppoPodsManager
-  maps four ranges (`100100`-`100102` -> `060414` and three more) before the lookup.
+  `065414`, its id in HeyMelody's model list. `[OSS]` OppoPods reads it the same way. `[VENDOR]`
+  HeyMelody folds four colour ranges into one id, the low byte being the colour (, on the
+  BLE scan id): `100100`-`100102` -> `060414`, `100200`-`100202` -> `060814`, `108100`-`108102` ->
+  `068414`, `108200`-`108202` -> `068814`. `[OSS]` OppoPodsManager applies the same map to `0x8103`,
+  and so do we (`ModelCatalog.normalise`).
+- **Model lookup** `[VENDOR]` (`WhitelistUtils.findWhitelistConfig`, ): the entries whose
+  `name` equals the Bluetooth name (exact; `startsWith` only with `fuzzyMatchName`, which no entry in
+  our list carries) and those whose `id` equals the product id. An entry in both wins, then the first
+  name match, then the first id match. `ModelCatalog.find` does the same; a model picked by hand
+  in the model list overrides it until other buds connect.
 - **`0x810D` lists only the feature switches the firmware has.** We ask for 12 ids; Buds 4 answers
   8 (`05 04 0B 11 18 06 1B 1D`, not `13 1C 27 28`). An id missing from the reply is a switch those
   buds do not have. `[OSS]` oneplus-buds-omarchy saw the same on Buds Pro 2 ("presence establishes

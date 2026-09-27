@@ -260,4 +260,10 @@
     <string name="widget_pages_hint">Widget 2x2 mempunyai dua halaman, bateri dan kawalan hingar. Dengan ketik dua kali, setiap ketikan tunggal menunggu kira-kira 0.4 s untuk melihat sama ada ketikan kedua menyusul.</string>
     <string name="widget_swap_desc">Tukar halaman</string>
     <string name="language_system">Lalai sistem</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_title">Model</string>
+    <string name="model_auto">Automatik</string>
+    <string name="model_detected">Dikesan: %1$s</string>
+    <string name="model_not_detected">Belum dikesan</string>
 </resources>
