@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Lista megnyitása</string>
     <string name="widget_tap_hint">A Következő mód sorban végigmegy az alábbi listán. A Lista megnyitása mindet megmutatja választásra; választás után vagy 5 másodperc elteltével bezárul.</string>
     <string name="widget_modes_title">Módok</string>
-    <string name="widget_modes_hint">Jelöljön be legalább 2-t, és húzással állítsa be a sorrendet. Mindkét lehetőség ugyanazokat a módokat használja.</string>
+    <string name="widget_modes_hint">Jelöljön be 2–6-ot, és húzással állítsa be a sorrendet. Mindkét lehetőség ugyanazokat a módokat használja.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Alacsony késleltetés gomb</string>
     <string name="widget_ll_sub">A módgomb mellett jelenik meg</string>

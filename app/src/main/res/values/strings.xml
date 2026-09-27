@@ -316,7 +316,7 @@
     <string name="widget_tap_list">Open list</string>
     <string name="widget_tap_hint">Next mode steps through the list below in order. Open list shows all of them to pick from; it closes after a pick or 5 seconds.</string>
     <string name="widget_modes_title">Modes</string>
-    <string name="widget_modes_hint">Tick at least 2 and drag to set the order. The same modes are used for both options.</string>
+    <string name="widget_modes_hint">Tick 2 to 6 and drag to set the order. The same modes are used for both options.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Low latency button</string>
     <string name="widget_ll_sub">Shown next to the mode button</string>

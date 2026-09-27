@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Öppna lista</string>
     <string name="widget_tap_hint">Nästa läge går igenom listan nedan i ordning. Öppna lista visar alla att välja bland; den stängs efter ett val eller efter 5 sekunder.</string>
     <string name="widget_modes_title">Lägen</string>
-    <string name="widget_modes_hint">Markera minst 2 och dra för att ställa in ordningen. Samma lägen används för båda alternativen.</string>
+    <string name="widget_modes_hint">Markera 2 till 6 och dra för att ställa in ordningen. Samma lägen används för båda alternativen.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Knapp för låg latens</string>
     <string name="widget_ll_sub">Visas bredvid lägesknappen</string>

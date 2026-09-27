@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Buksan ang listahan</string>
     <string name="widget_tap_hint">Dumadaan ang Susunod na mode sa listahan sa ibaba nang sunud-sunod. Ipinapakita ng Buksan ang listahan ang lahat para pumili; nagsasara ito pagkatapos pumili o pagkalipas ng 5 segundo.</string>
     <string name="widget_modes_title">Mga mode</string>
-    <string name="widget_modes_hint">Mag-check ng hindi bababa sa 2 at i-drag para itakda ang pagkakasunod. Parehong mga mode ang ginagamit sa dalawang opsyon.</string>
+    <string name="widget_modes_hint">Mag-check ng 2 hanggang 6 at i-drag para itakda ang pagkakasunod. Parehong mga mode ang ginagamit sa dalawang opsyon.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Low latency button</string>
     <string name="widget_ll_sub">Ipinapakita sa tabi ng mode button</string>

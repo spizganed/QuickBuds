@@ -238,7 +238,7 @@
     <string name="widget_tap_list">เปิดรายการ</string>
     <string name="widget_tap_hint">โหมดถัดไปจะเปลี่ยนตามลำดับในรายการด้านล่าง เปิดรายการจะแสดงทุกโหมดให้เลือก และปิดเมื่อเลือกแล้วหรือหลัง 5 วินาที</string>
     <string name="widget_modes_title">โหมด</string>
-    <string name="widget_modes_hint">เลือกอย่างน้อย 2 โหมดและลากเพื่อจัดลำดับ ทั้งสองตัวเลือกใช้โหมดชุดเดียวกัน</string>
+    <string name="widget_modes_hint">เลือก 2 ถึง 6 โหมดและลากเพื่อจัดลำดับ ทั้งสองตัวเลือกใช้โหมดชุดเดียวกัน</string>
     <string name="widget_section">วิดเจ็ต</string>
     <string name="widget_ll_title">ปุ่มเวลาแฝงต่ำ</string>
     <string name="widget_ll_sub">แสดงข้างปุ่มโหมด</string>

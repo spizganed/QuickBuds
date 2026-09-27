@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Liste öffnen</string>
     <string name="widget_tap_hint">„Nächster Modus“ geht die Liste unten der Reihe nach durch. „Liste öffnen“ zeigt alle zur Auswahl; sie schließt sich nach einer Auswahl oder nach 5 Sekunden.</string>
     <string name="widget_modes_title">Modi</string>
-    <string name="widget_modes_hint">Wähle mindestens 2 aus und ziehe sie in die gewünschte Reihenfolge. Beide Optionen nutzen dieselben Modi.</string>
+    <string name="widget_modes_hint">Wähle 2 bis 6 aus und ziehe sie in die gewünschte Reihenfolge. Beide Optionen nutzen dieselben Modi.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Button für niedrige Latenz</string>
     <string name="widget_ll_sub">Wird neben dem Modus-Button angezeigt</string>

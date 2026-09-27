@@ -238,7 +238,7 @@
     <string name="widget_tap_list">Mở danh sách</string>
     <string name="widget_tap_hint">Chế độ tiếp theo chuyển lần lượt theo thứ tự danh sách bên dưới. Mở danh sách hiện tất cả để chọn; danh sách đóng sau khi chọn hoặc sau 5 giây.</string>
     <string name="widget_modes_title">Chế độ</string>
-    <string name="widget_modes_hint">Chọn ít nhất 2 và kéo để sắp xếp. Cả hai tùy chọn dùng cùng các chế độ này.</string>
+    <string name="widget_modes_hint">Chọn từ 2 đến 6 và kéo để sắp xếp. Cả hai tùy chọn dùng cùng các chế độ này.</string>
     <string name="widget_section">Tiện ích</string>
     <string name="widget_ll_title">Nút độ trễ thấp</string>
     <string name="widget_ll_sub">Hiện cạnh nút chế độ</string>

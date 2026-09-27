@@ -236,7 +236,7 @@
     <string name="widget_tap_list">목록 열기</string>
     <string name="widget_tap_hint">다음 모드는 아래 목록을 순서대로 넘깁니다. 목록 열기는 모든 모드를 보여 주어 고를 수 있게 하며, 선택하거나 5초가 지나면 닫힙니다.</string>
     <string name="widget_modes_title">모드</string>
-    <string name="widget_modes_hint">2개 이상 체크하고 드래그해 순서를 정하세요. 두 옵션 모두 같은 모드를 사용합니다.</string>
+    <string name="widget_modes_hint">2~6개를 체크하고 드래그해 순서를 정하세요. 두 옵션 모두 같은 모드를 사용합니다.</string>
     <string name="widget_section">위젯</string>
     <string name="widget_ll_title">저지연 버튼</string>
     <string name="widget_ll_sub">모드 버튼 옆에 표시</string>

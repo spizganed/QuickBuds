@@ -236,7 +236,7 @@
     <string name="widget_tap_list">一覧を開く</string>
     <string name="widget_tap_hint">「次のモード」は下の一覧を順番に切り替えます。「一覧を開く」はすべてのモードを表示して選べます。選択後または 5 秒後に閉じます。</string>
     <string name="widget_modes_title">モード</string>
-    <string name="widget_modes_hint">2 つ以上にチェックを入れ、ドラッグで順番を決めます。どちらのオプションでも同じモードが使われます。</string>
+    <string name="widget_modes_hint">2〜6 個にチェックを入れ、ドラッグで順番を決めます。どちらのオプションでも同じモードが使われます。</string>
     <string name="widget_section">ウィジェット</string>
     <string name="widget_ll_title">低遅延ボタン</string>
     <string name="widget_ll_sub">モードボタンの隣に表示</string>

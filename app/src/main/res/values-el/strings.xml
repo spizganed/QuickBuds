@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Άνοιγμα λίστας</string>
     <string name="widget_tap_hint">Η Επόμενη λειτουργία περνά με τη σειρά από τη λίστα παρακάτω. Το Άνοιγμα λίστας τις δείχνει όλες για επιλογή· κλείνει μετά την επιλογή ή σε 5 δευτερόλεπτα.</string>
     <string name="widget_modes_title">Λειτουργίες</string>
-    <string name="widget_modes_hint">Επιλέξτε τουλάχιστον 2 και σύρετε για να ορίσετε τη σειρά. Οι ίδιες λειτουργίες χρησιμοποιούνται και στις δύο επιλογές.</string>
+    <string name="widget_modes_hint">Επιλέξτε από 2 έως 6 και σύρετε για να ορίσετε τη σειρά. Οι ίδιες λειτουργίες χρησιμοποιούνται και στις δύο επιλογές.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Κουμπί χαμηλής καθυστέρησης</string>
     <string name="widget_ll_sub">Εμφανίζεται δίπλα στο κουμπί λειτουργίας</string>

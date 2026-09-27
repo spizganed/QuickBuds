@@ -84,7 +84,9 @@ phone-specific piece lives outside it.
   moves build output to `~/qb-build/` (shared storage is slow FUSE) and disables the `lintVital*` tasks;
   `~/.gradle/gradle.properties` turns on the configuration cache and raises heaps (Gradle 3g, Kotlin 2g).
   **The phone's APK is `~/qb-build/_app/outputs/apk/release/app-release.apk`**, not `app/build/...`. Timed:
-  clean build (no build cache) 147 s → 83 s; rebuild after a one-line edit 43 s → 3 s. The daemon's
+  clean build (no build cache) 147 s → 83 s; rebuild after a one-line edit 43 s → 3 s. **The configuration cache can miss an
+  edit to `app/build.gradle.kts`** (2026-09-27: a version bump built as the old version). After changing a build
+  script, build with `--no-configuration-cache` and check `aapt2 dump badging`. The daemon's
   "Unable to set daemon's environment variables" warning is harmless on Termux.
 
 ## UI revision (design/SPEC.md)
@@ -178,7 +180,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 7 / versionName 3.2.0.**
+**Current: versionCode 8 / versionName 3.3.0.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
@@ -421,8 +423,9 @@ packet-listener path.
 ## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md)
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
-generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus `widget_grid` and
-`widget_disconnected`; the three page layouts come from `scripts/widget-layouts.py`, edit it and rerun, never the XML):
+generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus the mode list grids
+`widget_grid` / `widget_grid_l` (3x3, larger icons and labels) and `widget_disconnected`; all but the last come from
+`scripts/widget-layouts.py`, edit it and rerun, never the XML):
 **2x2** (`BatteryWidgetProvider`), **3x3** (`LargeWidgetProvider`, the 2x2 layout scaled up) and **4x2**
 (`AncWidgetProvider`, 3x2 until 2026-09-27) ([USER] 2026-09-27: no more sizes for now). All fixed size,
 `resizeMode="none"`. The old class names are kept so placed widgets survive; the 4x1 strip and the 2x2 controls

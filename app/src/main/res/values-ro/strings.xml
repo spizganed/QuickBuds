@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Deschide lista</string>
     <string name="widget_tap_hint">Modul următor parcurge în ordine lista de mai jos. Deschide lista le afișează pe toate pentru a alege; lista se închide după o alegere sau după 5 secunde.</string>
     <string name="widget_modes_title">Moduri</string>
-    <string name="widget_modes_hint">Bifează cel puțin 2 și trage pentru a stabili ordinea. Ambele opțiuni folosesc aceleași moduri.</string>
+    <string name="widget_modes_hint">Bifează între 2 și 6 și trage pentru a stabili ordinea. Ambele opțiuni folosesc aceleași moduri.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Buton latență redusă</string>
     <string name="widget_ll_sub">Afișat lângă butonul de mod</string>

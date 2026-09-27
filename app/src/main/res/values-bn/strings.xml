@@ -236,7 +236,7 @@
     <string name="widget_tap_list">তালিকা খুলুন</string>
     <string name="widget_tap_hint">পরের মোড নিচের তালিকা ক্রমানুসারে পার হয়। তালিকা খুলুন সবগুলো দেখায় বেছে নেওয়ার জন্য; বেছে নেওয়ার পরে বা 5 সেকেন্ডে এটি বন্ধ হয়।</string>
     <string name="widget_modes_title">মোড</string>
-    <string name="widget_modes_hint">অন্তত 2টি টিক দিন এবং ক্রম ঠিক করতে টানুন। দুটি বিকল্পেই একই মোড ব্যবহৃত হয়।</string>
+    <string name="widget_modes_hint">2 থেকে 6টি টিক দিন এবং ক্রম ঠিক করতে টানুন। দুটি বিকল্পেই একই মোড ব্যবহৃত হয়।</string>
     <string name="widget_section">উইজেট</string>
     <string name="widget_ll_title">লো লেটেন্সি বোতাম</string>
     <string name="widget_ll_sub">মোড বোতামের পাশে দেখানো হয়</string>

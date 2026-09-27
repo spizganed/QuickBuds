@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Открыть список</string>
     <string name="widget_tap_hint">«Следующий режим» перебирает список ниже по порядку. «Открыть список» показывает все режимы для выбора; список закрывается после выбора или через 5 секунд.</string>
     <string name="widget_modes_title">Режимы</string>
-    <string name="widget_modes_hint">Отметьте хотя бы 2 и перетащите, чтобы задать порядок. Эти же режимы используются в обоих вариантах.</string>
+    <string name="widget_modes_hint">Отметьте от 2 до 6 и перетащите, чтобы задать порядок. Эти же режимы используются в обоих вариантах.</string>
     <string name="widget_section">Виджет</string>
     <string name="widget_ll_title">Кнопка низкой задержки</string>
     <string name="widget_ll_sub">Показывается рядом с кнопкой режима</string>

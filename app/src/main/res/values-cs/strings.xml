@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Otevřít seznam</string>
     <string name="widget_tap_hint">Další režim prochází seznam níže v pořadí. Otevřít seznam ukáže všechny režimy k výběru; zavře se po výběru nebo po 5 sekundách.</string>
     <string name="widget_modes_title">Režimy</string>
-    <string name="widget_modes_hint">Zaškrtněte alespoň 2 a přetažením nastavte pořadí. Pro obě možnosti se používají stejné režimy.</string>
+    <string name="widget_modes_hint">Zaškrtněte 2 až 6 a přetažením nastavte pořadí. Pro obě možnosti se používají stejné režimy.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Tlačítko nízké latence</string>
     <string name="widget_ll_sub">Zobrazeno vedle tlačítka režimu</string>

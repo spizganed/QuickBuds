@@ -238,7 +238,7 @@
     <string name="widget_tap_list">सूची खोलें</string>
     <string name="widget_tap_hint">अगला मोड नीचे दी गई सूची के क्रम में बदलता है। सूची खोलें सभी मोड चुनने के लिए दिखाता है; चुनने के बाद या 5 सेकंड में बंद हो जाती है।</string>
     <string name="widget_modes_title">मोड</string>
-    <string name="widget_modes_hint">कम से कम 2 चुनें और क्रम बदलने के लिए खींचें। दोनों विकल्पों में यही मोड इस्तेमाल होते हैं।</string>
+    <string name="widget_modes_hint">2 से 6 चुनें और क्रम बदलने के लिए खींचें। दोनों विकल्पों में यही मोड इस्तेमाल होते हैं।</string>
     <string name="widget_section">विजेट</string>
     <string name="widget_ll_title">लो लेटेंसी बटन</string>
     <string name="widget_ll_sub">मोड बटन के बगल में दिखता है</string>

@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Abrir lista</string>
     <string name="widget_tap_hint">Modo seguinte percorre a lista abaixo por ordem. Abrir lista mostra todos para escolher; fecha após uma escolha ou ao fim de 5 segundos.</string>
     <string name="widget_modes_title">Modos</string>
-    <string name="widget_modes_hint">Marque pelo menos 2 e arraste para definir a ordem. As duas opções usam os mesmos modos.</string>
+    <string name="widget_modes_hint">Marque de 2 a 6 e arraste para definir a ordem. As duas opções usam os mesmos modos.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Botão de baixa latência</string>
     <string name="widget_ll_sub">Mostrado ao lado do botão de modo</string>

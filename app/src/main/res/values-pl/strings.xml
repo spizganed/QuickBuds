@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Otwórz listę</string>
     <string name="widget_tap_hint">Następny tryb przechodzi kolejno przez poniższą listę. Otwórz listę pokazuje wszystkie tryby do wyboru; lista zamyka się po wyborze lub po 5 sekundach.</string>
     <string name="widget_modes_title">Tryby</string>
-    <string name="widget_modes_hint">Zaznacz co najmniej 2 i przeciągnij, aby ustalić kolejność. Obie opcje używają tych samych trybów.</string>
+    <string name="widget_modes_hint">Zaznacz od 2 do 6 i przeciągnij, aby ustalić kolejność. Obie opcje używają tych samych trybów.</string>
     <string name="widget_section">Widżet</string>
     <string name="widget_ll_title">Przycisk niskiego opóźnienia</string>
     <string name="widget_ll_sub">Wyświetlany obok przycisku trybu</string>

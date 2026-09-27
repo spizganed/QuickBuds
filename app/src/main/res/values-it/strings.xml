@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Apri elenco</string>
     <string name="widget_tap_hint">Modalità successiva scorre l\'elenco qui sotto in ordine. Apri elenco le mostra tutte per scegliere; si chiude dopo una scelta o dopo 5 secondi.</string>
     <string name="widget_modes_title">Modalità</string>
-    <string name="widget_modes_hint">Selezionane almeno 2 e trascina per impostare l\'ordine. Entrambe le opzioni usano le stesse modalità.</string>
+    <string name="widget_modes_hint">Selezionane da 2 a 6 e trascina per impostare l\'ordine. Entrambe le opzioni usano le stesse modalità.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Pulsante bassa latenza</string>
     <string name="widget_ll_sub">Mostrato accanto al pulsante modalità</string>

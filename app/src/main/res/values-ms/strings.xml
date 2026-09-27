@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Buka senarai</string>
     <string name="widget_tap_hint">Mod seterusnya bergerak melalui senarai di bawah mengikut tertib. Buka senarai menunjukkan semuanya untuk dipilih; ia ditutup selepas pilihan atau 5 saat.</string>
     <string name="widget_modes_title">Mod</string>
-    <string name="widget_modes_hint">Tandakan sekurang-kurangnya 2 dan seret untuk menetapkan tertib. Mod yang sama digunakan untuk kedua-dua pilihan.</string>
+    <string name="widget_modes_hint">Tandakan 2 hingga 6 dan seret untuk menetapkan tertib. Mod yang sama digunakan untuk kedua-dua pilihan.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Butang kependaman rendah</string>
     <string name="widget_ll_sub">Ditunjukkan di sebelah butang mod</string>

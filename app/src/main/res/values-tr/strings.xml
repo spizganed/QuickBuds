@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Listeyi aç</string>
     <string name="widget_tap_hint">Sonraki mod, aşağıdaki listede sırayla ilerler. Listeyi aç, seçmek için hepsini gösterir; seçimden sonra veya 5 saniye içinde kapanır.</string>
     <string name="widget_modes_title">Modlar</string>
-    <string name="widget_modes_hint">En az 2 tanesini işaretleyin ve sıralamak için sürükleyin. Aynı modlar iki seçenekte de kullanılır.</string>
+    <string name="widget_modes_hint">2 ile 6 arasında işaretleyin ve sıralamak için sürükleyin. Aynı modlar iki seçenekte de kullanılır.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Düşük gecikme düğmesi</string>
     <string name="widget_ll_sub">Mod düğmesinin yanında gösterilir</string>

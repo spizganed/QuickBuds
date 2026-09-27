@@ -236,7 +236,7 @@
     <string name="widget_tap_list">Lijst openen</string>
     <string name="widget_tap_hint">Volgende modus loopt de lijst hieronder op volgorde door. Lijst openen toont ze allemaal om te kiezen; de lijst sluit na een keuze of na 5 seconden.</string>
     <string name="widget_modes_title">Modi</string>
-    <string name="widget_modes_hint">Vink er minstens 2 aan en sleep om de volgorde te bepalen. Beide opties gebruiken dezelfde modi.</string>
+    <string name="widget_modes_hint">Vink er 2 tot 6 aan en sleep om de volgorde te bepalen. Beide opties gebruiken dezelfde modi.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Knop voor lage latentie</string>
     <string name="widget_ll_sub">Getoond naast de modusknop</string>

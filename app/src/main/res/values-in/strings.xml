@@ -238,7 +238,7 @@
     <string name="widget_tap_list">Buka daftar</string>
     <string name="widget_tap_hint">Mode berikutnya berpindah sesuai urutan daftar di bawah. Buka daftar menampilkan semua mode untuk dipilih; daftar tertutup setelah memilih atau 5 detik.</string>
     <string name="widget_modes_title">Mode</string>
-    <string name="widget_modes_hint">Centang minimal 2 dan seret untuk mengatur urutan. Mode yang sama dipakai untuk kedua opsi.</string>
+    <string name="widget_modes_hint">Centang 2 sampai 6 dan seret untuk mengatur urutan. Mode yang sama dipakai untuk kedua opsi.</string>
     <string name="widget_section">Widget</string>
     <string name="widget_ll_title">Tombol latensi rendah</string>
     <string name="widget_ll_sub">Ditampilkan di samping tombol mode</string>
