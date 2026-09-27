@@ -17,10 +17,10 @@ import kotlin.math.min
  * 104dp battery ring, with the percentage and a wear label under it. Drawn in one view, in the
  * same language as [EqCurveView] / [LevelSliderView].
  *
- * Wear, from the buds' status codes (same meaning the widget uses):
- *   3 / 7 = in ear  -> glyph `text`,          label "In ear"
- *   4 / 0 = in case -> glyph `textSecondary`, label "In case" (no badge, [USER] 2026-09-26)
- *   other known     -> glyph `textSecondary`, label "Out of ear"
+ * Wear, from the buds' status codes (same meaning the widget uses; design/widgets/WIDGETS.md 1):
+ *   3 / 7 = in ear  -> glyph `text`,                   label "In ear" in `text`, semibold
+ *   4 / 0 = in case -> glyph `textSecondary` at 45%,   label "In case" (no badge, [USER] 2026-09-26)
+ *   other known     -> glyph `textSecondary`,          label "Out of ear"
  *
  * Disconnected ([connected] false) keeps exactly the same size: track-only rings, glyphs in the
  * disabled colour, "—" and the bare names. Rings animate to a new level.
@@ -69,6 +69,7 @@ class BudsStatusView(context: Context) : View(context) {
         textSize = dp(13f); textAlign = Paint.Align.CENTER; color = p.textSecondary
     }
     private val arcBox = RectF()
+    private val semibold = Typeface.create("sans-serif-medium", Typeface.NORMAL)
 
     /** 90dp (SPEC 104, made ~13% shorter, [USER] 2026-09-26), shrunk only if three columns cannot fit on a very narrow screen. */
     private val ringSize get() = min(dp(90f), width / 3f - dp(8f))
@@ -124,12 +125,7 @@ class BudsStatusView(context: Context) : View(context) {
             val bw = dp(s.boxW) * scale
             val bh = dp(s.boxH) * scale
             val (iw, ih) = if (s.iconRatio < bw / bh) bh * s.iconRatio to bh else bw to bw / s.iconRatio
-            val inEar = s.status == 3 || s.status == 7
-            s.icon.setTint(when {
-                !connected -> p.disabled
-                i == 1 || inEar -> p.text
-                else -> p.textSecondary
-            })
+            s.icon.setTint(if (connected) wearTint(p, i == 1, s.status) else p.disabled)
             s.icon.setBounds((cx - iw / 2).toInt(), (cy - ih / 2).toInt(), (cx + iw / 2).toInt(), (cy + ih / 2).toInt())
             s.icon.draw(canvas)
 
@@ -138,13 +134,25 @@ class BudsStatusView(context: Context) : View(context) {
             canvas.drawText(pctText(s.level), cx, ring + dp(30f), pctPaint)
 
             val wear = if (i == 1 || !connected) null else wearLabel(s.status)
-            val label = if (wear == null) names[i] else "${names[i]} · $wear"
-            // "Right · Out of ear" can be wider than a narrow column: shrink to fit, never clip.
+            val label = wear ?: names[i]
+            val inEar = wear != null && (s.status == 3 || s.status == 7)
+            labelPaint.color = if (inEar) p.text else p.textSecondary
+            labelPaint.typeface = if (inEar) semibold else Typeface.DEFAULT
+            // "Out of ear" can be wider than a narrow column: shrink to fit, never clip.
             labelPaint.textSize = dp(13f)
             val room = colW - dp(6f)
             val w = labelPaint.measureText(label)
             if (w > room) labelPaint.textSize = dp(13f) * room / w
             canvas.drawText(label, cx, ring + dp(51f), labelPaint)
+        }
+    }
+
+    companion object {
+        /** Glyph colour by wear (WIDGETS.md 1); the case is always `text`. Shared with the widgets. */
+        fun wearTint(p: Palette, isCase: Boolean, status: Int): Int = when {
+            isCase || status == 3 || status == 7 -> p.text
+            status == 4 || status == 0 -> Palette.withAlpha(p.textSecondary, 0.45f)
+            else -> p.textSecondary
         }
     }
 }

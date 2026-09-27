@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.WidgetActions
+import com.spizganed.quickbuds.ui.BudsStatusView
 import com.spizganed.quickbuds.ui.MainActivity
 import com.spizganed.quickbuds.ui.Palette
 import com.spizganed.quickbuds.ui.ThemeRes
@@ -252,13 +253,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val boxH = px * (if (isCase) 0.48f else 0.64f)
             val boxW = px * (if (isCase) 0.66f else 0.44f)
             val (w, h) = if (ratio < boxW / boxH) boxH * ratio to boxH else boxW to boxW / ratio
-            glyph.setTint(
-                when {
-                    !on -> p.disabled
-                    isCase || status == 3 || status == 7 -> p.text
-                    else -> p.textSecondary
-                }
-            )
+            glyph.setTint(if (on) BudsStatusView.wearTint(p, isCase, status) else p.disabled)
             glyph.setBounds(((px - w) / 2).toInt(), ((px - h) / 2).toInt(), ((px + w) / 2).toInt(), ((px + h) / 2).toInt())
             glyph.draw(c)
             return bmp
