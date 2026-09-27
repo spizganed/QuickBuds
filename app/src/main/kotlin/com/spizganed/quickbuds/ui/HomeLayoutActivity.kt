@@ -45,6 +45,7 @@ class HomeLayoutActivity : Activity() {
         ThemeRes.screenPadding(findViewById(R.id.mainLayout))
         findViewById<TextView>(R.id.headerTitle).setText(R.string.layout_title)
         findViewById<View>(R.id.connPill).visibility = View.GONE
+        findViewById<View>(R.id.btnModel).visibility = View.GONE
         fun headerButton(id: Int, icon: Int, desc: Int, onClick: () -> Unit) = findViewById<ImageButton>(id).apply {
             background = ThemeRes.ripple(this@HomeLayoutActivity, ThemeRes.iconButton(this@HomeLayoutActivity))
             setImageDrawable(ThemeRes.tint(this@HomeLayoutActivity, icon, p.accent))

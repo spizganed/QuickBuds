@@ -388,7 +388,7 @@ From `bluetooth/BudsConnectionManager.kt`.
 
 ## Main screen structure — SPEC 3.1-3.3 (UI revision step 3, 2026-09-26)
 
-Header (48dp: status chip = Connect/Disconnect button on the LEFT (min 128dp), then `headerTitle` (an empty spacer here;
+Header (48dp: model list button (`btnModel`), then the status chip = Connect/Disconnect button (min 128dp), then `headerTitle` (an empty spacer here;
 Home layout's title), dev-tools icon, settings cog; the device name sits under the rings in `batteryCard`, [USER] 2026-09-27)
 over a `ScrollView` named `mainScroll` holding `tiles`. Each tile is an include layout whose ROOT id is
 its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList` (tile_settings), in that
@@ -398,8 +398,8 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    glyphs at their SVG ratio inside 42x56 / 58x42 boxes (scaled with the ring), percentage 21sp (always `text`), label "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case is only the grey
    glyph and the label; the SPEC's case badge was tried and removed ([USER] 2026-09-26).
    Disconnected: same size, track only, disabled glyphs, "—", bare names.
-   The device name under the rings is a button: it shows `ModelCatalog.current()` (detected by product
-   id + Bluetooth name, or picked by hand) and opens `ModelActivity`, the model list.
+   The device name under the rings is `ModelCatalog.current()` (detected by product id + Bluetooth
+   name, or picked by hand); the header's `btnModel`, before the connect pill, opens `ModelActivity`.
 2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
    neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom
    sheet and the caption. The ANC segment applies the last level seen (`homeAncLevel`, default Medium).

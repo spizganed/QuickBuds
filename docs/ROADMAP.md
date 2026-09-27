@@ -19,8 +19,8 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
-   (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
+1. **Other HeyMelody models: detect, then show what the model supports.** realme (and DIZO) models
+   are in HeyMelody's list and in ours ([USER] 2026-09-27). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Done 2026-09-27: capability gating.** The buds' own `0x8100` bitmap and `0x810D` list decide
      which home rows, Earbud settings rows and connect-time queries appear (`Capabilities.kt`,
      PROTOCOL.md §4). The product id is read and logged.
@@ -31,7 +31,8 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      no noise control.
    - **Done 2026-09-27: detection and the model list.** `ModelCatalog` folds the colour ranges and
      matches id and Bluetooth name as HeyMelody does (PROTOCOL.md §4). The device name under the rings
-     shows the model and opens `ModelActivity`: Automatic plus every OnePlus / OPPO model; a pick
+     shows the model; a header button before the connect pill opens `ModelActivity`: Automatic plus
+     every model by brand (OnePlus, OPPO, realme, DIZO); a pick
      overrides detection until other buds connect. Checked on device (Buds 4 detected; a manual Buds
      Pro swapped the noise segments). Next: firmware version, then per-feature packets.
    - **Model list**: `Assets/Oplus/Data/DeviceModels.json`, HeyMelody's own per-model config.
@@ -48,7 +49,6 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
    - **Firmware version**: query `0x0105`; `[OSS]` reply is `00`, one byte, then UTF-8 text of
      `deviceType,versionType,version` triples (`DeviceInfoManager.ApplyFirmware` joins the versions
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
-   - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
    - **Sources checked 2026-09-27** ([USER]: reuse what the OSS clients already do). Both carry the same
      137-model list (56 OPPO, 49 realme, 32 OnePlus). `Leaf-lsgtky/OppoPods` (Kotlin, Android) now has

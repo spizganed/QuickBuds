@@ -10,10 +10,10 @@ import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 
 /**
- * The model list, opened from the device name on the main screen: Automatic (what
- * [ModelCatalog] detects) and every OnePlus and OPPO model HeyMelody lists. A pick overrides
- * detection until Automatic is picked again or other buds connect. realme is left out: HeyMelody
- * does not support it.
+ * The model list, opened from the header button before the connect pill: Automatic (what
+ * [ModelCatalog] detects) and every model HeyMelody's list has, by brand (realme and its DIZO
+ * included, [USER] 2026-09-27). A pick overrides detection until Automatic is picked again or
+ * other buds connect.
  */
 class ModelActivity : Activity() {
 
@@ -59,7 +59,8 @@ class ModelActivity : Activity() {
             manual == null) { ModelCatalog.setManual(this, null) })
         root.addView(auto)
 
-        for ((brand, label) in listOf("OnePlus" to R.string.model_brand_oneplus, "OPPO" to R.string.model_brand_oppo)) {
+        for ((brand, label) in listOf("OnePlus" to R.string.model_brand_oneplus, "OPPO" to R.string.model_brand_oppo,
+                "realme" to R.string.model_brand_realme, "DIZO" to R.string.model_brand_dizo)) {
             root.addView(SettingRowFactory.sectionLabel(this, label))
             val card = SettingRowFactory.card(this)
             for (m in models.filter { it.name.startsWith("$brand ") }.sortedBy { it.name.lowercase() }) {

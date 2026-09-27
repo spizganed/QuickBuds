@@ -310,11 +310,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         mainLayout = findViewById<LinearLayout>(R.id.mainLayout)
         featureList = findViewById<LinearLayout>(R.id.featureList)
         deviceNameText = findViewById<TextView>(R.id.deviceNameText)
-        deviceNameText.background = ThemeRes.ripple(this)
-        deviceNameText.setCompoundDrawablesRelative(null, null,
-            ThemeRes.tint(this, R.drawable.ic_chevron_down, ThemeRes.color(this, R.attr.appColorTextSecondary)).apply {
-                val size = ThemeRes.dp(this@MainActivity, 18f); setBounds(0, 0, size, size) }, null)
-        deviceNameText.setOnClickListener { startActivity(Intent(this, ModelActivity::class.java)) }
+        findViewById<ImageButton>(R.id.btnModel).apply {
+            background = ThemeRes.ripple(this@MainActivity, ThemeRes.iconButton(this@MainActivity))
+            setImageDrawable(ThemeRes.tint(this@MainActivity, R.drawable.ic_model_list, ThemeRes.color(this@MainActivity, R.attr.appColorAccent)))
+            setOnClickListener { startActivity(Intent(this@MainActivity, ModelActivity::class.java)) }
+        }
         showModelName()
         btnSettings = findViewById<ImageButton>(R.id.btnSettings)
         btnDevTools = findViewById<ImageButton>(R.id.btnDevTools)

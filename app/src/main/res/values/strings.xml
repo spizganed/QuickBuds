@@ -344,6 +344,8 @@
     <!-- Model list (ModelActivity) -->
     <string name="model_brand_oneplus" translatable="false">OnePlus</string>
     <string name="model_brand_oppo" translatable="false">OPPO</string>
+    <string name="model_brand_realme" translatable="false">realme</string>
+    <string name="model_brand_dizo" translatable="false">DIZO</string>
     <string name="model_title">Model</string>
     <string name="model_auto">Automatic</string>
     <string name="model_detected">Detected: %1$s</string>
