@@ -3,8 +3,7 @@
 The live plan: what is next and what is still open. Finished work moves to
 [ROADMAP-DONE.md](./ROADMAP-DONE.md).
 
-- Releases happen when the developer feels the app is ready. The one fixed target is **3.0.0**, after
-  the theme and widget work (step 6 below).
+- Releases happen when the developer feels the app is ready.
 - Protocol findings go in [PROTOCOL.md](./PROTOCOL.md), not here.
 - **The north star is parity with HeyMelody**, then our own improvements. Other earbud models come
   after that.
@@ -15,58 +14,58 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 None known (2026-09-25). A new one needs a HeyMelody capture first.
 
-## The plan, in order (`[USER]` 2026-09-25)
+## The plan, in order (`[USER]` 2026-09-27)
 
-Each step is done before the next one starts.
+Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
+widgets, 3.0.0) is finished; 3.1.0 is released.
 
-**UI revision (design/SPEC.md, branch `claude/eager-faraday-p3z8km`, 2026-09-26), awaiting his device
-test:** covers step 2 (Settings screen, with the Dev Tools button switch) and the SPEC's version of step 4
-(OLED Black / Classic Dark / White, up to 3 custom presets with hue slider, hex field and quick swatches,
-contrast warnings, hue / saturation / brightness sliders, accent of a built-in preset). Still open from
-step 4: auto-detect and recent colours. Step 3 is covered by Settings › Home layout (up/down
-arrows and a hide switch, not drag and drop).
-
-1. **Small fixes and small features.** Bugs and small items first. Start with a read of every doc
-   for outdated information; he will report anything he finds on his own read after that.
-2. **Settings screen.** The cog opens its own screen, not the bottom sheet it opens today. A
-   **Themes / Colour palette** entry lives there, plus the items under *Settings screen contents*.
-3. **Edit layout.** An **Edit layout** button starts a mode where the main-screen rows can be
-   dragged into a new order and hidden (e.g. Hi-Res codec, if it stays on permanently). Nothing
-   moves outside that mode.
-4. **Themes.**
-   - **3 built-in presets:** **OLED Dark** (today's look, the default), **Dark** (dark grey, for
-     non-OLED screens) and **White**. White may not keep the red accent; pick one that sits better
-     on white. He judges it.
-   - **Auto-detect:** follow the system light/dark setting by picking from the built-in presets.
-   - **Accent:** on a built-in preset the user can change the accent colour (red by default).
-   - **3 custom presets**, added, removed and renamed like the EQ presets. Each one is edited with:
-     - a **hex picker**: saturation/brightness square, hue slider, swatch;
-     - the **palette slots 1–5** (black, the greys, white, the accent) next to it;
-     - a **`#HEX` field** to paste a value, copy it, or apply it;
-     - **saved / recent colours** to pick from again.
-   - Reference: `local/refernce_hex_picker/unnamed.png` (htmlcolorcodes.com picker). Take the
-     layout idea only; the look follows our own UI (cards, red accent, drawn controls).
-   - This means reworking a lot of UI code: every colour has to come from the active palette, not
-     from fixed theme resources.
-5. **New widget, rebuilt from scratch.** Built 2026-09-26 (2x2 compact, 4x2 full, 4x1 bar), awaiting
-   his test. The old logic and UI are outdated. First a **2×2** (bud
-   icons, the case if it fits, the battery rings from the main screen, ANC Off / Transparency /
-   Low / Medium / High), styled like the main screen. Then **2 more sizes** with their own layouts,
-   which he will judge. All of them use the in-app colour scheme. Per-widget settings screens are
-   over-engineering for now.
-6. **Release 3.0.0**, once the 2×2 and the two other widgets are locked in. It is a big enough step
-   for a major version, not 2.2.0 (`[USER]` 2026-09-25).
-
-## Settings screen contents
-
-- **Hide the Dev Tools button** from the main screen (switch).
-- **Background service on/off.** Done 2026-09-26, with a warning that the widget needs it.
-- **App update:** check on start and the update screen redesign done 2026-09-26, awaiting his test.
-- **About screen:** done 2026-09-26 (GitHub and Ko-fi buttons open the browser; Ko-fi URL is a
-  placeholder until the page exists).
+1. **Cleanup.** Drop the Cloud sessions section and the cloud-only rules (`.debug` suffix, `apk/`) from
+   CLAUDE.md, and fix outdated agent memory.
+2. **Crash logger and logging tools.** Install the crash handler first thing in
+   `QuickBudsApp.attachBaseContext`, so a crash before any app logic still leaves a report (today it
+   is installed in `onCreate`, after `super.onCreate()`). Fall back to plain file I/O if MediaStore is
+   not usable yet. Add a Dev Tools "crash on next launch" switch to prove it on the device. Then check
+   that every Dev Tools logging tool still works with the new UI.
+3. **Widget mode list reacts late.** Cause: `WidgetActionReceiver.openList()` holds the broadcast with
+   `goAsync()` for the whole 5 s timeout, and Android delivers broadcasts to a manifest receiver one
+   at a time, so a pick waits for the timer. Fix: close the list with a plain delayed refresh, no
+   `goAsync`; `build()` already treats a stamp older than 5 s as closed.
+4. **In-app language screen.** Replace the link to Android's per-app language screen (which lists
+   every regional variant: Deutsch (Österreich), (Schweiz)…) with our own screen built from
+   `SettingRowFactory` rows: System default, English, 简体中文, 繁體中文 and one entry per other
+   language. `LocaleManager` on Android 13+, `applyOverrideConfiguration` in `ThemeRes` below that.
+5. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
+   (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
+   - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
+     little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
+     Look it up in the model list; if the id is missing or unknown, match the Bluetooth device name;
+     if that fails, the user picks from the list (manual choice overrides). We already send `0x0103`
+     and `0x0100` in the init sequence (PROTOCOL.md §4) but ignore both replies.
+   - **Model list**: `Assets/Oplus/Data/DeviceModels.json`, HeyMelody's own per-model config.
+     `whiteList` has 137 models: `id` (Buds 4 = `065414`), RFCOMM `uuid` (Buds 4 `0000079A-…`, ours),
+     and a `function` map: feature flags, `noiseReductionMode` with a `protocolIndex` per ANC mode
+     (Adaptive `11` = our bit 11), `equalizerMode`, `control` / `callControl` gesture bitmasks.
+   - **What the firmware supports**: the `0x8100` reply is `00` + a bitmap; each bit maps to the
+     commands it enables (`CapabilityReader.MelodyV16`, bits 0–66). A feature is shown only if the
+     JSON lists it AND the bitmap has its commands (`CapabilityLoader.IntersectWhitelistFeatures`).
+   - **Packets per feature**: `Control/Brands/Oppo/Features/*.cs` (bass engine, spatial audio, game
+     sound, hearing enhancement, custom EQ…). OSS has been wrong before (`0x0402`, PROTOCOL.md §6), so
+     each builder goes in with a PROTOCOL.md entry tagged `[OSS]`, and a feature Buds 4 lacks stays
+     marked unverified until an owner of that model confirms a write by read-back.
+   - **Firmware version**: query `0x0105`; `[OSS]` reply is `00`, one byte, then UTF-8 text of
+     `deviceType,versionType,version` triples (`DeviceInfoManager.ApplyFirmware` joins the versions
+     with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
+   - UI: the header's device name becomes a button that opens the model list (switch or override).
+   - The capture script and contributor docs are not needed for this.
+6. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
+   app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
+   mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
+   repo (`[USER]` 2026-09-27).
 
 ## Our own features
 
+- **Themes, still open:** auto-detect (follow system light/dark with a built-in preset) and
+  saved / recent colours in the picker.
 - **New app icon.** The current one is acceptable, but a better one is welcome.
 
 ## Connection and battery
@@ -91,15 +90,15 @@ arrows and a hide switch, not drag and drop).
 
 ## Parked
 
-- Other earbud models, once parity and the items above are done.
-- Golden Sound (hearing test → EQ): spike only, may be impossible over this protocol.
 - Hide the screenshot-to-text and layout-report tools; keep the logic.
-- A build quickstart for contributors (clone → first `assembleDebug`).
+- A build quickstart and a capture guide for contributors, only if the device file is not enough.
 - Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,
   `0x0510`): see PROTOCOL.md §12. Do not guess from a couple of samples.
 
 ## Decided against — do not re-suggest
 
+- Ear tip fit test and Golden Sound: the only HeyMelody features we skip; he sees no use in them
+  ([USER] 2026-09-27).
 - A lock-screen widget, a widget on/off switch, the Quick Settings tile (removed) and the
   fixed-level hold ([USER] 2026-09-26).
 - Slide up vs slide down: nothing to do. The firmware maps up/down itself (volume up/down, next/prev)
