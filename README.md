@@ -49,11 +49,12 @@ Every size has a battery page and a controls page; switch with the swap button o
   Saved on the earbuds.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
-- **Wear detection**, **Dual connection**, **Find my earbuds** and the earbuds' prompt volume.
+- **Wear detection**, **Dual connection**, **Find my earbuds**, the earbuds' prompt volume and their
+  firmware version.
 - **Home-screen widgets** in three sizes (2×2, 3×3, 4×2). Each has a battery page and a noise
   control + Low latency page, in your theme's colours.
-- **Themes:** OLED Black, Classic Dark and White, your own accent colour, and up to 3 custom colour
-  presets. Reorder or hide the home screen rows.
+- **Themes:** OLED Black, Classic Dark and White, or match the system's light / dark setting. Your own
+  accent colour and up to 3 custom colour presets. Reorder or hide the home screen rows.
 - **27 languages**, switchable inside the app.
 - **Update check** from inside the app, straight from GitHub releases.
 

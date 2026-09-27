@@ -186,7 +186,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 8 / versionName 3.3.0.**
+**Current: versionCode 9 / versionName 3.4.0.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
