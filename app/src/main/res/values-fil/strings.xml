@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Mga setting ng earbuds</string>
     <string name="earbuds_section_sounds">Mga tunog</string>
+    <string name="earbuds_section_about">Tungkol sa earbuds</string>
+    <string name="row_firmware_title">Bersyon ng firmware</string>
     <string name="settings_title">Mga Setting</string>
     <string name="row_wear_title">Pagtukoy ng pagsuot</string>
     <string name="row_wear_sub">I-pause kapag inalis mo ang earbuds</string>

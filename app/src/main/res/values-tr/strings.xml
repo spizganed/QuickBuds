@@ -53,6 +53,8 @@
     <string name="dual_add_ok">Tamam</string>
     <string name="earbuds_title">Kulaklık ayarları</string>
     <string name="earbuds_section_sounds">Sesler</string>
+    <string name="earbuds_section_about">Kulaklık hakkında</string>
+    <string name="row_firmware_title">Donanım yazılımı sürümü</string>
     <string name="settings_title">Ayarlar</string>
     <string name="row_wear_title">Takılma algılama</string>
     <string name="row_wear_sub">Kulaklıkları çıkardığınızda duraklat</string>

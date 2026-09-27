@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Настройки наушников</string>
     <string name="earbuds_section_sounds">Звуки</string>
+    <string name="earbuds_section_about">О наушниках</string>
+    <string name="row_firmware_title">Версия прошивки</string>
     <string name="settings_title">Настройки</string>
     <string name="row_wear_title">Определение ношения</string>
     <string name="row_wear_sub">Пауза, когда вы снимаете наушники</string>

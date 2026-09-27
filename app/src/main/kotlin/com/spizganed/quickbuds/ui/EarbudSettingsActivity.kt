@@ -31,6 +31,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private var bound = false
     private lateinit var alertSlider: LevelSliderView
     private lateinit var alertSpeaker: ImageView
+    private var firmwareText: TextView? = null
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -74,11 +75,27 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java,
             Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS))
         if (card.childCount > 0) root.addView(card)
-        if (!Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) {
-            setContentView(ScrollView(this).apply { addView(root) })
-            return
+        if (Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) sounds(root)
+
+        // --- About: the firmware version as HeyMelody shows it (read on connect, `0x0105`) ---
+        if (Capabilities.supports(this, OpoProtocol.CMD_QUERY_FIRMWARE)) {
+            root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_about))
+            val row = SettingRowFactory.build(this, R.drawable.ic_info, R.string.row_firmware_title, 0, null)
+            firmwareText = SettingRowFactory.subtitle(this, row)
+            paintFirmware()
+            root.addView(cardView().apply { addView(row) })
         }
 
+        setContentView(ScrollView(this).apply { addView(root) })
+    }
+
+    private fun paintFirmware(version: String? = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+        .getString(BudsConnectionManager.KEY_FIRMWARE, null)) {
+        firmwareText?.text = version ?: "—"
+    }
+
+    private fun sounds(root: LinearLayout) {
+        val dp = { v: Float -> ThemeRes.dp(this, v) }
         // --- Sounds: alert-sound volume, 1..10: `0x0427`, read back with `0x0130`. [CAPTURE] 2026-09-25 ---
         // Sent on release only, so the buds play one prompt per change, not one per step.
         // No numbers, as in HeyMelody: a speaker icon left of the bar, muted at the lowest step
@@ -109,8 +126,6 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 addView(alertSlider)
             })
         })
-
-        setContentView(ScrollView(this).apply { addView(root) })
     }
 
     private fun cardView() = SettingRowFactory.card(this)
@@ -143,7 +158,11 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
 
     override fun onStatus(msg: String) {}
     override fun onConnected(connected: Boolean) {}
-    override fun onPacketReceived(bytes: ByteArray) {}
+    override fun onPacketReceived(bytes: ByteArray) {
+        // A firmware reply (`0x8105`, `00 <count>` + text) that lands while this screen is open.
+        if (bytes.size > 11 && bytes[4].toInt() and 0xFF == 0x05 && bytes[5].toInt() and 0xFF == 0x81 && bytes[9].toInt() == 0)
+            OpoProtocol.firmwareVersion(String(bytes, 11, bytes.size - 11, Charsets.UTF_8))?.let { paintFirmware(it) }
+    }
     override fun onBattery(
         left: Int?, case: Int?, right: Int?,
         chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean

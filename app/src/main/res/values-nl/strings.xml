@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Oordopjesinstellingen</string>
     <string name="earbuds_section_sounds">Geluiden</string>
+    <string name="earbuds_section_about">Over de oordopjes</string>
+    <string name="row_firmware_title">Firmwareversie</string>
     <string name="settings_title">Instellingen</string>
     <string name="row_wear_title">Draagdetectie</string>
     <string name="row_wear_sub">Pauzeren als je de oordopjes uitdoet</string>

@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Tetapan fon telinga</string>
     <string name="earbuds_section_sounds">Bunyi</string>
+    <string name="earbuds_section_about">Perihal fon telinga</string>
+    <string name="row_firmware_title">Versi perisian tegar</string>
     <string name="settings_title">Tetapan</string>
     <string name="row_wear_title">Pengesanan pemakaian</string>
     <string name="row_wear_sub">Jeda apabila anda menanggalkan fon telinga</string>

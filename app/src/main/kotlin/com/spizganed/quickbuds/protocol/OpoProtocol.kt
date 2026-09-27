@@ -194,6 +194,16 @@ object OpoProtocol {
 
 
     fun queryFirmware(): ByteArray = buildPacket(CMD_QUERY_FIRMWARE)
+
+    /**
+     * The `0x8105` text as HeyMelody shows it: the `versionType` 2 versions in reply order, joined
+     * with dots. Buds 4 `1,2,138,2,2,138,3,1,01,3,2,105` -> `138.138.105`, as on HeyMelody's own
+     * screen `[CAPTURE]` 2026-09-27. Null when there is none.
+     */
+    fun firmwareVersion(text: String): String? = text.split(',').chunked(3)
+        .filter { it.size == 3 && it[1].trim() == "2" }
+        .joinToString(".") { it[2].trim() }
+        .ifEmpty { null }
     fun queryBattery(): ByteArray = buildPacket(CMD_QUERY_BATTERY, seq = 0xF0)
     fun queryAncMode(): ByteArray = buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x01, 0x01))
 

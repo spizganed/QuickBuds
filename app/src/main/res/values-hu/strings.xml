@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Fülhallgató-beállítások</string>
     <string name="earbuds_section_sounds">Hangok</string>
+    <string name="earbuds_section_about">A fülhallgatóról</string>
+    <string name="row_firmware_title">Firmware-verzió</string>
     <string name="settings_title">Beállítások</string>
     <string name="row_wear_title">Viselésérzékelés</string>
     <string name="row_wear_sub">Szünet, ha kiveszi a fülhallgatót</string>

@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Ρυθμίσεις ακουστικών</string>
     <string name="earbuds_section_sounds">Ήχοι</string>
+    <string name="earbuds_section_about">Σχετικά με τα ακουστικά</string>
+    <string name="row_firmware_title">Έκδοση υλικολογισμικού</string>
     <string name="settings_title">Ρυθμίσεις</string>
     <string name="row_wear_title">Ανίχνευση εφαρμογής</string>
     <string name="row_wear_sub">Παύση όταν βγάζετε τα ακουστικά</string>

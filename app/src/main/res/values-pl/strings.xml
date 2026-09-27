@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Ustawienia słuchawek</string>
     <string name="earbuds_section_sounds">Dźwięki</string>
+    <string name="earbuds_section_about">O słuchawkach</string>
+    <string name="row_firmware_title">Wersja oprogramowania</string>
     <string name="settings_title">Ustawienia</string>
     <string name="row_wear_title">Wykrywanie noszenia</string>
     <string name="row_wear_sub">Pauza po wyjęciu słuchawek</string>

@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Nastavení sluchátek</string>
     <string name="earbuds_section_sounds">Zvuky</string>
+    <string name="earbuds_section_about">O sluchátkách</string>
+    <string name="row_firmware_title">Verze firmwaru</string>
     <string name="settings_title">Nastavení</string>
     <string name="row_wear_title">Detekce nošení</string>
     <string name="row_wear_sub">Pozastavit, když sluchátka vyndáte</string>

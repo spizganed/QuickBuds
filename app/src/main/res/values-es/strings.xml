@@ -53,6 +53,8 @@
     <string name="dual_add_ok">Aceptar</string>
     <string name="earbuds_title">Ajustes de los auriculares</string>
     <string name="earbuds_section_sounds">Sonidos</string>
+    <string name="earbuds_section_about">Acerca de los auriculares</string>
+    <string name="row_firmware_title">Versión del firmware</string>
     <string name="settings_title">Ajustes</string>
     <string name="row_wear_title">Detección de uso</string>
     <string name="row_wear_sub">Pausa al quitarte los auriculares</string>

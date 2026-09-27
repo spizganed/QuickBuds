@@ -33,7 +33,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      shows the model; a header button before the connect pill opens `ModelActivity`: Automatic plus
      every model by brand (OnePlus, OPPO, realme, DIZO); a pick
      overrides detection until other buds connect. Checked on device (Buds 4 detected; a manual Buds
-     Pro swapped the noise segments). Next: firmware version, then per-feature packets.
+     Pro swapped the noise segments). Next: per-feature packets.
    - **Model list**: `Assets/Oplus/Data/DeviceModels.json`, HeyMelody's own per-model config.
      `whiteList` has 137 models: `id` (Buds 4 = `065414`), RFCOMM `uuid` (Buds 4 `0000079A-…`, ours),
      and a `function` map: feature flags, `noiseReductionMode` with a `protocolIndex` per ANC mode
@@ -45,8 +45,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      sound, hearing enhancement, custom EQ…). OSS has been wrong before (`0x0402`, PROTOCOL.md §6), so
      each builder goes in with a PROTOCOL.md entry tagged `[OSS]`, and a feature Buds 4 lacks stays
      marked unverified until an owner of that model confirms a write by read-back.
-   - **Firmware version**: queried and logged on connect; format confirmed on Buds 4 (PROTOCOL.md §3).
-     Next: show it in the Earbud settings hub, once the triples are matched to HeyMelody's own screen.
+   - **Firmware version**: done 2026-09-27, shown in Earbud settings as HeyMelody shows it (PROTOCOL.md §3).
    - The capture script and contributor docs are not needed for this.
    - **Sources checked 2026-09-27** ([USER]: reuse what the OSS clients already do). Both carry the same
      137-model list (56 OPPO, 49 realme, 32 OnePlus). `Leaf-lsgtky/OppoPods` (Kotlin, Android) now has

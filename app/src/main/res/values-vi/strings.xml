@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Cài đặt tai nghe</string>
     <string name="earbuds_section_sounds">Âm thanh</string>
+    <string name="earbuds_section_about">Giới thiệu tai nghe</string>
+    <string name="row_firmware_title">Phiên bản firmware</string>
     <string name="settings_title">Cài đặt</string>
     <string name="row_wear_title">Phát hiện đeo</string>
     <string name="row_wear_sub">Tạm dừng khi tháo tai nghe</string>

@@ -33,6 +33,11 @@ import java.util.concurrent.CopyOnWriteArrayList
 @SuppressLint("MissingPermission")
 class BudsConnectionManager(private val context: Context) {
 
+    companion object {
+        /** Last firmware version read, as HeyMelody shows it ([OpoProtocol.firmwareVersion]). */
+        const val KEY_FIRMWARE = "firmwareVersion"
+    }
+
     init {
         PacketLogger.init(context)
     }
@@ -936,10 +941,14 @@ class BudsConnectionManager(private val context: Context) {
             return
         }
 
-        // `00 <count>` + UTF-8 `deviceType,versionType,version` triples (PROTOCOL.md §3). Logged only for now.
+        // `00 <count>` + UTF-8 `deviceType,versionType,version` triples (PROTOCOL.md §3), shown in the
+        // Earbud settings hub the way HeyMelody shows it.
         if (cmd == 0x8105) {
             val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
-            log("FIRMWARE: status=${payload.firstOrNull()?.toInt() ?: -1} text=\"$text\" RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            val version = OpoProtocol.firmwareVersion(text)
+            log("FIRMWARE: $version text=\"$text\" RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            if (payload.firstOrNull()?.toInt() == 0 && version != null)
+                featurePrefs().edit().putString(KEY_FIRMWARE, version).apply()
             return
         }
 

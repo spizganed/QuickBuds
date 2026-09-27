@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Hörlursinställningar</string>
     <string name="earbuds_section_sounds">Ljud</string>
+    <string name="earbuds_section_about">Om hörlurarna</string>
+    <string name="row_firmware_title">Firmwareversion</string>
     <string name="settings_title">Inställningar</string>
     <string name="row_wear_title">Bäraravkänning</string>
     <string name="row_wear_sub">Pausa när du tar ut hörlurarna</string>

@@ -116,9 +116,10 @@ Responses are **`cmd | 0x8000`**. That is a reliable rule `[OSS]`.
 
 **Firmware version `0x8105`** `[CAPTURE]` 2026-09-27, Buds 4: `00 04` + `1,2,138,2,2,138,3,1,01,3,2,105`.
 `00` is the status and `04` the triple count; the OSS write-up missed the count byte. So four
-`deviceType,versionType,version` triples: `1,2,138` · `2,2,138` · `3,1,01` · `3,2,105`. Device types 1 / 2 / 3
-look like left / right / case and HeyMelody joins versions with dots, but neither is confirmed against
-HeyMelody's own screen yet. The app queries it on connect and only logs it (`FIRMWARE:` line).
+`deviceType,versionType,version` triples: `1,2,138` · `2,2,138` · `3,1,01` · `3,2,105`. HeyMelody's own
+screen shows **`138.138.105`** (same buds, same day): the `versionType` 2 versions in reply order, joined
+with dots, `versionType` 1 left out. Device types 1 / 2 / 3 look like left / right / case (unconfirmed, not
+needed). `OpoProtocol.firmwareVersion()` builds that string; Earbud settings › About earbuds shows it.
 
 ### Broadcast / notify (0x02xx)
 

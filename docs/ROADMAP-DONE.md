@@ -90,8 +90,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   Buds 4). New launcher and notification icon from the app's own bud glyphs; no bud icons on Find my
   earbuds. Dev tools button moved into Settings › General; the Language screen has its title back.
 - Auto-connect when the audio link comes up: confirmed by him.
-- Firmware version `0x0105` is queried on connect and logged (`FIRMWARE:`); the Buds 4 reply confirmed
-  the format with one correction, a count byte after the status (PROTOCOL.md §3).
+- Firmware version `0x0105`, read on connect and shown in Earbud settings › About earbuds exactly as
+  HeyMelody shows it (`138.138.105` on Buds 4, checked side by side). The reply has a count byte after
+  the status that the OSS write-up missed (PROTOCOL.md §3).
 - The widget hides its mode button on a model with no noise control.
 - New White preset: a cool grey page (#ECECF0) under white cards, darker text and outline; on light
   presets the switch thumb is the card colour on a darker track (it was a near-black dot), and a label

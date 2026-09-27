@@ -53,6 +53,8 @@
     <string name="dual_add_ok">ठीक है</string>
     <string name="earbuds_title">ईयरबड सेटिंग्स</string>
     <string name="earbuds_section_sounds">ध्वनियां</string>
+    <string name="earbuds_section_about">ईयरबड्स के बारे में</string>
+    <string name="row_firmware_title">फ़र्मवेयर संस्करण</string>
     <string name="settings_title">सेटिंग्स</string>
     <string name="row_wear_title">वियर डिटेक्शन</string>
     <string name="row_wear_sub">ईयरबड्स निकालने पर रोकें</string>

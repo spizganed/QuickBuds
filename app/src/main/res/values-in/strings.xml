@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">Pengaturan earbud</string>
     <string name="earbuds_section_sounds">Suara</string>
+    <string name="earbuds_section_about">Tentang earbud</string>
+    <string name="row_firmware_title">Versi firmware</string>
     <string name="settings_title">Pengaturan</string>
     <string name="row_wear_title">Deteksi pemakaian</string>
     <string name="row_wear_sub">Jeda saat earbud dilepas</string>

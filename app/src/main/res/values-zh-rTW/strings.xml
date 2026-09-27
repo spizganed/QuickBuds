@@ -53,6 +53,8 @@
     <string name="dual_add_ok">好</string>
     <string name="earbuds_title">耳機設定</string>
     <string name="earbuds_section_sounds">聲音</string>
+    <string name="earbuds_section_about">關於耳機</string>
+    <string name="row_firmware_title">韌體版本</string>
     <string name="settings_title">設定</string>
     <string name="row_wear_title">配戴偵測</string>
     <string name="row_wear_sub">摘下耳機時暫停</string>

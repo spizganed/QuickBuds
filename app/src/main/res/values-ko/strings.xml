@@ -53,6 +53,8 @@
     <string name="dual_add_ok">확인</string>
     <string name="earbuds_title">이어버드 설정</string>
     <string name="earbuds_section_sounds">소리</string>
+    <string name="earbuds_section_about">이어버드 정보</string>
+    <string name="row_firmware_title">펌웨어 버전</string>
     <string name="settings_title">설정</string>
     <string name="row_wear_title">착용 감지</string>
     <string name="row_wear_sub">이어버드를 빼면 일시정지</string>

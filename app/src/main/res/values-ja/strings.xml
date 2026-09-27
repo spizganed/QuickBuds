@@ -53,6 +53,8 @@
     <string name="dual_add_ok">OK</string>
     <string name="earbuds_title">イヤホンの設定</string>
     <string name="earbuds_section_sounds">サウンド</string>
+    <string name="earbuds_section_about">イヤホンについて</string>
+    <string name="row_firmware_title">ファームウェアバージョン</string>
     <string name="settings_title">設定</string>
     <string name="row_wear_title">装着検出</string>
     <string name="row_wear_sub">イヤホンを外すと一時停止</string>
