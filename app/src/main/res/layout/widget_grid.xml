@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Mode list grid, shared by the ViewFlipper list pages of widget_pages, widget_combined and widget_large (design/widgets/WIDGETS.md 3.2-3.4). Generated layout: colours, icons and texts are set at
+<!-- Mode list grid, shared by the ViewFlipper list pages of widget_pages, widget_pages_m and widget_pages_l (design/widgets/WIDGETS.md 3.2-3.4). Generated layout: colours, icons and texts are set at
      runtime by widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_grid" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
@@ -29,7 +29,7 @@
 </LinearLayout>
 </FrameLayout>
 </LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:layout_marginTop="6dp">
+<LinearLayout android:id="@+id/w_grid_row1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:layout_marginTop="6dp">
 <FrameLayout android:id="@+id/w_cell3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
 <ImageView android:id="@+id/w_cell3_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <ImageView android:id="@+id/w_cell3_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />

@@ -142,7 +142,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Double-tap mode on a 2x2 widget: a second tap within [WidgetSettings.DOUBLE_TAP_MS] switches
+     * Double-tap mode (every size): a second tap within [WidgetSettings.DOUBLE_TAP_MS] switches
      * to [page]; otherwise the tap runs as a plain one when the wait ends. Main thread only, like
      * [openList]; a process death during the wait drops the tap.
      */

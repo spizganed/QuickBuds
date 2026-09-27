@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds μεγάλο</string>
     <string name="settings_language_title">Γλώσσα</string>
     <string name="settings_language_sub">Γλώσσα εφαρμογής</string>
-    <string name="widget_pages_title">Εναλλαγή σελίδων 2x2</string>
+    <string name="widget_pages_title">Εναλλαγή σελίδων</string>
     <string name="widget_pages_button">Κουμπί εναλλαγής</string>
     <string name="widget_pages_double">Διπλό πάτημα</string>
-    <string name="widget_pages_hint">Το widget 2x2 έχει δύο σελίδες, μπαταρία και έλεγχο θορύβου. Με το διπλό πάτημα, κάθε μονό πάτημα περιμένει περίπου 0,4 δ. μήπως ακολουθήσει δεύτερο.</string>
+    <string name="widget_pages_hint">Κάθε widget έχει δύο σελίδες, μπαταρία και έλεγχο θορύβου. Με το διπλό πάτημα, κάθε μονό πάτημα περιμένει περίπου 0,4 δ. μήπως ακολουθήσει δεύτερο.</string>
     <string name="widget_swap_desc">Αλλαγή σελίδας</string>
     <string name="language_system">Προεπιλογή συστήματος</string>
 

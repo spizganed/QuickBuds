@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds velký</string>
     <string name="settings_language_title">Jazyk</string>
     <string name="settings_language_sub">Jazyk aplikace</string>
-    <string name="widget_pages_title">Přepínání stránek 2x2</string>
+    <string name="widget_pages_title">Přepínání stránek</string>
     <string name="widget_pages_button">Tlačítko přepnutí</string>
     <string name="widget_pages_double">Dvojité klepnutí</string>
-    <string name="widget_pages_hint">Widget 2x2 má dvě stránky, baterii a ovládání hluku. Při dvojitém klepnutí čeká každé jednotlivé klepnutí asi 0,4 s, zda nepřijde druhé.</string>
+    <string name="widget_pages_hint">Každý widget má dvě stránky, baterii a ovládání hluku. Při dvojitém klepnutí čeká každé jednotlivé klepnutí asi 0,4 s, zda nepřijde druhé.</string>
     <string name="widget_swap_desc">Přepnout stránku</string>
     <string name="language_system">Výchozí systémový</string>
 

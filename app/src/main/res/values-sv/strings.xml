@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds stor</string>
     <string name="settings_language_title">Språk</string>
     <string name="settings_language_sub">Appens språk</string>
-    <string name="widget_pages_title">Byta 2x2-sidor</string>
+    <string name="widget_pages_title">Byta sidor</string>
     <string name="widget_pages_button">Bytesknapp</string>
     <string name="widget_pages_double">Dubbeltryck</string>
-    <string name="widget_pages_hint">2x2-widgeten har två sidor, batteri och brusreglering. Med dubbeltryck väntar varje enkeltryck cirka 0,4 s för att se om ett andra följer.</string>
+    <string name="widget_pages_hint">Varje widget har två sidor, batteri och brusreglering. Med dubbeltryck väntar varje enkeltryck cirka 0,4 s för att se om ett andra följer.</string>
     <string name="widget_swap_desc">Byt sida</string>
     <string name="language_system">Systemstandard</string>
 

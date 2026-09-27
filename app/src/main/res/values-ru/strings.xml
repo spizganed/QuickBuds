@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds большой</string>
     <string name="settings_language_title">Язык</string>
     <string name="settings_language_sub">Язык приложения</string>
-    <string name="widget_pages_title">Переключение страниц 2x2</string>
+    <string name="widget_pages_title">Переключение страниц</string>
     <string name="widget_pages_button">Кнопка смены</string>
     <string name="widget_pages_double">Двойное касание</string>
-    <string name="widget_pages_hint">У виджета 2x2 две страницы: батарея и шумоподавление. При двойном касании каждое одиночное касание ждёт около 0,4 с, не последует ли второе.</string>
+    <string name="widget_pages_hint">У каждого виджета две страницы: батарея и шумоподавление. При двойном касании каждое одиночное касание ждёт около 0,4 с, не последует ли второе.</string>
     <string name="widget_swap_desc">Сменить страницу</string>
     <string name="language_system">Как в системе</string>
 

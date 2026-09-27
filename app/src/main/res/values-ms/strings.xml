@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds besar</string>
     <string name="settings_language_title">Bahasa</string>
     <string name="settings_language_sub">Bahasa aplikasi</string>
-    <string name="widget_pages_title">Menukar halaman 2x2</string>
+    <string name="widget_pages_title">Menukar halaman</string>
     <string name="widget_pages_button">Butang tukar</string>
     <string name="widget_pages_double">Ketik dua kali</string>
-    <string name="widget_pages_hint">Widget 2x2 mempunyai dua halaman, bateri dan kawalan hingar. Dengan ketik dua kali, setiap ketikan tunggal menunggu kira-kira 0.4 s untuk melihat sama ada ketikan kedua menyusul.</string>
+    <string name="widget_pages_hint">Setiap widget mempunyai dua halaman, bateri dan kawalan hingar. Dengan ketik dua kali, setiap ketikan tunggal menunggu kira-kira 0.4 s untuk melihat sama ada ketikan kedua menyusul.</string>
     <string name="widget_swap_desc">Tukar halaman</string>
     <string name="language_system">Lalai sistem</string>
 

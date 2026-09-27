@@ -256,10 +256,10 @@
     <string name="widget_large_name">QuickBuds 大号</string>
     <string name="settings_language_title">语言</string>
     <string name="settings_language_sub">应用语言</string>
-    <string name="widget_pages_title">切换 2x2 页面</string>
+    <string name="widget_pages_title">切换页面</string>
     <string name="widget_pages_button">切换按钮</string>
     <string name="widget_pages_double">双击</string>
-    <string name="widget_pages_hint">2x2 小组件有两个页面：电量和降噪控制。选择双击后，每次单击都会等待约 0.4 秒，看是否有第二次点击。</string>
+    <string name="widget_pages_hint">每个小组件都有两个页面：电量和降噪控制。选择双击后，每次单击都会等待约 0.4 秒，看是否有第二次点击。</string>
     <string name="widget_swap_desc">切换页面</string>
     <string name="language_system">跟随系统</string>
 

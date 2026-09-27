@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds великий</string>
     <string name="settings_language_title">Мова</string>
     <string name="settings_language_sub">Мова застосунку</string>
-    <string name="widget_pages_title">Перемикання сторінок 2x2</string>
+    <string name="widget_pages_title">Перемикання сторінок</string>
     <string name="widget_pages_button">Кнопка зміни</string>
     <string name="widget_pages_double">Подвійний дотик</string>
-    <string name="widget_pages_hint">Віджет 2x2 має дві сторінки: батарея і шумозаглушення. З подвійним дотиком кожен одиночний дотик чекає близько 0,4 с, чи не буде другого.</string>
+    <string name="widget_pages_hint">Кожен віджет має дві сторінки: батарея і шумозаглушення. З подвійним дотиком кожен одиночний дотик чекає близько 0,4 с, чи не буде другого.</string>
     <string name="widget_swap_desc">Змінити сторінку</string>
     <string name="language_system">Як у системі</string>
 

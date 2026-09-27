@@ -20,6 +20,7 @@ import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.ui.BudsStatusView
 import com.spizganed.quickbuds.ui.MainActivity
 import com.spizganed.quickbuds.ui.Palette
@@ -31,28 +32,37 @@ import com.spizganed.quickbuds.ui.ThemeRes
  *
  *  - [BatteryWidgetProvider] 2x2, starts on the battery page (3.1)
  *  - [SmallWidgetProvider]   2x2, starts on the controls page (3.2)
- *  - [AncWidgetProvider]     3x2 combined (3.3)
- *  - [LargeWidgetProvider]   3x3 combined (3.4)
+ *  - [AncWidgetProvider]     3x2, starts on the battery page
+ *  - [LargeWidgetProvider]   3x3, starts on the battery page
  *
  * Drawn in the ACTIVE palette at update time: white shapes tinted with ImageView.setColorFilter
  * (every API level) and ring bitmaps drawn here. Disconnected, every size shows only the main
  * screen's Connect chip ([USER] 2026-09-27). The mode list is a ViewFlipper child, opened and closed by
  * [WidgetActionReceiver] (stamp in [WidgetSettings]); it never opens an Activity.
  *
- * The two 2x2 providers are one widget with two pages (battery, controls), stored per widget id
- * and swapped by a corner button or a double tap ([WidgetSettings.doubleTapSwaps]).
+ * Every size is one widget with two pages (battery, controls; [USER] 2026-09-27), stored per
+ * widget id and swapped by a swap button or a double tap ([WidgetSettings.doubleTapSwaps]). The
+ * pages slide (inner ViewFlipper `w_slide`); the mode list cross-fades over them (`w_pages`).
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
+    /** The provider (size). BATTERY and CONTROLS double as the page names ([WidgetSettings.page]). */
     enum class Kind(val layout: Int, val large: Boolean = false) {
         BATTERY(R.layout.widget_pages),
         CONTROLS(R.layout.widget_pages),
-        COMBINED(R.layout.widget_combined),
-        LARGE(R.layout.widget_large, large = true)
+        COMBINED(R.layout.widget_pages_m),
+        LARGE(R.layout.widget_pages_l, large = true);
+
+        val small get() = layout == R.layout.widget_pages
     }
 
     override fun onUpdate(context: Context, mgr: AppWidgetManager, ids: IntArray) {
         for (id in ids) update(context, mgr, id, kind)
+    }
+
+    /** Resized: the 3x2 / 3x3 rings follow the new size ([ringDp]). */
+    override fun onAppWidgetOptionsChanged(context: Context, mgr: AppWidgetManager, id: Int, options: android.os.Bundle) {
+        update(context, mgr, id, kind)
     }
 
     override fun onDeleted(context: Context, ids: IntArray) {
@@ -102,26 +112,30 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
         }
 
-        private val PAGES = intArrayOf(R.id.w_page0, R.id.w_page1, R.id.w_page2)
-
         /**
-         * ViewFlipper.setDisplayedChild replays the fade-in even for the child already shown, and the
-         * service resends the whole cached views to the host on every update (partial ones too), so
-         * sending it each time made every refresh flash. Each page's visibility is set directly
+         * ViewFlipper.setDisplayedChild replays its animation even for the child already shown, and
+         * the service resends the whole cached views to the host on every update (partial ones too),
+         * so sending it each time made every refresh flash. Each child's visibility is set directly
          * instead (no animation, right after a host re-inflation too); setDisplayedChild goes out
-         * only in the update that changes the child, which fades.
+         * only in the update that changes that flipper's child: `w_slide` slides between the pages,
+         * `w_pages` fades the mode list in and out. Shown child: 0 battery, 1 controls, 2 list.
          */
         private fun update(context: Context, mgr: AppWidgetManager, id: Int, kind: Kind) {
             // A throw here would leave the host showing "Can't load widget" with no trace.
             try {
                 val (v, child) = build(context, WidgetStateStore.read(context), kind, id)
                 if (v.layoutId != R.layout.widget_disconnected) {
-                    val pages = if (v.layoutId == R.layout.widget_pages) 3 else 2
-                    if (WidgetSettings.shownChild(context, id) != child) {
-                        v.setDisplayedChild(R.id.w_pages, child)
-                        WidgetSettings.setShownChild(context, id, child)
-                    }
-                    for (i in 0 until pages) v.setViewVisibility(PAGES[i], if (i == child) View.VISIBLE else View.GONE)
+                    val prev = WidgetSettings.shownChild(context, id)
+                    // The list opens from the controls page, so under it the slide shows controls.
+                    val outer = if (child == 2) 1 else 0
+                    val inner = if (child == 2) 1 else child
+                    if (prev < 0 || (prev == 2) != (child == 2)) v.setDisplayedChild(R.id.w_pages, outer)
+                    if (prev < 0 || (if (prev == 2) 1 else prev) != inner) v.setDisplayedChild(R.id.w_slide, inner)
+                    if (prev != child) WidgetSettings.setShownChild(context, id, child)
+                    v.setViewVisibility(R.id.w_content, if (outer == 0) View.VISIBLE else View.GONE)
+                    v.setViewVisibility(R.id.w_page2, if (outer == 1) View.VISIBLE else View.GONE)
+                    v.setViewVisibility(R.id.w_page0, if (inner == 0) View.VISIBLE else View.GONE)
+                    v.setViewVisibility(R.id.w_page1, if (inner == 1) View.VISIBLE else View.GONE)
                 }
                 mgr.updateAppWidget(id, v)
             } catch (t: Throwable) {
@@ -134,36 +148,36 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val p = ThemeRes.palette(context)
             if (!state.connected) return disconnected(context, p, provider) to 0
 
-            val twoPages = provider == Kind.BATTERY || provider == Kind.CONTROLS
-            val kind = if (twoPages) WidgetSettings.page(context, id, provider) else provider
-            val list = kind != Kind.BATTERY && WidgetSettings.listOpen(context, id)
-            val v = RemoteViews(context.packageName, kind.layout)
+            val page = WidgetSettings.page(context, id, if (provider == Kind.CONTROLS) Kind.CONTROLS else Kind.BATTERY)
+            val list = page == Kind.CONTROLS && WidgetSettings.listOpen(context, id)
+            val v = RemoteViews(context.packageName, provider.layout)
             // The host reapplies an update with the same layout onto the views it has, so switching
-            // the flipper's child cross-fades (res/anim/widget_fade_*). The flip side: every state
-            // set here must be set both ways (visibility, click), or the previous update's sticks.
-            val child = when {
-                twoPages -> if (list) 2 else if (kind == Kind.BATTERY) 0 else 1
-                else -> if (list) 1 else 0
-            }
-            v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
+            // a flipper's child animates. The flip side: every state set here must be set both ways
+            // (visibility, click), or the previous update's sticks.
+            val child = if (list) 2 else if (page == Kind.BATTERY) 0 else 1
+            v.setImageViewResource(R.id.w_bg, if (provider.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
-            // Double-tap mode: every tap on a 2x2 page carries the other page, so a second tap swaps.
-            val other = if (kind == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
-            val swap = if (twoPages && !list && WidgetSettings.doubleTapSwaps(context)) other else null
+            // Double-tap mode: every tap on a page carries the other page, so a second tap swaps.
+            val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
+            val swap = if (!list && WidgetSettings.doubleTapSwaps(context)) other else null
             v.setOnClickPendingIntent(R.id.w_root, when {
                 swap != null -> receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = swap)
                 WidgetSettings.openAppOnTap(context) -> openAppPI(context)
                 else -> null
             })
-            if (twoPages) swapButtons(context, v, p, kind, id, other, shown = !list && swap == null)
+            swapButtons(context, v, p, page, id, other, shown = !list && swap == null)
 
-            if (list) grid(context, v, p, state, kind, id)
-            if (kind == Kind.LARGE || (kind != Kind.CONTROLS && !list)) battery(context, v, p, state, kind)
-            if (kind != Kind.BATTERY && !list) controls(context, v, p, state, kind, id, swap)
+            // Both pages are filled every time, so the one sliding out still shows current values.
+            if (list) grid(context, v, p, state, provider, id)
+            battery(context, v, p, state, provider, id)
+            if (!list) controls(context, v, p, state, provider, id, swap)
             return v to child
         }
 
-        /** The 2x2 swap button: at the end of the case bar on the battery page, top-right on the controls page. */
+        /**
+         * The swap button: on the battery page at the end of the case bar (2x2) or of the name strip
+         * (3x2, 3x3), top-right on the controls page.
+         */
         private fun swapButtons(context: Context, v: RemoteViews, p: Palette, kind: Kind, id: Int, other: Kind, shown: Boolean) {
             for ((root, icon, page) in listOf(Triple(R.id.w_swap_b, R.id.w_swap_b_icon, Kind.BATTERY), Triple(R.id.w_swap, R.id.w_swap_icon, Kind.CONTROLS))) {
                 val on = shown && kind == page
@@ -210,13 +224,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             return v
         }
 
-        private fun battery(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind) {
-            val ringDp = when (kind) { Kind.BATTERY -> 56f; Kind.LARGE -> 50f; else -> 42f }
+        private fun battery(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
+            val ringDp = ringDp(context, kind, id)
             val levels = intArrayOf(state.leftBattery, state.caseBattery, state.rightBattery)
             val statuses = intArrayOf(state.leftStatus, -1, state.rightStatus)
             val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
-            // The 2x2 battery shows the case as a bar under the two bud panels.
-            val slots = if (kind == Kind.BATTERY) listOf(0, 2) else listOf(0, 1, 2)
+            // 2x2 and 3x3 show the case as a bar under the two bud panels; the wide 3x2 has three panels.
+            val caseBar = kind != Kind.COMBINED
+            val slots = if (caseBar) listOf(0, 2) else listOf(0, 1, 2)
             for (slot in slots) {
                 val (bgId, ringId, pct, label) = PANELS[slot].toList()
                 v.setImageViewResource(bgId, if (kind.large) R.drawable.widget_panel_l else R.drawable.widget_panel)
@@ -228,12 +243,39 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 v.setTextViewText(label, if (inEar) semibold(text) else text)
                 v.setTextColor(label, if (inEar) p.text else p.textSecondary)
             }
-            if (kind == Kind.BATTERY) {
+            if (caseBar) {
+                v.setImageViewResource(R.id.w_bar_bg, if (kind.large) R.drawable.widget_panel_l else R.drawable.widget_panel)
                 v.setInt(R.id.w_bar_bg, "setColorFilter", panelColor(p))
                 v.setInt(R.id.w_case_icon, "setColorFilter", p.text)
                 v.setImageViewBitmap(R.id.w_case_bar, bar(context, p, state.caseBattery))
                 pctText(v, R.id.w_pct_case, p, state.caseBattery)
             }
+            if (!kind.small) {
+                // The model, as under the main screen's rings.
+                v.setTextViewText(R.id.w_name, ModelCatalog.current(context)?.name
+                    ?: context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getString(ModelCatalog.KEY_DEVICE_NAME, null).orEmpty())
+                v.setTextColor(R.id.w_name, p.textSecondary)
+            }
+        }
+
+        /**
+         * The ring size. 2x2: 56dp, and the layout shrinks it to the panel. 3x2 / 3x3: the largest
+         * ring the panel holds at the widget's real size (portrait: min width, max height), so ring
+         * and texts fill the panel as one centred group instead of a small ring over a gap.
+         */
+        private fun ringDp(context: Context, kind: Kind, id: Int): Float {
+            if (kind.small) return 56f
+            val o = AppWidgetManager.getInstance(context).getAppWidgetOptions(id)
+            val w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+            val h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+            if (w <= 0 || h <= 0) return if (kind.large) 68f else 56f
+            // Widget padding 12, panel padding 8; below the panels the name strip (and on 3x3 the
+            // 50dp case bar + 6 gap); texts: percentage + label lines.
+            val (below, texts) = if (kind.large) 40f + 56f to 22f * 1.3f + 13f * 1.3f + 2f else 34f to 18f * 1.3f + 12f * 1.3f + 2f
+            val columns = if (kind.large) 2 else 3
+            val byHeight = h - 12f - below - 8f - texts - 6f
+            val byWidth = (w - 12f - 6f * (columns - 1)) / columns - 8f
+            return minOf(byHeight, byWidth).coerceIn(28f, 120f)
         }
 
         /** Percentage, always `text`: nothing in the battery display changes colour by level ([USER] 2026-09-27). */
@@ -262,7 +304,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             content(v, MODE, p, active, mode.icon, name)
             v.setImageViewResource(R.id.w_mode_hint, if (opensList) R.drawable.ic_hint_list else R.drawable.ic_hint_cycle)
             v.setInt(R.id.w_mode_hint, "setColorFilter", if (active) p.onAccent else p.textSecondary)
-            if (kind == Kind.LARGE) {
+            if (!kind.small) {
                 v.setTextViewText(R.id.w_mode_caption, context.getString(R.string.anc_section))
                 v.setTextColor(R.id.w_mode_caption, Palette.withAlpha(if (active) p.onAccent else p.textSecondary, 0.8f))
             }
@@ -284,16 +326,18 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /**
-         * The open mode list: 2x2 when the 2x2 controls widget has <= 4 modes, 3x2 otherwise, icons
+         * The open mode list: 2x2 when a 2x2 widget has <= 4 modes, 3x2 otherwise, icons
          * only when a 2x2 widget has 5-6 (WIDGETS.md 3.2). Tapping the current mode only closes it.
          */
         private fun grid(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
             val modes = WidgetSettings.enabled(context)
             val current = WidgetSettings.modeOf(state.ancMode)
-            val twoCols = kind == Kind.CONTROLS && modes.size <= 4
-            val labels = !(kind == Kind.CONTROLS && modes.size > 4)
+            val twoCols = kind.small && modes.size <= 4
+            val labels = !(kind.small && modes.size > 4)
             val slots = if (twoCols) listOf(0, 1, 3, 4) else (0..5).toList()
             listOf(2, 5).forEach { v.setViewVisibility(CELLS[it].root, if (twoCols) View.GONE else View.VISIBLE) }
+            // Modes that fit one row: the first row takes the whole height.
+            v.setViewVisibility(R.id.w_grid_row1, if (modes.size > slots.size / 2) View.VISIBLE else View.GONE)
             slots.forEachIndexed { i, slot ->
                 val b = CELLS[slot]
                 val mode = modes.getOrNull(i)
@@ -391,7 +435,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
     }
 }
 
-/** 3x2 combined. Keeps the original class name so widgets placed before the redesign still work. */
+/** 3x2. Keeps the original class name so widgets placed before the redesign still work. */
 class AncWidgetProvider : QuickBudsWidget(Kind.COMBINED) {
     companion object {
         fun refreshAll(context: Context) = QuickBudsWidget.refreshAll(context)
@@ -404,5 +448,5 @@ class SmallWidgetProvider : QuickBudsWidget(Kind.CONTROLS)
 /** 2x2 battery. */
 class BatteryWidgetProvider : QuickBudsWidget(Kind.BATTERY)
 
-/** 3x3 combined. */
+/** 3x3. */
 class LargeWidgetProvider : QuickBudsWidget(Kind.LARGE)

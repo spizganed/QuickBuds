@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds büyük</string>
     <string name="settings_language_title">Dil</string>
     <string name="settings_language_sub">Uygulama dili</string>
-    <string name="widget_pages_title">2x2 sayfalarını değiştirme</string>
+    <string name="widget_pages_title">Sayfaları değiştirme</string>
     <string name="widget_pages_button">Değiştir düğmesi</string>
     <string name="widget_pages_double">Çift dokunma</string>
-    <string name="widget_pages_hint">2x2 widget\'ın iki sayfası vardır: pil ve gürültü kontrolü. Çift dokunmada her tek dokunuş, ikincisinin gelip gelmediğini görmek için yaklaşık 0,4 sn bekler.</string>
+    <string name="widget_pages_hint">Her widget\'ın iki sayfası vardır: pil ve gürültü kontrolü. Çift dokunmada her tek dokunuş, ikincisinin gelip gelmediğini görmek için yaklaşık 0,4 sn bekler.</string>
     <string name="widget_swap_desc">Sayfa değiştir</string>
     <string name="language_system">Sistem varsayılanı</string>
 

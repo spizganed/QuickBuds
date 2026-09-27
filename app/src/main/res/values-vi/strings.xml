@@ -256,10 +256,10 @@
     <string name="widget_large_name">QuickBuds lớn</string>
     <string name="settings_language_title">Ngôn ngữ</string>
     <string name="settings_language_sub">Ngôn ngữ ứng dụng</string>
-    <string name="widget_pages_title">Chuyển trang 2x2</string>
+    <string name="widget_pages_title">Chuyển trang</string>
     <string name="widget_pages_button">Nút chuyển</string>
     <string name="widget_pages_double">Chạm hai lần</string>
-    <string name="widget_pages_hint">Tiện ích 2x2 có hai trang: pin và kiểm soát tiếng ồn. Với chạm hai lần, mỗi lần chạm đơn sẽ chờ khoảng 0,4 giây xem có lần chạm thứ hai không.</string>
+    <string name="widget_pages_hint">Mỗi tiện ích có hai trang: pin và kiểm soát tiếng ồn. Với chạm hai lần, mỗi lần chạm đơn sẽ chờ khoảng 0,4 giây xem có lần chạm thứ hai không.</string>
     <string name="widget_swap_desc">Chuyển trang</string>
     <string name="language_system">Mặc định hệ thống</string>
 

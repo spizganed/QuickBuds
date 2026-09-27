@@ -90,11 +90,11 @@ object WidgetSettings {
     fun openAppOnTap(c: Context) = prefs(c).getBoolean(KEY_OPEN_APP, false)
     fun setOpenAppOnTap(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_OPEN_APP, v) }
 
-    /** True: a double tap switches the 2x2 widget's pages. False (default): the swap button does. */
+    /** True: a double tap switches a widget's pages (every size). False (default): the swap button does. */
     fun doubleTapSwaps(c: Context) = prefs(c).getBoolean(KEY_DOUBLE_TAP, false)
     fun setDoubleTapSwaps(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_DOUBLE_TAP, v) }
 
-    /** The page 2x2 widget [id] shows, BATTERY or CONTROLS; [default] is its provider's own. */
+    /** The page widget [id] shows, BATTERY or CONTROLS; [default] is its provider's own. */
     fun page(c: Context, id: Int, default: QuickBudsWidget.Kind): QuickBudsWidget.Kind =
         prefs(c).getString(KEY_PAGE + id, null)?.let { runCatching { QuickBudsWidget.Kind.valueOf(it) }.getOrNull() } ?: default
 
@@ -102,7 +102,7 @@ object WidgetSettings {
         prefs(c).edit().apply { if (page == null) remove(KEY_PAGE + id) else putString(KEY_PAGE + id, page.name) }.apply()
     }
 
-    /** The flipper child widget [id] last faded to (QuickBudsWidget.update), -1 when unknown. */
+    /** The child widget [id] last showed (QuickBudsWidget.update: 0 battery, 1 controls, 2 list), -1 when unknown. */
     fun shownChild(c: Context, id: Int) = prefs(c).getInt(KEY_CHILD + id, -1)
 
     fun setShownChild(c: Context, id: Int, child: Int?) {

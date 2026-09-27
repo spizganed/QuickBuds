@@ -419,13 +419,17 @@ packet-listener path.
 ## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md)
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
-generated as one family (`widget_pages/combined/large/grid/disconnected`): **2x2 battery**
-(`BatteryWidgetProvider`), **2x2 controls** (`SmallWidgetProvider`), **3x2 combined** (`AncWidgetProvider`),
-**3x3 combined** (`LargeWidgetProvider`). The old class names are kept so placed widgets survive; the 4x1 strip
-is gone. **The two 2x2s are one widget with two pages** (battery / controls, 2026-09-27): the page is stored per
-widget id (`widgetPage_<id>`, default = the provider's own) and swapped by the `w_swap` button (controls page: top-right corner; battery page: end of the case bar, as the corner overlapped the ring) or, with
-`widgetDoubleTap`, a double tap: every 2x2 tap then carries `EXTRA_PAGE` and the receiver waits 400 ms for a
-second one before running it (`WidgetActionReceiver.doubleTap`). All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
+generated as one family (`widget_pages` 2x2, `widget_pages_m` 3x2, `widget_pages_l` 3x3, plus `widget_grid` and
+`widget_disconnected`; the three page layouts come from `scripts/widget-layouts.py`, edit it and rerun, never the XML):
+**2x2 battery** (`BatteryWidgetProvider`), **2x2 controls** (`SmallWidgetProvider`), **3x2** (`AncWidgetProvider`),
+**3x3** (`LargeWidgetProvider`). The old class names are kept so placed widgets survive; the 4x1 strip is gone.
+**Every size has two pages, battery and controls** ([USER] 2026-09-27; the 2x2 had them first): the page is
+stored per widget id (`widgetPage_<id>`; "controls" starts on controls, the rest on battery) and swapped by the
+`w_swap` buttons (controls page: top-right corner; battery page: end of the 2x2 case bar or of the 3x2 / 3x3 name
+strip) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 400 ms
+for a second one before running it (`WidgetActionReceiver.doubleTap`). Battery pages: 2x2 and 3x3 = two bud
+panels + case bar, 3x2 = three panels; 3x2 / 3x3 add the model name (`ModelCatalog`) and size their rings from
+`getAppWidgetOptions` (`ringDp`, redrawn on resize). All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
 and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
 **Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
 FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs
@@ -435,15 +439,16 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
   (default) or Open list, the ordered checked modes (min 2, same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
-- **Mode list and 2x2 pages are children of a `ViewFlipper` `w_pages`** (2026-09-27): 2x2 `widget_pages` = battery /
-  controls / list, 3x2 = content / list, 3x3 = controls / list. `build()` calls `setDisplayedChild`; the host
-  reapplies a same-layout update onto its views, so the flipper cross-fades (`res/anim/widget_fade_*`, 220 ms,
-  measured on device). The price: **every state `build()` sets must be set both ways** (visibility, click
-  intents, null included), or the last update's value sticks. `setDisplayedChild` replays the fade-in even for the
-  same child, and the service resends the whole cached views on every update (partial ones too, so
-  `partiallyUpdateAppWidget` does not help). So each page child (`w_page0..2`) gets its visibility set directly
-  every time, and `setDisplayedChild` goes out only in the update that changes the child (`widgetChild_<id>`).
-  Sending it every time made every widget flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
+- **Two nested `ViewFlipper`s** (2026-09-27): outer `w_pages` (cross-fade, `res/anim/widget_fade_*`, 220 ms) holds
+  `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide` (slide, `widget_slide_*`, 280 ms) holds the
+  battery page `w_page0` and the controls page `w_page1`. The host reapplies a same-layout update onto its views,
+  so a flipper animates when its child changes. The price: **every state `build()` sets must be set both ways**
+  (visibility, click intents, null included), or the last update's value sticks. Both pages are filled on every
+  update so the page sliding out shows current values. `setDisplayedChild` replays the animation even for the same
+  child, and the service resends the whole cached views on every update (partial ones too, so
+  `partiallyUpdateAppWidget` does not help). So each flipper child gets its visibility set directly every time,
+  and each flipper's `setDisplayedChild` goes out only in the update that changes its child (`widgetChild_<id>`:
+  0 battery, 1 controls, 2 list). Sending it every time made every widget flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
   the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back

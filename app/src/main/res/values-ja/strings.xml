@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds 大</string>
     <string name="settings_language_title">言語</string>
     <string name="settings_language_sub">アプリの言語</string>
-    <string name="widget_pages_title">2x2 ページの切り替え</string>
+    <string name="widget_pages_title">ページの切り替え</string>
     <string name="widget_pages_button">切り替えボタン</string>
     <string name="widget_pages_double">ダブルタップ</string>
-    <string name="widget_pages_hint">2x2 ウィジェットにはバッテリーとノイズコントロールの 2 ページがあります。ダブルタップでは、各タップが 2 回目を待つため約 0.4 秒遅れます。</string>
+    <string name="widget_pages_hint">すべてのウィジェットにはバッテリーとノイズコントロールの 2 ページがあります。ダブルタップでは、各タップが 2 回目を待つため約 0.4 秒遅れます。</string>
     <string name="widget_swap_desc">ページを切り替え</string>
     <string name="language_system">システムのデフォルト</string>
 

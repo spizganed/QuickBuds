@@ -83,6 +83,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Dev Tools redesigned to match the app: Settings-style screen and title, a Human-readable / Raw hex
   segmented switch, the five actions in one icon card (Crash test asks first), the log in a normal card
   with TX / RX in the accent colour.
+- Widgets 3x2 and 3x3 redesigned like the 2x2 (2026-09-27): battery and controls pages on every size,
+  swapped by the swap button or a double tap, sliding between pages; bigger rings sized from the widget,
+  the model name on the bigger battery pages; a mode list with three modes or fewer fills one row.
 
 ## Docs
 

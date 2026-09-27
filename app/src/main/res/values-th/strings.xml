@@ -256,10 +256,10 @@
     <string name="widget_large_name">QuickBuds ใหญ่</string>
     <string name="settings_language_title">ภาษา</string>
     <string name="settings_language_sub">ภาษาของแอป</string>
-    <string name="widget_pages_title">สลับหน้า 2x2</string>
+    <string name="widget_pages_title">สลับหน้า</string>
     <string name="widget_pages_button">ปุ่มสลับ</string>
     <string name="widget_pages_double">แตะสองครั้ง</string>
-    <string name="widget_pages_hint">วิดเจ็ต 2x2 มีสองหน้า: แบตเตอรี่และการควบคุมเสียงรบกวน เมื่อใช้แตะสองครั้ง การแตะครั้งเดียวทุกครั้งจะรอประมาณ 0.4 วินาทีเผื่อมีการแตะครั้งที่สอง</string>
+    <string name="widget_pages_hint">วิดเจ็ตทุกขนาดมีสองหน้า: แบตเตอรี่และการควบคุมเสียงรบกวน เมื่อใช้แตะสองครั้ง การแตะครั้งเดียวทุกครั้งจะรอประมาณ 0.4 วินาทีเผื่อมีการแตะครั้งที่สอง</string>
     <string name="widget_swap_desc">สลับหน้า</string>
     <string name="language_system">ค่าเริ่มต้นของระบบ</string>
 

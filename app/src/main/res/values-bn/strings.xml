@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds বড়</string>
     <string name="settings_language_title">ভাষা</string>
     <string name="settings_language_sub">অ্যাপের ভাষা</string>
-    <string name="widget_pages_title">2x2 পৃষ্ঠা বদল</string>
+    <string name="widget_pages_title">পৃষ্ঠা বদল</string>
     <string name="widget_pages_button">বদলের বোতাম</string>
     <string name="widget_pages_double">দুবার ট্যাপ</string>
-    <string name="widget_pages_hint">2x2 উইজেটে দুটি পৃষ্ঠা আছে, ব্যাটারি ও নয়েজ নিয়ন্ত্রণ। দুবার ট্যাপে প্রতিটি একক ট্যাপ দ্বিতীয়টি আসে কিনা দেখতে প্রায় 0.4 সেকেন্ড অপেক্ষা করে।</string>
+    <string name="widget_pages_hint">প্রতিটি উইজেটে দুটি পৃষ্ঠা আছে, ব্যাটারি ও নয়েজ নিয়ন্ত্রণ। দুবার ট্যাপে প্রতিটি একক ট্যাপ দ্বিতীয়টি আসে কিনা দেখতে প্রায় 0.4 সেকেন্ড অপেক্ষা করে।</string>
     <string name="widget_swap_desc">পৃষ্ঠা বদলান</string>
     <string name="language_system">সিস্টেম ডিফল্ট</string>
 

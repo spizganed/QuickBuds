@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds nagy</string>
     <string name="settings_language_title">Nyelv</string>
     <string name="settings_language_sub">Alkalmazás nyelve</string>
-    <string name="widget_pages_title">2x2 oldalak váltása</string>
+    <string name="widget_pages_title">Oldalak váltása</string>
     <string name="widget_pages_button">Váltógomb</string>
     <string name="widget_pages_double">Dupla koppintás</string>
-    <string name="widget_pages_hint">A 2x2 widgetnek két oldala van: akkumulátor és zajszabályozás. Dupla koppintásnál minden egyes koppintás kb. 0,4 mp-et vár, hogy jön-e második.</string>
+    <string name="widget_pages_hint">Minden widgetnek két oldala van: akkumulátor és zajszabályozás. Dupla koppintásnál minden egyes koppintás kb. 0,4 mp-et vár, hogy jön-e második.</string>
     <string name="widget_swap_desc">Oldal váltása</string>
     <string name="language_system">Rendszer alapértelmezése</string>
 

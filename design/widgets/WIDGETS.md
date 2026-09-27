@@ -48,16 +48,17 @@ The three widgets below replace the previous widget designs.
   - With 5–6 modes: a 3×2 grid of **icons only**, because the labels don't fit.
 - Disconnected: both controls greyed out and disabled, with "Not connected" in the mode area.
 
-### 3.3 Combined widget, 3×2 — `w4`
-- Top: three 84dp battery panels (Left, Case, Right). Each has a 42dp ring, the percentage (13.5sp bold), and the state label (10.5sp).
-- Bottom: the mode button (icon, name, hint glyph, horizontal) and a 78dp-wide low latency button (icon above the label).
-- List open: replaces the whole widget with a 3×2 grid, icon plus label, all 6 modes fit.
+### 3.3 Widget, 3×2 (redesigned 2026-09-27, [USER]; `w4` is the old combined design)
+Two pages like the 2×2, starting on battery.
+- Battery page: three panels in a row (Left, Case, Right), then a 34dp strip with the model name (13sp) and the swap button. Ring + percentage (18sp bold) + label (12sp) sit centred as one group; the ring is sized from the widget's real size (`AppWidgetManager` options), so it fills the panel at any size.
+- Controls page: the mode button (44dp icon, "Noise control" caption 12sp over the name 18sp bold + hint, horizontal) and a 50dp low latency button; swap button in the top-right corner.
+- List open: replaces the whole widget with a 3-column grid, icon plus label. With 3 modes or fewer the grid is one row.
 
-### 3.4 Combined widget, 3×3 — `w5`
-- Top: three 96dp battery panels with 50dp rings.
-- Middle: the mode button, with a 42dp icon and two lines of text ("Noise control" caption at 12sp, then the mode name at 17sp bold with the hint glyph).
-- Bottom: a 50dp full-width low latency button.
-- List open: replaces **only the controls**, and the battery row stays visible. It is a 3×2 grid with icons plus labels.
+### 3.4 Widget, 3×3 (redesigned 2026-09-27, [USER]; `w5` is the old combined design)
+Two pages, starting on battery.
+- Battery page: the 2×2 battery scaled up: two bud panels (ring sized from the widget, percentage 22sp, label 13sp), a 50dp case bar, then a 40dp strip with the model name (14sp) and the swap button.
+- Controls page: the mode button (60dp icon, caption 13sp, name 21sp bold + hint, vertical) and a 58dp low latency button; swap button top-right.
+- List open: replaces the whole widget (3-column grid, icons plus labels).
 
 ## 4. Behavior
 
@@ -70,7 +71,7 @@ The three widgets below replace the previous widget designs.
 - **Battery / widget background tap:** does **nothing by default**. It opens QuickBuds only when "Open app on tap" is on.
 - **Disconnected:** show the disconnected layout. Controls are disabled and do nothing.
 - Each size is its own `AppWidgetProviderInfo` with a sensible `minWidth`/`minHeight` and `targetCellWidth`/`targetCellHeight` (API 31+). The alternative is one provider with size-mapped RemoteViews on API 31+. Choose whichever matches the existing widget code, and explain the choice in the plan.
-- **2x2 pages** (2026-09-27): the two 2x2 widgets are one widget with a battery page and a controls page, stored per widget. "QuickBuds battery" starts on the battery page, "QuickBuds controls" on the controls page. A corner swap button switches them, or a double tap when that is chosen in the settings (every single tap then waits ~400 ms). Page changes and the mode list cross-fade (ViewFlipper); every widget tap gives a haptic tick when Haptic feedback is on.
+- **Pages** (2x2 2026-09-27, every size since the same day): each widget has a battery page and a controls page, stored per widget. "QuickBuds controls" starts on the controls page, the others on battery. A swap button switches them, or a double tap when that is chosen in the settings (every single tap then waits ~400 ms). Pages **slide** (inner ViewFlipper `w_slide`, 280 ms, new page in from the end); the mode list cross-fades over them (outer `w_pages`). Every widget tap gives a haptic tick when Haptic feedback is on.
 - Every button needs a `contentDescription`. For example, the mode button reads "Noise control: ANC Medium, tap for next mode", and a list item reads "ANC High".
 
 ## 5. Widget settings screen — `w6`
@@ -80,7 +81,7 @@ This screen follows the app's settings screen style.
 - **Tapping the mode button:** a two-option segmented control, *Next mode* (↻, default) or *Open list* (grid icon).
 - **Modes:** a reorderable list of Off, ANC Low, ANC Medium, ANC High, Adaptive and Transparency. Each row has a drag handle, the mode icon, the name and a checkbox. At least 2 must stay checked (disable unchecking the last two). The **same list and order** drive both the cycle and the list.
   - Default: ANC Low, ANC Medium, ANC High and Transparency checked; Adaptive and Off unchecked.
-- **Switching 2x2 pages:** *Swap button* (default) or *Double tap*, with a note that double tap delays every single tap.
+- **Switching pages** (every size): *Swap button* (default) or *Double tap*, with a note that double tap delays every single tap.
 - **Low latency button:** toggle, default on.
 - **Open app on tap:** toggle, **default off**.
 - Settings apply to all widget instances. Changing them triggers a widget update.

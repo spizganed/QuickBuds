@@ -254,10 +254,10 @@
     <string name="widget_large_name">QuickBuds groot</string>
     <string name="settings_language_title">Taal</string>
     <string name="settings_language_sub">Taal van de app</string>
-    <string name="widget_pages_title">2x2-pagina\'s wisselen</string>
+    <string name="widget_pages_title">Pagina\'s wisselen</string>
     <string name="widget_pages_button">Wisselknop</string>
     <string name="widget_pages_double">Dubbeltikken</string>
-    <string name="widget_pages_hint">De 2x2-widget heeft twee pagina\'s: batterij en ruisbediening. Met dubbeltikken wacht elke enkele tik ongeveer 0,4 s of er een tweede volgt.</string>
+    <string name="widget_pages_hint">Elke widget heeft twee pagina\'s: batterij en ruisbediening. Met dubbeltikken wacht elke enkele tik ongeveer 0,4 s of er een tweede volgt.</string>
     <string name="widget_swap_desc">Pagina wisselen</string>
     <string name="language_system">Systeemstandaard</string>
 
