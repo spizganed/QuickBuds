@@ -11,11 +11,14 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import android.os.Build
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.TypefaceSpan
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
@@ -321,10 +324,15 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
-            // A model with no noise control has no mode button (set both ways, see update()).
-            // ponytail: low latency then sits alone at the top; stretch it if such a model shows up.
+            // A model with no noise control has no mode button, and low latency fills the page
+            // (Android 12+; older ones keep its own height). Both set both ways, see update().
+            // The dp heights are the ones scripts/widget-layouts.py gives w_ll.
             val hasAnc = !AncModes.of(context).isEmpty
             v.setViewVisibility(R.id.w_mode, if (hasAnc) View.VISIBLE else View.GONE)
+            if (Build.VERSION.SDK_INT >= 31) {
+                if (hasAnc) v.setViewLayoutHeight(LL.root, if (kind.small) 48f else if (kind.large) 66f else 50f, TypedValue.COMPLEX_UNIT_DIP)
+                else v.setViewLayoutHeight(LL.root, ViewGroup.LayoutParams.MATCH_PARENT.toFloat(), TypedValue.COMPLEX_UNIT_PX)
+            }
             if (hasAnc) modeControls(context, v, p, state, kind, id, swap)
 
             if (!WidgetSettings.lowLatencyShown(context)) {
