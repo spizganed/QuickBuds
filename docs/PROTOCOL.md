@@ -172,6 +172,26 @@ reply and its decode.** This note used to say no capture had ever answered `02 0
 the whole time the project ran on the phone. The first reply came from `packets.log`, not a
 Wireshark capture, on the very first PC-side reconnect that happened to be logged from cold start.
 
+### What these buds are and accept (0x8100, 0x8103, 0x810D)
+
+Used by `protocol/Capabilities.kt` to hide what a model does not have (2026-09-27).
+
+- **`0x8100`, the handshake reply, is a command bitmap.** `00` then bytes read LSB first; bit n
+  enables a fixed list of commands (bit 3 = `0x0108` `0x0401` `0x0416`, bit 8 = `0x010C` `0x0404`,
+  bit 57 = `0x0427` `0x0130`, 67 bits in all). `[VENDOR]` HeyMelody  ( in the
+  JADX output, see CLAUDE.md), which also lists the commands sent without a bit (`0x0100`-`0x0104`,
+  `0x0106`, `0x010B`, `0x010D`, `0x0F00`, `0x0F03`, `0x0F04`). HeyMelody refuses to send anything
+  else (, "UNSUPPORTED cmd"), and so does our connect sequence now. `[CAPTURE]` Buds 4:
+  `00 FF 77 5A EA 67 0E 20 07`, which lists every command the app uses and not `0x0422`/`0x012A`
+  (Buds 4 does spatial through feature `0x1B`).
+- **`0x8103` is the product id:** `00` + 3 bytes little-endian. `[CAPTURE]` Buds 4: `00 14 54 06` =
+  `065414`, its id in HeyMelody's model list. `[OSS]` OppoPods reads it the same way; OppoPodsManager
+  maps four ranges (`100100`-`100102` -> `060414` and three more) before the lookup.
+- **`0x810D` lists only the feature switches the firmware has.** We ask for 12 ids; Buds 4 answers
+  8 (`05 04 0B 11 18 06 1B 1D`, not `13 1C 27 28`). An id missing from the reply is a switch those
+  buds do not have. `[OSS]` oneplus-buds-omarchy saw the same on Buds Pro 2 ("presence establishes
+  capability").
+
 ### The broadcast codes reply (0x8200) is the map of what exists
 
 `[CAPTURE]` On Buds 4:

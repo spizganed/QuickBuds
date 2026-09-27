@@ -11,6 +11,7 @@ import android.os.Looper
 import android.util.Log
 import com.spizganed.quickbuds.protocol.AncEventParser
 import com.spizganed.quickbuds.protocol.BatteryParser
+import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.GameModeParser
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
@@ -90,6 +91,9 @@ class BudsConnectionManager(private val context: Context) {
 
         /** The paired-device list changed, see [devices]. */
         fun onDevices(list: List<PairedDevice>) {}
+
+        /** The buds reported which commands they accept (`0x8100`), see [Capabilities]. */
+        fun onCapabilities() {}
     }
 
     private val listeners = CopyOnWriteArrayList<Listener>()
@@ -269,19 +273,22 @@ class BudsConnectionManager(private val context: Context) {
                 delay(300); sendRawBlocking(OpoProtocol.buildHandshake(), "handshake")
                 delay(200); sendRawBlocking(OpoProtocol.buildQueryProductId(), "query product id")
                 delay(200); sendRawBlocking(OpoProtocol.buildQueryBroadcastCodes(), "query broadcast codes")
-                delay(200); sendRawBlocking(OpoProtocol.registerNotifications(), "register notify")
-                delay(200); sendRawBlocking(OpoProtocol.queryStatus(), "query status")
-                delay(200); sendRawBlocking(OpoProtocol.queryAncMode(), "query anc")
-                delay(200); sendRawBlocking(OpoProtocol.queryAlertVolume(), "query alert volume")
-                delay(200); sendRawBlocking(OpoProtocol.queryBattery(), "query battery")
-                delay(200); sendRawBlocking(OpoProtocol.queryWearingStatus(), "query wearing")
-                // Read-only: reports the CURRENT gesture bindings so a capture can
-                // reveal the `function` enum. See OpoProtocol.queryKeyFunction().
-                delay(200); sendRawBlocking(OpoProtocol.queryKeyFunction(), "query key function")
-                // Read-only: the HOLD's ANC mode list, which is the one gesture this app
-                // still cannot configure — its key-function byte only reports that the hold
-                // cycles ANC, not which modes. See OpoProtocol.queryNoiseSwitchModes().
-                delay(200); sendRawBlocking(OpoProtocol.queryNoiseSwitchModes(), "query noise switch")
+                // The handshake reply (0x8100) has landed by now; the reads below go out only if
+                // these buds list them, as HeyMelody does (see Capabilities).
+                fun query(cmd: Int, packet: ByteArray, label: String) {
+                    if (!Capabilities.supports(context, cmd)) { log("skip $label: not supported"); return }
+                    delay(200); sendRawBlocking(packet, label)
+                }
+                query(OpoProtocol.CMD_REGISTER_NOTIFY, OpoProtocol.registerNotifications(), "register notify")
+                query(OpoProtocol.CMD_QUERY_STATUS, OpoProtocol.queryStatus(), "query status")
+                query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
+                query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
+                query(OpoProtocol.CMD_QUERY_BATTERY, OpoProtocol.queryBattery(), "query battery")
+                query(OpoProtocol.CMD_QUERY_WEARING, OpoProtocol.queryWearingStatus(), "query wearing")
+                // The current gesture bindings, the table every gesture write is built from.
+                query(OpoProtocol.CMD_QUERY_KEY_FUNCTION, OpoProtocol.queryKeyFunction(), "query key function")
+                // The hold's ANC cycle, see OpoProtocol.queryNoiseSwitchModes().
+                query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryNoiseSwitchModes(), "query noise switch")
             } catch (e: Exception) {
                 log("Init sequence error: ${e.message}")
             }
@@ -463,7 +470,7 @@ class BudsConnectionManager(private val context: Context) {
     /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §9. */
     fun setFindTone(on: Boolean) = sendRaw(OpoProtocol.findTone(on), "Find tone -> $on")
 
-    private val FEATURES_KEY = "lastFeatureStates"
+    private val FEATURES_KEY = Capabilities.KEY_FEATURES
 
     /**
      * Latest `0x810D` reply as feature id -> value (PROTOCOL.md §9). Persisted, so the switches
@@ -923,6 +930,25 @@ class BudsConnectionManager(private val context: Context) {
         if (packet.size < 9) return
         val cmd = (packet[4].toInt() and 0xFF) or ((packet[5].toInt() and 0xFF) shl 8)
         val payload = payloadOf(packet)
+
+        // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
+        if (cmd == 0x8100) {
+            val commands = Capabilities.parse(payload)
+            if (commands != null) {
+                Capabilities.save(context, commands)
+                log("CAPABILITIES: " + commands.sorted().joinToString(" ") { "%04X".format(it) })
+                handler.post { listeners.forEach { it.onCapabilities() } }
+            }
+            return
+        }
+        if (cmd == 0x8103) {
+            val id = Capabilities.productId(payload)
+            if (id != null) {
+                featurePrefs().edit().putString(Capabilities.KEY_PRODUCT_ID, id).apply()
+                log("PRODUCT ID: $id")
+            }
+            return
+        }
 
         // --- Wearing / in-case state: 0x8109 query response OR 0x0204 spontaneous event ---
         var wearing: WearingStatusParser.Result? = null

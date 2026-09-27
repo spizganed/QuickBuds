@@ -31,6 +31,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
+import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetStateStore
@@ -923,6 +924,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     override fun onFeatureStates(states: Map<Int, Int>) {
+        relayoutIfSupportChanged()
         // Disconnected, the switches stay neutral (SPEC 3.2); setConnectedUi repaints on connect.
         if (connectedUi == false) return
         states[OpoProtocol.FEATURE_HIRES_CODEC]?.let { v ->
@@ -932,6 +934,33 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         states[OpoProtocol.FEATURE_SPATIAL_SOUND]?.let { v ->
             spatialSwitch?.let { setSwitchQuiet(it, v == 1) }
         }
+    }
+
+    override fun onCapabilities() = relayoutIfSupportChanged()
+
+    /**
+     * Whether the connected buds have a row's feature at all (see [Capabilities]): a `0x0403`
+     * switch must be in their `0x810D` reply, a command in their `0x8100` bitmap. Nothing read
+     * yet = shown. Earbud settings gates its own rows.
+     */
+    private fun rowSupported(key: String): Boolean = when (key) {
+        "game" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GAME_MODE)
+        "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC)
+        "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND)
+        "eq" -> Capabilities.supports(this, OpoProtocol.CMD_SET_EQ)
+        "dual" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_DUAL_DEVICE)
+        else -> true
+    }
+
+    private var supportSignature: String? = null
+
+    /** Relays the rows only when what the buds support changed, not on every status poll. */
+    private fun relayoutIfSupportChanged() {
+        val sig = featureRows.keys.filter { rowSupported(it) }.joinToString() +
+            Capabilities.supports(this, OpoProtocol.CMD_SET_ANC)
+        if (sig == supportSignature) return
+        supportSignature = sig
+        layoutFeatureRows()
     }
 
     /** The sound-settings rows by key, in build (default) order; laid out by [layoutFeatureRows]. */
@@ -953,9 +982,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         for (key in rowOrder(prefs, featureRows.keys.toList())) {
             val row = featureRows[key] ?: continue
             (row.parent as? android.view.ViewGroup)?.removeView(row)
-            if (key !in hidden) SettingRowFactory.addRow(featureList, row)
+            if (key !in hidden && rowSupported(key)) SettingRowFactory.addRow(featureList, row)
         }
         featureList.visibility = if (featureList.childCount == 0) View.GONE else View.VISIBLE
+        ancRow.visibility = if (Capabilities.supports(this, OpoProtocol.CMD_SET_ANC)) View.VISIBLE else View.GONE
         setEnabledDeep(featureList, connectedUi != false)
     }
 

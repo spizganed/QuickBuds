@@ -16,6 +16,8 @@ import android.widget.TextView
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
+import com.spizganed.quickbuds.protocol.Capabilities
+import com.spizganed.quickbuds.protocol.OpoProtocol
 
 /**
  * Earbud settings — the hub for everything about the buds themselves rather than the sound
@@ -34,8 +36,10 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             manager = (service as BudsService.LocalBinder).getService().manager
             manager?.addListener(this@EarbudSettingsActivity)
-            manager?.alertVolume?.let { onAlertVolume(it) }
-            manager?.refreshAlertVolume()
+            if (::alertSlider.isInitialized) {
+                manager?.alertVolume?.let { onAlertVolume(it) }
+                manager?.refreshAlertVolume()
+            }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -53,7 +57,9 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         root.addView(SettingRowFactory.title(this, R.string.earbuds_title))
 
         val card = cardView()
-        fun link(icon: Int, title: Int, sub: Int, target: Class<*>) {
+        // Only what these buds have (see Capabilities); a model without it never sees the row.
+        fun link(icon: Int, title: Int, sub: Int, target: Class<*>, supported: Boolean) {
+            if (!supported) return
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
             card.addView(
                 SettingRowFactory.build(this, icon, title, sub, SettingRowFactory.buildChevron(this)) {
@@ -61,10 +67,17 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 }
             )
         }
-        link(R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub, GestureActivity::class.java)
-        link(R.drawable.ic_bud_left, R.string.row_wear_title, R.string.row_wear_sub, WearActivity::class.java)
-        link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java)
-        root.addView(card)
+        link(R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub, GestureActivity::class.java,
+            Capabilities.supports(this, OpoProtocol.CMD_SET_KEY_FUNCTION))
+        link(R.drawable.ic_bud_left, R.string.row_wear_title, R.string.row_wear_sub, WearActivity::class.java,
+            Capabilities.hasFeature(this, OpoProtocol.FEATURE_AUTO_PLAY_PAUSE))
+        link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java,
+            Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS))
+        if (card.childCount > 0) root.addView(card)
+        if (!Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) {
+            setContentView(ScrollView(this).apply { addView(root) })
+            return
+        }
 
         // --- Sounds: alert-sound volume, 1..10: `0x0427`, read back with `0x0130`. [CAPTURE] 2026-09-25 ---
         // Sent on release only, so the buds play one prompt per change, not one per step.
@@ -123,7 +136,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     override fun onAlertVolume(level: Int) {
-        if (alertSlider.dragging) return
+        if (!::alertSlider.isInitialized || alertSlider.dragging) return
         alertSlider.value = level
         paintSpeaker(level)
     }

@@ -21,6 +21,9 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 1. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
+   - **Done 2026-09-27: capability gating.** The buds' own `0x8100` bitmap and `0x810D` list decide
+     which home rows, Earbud settings rows and connect-time queries appear (`Capabilities.kt`,
+     PROTOCOL.md §4). The product id is read and logged. Next: the model list and per-model ANC.
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
      Look it up in the model list; if the id is missing or unknown, match the Bluetooth device name;
