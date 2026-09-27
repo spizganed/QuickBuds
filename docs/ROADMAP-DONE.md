@@ -67,6 +67,11 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   test verified on device (report written, next-launch dialog shown).
 - Widget mode list: a pick no longer waits up to 5 s (the list close no longer holds the broadcast
   with `goAsync`). Confirmed by him.
+- One 2x2 widget with two pages (battery / controls), switched by a swap button or a double tap
+  (Widget settings); the page is stored per widget. Page changes and the mode list cross-fade on every
+  size, and widget taps give a haptic tick. Confirmed by him.
+- In-app language screen (`LanguageActivity`) replaces the link to Android's per-app screen. Confirmed
+  by him.
 
 ## Docs
 

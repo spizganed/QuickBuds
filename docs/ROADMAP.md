@@ -19,27 +19,17 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Done 2026-09-27, awaiting his test: one 2x2 widget with two pages** (battery and wear / noise control), swapped by a small
-   button in a corner or by a double tap: a widget setting "Switch pages with", swap button (default) or
-   double tap. A widget only gets single taps, so double tap makes every single tap wait ~400 ms;
-   say so under the option. Page stored per widget id. Both existing 2x2 providers stay so placed
-   widgets survive, keeping their names: "QuickBuds battery" starts on the battery page, "QuickBuds
-   controls" on the controls page.
-2. **Done 2026-09-27, awaiting his test: in-app language screen** (`LanguageActivity`). Replace the link to Android's per-app language screen (which lists
-   every regional variant: Deutsch (Österreich), (Schweiz)…) with our own screen built from
-   `SettingRowFactory` rows: System default, English, 简体中文, 繁體中文 and one entry per other
-   language. `LocaleManager` on Android 13+, `applyOverrideConfiguration` in `ThemeRes` below that.
-3. **More languages, next session** ([USER] 2026-09-27: "all of them"): Russian, Ukrainian, Turkish,
+1. **Next: more languages** (new session) ([USER] 2026-09-27: "all of them"): Russian, Ukrainian, Turkish,
    Japanese, Korean, Malay, Filipino, Bengali, Czech, Hungarian, Greek, Swedish. Machine-drafted like the rest,
    each with its line in `ThemeRes.LANGUAGES`. Right-to-left ones (Arabic, Urdu, Persian) are a separate step:
    RTL support in the manifest and a mirrored check of every screen.
-4. **Small items** ([USER] 2026-09-27):
+2. **Small items** ([USER] 2026-09-27):
    - **Dead code sweep.** lint `UnusedResources` plus a scan for Kotlin symbols nothing references;
      delete what is unused.
    - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment
      Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
      with a confirm), the log in a normal card with TX / RX in the accent colour.
-5. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
+3. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
@@ -62,7 +52,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
    - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
-6. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
+4. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
    repo (`[USER]` 2026-09-27).
