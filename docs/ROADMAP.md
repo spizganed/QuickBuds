@@ -76,8 +76,10 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 ## Our own features
 
-- **Themes, still open:** auto-detect (follow system light/dark with a built-in preset) and
-  saved / recent colours in the picker.
+- **Next: a new White preset** ([USER] 2026-09-27): the current White colours look off and need a
+  redesign. Do it together with **auto-detect** (follow the system light/dark setting, switching
+  between a dark built-in and the new White).
+- **Themes, still open:** saved / recent colours in the picker.
 
 ## Connection and battery
 
