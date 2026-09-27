@@ -165,8 +165,9 @@ A working connection is exactly this, in order `[CAPTURE]`:
 Each step is 200 ms apart, with a 300 ms delay before the first. Source:
 `BudsConnectionManager.runInitSequence()`.
 
-Then a periodic status poll (the app uses `POLL_INTERVAL_SECONDS = 60`). It sends the status
-query only — wear is NOT polled, because the buds push it (§8).
+Nothing is polled after that: wear, battery, ANC and game mode are pushed (§8). The periodic status
+poll the reference sources call a keep-alive was dropped 2026-09-27, after days of use without it
+showed no stale link ([USER]).
 
 Steps 9 and 10 are READ-ONLY additions, so neither can corrupt a binding.
 
@@ -1081,7 +1082,7 @@ the first thing to try.
 
 ### Batch status query — `0x010D`
 
-`[CAPTURE]` The app polls:
+`[CAPTURE]` The app queries it on connect:
 
 ```
 TX  AA 13 00 00 0D 01 00 0C 00 0B 05 04 0B 11 13 18 06 1B 1C 27 28

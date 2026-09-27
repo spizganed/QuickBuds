@@ -78,11 +78,6 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
   redesign. Do it together with **auto-detect** (follow the system light/dark setting, switching
   between a dark built-in and the new White).
 
-## Connection and battery
-
-- **Keep-alive: drop it entirely?** Open. It is now 300 s. A test build without it is on his phone
-  since 2026-09-27 evening (not committed); his report decides.
-
 ## Docs cleanup
 
 - Done 2026-09-26: README is short and user-facing, CREDITS.md folded into its Credits section,

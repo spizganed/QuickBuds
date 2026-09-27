@@ -29,7 +29,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.Executors
 
 @SuppressLint("MissingPermission")
 class BudsConnectionManager(private val context: Context) {
@@ -111,14 +110,12 @@ class BudsConnectionManager(private val context: Context) {
     fun removeListener(l: Listener) { listeners.remove(l) }
 
     private val handler = Handler(Looper.getMainLooper())
-    private val pollExecutor = Executors.newSingleThreadScheduledExecutor()
 
     private var bluetoothSocket: BluetoothSocket? = null
     private var connectedThread: ConnectedThread? = null
     private var isReady = false
     private var isConnecting = false
     private var reconnectAttempts = 0
-    private var pollTask: java.util.concurrent.ScheduledFuture<*>? = null
 
     // Reconnect-after-loss state — see reconnectAfterLoss().
     private var lastDevice: BluetoothDevice? = null
@@ -127,18 +124,6 @@ class BudsConnectionManager(private val context: Context) {
     private var pendingReconnect: Runnable? = null
     /** Set by the all-zero wear push the buds send just before a lid close drops the link (PROTOCOL.md §8). */
     @Volatile private var caseClosing = false
-
-    /**
-     * Poll period for the status query (0x010D).
-     *
-     * Only a keep-alive: wear and battery are pushed (0x0204).
-     *
-     * Do NOT remove the 0x010D packet outright: the reference sources describe
-     * it as a FIXED packet that wakes the earbuds and likely acts as a
-     * keep-alive. Widening is safe; deleting risks the buds sleeping and the
-     * link going stale.
-     */
-    private val POLL_INTERVAL_SECONDS = 300L
 
     private var lastLeft: BatteryParser.Info? = null
     private var lastRight: BatteryParser.Info? = null
@@ -249,7 +234,6 @@ class BudsConnectionManager(private val context: Context) {
                 handler.post { listeners.forEach { it.onConnected(true) } }
                 log("Ready for commands. Running init sequence...")
                 runInitSequence()
-                startBatteryPolling()
             } else {
                 log("All connection methods failed: $lastError")
                 isConnecting = false
@@ -300,21 +284,6 @@ class BudsConnectionManager(private val context: Context) {
         }.start()
     }
 
-    private fun startBatteryPolling() {
-        // disconnect() cancels it; cancel here too so a reconnect never stacks a second one.
-        pollTask?.cancel(false)
-        pollTask = pollExecutor.scheduleWithFixedDelay({
-            if (isReady) {
-                try {
-                    // Status query only. The wear query (0x0109) is intentionally
-                    // not polled — the buds push wear changes as 0x0204 subtype 02,
-                    // measured at 1-3 ms, so polling it just wastes radio time.
-                    sendRaw(OpoProtocol.queryStatus(), "poll status")
-                } catch (_: Exception) {}
-            }
-        }, POLL_INTERVAL_SECONDS, POLL_INTERVAL_SECONDS, java.util.concurrent.TimeUnit.SECONDS)
-    }
-
     /**
      * A link we did not close ourselves dropped — typically the buds restarting after a codec
      * change, which drops us 2-3 times in a row while they settle (log 2026-09-23). Nothing else
@@ -346,8 +315,6 @@ class BudsConnectionManager(private val context: Context) {
         connectedThread?.cancel()
         connectedThread = null
         bluetoothSocket = null
-        pollTask?.cancel(false)
-        pollTask = null
         handler.post { listeners.forEach { it.onConnected(false) } }
         log("Disconnected")
     }

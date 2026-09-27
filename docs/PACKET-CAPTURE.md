@@ -24,7 +24,7 @@ real sessions more than once, and a wrong write to the buds fails completely sil
 6. Dev Tools → **Export**. Files land in `Download/QuickBudsLogs/` via MediaStore.
 
 Hand over only the lines between the first and last `MARK`, plus the two lines either side of each
-one. The 60-second `TX[poll status]` keep-alives in between can be left out.
+one.
 
 ### Automated pull — no MARK/Export needed at all (confirmed working, 2026-09-20)
 
