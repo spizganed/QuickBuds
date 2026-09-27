@@ -120,22 +120,20 @@ class WidgetActionReceiver : BroadcastReceiver() {
 
     /**
      * Shows widget [id]'s mode list and closes it after [WidgetSettings.LIST_TIMEOUT_MS] with no
-     * pick. goAsync keeps the process alive for the wait (well inside the broadcast timeout); the
+     * pick. No goAsync: it held this receiver for the whole timeout, and Android delivers a
+     * manifest receiver's broadcasts one at a time, so a pick waited up to 5 s. If the process
+     * dies before the close runs, build() treats a stamp older than the timeout as closed. The
      * stamp check makes a pick or a newer open win over this close.
      */
     private fun openList(context: Context, id: Int) {
         val stamp = System.currentTimeMillis()
         WidgetSettings.setListOpenedAt(context, id, stamp)
         AncWidgetProvider.refreshAll(context)
-        val pending = goAsync()
+        val app = context.applicationContext
         Handler(Looper.getMainLooper()).postDelayed({
-            try {
-                if (WidgetSettings.listOpenedAt(context, id) == stamp) {
-                    WidgetSettings.setListOpenedAt(context, id, 0L)
-                    AncWidgetProvider.refreshAll(context)
-                }
-            } finally {
-                pending.finish()
+            if (WidgetSettings.listOpenedAt(app, id) == stamp) {
+                WidgetSettings.setListOpenedAt(app, id, 0L)
+                AncWidgetProvider.refreshAll(app)
             }
         }, WidgetSettings.LIST_TIMEOUT_MS)
     }

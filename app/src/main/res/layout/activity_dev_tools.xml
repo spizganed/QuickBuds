@@ -260,6 +260,20 @@
                 android:paddingEnd="4dp"
                 android:textSize="12sp"
                 android:text="Disconnect" />
+
+            <Button
+                android:id="@+id/btnCrashTest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:minWidth="0dp"
+                android:minHeight="42dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textSize="12sp"
+                android:text="Crash test" />
         </LinearLayout>
     </LinearLayout>
 

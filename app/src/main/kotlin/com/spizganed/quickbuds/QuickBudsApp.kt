@@ -59,6 +59,28 @@ class QuickBudsApp : Application() {
     /** Activities currently started, for the background-service switch. */
     private var started = 0
 
+    // The crash handler goes in first, before onCreate and before any content provider or
+    // activity runs, so a crash in the earliest app code still leaves a report.
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        val previous = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                writeCrashReport(this, thread, throwable)
+            } catch (_: Throwable) {
+                // Never let the reporter itself take down the crash path.
+            }
+            // Hand back to the platform so the normal "app has stopped" flow runs.
+            previous?.uncaughtException(thread, throwable)
+        }
+        // Dev Tools' "Crash test": one throw at launch, cleared first so it never loops.
+        val prefs = base.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+        if (prefs.getBoolean(PREF_CRASH_ON_LAUNCH, false)) {
+            prefs.edit().remove(PREF_CRASH_ON_LAUNCH).commit()
+            throw RuntimeException("Crash test from Dev Tools (crash logger check)")
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         // A preset change rebuilds every open activity when it comes back to the front,
@@ -79,16 +101,6 @@ class QuickBudsApp : Application() {
             override fun onActivitySaveInstanceState(a: Activity, b: Bundle) {}
             override fun onActivityDestroyed(a: Activity) {}
         })
-        val previous = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            try {
-                writeCrashReport(this, thread, throwable)
-            } catch (_: Throwable) {
-                // Never let the reporter itself take down the crash path.
-            }
-            // Hand back to the platform so the normal "app has stopped" flow runs.
-            previous?.uncaughtException(thread, throwable)
-        }
     }
 
     private fun writeCrashReport(context: Context, thread: Thread, throwable: Throwable) {
@@ -176,6 +188,9 @@ class QuickBudsApp : Application() {
     companion object {
         /** Subfolder of Download holding crash reports. */
         const val PUBLIC_DIR = "QuickBudsCrash"
+
+        /** Dev Tools' "Crash test" arms this; the next launch throws once in attachBaseContext. */
+        const val PREF_CRASH_ON_LAUNCH = "devCrashOnLaunch"
     }
 }
 

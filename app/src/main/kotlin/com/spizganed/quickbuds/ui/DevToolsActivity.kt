@@ -1,6 +1,7 @@
 package com.spizganed.quickbuds.ui
 
 import android.Manifest
+import com.spizganed.quickbuds.QuickBudsApp
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ClipData
@@ -61,6 +62,7 @@ class DevToolsActivity : Activity() {
     private lateinit var btnTabRaw: Button
     private lateinit var btnClear: Button
     private lateinit var btnExport: Button
+    private lateinit var btnCrashTest: Button
     private lateinit var btnMark: Button
     private lateinit var btnReconnect: Button
     private lateinit var btnDisconnect: Button
@@ -169,6 +171,7 @@ class DevToolsActivity : Activity() {
         // action button below — an unbound lateinit would throw on open.
         btnReconnect = findViewById<Button>(R.id.btnReconnect)
         btnDisconnect = findViewById<Button>(R.id.btnDisconnect)
+        btnCrashTest = findViewById<Button>(R.id.btnCrashTest)
         applyTheme()
 
         btnTabHuman.setOnClickListener { switchToHumanTab() }
@@ -179,6 +182,15 @@ class DevToolsActivity : Activity() {
             lastLineCount = 0
         }
         btnMark.setOnClickListener { addMark() }
+        // Proves the crash logger catches a crash before any app logic: arms a throw at the
+        // very start of the next launch (QuickBudsApp.attachBaseContext), then closes the app.
+        btnCrashTest.setOnClickListener {
+            getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit()
+                .putBoolean(QuickBudsApp.PREF_CRASH_ON_LAUNCH, true).commit()
+            Toast.makeText(this, "Reopen the app: it crashes once at launch", Toast.LENGTH_LONG).show()
+            finishAffinity()
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }
         btnExport.setOnClickListener {
             if (checkStoragePermission()) {
                 exportLog()
@@ -835,7 +847,7 @@ class DevToolsActivity : Activity() {
         for (b in listOf(
             btnClear, btnMark, btnExport,
             btnScreenshot, btnLayout, btnWidgetLayout, btnWidgetLogic,
-            btnReconnect, btnDisconnect
+            btnReconnect, btnDisconnect, btnCrashTest
         )) {
             b.background = ThemeRes.chip(this, false)
             b.setTextColor(txtColor)

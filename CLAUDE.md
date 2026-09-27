@@ -80,6 +80,12 @@ phone-specific piece lives outside it.
 - Run the wrapper as `sh gradlew ...` (shared storage has no exec bit; `core.filemode` is false so git
   keeps `gradlew` at 755). SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
 - The release key is in `local/keys/` here too, so `sh gradlew assembleRelease` signs as on the PC.
+- **Phone build tweaks, all outside the repo** (2026-09-27): `~/.gradle/init.d/quickbuds-phone.gradle.kts`
+  moves build output to `~/qb-build/` (shared storage is slow FUSE) and disables the `lintVital*` tasks;
+  `~/.gradle/gradle.properties` turns on the configuration cache and raises heaps (Gradle 3g, Kotlin 2g).
+  **The phone's APK is `~/qb-build/_app/outputs/apk/release/app-release.apk`**, not `app/build/...`. Timed:
+  clean build (no build cache) 147 s → 83 s; rebuild after a one-line edit 43 s → 3 s. The daemon's
+  "Unable to set daemon's environment variables" warning is harmless on Termux.
 
 ## UI revision (design/SPEC.md)
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
@@ -291,6 +297,14 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 
 ## Dev tools inside the app
 
+**Crash logger:** `QuickBudsApp.attachBaseContext` installs the handler before anything else runs (writes
+`Download/QuickBudsCrash/`, plus two private copies for the next-launch dialog). Dev Tools' **Crash test**
+button arms `devCrashOnLaunch`; the next launch throws once there, which proves an early crash is caught.
+
+**Crash logger:** `QuickBudsApp.attachBaseContext` installs the handler before anything else runs (writes
+`Download/QuickBudsCrash/`, plus two private copies for the next-launch dialog). Dev Tools' **Crash test**
+button arms `devCrashOnLaunch`; the next launch throws once there, which proves an early crash is caught.
+
 `devtool/LayoutReport.kt` writes the laid-out view tree as text — bounds, weights, margins, padding,
 gravity, text sizes, and drawable intrinsic vs actual size, plus a `SIBLING GAPS` section. It exists
 because a screenshot does not show view ids or exact spacing. **If you change `collectGaps`, keep it
@@ -403,8 +417,9 @@ builds and parcels every size.
   (default) or Open list, the ordered checked modes (min 2, same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
 - **Mode list** is a layout swap (`widget_list`; the 3x3 swaps only `w_controls` for its included `w_grid`), never
-  an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a `goAsync` + 5 s handler closes it if the
-  stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died.
+  an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
+  the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
+  `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
 
