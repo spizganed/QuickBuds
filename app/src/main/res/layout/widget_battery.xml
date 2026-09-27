@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2x2 battery widget (design/widgets/WIDGETS.md 3.1). Generated layout: colours, icons and texts are set at
+     runtime by widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
+<ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_bg" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
+<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+<FrameLayout android:id="@+id/w_panel_left" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" >
+<ImageView android:id="@+id/w_panel_left_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="4dp">
+<ImageView android:id="@+id/w_ring_left" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
+<TextView android:id="@+id/w_pct_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
+<TextView android:id="@+id/w_label_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11.5sp" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
+</LinearLayout>
+</FrameLayout>
+<FrameLayout android:id="@+id/w_panel_right" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="6dp">
+<ImageView android:id="@+id/w_panel_right_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="4dp">
+<ImageView android:id="@+id/w_ring_right" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
+<TextView android:id="@+id/w_pct_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
+<TextView android:id="@+id/w_label_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11.5sp" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
+</LinearLayout>
+</FrameLayout>
+</LinearLayout>
+<FrameLayout android:id="@+id/w_bar" android:layout_width="match_parent" android:layout_height="42dp" android:layout_marginTop="6dp">
+<ImageView android:id="@+id/w_bar_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="14dp" android:paddingEnd="14dp">
+<ImageView android:id="@+id/w_case_icon" android:layout_width="27dp" android:layout_height="22dp" android:src="@drawable/ic_case" android:scaleType="fitCenter" android:importantForAccessibility="no" />
+<ImageView android:id="@+id/w_case_bar" android:layout_width="0dp" android:layout_height="6dp" android:layout_weight="1" android:layout_marginStart="12dp" android:layout_marginEnd="12dp" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<TextView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
+</LinearLayout>
+</FrameLayout>
+</LinearLayout>
+</FrameLayout>

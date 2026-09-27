@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
-    <string name="widget_anc_label">ANC</string>
-    <string name="widget_small_name">QuickBuds कॉम्पैक्ट</string>
-    <string name="widget_strip_name">QuickBuds बार</string>
-    <string name="widget_short_low">कम</string>
-    <string name="widget_short_med">मध्य</string>
-    <string name="widget_short_high">उच्च</string>
-    <string name="widget_game_label">गेम</string>
-    <string name="widget_buds_desc">ईयरबड्स</string>
-    <string name="widget_battery_left">बा</string>
-    <string name="widget_battery_right">दा</string>
-    <string name="widget_battery_case">के</string>
-    <string name="widget_anc_off">बंद</string>
-    <string name="widget_anc_trans">पारदर्शी</string>
-    <string name="widget_anc_low">कम</string>
-    <string name="widget_anc_med">मध्यम</string>
-    <string name="widget_anc_high">उच्च</string>
-    <string name="widget_anc_adapt">अनुकूल</string>
-    <string name="widget_game_mode_label">गेम मोड</string>
     <string name="action_dev_tools">डेवलपर टूल</string>
     <string name="action_settings">सेटिंग्स</string>
     <string name="conn_on">कनेक्टेड</string>

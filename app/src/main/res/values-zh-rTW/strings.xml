@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
-    <string name="widget_anc_label">降噪</string>
-    <string name="widget_small_name">QuickBuds 精簡</string>
-    <string name="widget_strip_name">QuickBuds 橫條</string>
-    <string name="widget_short_low">低</string>
-    <string name="widget_short_med">中</string>
-    <string name="widget_short_high">高</string>
-    <string name="widget_game_label">遊戲</string>
-    <string name="widget_buds_desc">耳機</string>
-    <string name="widget_battery_left">左</string>
-    <string name="widget_battery_right">右</string>
-    <string name="widget_battery_case">盒</string>
-    <string name="widget_anc_off">關</string>
-    <string name="widget_anc_trans">通透</string>
-    <string name="widget_anc_low">低</string>
-    <string name="widget_anc_med">中</string>
-    <string name="widget_anc_high">高</string>
-    <string name="widget_anc_adapt">自適應</string>
-    <string name="widget_game_mode_label">遊戲模式</string>
     <string name="action_dev_tools">開發者工具</string>
     <string name="action_settings">設定</string>
     <string name="conn_on">已連線</string>

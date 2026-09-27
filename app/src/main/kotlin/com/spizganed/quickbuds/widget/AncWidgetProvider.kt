@@ -10,11 +10,16 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.net.Uri
 import android.os.Parcel
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.TypefaceSpan
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
 import com.spizganed.quickbuds.ui.BudsStatusView
 import com.spizganed.quickbuds.ui.MainActivity
@@ -22,225 +27,252 @@ import com.spizganed.quickbuds.ui.Palette
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
- * The home-screen widgets (rebuilt 2026-09-26, [USER]: "follow the design we already have").
+ * The home-screen widgets (design/widgets/WIDGETS.md, 2026-09-27). One provider per size, so each
+ * has its own picker entry and cell size, and the old class names keep placed widgets alive:
  *
- *  - [AncWidgetProvider]   4x2 full: rings with wear labels, all six noise modes, Low latency.
- *                          Keeps the old widget's class name so widgets already placed survive.
- *  - [SmallWidgetProvider] 2x2 compact: rings, Off / L / M / H / Transparency, Low latency.
- *  - [StripWidgetProvider] 4x1 bar: rings, a chip that cycles Off / ANC / Transparency, Low latency.
+ *  - [BatteryWidgetProvider] 2x2 battery (3.1)
+ *  - [SmallWidgetProvider]   2x2 controls (3.2)
+ *  - [AncWidgetProvider]     3x2 combined (3.3)
+ *  - [LargeWidgetProvider]   3x3 combined (3.4)
  *
- * All three are drawn in the ACTIVE app palette: surfaces are white shapes tinted at runtime with
- * ImageView.setColorFilter (works on every API level, unlike background tint lists), and the
- * battery rings are small bitmaps drawn here. Taps go through [WidgetActionReceiver], the same
- * path as before. Disconnected, the widgets show the empty state and any tap opens the app.
+ * Drawn in the ACTIVE palette at update time: white shapes tinted with ImageView.setColorFilter
+ * (every API level) and ring bitmaps drawn here. Disconnected, every size shows only the main
+ * screen's Connect chip ([USER] 2026-09-27). The mode list is a layout swap, opened and closed by
+ * [WidgetActionReceiver] (stamp in [WidgetSettings]); it never opens an Activity.
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
-    enum class Kind { FULL, SMALL, STRIP }
+    enum class Kind(val layout: Int, val large: Boolean = false) {
+        BATTERY(R.layout.widget_battery),
+        CONTROLS(R.layout.widget_controls),
+        COMBINED(R.layout.widget_combined),
+        LARGE(R.layout.widget_large, large = true)
+    }
 
     override fun onUpdate(context: Context, mgr: AppWidgetManager, ids: IntArray) {
         for (id in ids) update(context, mgr, id, kind)
     }
 
+    override fun onDeleted(context: Context, ids: IntArray) {
+        for (id in ids) WidgetSettings.setListOpenedAt(context, id, 0L)
+    }
+
+    /** A button's view ids: the tappable frame, its fill and stroke, its icon and its text. */
+    private class Btn(val root: Int, val bg: Int, val stroke: Int, val icon: Int, val label: Int)
+
     companion object {
 
-        /** Stable PendingIntent request codes, one per noise target. */
-        private val REQ = mapOf("off" to 200, "trans" to 201, "low" to 202, "med" to 203, "high" to 204, "adapt" to 205)
-
         private val providers = listOf(
-            AncWidgetProvider::class.java to Kind.FULL,
-            SmallWidgetProvider::class.java to Kind.SMALL,
-            StripWidgetProvider::class.java to Kind.STRIP
+            BatteryWidgetProvider::class.java to Kind.BATTERY,
+            SmallWidgetProvider::class.java to Kind.CONTROLS,
+            AncWidgetProvider::class.java to Kind.COMBINED,
+            LargeWidgetProvider::class.java to Kind.LARGE
         )
 
-        /** Repaints every placed widget of every size: state or palette changed. */
+        private val MODE = Btn(R.id.w_mode, R.id.w_mode_bg, R.id.w_mode_stroke, R.id.w_mode_icon, R.id.w_mode_name)
+        private val LL = Btn(R.id.w_ll, R.id.w_ll_bg, R.id.w_ll_stroke, R.id.w_ll_icon, R.id.w_ll_label)
+        private val CONN = Btn(R.id.w_conn, R.id.w_conn_bg, R.id.w_conn_stroke, R.id.w_conn_dot, R.id.w_conn_text)
+        private val CELLS = listOf(
+            Btn(R.id.w_cell0, R.id.w_cell0_bg, R.id.w_cell0_stroke, R.id.w_cell0_icon, R.id.w_cell0_label),
+            Btn(R.id.w_cell1, R.id.w_cell1_bg, R.id.w_cell1_stroke, R.id.w_cell1_icon, R.id.w_cell1_label),
+            Btn(R.id.w_cell2, R.id.w_cell2_bg, R.id.w_cell2_stroke, R.id.w_cell2_icon, R.id.w_cell2_label),
+            Btn(R.id.w_cell3, R.id.w_cell3_bg, R.id.w_cell3_stroke, R.id.w_cell3_icon, R.id.w_cell3_label),
+            Btn(R.id.w_cell4, R.id.w_cell4_bg, R.id.w_cell4_stroke, R.id.w_cell4_icon, R.id.w_cell4_label),
+            Btn(R.id.w_cell5, R.id.w_cell5_bg, R.id.w_cell5_stroke, R.id.w_cell5_icon, R.id.w_cell5_label)
+        )
+
+        /** Battery panel ids per slot (0 left, 1 case, 2 right): panel fill, ring, percentage, label. */
+        private val PANELS = listOf(
+            intArrayOf(R.id.w_panel_left_bg, R.id.w_ring_left, R.id.w_pct_left, R.id.w_label_left),
+            intArrayOf(R.id.w_panel_case_bg, R.id.w_ring_case, R.id.w_pct_case, R.id.w_label_case),
+            intArrayOf(R.id.w_panel_right_bg, R.id.w_ring_right, R.id.w_pct_right, R.id.w_label_right)
+        )
+
+        /** Repaints every placed widget of every size: state, palette or settings changed. */
         fun refreshAll(context: Context) {
             val mgr = AppWidgetManager.getInstance(context)
             for ((cls, kind) in providers) {
-                val ids = mgr.getAppWidgetIds(ComponentName(context, cls))
-                for (id in ids) update(context, mgr, id, kind)
+                for (id in mgr.getAppWidgetIds(ComponentName(context, cls))) update(context, mgr, id, kind)
             }
         }
 
         private fun update(context: Context, mgr: AppWidgetManager, id: Int, kind: Kind) {
             // A throw here would leave the host showing "Can't load widget" with no trace.
             try {
-                mgr.updateAppWidget(id, build(context, WidgetStateStore.read(context), kind))
+                mgr.updateAppWidget(id, build(context, WidgetStateStore.read(context), kind, id))
             } catch (t: Throwable) {
                 Log.e("BudsWidget", "update failed for $kind #$id", t)
             }
         }
 
-        private fun layoutFor(kind: Kind) = when (kind) {
-            Kind.FULL -> R.layout.widget_full
-            Kind.SMALL -> R.layout.widget_small
-            Kind.STRIP -> R.layout.widget_strip
-        }
-
-        fun build(context: Context, state: WidgetStateStore.State, kind: Kind): RemoteViews {
+        fun build(context: Context, state: WidgetStateStore.State, kind: Kind, id: Int): RemoteViews {
             val p = ThemeRes.palette(context)
-            val v = RemoteViews(context.packageName, layoutFor(kind))
-            val on = state.connected
-            val openApp = openAppPI(context)
+            if (!state.connected) return disconnected(context, p, kind)
 
+            val list = kind != Kind.BATTERY && WidgetSettings.listOpen(context, id)
+            val v = RemoteViews(context.packageName, if (list && kind != Kind.LARGE) R.layout.widget_list else kind.layout)
+            v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
-            v.setInt(R.id.w_stroke, "setColorFilter", p.outline)
-            v.setOnClickPendingIntent(R.id.w_root, openApp)
+            if (WidgetSettings.openAppOnTap(context)) v.setOnClickPendingIntent(R.id.w_root, openAppPI(context))
 
-            // Battery rings. FULL / SMALL: the ImageView fills the rings row and fitCenter scales the
-            // bitmap, so this is the largest size drawn sharp. STRIP: matches the layout's 38dp box.
-            val ringDp = when (kind) { Kind.FULL -> 64f; Kind.SMALL -> 56f; Kind.STRIP -> 38f }
-            val sides = listOf(
-                Triple(R.id.w_ring_left, R.id.w_pct_left, 0),
-                Triple(R.id.w_ring_case, R.id.w_pct_case, 1),
-                Triple(R.id.w_ring_right, R.id.w_pct_right, 2)
-            )
-            val levels = intArrayOf(state.leftBattery, state.caseBattery, state.rightBattery)
-            val statuses = intArrayOf(state.leftStatus, -1, state.rightStatus)
-            for ((i, ids) in sides.withIndex()) {
-                val level = if (on) levels[i] else -1
-                v.setImageViewBitmap(ids.first, ring(context, p, level, i, statuses[i], on, ringDp))
-                v.setTextViewText(ids.second, if (level in 0..100) "$level%" else "—")
-                v.setTextColor(ids.second, if (level in 0..20) p.accent else if (on) p.text else p.disabled)
+            if (list) {
+                grid(context, v, p, state, kind, id)
+                if (kind != Kind.LARGE) return v
+                v.setViewVisibility(R.id.w_controls, View.GONE)
+                v.setViewVisibility(R.id.w_grid, View.VISIBLE)
             }
-            if (kind == Kind.FULL) {
-                val labels = listOf(
-                    R.id.w_label_left to wearLabel(context, R.string.status_left, state.leftStatus, on),
-                    R.id.w_label_case to context.getString(R.string.status_case),
-                    R.id.w_label_right to wearLabel(context, R.string.status_right, state.rightStatus, on)
-                )
-                for ((id, text) in labels) {
-                    v.setTextViewText(id, text)
-                    v.setTextColor(id, p.textSecondary)
-                }
-            }
-
-            // Noise control.
-            when (kind) {
-                Kind.FULL -> {
-                    chip(context, v, p, "off", R.drawable.ic_noise_off, R.string.widget_anc_off, state.offIsActive(), on)
-                    chip(context, v, p, "low", R.drawable.ic_anc, R.string.widget_anc_low, state.lowIsActive(), on)
-                    chip(context, v, p, "med", R.drawable.ic_anc, R.string.widget_anc_med, state.medIsActive(), on)
-                    chip(context, v, p, "high", R.drawable.ic_anc, R.string.widget_anc_high, state.highIsActive(), on)
-                    chip(context, v, p, "adapt", R.drawable.ic_adaptive, R.string.widget_anc_adapt, state.adaptiveIsActive(), on)
-                    chip(context, v, p, "trans", R.drawable.ic_transparency, R.string.widget_anc_trans, state.transIsActive(), on)
-                }
-                Kind.SMALL -> {
-                    chip(context, v, p, "off", R.drawable.ic_noise_off, 0, state.offIsActive(), on)
-                    chip(context, v, p, "low", 0, R.string.widget_short_low, state.lowIsActive(), on)
-                    chip(context, v, p, "med", 0, R.string.widget_short_med, state.medIsActive(), on)
-                    chip(context, v, p, "high", 0, R.string.widget_short_high, state.highIsActive(), on)
-                    chip(context, v, p, "trans", R.drawable.ic_transparency, 0, state.transIsActive(), on)
-                }
-                Kind.STRIP -> {
-                    // One chip showing the current mode; a tap moves to the next of Off -> ANC -> Transparency.
-                    val (icon, label, next) = when {
-                        state.transIsActive() -> Triple(R.drawable.ic_transparency, R.string.widget_anc_trans, "off")
-                        state.offIsActive() -> Triple(R.drawable.ic_noise_off, R.string.widget_anc_off, lastLevel(context))
-                        state.adaptiveIsActive() -> Triple(R.drawable.ic_adaptive, R.string.widget_anc_adapt, "trans")
-                        else -> Triple(R.drawable.ic_anc, levelLabel(state), "trans")
-                    }
-                    paintChip(context, v, p, "cycle", icon, label, active = on && !state.offIsActive(), on = on)
-                    v.setOnClickPendingIntent(R.id.w_chip_cycle, if (on) ancPI(context, next, 300) else openApp)
-                    v.setContentDescription(R.id.w_chip_cycle, context.getString(R.string.anc_section))
-                }
-            }
-
-            // Low latency: a bolt chip in every size.
-            paintChip(context, v, p, "gamechip", R.drawable.ic_bolt, 0, active = on && state.gameMode, on = on)
-            v.setOnClickPendingIntent(R.id.w_chip_gamechip, if (on) gamePI(context) else openApp)
-            v.setContentDescription(R.id.w_chip_gamechip, context.getString(R.string.row_game_title))
+            if (kind != Kind.CONTROLS) battery(context, v, p, state, kind)
+            if (kind != Kind.BATTERY && !list) controls(context, v, p, state, kind, id)
             return v
         }
 
-        private fun levelLabel(state: WidgetStateStore.State) = when {
-            state.lowIsActive() -> R.string.widget_anc_low
-            state.highIsActive() -> R.string.widget_anc_high
-            else -> R.string.widget_anc_med
+        /** Battery panel colour: `card` lightened ~4% toward `text` (WIDGETS.md 2). */
+        private fun panelColor(p: Palette) = Palette.blend(p.card, p.text, 0.04f)
+
+        /** Selected: accent fill and stroke. Otherwise the panel colour with an `outline` stroke. */
+        private fun paint(v: RemoteViews, b: Btn, p: Palette, selected: Boolean, large: Boolean) {
+            v.setImageViewResource(b.bg, if (large) R.drawable.widget_panel_l else R.drawable.widget_panel)
+            v.setInt(b.bg, "setColorFilter", if (selected) p.accent else panelColor(p))
+            v.setImageViewResource(b.stroke, if (large) R.drawable.widget_panel_stroke_l else R.drawable.widget_panel_stroke)
+            v.setInt(b.stroke, "setColorFilter", if (selected) p.accent else p.outline)
         }
 
-        /** The strength the bar's ANC step applies: the last one the home screen saw, Medium otherwise. */
-        private fun lastLevel(context: Context) =
-            when (context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getString("homeAncLevel", null)) {
-                "ANC-Light" -> "low"
-                "ANC-Deep" -> "high"
-                else -> "med"
+        /** Paints [b] with [icon] and [text] in the on-accent or secondary colour. */
+        private fun content(v: RemoteViews, b: Btn, p: Palette, selected: Boolean, icon: Int, text: CharSequence?) {
+            val fg = if (selected) p.onAccent else p.textSecondary
+            v.setImageViewResource(b.icon, icon)
+            v.setInt(b.icon, "setColorFilter", fg)
+            if (text == null) v.setViewVisibility(b.label, View.GONE)
+            else {
+                v.setViewVisibility(b.label, View.VISIBLE)
+                v.setTextViewText(b.label, text)
+                v.setTextColor(b.label, fg)
             }
+        }
 
-        private fun wearLabel(context: Context, sideRes: Int, status: Int, on: Boolean): String {
-            val side = context.getString(sideRes)
-            if (!on) return side
-            val wear = when (status) {
-                3, 7 -> R.string.status_in_ear
-                4, 0 -> R.string.status_in_case
-                -1 -> return side
-                else -> R.string.status_out
+        private fun disconnected(context: Context, p: Palette, kind: Kind): RemoteViews {
+            val v = RemoteViews(context.packageName, R.layout.widget_disconnected)
+            v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
+            v.setInt(R.id.w_bg, "setColorFilter", p.card)
+            paint(v, CONN, p, false, kind.large)
+            content(v, CONN, p, false, R.drawable.ic_status_dot_empty, context.getString(R.string.conn_action_connect))
+            v.setContentDescription(CONN.root, context.getString(R.string.conn_off) + ". " + context.getString(R.string.conn_action_connect))
+            v.setOnClickPendingIntent(CONN.root, connectPI(context))
+            return v
+        }
+
+        private fun battery(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind) {
+            val ringDp = when (kind) { Kind.BATTERY -> 56f; Kind.LARGE -> 50f; else -> 42f }
+            val levels = intArrayOf(state.leftBattery, state.caseBattery, state.rightBattery)
+            val statuses = intArrayOf(state.leftStatus, -1, state.rightStatus)
+            val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
+            // The 2x2 battery shows the case as a bar under the two bud panels.
+            val slots = if (kind == Kind.BATTERY) listOf(0, 2) else listOf(0, 1, 2)
+            for (slot in slots) {
+                val (bgId, ringId, pct, label) = PANELS[slot].toList()
+                v.setImageViewResource(bgId, if (kind.large) R.drawable.widget_panel_l else R.drawable.widget_panel)
+                v.setInt(bgId, "setColorFilter", panelColor(p))
+                v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp))
+                pctText(v, pct, p, levels[slot])
+                val inEar = statuses[slot] == 3 || statuses[slot] == 7
+                val text = if (slot == 1) context.getString(names[slot]) else wearLabel(context, statuses[slot]) ?: context.getString(names[slot])
+                v.setTextViewText(label, if (inEar) semibold(text) else text)
+                v.setTextColor(label, if (inEar) p.text else p.textSecondary)
             }
-            return "$side · ${context.getString(wear)}"
-        }
-
-        /** A noise-mode chip that selects [target] ("off", "low", "med", "high", "adapt", "trans"). */
-        private fun chip(
-            context: Context, v: RemoteViews, p: Palette, target: String,
-            icon: Int, label: Int, active: Boolean, on: Boolean
-        ) {
-            paintChip(context, v, p, target, icon, label, on && active, on)
-            val id = chipId(target, "")
-            v.setOnClickPendingIntent(id, if (on) ancPI(context, target, REQ.getValue(target)) else openAppPI(context))
-            if (label != 0) v.setContentDescription(id, context.getString(label))
-        }
-
-        /** Colours one chip: accent fill with on-accent content when active, background fill otherwise. */
-        private fun paintChip(
-            context: Context, v: RemoteViews, p: Palette, key: String, icon: Int, label: Int, active: Boolean, on: Boolean
-        ) {
-            val fg = when {
-                !on -> p.disabled
-                active -> p.onAccent
-                else -> p.textSecondary
+            if (kind == Kind.BATTERY) {
+                v.setInt(R.id.w_bar_bg, "setColorFilter", panelColor(p))
+                v.setInt(R.id.w_case_icon, "setColorFilter", p.text)
+                v.setImageViewBitmap(R.id.w_case_bar, bar(context, p, state.caseBattery))
+                pctText(v, R.id.w_pct_case, p, state.caseBattery)
             }
-            v.setInt(chipId(key, "_bg"), "setColorFilter", if (active) p.accent else p.background)
-            val iconId = chipId(key, "_icon")
-            if (icon != 0) {
-                v.setViewVisibility(iconId, View.VISIBLE)
-                v.setImageViewResource(iconId, icon)
-                v.setInt(iconId, "setColorFilter", fg)
-            } else v.setViewVisibility(iconId, View.GONE)
-            val labelId = chipId(key, "_label")
-            if (label != 0) {
-                v.setViewVisibility(labelId, View.VISIBLE)
-                v.setTextViewText(labelId, context.getString(label))
-                v.setTextColor(labelId, fg)
-            } else v.setViewVisibility(labelId, View.GONE)
         }
 
-        private fun chipId(key: String, suffix: String): Int = when ("$key$suffix") {
-            "off" -> R.id.w_chip_off; "off_bg" -> R.id.w_chip_off_bg; "off_icon" -> R.id.w_chip_off_icon; "off_label" -> R.id.w_chip_off_label
-            "low" -> R.id.w_chip_low; "low_bg" -> R.id.w_chip_low_bg; "low_icon" -> R.id.w_chip_low_icon; "low_label" -> R.id.w_chip_low_label
-            "med" -> R.id.w_chip_med; "med_bg" -> R.id.w_chip_med_bg; "med_icon" -> R.id.w_chip_med_icon; "med_label" -> R.id.w_chip_med_label
-            "high" -> R.id.w_chip_high; "high_bg" -> R.id.w_chip_high_bg; "high_icon" -> R.id.w_chip_high_icon; "high_label" -> R.id.w_chip_high_label
-            "adapt" -> R.id.w_chip_adapt; "adapt_bg" -> R.id.w_chip_adapt_bg; "adapt_icon" -> R.id.w_chip_adapt_icon; "adapt_label" -> R.id.w_chip_adapt_label
-            "trans" -> R.id.w_chip_trans; "trans_bg" -> R.id.w_chip_trans_bg; "trans_icon" -> R.id.w_chip_trans_icon; "trans_label" -> R.id.w_chip_trans_label
-            "cycle" -> R.id.w_chip_cycle; "cycle_bg" -> R.id.w_chip_cycle_bg; "cycle_icon" -> R.id.w_chip_cycle_icon; "cycle_label" -> R.id.w_chip_cycle_label
-            "gamechip" -> R.id.w_chip_gamechip; "gamechip_bg" -> R.id.w_chip_gamechip_bg; "gamechip_icon" -> R.id.w_chip_gamechip_icon; "gamechip_label" -> R.id.w_chip_gamechip_label
-            else -> throw IllegalArgumentException("no widget chip '$key$suffix'")
+        /** Percentage in `text`; red-accent at <= 20% like the home screen ([USER] 2026-09-26). */
+        private fun pctText(v: RemoteViews, id: Int, p: Palette, level: Int) {
+            v.setTextViewText(id, if (level in 0..100) "$level%" else "—")
+            v.setTextColor(id, if (level in 0..20) p.accent else p.text)
+        }
+
+        private fun semibold(text: String) = SpannableString(text).apply {
+            setSpan(TypefaceSpan("sans-serif-medium"), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        private fun wearLabel(context: Context, status: Int): String? = when (status) {
+            3, 7 -> context.getString(R.string.status_in_ear)
+            4, 0 -> context.getString(R.string.status_in_case)
+            -1 -> null
+            else -> context.getString(R.string.status_out)
+        }
+
+        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
+            val mode = WidgetSettings.modeOf(state.ancMode)
+            val active = mode.key != "off"
+            val name = context.getString(mode.name)
+            val opensList = WidgetSettings.tapOpensList(context)
+            paint(v, MODE, p, active, kind.large)
+            content(v, MODE, p, active, mode.icon, name)
+            v.setImageViewResource(R.id.w_mode_hint, if (opensList) R.drawable.ic_hint_list else R.drawable.ic_hint_cycle)
+            v.setInt(R.id.w_mode_hint, "setColorFilter", if (active) p.onAccent else p.textSecondary)
+            if (kind == Kind.LARGE) {
+                v.setTextViewText(R.id.w_mode_caption, context.getString(R.string.anc_section))
+                v.setTextColor(R.id.w_mode_caption, Palette.withAlpha(if (active) p.onAccent else p.textSecondary, 0.8f))
+            }
+            v.setContentDescription(MODE.root, context.getString(
+                if (opensList) R.string.widget_mode_desc_list else R.string.widget_mode_desc_cycle,
+                context.getString(R.string.anc_section), name
+            ))
+            v.setOnClickPendingIntent(MODE.root, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id))
+
+            if (!WidgetSettings.lowLatencyShown(context)) {
+                v.setViewVisibility(LL.root, View.GONE)
+                return
+            }
+            paint(v, LL, p, state.gameMode, kind.large)
+            content(v, LL, p, state.gameMode, R.drawable.ic_low_latency, context.getString(R.string.widget_low_latency))
+            v.setContentDescription(LL.root, context.getString(R.string.row_game_title))
+            v.setOnClickPendingIntent(LL.root, receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id))
+        }
+
+        /**
+         * The open mode list: 2x2 when the 2x2 controls widget has <= 4 modes, 3x2 otherwise, icons
+         * only when a 2x2 widget has 5-6 (WIDGETS.md 3.2). Tapping the current mode only closes it.
+         */
+        private fun grid(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
+            val modes = WidgetSettings.enabled(context)
+            val current = WidgetSettings.modeOf(state.ancMode)
+            val twoCols = kind == Kind.CONTROLS && modes.size <= 4
+            val labels = !(kind == Kind.CONTROLS && modes.size > 4)
+            val slots = if (twoCols) listOf(0, 1, 3, 4) else (0..5).toList()
+            if (twoCols) listOf(2, 5).forEach { v.setViewVisibility(CELLS[it].root, View.GONE) }
+            slots.forEachIndexed { i, slot ->
+                val b = CELLS[slot]
+                val mode = modes.getOrNull(i)
+                if (mode == null) { v.setViewVisibility(b.root, View.INVISIBLE); return@forEachIndexed }
+                val selected = mode.key == current.key
+                paint(v, b, p, selected, kind.large)
+                content(v, b, p, selected, mode.icon, if (labels) context.getString(mode.short) else null)
+                v.setContentDescription(b.root, context.getString(mode.name))
+                v.setOnClickPendingIntent(b.root,
+                    if (selected) receiverPI(context, WidgetActions.ACTION_LIST_CLOSE, id)
+                    else receiverPI(context, WidgetActions.ACTION_ANC_SELECT, id, mode.key))
+            }
         }
 
         /**
          * One battery ring as a bitmap: outline track, accent arc from 12 o'clock, and the glyph at
-         * its true ratio, tinted by wear (in ear = text, out / in case = secondary, offline = disabled).
-         * Small on purpose: RemoteViews bitmaps count against the host's memory limit.
+         * its true ratio, tinted by wear (BudsStatusView.wearTint). Small on purpose: RemoteViews
+         * bitmaps count against the host's memory limit.
          */
-        private fun ring(context: Context, p: Palette, level: Int, slot: Int, status: Int, on: Boolean, sizeDp: Float): Bitmap {
+        private fun ring(context: Context, p: Palette, level: Int, slot: Int, status: Int, sizeDp: Float): Bitmap {
             val px = ThemeRes.dp(context, sizeDp).coerceAtLeast(1)
             val bmp = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
             val c = Canvas(bmp)
-            val stroke = px * 0.075f
+            val stroke = px * 0.085f
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = stroke; strokeCap = Paint.Cap.ROUND }
             val box = RectF(stroke / 2, stroke / 2, px - stroke / 2, px - stroke / 2)
             paint.color = p.outline
             c.drawOval(box, paint)
-            if (on && level in 1..100) {
+            if (level in 1..100) {
                 paint.color = p.accent
                 c.drawArc(box, -90f, 360f * level / 100f, false, paint)
             }
@@ -249,13 +281,28 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 when (slot) { 0 -> R.drawable.ic_bud_left; 1 -> R.drawable.ic_case; else -> R.drawable.ic_bud_right }
             )!!.mutate()
             val ratio = if (isCase) 496f / 400f else 176f / 272f
-            // Largest boxes whose corners still clear the ring's inner edge (radius 0.425 px).
-            val boxH = px * (if (isCase) 0.48f else 0.64f)
-            val boxW = px * (if (isCase) 0.66f else 0.44f)
+            // Largest boxes whose corners still clear the ring's inner edge.
+            val boxH = px * (if (isCase) 0.46f else 0.6f)
+            val boxW = px * (if (isCase) 0.62f else 0.42f)
             val (w, h) = if (ratio < boxW / boxH) boxH * ratio to boxH else boxW to boxW / ratio
-            glyph.setTint(if (on) BudsStatusView.wearTint(p, isCase, status) else p.disabled)
+            glyph.setTint(BudsStatusView.wearTint(p, isCase, status))
             glyph.setBounds(((px - w) / 2).toInt(), ((px - h) / 2).toInt(), ((px + w) / 2).toInt(), ((px + h) / 2).toInt())
             glyph.draw(c)
+            return bmp
+        }
+
+        /** The 2x2 battery's case bar: 6dp, `outline` track, `accent` fill, round ends. */
+        private fun bar(context: Context, p: Palette, level: Int): Bitmap {
+            val w = ThemeRes.dp(context, 80f)
+            val h = ThemeRes.dp(context, 6f).coerceAtLeast(1)
+            val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            val c = Canvas(bmp)
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.outline }
+            c.drawRoundRect(RectF(0f, 0f, w.toFloat(), h.toFloat()), h / 2f, h / 2f, paint)
+            if (level in 1..100) {
+                paint.color = p.accent
+                c.drawRoundRect(RectF(0f, 0f, maxOf(h.toFloat(), w * level / 100f), h.toFloat()), h / 2f, h / 2f, paint)
+            }
             return bmp
         }
 
@@ -264,33 +311,43 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        private fun ancPI(context: Context, target: String, reqCode: Int): PendingIntent {
-            val intent = Intent(context, WidgetActionReceiver::class.java).apply {
-                action = WidgetActions.ACTION_ANC_SELECT
-                putExtra(WidgetActions.EXTRA_ANC_TARGET, target)
-            }
-            return PendingIntent.getBroadcast(context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        /**
+         * The main screen's Connect, from the widget. With the background service off the widget
+         * does not start the service ([BudsService.backgroundAllowed]), so it opens the app instead.
+         */
+        private fun connectPI(context: Context): PendingIntent {
+            if (!BudsService.backgroundAllowed(context)) return openAppPI(context)
+            val intent = Intent(context, BudsService::class.java)
+                .setAction(BudsService.ACTION_FORCE_CONNECT)
+                .putExtra(BudsService.EXTRA_WITH_AUDIO, true)
+            return PendingIntent.getForegroundService(context, 401, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
 
-        private fun gamePI(context: Context): PendingIntent {
-            val intent = Intent(context, WidgetActionReceiver::class.java).apply { action = WidgetActions.ACTION_GAME_TOGGLE }
-            return PendingIntent.getBroadcast(context, 101, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        /** A tap for [WidgetActionReceiver]. The data URI makes each (widget, action, target) its own PendingIntent. */
+        private fun receiverPI(context: Context, action: String, id: Int, target: String? = null): PendingIntent {
+            val intent = Intent(context, WidgetActionReceiver::class.java).apply {
+                this.action = action
+                data = Uri.parse("quickbuds-widget://$id/$action/${target.orEmpty()}")
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+                if (target != null) putExtra(WidgetActions.EXTRA_ANC_TARGET, target)
+            }
+            return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
 
         /**
-         * Dev Tools' widget logic check: builds every size for the current state and round-trips each
-         * through a Parcel, as the AppWidgetService does before the launcher sees it.
+         * Dev Tools' widget logic check: builds every size for the current state
+         * and round-trips each through a Parcel, as the AppWidgetService does.
          */
         fun buildWidgetRemoteViews(context: Context): String {
             val sb = StringBuilder("WIDGET REMOTEVIEWS CHECK\n\n")
             val state = WidgetStateStore.read(context)
             sb.appendLine("state: connected=${state.connected} anc=${state.ancMode} game=${state.gameMode}")
+            val mgr = AppWidgetManager.getInstance(context)
             for ((cls, kind) in providers) {
-                val placed = AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, cls)).size
+                val placed = mgr.getAppWidgetIds(ComponentName(context, cls)).size
                 val result = try {
-                    val views = build(context, state, kind)
                     val parcel = Parcel.obtain()
-                    try { views.writeToParcel(parcel, 0); "OK (${parcel.dataSize()} bytes)" } finally { parcel.recycle() }
+                    try { build(context, state, kind, 0).writeToParcel(parcel, 0); "OK (${parcel.dataSize()} bytes)" } finally { parcel.recycle() }
                 } catch (t: Throwable) {
                     "FAILED: $t\n${t.stackTraceToString()}"
                 }
@@ -301,16 +358,19 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
     }
 }
 
-/** 4x2 full widget. Keeps the original class name so widgets placed before the rebuild still work. */
-class AncWidgetProvider : QuickBudsWidget(Kind.FULL) {
+/** 3x2 combined. Keeps the original class name so widgets placed before the redesign still work. */
+class AncWidgetProvider : QuickBudsWidget(Kind.COMBINED) {
     companion object {
         fun refreshAll(context: Context) = QuickBudsWidget.refreshAll(context)
         fun buildWidgetRemoteViews(context: Context) = QuickBudsWidget.buildWidgetRemoteViews(context)
     }
 }
 
-/** 2x2 compact widget. */
-class SmallWidgetProvider : QuickBudsWidget(Kind.SMALL)
+/** 2x2 controls (was the 2x2 compact; class name kept for placed widgets). */
+class SmallWidgetProvider : QuickBudsWidget(Kind.CONTROLS)
 
-/** 4x1 bar widget. */
-class StripWidgetProvider : QuickBudsWidget(Kind.STRIP)
+/** 2x2 battery. */
+class BatteryWidgetProvider : QuickBudsWidget(Kind.BATTERY)
+
+/** 3x3 combined. */
+class LargeWidgetProvider : QuickBudsWidget(Kind.LARGE)

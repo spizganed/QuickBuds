@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 3x2 combined widget (AncWidgetProvider). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
+<!-- 3x3 combined widget (LargeWidgetProvider). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
      updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="180dp"
-    android:minHeight="110dp"
+    android:minHeight="180dp"
     android:minResizeWidth="180dp"
-    android:minResizeHeight="110dp"
+    android:minResizeHeight="180dp"
     android:targetCellWidth="3"
-    android:targetCellHeight="2"
+    android:targetCellHeight="3"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/widget_combined"
+    android:initialLayout="@layout/widget_large"
     android:widgetCategory="home_screen" />

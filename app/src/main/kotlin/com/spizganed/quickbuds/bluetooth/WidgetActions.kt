@@ -8,6 +8,10 @@ object WidgetActions {
     const val ACTION_TRANS      = "com.spizganed.quickbuds.action.TRANS"
     const val ACTION_OFF        = "com.spizganed.quickbuds.action.OFF"
     const val ACTION_GAME_TOGGLE = "com.spizganed.quickbuds.action.GAME_TOGGLE"
+    /** Widget mode button: next mode or open the list, per WidgetSettings.tapOpensList. */
+    const val ACTION_MODE_TAP   = "com.spizganed.quickbuds.action.MODE_TAP"
+    /** Widget mode list: close without a change (the current mode was tapped). */
+    const val ACTION_LIST_CLOSE = "com.spizganed.quickbuds.action.LIST_CLOSE"
 
     const val EXTRA_ANC_TARGET = "anc_target"
 }

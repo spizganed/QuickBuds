@@ -123,7 +123,7 @@ object LayoutReport {
         sb.appendLine()
 
         val root = try {
-            android.view.LayoutInflater.from(context).inflate(R.layout.widget_full, null)
+            android.view.LayoutInflater.from(context).inflate(R.layout.widget_combined, null)
         } catch (e: Exception) {
             sb.appendLine("!! inflate FAILED: $e")
             return sb.toString()

@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
-    <string name="widget_anc_label">ANC</string>
-    <string name="widget_small_name">QuickBuds ringkas</string>
-    <string name="widget_strip_name">QuickBuds bilah</string>
-    <string name="widget_short_low">R</string>
-    <string name="widget_short_med">S</string>
-    <string name="widget_short_high">T</string>
-    <string name="widget_game_label">Game</string>
-    <string name="widget_buds_desc">Earbud</string>
-    <string name="widget_battery_left">Ki</string>
-    <string name="widget_battery_right">Ka</string>
-    <string name="widget_battery_case">Ks</string>
-    <string name="widget_anc_off">Mati</string>
-    <string name="widget_anc_trans">Trans</string>
-    <string name="widget_anc_low">Rendah</string>
-    <string name="widget_anc_med">Sedang</string>
-    <string name="widget_anc_high">Tinggi</string>
-    <string name="widget_anc_adapt">Adaptif</string>
-    <string name="widget_game_mode_label">Mode game</string>
     <string name="action_dev_tools">Alat developer</string>
     <string name="action_settings">Pengaturan</string>
     <string name="conn_on">Terhubung</string>

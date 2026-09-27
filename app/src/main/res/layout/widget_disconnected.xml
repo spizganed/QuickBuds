@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every widget while disconnected: only the main screen's Connect chip ([USER] 2026-09-27) (design/widgets/WIDGETS.md 4). Generated layout: colours, icons and texts are set at
+     runtime by widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
+<ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_bg" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<FrameLayout android:id="@+id/w_conn" android:layout_width="wrap_content" android:layout_height="44dp" android:layout_gravity="center">
+<ImageView android:id="@+id/w_conn_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<ImageView android:id="@+id/w_conn_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="16dp" android:paddingEnd="16dp">
+<ImageView android:id="@+id/w_conn_dot" android:layout_width="10dp" android:layout_height="10dp" android:src="@drawable/ic_status_dot_empty" android:scaleType="fitCenter" android:importantForAccessibility="no" />
+<TextView android:id="@+id/w_conn_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginStart="8dp" />
+</LinearLayout>
+</FrameLayout>
+</FrameLayout>

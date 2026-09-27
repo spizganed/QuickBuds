@@ -200,7 +200,7 @@
         <receiver
             android:name=".widget.SmallWidgetProvider"
             android:exported="true"
-            android:label="@string/widget_small_name">
+            android:label="@string/widget_controls_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -210,15 +210,27 @@
         </receiver>
 
         <receiver
-            android:name=".widget.StripWidgetProvider"
+            android:name=".widget.BatteryWidgetProvider"
             android:exported="true"
-            android:label="@string/widget_strip_name">
+            android:label="@string/widget_battery_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_strip_info" />
+                android:resource="@xml/widget_battery_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.LargeWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_large_info" />
         </receiver>
 
         <receiver

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget surface, WHITE on purpose: tinted at runtime (ImageView.setColorFilter) with the active palette.
+     Radii from design/widgets/WIDGETS.md 2; the renderer swaps in the _l variants on the 3x3. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFFFF" />
+    <corners android:radius="26dp" />
+</shape>

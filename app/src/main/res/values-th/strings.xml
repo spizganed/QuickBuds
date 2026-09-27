@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
-    <string name="widget_anc_label">ANC</string>
-    <string name="widget_small_name">QuickBuds แบบย่อ</string>
-    <string name="widget_strip_name">QuickBuds แถบ</string>
-    <string name="widget_short_low">ต่ำ</string>
-    <string name="widget_short_med">กลาง</string>
-    <string name="widget_short_high">สูง</string>
-    <string name="widget_game_label">เกม</string>
-    <string name="widget_buds_desc">หูฟัง</string>
-    <string name="widget_battery_left">ซ</string>
-    <string name="widget_battery_right">ข</string>
-    <string name="widget_battery_case">ค</string>
-    <string name="widget_anc_off">ปิด</string>
-    <string name="widget_anc_trans">โปร่งใส</string>
-    <string name="widget_anc_low">ต่ำ</string>
-    <string name="widget_anc_med">กลาง</string>
-    <string name="widget_anc_high">สูง</string>
-    <string name="widget_anc_adapt">ปรับเอง</string>
-    <string name="widget_game_mode_label">โหมดเกม</string>
     <string name="action_dev_tools">เครื่องมือนักพัฒนา</string>
     <string name="action_settings">การตั้งค่า</string>
     <string name="conn_on">เชื่อมต่อแล้ว</string>

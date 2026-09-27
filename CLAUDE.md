@@ -234,7 +234,7 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 
 `OpoProtocol` builders · `AncEventParser` (buds→app names) · `LogDecoder` (SET-table log names) ·
 `BudsConnectionManager` (`sendAnc*`, `lastAncLevelSent`) · `BudsService` routing ·
-`WidgetStateStore` (state + `*IsActive()`) · `AncWidgetProvider` segments ·
+`WidgetStateStore` (state + `*IsActive()`) · `WidgetSettings.MODES` (widget modes) ·
 `WidgetActionReceiver` · `MainActivity` segments. (The Quick Settings tile was removed, [USER] 2026-09-26.)
 
 ## UI conventions and traps
@@ -380,21 +380,27 @@ listener also honours, or the neutral state would send a write) and repainted fr
 appends to a bounded in-memory tail. See the note above about not putting user-visible output on a
 packet-listener path.
 
-## Widgets (rebuilt 2026-09-26)
+## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md)
 
-Three sizes in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`): **4x2 full**
-(`AncWidgetProvider`, old class name kept so placed widgets survive; `widget_full.xml`), **2x2 compact**
-(`SmallWidgetProvider`, `widget_small.xml`) and **4x1 bar** (`StripWidgetProvider`, `widget_strip.xml`; its chip
-cycles Off -> ANC (last home level) -> Transparency). All use the ACTIVE app palette: white shapes tinted with
-`ImageView.setColorFilter` (every API level) and ring bitmaps drawn per update, so a palette change calls
-`refreshAll` (PaletteStore does). Disconnected: empty state, every tap opens the app. A new id in a widget
-layout needs its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Dev Tools'
-widget logic check builds and parcels all three.
+One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
+generated as one family (`widget_battery/controls/combined/large/list/grid/disconnected`): **2x2 battery**
+(`BatteryWidgetProvider`), **2x2 controls** (`SmallWidgetProvider`), **3x2 combined** (`AncWidgetProvider`),
+**3x3 combined** (`LargeWidgetProvider`). The old class names are kept so placed widgets survive; the 4x1 strip
+is gone. All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
+and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
+**Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
+FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs
+its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Dev Tools' widget logic check
+builds and parcels every size.
 
-**Fit ([USER] 2026-09-27, the 4x2 clipped top and bottom on his phone):** launchers give less height than
-`minHeight`, and a fixed-height stack in a `gravity="center"` column clips at both ends. In the 4x2 and 2x2 the
-rings row has weight 1 and the ring ImageView fills it with `fitCenter`, so the rings shrink instead; only the
-noise chip row is fixed. Low latency is the bolt chip (`w_chip_gamechip`) at the end of that row in every size.
+- **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
+  (default) or Open list, the ordered checked modes (min 2, same list for both), Low latency button (default on),
+  Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
+- **Mode list** is a layout swap (`widget_list`; the 3x3 swaps only `w_controls` for its included `w_grid`), never
+  an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a `goAsync` + 5 s handler closes it if the
+  stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died.
+- Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
+  corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
 
 ### Widget tap flow
 

@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Machine-drafted translation (2026-09-26); a native speaker should review it. Keys follow values/strings.xml. -->
 <resources>
-    <string name="widget_anc_label">ANC</string>
-    <string name="widget_small_name">QuickBuds thu gọn</string>
-    <string name="widget_strip_name">QuickBuds thanh ngang</string>
-    <string name="widget_short_low">Nhẹ</string>
-    <string name="widget_short_med">Vừa</string>
-    <string name="widget_short_high">Mạnh</string>
-    <string name="widget_game_label">Game</string>
-    <string name="widget_buds_desc">Tai nghe</string>
-    <string name="widget_battery_left">T</string>
-    <string name="widget_battery_right">P</string>
-    <string name="widget_battery_case">H</string>
-    <string name="widget_anc_off">Tắt</string>
-    <string name="widget_anc_trans">Xuyên âm</string>
-    <string name="widget_anc_low">Thấp</string>
-    <string name="widget_anc_med">Vừa</string>
-    <string name="widget_anc_high">Cao</string>
-    <string name="widget_anc_adapt">Thích ứng</string>
-    <string name="widget_game_mode_label">Chế độ game</string>
     <string name="action_dev_tools">Công cụ nhà phát triển</string>
     <string name="action_settings">Cài đặt</string>
     <string name="conn_on">Đã kết nối</string>
