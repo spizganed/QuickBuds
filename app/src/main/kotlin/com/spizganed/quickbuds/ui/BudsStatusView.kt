@@ -129,8 +129,7 @@ class BudsStatusView(context: Context) : View(context) {
             s.icon.setBounds((cx - iw / 2).toInt(), (cy - ih / 2).toInt(), (cx + iw / 2).toInt(), (cy + ih / 2).toInt())
             s.icon.draw(canvas)
 
-            val low = connected && s.level in 0..20
-            pctPaint.color = if (low) p.accent else p.text
+            pctPaint.color = p.text
             canvas.drawText(pctText(s.level), cx, ring + dp(30f), pctPaint)
 
             val wear = if (i == 1 || !connected) null else wearLabel(s.status)

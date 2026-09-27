@@ -93,7 +93,7 @@ No release key exists in the cloud, so the PC signing rules above can't apply th
   tile gaps 12dp. Touch targets stay >= 44dp (icon buttons, status chip).
 - Decisions ([USER] 2026-09-26): no Material Components (plain Switch/Dialog/EditText, custom rings); the
   status chip follows SPEC (accent dot when connected, grey ring + grey "Connect" when not); the battery glyphs keep
-  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the red percentage at <= 20% stays; the Dev tools
+  their traced SVG ratio inside SPEC's 42x56 / 58x42 boxes; the percentage is always `text`, never red at low levels ([USER] 2026-09-27); the Dev tools
   button toggle defaults ON.
 - **Shared components (step 2)** live in `SettingRowFactory`: `screen` (padding + system-bar insets; the app
   is edge to edge on target 35+), `title`, `sectionLabel`, `card`, `build` (row with 52dp trailing slot and an
@@ -360,8 +360,7 @@ its stable id: `batteryCard` (tile_battery), `ancRow` (tile_noise), `featureList
 fixed order. The rows inside `featureList` are ordered and hidden one by one (see Home layout above).
 
 1. `batteryCard` — `BudsStatusView`: three 90dp rings (outline track, accent arc from 12 o'clock),
-   glyphs at their SVG ratio inside 42x56 / 58x42 boxes (scaled with the ring), percentage 21sp (red at
-   <= 20%), label "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case is only the grey
+   glyphs at their SVG ratio inside 42x56 / 58x42 boxes (scaled with the ring), percentage 21sp (always `text`), label "Left · In ear" / "Out of ear" / "In case" (shrinks to fit). In case is only the grey
    glyph and the label; the SPEC's case badge was tried and removed ([USER] 2026-09-26).
    Disconnected: same size, track only, disabled glyphs, "—", bare names.
 2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =

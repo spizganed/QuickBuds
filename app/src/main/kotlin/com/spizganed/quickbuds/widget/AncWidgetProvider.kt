@@ -187,10 +187,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
         }
 
-        /** Percentage in `text`; red-accent at <= 20% like the home screen ([USER] 2026-09-26). */
+        /** Percentage, always `text`: nothing in the battery display changes colour by level ([USER] 2026-09-27). */
         private fun pctText(v: RemoteViews, id: Int, p: Palette, level: Int) {
             v.setTextViewText(id, if (level in 0..100) "$level%" else "—")
-            v.setTextColor(id, if (level in 0..20) p.accent else p.text)
+            v.setTextColor(id, p.text)
         }
 
         private fun semibold(text: String) = SpannableString(text).apply {
