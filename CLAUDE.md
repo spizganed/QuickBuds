@@ -276,7 +276,7 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 - **A `when` on UI string keys with no `else` is a silent-failure generator.** The Transparency bug
   was `"Trans"` vs `"Transparency"` and hid for weeks. Also check for a state write with no matching
   refresh call — that was a widget one-way sync.
-- **The download folders are `QuickBudsCrash/`, `QuickBudsLogs/`, `QuickBudsShot/`**, written through
+- **The download folders are `QuickBudsCrash/` and `QuickBudsLogs/`**, written through
   MediaStore. Do not write to public Downloads with a plain `File` — it is scoped-storage-blocked on
   API 29+, and the failure is silent if the result is not checked.
 
@@ -297,25 +297,15 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 
 ## Dev tools inside the app
 
-**Crash logger:** `QuickBudsApp.attachBaseContext` installs the handler before anything else runs (writes
-`Download/QuickBudsCrash/`, plus two private copies for the next-launch dialog). Dev Tools' **Crash test**
-button arms `devCrashOnLaunch`; the next launch throws once there, which proves an early crash is caught.
+Dev Tools is the live packet log (Human-Readable / Raw Hex tabs, long press copies), Clear, Export
+(`Download/QuickBudsLogs/`), Reconnect, Disconnect and Crash test. The layout report, screenshot-to-text and
+widget reports were deleted 2026-09-27 ([USER]): adb covers them (`uiautomator dump`, `screencap`, `logcat`).
+They are in git history before that date if ever needed.
 
 **Crash logger:** `QuickBudsApp.attachBaseContext` installs the handler before anything else runs (writes
 `Download/QuickBudsCrash/`, plus two private copies for the next-launch dialog). Dev Tools' **Crash test**
-button arms `devCrashOnLaunch`; the next launch throws once there, which proves an early crash is caught.
-
-`devtool/LayoutReport.kt` writes the laid-out view tree as text — bounds, weights, margins, padding,
-gravity, text sizes, and drawable intrinsic vs actual size, plus a `SIBLING GAPS` section. It exists
-because a screenshot does not show view ids or exact spacing. **If you change `collectGaps`, keep it
-to direct children of each container, measured against that container's own origin and on its own
-stacking axis** — two earlier versions broke that and produced confident nonsense. `!! OVERLAP` on
-`status_bar_* -> status_text_*` is **by design** (the battery percentage is drawn over the bar).
-
-`devtool/ScreenshotToText.kt` converts a picked screenshot into ascii / grid / colour / rows text.
-
-**Both are slated to be hidden from the UI, with the logic kept** — they may be useful again. Do not
-delete them, and do not treat "the agent cannot read images" as a constraint any more.
+button arms `devCrashOnLaunch`; the next launch throws once there, which proves an early crash is caught
+(verified on device 2026-09-27).
 
 ## Current open items
 
@@ -410,8 +400,8 @@ is gone. All use the ACTIVE palette: white shapes tinted with `ImageView.setColo
 and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
 **Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
 FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs
-its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Dev Tools' widget logic check
-builds and parcels every size.
+its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Check a widget change with
+`adb logcat` while the widget updates.
 
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
   (default) or Open list, the ordered checked modes (min 2, same list for both), Low latency button (default on),

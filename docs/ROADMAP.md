@@ -90,7 +90,6 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 ## Parked
 
-- Hide the screenshot-to-text and layout-report tools; keep the logic.
 - A build quickstart and a capture guide for contributors, only if the device file is not enough.
 - Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,
   `0x0510`): see PROTOCOL.md §12. Do not guess from a couple of samples.

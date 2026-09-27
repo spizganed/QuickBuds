@@ -56,7 +56,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 ## Tooling and release
 
 - Dev Tools screen: human-readable log, raw hex log, Mark / Clear / Export, Reconnect / Disconnect.
-- Layout-report and screenshot-to-text tools (built; to be hidden, logic kept).
+- Dev Tools trimmed to the log, Export, link controls and Crash test (2026-09-27); the layout,
+  screenshot and widget reports were deleted, adb covers them.
 - Signed release builds with a version set in one place (`app/build.gradle.kts`).
 
 ## Docs

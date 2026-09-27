@@ -31,7 +31,6 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
-import com.spizganed.quickbuds.devtool.LayoutReport
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetStateStore
@@ -557,23 +556,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // Settings › Developer › Dev tools button (default on).
         btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
                 .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
-        instance = this
-        // Capture our own geometry while we are actually laid out, and park the
-        // TEXT for Dev Tools. Doing it here (not on demand from Dev Tools) is
-        // deliberate: once the user navigates to Dev Tools this activity is paused
-        // and the tree is no longer the one on screen, which is how the first
-        // version of the report ended up always describing Dev Tools itself.
-        LayoutReport.capture(this) { text -> Companion.cacheReport(text) }
     }
 
-    override fun onPause() {
-        // Clear before onResume of the next activity can run, so the report button
-        // can never point at a stopped activity.
-        if (instance === this) instance = null
-        super.onPause()
-    }
-
-    // ==================== Th  eme ====================
+    // ==================== Theme ====================
 
     /**
      * Tints every vector glyph and restyles the header icon frames.
@@ -1147,38 +1132,5 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             val saved = prefs.getString(KEY_ROW_ORDER, null)?.split(',').orEmpty().filter { it in defaults }
             return (saved + defaults.filter { it !in saved }).distinct()
         }
-
-        /**
-         * The last report MainActivity took of ITSELF, while resumed.
-         *
-         * WHY THIS EXISTS: the Layout button lives on Dev Tools, so fetching a
-         * report on demand can never describe the main screen — by the time the
-         * button is reachable, MainActivity is paused. The first version held a
-         * reference to the Activity instead and therefore always fell back to
-         * dumping Dev Tools (visible as the "layout_devtools_" filename).
-         *
-         * So the main screen captures its own tree in onResume and parks the TEXT
-         * here. Text, not the Activity: keeping a paused Activity alive to ask it
-         * questions later is the leak this avoids.
-         */
-        @JvmStatic
-        var cachedReport: String? = null
-            private set
-
-        /** Called by MainActivity once its tree has been laid out. */
-        @JvmStatic
-        fun cacheReport(text: String) {
-            cachedReport = text
-        }
-
-        /**
-         * The currently resumed MainActivity, or null.
-         *
-         * Only used to decide whether a CACHED report is still meaningful, and as
-         * a fallback target. Cleared in onPause.
-         */
-        @JvmStatic
-        var instance: MainActivity? = null
-            private set
     }
 }
