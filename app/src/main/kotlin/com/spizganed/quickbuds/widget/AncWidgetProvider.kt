@@ -30,8 +30,8 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * The home-screen widgets (design/widgets/WIDGETS.md, 2026-09-27). One provider per size, so each
  * has its own picker entry and cell size, and the old class names keep placed widgets alive:
  *
- *  - [BatteryWidgetProvider] 2x2 battery (3.1)
- *  - [SmallWidgetProvider]   2x2 controls (3.2)
+ *  - [BatteryWidgetProvider] 2x2, starts on the battery page (3.1)
+ *  - [SmallWidgetProvider]   2x2, starts on the controls page (3.2)
  *  - [AncWidgetProvider]     3x2 combined (3.3)
  *  - [LargeWidgetProvider]   3x3 combined (3.4)
  *
@@ -39,6 +39,9 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * (every API level) and ring bitmaps drawn here. Disconnected, every size shows only the main
  * screen's Connect chip ([USER] 2026-09-27). The mode list is a layout swap, opened and closed by
  * [WidgetActionReceiver] (stamp in [WidgetSettings]); it never opens an Activity.
+ *
+ * The two 2x2 providers are one widget with two pages (battery, controls), stored per widget id
+ * and swapped by a corner button or a double tap ([WidgetSettings.doubleTapSwaps]).
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
@@ -54,7 +57,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
     }
 
     override fun onDeleted(context: Context, ids: IntArray) {
-        for (id in ids) WidgetSettings.setListOpenedAt(context, id, 0L)
+        for (id in ids) {
+            WidgetSettings.setListOpenedAt(context, id, 0L)
+            WidgetSettings.setPage(context, id, null)
+        }
     }
 
     /** A button's view ids: the tappable frame, its fill and stroke, its icon and its text. */
@@ -105,15 +111,29 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
         }
 
-        fun build(context: Context, state: WidgetStateStore.State, kind: Kind, id: Int): RemoteViews {
+        fun build(context: Context, state: WidgetStateStore.State, provider: Kind, id: Int): RemoteViews {
             val p = ThemeRes.palette(context)
-            if (!state.connected) return disconnected(context, p, kind)
+            if (!state.connected) return disconnected(context, p, provider)
 
+            val twoPages = provider == Kind.BATTERY || provider == Kind.CONTROLS
+            val kind = if (twoPages) WidgetSettings.page(context, id, provider) else provider
             val list = kind != Kind.BATTERY && WidgetSettings.listOpen(context, id)
             val v = RemoteViews(context.packageName, if (list && kind != Kind.LARGE) R.layout.widget_list else kind.layout)
             v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
-            if (WidgetSettings.openAppOnTap(context)) v.setOnClickPendingIntent(R.id.w_root, openAppPI(context))
+            // Double-tap mode: every tap on a 2x2 page carries the other page, so a second tap swaps.
+            val other = if (kind == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
+            val swap = if (twoPages && !list && WidgetSettings.doubleTapSwaps(context)) other else null
+            if (swap != null) v.setOnClickPendingIntent(R.id.w_root, receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = swap))
+            else if (WidgetSettings.openAppOnTap(context)) v.setOnClickPendingIntent(R.id.w_root, openAppPI(context))
+            if (twoPages && !list) {
+                if (swap != null) v.setViewVisibility(R.id.w_swap, View.GONE)
+                else {
+                    v.setInt(R.id.w_swap_icon, "setColorFilter", p.textSecondary)
+                    v.setContentDescription(R.id.w_swap, context.getString(R.string.widget_swap_desc))
+                    v.setOnClickPendingIntent(R.id.w_swap, receiverPI(context, WidgetActions.ACTION_PAGE_SWAP, id, swap = other))
+                }
+            }
 
             if (list) {
                 grid(context, v, p, state, kind, id)
@@ -122,7 +142,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 v.setViewVisibility(R.id.w_grid, View.VISIBLE)
             }
             if (kind != Kind.CONTROLS) battery(context, v, p, state, kind)
-            if (kind != Kind.BATTERY && !list) controls(context, v, p, state, kind, id)
+            if (kind != Kind.BATTERY && !list) controls(context, v, p, state, kind, id, swap)
             return v
         }
 
@@ -204,7 +224,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             else -> context.getString(R.string.status_out)
         }
 
-        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
+        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
             val mode = WidgetSettings.modeOf(state.ancMode)
             val active = mode.key != "off"
             val name = context.getString(mode.name)
@@ -221,7 +241,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 if (opensList) R.string.widget_mode_desc_list else R.string.widget_mode_desc_cycle,
                 context.getString(R.string.anc_section), name
             ))
-            v.setOnClickPendingIntent(MODE.root, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id))
+            v.setOnClickPendingIntent(MODE.root, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id, swap = swap))
 
             if (!WidgetSettings.lowLatencyShown(context)) {
                 v.setViewVisibility(LL.root, View.GONE)
@@ -230,7 +250,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             paint(v, LL, p, state.gameMode, kind.large)
             content(v, LL, p, state.gameMode, R.drawable.ic_low_latency, context.getString(R.string.widget_low_latency))
             v.setContentDescription(LL.root, context.getString(R.string.row_game_title))
-            v.setOnClickPendingIntent(LL.root, receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id))
+            v.setOnClickPendingIntent(LL.root, receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap))
         }
 
         /**
@@ -323,13 +343,17 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             return PendingIntent.getForegroundService(context, 401, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
 
-        /** A tap for [WidgetActionReceiver]. The data URI makes each (widget, action, target) its own PendingIntent. */
-        private fun receiverPI(context: Context, action: String, id: Int, target: String? = null): PendingIntent {
+        /**
+         * A tap for [WidgetActionReceiver]. The data URI makes each (widget, action, target) its own
+         * PendingIntent. [swap] is the 2x2 page to switch to ([WidgetActions.EXTRA_PAGE]).
+         */
+        private fun receiverPI(context: Context, action: String, id: Int, target: String? = null, swap: Kind? = null): PendingIntent {
             val intent = Intent(context, WidgetActionReceiver::class.java).apply {
                 this.action = action
                 data = Uri.parse("quickbuds-widget://$id/$action/${target.orEmpty()}")
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
                 if (target != null) putExtra(WidgetActions.EXTRA_ANC_TARGET, target)
+                if (swap != null) putExtra(WidgetActions.EXTRA_PAGE, swap.name)
             }
             return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }

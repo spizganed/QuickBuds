@@ -64,6 +64,19 @@ class WidgetSettingsActivity : Activity() {
         root.addView(modesCard)
         root.addView(hint(R.string.widget_modes_hint))
 
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_pages_title))
+        root.addView(AncSegmentedView(
+            this, listOf(getString(R.string.widget_pages_button), getString(R.string.widget_pages_double)),
+            listOf(R.drawable.ic_swap_page, R.drawable.ic_tap_double)
+        ).apply {
+            selected = if (WidgetSettings.doubleTapSwaps(this@WidgetSettingsActivity)) 1 else 0
+            onSegmentTapped = { i ->
+                selected = i
+                WidgetSettings.setDoubleTapSwaps(this@WidgetSettingsActivity, i == 1)
+            }
+        })
+        root.addView(hint(R.string.widget_pages_hint))
+
         root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_section))
         root.addView(SettingRowFactory.card(this).apply {
             SettingRowFactory.addRow(this, toggle(R.drawable.ic_low_latency, R.string.widget_ll_title, R.string.widget_ll_sub,

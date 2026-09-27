@@ -25,10 +25,13 @@
 </LinearLayout>
 <FrameLayout android:id="@+id/w_bar" android:layout_width="match_parent" android:layout_height="42dp" android:layout_marginTop="6dp">
 <ImageView android:id="@+id/w_bar_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
-<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="14dp" android:paddingEnd="14dp">
+<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="12dp" android:paddingEnd="12dp">
 <ImageView android:id="@+id/w_case_icon" android:layout_width="27dp" android:layout_height="22dp" android:src="@drawable/ic_case" android:scaleType="fitCenter" android:importantForAccessibility="no" />
-<ImageView android:id="@+id/w_case_bar" android:layout_width="0dp" android:layout_height="6dp" android:layout_weight="1" android:layout_marginStart="12dp" android:layout_marginEnd="12dp" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<ImageView android:id="@+id/w_case_bar" android:layout_width="0dp" android:layout_height="6dp" android:layout_weight="1" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <TextView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
+<FrameLayout android:id="@+id/w_swap" android:layout_width="28dp" android:layout_height="match_parent" android:layout_marginEnd="-8dp">
+<ImageView android:id="@+id/w_swap_icon" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:src="@drawable/ic_swap_page" android:importantForAccessibility="no" />
+</FrameLayout>
 </LinearLayout>
 </FrameLayout>
 </LinearLayout>

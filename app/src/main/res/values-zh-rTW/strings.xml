@@ -260,4 +260,10 @@
     <string name="widget_large_name">QuickBuds 大型</string>
     <string name="settings_language_title">語言</string>
     <string name="settings_language_sub">應用程式語言</string>
+    <string name="widget_pages_title">切換 2x2 頁面</string>
+    <string name="widget_pages_button">切換按鈕</string>
+    <string name="widget_pages_double">點兩下</string>
+    <string name="widget_pages_hint">2x2 小工具有兩個頁面：電量和降噪控制。選擇點兩下後，每次單擊都會等待約 0.4 秒，看是否有第二次點按。</string>
+    <string name="widget_swap_desc">切換頁面</string>
+    <string name="language_system">跟隨系統</string>
 </resources>

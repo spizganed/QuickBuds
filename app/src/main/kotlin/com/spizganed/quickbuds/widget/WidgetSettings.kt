@@ -28,6 +28,8 @@ object WidgetSettings {
     private val DEFAULT_ON = setOf("low", "med", "high", "trans")
     const val MIN_ON = 2
     const val LIST_TIMEOUT_MS = 5_000L
+    /** How long a 2x2 tap waits for a second one in double-tap mode. */
+    const val DOUBLE_TAP_MS = 400L
 
     private const val KEY_TAP_LIST = "widgetTapList"
     private const val KEY_ORDER = "widgetModeOrder"
@@ -35,6 +37,8 @@ object WidgetSettings {
     private const val KEY_LOW_LATENCY = "widgetLowLatency"
     private const val KEY_OPEN_APP = "widgetOpenApp"
     private const val KEY_LIST_AT = "widgetListAt_"
+    private const val KEY_DOUBLE_TAP = "widgetDoubleTap"
+    private const val KEY_PAGE = "widgetPage_"
 
     private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -76,6 +80,18 @@ object WidgetSettings {
 
     fun openAppOnTap(c: Context) = prefs(c).getBoolean(KEY_OPEN_APP, false)
     fun setOpenAppOnTap(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_OPEN_APP, v) }
+
+    /** True: a double tap switches the 2x2 widget's pages. False (default): the swap button does. */
+    fun doubleTapSwaps(c: Context) = prefs(c).getBoolean(KEY_DOUBLE_TAP, false)
+    fun setDoubleTapSwaps(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_DOUBLE_TAP, v) }
+
+    /** The page 2x2 widget [id] shows, BATTERY or CONTROLS; [default] is its provider's own. */
+    fun page(c: Context, id: Int, default: QuickBudsWidget.Kind): QuickBudsWidget.Kind =
+        prefs(c).getString(KEY_PAGE + id, null)?.let { runCatching { QuickBudsWidget.Kind.valueOf(it) }.getOrNull() } ?: default
+
+    fun setPage(c: Context, id: Int, page: QuickBudsWidget.Kind?) {
+        prefs(c).edit().apply { if (page == null) remove(KEY_PAGE + id) else putString(KEY_PAGE + id, page.name) }.apply()
+    }
 
     /** When widget [id]'s list was opened, 0 when closed. */
     fun listOpenedAt(c: Context, id: Int) = prefs(c).getLong(KEY_LIST_AT + id, 0L)

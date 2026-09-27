@@ -70,6 +70,7 @@ The three widgets below replace the previous widget designs.
 - **Battery / widget background tap:** does **nothing by default**. It opens QuickBuds only when "Open app on tap" is on.
 - **Disconnected:** show the disconnected layout. Controls are disabled and do nothing.
 - Each size is its own `AppWidgetProviderInfo` with a sensible `minWidth`/`minHeight` and `targetCellWidth`/`targetCellHeight` (API 31+). The alternative is one provider with size-mapped RemoteViews on API 31+. Choose whichever matches the existing widget code, and explain the choice in the plan.
+- **2x2 pages** (2026-09-27): the two 2x2 widgets are one widget with a battery page and a controls page, stored per widget. "QuickBuds battery" starts on the battery page, "QuickBuds controls" on the controls page. A corner swap button switches them, or a double tap when that is chosen in the settings (every single tap then waits ~400 ms).
 - Every button needs a `contentDescription`. For example, the mode button reads "Noise control: ANC Medium, tap for next mode", and a list item reads "ANC High".
 
 ## 5. Widget settings screen — `w6`
@@ -79,6 +80,7 @@ This screen follows the app's settings screen style.
 - **Tapping the mode button:** a two-option segmented control, *Next mode* (↻, default) or *Open list* (grid icon).
 - **Modes:** a reorderable list of Off, ANC Low, ANC Medium, ANC High, Adaptive and Transparency. Each row has a drag handle, the mode icon, the name and a checkbox. At least 2 must stay checked (disable unchecking the last two). The **same list and order** drive both the cycle and the list.
   - Default: ANC Low, ANC Medium, ANC High and Transparency checked; Adaptive and Off unchecked.
+- **Switching 2x2 pages:** *Swap button* (default) or *Double tap*, with a note that double tap delays every single tap.
 - **Low latency button:** toggle, default on.
 - **Open app on tap:** toggle, **default off**.
 - Settings apply to all widget instances. Changing them triggers a widget update.

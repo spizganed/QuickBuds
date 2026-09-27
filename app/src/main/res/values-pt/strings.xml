@@ -258,4 +258,10 @@
     <string name="widget_large_name">QuickBuds grande</string>
     <string name="settings_language_title">Idioma</string>
     <string name="settings_language_sub">Idioma da app</string>
+    <string name="widget_pages_title">Trocar páginas 2x2</string>
+    <string name="widget_pages_button">Botão de troca</string>
+    <string name="widget_pages_double">Toque duplo</string>
+    <string name="widget_pages_hint">O widget 2x2 tem duas páginas: bateria e controlo de ruído. Com toque duplo, cada toque simples espera cerca de 0,4 s por um segundo.</string>
+    <string name="widget_swap_desc">Trocar página</string>
+    <string name="language_system">Predefinição do sistema</string>
 </resources>

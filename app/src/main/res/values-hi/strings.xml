@@ -260,4 +260,10 @@
     <string name="widget_large_name">QuickBuds बड़ा</string>
     <string name="settings_language_title">भाषा</string>
     <string name="settings_language_sub">ऐप की भाषा</string>
+    <string name="widget_pages_title">2x2 पेज बदलना</string>
+    <string name="widget_pages_button">स्वैप बटन</string>
+    <string name="widget_pages_double">डबल टैप</string>
+    <string name="widget_pages_hint">2x2 विजेट में दो पेज हैं: बैटरी और नॉइज़ कंट्रोल। डबल टैप चुनने पर हर एक टैप लगभग 0.4 सेकंड दूसरे टैप का इंतज़ार करता है।</string>
+    <string name="widget_swap_desc">पेज बदलें</string>
+    <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
 </resources>

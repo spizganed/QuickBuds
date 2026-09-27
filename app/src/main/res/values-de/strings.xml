@@ -258,4 +258,10 @@
     <string name="widget_large_name">QuickBuds groß</string>
     <string name="settings_language_title">Sprache</string>
     <string name="settings_language_sub">App-Sprache</string>
+    <string name="widget_pages_title">2x2-Seiten wechseln</string>
+    <string name="widget_pages_button">Wechseltaste</string>
+    <string name="widget_pages_double">Doppeltippen</string>
+    <string name="widget_pages_hint">Das 2x2-Widget hat zwei Seiten: Akku und Geräuschsteuerung. Mit Doppeltippen wartet jedes einfache Tippen etwa 0,4 s, ob ein zweites folgt.</string>
+    <string name="widget_swap_desc">Seite wechseln</string>
+    <string name="language_system">Systemstandard</string>
 </resources>

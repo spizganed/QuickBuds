@@ -151,6 +151,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ui.LanguageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <!--
           FileProvider for the app-update flow. The downloaded APK lives in the
           app's private cache, which the package installer cannot read directly,

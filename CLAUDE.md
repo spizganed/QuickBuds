@@ -321,8 +321,11 @@ button arms `devCrashOnLaunch`; the next launch throws once there, which proves 
   `-es`, `-it`, `-pl`, `-nl`, `-pt`, `-ro`. Machine-drafted, marked as such in each file; a native speaker should
   review. A new user-facing string needs all fourteen (lint does not stop a missing one; it falls back to English).
   `generateLocaleConfig` (build.gradle.kts + `res/resources.properties`) lists them for Android 13+'s per-app
-  language, which Settings > General > Language opens. Constant strings are `translatable="false"`. Dev Tools labels stay English-only
-  by design; the crash and permission dialogs were moved into `strings.xml`.
+  language, which Android's own per-app screen uses. Constant strings are `translatable="false"`. The language row opens
+  `LanguageActivity` (our own list, `ThemeRes.LANGUAGES`, native names): `LocaleManager` on 13+, below that an
+  `appLanguage` pref applied in `ThemeRes.select` via `Resources.updateConfiguration` (widget and notification
+  stay in the system language there). A new locale needs its line in `ThemeRes.LANGUAGES`. Dev Tools labels
+  stay English-only by design; the crash and permission dialogs were moved into `strings.xml`.
 - **`0x0500` time request / `0x0501`** — **skipped by decision** (2026-09-25): no feature depends on
   them and no OSS client answers them (PROTOCOL.md §9). Do not raise again.
 - **Undecoded families** — broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
@@ -396,7 +399,10 @@ One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBuds
 generated as one family (`widget_battery/controls/combined/large/list/grid/disconnected`): **2x2 battery**
 (`BatteryWidgetProvider`), **2x2 controls** (`SmallWidgetProvider`), **3x2 combined** (`AncWidgetProvider`),
 **3x3 combined** (`LargeWidgetProvider`). The old class names are kept so placed widgets survive; the 4x1 strip
-is gone. All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
+is gone. **The two 2x2s are one widget with two pages** (battery / controls, 2026-09-27): the page is stored per
+widget id (`widgetPage_<id>`, default = the provider's own) and swapped by the `w_swap` button (controls page: top-right corner; battery page: end of the case bar, as the corner overlapped the ring) or, with
+`widgetDoubleTap`, a double tap: every 2x2 tap then carries `EXTRA_PAGE` and the receiver waits 400 ms for a
+second one before running it (`WidgetActionReceiver.doubleTap`). All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
 and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
 **Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
 FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs

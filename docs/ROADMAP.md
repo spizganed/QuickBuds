@@ -19,13 +19,13 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Next: one 2x2 widget with two pages** (battery and wear / noise control), swapped by a small
+1. **Done 2026-09-27, awaiting his test: one 2x2 widget with two pages** (battery and wear / noise control), swapped by a small
    button in a corner or by a double tap: a widget setting "Switch pages with", swap button (default) or
    double tap. A widget only gets single taps, so double tap makes every single tap wait ~400 ms;
    say so under the option. Page stored per widget id. Both existing 2x2 providers stay so placed
    widgets survive, keeping their names: "QuickBuds battery" starts on the battery page, "QuickBuds
    controls" on the controls page.
-2. **In-app language screen.** Replace the link to Android's per-app language screen (which lists
+2. **Done 2026-09-27, awaiting his test: in-app language screen** (`LanguageActivity`). Replace the link to Android's per-app language screen (which lists
    every regional variant: Deutsch (Österreich), (Schweiz)…) with our own screen built from
    `SettingRowFactory` rows: System default, English, 简体中文, 繁體中文 and one entry per other
    language. `LocaleManager` on Android 13+, `applyOverrideConfiguration` in `ThemeRes` below that.

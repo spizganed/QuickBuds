@@ -9,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
+import com.spizganed.quickbuds.ui.MainActivity
 
 class WidgetActionReceiver : BroadcastReceiver() {
 
@@ -18,15 +19,31 @@ class WidgetActionReceiver : BroadcastReceiver() {
 
         Log.d("BudsWidget", "[RX] Action: $action")
 
+        val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        val page = intent.getStringExtra(WidgetActions.EXTRA_PAGE)
+        if (action == WidgetActions.ACTION_PAGE_SWAP) {
+            WidgetSettings.setPage(context, widgetId, page?.let { QuickBudsWidget.Kind.valueOf(it) })
+            AncWidgetProvider.refreshAll(context)
+            return
+        }
+        if (page != null) return doubleTap(context, intent, widgetId, page)
+
         val state = WidgetStateStore.read(context)
         var shortAction: String? = null
         var sendAncMode: String = state.ancMode
-        val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
 
         // A pick from a widget's mode list closes that list.
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) WidgetSettings.setListOpenedAt(context, widgetId, 0L)
 
         when (action) {
+            WidgetActions.ACTION_OPEN_APP -> {
+                if (!WidgetSettings.openAppOnTap(context)) return
+                // Still inside the widget tap's background-start window (DOUBLE_TAP_MS after it).
+                runCatching {
+                    context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                }.onFailure { Log.e("BudsWidget", "[RX] open app failed", it) }
+                return
+            }
             WidgetActions.ACTION_LIST_CLOSE -> {
                 AncWidgetProvider.refreshAll(context)
                 return
@@ -116,6 +133,31 @@ class WidgetActionReceiver : BroadcastReceiver() {
         } catch (e: Exception) {
             Log.e("BudsWidget", "[RX] startService failed", e)
         }
+    }
+
+    /**
+     * Double-tap mode on a 2x2 widget: a second tap within [WidgetSettings.DOUBLE_TAP_MS] switches
+     * to [page]; otherwise the tap runs as a plain one when the wait ends. Main thread only, like
+     * [openList]; a process death during the wait drops the tap.
+     */
+    private fun doubleTap(context: Context, intent: Intent, id: Int, page: String) {
+        pending.remove(id)?.let {
+            handler.removeCallbacks(it)
+            WidgetSettings.setPage(context, id, QuickBudsWidget.Kind.valueOf(page))
+            AncWidgetProvider.refreshAll(context)
+            return
+        }
+        val app = context.applicationContext
+        val single = Intent(intent).apply { removeExtra(WidgetActions.EXTRA_PAGE) }
+        val run = Runnable { pending.remove(id); onReceive(app, single) }
+        pending[id] = run
+        handler.postDelayed(run, WidgetSettings.DOUBLE_TAP_MS)
+    }
+
+    private companion object {
+        val handler = Handler(Looper.getMainLooper())
+        /** The tap waiting for a second one, per widget id. */
+        val pending = HashMap<Int, Runnable>()
     }
 
     /**

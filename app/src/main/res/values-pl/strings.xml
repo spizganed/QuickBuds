@@ -258,4 +258,10 @@
     <string name="widget_large_name">QuickBuds duży</string>
     <string name="settings_language_title">Język</string>
     <string name="settings_language_sub">Język aplikacji</string>
+    <string name="widget_pages_title">Przełączanie stron 2x2</string>
+    <string name="widget_pages_button">Przycisk zamiany</string>
+    <string name="widget_pages_double">Dwukrotne dotknięcie</string>
+    <string name="widget_pages_hint">Widżet 2x2 ma dwie strony: bateria i kontrola hałasu. Przy dwukrotnym dotknięciu każde pojedyncze dotknięcie czeka ok. 0,4 s na drugie.</string>
+    <string name="widget_swap_desc">Zmień stronę</string>
+    <string name="language_system">Domyślny systemu</string>
 </resources>

@@ -1,7 +1,12 @@
 package com.spizganed.quickbuds.ui
 
 import android.app.Activity
+import android.app.LocaleManager
 import android.content.Context
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Build
+import android.os.LocaleList
 import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -14,6 +19,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.spizganed.quickbuds.R
+import java.util.Locale
 import java.util.WeakHashMap
 
 /**
@@ -104,7 +110,48 @@ object ThemeRes {
     /** What each live activity was themed with, so a preset change can rebuild it. */
     private val applied = WeakHashMap<Activity, String>()
 
-    private fun signature(p: Palette) = p.id + p.tokens.contentToString()
+    // The language is part of it so a language change below Android 13 rebuilds open screens too.
+    private fun signature(context: Context, p: Palette) = p.id + p.tokens.contentToString() + language(context)
+
+    /**
+     * The in-app language screen's choices: BCP 47 tag to native name, "" = system default
+     * (LanguageActivity). One entry per values-xx folder.
+     */
+    val LANGUAGES = listOf(
+        "" to null, "en" to "English", "zh-CN" to "简体中文", "zh-TW" to "繁體中文",
+        "id" to "Bahasa Indonesia", "de" to "Deutsch", "es" to "Español", "fr" to "Français",
+        "it" to "Italiano", "nl" to "Nederlands", "pl" to "Polski", "pt" to "Português",
+        "ro" to "Română", "vi" to "Tiếng Việt", "hi" to "हिन्दी", "th" to "ไทย"
+    )
+    private const val KEY_LANGUAGE = "appLanguage"
+
+    /** The app language tag, "" for the system default. Android 13+ keeps it itself (LocaleManager). */
+    fun language(context: Context): String =
+        if (Build.VERSION.SDK_INT >= 33) context.getSystemService(LocaleManager::class.java).applicationLocales.toLanguageTags()
+        else context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_LANGUAGE, "").orEmpty()
+
+    /** Android 13+ recreates every activity itself; below that, [isStale] catches the change on resume. */
+    fun setLanguage(context: Context, tag: String) {
+        if (Build.VERSION.SDK_INT >= 33) context.getSystemService(LocaleManager::class.java).applicationLocales = LocaleList.forLanguageTags(tag)
+        else context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY_LANGUAGE, tag).apply()
+    }
+
+    /**
+     * Below Android 13: the chosen locale on this activity's resources. Not
+     * applyOverrideConfiguration (it throws here, see the class comment). ponytail: the widget and
+     * the notification keep the system language below 13; wrap QuickBudsApp's base context if
+     * that matters.
+     */
+    @Suppress("DEPRECATION")
+    private fun applyLegacyLanguage(activity: Activity) {
+        if (Build.VERSION.SDK_INT >= 33) return
+        val tag = language(activity)
+        val locale = if (tag.isEmpty()) Resources.getSystem().configuration.locales[0] else Locale.forLanguageTag(tag)
+        Locale.setDefault(locale)
+        val res = activity.resources
+        val cfg = Configuration(res.configuration).apply { setLocale(locale) }
+        res.updateConfiguration(cfg, res.displayMetrics)
+    }
 
     /**
      * Selects and applies the theme for one activity.
@@ -117,6 +164,7 @@ object ThemeRes {
      * the decor exists.
      */
     fun select(activity: Activity) {
+        applyLegacyLanguage(activity)
         val p = palette(activity)
         if (p.builtIn && PaletteStore.accentOverride(activity, p.id) == null) {
             activity.setTheme(styleFor(p.id))
@@ -131,13 +179,13 @@ object ThemeRes {
             @Suppress("DEPRECATION")
             activity.window.navigationBarColor = p.background
         }
-        applied[activity] = signature(p)
+        applied[activity] = signature(activity, p)
     }
 
     /** True when the preset changed since [activity] was themed (checked on resume). */
     fun isStale(activity: Activity): Boolean {
         val sig = applied[activity] ?: return false
-        return sig != signature(palette(activity))
+        return sig != signature(activity, palette(activity))
     }
 
     /**

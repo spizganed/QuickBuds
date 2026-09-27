@@ -55,9 +55,8 @@ class SettingsActivity : Activity() {
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
             backgroundRow(prefs)
         )
-        // Per-app language is a system screen, Android 13+ only (the list comes from localeConfig).
-        if (android.os.Build.VERSION.SDK_INT >= 33) general.add(0, link(R.drawable.ic_language, R.string.settings_language_title, R.string.settings_language_sub) {
-            startActivity(Intent(android.provider.Settings.ACTION_APP_LOCALE_SETTINGS, android.net.Uri.fromParts("package", packageName, null)))
+        general.add(0, link(R.drawable.ic_language, R.string.settings_language_title, R.string.settings_language_sub) {
+            startActivity(Intent(this, LanguageActivity::class.java))
         })
         section(R.string.settings_general, *general.toTypedArray())
         section(

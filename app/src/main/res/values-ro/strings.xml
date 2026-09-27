@@ -258,4 +258,10 @@
     <string name="widget_large_name">QuickBuds mare</string>
     <string name="settings_language_title">Limbă</string>
     <string name="settings_language_sub">Limba aplicației</string>
+    <string name="widget_pages_title">Schimbarea paginilor 2x2</string>
+    <string name="widget_pages_button">Buton de schimbare</string>
+    <string name="widget_pages_double">Atingere dublă</string>
+    <string name="widget_pages_hint">Widgetul 2x2 are două pagini: baterie și controlul zgomotului. Cu atingere dublă, fiecare atingere simplă așteaptă circa 0,4 s pentru o a doua.</string>
+    <string name="widget_swap_desc">Schimbă pagina</string>
+    <string name="language_system">Implicit sistem</string>
 </resources>
