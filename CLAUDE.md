@@ -65,7 +65,7 @@ Plain desktop Gradle.
 ## Phone sessions (Termux, reached over SSH from the PC)
 
 Since 2026-09-27 the repo is also built on the phone itself (Termux, aarch64), at
-`/storage/emulated/0/Download/claudeProjects/QuickBuds`. The repo is the same for both setups; every
+`~/projects/QuickBuds` (Termux home, moved off shared storage 2026-09-27). The repo is the same for both setups; every
 phone-specific piece lives outside it.
 
 - `pkg install openjdk-21 aapt2 android-tools`. `JAVA_HOME=$PREFIX/lib/jvm/java-21-openjdk` and
@@ -77,17 +77,14 @@ phone-specific piece lives outside it.
   an x86 aapt2 otherwise). User-level on purpose: never put it in the repo's `gradle.properties`, it
   would break the PC build.
 - `local.properties`: `sdk.dir=/data/data/com.termux/files/home/android-sdk`.
-- Run the wrapper as `sh gradlew ...` (shared storage has no exec bit; `core.filemode` is false so git
-  keeps `gradlew` at 755). SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
-- The release key is in `local/keys/` here too, so `sh gradlew assembleRelease` signs as on the PC.
+- `./gradlew` works. `core.filemode` is false (a leftover from shared storage), so git keeps
+  `gradlew` at 755 whatever the local bits are. SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
+- The release key is in `local/keys/` here too, so `./gradlew assembleRelease` signs as on the PC.
 - **Phone build tweaks, all outside the repo** (2026-09-27): `~/.gradle/init.d/quickbuds-phone.gradle.kts`
-  moves build output to `~/qb-build/` (shared storage is slow FUSE) and disables the `lintVital*` tasks;
+  moves build output to `~/qb-build/` (set up while the repo was on slow FUSE shared storage) and disables the `lintVital*` tasks;
   `~/.gradle/gradle.properties` turns on the configuration cache and raises heaps (Gradle 3g, Kotlin 2g).
   **The phone's APK is `~/qb-build/_app/outputs/apk/release/app-release.apk`**, not `app/build/...`. Timed:
-  clean build (no build cache) 147 s → 83 s; rebuild after a one-line edit 43 s → 3 s. **An edit on shared storage can keep the
-  file's old mtime** (2026-09-27: `app/build.gradle.kts` still said 15:23 after the 20:54 version bump). A same-size
-  edit (`7`→`8`, `3.2.0`→`3.3.0`) then looks unchanged to Gradle's hash cache, and the configuration cache keeps
-  building the old version. **After editing a build script, `touch` it**, and check `aapt2 dump badging`. The daemon's
+  clean build (no build cache) 147 s → 83 s; rebuild after a one-line edit 43 s → 3 s. The daemon's
   "Unable to set daemon's environment variables" warning is harmless on Termux.
 
 ## UI revision (design/SPEC.md)
