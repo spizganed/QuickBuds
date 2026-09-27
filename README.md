@@ -21,17 +21,13 @@ home-screen widget.
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/earbuds.png" width="200"> | <img src="docs/screenshots/gestures.png" width="200"> | <img src="docs/screenshots/wear.png" width="200"> | <img src="docs/screenshots/find.png" width="200"> |
 
-| Dual connection | | | |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/dual.png" width="200"> | | | |
-
 | Settings | Theme & colors | Edit preset | Home layout |
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/settings.png" width="200"> | <img src="docs/screenshots/theme.png" width="200"> | <img src="docs/screenshots/preset.png" width="200"> | <img src="docs/screenshots/home-layout.png" width="200"> |
 
-| Widget settings | App update | About |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/widget-settings.png" width="200"> | <img src="docs/screenshots/update.png" width="200"> | <img src="docs/screenshots/about.png" width="200"> |
+| Dual connection | Widget settings | App update | About |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/dual.png" width="200"> | <img src="docs/screenshots/widget-settings.png" width="200"> | <img src="docs/screenshots/update.png" width="200"> | <img src="docs/screenshots/about.png" width="200"> |
 
 ### Widgets
 
