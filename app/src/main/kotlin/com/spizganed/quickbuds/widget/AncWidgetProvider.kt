@@ -11,7 +11,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
-import android.os.Parcel
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.TypefaceSpan
@@ -60,6 +59,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         for (id in ids) {
             WidgetSettings.setListOpenedAt(context, id, 0L)
             WidgetSettings.setPage(context, id, null)
+            shownView.remove(id)
         }
     }
 
@@ -102,18 +102,35 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
         }
 
+        /** Per widget id, the layout and flipper child the host last got in a full update. */
+        private val shownView = HashMap<Int, Pair<Int, Int>>()
+
+        /**
+         * ViewFlipper.setDisplayedChild replays the fade-in even when the child is unchanged, so an
+         * update that sends it every time made every refresh flash. A full update goes out only when
+         * the layout or child changes; otherwise a partial one, which the service merges into its
+         * cached views, so the last setDisplayedChild survives a host re-inflation.
+         */
         private fun update(context: Context, mgr: AppWidgetManager, id: Int, kind: Kind) {
             // A throw here would leave the host showing "Can't load widget" with no trace.
             try {
-                mgr.updateAppWidget(id, build(context, WidgetStateStore.read(context), kind, id))
+                val (v, child) = build(context, WidgetStateStore.read(context), kind, id)
+                val shown = v.layoutId to child
+                if (shownView[id] == shown) mgr.partiallyUpdateAppWidget(id, v)
+                else {
+                    v.setDisplayedChild(R.id.w_pages, child)
+                    mgr.updateAppWidget(id, v)
+                    shownView[id] = shown
+                }
             } catch (t: Throwable) {
                 Log.e("BudsWidget", "update failed for $kind #$id", t)
             }
         }
 
-        fun build(context: Context, state: WidgetStateStore.State, provider: Kind, id: Int): RemoteViews {
+        /** The views and the flipper child to show; [update] decides whether to send the child. */
+        private fun build(context: Context, state: WidgetStateStore.State, provider: Kind, id: Int): Pair<RemoteViews, Int> {
             val p = ThemeRes.palette(context)
-            if (!state.connected) return disconnected(context, p, provider)
+            if (!state.connected) return disconnected(context, p, provider) to 0
 
             val twoPages = provider == Kind.BATTERY || provider == Kind.CONTROLS
             val kind = if (twoPages) WidgetSettings.page(context, id, provider) else provider
@@ -122,10 +139,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             // The host reapplies an update with the same layout onto the views it has, so switching
             // the flipper's child cross-fades (res/anim/widget_fade_*). The flip side: every state
             // set here must be set both ways (visibility, click), or the previous update's sticks.
-            v.setDisplayedChild(R.id.w_pages, when {
+            val child = when {
                 twoPages -> if (list) 2 else if (kind == Kind.BATTERY) 0 else 1
                 else -> if (list) 1 else 0
-            })
+            }
             v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
             // Double-tap mode: every tap on a 2x2 page carries the other page, so a second tap swaps.
@@ -141,7 +158,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             if (list) grid(context, v, p, state, kind, id)
             if (kind == Kind.LARGE || (kind != Kind.CONTROLS && !list)) battery(context, v, p, state, kind)
             if (kind != Kind.BATTERY && !list) controls(context, v, p, state, kind, id, swap)
-            return v
+            return v to child
         }
 
         /** The 2x2 swap button: at the end of the case bar on the battery page, top-right on the controls page. */
@@ -369,28 +386,6 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
             return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
-
-        /**
-         * Dev Tools' widget logic check: builds every size for the current state
-         * and round-trips each through a Parcel, as the AppWidgetService does.
-         */
-        fun buildWidgetRemoteViews(context: Context): String {
-            val sb = StringBuilder("WIDGET REMOTEVIEWS CHECK\n\n")
-            val state = WidgetStateStore.read(context)
-            sb.appendLine("state: connected=${state.connected} anc=${state.ancMode} game=${state.gameMode}")
-            val mgr = AppWidgetManager.getInstance(context)
-            for ((cls, kind) in providers) {
-                val placed = mgr.getAppWidgetIds(ComponentName(context, cls)).size
-                val result = try {
-                    val parcel = Parcel.obtain()
-                    try { build(context, state, kind, 0).writeToParcel(parcel, 0); "OK (${parcel.dataSize()} bytes)" } finally { parcel.recycle() }
-                } catch (t: Throwable) {
-                    "FAILED: $t\n${t.stackTraceToString()}"
-                }
-                sb.appendLine("$kind: placed=$placed build+parcel $result")
-            }
-            return sb.toString()
-        }
     }
 }
 
@@ -398,7 +393,6 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 class AncWidgetProvider : QuickBudsWidget(Kind.COMBINED) {
     companion object {
         fun refreshAll(context: Context) = QuickBudsWidget.refreshAll(context)
-        fun buildWidgetRemoteViews(context: Context) = QuickBudsWidget.buildWidgetRemoteViews(context)
     }
 }
 
