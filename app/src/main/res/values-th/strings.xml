@@ -258,4 +258,6 @@
     <string name="widget_battery_name">QuickBuds แบตเตอรี่</string>
     <string name="widget_controls_name">QuickBuds ควบคุม</string>
     <string name="widget_large_name">QuickBuds ใหญ่</string>
+    <string name="settings_language_title">ภาษา</string>
+    <string name="settings_language_sub">ภาษาของแอป</string>
 </resources>

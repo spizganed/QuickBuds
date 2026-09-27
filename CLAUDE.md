@@ -308,9 +308,11 @@ delete them, and do not treat "the agent cannot read images" as a constraint any
   stops the reconnect retries. `ic_case.xml` stays (the status view uses it). Case charging is only
   reported with the lid open, so it is **not shown, by decision** (PROTOCOL.md §7).
 - **Localisation** (2026-09-26, [USER]: the Asian OPPO / OnePlus markets): `values-zh-rCN`, `values-zh-rTW`,
-  `values-hi`, `values-in` (Indonesian), `values-vi`, `values-th`. Machine-drafted, marked as such in each file;
-  a native speaker should review. A new user-facing string needs all six (lint does not stop a missing one;
-  it falls back to English). Constant strings are `translatable="false"`. Dev Tools labels stay English-only
+  `values-hi`, `values-in` (Indonesian), `values-vi`, `values-th`; EU (2026-09-27, [USER]): `values-de`, `-fr`,
+  `-es`, `-it`, `-pl`, `-nl`, `-pt`, `-ro`. Machine-drafted, marked as such in each file; a native speaker should
+  review. A new user-facing string needs all fourteen (lint does not stop a missing one; it falls back to English).
+  `generateLocaleConfig` (build.gradle.kts + `res/resources.properties`) lists them for Android 13+'s per-app
+  language, which Settings > General > Language opens. Constant strings are `translatable="false"`. Dev Tools labels stay English-only
   by design; the crash and permission dialogs were moved into `strings.xml`.
 - **`0x0500` time request / `0x0501`** — **skipped by decision** (2026-09-25): no feature depends on
   them and no OSS client answers them (PROTOCOL.md §9). Do not raise again.

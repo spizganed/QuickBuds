@@ -258,4 +258,6 @@
     <string name="widget_battery_name">QuickBuds 电量</string>
     <string name="widget_controls_name">QuickBuds 控制</string>
     <string name="widget_large_name">QuickBuds 大号</string>
+    <string name="settings_language_title">语言</string>
+    <string name="settings_language_sub">应用语言</string>
 </resources>

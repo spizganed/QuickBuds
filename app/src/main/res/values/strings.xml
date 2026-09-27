@@ -113,7 +113,7 @@
     <string name="eq_close">Close</string>
     <string name="eq_save">Save</string>
     <string name="eq_delete">Delete</string>
-    <string name="eq_delete_confirm">Delete "%1$s"?</string>
+    <string name="eq_delete_confirm">Delete \"%1$s\"?</string>
     <string name="eq_add">New</string>
     <string name="eq_import">Import</string>
     <string name="eq_import_title">Paste a preset copied from QuickBuds</string>
@@ -336,4 +336,6 @@
     <string name="widget_battery_name">QuickBuds battery</string>
     <string name="widget_controls_name">QuickBuds controls</string>
     <string name="widget_large_name">QuickBuds large</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_sub">App language</string>
 </resources>

@@ -258,4 +258,6 @@
     <string name="widget_battery_name">QuickBuds baterai</string>
     <string name="widget_controls_name">QuickBuds kontrol</string>
     <string name="widget_large_name">QuickBuds besar</string>
+    <string name="settings_language_title">Bahasa</string>
+    <string name="settings_language_sub">Bahasa aplikasi</string>
 </resources>

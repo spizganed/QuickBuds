@@ -258,4 +258,6 @@
     <string name="widget_battery_name">QuickBuds बैटरी</string>
     <string name="widget_controls_name">QuickBuds कंट्रोल</string>
     <string name="widget_large_name">QuickBuds बड़ा</string>
+    <string name="settings_language_title">भाषा</string>
+    <string name="settings_language_sub">ऐप की भाषा</string>
 </resources>

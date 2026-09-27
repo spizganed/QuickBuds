@@ -63,6 +63,13 @@ android {
         buildConfig = false
     }
 
+    // Lists every values-xx folder as a supported locale, so Android 13+ offers a per-app
+    // language (Settings > Apps > QuickBuds > Language, or the app's own Settings > Language row).
+    // The default locale comes from res/resources.properties.
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

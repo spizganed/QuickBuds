@@ -258,4 +258,6 @@
     <string name="widget_battery_name">QuickBuds pin</string>
     <string name="widget_controls_name">QuickBuds điều khiển</string>
     <string name="widget_large_name">QuickBuds lớn</string>
+    <string name="settings_language_title">Ngôn ngữ</string>
+    <string name="settings_language_sub">Ngôn ngữ ứng dụng</string>
 </resources>
