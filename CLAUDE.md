@@ -320,8 +320,10 @@ button arms `devCrashOnLaunch`; the next launch throws once there, which proves 
   reported with the lid open, so it is **not shown, by decision** (PROTOCOL.md §7).
 - **Localisation** (2026-09-26, [USER]: the Asian OPPO / OnePlus markets): `values-zh-rCN`, `values-zh-rTW`,
   `values-hi`, `values-in` (Indonesian), `values-vi`, `values-th`; EU (2026-09-27, [USER]): `values-de`, `-fr`,
-  `-es`, `-it`, `-pl`, `-nl`, `-pt`, `-ro`. Machine-drafted, marked as such in each file; a native speaker should
-  review. A new user-facing string needs all fourteen (lint does not stop a missing one; it falls back to English).
+  `-es`, `-it`, `-pl`, `-nl`, `-pt`, `-ro`; more (2026-09-27, [USER] "all of them"): `values-ru`, `-uk`, `-tr`, `-ja`,
+  `-ko`, `-ms`, `-fil` (3-letter qualifier; verified on device), `-bn`, `-cs`, `-hu`, `-el`, `-sv`. Machine-drafted,
+  marked as such in each file; a native speaker should review. A new user-facing string needs all 26 (lint does not
+  stop a missing one; it falls back to English).
   `generateLocaleConfig` (build.gradle.kts + `res/resources.properties`) lists them for Android 13+'s per-app
   language, which Android's own per-app screen uses. Constant strings are `translatable="false"`. The language row opens
   `LanguageActivity` (our own list, `ThemeRes.LANGUAGES`, native names): `LocaleManager` on 13+, below that an

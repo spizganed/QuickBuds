@@ -72,6 +72,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   size, and widget taps give a haptic tick. Confirmed by him.
 - In-app language screen (`LanguageActivity`) replaces the link to Android's per-app screen. Confirmed
   by him.
+- Twelve more languages, machine-drafted: Russian, Ukrainian, Turkish, Japanese, Korean, Malay, Filipino,
+  Bengali, Czech, Hungarian, Greek, Swedish (26 in all). Checked on device: home screen strings in ru, ja,
+  fil, el, bn, and picking Čeština from the in-app list.
 
 ## Docs
 

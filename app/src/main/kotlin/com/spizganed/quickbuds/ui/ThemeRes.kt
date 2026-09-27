@@ -119,9 +119,13 @@ object ThemeRes {
      */
     val LANGUAGES = listOf(
         "" to null, "en" to "English", "zh-CN" to "简体中文", "zh-TW" to "繁體中文",
-        "id" to "Bahasa Indonesia", "de" to "Deutsch", "es" to "Español", "fr" to "Français",
-        "it" to "Italiano", "nl" to "Nederlands", "pl" to "Polski", "pt" to "Português",
-        "ro" to "Română", "vi" to "Tiếng Việt", "hi" to "हिन्दी", "th" to "ไทย"
+        "ja" to "日本語", "ko" to "한국어",
+        "id" to "Bahasa Indonesia", "ms" to "Bahasa Melayu", "cs" to "Čeština", "de" to "Deutsch",
+        "es" to "Español", "fil" to "Filipino", "fr" to "Français", "it" to "Italiano",
+        "hu" to "Magyar", "nl" to "Nederlands", "pl" to "Polski", "pt" to "Português",
+        "ro" to "Română", "sv" to "Svenska", "vi" to "Tiếng Việt", "tr" to "Türkçe",
+        "el" to "Ελληνικά", "ru" to "Русский", "uk" to "Українська",
+        "hi" to "हिन्दी", "bn" to "বাংলা", "th" to "ไทย"
     )
     private const val KEY_LANGUAGE = "appLanguage"
 

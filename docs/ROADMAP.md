@@ -19,10 +19,8 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Next: more languages** (new session) ([USER] 2026-09-27: "all of them"): Russian, Ukrainian, Turkish,
-   Japanese, Korean, Malay, Filipino, Bengali, Czech, Hungarian, Greek, Swedish. Machine-drafted like the rest,
-   each with its line in `ThemeRes.LANGUAGES`. Right-to-left ones (Arabic, Urdu, Persian) are a separate step:
-   RTL support in the manifest and a mirrored check of every screen.
+1. **Right-to-left languages** (Arabic, Urdu, Persian), when wanted: RTL support in the manifest and a
+   mirrored check of every screen.
 2. **Small items** ([USER] 2026-09-27):
    - **Dead code sweep.** lint `UnusedResources` plus a scan for Kotlin symbols nothing references;
      delete what is unused.
@@ -81,7 +79,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 - **Translations** for the Asian OPPO / OnePlus markets: Simplified and Traditional Chinese, Hindi,
   Indonesian, Vietnamese and Thai added 2026-09-26 (CLAUDE.md, Localisation). Machine-drafted: have a
-  native speaker review each one. More languages (Japanese, Malay, Filipino…) on request.
+  native speaker review each one (26 languages since 2026-09-27).
 
 ## Parked
 
