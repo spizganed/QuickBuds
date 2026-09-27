@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Transparency: dashed rings, drawn as arc segments (vectors have no dash). design/widgets/WIDGETS.md 6. White, tinted at runtime. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF" android:pathData="M9.8,12a2.2,2.2 0 1,0 4.4,0a2.2,2.2 0 1,0 -4.4,0z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.9" android:strokeLineCap="butt" android:strokeLineJoin="round" android:pathData="M12.00,6.40A5.6,5.6 0 0,1 14.14,6.83M15.96,8.04A5.6,5.6 0 0,1 17.17,9.86M17.60,12.00A5.6,5.6 0 0,1 17.17,14.14M15.96,15.96A5.6,5.6 0 0,1 14.14,17.17M12.00,17.60A5.6,5.6 0 0,1 9.86,17.17M8.04,15.96A5.6,5.6 0 0,1 6.83,14.14M6.40,12.00A5.6,5.6 0 0,1 6.83,9.86M8.04,8.04A5.6,5.6 0 0,1 9.86,6.83" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.9" android:strokeLineCap="butt" android:strokeLineJoin="round" android:pathData="M12.00,2.20A9.8,9.8 0 0,1 14.54,2.53M16.90,3.51A9.8,9.8 0 0,1 18.93,5.07M20.49,7.10A9.8,9.8 0 0,1 21.47,9.46M21.80,12.00A9.8,9.8 0 0,1 21.47,14.54M20.49,16.90A9.8,9.8 0 0,1 18.93,18.93M16.90,20.49A9.8,9.8 0 0,1 14.54,21.47M12.00,21.80A9.8,9.8 0 0,1 9.46,21.47M7.10,20.49A9.8,9.8 0 0,1 5.07,18.93M3.51,16.90A9.8,9.8 0 0,1 2.53,14.54M2.20,12.00A9.8,9.8 0 0,1 2.53,9.46M3.51,7.10A9.8,9.8 0 0,1 5.07,5.07M7.10,3.51A9.8,9.8 0 0,1 9.46,2.53" />
+</vector>
