@@ -82,7 +82,6 @@
     <string name="eq_custom">カスタム</string>
     <string name="eq_rename">名前を変更</string>
     <string name="eq_edit">プリセットを編集</string>
-    <string name="eq_close">閉じる</string>
     <string name="eq_save">保存</string>
     <string name="eq_delete">削除</string>
     <string name="eq_delete_confirm">「%1$s」を削除しますか？</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">QuickBuds からコピーしたプリセットを貼り付けてください</string>
     <string name="eq_import_confirm">インポート</string>
     <string name="eq_import_bad">QuickBuds のプリセットではありません</string>
-    <string name="eq_copy">テキストとしてコピー</string>
     <string name="eq_copied">プリセットをコピーしました</string>
     <string name="update_title">アプリの更新</string>
     <string name="update_installed">インストール済み</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">イヤホンのジェスチャー</string>
     <string name="gesture_bud_left">左</string>
     <string name="gesture_bud_right">右</string>
-    <string name="gesture_bud_desc">設定するイヤホンを選択</string>
     <string name="gesture_section_not_in_call">通話中以外</string>
     <string name="gesture_section_on_call">通話中</string>
     <string name="gesture_single">シングルタップ</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">外音</string>
     <string name="gesture_action_anc_off_short">オフ</string>
     <string name="gesture_not_set">未設定</string>
-    <string name="gesture_choose_title">操作を割り当て</string>
     <string name="gesture_done">完了</string>
     <string name="gesture_hold_rule">1 つだけ選択されています。長押ししてもモードは切り替わりません。</string>
     <string name="gesture_write_note">変更はイヤホンに送信され、確認のため読み戻されます。</string>

@@ -82,7 +82,6 @@
     <string name="eq_custom">Personalizzato</string>
     <string name="eq_rename">Rinomina</string>
     <string name="eq_edit">Modifica preset</string>
-    <string name="eq_close">Chiudi</string>
     <string name="eq_save">Salva</string>
     <string name="eq_delete">Elimina</string>
     <string name="eq_delete_confirm">Eliminare «%1$s»?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Incolla un preset copiato da QuickBuds</string>
     <string name="eq_import_confirm">Importa</string>
     <string name="eq_import_bad">Non è un preset di QuickBuds</string>
-    <string name="eq_copy">Copia come testo</string>
     <string name="eq_copied">Preset copiato</string>
     <string name="update_title">Aggiornamento app</string>
     <string name="update_installed">Installata</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gesti degli auricolari</string>
     <string name="gesture_bud_left">Sinistro</string>
     <string name="gesture_bud_right">Destro</string>
-    <string name="gesture_bud_desc">Scegli quale auricolare configurare</string>
     <string name="gesture_section_not_in_call">Fuori dalle chiamate</string>
     <string name="gesture_section_on_call">Durante una chiamata</string>
     <string name="gesture_single">Tocco singolo</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Trasp.</string>
     <string name="gesture_action_anc_off_short">Off</string>
     <string name="gesture_not_set">Non impostato</string>
-    <string name="gesture_choose_title">Assegna azione</string>
     <string name="gesture_done">Fine</string>
     <string name="gesture_hold_rule">1 opzione selezionata. Tenere premuto non cambierà modalità.</string>
     <string name="gesture_write_note">Le modifiche vengono inviate agli auricolari e poi rilette per conferma.</string>

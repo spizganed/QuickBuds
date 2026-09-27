@@ -82,7 +82,6 @@
     <string name="eq_custom">Özel</string>
     <string name="eq_rename">Yeniden adlandır</string>
     <string name="eq_edit">Ön ayarı düzenle</string>
-    <string name="eq_close">Kapat</string>
     <string name="eq_save">Kaydet</string>
     <string name="eq_delete">Sil</string>
     <string name="eq_delete_confirm">\"%1$s\" silinsin mi?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">QuickBuds\'tan kopyalanan bir ön ayarı yapıştırın</string>
     <string name="eq_import_confirm">İçe aktar</string>
     <string name="eq_import_bad">QuickBuds ön ayarı değil</string>
-    <string name="eq_copy">Metin olarak kopyala</string>
     <string name="eq_copied">Ön ayar kopyalandı</string>
     <string name="update_title">Uygulama güncellemesi</string>
     <string name="update_installed">Yüklü</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Kulaklık hareketleri</string>
     <string name="gesture_bud_left">Sol</string>
     <string name="gesture_bud_right">Sağ</string>
-    <string name="gesture_bud_desc">Ayarlanacak kulaklığı seçin</string>
     <string name="gesture_section_not_in_call">Arama dışında</string>
     <string name="gesture_section_on_call">Arama sırasında</string>
     <string name="gesture_single">Tek dokunma</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Şeff.</string>
     <string name="gesture_action_anc_off_short">Kapalı</string>
     <string name="gesture_not_set">Ayarlanmadı</string>
-    <string name="gesture_choose_title">Eylem ata</string>
     <string name="gesture_done">Bitti</string>
     <string name="gesture_hold_rule">1 seçenek seçildi. Basılı tutmak modları değiştirmeyecek.</string>
     <string name="gesture_write_note">Değişiklikler kulaklıklara gönderilir, ardından doğrulamak için geri okunur.</string>

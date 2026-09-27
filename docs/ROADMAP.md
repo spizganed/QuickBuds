@@ -20,8 +20,6 @@ Each step is done before the next one starts. The previous plan (Settings screen
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
 1. **Small items** ([USER] 2026-09-27):
-   - **Dead code sweep.** lint `UnusedResources` plus a scan for Kotlin symbols nothing references;
-     delete what is unused.
    - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment
      Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
      with a confirm), the log in a normal card with TX / RX in the accent colour.

@@ -83,11 +83,6 @@ object OpoProtocol {
     const val EVT_WEARING = 0x02              // 0x0204 subType: wearing status changed
     const val EVT_GAME_MODE = 0x05            // 0x0204 subType: game mode changed
 
-    // Legacy misnomers — 0x0105 is actually getRemoteVersion (returns firmware CSV).
-    // Kept only so the old unused EarStatusParser still compiles; do NOT call.
-    const val CMD_QUERY_EAR_STATUS = 0x0105
-    const val CMD_RESP_EAR_STATUS = 0x8105
-
     const val FEATURE_GAME_MODE = 0x06
     /** Firmware auto play/pause on wear. `04 01` / `04 00`, `[CAPTURE]` 2026-09-25. */
     const val FEATURE_AUTO_PLAY_PAUSE = 0x04
@@ -249,9 +244,6 @@ object OpoProtocol {
     fun setFeature(featureId: Int, on: Boolean): ByteArray =
         buildPacket(CMD_SET_FEATURE, payload = featurePayload(featureId, on))
 
-    fun spatialOff(): ByteArray = buildPacket(CMD_SET_SPATIAL, payload = byteArrayOf(0x00))
-    fun spatialFixed(): ByteArray = buildPacket(CMD_SET_SPATIAL, payload = byteArrayOf(0x01))
-    fun spatialHeadTracking(): ByteArray = buildPacket(CMD_SET_SPATIAL, payload = byteArrayOf(0x02))
 
     fun queryBattery(): ByteArray = buildPacket(CMD_QUERY_BATTERY, seq = 0xF0)
     fun queryAncMode(): ByteArray = buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x01, 0x01))
@@ -449,14 +441,6 @@ object OpoProtocol {
             0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D
         )
     )
-
-    fun hexToBytes(hex: String): ByteArray {
-        val clean = hex.replace(" ", "").replace("0x", "")
-        require(clean.length % 2 == 0)
-        return ByteArray(clean.length / 2) { i ->
-            clean.substring(i * 2, i * 2 + 2).toInt(16).toByte()
-        }
-    }
 
     fun bytesToHex(bytes: ByteArray): String =
         bytes.joinToString(" ") { "%02X".format(it) }

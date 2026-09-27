@@ -82,7 +82,6 @@
     <string name="eq_custom">自定义</string>
     <string name="eq_rename">重命名</string>
     <string name="eq_edit">编辑预设</string>
-    <string name="eq_close">关闭</string>
     <string name="eq_save">保存</string>
     <string name="eq_delete">删除</string>
     <string name="eq_delete_confirm">删除“%1$s”？</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">粘贴从 QuickBuds 复制的预设</string>
     <string name="eq_import_confirm">导入</string>
     <string name="eq_import_bad">不是 QuickBuds 预设</string>
-    <string name="eq_copy">复制为文本</string>
     <string name="eq_copied">已复制预设</string>
     <string name="update_title">应用更新</string>
     <string name="update_installed">已安装</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">耳机手势</string>
     <string name="gesture_bud_left">左耳</string>
     <string name="gesture_bud_right">右耳</string>
-    <string name="gesture_bud_desc">选择要设置的耳机</string>
     <string name="gesture_section_not_in_call">非通话时</string>
     <string name="gesture_section_on_call">通话时</string>
     <string name="gesture_single">单击</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">通透</string>
     <string name="gesture_action_anc_off_short">关</string>
     <string name="gesture_not_set">未设置</string>
-    <string name="gesture_choose_title">分配操作</string>
     <string name="gesture_done">完成</string>
     <string name="gesture_hold_rule">已选择 1 个选项。长按将不会切换模式。</string>
     <string name="gesture_write_note">更改会发送到耳机，然后回读确认。</string>

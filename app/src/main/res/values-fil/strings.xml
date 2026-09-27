@@ -82,7 +82,6 @@
     <string name="eq_custom">Custom</string>
     <string name="eq_rename">Palitan ang pangalan</string>
     <string name="eq_edit">I-edit ang preset</string>
-    <string name="eq_close">Isara</string>
     <string name="eq_save">I-save</string>
     <string name="eq_delete">I-delete</string>
     <string name="eq_delete_confirm">I-delete ang \"%1$s\"?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">I-paste ang preset na kinopya mula sa QuickBuds</string>
     <string name="eq_import_confirm">I-import</string>
     <string name="eq_import_bad">Hindi ito preset ng QuickBuds</string>
-    <string name="eq_copy">Kopyahin bilang text</string>
     <string name="eq_copied">Nakopya ang preset</string>
     <string name="update_title">Update ng app</string>
     <string name="update_installed">Naka-install</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Mga gesture ng earbuds</string>
     <string name="gesture_bud_left">Kaliwa</string>
     <string name="gesture_bud_right">Kanan</string>
-    <string name="gesture_bud_desc">Piliin kung aling earbud ang ise-set up</string>
     <string name="gesture_section_not_in_call">Kapag walang tawag</string>
     <string name="gesture_section_on_call">Kapag may tawag</string>
     <string name="gesture_single">Isang tap</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Trans</string>
     <string name="gesture_action_anc_off_short">Off</string>
     <string name="gesture_not_set">Hindi nakatakda</string>
-    <string name="gesture_choose_title">Magtakda ng aksyon</string>
     <string name="gesture_done">Tapos na</string>
     <string name="gesture_hold_rule">1 opsyon ang napili. Hindi magpapalit ng mode ang pagpindot nang matagal.</string>
     <string name="gesture_write_note">Ipinapadala ang mga pagbabago sa earbuds, pagkatapos ay binabasa muli para kumpirmahin.</string>

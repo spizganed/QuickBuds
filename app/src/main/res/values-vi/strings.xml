@@ -82,7 +82,6 @@
     <string name="eq_custom">Tùy chỉnh</string>
     <string name="eq_rename">Đổi tên</string>
     <string name="eq_edit">Sửa cấu hình</string>
-    <string name="eq_close">Đóng</string>
     <string name="eq_save">Lưu</string>
     <string name="eq_delete">Xóa</string>
     <string name="eq_delete_confirm">Xóa \"%1$s\"?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Dán cấu hình đã sao chép từ QuickBuds</string>
     <string name="eq_import_confirm">Nhập</string>
     <string name="eq_import_bad">Không phải cấu hình QuickBuds</string>
-    <string name="eq_copy">Sao chép dạng văn bản</string>
     <string name="eq_copied">Đã sao chép cấu hình</string>
     <string name="update_title">Cập nhật ứng dụng</string>
     <string name="update_installed">Đã cài</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Cử chỉ tai nghe</string>
     <string name="gesture_bud_left">Trái</string>
     <string name="gesture_bud_right">Phải</string>
-    <string name="gesture_bud_desc">Chọn bên tai nghe cần cài đặt</string>
     <string name="gesture_section_not_in_call">Khi không gọi điện</string>
     <string name="gesture_section_on_call">Khi đang gọi</string>
     <string name="gesture_single">Chạm một lần</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Xuyên âm</string>
     <string name="gesture_action_anc_off_short">Tắt</string>
     <string name="gesture_not_set">Chưa đặt</string>
-    <string name="gesture_choose_title">Gán thao tác</string>
     <string name="gesture_done">Xong</string>
     <string name="gesture_hold_rule">Đã chọn 1 tùy chọn. Nhấn giữ sẽ không chuyển chế độ.</string>
     <string name="gesture_write_note">Thay đổi được gửi tới tai nghe rồi đọc lại để xác nhận.</string>

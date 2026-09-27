@@ -68,9 +68,6 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
-    <!-- Kept so a stale reference lands on OLED instead of the light platform default. -->
-    <style name="Theme.App" parent="Theme.App.OLED" />
-
     <!-- Window animation for the bottom sheets (BottomSheetDialog, the EQ editor). -->
     <style name="SheetAnimation">
         <item name="android:windowEnterAnimation">@anim/sheet_in</item>

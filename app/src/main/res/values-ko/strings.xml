@@ -82,7 +82,6 @@
     <string name="eq_custom">사용자 지정</string>
     <string name="eq_rename">이름 바꾸기</string>
     <string name="eq_edit">프리셋 편집</string>
-    <string name="eq_close">닫기</string>
     <string name="eq_save">저장</string>
     <string name="eq_delete">삭제</string>
     <string name="eq_delete_confirm">\"%1$s\"을(를) 삭제할까요?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">QuickBuds에서 복사한 프리셋을 붙여넣으세요</string>
     <string name="eq_import_confirm">가져오기</string>
     <string name="eq_import_bad">QuickBuds 프리셋이 아닙니다</string>
-    <string name="eq_copy">텍스트로 복사</string>
     <string name="eq_copied">프리셋을 복사했습니다</string>
     <string name="update_title">앱 업데이트</string>
     <string name="update_installed">설치됨</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">이어버드 제스처</string>
     <string name="gesture_bud_left">왼쪽</string>
     <string name="gesture_bud_right">오른쪽</string>
-    <string name="gesture_bud_desc">설정할 이어버드 선택</string>
     <string name="gesture_section_not_in_call">통화 중이 아닐 때</string>
     <string name="gesture_section_on_call">통화 중일 때</string>
     <string name="gesture_single">한 번 탭</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">주변음</string>
     <string name="gesture_action_anc_off_short">끄기</string>
     <string name="gesture_not_set">설정 안 됨</string>
-    <string name="gesture_choose_title">동작 지정</string>
     <string name="gesture_done">완료</string>
     <string name="gesture_hold_rule">1개만 선택했습니다. 길게 눌러도 모드가 바뀌지 않습니다.</string>
     <string name="gesture_write_note">변경 사항은 이어버드로 전송된 뒤 확인을 위해 다시 읽어옵니다.</string>

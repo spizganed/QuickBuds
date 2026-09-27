@@ -82,7 +82,6 @@
     <string name="eq_custom">Свои</string>
     <string name="eq_rename">Переименовать</string>
     <string name="eq_edit">Изменить пресет</string>
-    <string name="eq_close">Закрыть</string>
     <string name="eq_save">Сохранить</string>
     <string name="eq_delete">Удалить</string>
     <string name="eq_delete_confirm">Удалить «%1$s»?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Вставьте пресет, скопированный из QuickBuds</string>
     <string name="eq_import_confirm">Импорт</string>
     <string name="eq_import_bad">Это не пресет QuickBuds</string>
-    <string name="eq_copy">Копировать как текст</string>
     <string name="eq_copied">Пресет скопирован</string>
     <string name="update_title">Обновление приложения</string>
     <string name="update_installed">Установлена</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Жесты наушников</string>
     <string name="gesture_bud_left">Левый</string>
     <string name="gesture_bud_right">Правый</string>
-    <string name="gesture_bud_desc">Выберите наушник для настройки</string>
     <string name="gesture_section_not_in_call">Вне звонка</string>
     <string name="gesture_section_on_call">Во время звонка</string>
     <string name="gesture_single">Одно касание</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Прозр.</string>
     <string name="gesture_action_anc_off_short">Выкл.</string>
     <string name="gesture_not_set">Не задано</string>
-    <string name="gesture_choose_title">Назначить действие</string>
     <string name="gesture_done">Готово</string>
     <string name="gesture_hold_rule">Выбран 1 вариант. Удержание не будет переключать режимы.</string>
     <string name="gesture_write_note">Изменения отправляются на наушники и считываются обратно для проверки.</string>

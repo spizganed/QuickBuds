@@ -82,7 +82,6 @@
     <string name="eq_custom">Własne</string>
     <string name="eq_rename">Zmień nazwę</string>
     <string name="eq_edit">Edytuj preset</string>
-    <string name="eq_close">Zamknij</string>
     <string name="eq_save">Zapisz</string>
     <string name="eq_delete">Usuń</string>
     <string name="eq_delete_confirm">Usunąć „%1$s”?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Wklej preset skopiowany z QuickBuds</string>
     <string name="eq_import_confirm">Importuj</string>
     <string name="eq_import_bad">To nie jest preset QuickBuds</string>
-    <string name="eq_copy">Kopiuj jako tekst</string>
     <string name="eq_copied">Skopiowano preset</string>
     <string name="update_title">Aktualizacja aplikacji</string>
     <string name="update_installed">Zainstalowana</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gesty słuchawek</string>
     <string name="gesture_bud_left">Lewa</string>
     <string name="gesture_bud_right">Prawa</string>
-    <string name="gesture_bud_desc">Wybierz słuchawkę do skonfigurowania</string>
     <string name="gesture_section_not_in_call">Poza połączeniem</string>
     <string name="gesture_section_on_call">Podczas połączenia</string>
     <string name="gesture_single">Jedno dotknięcie</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Przezr.</string>
     <string name="gesture_action_anc_off_short">Wył.</string>
     <string name="gesture_not_set">Nie ustawiono</string>
-    <string name="gesture_choose_title">Przypisz akcję</string>
     <string name="gesture_done">Gotowe</string>
     <string name="gesture_hold_rule">Wybrano 1 opcję. Dotknięcie i przytrzymanie nie będzie przełączać trybów.</string>
     <string name="gesture_write_note">Zmiany są wysyłane do słuchawek, a potem odczytywane ponownie w celu potwierdzenia.</string>

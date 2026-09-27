@@ -82,7 +82,6 @@
     <string name="eq_custom">कस्टम</string>
     <string name="eq_rename">नाम बदलें</string>
     <string name="eq_edit">प्रीसेट संपादित करें</string>
-    <string name="eq_close">बंद करें</string>
     <string name="eq_save">सहेजें</string>
     <string name="eq_delete">हटाएं</string>
     <string name="eq_delete_confirm">\"%1$s\" हटाएं?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">QuickBuds से कॉपी किया प्रीसेट पेस्ट करें</string>
     <string name="eq_import_confirm">इम्पोर्ट</string>
     <string name="eq_import_bad">यह QuickBuds प्रीसेट नहीं है</string>
-    <string name="eq_copy">टेक्स्ट के रूप में कॉपी करें</string>
     <string name="eq_copied">प्रीसेट कॉपी हुआ</string>
     <string name="update_title">ऐप अपडेट</string>
     <string name="update_installed">इंस्टॉल</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">ईयरबड जेस्चर</string>
     <string name="gesture_bud_left">बायां</string>
     <string name="gesture_bud_right">दायां</string>
-    <string name="gesture_bud_desc">सेट करने के लिए ईयरबड चुनें</string>
     <string name="gesture_section_not_in_call">कॉल पर न होने पर</string>
     <string name="gesture_section_on_call">कॉल के दौरान</string>
     <string name="gesture_single">सिंगल टैप</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">पारदर्शी</string>
     <string name="gesture_action_anc_off_short">बंद</string>
     <string name="gesture_not_set">सेट नहीं</string>
-    <string name="gesture_choose_title">क्रिया चुनें</string>
     <string name="gesture_done">हो गया</string>
     <string name="gesture_hold_rule">1 विकल्प चुना गया। दबाए रखने पर मोड नहीं बदलेगा।</string>
     <string name="gesture_write_note">बदलाव ईयरबड्स को भेजे जाते हैं, फिर पुष्टि के लिए वापस पढ़े जाते हैं।</string>

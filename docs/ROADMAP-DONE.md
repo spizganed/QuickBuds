@@ -77,6 +77,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   fil, el, bn, and picking Čeština from the in-app list.
 - One font everywhere: the theme and the widget text set `sans-serif`, the family every code-set
   typeface already used (the OEM font had leaked into theme-styled text).
+- Dead code sweep: lint `UnusedResources` (27 colours, dimens and strings in every locale, the unused
+  launcher background drawable, the `Theme.App` alias) and unreferenced Kotlin (`EarStatusParser`, the
+  widget state helpers, the `0x0422` spatial builders, `sendAncOn`, `hexToBytes`).
 
 ## Docs
 

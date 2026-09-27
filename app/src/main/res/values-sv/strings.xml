@@ -82,7 +82,6 @@
     <string name="eq_custom">Anpassade</string>
     <string name="eq_rename">Byt namn</string>
     <string name="eq_edit">Redigera förinställning</string>
-    <string name="eq_close">Stäng</string>
     <string name="eq_save">Spara</string>
     <string name="eq_delete">Ta bort</string>
     <string name="eq_delete_confirm">Ta bort ”%1$s”?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Klistra in en förinställning som kopierats från QuickBuds</string>
     <string name="eq_import_confirm">Importera</string>
     <string name="eq_import_bad">Inte en förinställning från QuickBuds</string>
-    <string name="eq_copy">Kopiera som text</string>
     <string name="eq_copied">Förinställningen har kopierats</string>
     <string name="update_title">Appuppdatering</string>
     <string name="update_installed">Installerad</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Hörlursgester</string>
     <string name="gesture_bud_left">Vänster</string>
     <string name="gesture_bud_right">Höger</string>
-    <string name="gesture_bud_desc">Välj vilken hörlur som ska ställas in</string>
     <string name="gesture_section_not_in_call">Utanför samtal</string>
     <string name="gesture_section_on_call">Under samtal</string>
     <string name="gesture_single">Enkeltryck</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Transp</string>
     <string name="gesture_action_anc_off_short">Av</string>
     <string name="gesture_not_set">Inte inställt</string>
-    <string name="gesture_choose_title">Tilldela åtgärd</string>
     <string name="gesture_done">Klar</string>
     <string name="gesture_hold_rule">1 alternativ har valts. Att hålla in växlar inte läge.</string>
     <string name="gesture_write_note">Ändringar skickas till hörlurarna och läses sedan tillbaka för att bekräftas.</string>

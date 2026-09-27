@@ -82,7 +82,6 @@
     <string name="eq_custom">Vlastní</string>
     <string name="eq_rename">Přejmenovat</string>
     <string name="eq_edit">Upravit předvolbu</string>
-    <string name="eq_close">Zavřít</string>
     <string name="eq_save">Uložit</string>
     <string name="eq_delete">Smazat</string>
     <string name="eq_delete_confirm">Smazat „%1$s“?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Vložte předvolbu zkopírovanou z QuickBuds</string>
     <string name="eq_import_confirm">Importovat</string>
     <string name="eq_import_bad">Nejde o předvolbu QuickBuds</string>
-    <string name="eq_copy">Kopírovat jako text</string>
     <string name="eq_copied">Předvolba zkopírována</string>
     <string name="update_title">Aktualizace aplikace</string>
     <string name="update_installed">Nainstalováno</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gesta sluchátek</string>
     <string name="gesture_bud_left">Levé</string>
     <string name="gesture_bud_right">Pravé</string>
-    <string name="gesture_bud_desc">Vyberte, které sluchátko nastavit</string>
     <string name="gesture_section_not_in_call">Mimo hovor</string>
     <string name="gesture_section_on_call">Během hovoru</string>
     <string name="gesture_single">Jedno klepnutí</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Prop.</string>
     <string name="gesture_action_anc_off_short">Vyp.</string>
     <string name="gesture_not_set">Nenastaveno</string>
-    <string name="gesture_choose_title">Přiřadit akci</string>
     <string name="gesture_done">Hotovo</string>
     <string name="gesture_hold_rule">Vybrána 1 možnost. Podržení nebude přepínat režimy.</string>
     <string name="gesture_write_note">Změny se odešlou do sluchátek a pak se pro kontrolu načtou zpět.</string>

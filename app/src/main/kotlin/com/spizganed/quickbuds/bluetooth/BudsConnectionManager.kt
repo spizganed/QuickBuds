@@ -341,7 +341,6 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     fun sendAncOff() { lastAncLevelSent = null; sendRaw(OpoProtocol.ancOff(), "ANC Off") }
-    fun sendAncOn() { sendRaw(OpoProtocol.ancOn(), "ANC On") }
     fun sendAncTransparency() { sendRaw(OpoProtocol.ancTransparency(), "ANC Trans") }
     fun sendAncSmart() { sendRaw(OpoProtocol.ancSmart(), "ANC Smart") }
     fun sendAncDeep() { lastAncLevelSent = "ANC-Deep"; sendRaw(OpoProtocol.ancDeep(), "ANC Deep") }

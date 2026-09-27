@@ -82,7 +82,6 @@
     <string name="eq_custom">Tersuai</string>
     <string name="eq_rename">Namakan semula</string>
     <string name="eq_edit">Edit praset</string>
-    <string name="eq_close">Tutup</string>
     <string name="eq_save">Simpan</string>
     <string name="eq_delete">Padam</string>
     <string name="eq_delete_confirm">Padam \"%1$s\"?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Tampal praset yang disalin daripada QuickBuds</string>
     <string name="eq_import_confirm">Import</string>
     <string name="eq_import_bad">Bukan praset QuickBuds</string>
-    <string name="eq_copy">Salin sebagai teks</string>
     <string name="eq_copied">Praset disalin</string>
     <string name="update_title">Kemas kini aplikasi</string>
     <string name="update_installed">Dipasang</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gerak isyarat fon telinga</string>
     <string name="gesture_bud_left">Kiri</string>
     <string name="gesture_bud_right">Kanan</string>
-    <string name="gesture_bud_desc">Pilih fon telinga untuk dikonfigurasi</string>
     <string name="gesture_section_not_in_call">Semasa tiada panggilan</string>
     <string name="gesture_section_on_call">Semasa panggilan</string>
     <string name="gesture_single">Ketik sekali</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Telus</string>
     <string name="gesture_action_anc_off_short">Mati</string>
     <string name="gesture_not_set">Tidak ditetapkan</string>
-    <string name="gesture_choose_title">Tetapkan tindakan</string>
     <string name="gesture_done">Selesai</string>
     <string name="gesture_hold_rule">1 pilihan dipilih. Menyentuh dan menahan tidak akan menukar mod.</string>
     <string name="gesture_write_note">Perubahan dihantar ke fon telinga, kemudian dibaca semula untuk pengesahan.</string>

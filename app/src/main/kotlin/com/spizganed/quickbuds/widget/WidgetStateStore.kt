@@ -55,39 +55,7 @@ object WidgetStateStore {
         // timestamp of the last valid case battery report — a closed lid stops
         // these, so freshness == lid open
         var caseBatteryAt: Long = 0L
-    ) {
-        fun leftProgress(): Int = if (leftBattery in 0..100) leftBattery else 0
-        fun rightProgress(): Int = if (rightBattery in 0..100) rightBattery else 0
-        fun caseProgress(): Int = if (caseBattery in 0..100) caseBattery else 0
-
-        fun hasLeft(): Boolean = leftBattery in 0..100
-        fun hasRight(): Boolean = rightBattery in 0..100
-        fun hasCase(): Boolean = caseBattery in 0..100
-
-        fun leftText(): String = if (leftBattery in 0..100) leftBattery.toString() else ""
-        fun rightText(): String = if (rightBattery in 0..100) rightBattery.toString() else ""
-        fun caseText(): String = if (caseBattery in 0..100) caseBattery.toString() else ""
-
-        fun leftWearing(): Boolean = leftStatus == 3 || leftStatus == 7
-        fun rightWearing(): Boolean = rightStatus == 3 || rightStatus == 7
-
-        fun offIsActive(): Boolean = ancMode == "Off" || ancMode.isEmpty()
-        fun transIsActive(): Boolean = ancMode == "Transparency"
-        fun lowIsActive(): Boolean = ancMode == "ANC-Light"
-        fun medIsActive(): Boolean = ancMode == "ANC-Medium"
-        fun highIsActive(): Boolean = ancMode == "ANC-Deep"
-
-        /**
-         * Adaptive is its OWN state, not one of the three levels.
-         *
-         * The buds report it as 0x0800 and the app sets it with
-         * `OpoProtocol.ancAdaptive()`. It needs its own flag because without one the
-         * widget would light NO segment while the buds sat in Adaptive, and a widget
-         * with nothing highlighted reads as "nothing is active" — the same class of
-         * lie the store's `offIsActive()` guards against.
-         */
-        fun adaptiveIsActive(): Boolean = ancMode == "Adaptive"
-    }
+    )
 
     fun addListener(l: (State) -> Unit) { listeners.add(l) }
     fun removeListener(l: (State) -> Unit) { listeners.remove(l) }

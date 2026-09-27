@@ -82,7 +82,6 @@
     <string name="eq_custom">Personalizat</string>
     <string name="eq_rename">Redenumește</string>
     <string name="eq_edit">Editează presetarea</string>
-    <string name="eq_close">Închide</string>
     <string name="eq_save">Salvează</string>
     <string name="eq_delete">Șterge</string>
     <string name="eq_delete_confirm">Ștergi „%1$s”?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Lipește o presetare copiată din QuickBuds</string>
     <string name="eq_import_confirm">Importă</string>
     <string name="eq_import_bad">Nu este o presetare QuickBuds</string>
-    <string name="eq_copy">Copiază ca text</string>
     <string name="eq_copied">Presetare copiată</string>
     <string name="update_title">Actualizare aplicație</string>
     <string name="update_installed">Instalată</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gesturile căștilor</string>
     <string name="gesture_bud_left">Stânga</string>
     <string name="gesture_bud_right">Dreapta</string>
-    <string name="gesture_bud_desc">Alege casca pe care o configurezi</string>
     <string name="gesture_section_not_in_call">În afara apelurilor</string>
     <string name="gesture_section_on_call">În timpul unui apel</string>
     <string name="gesture_single">Atingere simplă</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Transp.</string>
     <string name="gesture_action_anc_off_short">Oprit</string>
     <string name="gesture_not_set">Nesetat</string>
-    <string name="gesture_choose_title">Atribuie acțiunea</string>
     <string name="gesture_done">Gata</string>
     <string name="gesture_hold_rule">1 opțiune selectată. Atingerea prelungită nu va schimba modurile.</string>
     <string name="gesture_write_note">Modificările sunt trimise căștilor, apoi citite din nou pentru confirmare.</string>

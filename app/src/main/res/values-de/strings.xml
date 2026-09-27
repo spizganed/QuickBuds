@@ -82,7 +82,6 @@
     <string name="eq_custom">Benutzerdefiniert</string>
     <string name="eq_rename">Umbenennen</string>
     <string name="eq_edit">Preset bearbeiten</string>
-    <string name="eq_close">Schließen</string>
     <string name="eq_save">Speichern</string>
     <string name="eq_delete">Löschen</string>
     <string name="eq_delete_confirm">„%1$s“ löschen?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Ein aus QuickBuds kopiertes Preset einfügen</string>
     <string name="eq_import_confirm">Importieren</string>
     <string name="eq_import_bad">Kein QuickBuds-Preset</string>
-    <string name="eq_copy">Als Text kopieren</string>
     <string name="eq_copied">Preset kopiert</string>
     <string name="update_title">App-Update</string>
     <string name="update_installed">Installiert</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Earbud-Gesten</string>
     <string name="gesture_bud_left">Links</string>
     <string name="gesture_bud_right">Rechts</string>
-    <string name="gesture_bud_desc">Wähle, welchen Earbud du einstellen willst</string>
     <string name="gesture_section_not_in_call">Außerhalb von Anrufen</string>
     <string name="gesture_section_on_call">Während eines Anrufs</string>
     <string name="gesture_single">Einmal tippen</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Transp.</string>
     <string name="gesture_action_anc_off_short">Aus</string>
     <string name="gesture_not_set">Nicht festgelegt</string>
-    <string name="gesture_choose_title">Aktion zuweisen</string>
     <string name="gesture_done">Fertig</string>
     <string name="gesture_hold_rule">1 Option ausgewählt. Berühren und Halten wechselt den Modus nicht.</string>
     <string name="gesture_write_note">Änderungen werden an die Earbuds gesendet und zur Bestätigung zurückgelesen.</string>

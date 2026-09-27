@@ -82,7 +82,6 @@
     <string name="eq_custom">Aangepast</string>
     <string name="eq_rename">Naam wijzigen</string>
     <string name="eq_edit">Preset bewerken</string>
-    <string name="eq_close">Sluiten</string>
     <string name="eq_save">Opslaan</string>
     <string name="eq_delete">Verwijderen</string>
     <string name="eq_delete_confirm">\"%1$s\" verwijderen?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Plak een preset die uit QuickBuds is gekopieerd</string>
     <string name="eq_import_confirm">Importeren</string>
     <string name="eq_import_bad">Geen QuickBuds-preset</string>
-    <string name="eq_copy">Kopiëren als tekst</string>
     <string name="eq_copied">Preset gekopieerd</string>
     <string name="update_title">App-update</string>
     <string name="update_installed">Geïnstalleerd</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Oordopjesgebaren</string>
     <string name="gesture_bud_left">Links</string>
     <string name="gesture_bud_right">Rechts</string>
-    <string name="gesture_bud_desc">Kies welk oordopje je wilt instellen</string>
     <string name="gesture_section_not_in_call">Buiten gesprekken</string>
     <string name="gesture_section_on_call">Tijdens een gesprek</string>
     <string name="gesture_single">Enkele tik</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Transp.</string>
     <string name="gesture_action_anc_off_short">Uit</string>
     <string name="gesture_not_set">Niet ingesteld</string>
-    <string name="gesture_choose_title">Actie toewijzen</string>
     <string name="gesture_done">Klaar</string>
     <string name="gesture_hold_rule">1 optie geselecteerd. Aanraken en vasthouden wisselt niet van modus.</string>
     <string name="gesture_write_note">Wijzigingen worden naar de oordopjes gestuurd en daarna teruggelezen ter bevestiging.</string>

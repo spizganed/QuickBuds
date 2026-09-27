@@ -82,7 +82,6 @@
     <string name="eq_custom">กำหนดเอง</string>
     <string name="eq_rename">เปลี่ยนชื่อ</string>
     <string name="eq_edit">แก้ไขพรีเซ็ต</string>
-    <string name="eq_close">ปิด</string>
     <string name="eq_save">บันทึก</string>
     <string name="eq_delete">ลบ</string>
     <string name="eq_delete_confirm">ลบ \"%1$s\" ไหม</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">วางพรีเซ็ตที่คัดลอกจาก QuickBuds</string>
     <string name="eq_import_confirm">นำเข้า</string>
     <string name="eq_import_bad">ไม่ใช่พรีเซ็ต QuickBuds</string>
-    <string name="eq_copy">คัดลอกเป็นข้อความ</string>
     <string name="eq_copied">คัดลอกพรีเซ็ตแล้ว</string>
     <string name="update_title">อัปเดตแอป</string>
     <string name="update_installed">ที่ติดตั้ง</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">ท่าทางหูฟัง</string>
     <string name="gesture_bud_left">ซ้าย</string>
     <string name="gesture_bud_right">ขวา</string>
-    <string name="gesture_bud_desc">เลือกหูฟังที่จะตั้งค่า</string>
     <string name="gesture_section_not_in_call">เมื่อไม่ได้โทร</string>
     <string name="gesture_section_on_call">ขณะโทร</string>
     <string name="gesture_single">แตะครั้งเดียว</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">โปร่งใส</string>
     <string name="gesture_action_anc_off_short">ปิด</string>
     <string name="gesture_not_set">ยังไม่ได้ตั้ง</string>
-    <string name="gesture_choose_title">กำหนดการทำงาน</string>
     <string name="gesture_done">เสร็จ</string>
     <string name="gesture_hold_rule">เลือกแล้ว 1 ตัวเลือก การกดค้างจะไม่สลับโหมด</string>
     <string name="gesture_write_note">การเปลี่ยนแปลงจะส่งไปยังหูฟัง แล้วอ่านกลับเพื่อยืนยัน</string>

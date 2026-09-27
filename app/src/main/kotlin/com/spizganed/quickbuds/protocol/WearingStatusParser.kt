@@ -19,7 +19,6 @@ package com.spizganed.quickbuds.protocol
  */
 object WearingStatusParser {
 
-    const val ST_DISCONNECTED = 0
     const val ST_IN_CASE = 4
 
     data class Result(

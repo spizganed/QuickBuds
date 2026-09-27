@@ -82,7 +82,6 @@
     <string name="eq_custom">কাস্টম</string>
     <string name="eq_rename">নাম বদলান</string>
     <string name="eq_edit">প্রিসেট সম্পাদনা</string>
-    <string name="eq_close">বন্ধ করুন</string>
     <string name="eq_save">সংরক্ষণ করুন</string>
     <string name="eq_delete">মুছুন</string>
     <string name="eq_delete_confirm">\"%1$s\" মুছবেন?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">QuickBuds থেকে কপি করা একটি প্রিসেট পেস্ট করুন</string>
     <string name="eq_import_confirm">ইমপোর্ট</string>
     <string name="eq_import_bad">এটি QuickBuds প্রিসেট নয়</string>
-    <string name="eq_copy">টেক্সট হিসেবে কপি করুন</string>
     <string name="eq_copied">প্রিসেট কপি হয়েছে</string>
     <string name="update_title">অ্যাপ আপডেট</string>
     <string name="update_installed">ইনস্টল করা</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">ইয়ারবাড জেসচার</string>
     <string name="gesture_bud_left">বাম</string>
     <string name="gesture_bud_right">ডান</string>
-    <string name="gesture_bud_desc">কোন ইয়ারবাড সেট করবেন বেছে নিন</string>
     <string name="gesture_section_not_in_call">কলে না থাকলে</string>
     <string name="gesture_section_on_call">কলে থাকলে</string>
     <string name="gesture_single">একবার ট্যাপ</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">স্বচ্ছ</string>
     <string name="gesture_action_anc_off_short">বন্ধ</string>
     <string name="gesture_not_set">সেট করা নেই</string>
-    <string name="gesture_choose_title">কাজ নির্ধারণ</string>
     <string name="gesture_done">সম্পন্ন</string>
     <string name="gesture_hold_rule">1টি বিকল্প নির্বাচিত। চেপে ধরলে মোড বদলাবে না।</string>
     <string name="gesture_write_note">পরিবর্তনগুলো ইয়ারবাডে পাঠানো হয়, তারপর নিশ্চিত করতে আবার পড়া হয়।</string>

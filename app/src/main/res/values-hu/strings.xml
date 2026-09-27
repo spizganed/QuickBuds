@@ -82,7 +82,6 @@
     <string name="eq_custom">Egyéni</string>
     <string name="eq_rename">Átnevezés</string>
     <string name="eq_edit">Előbeállítás szerkesztése</string>
-    <string name="eq_close">Bezárás</string>
     <string name="eq_save">Mentés</string>
     <string name="eq_delete">Törlés</string>
     <string name="eq_delete_confirm">Törli: „%1$s”?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Illesszen be egy QuickBudsból másolt előbeállítást</string>
     <string name="eq_import_confirm">Importálás</string>
     <string name="eq_import_bad">Nem QuickBuds-előbeállítás</string>
-    <string name="eq_copy">Másolás szövegként</string>
     <string name="eq_copied">Előbeállítás másolva</string>
     <string name="update_title">Alkalmazásfrissítés</string>
     <string name="update_installed">Telepítve</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Fülhallgató-kézmozdulatok</string>
     <string name="gesture_bud_left">Bal</string>
     <string name="gesture_bud_right">Jobb</string>
-    <string name="gesture_bud_desc">Válassza ki a beállítandó fülhallgatót</string>
     <string name="gesture_section_not_in_call">Hívás nélkül</string>
     <string name="gesture_section_on_call">Hívás közben</string>
     <string name="gesture_single">Egyszeri koppintás</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Átenged.</string>
     <string name="gesture_action_anc_off_short">Ki</string>
     <string name="gesture_not_set">Nincs beállítva</string>
-    <string name="gesture_choose_title">Művelet hozzárendelése</string>
     <string name="gesture_done">Kész</string>
     <string name="gesture_hold_rule">1 lehetőség van kiválasztva. A nyomva tartás nem vált módot.</string>
     <string name="gesture_write_note">A módosítások a fülhallgatóra kerülnek, majd ellenőrzésként visszaolvasásra.</string>

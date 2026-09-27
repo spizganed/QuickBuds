@@ -82,7 +82,6 @@
     <string name="eq_custom">Προσαρμοσμένα</string>
     <string name="eq_rename">Μετονομασία</string>
     <string name="eq_edit">Επεξεργασία προεπιλογής</string>
-    <string name="eq_close">Κλείσιμο</string>
     <string name="eq_save">Αποθήκευση</string>
     <string name="eq_delete">Διαγραφή</string>
     <string name="eq_delete_confirm">Διαγραφή του «%1$s»;</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Επικολλήστε μια προεπιλογή που αντιγράψατε από το QuickBuds</string>
     <string name="eq_import_confirm">Εισαγωγή</string>
     <string name="eq_import_bad">Δεν είναι προεπιλογή QuickBuds</string>
-    <string name="eq_copy">Αντιγραφή ως κείμενο</string>
     <string name="eq_copied">Η προεπιλογή αντιγράφηκε</string>
     <string name="update_title">Ενημέρωση εφαρμογής</string>
     <string name="update_installed">Εγκατεστημένη</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Χειρονομίες ακουστικών</string>
     <string name="gesture_bud_left">Αριστερό</string>
     <string name="gesture_bud_right">Δεξί</string>
-    <string name="gesture_bud_desc">Επιλέξτε ποιο ακουστικό θα ρυθμίσετε</string>
     <string name="gesture_section_not_in_call">Εκτός κλήσης</string>
     <string name="gesture_section_on_call">Κατά την κλήση</string>
     <string name="gesture_single">Μονό πάτημα</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Διαφ.</string>
     <string name="gesture_action_anc_off_short">Ανεν.</string>
     <string name="gesture_not_set">Δεν ορίστηκε</string>
-    <string name="gesture_choose_title">Αντιστοίχιση ενέργειας</string>
     <string name="gesture_done">Τέλος</string>
     <string name="gesture_hold_rule">Επιλέχθηκε 1 επιλογή. Το παρατεταμένο πάτημα δεν θα αλλάζει λειτουργίες.</string>
     <string name="gesture_write_note">Οι αλλαγές στέλνονται στα ακουστικά και μετά διαβάζονται ξανά για επιβεβαίωση.</string>

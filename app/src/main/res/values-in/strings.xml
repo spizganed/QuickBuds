@@ -82,7 +82,6 @@
     <string name="eq_custom">Kustom</string>
     <string name="eq_rename">Ganti nama</string>
     <string name="eq_edit">Edit preset</string>
-    <string name="eq_close">Tutup</string>
     <string name="eq_save">Simpan</string>
     <string name="eq_delete">Hapus</string>
     <string name="eq_delete_confirm">Hapus \"%1$s\"?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Tempel preset yang disalin dari QuickBuds</string>
     <string name="eq_import_confirm">Impor</string>
     <string name="eq_import_bad">Bukan preset QuickBuds</string>
-    <string name="eq_copy">Salin sebagai teks</string>
     <string name="eq_copied">Preset disalin</string>
     <string name="update_title">Pembaruan aplikasi</string>
     <string name="update_installed">Terpasang</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gestur earbud</string>
     <string name="gesture_bud_left">Kiri</string>
     <string name="gesture_bud_right">Kanan</string>
-    <string name="gesture_bud_desc">Pilih earbud yang akan diatur</string>
     <string name="gesture_section_not_in_call">Saat tidak menelepon</string>
     <string name="gesture_section_on_call">Saat menelepon</string>
     <string name="gesture_single">Ketuk sekali</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Trans</string>
     <string name="gesture_action_anc_off_short">Mati</string>
     <string name="gesture_not_set">Belum diatur</string>
-    <string name="gesture_choose_title">Tetapkan tindakan</string>
     <string name="gesture_done">Selesai</string>
     <string name="gesture_hold_rule">1 opsi dipilih. Menahan tidak akan mengganti mode.</string>
     <string name="gesture_write_note">Perubahan dikirim ke earbud, lalu dibaca ulang untuk konfirmasi.</string>

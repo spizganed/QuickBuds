@@ -82,7 +82,6 @@
     <string name="eq_custom">Personnalisé</string>
     <string name="eq_rename">Renommer</string>
     <string name="eq_edit">Modifier le préréglage</string>
-    <string name="eq_close">Fermer</string>
     <string name="eq_save">Enregistrer</string>
     <string name="eq_delete">Supprimer</string>
     <string name="eq_delete_confirm">Supprimer « %1$s » ?</string>
@@ -91,7 +90,6 @@
     <string name="eq_import_title">Collez un préréglage copié depuis QuickBuds</string>
     <string name="eq_import_confirm">Importer</string>
     <string name="eq_import_bad">Ce n\'est pas un préréglage QuickBuds</string>
-    <string name="eq_copy">Copier en texte</string>
     <string name="eq_copied">Préréglage copié</string>
     <string name="update_title">Mise à jour de l\'app</string>
     <string name="update_installed">Installée</string>
@@ -121,7 +119,6 @@
     <string name="gesture_title">Gestes des écouteurs</string>
     <string name="gesture_bud_left">Gauche</string>
     <string name="gesture_bud_right">Droite</string>
-    <string name="gesture_bud_desc">Choisissez l\'écouteur à configurer</string>
     <string name="gesture_section_not_in_call">Hors appel</string>
     <string name="gesture_section_on_call">Pendant un appel</string>
     <string name="gesture_single">Appui simple</string>
@@ -149,7 +146,6 @@
     <string name="gesture_action_anc_transparency_short">Transp.</string>
     <string name="gesture_action_anc_off_short">Désact.</string>
     <string name="gesture_not_set">Non défini</string>
-    <string name="gesture_choose_title">Attribuer une action</string>
     <string name="gesture_done">Terminé</string>
     <string name="gesture_hold_rule">1 option sélectionnée. Un appui long ne changera pas de mode.</string>
     <string name="gesture_write_note">Les modifications sont envoyées aux écouteurs, puis relues pour confirmation.</string>
