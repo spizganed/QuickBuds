@@ -60,6 +60,14 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   screenshot and widget reports were deleted, adb covers them.
 - Signed release builds with a version set in one place (`app/build.gradle.kts`).
 
+## 2026-09-27
+
+- CLAUDE.md: cloud session rules removed; test phone is on Android 16.
+- Crash handler installed in `QuickBudsApp.attachBaseContext`, before any app code; Dev Tools' Crash
+  test verified on device (report written, next-launch dialog shown).
+- Widget mode list: a pick no longer waits up to 5 s (the list close no longer holds the broadcast
+  with `goAsync`). Confirmed by him.
+
 ## Docs
 
 - Docs moved to `docs/`; only README, LICENSE and CLAUDE.md stay in root (2026-09-25).

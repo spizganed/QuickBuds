@@ -19,34 +19,23 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Cleanup.** Drop the Cloud sessions section and the cloud-only rules (`.debug` suffix, `apk/`) from
-   CLAUDE.md, and fix outdated agent memory.
-2. **Crash logger and logging tools.** Install the crash handler first thing in
-   `QuickBudsApp.attachBaseContext`, so a crash before any app logic still leaves a report (today it
-   is installed in `onCreate`, after `super.onCreate()`). Fall back to plain file I/O if MediaStore is
-   not usable yet. Add a Dev Tools "crash on next launch" switch to prove it on the device. Then check
-   that every Dev Tools logging tool still works with the new UI.
-3. **Widget mode list reacts late.** Cause: `WidgetActionReceiver.openList()` holds the broadcast with
-   `goAsync()` for the whole 5 s timeout, and Android delivers broadcasts to a manifest receiver one
-   at a time, so a pick waits for the timer. Fix: close the list with a plain delayed refresh, no
-   `goAsync`; `build()` already treats a stamp older than 5 s as closed.
-4. **In-app language screen.** Replace the link to Android's per-app language screen (which lists
+1. **Next: one 2x2 widget with two pages** (battery and wear / noise control), swapped by a small
+   button in a corner or by a double tap: a widget setting "Switch pages with", swap button (default) or
+   double tap. A widget only gets single taps, so double tap makes every single tap wait ~400 ms;
+   say so under the option. Page stored per widget id. Both existing 2x2 providers stay so placed
+   widgets survive, keeping their names: "QuickBuds battery" starts on the battery page, "QuickBuds
+   controls" on the controls page.
+2. **In-app language screen.** Replace the link to Android's per-app language screen (which lists
    every regional variant: Deutsch (Österreich), (Schweiz)…) with our own screen built from
    `SettingRowFactory` rows: System default, English, 简体中文, 繁體中文 and one entry per other
    language. `LocaleManager` on Android 13+, `applyOverrideConfiguration` in `ThemeRes` below that.
-5. **Small items** ([USER] 2026-09-27):
+3. **Small items** ([USER] 2026-09-27):
    - **Dead code sweep.** lint `UnusedResources` plus a scan for Kotlin symbols nothing references;
      delete what is unused.
    - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment
      Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
      with a confirm), the log in a normal card with TX / RX in the accent colour.
-   - **One 2x2 widget with two pages** (battery and wear / noise control), swapped by a small button
-     in a corner or by a double tap: a widget setting "Switch pages with", swap button (default) or
-     double tap. A widget only gets single taps, so double tap makes every single tap wait ~400 ms;
-     say so under the option. Page stored per widget id. Both existing 2x2 providers stay so placed
-     widgets survive, keeping their names: "QuickBuds battery" starts on the battery page, "QuickBuds
-     controls" on the controls page.
-6. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
+4. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
@@ -69,7 +58,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
    - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
-7. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
+5. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
    repo (`[USER]` 2026-09-27).
