@@ -10,7 +10,7 @@ plugins {
 }
 
 // Release signing — `[USER]` 2026-09-23, from v2.0.0. The key and its passwords live in
-// local/keys/ (git-ignored, PC-only — BACK IT UP: the in-app updater can only install over an app
+// local/keys/ (git-ignored, local-only — BACK IT UP: the in-app updater can only install over an app
 // signed with the same key). Without that file, release builds come out unsigned, as before.
 val keyProps = Properties().apply {
     val f = rootProject.file("local/keys/keystore.properties")

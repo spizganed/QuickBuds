@@ -62,6 +62,25 @@ Plain desktop Gradle.
   pairing/connect ports are reachable.
 - `local.properties` must contain `sdk.dir=...`; it is git-ignored and must not be committed.
 
+## Phone sessions (Termux, reached over SSH from the PC)
+
+Since 2026-09-27 the repo is also built on the phone itself (Termux, aarch64), at
+`/storage/emulated/0/Download/claudeProjects/QuickBuds`. The repo is the same for both setups; every
+phone-specific piece lives outside it.
+
+- `pkg install openjdk-21 aapt2 android-tools`. `JAVA_HOME=$PREFIX/lib/jvm/java-21-openjdk` and
+  `ANDROID_HOME=$HOME/android-sdk` are exported in `~/.bashrc`.
+- SDK in `~/android-sdk`: cmdline-tools **13114758** (newer ones wrap an x86 `android` binary that
+  cannot run on arm64; run `termux-fix-shebang` on its `bin/`), `platforms;android-37.0`,
+  `build-tools;37.0.0` with its x86 `aapt2` replaced by a symlink to Termux's.
+- `~/.gradle/gradle.properties` has `android.aapt2FromMavenOverride=$PREFIX/bin/aapt2` (AGP downloads
+  an x86 aapt2 otherwise). User-level on purpose: never put it in the repo's `gradle.properties`, it
+  would break the PC build.
+- `local.properties`: `sdk.dir=/data/data/com.termux/files/home/android-sdk`.
+- Run the wrapper as `sh gradlew ...` (shared storage has no exec bit; `core.filemode` is false so git
+  keeps `gradlew` at 755). SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
+- The release key is in `local/keys/` here too, so `sh gradlew assembleRelease` signs as on the PC.
+
 ## Cloud sessions (Claude Code on the web)
 
 No release key exists in the cloud, so the PC signing rules above can't apply there.
@@ -151,7 +170,7 @@ One-time setup.
 **Releases are signed** with the key in `local/keys/quickbuds-release.jks` (PKCS12, alias
 `quickbuds`, RSA 4096, valid 100 years), created 2026-09-23 at his request. Its passwords are in
 `local/keys/keystore.properties`, which `app/build.gradle.kts` reads. Both are git-ignored and
-PC-only. **He must keep a backup of both files**: the in-app updater can only install over an app
+on the PC and the phone only (never in git). **He must keep a backup of both files**: the in-app updater can only install over an app
 signed with the same key, and losing it means every user has to uninstall first. Never commit
 them and never print the password.
 
@@ -434,7 +453,7 @@ a shared one hung.
 
 - **`local/` holds two folders now**: `logs/` (packet captures cited as evidence by PROTOCOL.md) and
   `svgs/` (the source SVGs the wear icons were traced from, named in the drawables' own headers).
-  **`local/` is PC-only — git-ignored, never committed or pushed** (`[USER]` 2026-09-22; it was
+  **`local/` is local-only (PC and phone) — git-ignored, never committed or pushed** (`[USER]` 2026-09-22; it was
   tracked until then and still sits in older commits' history). Doc references to `local/logs/`
   point at the developer's machine, not the repo.
 - **`local/notes/` and `local/NEXT-SESSION.md` are gone, on purpose** — all superseded, and their
