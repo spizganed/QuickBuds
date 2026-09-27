@@ -445,10 +445,10 @@ a shared one hung.
 - Runtime `*.log` files written by the app are ignored — they are regenerated every run. Handed-over
   captures (`*.log.txt`) are evidence and **are** tracked.
 - **README screenshots** live in `docs/screenshots/` and are retaken with
-  `scripts/readme-screenshots.sh [adb-serial]` (buds connected, Pillow installed). It taps through
-  the app by visible text, so renaming a row label or `eq_edit` breaks it. It stops mobile-mcp's
+  `scripts/readme-screenshots.sh [adb-serial]` (buds connected, phone in English, Pillow installed). It
+  opens every screen by visible text (never toggles anything), so renaming a row or screen label breaks it. It stops mobile-mcp's
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.
-  `widget.png` is taken only if the widget is on the home screen, cropped to the widget alone.
+  Widgets: each placed size on the LAST home screen page is cropped to `widget-<size>.png`.
 - Root holds only `README.md`, `LICENSE` and `CLAUDE.md` (it must stay in root to load automatically).
   Every other doc lives in `docs/`: `ROADMAP.md`, `ROADMAP-DONE.md`, `PROTOCOL.md`,
   `PACKET-CAPTURE.md` (`[USER]` 2026-09-25). `LICENSE` is the verbatim GPL-3.0 text; the copyright

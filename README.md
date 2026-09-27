@@ -13,9 +13,31 @@ home-screen widget.
 
 <!-- Retaken with scripts/readme-screenshots.sh; see CLAUDE.md. -->
 
-| Main screen | Equalizer | Curve editor | Earbud gestures | Widget |
-| :---: | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-curve.png" width="200"> | <img src="docs/screenshots/controls.png" width="200"> | <img src="docs/screenshots/widget.png" width="200"> |
+| Main screen | Equalizer | Curve editor | Earbud settings |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-edit.png" width="200"> | <img src="docs/screenshots/earbuds.png" width="200"> |
+
+| Earbud gestures | Wear detection | Find my earbuds | Dual connection |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/gestures.png" width="200"> | <img src="docs/screenshots/wear.png" width="200"> | <img src="docs/screenshots/find.png" width="200"> | <img src="docs/screenshots/dual.png" width="200"> |
+
+| Settings | Theme & colors | Edit preset | Home layout |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/settings.png" width="200"> | <img src="docs/screenshots/theme.png" width="200"> | <img src="docs/screenshots/preset.png" width="200"> | <img src="docs/screenshots/home-layout.png" width="200"> |
+
+| Widget settings | App update | About |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/widget-settings.png" width="200"> | <img src="docs/screenshots/update.png" width="200"> | <img src="docs/screenshots/about.png" width="200"> |
+
+### Widgets
+
+| Battery 2x2 | Controls 2x2 |
+| :---: | :---: |
+| <img src="docs/screenshots/widget-battery.png" width="200"> | <img src="docs/screenshots/widget-controls.png" width="200"> |
+
+| Combined 3x2 | Combined 3x3 |
+| :---: | :---: |
+| <img src="docs/screenshots/widget-combined.png" width="300"> | <img src="docs/screenshots/widget-large.png" width="300"> |
 
 ## Features
 
