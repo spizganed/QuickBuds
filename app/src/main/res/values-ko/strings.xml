@@ -24,6 +24,7 @@
     <string name="anc_mode_low">낮음</string>
     <string name="anc_mode_medium">보통</string>
     <string name="anc_mode_high">높음</string>
+    <string name="anc_mode_smart">스마트</string>
     <string name="row_game_title">저지연 모드</string>
     <string name="row_game_sub">영상과 싱크를 맞춥니다</string>
     <string name="row_hires_title">고음질 오디오</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">테마 및 색상</string>
     <string name="settings_appearance">모양</string>
     <string name="settings_general">일반</string>
-    <string name="settings_developer">개발자</string>
     <string name="settings_app">앱</string>
     <string name="settings_layout_title">홈 레이아웃</string>
     <string name="settings_layout_sub">행 순서 변경 및 숨기기</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC 낮음</string>
     <string name="widget_mode_anc_medium">ANC 보통</string>
     <string name="widget_mode_anc_high">ANC 높음</string>
+    <string name="widget_mode_anc_smart">ANC 스마트</string>
     <string name="widget_low_latency">저지연</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, 탭하면 다음 모드</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, 탭해서 모드 선택</string>
     <string name="widget_battery_name">QuickBuds 배터리</string>
-    <string name="widget_controls_name">QuickBuds 컨트롤</string>
     <string name="widget_large_name">QuickBuds 대형</string>
     <string name="settings_language_title">언어</string>
     <string name="settings_language_sub">앱 언어</string>

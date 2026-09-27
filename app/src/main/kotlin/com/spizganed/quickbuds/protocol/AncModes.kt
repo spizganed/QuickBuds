@@ -42,7 +42,9 @@ class AncModes private constructor(
         const val OFF = "Off"
         const val TRANSPARENCY = "Transparency"
         const val ADAPTIVE = "Adaptive"
-        val LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep")
+        const val SMART = "ANC-Smart"
+        /** Low to high, then Smart (the firmware picks the level). */
+        val LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep", SMART)
         private const val NC = "ANC"
 
         /** HeyMelody's `modeType` -> our name (strings in `NoiseReductionItem`, ). */
@@ -54,7 +56,7 @@ class AncModes private constructor(
             4 -> "ANC-Deep"      // "strong"
             5 -> NC              // "noise reduction", a parent of levels or a mode alone
             10 -> ADAPTIVE       // "auto"
-            7 -> "Smart"         // "intelligent": not offered, reported as a level
+            7 -> SMART           // "intelligent": the firmware picks the level
             6 -> "Voice"         // "transparency (voice)": not offered, reported as Transparency
             else -> null
         }
@@ -82,10 +84,7 @@ class AncModes private constructor(
             // Plain noise cancelling with no levels is offered as the one level the UI has for it.
             // ponytail: shows as "Medium" in the widget; a level-less ANC name if that confuses.
             set.remove(NC)?.let { if (LEVELS.none { l -> l in set }) set["ANC-Medium"] = it }
-            set.remove("Smart")
             set.remove("Voice")
-            // Smart is on the ANC segment too; the UI has no pill for it, as before.
-            for ((bit, m) in report.entries.toList()) if (m == "Smart") report[bit] = NC
             return AncModes(set, report)
         }
 

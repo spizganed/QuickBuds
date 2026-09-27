@@ -1,53 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Adaptive launcher foreground (108x108 viewport).
+  Adaptive launcher foreground (108x108 viewport), also the monochrome layer.
 
-  Artwork is the traced bud pair from drawable/ic_bud_left.xml and
-  drawable/ic_bud_right.xml — the same vectors the widget uses — arranged
-  side by side as if sitting in the case.
+  The app's own bud glyphs, path data verbatim from ic_bud_right.xml (on the left, facing left) and
+  ic_bud_left.xml (on the right, facing right), 4 units apart ([USER] 2026-09-27). Both at scale
+  0.1689: the largest at which no ink pixel is further than 32 units from the centre, measured on a
+  raster (the safe zone is a circle of radius 33, so a 1-unit margin is left). If the glyphs or the
+  gap change, re-measure that way rather than from bounding boxes: the pair's corners are empty.
 
-  Both buds are placed with <group> transforms, so the original traced path
-  data is reused verbatim rather than redrawn.
-
-  GEOMETRY (derived, not eyeballed - see the numbers below)
-
-  Ink bounds of each source path, in the 48x48 source space:
-      left  : x 8.6 -> 38.1  (centre 23.35), y 0.3 -> 47.5 (centre 23.90)
-      right : x 9.5 -> 39.2  (centre 24.35), y 0.3 -> 47.5 (centre 23.90)
-
-  The right bud is mirrored (scaleX = -S) so the two face each other. Under
-  x' = Tx + (-S)*x the mirrored ink centre lands at Tx - S*cx. For the pair to
-  be centred horizontally on the viewport centre C (=54) with an ink gap of G
-  between the two inner edges, both bud centres must sit at C +/- (S*w + G)/2.
-
-  Chosen: G = 5.0 units (gap between inner edges), S = 0.756.
-      w = 29.5 (mean ink width), so half-step = (0.756*29.5 + 5.0)/2 = 13.65
-      left  ink centre x = 54 - 13.65 = 40.35  -> Tx = 40.35 - 0.756*23.35 = 22.14
-      right ink centre x = 54 + 13.65 = 67.65  -> Tx = 67.65 + 0.756*24.35 = 86.62
-
-  Vertically, ink centre 23.90 must map to C = 54:
-      Ty = 54 - 0.756*23.90 = 35.93
-
-  Resulting ink box: x 28.64 -> 79.44, y 36.16 -> 71.84. Centred on 54 in both
-  axes.
-
-  WHY S = 0.756 AND NOT SOMETHING BIGGER: the safe zone is a CIRCLE of radius 33
-  (not a 66-unit square), so the binding test is the distance of each ink CORNER
-  from the centre, not each axis independently. At S=0.62 the worst corner sat
-  at radius 25.58, i.e. the artwork filled only 77.5% of the safe circle and read
-  as undersized next to other launcher icons. The pair is wide and short, so its
-  width is what limits growth.
-
-  At S=0.756 the worst corner is at radius 31.04, which is 94.1% of the safe
-  radius: visibly larger while keeping a margin against antialiasing and mask
-  variance. Do NOT raise this toward 33/25.58 = 1.29 (the exact-touch limit) -
-  there would be no margin left.
-
-  If the artwork is retraced, RE-SOLVE: max over the four ink corners of the
-  distance from (54,54), then pick a scale whose worst corner lands near 31.
-
-  Monochrome by design: solid white on the black ic_launcher_background. No
-  accent colour, no dots.
+  Solid white on the black ic_launcher_background.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -55,28 +16,15 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Left bud: source 48x48 scaled 0.756; ink centre -> x 40.35, y 54. -->
-    <group
-        android:scaleX="0.756"
-        android:scaleY="0.756"
-        android:translateX="22.14"
-        android:translateY="35.93">
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M 25.8 47.5 L 22.7 47.2 L 21.4 46.4 L 20.0 44.9 L 19.3 43.0 L 19.1 39.7 L 19.1 27.3 L 16.6 27.2 L 14.6 26.7 L 12.4 25.4 L 10.4 23.4 L 9.1 21.2 L 8.6 19.4 L 8.6 16.1 L 9.1 14.2 L 10.8 11.4 L 13.8 9.0 L 15.8 5.5 L 18.5 3.0 L 22.9 0.8 L 25.3 0.3 L 29.0 0.3 L 32.7 1.6 L 36.5 5.2 L 37.9 8.5 L 38.1 12.6 L 37.4 15.1 L 35.5 18.3 L 33.4 20.6 L 30.4 22.9 L 30.6 43.2 L 29.6 45.2 L 28.4 46.4 Z" />
+    <!-- Right bud glyph, facing left. -->
+    <group android:scaleX="0.1689" android:scaleY="0.1689" android:translateX="22.53" android:translateY="31.03">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd"
+            android:pathData="M10.9 131.2a66 66 0 0 1-9-31A56 56 0 0 1 5 80.4a46 46 0 0 1 10.4-15.8 40 40 0 0 1 35-10.8 50 50 0 0 1 19 6.8 59 59 0 0 1 16.3 14 67 67 0 0 1 15.3 39.8 55 55 0 0 1-3.4 19.9A45 45 0 0 1 87.3 150a40 40 0 0 1-34.6 10.6 50 50 0 0 1-19-6.7 61 61 0 0 1-16.5-13.8 67 67 0 0 1-6.3-9m116.7 1.8c-1.2.5-2.6.5-3.9.8q-.8.7-1.1 1.7v101.1q-.5 5.3-2 10.4-1 3-2.7 5.8a33 33 0 0 1-26.7 16A33 33 0 0 1 57.4 243q-.8-3.6-.8-7.2v-66.7l1.8-2 11.8-1.4a48 48 0 0 0 19.3-9.7 47 47 0 0 0 12.9-17.5 55 55 0 0 0 4.7-22.9 68 68 0 0 0-9.5-34.9 73 73 0 0 0-24.4-25 59 59 0 0 0-21.7-8l-12.4-.4-1.4-.9-.5-1.6q3-5 6.3-9.8a84 84 0 0 1 34-25.4 93 93 0 0 1 30.3-6.5q6.4-.2 12.9.7a63 63 0 0 1 23.3 8.3 62 62 0 0 1 19.3 18.5 67 67 0 0 1 10 23.5 59 59 0 0 1-4.7 36 79 79 0 0 1-16.1 23.4q-5 5-10.4 9.4z" />
     </group>
 
-    <!--
-      Right bud: mirrored to face the left one, as they sit in the case.
-      scaleX = -0.756 puts ink at x = 86.62 - 0.756*x (centre 67.65).
-    -->
-    <group
-        android:scaleX="-0.756"
-        android:scaleY="0.756"
-        android:translateX="86.62"
-        android:translateY="35.93">
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M 23.8 47.5 L 21.0 47.4 L 19.6 46.6 L 18.6 45.8 L 17.4 43.9 L 17.1 42.8 L 17.3 22.7 L 15.0 21.1 L 11.9 17.9 L 10.1 14.4 L 9.5 11.8 L 9.9 8.1 L 12.1 4.1 L 14.8 1.8 L 18.8 0.3 L 24.2 0.6 L 27.1 1.8 L 29.7 3.4 L 32.8 6.6 L 34.1 9.2 L 35.3 9.9 L 37.8 12.6 L 39.2 16.6 L 39.0 19.9 L 37.0 23.8 L 33.6 26.5 L 31.2 27.2 L 28.7 27.3 L 28.3 43.4 L 27.6 45.0 L 26.0 46.6 Z" />
+    <!-- Left bud glyph, facing right. -->
+    <group android:scaleX="0.1689" android:scaleY="0.1689" android:translateX="55.75" android:translateY="31.03">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd"
+            android:pathData="M165.1 131.2a66 66 0 0 0 9-31 56 56 0 0 0-3.2-19.9 46 46 0 0 0-10.4-15.8 40 40 0 0 0-35-10.8 50 50 0 0 0-19 6.8 59 59 0 0 0-16.3 14 67 67 0 0 0-15.3 39.8 55 55 0 0 0 3.4 19.9A45 45 0 0 0 88.7 150a40 40 0 0 0 34.6 10.6 50 50 0 0 0 19-6.7 61 61 0 0 0 16.4-13.8 67 67 0 0 0 6.4-9M48.4 133c1.2.5 2.6.5 3.9.8q.8.7 1.1 1.7v101.1q.5 5.3 2 10.4 1 3 2.8 5.8a33 33 0 0 0 26.6 16 33 33 0 0 0 33.8-25.7q.8-3.6.8-7.2v-66.7l-1.8-2-11.8-1.4a48 48 0 0 1-19.3-9.7 47 47 0 0 1-12.9-17.5 55 55 0 0 1-4.7-22.9 68 68 0 0 1 9.5-34.9 73 73 0 0 1 24.4-25 59 59 0 0 1 21.7-8l12.4-.4 1.3-.9.6-1.6q-3-5-6.3-9.8a84 84 0 0 0-34-25.4 93 93 0 0 0-30.3-6.5Q61.7 3 55.3 4A63 63 0 0 0 32 12.2a62 62 0 0 0-19.3 18.5 67 67 0 0 0-10 23.5 59 59 0 0 0 4.7 36 79 79 0 0 0 16.1 23.4q5 5 10.5 9.4z" />
     </group>
 </vector>

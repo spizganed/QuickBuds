@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ANC Smart: the Medium rings, the outer one opened for a sparkle (the firmware picks the level). White, tinted at runtime. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF" android:pathData="M9.8,12a2.2,2.2 0 1,0 4.4,0a2.2,2.2 0 1,0 -4.4,0z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.9" android:strokeLineCap="butt" android:strokeLineJoin="round" android:pathData="M6.8,12a5.2,5.2 0 1,0 10.4,0a5.2,5.2 0 1,0 -10.4,0z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.9" android:strokeLineCap="round" android:pathData="M20.08,10.58A8.2,8.2 0 1,1 13.42,3.92" />
+    <path android:fillColor="#FFFFFF" android:pathData="M19,1.2Q19.6,4.4 22.8,5Q19.6,5.6 19,8.8Q18.4,5.6 15.2,5Q18.4,4.4 19,1.2z" />
+</vector>

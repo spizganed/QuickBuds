@@ -86,6 +86,11 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Widgets 3x2 and 3x3 redesigned like the 2x2 (2026-09-27): battery and controls pages on every size,
   swapped by the swap button or a double tap, sliding between pages; bigger rings sized from the widget,
   the model name on the bigger battery pages; a mode list with three modes or fewer fills one row.
+- Later the same day ([USER]): widgets are 2x2, 3x3 (the 2x2 scaled up) and 4x2, all fixed size, with
+  no model name; the 2x2 controls widget is gone. The mode button flips between two copies on a change
+  (fill cross-fades, icon and name tick up). Smart ANC as a fourth level (app and widget, confirmed on
+  Buds 4). New launcher and notification icon from the app's own bud glyphs; no bud icons on Find my
+  earbuds. Dev tools button moved into Settings › General; the Language screen has its title back.
 
 ## Docs
 

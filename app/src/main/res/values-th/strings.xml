@@ -24,6 +24,7 @@
     <string name="anc_mode_low">ต่ำ</string>
     <string name="anc_mode_medium">กลาง</string>
     <string name="anc_mode_high">สูง</string>
+    <string name="anc_mode_smart">อัจฉริยะ</string>
     <string name="row_game_title">โหมดความหน่วงต่ำ</string>
     <string name="row_game_sub">ซิงค์กับวิดีโอ</string>
     <string name="row_hires_title">เสียงคุณภาพสูง</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">ธีมและสี</string>
     <string name="settings_appearance">รูปลักษณ์</string>
     <string name="settings_general">ทั่วไป</string>
-    <string name="settings_developer">นักพัฒนา</string>
     <string name="settings_app">แอป</string>
     <string name="settings_layout_title">เลย์เอาต์หน้าหลัก</string>
     <string name="settings_layout_sub">จัดลำดับและซ่อนแถว</string>
@@ -248,11 +248,11 @@
     <string name="widget_mode_anc_low">ANC ต่ำ</string>
     <string name="widget_mode_anc_medium">ANC กลาง</string>
     <string name="widget_mode_anc_high">ANC สูง</string>
+    <string name="widget_mode_anc_smart">ANC อัจฉริยะ</string>
     <string name="widget_low_latency">เวลาแฝงต่ำ</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s แตะเพื่อไปโหมดถัดไป</string>
     <string name="widget_mode_desc_list">%1$s: %2$s แตะเพื่อเลือกโหมด</string>
     <string name="widget_battery_name">QuickBuds แบตเตอรี่</string>
-    <string name="widget_controls_name">QuickBuds ควบคุม</string>
     <string name="widget_large_name">QuickBuds ใหญ่</string>
     <string name="settings_language_title">ภาษา</string>
     <string name="settings_language_sub">ภาษาของแอป</string>

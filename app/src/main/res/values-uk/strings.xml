@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Низький</string>
     <string name="anc_mode_medium">Середній</string>
     <string name="anc_mode_high">Високий</string>
+    <string name="anc_mode_smart">Розумний</string>
     <string name="row_game_title">Режим низької затримки</string>
     <string name="row_game_sub">Звук синхронний з відео</string>
     <string name="row_hires_title">Звук високої якості</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Тема й кольори</string>
     <string name="settings_appearance">Вигляд</string>
     <string name="settings_general">Загальні</string>
-    <string name="settings_developer">Для розробників</string>
     <string name="settings_app">Застосунок</string>
     <string name="settings_layout_title">Макет головного екрана</string>
     <string name="settings_layout_sub">Порядок і приховування рядків</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC низький</string>
     <string name="widget_mode_anc_medium">ANC середній</string>
     <string name="widget_mode_anc_high">ANC високий</string>
+    <string name="widget_mode_anc_smart">ANC розумний</string>
     <string name="widget_low_latency">Низька затримка</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, торкніться для наступного режиму</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, торкніться, щоб вибрати режим</string>
     <string name="widget_battery_name">QuickBuds батарея</string>
-    <string name="widget_controls_name">QuickBuds керування</string>
     <string name="widget_large_name">QuickBuds великий</string>
     <string name="settings_language_title">Мова</string>
     <string name="settings_language_sub">Мова застосунку</string>

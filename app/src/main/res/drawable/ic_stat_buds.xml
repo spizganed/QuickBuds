@@ -1,29 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Status-bar small icon for the foreground service notification.
-
-  Replaces android.R.drawable.stat_sys_headset (a generic system framework icon).
-
-  Important: Android renders small icons as a SILHOUETTE — it uses only the alpha
-  channel and tints the result, discarding all colour. It must therefore be a
-  solid single-colour shape with no fine detail, because anything subtle turns to
-  mush at ~24dp. The full traced bud pair (ic_launcher_foreground) is far too
-  detailed to read at status-bar size, so this is a deliberately simplified bud.
-
-  GEOMETRY NOTES
-  The previous revision drew the head as a circle of radius 4 centred at (12, 2.4).
-  Its top reached y = -1.6, i.e. OUTSIDE the 24x24 viewport, so the vector
-  clipped the head's top tip. That was the cropping visible in the shade; it was
-  not a centering problem.
-
-  This revision keeps all strokes inside the viewport with margin to spare:
-      head circle : centre (12, 6.2), r = 4.0  -> y 2.2 -> 10.2, x 8.0 -> 16.0
-      stem        : y 10.0 -> 16.6 + 2.6 round tip, half-width 2.6
-      stroke width 1.6 -> outermost ink y 1.4 -> 20.6, x 7.2 -> 16.8
-  Ink centre is (12.0, 11.0); the viewport centre is (12, 12). The 1-unit rise is
-  deliberate: an arc's visual mass sits below its topmost point, so centring the
-  raw ink box reads as slightly low. Nothing reaches the viewport edge, so no
-  clipping is possible.
+  Status-bar small icon of the service notification: the launcher icon's bud pair
+  (ic_launcher_foreground.xml, same glyphs and proportions), 22 units wide in the 24 viewport.
+  Android draws small icons as a silhouette from the alpha channel only, so it stays solid white.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
@@ -31,19 +10,15 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
 
-    <!-- Head: closed circle, drawn as two arcs so it stays inside the viewport. -->
-    <path
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M8,6.2a4,4 0 1,0 8,0a4,4 0 1,0 -8,0" />
+    <!-- Right bud glyph, facing left. -->
+    <group android:scaleX="0.0596" android:scaleY="0.0596" android:translateX="0.90" android:translateY="3.90">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd"
+            android:pathData="M10.9 131.2a66 66 0 0 1-9-31A56 56 0 0 1 5 80.4a46 46 0 0 1 10.4-15.8 40 40 0 0 1 35-10.8 50 50 0 0 1 19 6.8 59 59 0 0 1 16.3 14 67 67 0 0 1 15.3 39.8 55 55 0 0 1-3.4 19.9A45 45 0 0 1 87.3 150a40 40 0 0 1-34.6 10.6 50 50 0 0 1-19-6.7 61 61 0 0 1-16.5-13.8 67 67 0 0 1-6.3-9m116.7 1.8c-1.2.5-2.6.5-3.9.8q-.8.7-1.1 1.7v101.1q-.5 5.3-2 10.4-1 3-2.7 5.8a33 33 0 0 1-26.7 16A33 33 0 0 1 57.4 243q-.8-3.6-.8-7.2v-66.7l1.8-2 11.8-1.4a48 48 0 0 0 19.3-9.7 47 47 0 0 0 12.9-17.5 55 55 0 0 0 4.7-22.9 68 68 0 0 0-9.5-34.9 73 73 0 0 0-24.4-25 59 59 0 0 0-21.7-8l-12.4-.4-1.4-.9-.5-1.6q3-5 6.3-9.8a84 84 0 0 1 34-25.4 93 93 0 0 1 30.3-6.5q6.4-.2 12.9.7a63 63 0 0 1 23.3 8.3 62 62 0 0 1 19.3 18.5 67 67 0 0 1 10 23.5 59 59 0 0 1-4.7 36 79 79 0 0 1-16.1 23.4q-5 5-10.4 9.4z" />
+    </group>
 
-    <!-- Stem: falls from the head and rounds off at the tip. -->
-    <path
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M9.4,10L9.4,16.6a2.6,2.6 0 0,0 5.2,0L14.6,10" />
+    <!-- Left bud glyph, facing right. -->
+    <group android:scaleX="0.0596" android:scaleY="0.0596" android:translateX="12.62" android:translateY="3.90">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd"
+            android:pathData="M165.1 131.2a66 66 0 0 0 9-31 56 56 0 0 0-3.2-19.9 46 46 0 0 0-10.4-15.8 40 40 0 0 0-35-10.8 50 50 0 0 0-19 6.8 59 59 0 0 0-16.3 14 67 67 0 0 0-15.3 39.8 55 55 0 0 0 3.4 19.9A45 45 0 0 0 88.7 150a40 40 0 0 0 34.6 10.6 50 50 0 0 0 19-6.7 61 61 0 0 0 16.4-13.8 67 67 0 0 0 6.4-9M48.4 133c1.2.5 2.6.5 3.9.8q.8.7 1.1 1.7v101.1q.5 5.3 2 10.4 1 3 2.8 5.8a33 33 0 0 0 26.6 16 33 33 0 0 0 33.8-25.7q.8-3.6.8-7.2v-66.7l-1.8-2-11.8-1.4a48 48 0 0 1-19.3-9.7 47 47 0 0 1-12.9-17.5 55 55 0 0 1-4.7-22.9 68 68 0 0 1 9.5-34.9 73 73 0 0 1 24.4-25 59 59 0 0 1 21.7-8l12.4-.4 1.3-.9.6-1.6q-3-5-6.3-9.8a84 84 0 0 0-34-25.4 93 93 0 0 0-30.3-6.5Q61.7 3 55.3 4A63 63 0 0 0 32 12.2a62 62 0 0 0-19.3 18.5 67 67 0 0 0-10 23.5 59 59 0 0 0 4.7 36 79 79 0 0 0 16.1 23.4q5 5 10.5 9.4z" />
+    </group>
 </vector>

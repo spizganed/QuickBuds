@@ -33,13 +33,9 @@ home-screen widget.
 
 Every size has a battery page and a controls page; switch with the swap button or a double tap.
 
-| 2x2, battery page | 2x2, controls page |
-| :---: | :---: |
-| <img src="docs/screenshots/widget-battery.png" width="200"> | <img src="docs/screenshots/widget-controls.png" width="200"> |
-
-| 3x2 | 3x3 |
-| :---: | :---: |
-| <img src="docs/screenshots/widget-3x2.png" width="300"> | <img src="docs/screenshots/widget-3x3.png" width="300"> |
+| 2x2 | 3x3 | 4x2 |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-3x3-controls.png" width="220"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
 
 ## Features
 
@@ -47,14 +43,14 @@ Every size has a battery page and a controls page; switch with the swap button o
   list of OnePlus, OPPO and realme models, then shows only what that model supports. You can also
   pick the model yourself.
 - **Battery and wear status** for each bud and the case, live.
-- **Noise control:** Off, Noise cancelling (Low / Medium / High), Adaptive and Transparency. Changes
+- **Noise control:** Off, Noise cancelling (Low / Medium / High / Smart), Adaptive and Transparency. Changes
   made on the earbuds show up instantly.
 - **Equalizer:** built-in presets, up to 3 custom 6-band presets you draw on a curve, and bass boost.
   Saved on the earbuds.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
 - **Wear detection**, **Dual connection**, **Find my earbuds** and the earbuds' prompt volume.
-- **Home-screen widgets** in three sizes (2×2, 3×2, 3×3). Each has a battery page and a noise
+- **Home-screen widgets** in three sizes (2×2, 3×3, 4×2). Each has a battery page and a noise
   control + Low latency page, in your theme's colours.
 - **Themes:** OLED Black, Classic Dark and White, your own accent colour, and up to 3 custom colour
   presets. Reorder or hide the home screen rows.

@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Nízké</string>
     <string name="anc_mode_medium">Střední</string>
     <string name="anc_mode_high">Vysoké</string>
+    <string name="anc_mode_smart">Chytré</string>
     <string name="row_game_title">Režim nízké latence</string>
     <string name="row_game_sub">Zůstává synchronní s videem</string>
     <string name="row_hires_title">Vysoce kvalitní zvuk</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Motiv a barvy</string>
     <string name="settings_appearance">Vzhled</string>
     <string name="settings_general">Obecné</string>
-    <string name="settings_developer">Pro vývojáře</string>
     <string name="settings_app">Aplikace</string>
     <string name="settings_layout_title">Rozvržení domovské obrazovky</string>
     <string name="settings_layout_sub">Změna pořadí a skrytí řádků</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC nízké</string>
     <string name="widget_mode_anc_medium">ANC střední</string>
     <string name="widget_mode_anc_high">ANC vysoké</string>
+    <string name="widget_mode_anc_smart">ANC chytré</string>
     <string name="widget_low_latency">Nízká latence</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, klepnutím další režim</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, klepnutím vyberete režim</string>
     <string name="widget_battery_name">QuickBuds baterie</string>
-    <string name="widget_controls_name">QuickBuds ovládání</string>
     <string name="widget_large_name">QuickBuds velký</string>
     <string name="settings_language_title">Jazyk</string>
     <string name="settings_language_sub">Jazyk aplikace</string>

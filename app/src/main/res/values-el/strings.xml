@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Χαμηλό</string>
     <string name="anc_mode_medium">Μεσαίο</string>
     <string name="anc_mode_high">Υψηλό</string>
+    <string name="anc_mode_smart">Έξυπνο</string>
     <string name="row_game_title">Λειτουργία χαμηλής καθυστέρησης</string>
     <string name="row_game_sub">Μένει συγχρονισμένο με το βίντεο</string>
     <string name="row_hires_title">Ήχος υψηλής ποιότητας</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Θέμα και χρώματα</string>
     <string name="settings_appearance">Εμφάνιση</string>
     <string name="settings_general">Γενικά</string>
-    <string name="settings_developer">Για προγραμματιστές</string>
     <string name="settings_app">Εφαρμογή</string>
     <string name="settings_layout_title">Διάταξη αρχικής οθόνης</string>
     <string name="settings_layout_sub">Αναδιάταξη και απόκρυψη γραμμών</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC Χαμηλό</string>
     <string name="widget_mode_anc_medium">ANC Μεσαίο</string>
     <string name="widget_mode_anc_high">ANC Υψηλό</string>
+    <string name="widget_mode_anc_smart">ANC Έξυπνο</string>
     <string name="widget_low_latency">Χαμηλή καθυστέρηση</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, πατήστε για την επόμενη λειτουργία</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, πατήστε για επιλογή λειτουργίας</string>
     <string name="widget_battery_name">QuickBuds μπαταρία</string>
-    <string name="widget_controls_name">QuickBuds χειριστήρια</string>
     <string name="widget_large_name">QuickBuds μεγάλο</string>
     <string name="settings_language_title">Γλώσσα</string>
     <string name="settings_language_sub">Γλώσσα εφαρμογής</string>

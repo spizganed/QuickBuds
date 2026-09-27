@@ -24,6 +24,7 @@
     <string name="anc_mode_low">輕度</string>
     <string name="anc_mode_medium">中度</string>
     <string name="anc_mode_high">深度</string>
+    <string name="anc_mode_smart">智慧</string>
     <string name="row_game_title">低延遲模式</string>
     <string name="row_game_sub">與影片保持同步</string>
     <string name="row_hires_title">高音質音訊</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">主題與色彩</string>
     <string name="settings_appearance">外觀</string>
     <string name="settings_general">一般</string>
-    <string name="settings_developer">開發者</string>
     <string name="settings_app">應用程式</string>
     <string name="settings_layout_title">主頁版面</string>
     <string name="settings_layout_sub">重新排序和隱藏列</string>
@@ -248,11 +248,11 @@
     <string name="widget_mode_anc_low">降噪 低</string>
     <string name="widget_mode_anc_medium">降噪 中</string>
     <string name="widget_mode_anc_high">降噪 高</string>
+    <string name="widget_mode_anc_smart">降噪 智慧</string>
     <string name="widget_low_latency">低延遲</string>
     <string name="widget_mode_desc_cycle">%1$s：%2$s，點按切換下一個模式</string>
     <string name="widget_mode_desc_list">%1$s：%2$s，點按選擇模式</string>
     <string name="widget_battery_name">QuickBuds 電量</string>
-    <string name="widget_controls_name">QuickBuds 控制</string>
     <string name="widget_large_name">QuickBuds 大型</string>
     <string name="settings_language_title">語言</string>
     <string name="settings_language_sub">應用程式語言</string>

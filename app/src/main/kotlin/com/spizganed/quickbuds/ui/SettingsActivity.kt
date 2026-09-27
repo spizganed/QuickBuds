@@ -53,16 +53,13 @@ class SettingsActivity : Activity() {
 
         val general = mutableListOf<android.view.View>(
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
-            backgroundRow(prefs)
+            backgroundRow(prefs),
+            toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true)
         )
         general.add(0, link(R.drawable.ic_language, R.string.settings_language_title, R.string.settings_language_sub) {
             startActivity(Intent(this, LanguageActivity::class.java))
         })
         section(R.string.settings_general, *general.toTypedArray())
-        section(
-            R.string.settings_developer,
-            toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true)
-        )
 
         val version = UpdateChecker.installed(this)
         val updateRow = link(R.drawable.ic_update, R.string.row_update_title, 0) {

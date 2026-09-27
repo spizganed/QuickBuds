@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Mahina</string>
     <string name="anc_mode_medium">Katamtaman</string>
     <string name="anc_mode_high">Malakas</string>
+    <string name="anc_mode_smart">Smart</string>
     <string name="row_game_title">Low latency mode</string>
     <string name="row_game_sub">Nananatiling sabay sa video</string>
     <string name="row_hires_title">Mataas na kalidad ng audio</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Tema at mga kulay</string>
     <string name="settings_appearance">Hitsura</string>
     <string name="settings_general">Pangkalahatan</string>
-    <string name="settings_developer">Developer</string>
     <string name="settings_app">App</string>
     <string name="settings_layout_title">Layout ng home</string>
     <string name="settings_layout_sub">Ayusin at itago ang mga row</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC Mahina</string>
     <string name="widget_mode_anc_medium">ANC Katamtaman</string>
     <string name="widget_mode_anc_high">ANC Malakas</string>
+    <string name="widget_mode_anc_smart">ANC Smart</string>
     <string name="widget_low_latency">Low latency</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, i-tap para sa susunod na mode</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, i-tap para pumili ng mode</string>
     <string name="widget_battery_name">QuickBuds baterya</string>
-    <string name="widget_controls_name">QuickBuds mga kontrol</string>
     <string name="widget_large_name">QuickBuds malaki</string>
     <string name="settings_language_title">Wika</string>
     <string name="settings_language_sub">Wika ng app</string>

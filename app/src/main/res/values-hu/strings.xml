@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Alacsony</string>
     <string name="anc_mode_medium">Közepes</string>
     <string name="anc_mode_high">Magas</string>
+    <string name="anc_mode_smart">Intelligens</string>
     <string name="row_game_title">Alacsony késleltetésű mód</string>
     <string name="row_game_sub">Szinkronban marad a videóval</string>
     <string name="row_hires_title">Kiváló minőségű hang</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Téma és színek</string>
     <string name="settings_appearance">Megjelenés</string>
     <string name="settings_general">Általános</string>
-    <string name="settings_developer">Fejlesztői</string>
     <string name="settings_app">Alkalmazás</string>
     <string name="settings_layout_title">Kezdőképernyő elrendezése</string>
     <string name="settings_layout_sub">Sorok átrendezése és elrejtése</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC alacsony</string>
     <string name="widget_mode_anc_medium">ANC közepes</string>
     <string name="widget_mode_anc_high">ANC magas</string>
+    <string name="widget_mode_anc_smart">ANC intelligens</string>
     <string name="widget_low_latency">Alacsony késleltetés</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, koppintson a következő módhoz</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, koppintson mód választásához</string>
     <string name="widget_battery_name">QuickBuds akkumulátor</string>
-    <string name="widget_controls_name">QuickBuds vezérlők</string>
     <string name="widget_large_name">QuickBuds nagy</string>
     <string name="settings_language_title">Nyelv</string>
     <string name="settings_language_sub">Alkalmazás nyelve</string>

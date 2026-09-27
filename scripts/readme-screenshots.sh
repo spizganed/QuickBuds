@@ -3,9 +3,9 @@
 # Needs: the phone on adb with the buds connected in QuickBuds and the phone in English, and
 # Python with Pillow (`pip install pillow`) for cropping. It only OPENS screens: nothing is
 # toggled, so the buds and the app settings are left as they were.
-# Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file
-# (widget-battery / -controls for the 2x2 pages, widget-3x2 / -3x3 for whatever page those show);
-# sizes that are not placed are skipped.
+# Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file,
+# widget-<size>-<page> (2x2, 3x3, 4x2; battery or controls, whichever page it shows); sizes that
+# are not placed are skipped.
 # Usage: scripts/readme-screenshots.sh [adb-serial]
 set -euo pipefail
 export MSYS_NO_PATHCONV=1  # Git Bash would rewrite /sdcard/... into a Windows path
@@ -96,22 +96,22 @@ adb shell input keyevent HOME; sleep 1
 for _ in 1 2 3 4 5 6 7 8; do adb shell input swipe $((W * 9 / 10)) $((BOTTOM / 2)) $((W / 10)) $((BOTTOM / 2)) 150; done
 sleep 2
 dump > "$OUT/.ui.xml"
-python - "$OUT/.ui.xml" <<'PY' | while read -r name l t r b; do shot "$name" "$l $t $r $b"; done
+python - "$OUT/.ui.xml" "$W" <<'PY' | while read -r name l t r b; do shot "$name" "$l $t $r $b"; done
 import re, sys
 import xml.etree.ElementTree as ET
+WIDTH = int(sys.argv[2])
 ids = lambda n: {e.get("resource-id", "").split("/")[-1] for e in n.iter()}
 for n in ET.parse(sys.argv[1]).iter("node"):
     if not n.get("resource-id", "").endswith(":id/w_root"):
         continue
-    # Only the shown page is in the dump. 3x2 / 3x3 carry the model name (battery page) or the
-    # "Noise control" caption (controls page); the 3x2 is the wide one.
+    # Only the shown page is in the dump. The 4x2 is the wide one; the 3x3 is the 2x2 scaled up,
+    # so a square wider than half the screen is the 3x3.
     have = ids(n)
     l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
-    if "w_name" in have or "w_mode_caption" in have:
-        name = "widget-3x2" if (r - l) > 1.3 * (b - t) else "widget-3x3"
-    else:
-        name = "widget-battery" if "w_bar" in have else "widget-controls" if "w_mode" in have else None
-    if name:
-        print(name, l - 16, t - 16, r + 16, b + 16)
+    page = "battery" if "w_panel_left" in have else "controls" if "w_mode" in have else None
+    if not page:
+        continue
+    size = "4x2" if (r - l) > 1.3 * (b - t) else "3x3" if (r - l) > 0.5 * WIDTH else "2x2"
+    print(f"widget-{size}-{page}", l - 16, t - 16, r + 16, b + 16)
 PY
 rm -f "$OUT/.ui.xml"

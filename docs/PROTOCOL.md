@@ -284,6 +284,12 @@ OppoPods maps it).
 - `[CAPTURE]` Buds 4 through the table, 2026-09-27: `Off=0, Transparency=2, Adaptive=11, Light=6,
   Medium=5, Deep=4`, and the writes are byte-identical to the old fixed builders. Other models are
   unverified until an owner reads a write back.
+- **Smart (modeType 7) is offered since 2026-09-27** as a fourth ANC level (`AncModes.SMART`), for
+  parity. `[CAPTURE]` Buds 4, 2026-09-27: TX `AA 0A 00 00 04 04 0A 03 00 01 01 80` (bit 7), ACK
+  `84 0A 01 00 00`, then `0x0204` subType 3 `03 01 01 80 00` (raw `0x0080`, Smart). Right after it the
+  buds pushed `03 04 01 20 00` and `03 04 01 40 00`. `04 01` is the question `0x010C` asks for the
+  intelligent mode (table below), and `0x20` / `0x40` are the Medium / Light bits, so these are
+  probably the level Smart chose `[GUESS]`. Not parsed or shown until more samples confirm it.
 
 ### SET vs NOTIFY use DIFFERENT encodings
 

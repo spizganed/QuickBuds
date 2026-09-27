@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Faible</string>
     <string name="anc_mode_medium">Moyen</string>
     <string name="anc_mode_high">Élevé</string>
+    <string name="anc_mode_smart">Intelligent</string>
     <string name="row_game_title">Mode faible latence</string>
     <string name="row_game_sub">Reste synchronisé avec la vidéo</string>
     <string name="row_hires_title">Audio haute qualité</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Thème et couleurs</string>
     <string name="settings_appearance">Apparence</string>
     <string name="settings_general">Général</string>
-    <string name="settings_developer">Développeur</string>
     <string name="settings_app">Application</string>
     <string name="settings_layout_title">Disposition de l\'accueil</string>
     <string name="settings_layout_sub">Réorganiser et masquer des lignes</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC faible</string>
     <string name="widget_mode_anc_medium">ANC moyen</string>
     <string name="widget_mode_anc_high">ANC élevé</string>
+    <string name="widget_mode_anc_smart">ANC intelligent</string>
     <string name="widget_low_latency">Faible latence</string>
     <string name="widget_mode_desc_cycle">%1$s : %2$s, touchez pour le mode suivant</string>
     <string name="widget_mode_desc_list">%1$s : %2$s, touchez pour choisir un mode</string>
     <string name="widget_battery_name">QuickBuds batterie</string>
-    <string name="widget_controls_name">QuickBuds commandes</string>
     <string name="widget_large_name">QuickBuds grand</string>
     <string name="settings_language_title">Langue</string>
     <string name="settings_language_sub">Langue de l\'app</string>

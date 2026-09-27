@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Düşük</string>
     <string name="anc_mode_medium">Orta</string>
     <string name="anc_mode_high">Yüksek</string>
+    <string name="anc_mode_smart">Akıllı</string>
     <string name="row_game_title">Düşük gecikme modu</string>
     <string name="row_game_sub">Görüntüyle senkron kalır</string>
     <string name="row_hires_title">Yüksek kaliteli ses</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Tema ve renkler</string>
     <string name="settings_appearance">Görünüm</string>
     <string name="settings_general">Genel</string>
-    <string name="settings_developer">Geliştirici</string>
     <string name="settings_app">Uygulama</string>
     <string name="settings_layout_title">Ana ekran düzeni</string>
     <string name="settings_layout_sub">Satırları sırala ve gizle</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC Düşük</string>
     <string name="widget_mode_anc_medium">ANC Orta</string>
     <string name="widget_mode_anc_high">ANC Yüksek</string>
+    <string name="widget_mode_anc_smart">ANC Akıllı</string>
     <string name="widget_low_latency">Düşük gecikme</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, sonraki mod için dokunun</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, mod seçmek için dokunun</string>
     <string name="widget_battery_name">QuickBuds pil</string>
-    <string name="widget_controls_name">QuickBuds kontroller</string>
     <string name="widget_large_name">QuickBuds büyük</string>
     <string name="settings_language_title">Dil</string>
     <string name="settings_language_sub">Uygulama dili</string>

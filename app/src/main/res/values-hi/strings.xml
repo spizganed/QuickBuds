@@ -24,6 +24,7 @@
     <string name="anc_mode_low">कम</string>
     <string name="anc_mode_medium">मध्यम</string>
     <string name="anc_mode_high">उच्च</string>
+    <string name="anc_mode_smart">स्मार्ट</string>
     <string name="row_game_title">लो लेटेंसी मोड</string>
     <string name="row_game_sub">वीडियो के साथ तालमेल</string>
     <string name="row_hires_title">हाई-क्वालिटी ऑडियो</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">थीम और रंग</string>
     <string name="settings_appearance">रूप</string>
     <string name="settings_general">सामान्य</string>
-    <string name="settings_developer">डेवलपर</string>
     <string name="settings_app">ऐप</string>
     <string name="settings_layout_title">होम लेआउट</string>
     <string name="settings_layout_sub">पंक्तियां क्रम बदलें और छिपाएं</string>
@@ -248,11 +248,11 @@
     <string name="widget_mode_anc_low">ANC कम</string>
     <string name="widget_mode_anc_medium">ANC मध्यम</string>
     <string name="widget_mode_anc_high">ANC अधिक</string>
+    <string name="widget_mode_anc_smart">ANC स्मार्ट</string>
     <string name="widget_low_latency">लो लेटेंसी</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, अगले मोड के लिए टैप करें</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, मोड चुनने के लिए टैप करें</string>
     <string name="widget_battery_name">QuickBuds बैटरी</string>
-    <string name="widget_controls_name">QuickBuds कंट्रोल</string>
     <string name="widget_large_name">QuickBuds बड़ा</string>
     <string name="settings_language_title">भाषा</string>
     <string name="settings_language_sub">ऐप की भाषा</string>

@@ -115,7 +115,8 @@ class WidgetSettingsActivity : Activity() {
             contentDescription = getString(R.string.widget_drag_desc)
         }
         val row = SettingRowFactory.build(this, mode.icon, mode.name, 0, box, leading = handle) {
-            if (!on.remove(mode.key)) on.add(mode.key) else if (on.size < WidgetSettings.MIN_ON) { on.add(mode.key); return@build }
+            if (!on.remove(mode.key)) { if (on.size >= WidgetSettings.MAX_ON) return@build; on.add(mode.key) }
+            else if (on.size < WidgetSettings.MIN_ON) { on.add(mode.key); return@build }
             Haptics.commit(box)
             WidgetSettings.setEnabledKeys(this, on)
             render()
@@ -144,8 +145,8 @@ class WidgetSettingsActivity : Activity() {
             }
             boxes.getValue(mode.key).apply {
                 isChecked = checked
-                // The last two checked cannot be unchecked.
-                isEnabled = !checked || on.size > WidgetSettings.MIN_ON
+                // The last two checked cannot be unchecked, nor a seventh checked.
+                isEnabled = if (checked) on.size > WidgetSettings.MIN_ON else on.size < WidgetSettings.MAX_ON
             }
         }
     }

@@ -40,6 +40,7 @@ class LanguageActivity : Activity() {
         val exact = ThemeRes.LANGUAGES.any { it.first == current }
 
         val root = SettingRowFactory.screen(this)
+        root.addView(SettingRowFactory.title(this, R.string.settings_language_title))
         val card = SettingRowFactory.card(this)
         for ((tag, name) in ThemeRes.LANGUAGES) {
             val selected = tag == current || (!exact && base != "zh" && tag == base)

@@ -114,6 +114,8 @@ phone-specific piece lives outside it.
   chip, EQ preset delete, and the preset delete in 3.8. EQ editor Duplicate reuses the import path
   (`pendingImport` + `createCustomEq`); a long press on it still copies the preset as text.
 - **Settings (step 5)** is `SettingsActivity`, opened by the header cog (the old cog bottom sheet is gone).
+  Sections: Appearance, General (language, haptics, background service, Dev tools button; the Developer
+  section was folded in, [USER] 2026-09-27), App. The Language screen has its title again.
   Prefs: `haptics` (default on), `backgroundService` (see Connection robustness) and `devToolsButton` (default
   on, read in `MainActivity.onResume`).
 - **About** is `AboutActivity` (2026-09-26): icon, version, tagline, GitHub and Ko-fi buttons (default browser;
@@ -419,17 +421,21 @@ packet-listener path.
 ## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md)
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
-generated as one family (`widget_pages` 2x2, `widget_pages_m` 3x2, `widget_pages_l` 3x3, plus `widget_grid` and
+generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus `widget_grid` and
 `widget_disconnected`; the three page layouts come from `scripts/widget-layouts.py`, edit it and rerun, never the XML):
-**2x2 battery** (`BatteryWidgetProvider`), **2x2 controls** (`SmallWidgetProvider`), **3x2** (`AncWidgetProvider`),
-**3x3** (`LargeWidgetProvider`). The old class names are kept so placed widgets survive; the 4x1 strip is gone.
-**Every size has two pages, battery and controls** ([USER] 2026-09-27; the 2x2 had them first): the page is
-stored per widget id (`widgetPage_<id>`; "controls" starts on controls, the rest on battery) and swapped by the
-`w_swap` buttons (controls page: top-right corner; battery page: end of the 2x2 case bar or of the 3x2 / 3x3 name
-strip) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 400 ms
+**2x2** (`BatteryWidgetProvider`), **3x3** (`LargeWidgetProvider`, the 2x2 layout scaled up) and **4x2**
+(`AncWidgetProvider`, 3x2 until 2026-09-27) ([USER] 2026-09-27: no more sizes for now). All fixed size,
+`resizeMode="none"`. The old class names are kept so placed widgets survive; the 4x1 strip and the 2x2 controls
+widget (`SmallWidgetProvider`) are gone. No model name on any widget ([USER] 2026-09-27).
+**Every size has two pages, battery and controls** ([USER] 2026-09-27): the page is
+stored per widget id (`widgetPage_<id>`, battery first) and swapped by the
+`w_swap` buttons (top-right corner, except the 2x2 / 3x3 battery page: end of the case bar) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 400 ms
 for a second one before running it (`WidgetActionReceiver.doubleTap`). Battery pages: 2x2 and 3x3 = two bud
-panels + case bar, 3x2 = three panels; 3x2 / 3x3 add the model name (`ModelCatalog`) and size their rings from
-`getAppWidgetOptions` (`ringDp`, redrawn on resize). All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
+panels + case bar, 4x2 = three panels sized from `getAppWidgetOptions` (`ringDp`).
+**The mode button has two copies** (`w_mode_fills` / `w_mode_flip`, [USER] 2026-09-27: better switching
+animations): a mode change fills the hidden copy and flips to it, the fill cross-fading while the icon and name
+tick up (`anim/widget_tick_*`). `WidgetSettings.modeSlot` stores the copy and the mode per widget; the flips
+follow the same rule as the pages below. The mode list is filled on every update, so a pick fades out lit. All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
 and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
 **Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
 FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs
@@ -437,7 +443,7 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
 `adb logcat` while the widget updates.
 
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
-  (default) or Open list, the ordered checked modes (min 2, same list for both), Low latency button (default on),
+  (default) or Open list, the ordered checked modes (2 to 6: the list has six cells and there are seven modes since Smart; same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
 - **Two nested `ViewFlipper`s** (2026-09-27): outer `w_pages` (cross-fade, `res/anim/widget_fade_*`, 220 ms) holds
   `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide` (slide, `widget_slide_*`, 280 ms) holds the
@@ -479,7 +485,10 @@ a shared one hung.
 - **The case icon keeps its LED dot**, and the lid cut stays full width — no hinge bulge or opening.
 - **Icons keep their SVG's true ratio** (buds 176x272, case 496x400). `BudsStatusView` fits each into
   its ring by that ratio; the widget still uses its own sized boxes.
-- The 2026 icon work is done for the app and the launcher.
+- **Launcher and notification icon** ([USER] 2026-09-27): the app's own bud glyphs (`ic_bud_right` on the
+  left facing left, `ic_bud_left` on the right facing right), 4 units apart, as large as the adaptive safe
+  circle allows (`ic_launcher_foreground.xml` has the measurement). `ic_stat_buds` is the same pair. minSdk 26
+  means only the adaptive icon is used; the legacy PNG mipmaps were deleted. Find my earbuds shows no bud icons.
 
 ## Repo hygiene
 

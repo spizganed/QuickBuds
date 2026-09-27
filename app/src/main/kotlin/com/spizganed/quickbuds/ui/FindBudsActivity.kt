@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -59,16 +57,6 @@ class FindBudsActivity : Activity() {
             setPadding(0, dp(10f), 0, dp(30f))
         })
 
-        // Both buds, as a picture of what rings — not buttons, since there is no per-bud choice.
-        val budRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-        }
-        budRow.addView(budIcon(R.drawable.ic_bud_left))
-        budRow.addView(View(this).apply { layoutParams = LinearLayout.LayoutParams(dp(28f), dp(1f)) })
-        budRow.addView(budIcon(R.drawable.ic_bud_right))
-        root.addView(budRow)
-
         playButton = Button(this).apply {
             setTextColor(ThemeRes.color(this@FindBudsActivity, R.attr.appColorTextPrimary))
             background = ThemeRes.iconButton(context)
@@ -76,28 +64,13 @@ class FindBudsActivity : Activity() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(32f) }
+            )
             setOnClickListener { if (playing) setTone(false) else startWithWarning() }
         }
         root.addView(playButton)
         render()
 
         setContentView(ScrollView(this).apply { addView(root) })
-    }
-
-    /** Box at the drawable's own 62 x 96 ratio, so fitCenter fills it without letterboxing. */
-    private fun budIcon(iconRes: Int): ImageView {
-        val dp = { v: Float -> ThemeRes.dp(this, v) }
-        return ImageView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(93f), dp(144f))
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            setImageDrawable(
-                ThemeRes.tint(
-                    this@FindBudsActivity, iconRes,
-                    ThemeRes.color(this@FindBudsActivity, R.attr.appColorTextPrimary)
-                )
-            )
-        }
     }
 
     private fun startWithWarning() {

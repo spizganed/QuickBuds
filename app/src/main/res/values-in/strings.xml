@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Rendah</string>
     <string name="anc_mode_medium">Sedang</string>
     <string name="anc_mode_high">Tinggi</string>
+    <string name="anc_mode_smart">Cerdas</string>
     <string name="row_game_title">Mode latensi rendah</string>
     <string name="row_game_sub">Tetap sinkron dengan video</string>
     <string name="row_hires_title">Audio kualitas tinggi</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Tema &amp; warna</string>
     <string name="settings_appearance">Tampilan</string>
     <string name="settings_general">Umum</string>
-    <string name="settings_developer">Developer</string>
     <string name="settings_app">Aplikasi</string>
     <string name="settings_layout_title">Tata letak beranda</string>
     <string name="settings_layout_sub">Urutkan ulang dan sembunyikan baris</string>
@@ -248,11 +248,11 @@
     <string name="widget_mode_anc_low">ANC Rendah</string>
     <string name="widget_mode_anc_medium">ANC Sedang</string>
     <string name="widget_mode_anc_high">ANC Tinggi</string>
+    <string name="widget_mode_anc_smart">ANC Cerdas</string>
     <string name="widget_low_latency">Latensi rendah</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, ketuk untuk mode berikutnya</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, ketuk untuk memilih mode</string>
     <string name="widget_battery_name">QuickBuds baterai</string>
-    <string name="widget_controls_name">QuickBuds kontrol</string>
     <string name="widget_large_name">QuickBuds besar</string>
     <string name="settings_language_title">Bahasa</string>
     <string name="settings_language_sub">Bahasa aplikasi</string>

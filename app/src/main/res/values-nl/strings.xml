@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Laag</string>
     <string name="anc_mode_medium">Gemiddeld</string>
     <string name="anc_mode_high">Hoog</string>
+    <string name="anc_mode_smart">Slim</string>
     <string name="row_game_title">Modus met lage latentie</string>
     <string name="row_game_sub">Blijft synchroon met video</string>
     <string name="row_hires_title">Audio van hoge kwaliteit</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Thema en kleuren</string>
     <string name="settings_appearance">Weergave</string>
     <string name="settings_general">Algemeen</string>
-    <string name="settings_developer">Ontwikkelaar</string>
     <string name="settings_app">App</string>
     <string name="settings_layout_title">Indeling startscherm</string>
     <string name="settings_layout_sub">Rijen herschikken en verbergen</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC laag</string>
     <string name="widget_mode_anc_medium">ANC gemiddeld</string>
     <string name="widget_mode_anc_high">ANC hoog</string>
+    <string name="widget_mode_anc_smart">ANC slim</string>
     <string name="widget_low_latency">Lage latentie</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, tik voor volgende modus</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, tik om een modus te kiezen</string>
     <string name="widget_battery_name">QuickBuds batterij</string>
-    <string name="widget_controls_name">QuickBuds bediening</string>
     <string name="widget_large_name">QuickBuds groot</string>
     <string name="settings_language_title">Taal</string>
     <string name="settings_language_sub">Taal van de app</string>

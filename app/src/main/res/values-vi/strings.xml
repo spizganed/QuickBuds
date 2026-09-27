@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Nhẹ</string>
     <string name="anc_mode_medium">Vừa</string>
     <string name="anc_mode_high">Mạnh</string>
+    <string name="anc_mode_smart">Thông minh</string>
     <string name="row_game_title">Chế độ độ trễ thấp</string>
     <string name="row_game_sub">Đồng bộ với video</string>
     <string name="row_hires_title">Âm thanh chất lượng cao</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Chủ đề &amp; màu sắc</string>
     <string name="settings_appearance">Giao diện</string>
     <string name="settings_general">Chung</string>
-    <string name="settings_developer">Nhà phát triển</string>
     <string name="settings_app">Ứng dụng</string>
     <string name="settings_layout_title">Bố cục màn hình chính</string>
     <string name="settings_layout_sub">Sắp xếp và ẩn các hàng</string>
@@ -248,11 +248,11 @@
     <string name="widget_mode_anc_low">ANC Thấp</string>
     <string name="widget_mode_anc_medium">ANC Vừa</string>
     <string name="widget_mode_anc_high">ANC Cao</string>
+    <string name="widget_mode_anc_smart">ANC Thông minh</string>
     <string name="widget_low_latency">Độ trễ thấp</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, chạm để chuyển chế độ tiếp theo</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, chạm để chọn chế độ</string>
     <string name="widget_battery_name">QuickBuds pin</string>
-    <string name="widget_controls_name">QuickBuds điều khiển</string>
     <string name="widget_large_name">QuickBuds lớn</string>
     <string name="settings_language_title">Ngôn ngữ</string>
     <string name="settings_language_sub">Ngôn ngữ ứng dụng</string>

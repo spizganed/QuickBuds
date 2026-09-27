@@ -78,7 +78,6 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 - **Themes, still open:** auto-detect (follow system light/dark with a built-in preset) and
   saved / recent colours in the picker.
-- **New app icon.** The current one is acceptable, but a better one is welcome.
 
 ## Connection and battery
 

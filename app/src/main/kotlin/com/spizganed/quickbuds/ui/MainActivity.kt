@@ -652,7 +652,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /** The ANC strength the ANC segment applies; the last one seen, else the buds' middle one. */
     private var lastAncLevel: String
         get() = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(KEY_ANC_LEVEL, null)
-            ?.takeIf { it in ancModes.levels } ?: ancModes.levels.getOrElse(ancModes.levels.size / 2) { AncModes.LEVELS[1] }
+            ?.takeIf { it in ancModes.levels } ?: ancModes.levels.filter { it != AncModes.SMART }.let { it.getOrElse(it.size / 2) { AncModes.LEVELS[1] } }
         set(v) { getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit().putString(KEY_ANC_LEVEL, v).apply() }
 
     /** The connected model's noise modes ([AncModes]); the segments and pills show only these. */
@@ -671,7 +671,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         }
         findViewById<android.widget.FrameLayout>(R.id.ancSlot).apply { removeAllViews(); addView(ancView) }
         ancLevels.removeAllViews()
-        val names = intArrayOf(R.string.anc_mode_low, R.string.anc_mode_medium, R.string.anc_mode_high)
+        val names = intArrayOf(R.string.anc_mode_low, R.string.anc_mode_medium, R.string.anc_mode_high, R.string.anc_mode_smart)
         ancModes.levels.forEachIndexed { i, mode ->
             ancLevels.addView(TextView(this).apply {
                 setText(names[AncModes.LEVELS.indexOf(mode)])
@@ -714,7 +714,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun circleFor(mode: String): String = when (mode) {
         "Transparency" -> "Transparency"
         "Adaptive" -> "Adaptive"
-        "ANC-Light", "ANC-Medium", "ANC-Deep" -> "ANC"
+        "ANC-Light", "ANC-Medium", "ANC-Deep", AncModes.SMART -> "ANC"
         else -> "Off"
     }
 
@@ -750,13 +750,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /**
      * Applies an ANC mode: sends the command, updates state, repaints everything.
      *
-     * Smart is deliberately NOT offered. The user does not want it, so there is no UI
-     * path that can select it and no command is sent for it ([AncModes] drops it).
-     *
-     * ADAPTIVE, BY CONTRAST, IS HANDLED — and it is a different mode from Smart, not
-     * another name for it: the buds set them with different bits (0x0800 vs 0x0080)
-     * and report them differently too. "The adaptive mode" in the note above meant the
-     * one the vendor app calls Adaptive, which he now wants on the main screen.
+     * Smart is an ANC level (its pill after High, 2026-09-27: near-full HeyMelody parity).
+     * Adaptive is a different mode, not another name for it: the buds set them with
+     * different bits (0x0800 vs 0x0080) and report them differently too.
      */
     private fun selectAnc(mode: String) {
         manager.sendAnc(mode)

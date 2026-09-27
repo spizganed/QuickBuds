@@ -24,6 +24,7 @@
     <string name="anc_mode_low">Låg</string>
     <string name="anc_mode_medium">Medel</string>
     <string name="anc_mode_high">Hög</string>
+    <string name="anc_mode_smart">Smart</string>
     <string name="row_game_title">Läge med låg latens</string>
     <string name="row_game_sub">Håller takten med video</string>
     <string name="row_hires_title">Ljud med hög kvalitet</string>
@@ -168,7 +169,6 @@
     <string name="theme_title">Tema och färger</string>
     <string name="settings_appearance">Utseende</string>
     <string name="settings_general">Allmänt</string>
-    <string name="settings_developer">Utvecklare</string>
     <string name="settings_app">App</string>
     <string name="settings_layout_title">Startskärmens layout</string>
     <string name="settings_layout_sub">Ändra ordning och dölj rader</string>
@@ -246,11 +246,11 @@
     <string name="widget_mode_anc_low">ANC låg</string>
     <string name="widget_mode_anc_medium">ANC medel</string>
     <string name="widget_mode_anc_high">ANC hög</string>
+    <string name="widget_mode_anc_smart">ANC smart</string>
     <string name="widget_low_latency">Låg latens</string>
     <string name="widget_mode_desc_cycle">%1$s: %2$s, tryck för nästa läge</string>
     <string name="widget_mode_desc_list">%1$s: %2$s, tryck för att välja läge</string>
     <string name="widget_battery_name">QuickBuds batteri</string>
-    <string name="widget_controls_name">QuickBuds kontroller</string>
     <string name="widget_large_name">QuickBuds stor</string>
     <string name="settings_language_title">Språk</string>
     <string name="settings_language_sub">Appens språk</string>
