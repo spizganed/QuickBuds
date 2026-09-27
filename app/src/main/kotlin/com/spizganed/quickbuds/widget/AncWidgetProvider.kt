@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
 import com.spizganed.quickbuds.ui.BudsStatusView
@@ -298,8 +299,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             else -> context.getString(R.string.status_out)
         }
 
-        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
-            val mode = WidgetSettings.modeOf(state.ancMode)
+        private fun modeControls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
+            val mode =WidgetSettings.modeOf(state.ancMode)
             val active = mode.key != "off"
             val name = context.getString(mode.name)
             val opensList = WidgetSettings.tapOpensList(context)
@@ -317,6 +318,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 context.getString(R.string.anc_section), name
             ))
             v.setOnClickPendingIntent(R.id.w_mode, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id, swap = swap))
+        }
+
+        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
+            // A model with no noise control has no mode button (set both ways, see update()).
+            // ponytail: low latency then sits alone at the top; stretch it if such a model shows up.
+            val hasAnc = !AncModes.of(context).isEmpty
+            v.setViewVisibility(R.id.w_mode, if (hasAnc) View.VISIBLE else View.GONE)
+            if (hasAnc) modeControls(context, v, p, state, kind, id, swap)
 
             if (!WidgetSettings.lowLatencyShown(context)) {
                 v.setViewVisibility(LL.root, View.GONE)

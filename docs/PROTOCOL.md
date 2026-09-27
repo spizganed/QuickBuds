@@ -102,6 +102,7 @@ garbage rather than an error.
 |-----|------|------|---------|--------|
 | `0x0100` | `0x8100` | Handshake | — | `[CAPTURE]` |
 | `0x0103` | `0x8103` | Product ID | — | `[CAPTURE]` |
+| `0x0105` | `0x8105` | Firmware version | — → `00 <count>` + UTF-8 `deviceType,versionType,version` triples | `[CAPTURE]` see below |
 | `0x0106` | `0x8106` | Battery | — | `[CAPTURE]` |
 | `0x0108` | `0x8108` | **getKeyFunction** (gestures) | `<status> <count> <deviceType...>` | `[CAPTURE]` see §6 |
 | `0x0109` | `0x8109` | Wearing / in-case | — | `[CAPTURE]` |
@@ -112,6 +113,12 @@ garbage rather than an error.
 | `0x0130` | `0x8130` | Alert-sound volume | — → `00 <level>` | `[CAPTURE]` see §9 |
 
 Responses are **`cmd | 0x8000`**. That is a reliable rule `[OSS]`.
+
+**Firmware version `0x8105`** `[CAPTURE]` 2026-09-27, Buds 4: `00 04` + `1,2,138,2,2,138,3,1,01,3,2,105`.
+`00` is the status and `04` the triple count; the OSS write-up missed the count byte. So four
+`deviceType,versionType,version` triples: `1,2,138` · `2,2,138` · `3,1,01` · `3,2,105`. Device types 1 / 2 / 3
+look like left / right / case and HeyMelody joins versions with dots, but neither is confirmed against
+HeyMelody's own screen yet. The app queries it on connect and only logs it (`FIRMWARE:` line).
 
 ### Broadcast / notify (0x02xx)
 

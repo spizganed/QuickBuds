@@ -292,6 +292,8 @@ class BudsConnectionManager(private val context: Context) {
                 query(OpoProtocol.CMD_QUERY_KEY_FUNCTION, OpoProtocol.queryKeyFunction(), "query key function")
                 // The hold's ANC cycle, see OpoProtocol.queryNoiseSwitchModes().
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryNoiseSwitchModes(), "query noise switch")
+                // Logged only until a Buds 4 reply confirms the [OSS] format (ROADMAP, firmware version).
+                query(OpoProtocol.CMD_QUERY_FIRMWARE, OpoProtocol.queryFirmware(), "query firmware")
             } catch (e: Exception) {
                 log("Init sequence error: ${e.message}")
             }
@@ -912,6 +914,7 @@ class BudsConnectionManager(private val context: Context) {
 
         val explained = cmd == 0x8100 ||                 // handshake
             cmd == 0x8103 ||                             // product id
+            cmd == 0x8105 ||                             // firmware version
             cmd == 0x8106 ||                             // battery query reply
             cmd == 0x8109 ||                             // wearing query reply
             cmd == OpoProtocol.CMD_RESP_WEARING ||
@@ -963,6 +966,13 @@ class BudsConnectionManager(private val context: Context) {
                     AncModes.LEVELS).filter { anc.supports(it) }.joinToString { "$it=${anc.bit(it)}" }.ifEmpty { "none" })
                 handler.post { listeners.forEach { it.onCapabilities() } }
             }
+            return
+        }
+
+        // `00 <count>` + UTF-8 `deviceType,versionType,version` triples (PROTOCOL.md §3). Logged only for now.
+        if (cmd == 0x8105) {
+            val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
+            log("FIRMWARE: status=${payload.firstOrNull()?.toInt() ?: -1} text=\"$text\" RAW=[${OpoProtocol.bytesToHex(payload)}]")
             return
         }
 

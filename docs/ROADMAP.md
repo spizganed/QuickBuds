@@ -27,8 +27,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
    - **Done 2026-09-27: per-model noise control.** HeyMelody's `noiseReductionMode` per product id
      (`assets/models.json`, `AncModes.kt`, PROTOCOL.md §5) sets the bits both ways and decides which
      segments, level pills and widget modes show. Buds 4 unchanged on device; other models unverified
-     until an owner reads a write back. Open: the widget still shows its mode button on a model with
-     no noise control.
+     until an owner reads a write back.
    - **Done 2026-09-27: detection and the model list.** `ModelCatalog` folds the colour ranges and
      matches id and Bluetooth name as HeyMelody does (PROTOCOL.md §4). The device name under the rings
      shows the model; a header button before the connect pill opens `ModelActivity`: Automatic plus
@@ -46,9 +45,8 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      sound, hearing enhancement, custom EQ…). OSS has been wrong before (`0x0402`, PROTOCOL.md §6), so
      each builder goes in with a PROTOCOL.md entry tagged `[OSS]`, and a feature Buds 4 lacks stays
      marked unverified until an owner of that model confirms a write by read-back.
-   - **Firmware version**: query `0x0105`; `[OSS]` reply is `00`, one byte, then UTF-8 text of
-     `deviceType,versionType,version` triples (`DeviceInfoManager.ApplyFirmware` joins the versions
-     with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
+   - **Firmware version**: queried and logged on connect; format confirmed on Buds 4 (PROTOCOL.md §3).
+     Next: show it in the Earbud settings hub, once the triples are matched to HeyMelody's own screen.
    - The capture script and contributor docs are not needed for this.
    - **Sources checked 2026-09-27** ([USER]: reuse what the OSS clients already do). Both carry the same
      137-model list (56 OPPO, 49 realme, 32 OnePlus). `Leaf-lsgtky/OppoPods` (Kotlin, Android) now has
@@ -79,14 +77,11 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 - **Next: a new White preset** ([USER] 2026-09-27): the current White colours look off and need a
   redesign. Do it together with **auto-detect** (follow the system light/dark setting, switching
   between a dark built-in and the new White).
-- **Themes, still open:** saved / recent colours in the picker.
 
 ## Connection and battery
 
-- **Keep-alive: drop it entirely?** Open. It is now 300 s. Dropping it needs a long session
-  without it, to prove the link does not go stale.
-- **Connect when the audio link comes up.** Done 2026-09-26, awaiting his test (CLAUDE.md,
-  Connection robustness).
+- **Keep-alive: drop it entirely?** Open. It is now 300 s. A test build without it is on his phone
+  since 2026-09-27 evening (not committed); his report decides.
 
 ## Docs cleanup
 

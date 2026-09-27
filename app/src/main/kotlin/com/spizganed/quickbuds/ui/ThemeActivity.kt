@@ -137,7 +137,7 @@ class ThemeActivity : Activity() {
             sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(active.accent))
             accentCard.addView(row)
             if (accentOpen) accentCard.addView(ColorPickerView(
-                this, active.accent,
+                this, active.accent, "accent:${active.id}",
                 onChange = { c ->
                     swatch.background = ThemeRes.shape(this, c, p.outline, 15f)
                     sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(c))

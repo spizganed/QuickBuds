@@ -224,7 +224,7 @@ object LogDecoder {
                 sb.toString()
             }
             0x810D -> "Status query response ($cmdHex)"
-            0x8105 -> "Ear status response (legacy) ($cmdHex)"
+            0x8105 -> "Firmware version response ($cmdHex): ${data.joinToString(" ") { "%02X".format(it) }}"
             0x8122 -> "EQ query response ($cmdHex)"
             0x8130 -> "Alert volume response ($cmdHex): ${data.joinToString(" ") { "%02X".format(it) }}"
             0x0501 -> {

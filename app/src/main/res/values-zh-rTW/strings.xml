@@ -228,6 +228,7 @@
     <string name="preset_hue">色相</string>
     <string name="preset_saturation">飽和度</string>
     <string name="preset_brightness">亮度</string>
+    <string name="preset_recent">最近</string>
     <string name="preset_hex">十六進位色彩</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->

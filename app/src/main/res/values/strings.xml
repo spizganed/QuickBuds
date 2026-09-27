@@ -306,6 +306,7 @@
     <string name="preset_hue">Hue</string>
     <string name="preset_saturation">Saturation</string>
     <string name="preset_brightness">Brightness</string>
+    <string name="preset_recent">Recent</string>
     <string name="preset_hex">Hex colour</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->

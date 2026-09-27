@@ -228,6 +228,7 @@
     <string name="preset_hue">ह्यू</string>
     <string name="preset_saturation">सैचुरेशन</string>
     <string name="preset_brightness">ब्राइटनेस</string>
+    <string name="preset_recent">हाल के</string>
     <string name="preset_hex">हेक्स रंग</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->

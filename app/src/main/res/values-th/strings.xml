@@ -228,6 +228,7 @@
     <string name="preset_hue">สีสัน</string>
     <string name="preset_saturation">ความอิ่มตัว</string>
     <string name="preset_brightness">ความสว่าง</string>
+    <string name="preset_recent">ล่าสุด</string>
     <string name="preset_hex">สีแบบเลขฐานสิบหก</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->

@@ -228,6 +228,7 @@
     <string name="preset_hue">Відтінок</string>
     <string name="preset_saturation">Насиченість</string>
     <string name="preset_brightness">Яскравість</string>
+    <string name="preset_recent">Нещодавні</string>
     <string name="preset_hex">Колір у HEX</string>
     <string name="widget_settings_title">Налаштування віджета</string>
     <string name="widget_settings_sub">Кнопка режиму, режими, низька затримка</string>

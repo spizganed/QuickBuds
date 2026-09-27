@@ -228,6 +228,7 @@
     <string name="preset_hue">Tint</string>
     <string name="preset_saturation">Verzadiging</string>
     <string name="preset_brightness">Helderheid</string>
+    <string name="preset_recent">Recent</string>
     <string name="preset_hex">Hex-kleur</string>
     <string name="widget_settings_title">Widgetinstellingen</string>
     <string name="widget_settings_sub">Modusknop, modi, lage latentie</string>

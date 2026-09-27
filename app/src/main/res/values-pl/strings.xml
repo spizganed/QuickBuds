@@ -228,6 +228,7 @@
     <string name="preset_hue">Odcień</string>
     <string name="preset_saturation">Nasycenie</string>
     <string name="preset_brightness">Jasność</string>
+    <string name="preset_recent">Ostatnie</string>
     <string name="preset_hex">Kolor hex</string>
     <string name="widget_settings_title">Ustawienia widżetu</string>
     <string name="widget_settings_sub">Przycisk trybu, tryby, niskie opóźnienie</string>

@@ -228,6 +228,7 @@
     <string name="preset_hue">色相</string>
     <string name="preset_saturation">彩度</string>
     <string name="preset_brightness">明度</string>
+    <string name="preset_recent">最近</string>
     <string name="preset_hex">16 進カラー</string>
     <string name="widget_settings_title">ウィジェットの設定</string>
     <string name="widget_settings_sub">モードボタン、モード、低遅延</string>

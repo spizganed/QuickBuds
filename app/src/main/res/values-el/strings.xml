@@ -228,6 +228,7 @@
     <string name="preset_hue">Απόχρωση</string>
     <string name="preset_saturation">Κορεσμός</string>
     <string name="preset_brightness">Φωτεινότητα</string>
+    <string name="preset_recent">Πρόσφατα</string>
     <string name="preset_hex">Χρώμα hex</string>
     <string name="widget_settings_title">Ρυθμίσεις widget</string>
     <string name="widget_settings_sub">Κουμπί λειτουργίας, λειτουργίες, χαμηλή καθυστέρηση</string>

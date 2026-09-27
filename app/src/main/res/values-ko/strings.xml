@@ -228,6 +228,7 @@
     <string name="preset_hue">색조</string>
     <string name="preset_saturation">채도</string>
     <string name="preset_brightness">밝기</string>
+    <string name="preset_recent">최근</string>
     <string name="preset_hex">16진수 색상</string>
     <string name="widget_settings_title">위젯 설정</string>
     <string name="widget_settings_sub">모드 버튼, 모드, 저지연</string>

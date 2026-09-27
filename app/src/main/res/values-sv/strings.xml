@@ -228,6 +228,7 @@
     <string name="preset_hue">Nyans</string>
     <string name="preset_saturation">Mättnad</string>
     <string name="preset_brightness">Ljusstyrka</string>
+    <string name="preset_recent">Senaste</string>
     <string name="preset_hex">Hexfärg</string>
     <string name="widget_settings_title">Widgetinställningar</string>
     <string name="widget_settings_sub">Lägesknapp, lägen, låg latens</string>

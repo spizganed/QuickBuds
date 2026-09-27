@@ -29,6 +29,8 @@ object OpoProtocol {
     const val CMD_SET_ANC = 0x0404
     const val CMD_SET_SPATIAL = 0x0422
     const val CMD_QUERY_BATTERY = 0x0106
+    /** Firmware version, empty payload -> `0x8105`. `[CAPTURE]` 2026-09-27 (PROTOCOL.md §3). */
+    const val CMD_QUERY_FIRMWARE = 0x0105
     const val CMD_QUERY_ANC = 0x010C
     const val CMD_QUERY_STATUS = 0x010D
     const val CMD_QUERY_EQ = 0x010F
@@ -191,6 +193,7 @@ object OpoProtocol {
         buildPacket(CMD_SET_FEATURE, payload = featurePayload(featureId, on))
 
 
+    fun queryFirmware(): ByteArray = buildPacket(CMD_QUERY_FIRMWARE)
     fun queryBattery(): ByteArray = buildPacket(CMD_QUERY_BATTERY, seq = 0xF0)
     fun queryAncMode(): ByteArray = buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x01, 0x01))
 

@@ -228,6 +228,7 @@
     <string name="preset_hue">Ton</string>
     <string name="preset_saturation">Doygunluk</string>
     <string name="preset_brightness">Parlaklık</string>
+    <string name="preset_recent">Son kullanılanlar</string>
     <string name="preset_hex">Hex renk</string>
     <string name="widget_settings_title">Widget ayarları</string>
     <string name="widget_settings_sub">Mod düğmesi, modlar, düşük gecikme</string>

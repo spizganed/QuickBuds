@@ -228,6 +228,7 @@
     <string name="preset_hue">Színárnyalat</string>
     <string name="preset_saturation">Telítettség</string>
     <string name="preset_brightness">Fényerő</string>
+    <string name="preset_recent">Legutóbbiak</string>
     <string name="preset_hex">Hex szín</string>
     <string name="widget_settings_title">Widget-beállítások</string>
     <string name="widget_settings_sub">Módgomb, módok, alacsony késleltetés</string>

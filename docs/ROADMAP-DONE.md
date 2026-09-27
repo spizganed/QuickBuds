@@ -91,6 +91,12 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   (fill cross-fades, icon and name tick up). Smart ANC as a fourth level (app and widget, confirmed on
   Buds 4). New launcher and notification icon from the app's own bud glyphs; no bud icons on Find my
   earbuds. Dev tools button moved into Settings › General; the Language screen has its title back.
+- Auto-connect when the audio link comes up: confirmed by him.
+- Firmware version `0x0105` is queried on connect and logged (`FIRMWARE:`); the Buds 4 reply confirmed
+  the format with one correction, a count byte after the status (PROTOCOL.md §3).
+- The widget hides its mode button on a model with no noise control.
+- Colour picker: the last five committed colours under the quick swatches ("Recent"), shared by Edit
+  preset and the built-in accent picker; swatches have a thin outline so a card-coloured one shows.
 
 ## Docs
 

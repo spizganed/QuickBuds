@@ -228,6 +228,7 @@
     <string name="preset_hue">Farbton</string>
     <string name="preset_saturation">Sättigung</string>
     <string name="preset_brightness">Helligkeit</string>
+    <string name="preset_recent">Zuletzt</string>
     <string name="preset_hex">Hex-Farbe</string>
     <string name="widget_settings_title">Widget-Einstellungen</string>
     <string name="widget_settings_sub">Modus-Button, Modi, niedrige Latenz</string>

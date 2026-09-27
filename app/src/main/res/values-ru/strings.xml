@@ -228,6 +228,7 @@
     <string name="preset_hue">Оттенок</string>
     <string name="preset_saturation">Насыщенность</string>
     <string name="preset_brightness">Яркость</string>
+    <string name="preset_recent">Недавние</string>
     <string name="preset_hex">Цвет в HEX</string>
     <string name="widget_settings_title">Настройки виджета</string>
     <string name="widget_settings_sub">Кнопка режима, режимы, низкая задержка</string>

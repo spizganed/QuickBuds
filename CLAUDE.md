@@ -85,8 +85,9 @@ phone-specific piece lives outside it.
   `~/.gradle/gradle.properties` turns on the configuration cache and raises heaps (Gradle 3g, Kotlin 2g).
   **The phone's APK is `~/qb-build/_app/outputs/apk/release/app-release.apk`**, not `app/build/...`. Timed:
   clean build (no build cache) 147 s → 83 s; rebuild after a one-line edit 43 s → 3 s. **The configuration cache can miss an
-  edit to `app/build.gradle.kts`** (2026-09-27: a version bump built as the old version). After changing a build
-  script, build with `--no-configuration-cache` and check `aapt2 dump badging`. The daemon's
+  edit to `app/build.gradle.kts`** (2026-09-27: a version bump built as the old version). It also served an old version
+  with no build-script edit in the session (2026-09-27, versionCode 7 instead of 8), so **always check
+  `aapt2 dump badging`** and rebuild with `--no-configuration-cache` when the version is wrong. The daemon's
   "Unable to set daemon's environment variables" warning is harmless on Termux.
 
 ## UI revision (design/SPEC.md)
@@ -371,7 +372,7 @@ From `bluetooth/BudsConnectionManager.kt`.
 - `Connection reset by peer` / `Broken pipe` appear during long sessions.
 - **A lid close is not a lost link.** The buds push all-zero wear just before dropping; the manager
   logs `Case closed` and does not retry (2026-09-25).
-- **Auto-connect follows the audio link (2026-09-26, `[USER]`-requested, awaiting his test).**
+- **Auto-connect follows the audio link (2026-09-26, `[USER]`-requested, confirmed by him 2026-09-27).**
   `KeepAliveReceiver` connects RFCOMM when A2DP or HFP reports `STATE_CONNECTED`, not on the bare ACL
   link (the buds are not ready then, which meant a failed attempt and 5 s retries). ACL still sends a
   FORCE_CONNECT with `EXTRA_DELAY_MS` = 8 s as a fallback; it does nothing if already connected. The

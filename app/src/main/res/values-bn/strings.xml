@@ -228,6 +228,7 @@
     <string name="preset_hue">হিউ</string>
     <string name="preset_saturation">স্যাচুরেশন</string>
     <string name="preset_brightness">উজ্জ্বলতা</string>
+    <string name="preset_recent">সাম্প্রতিক</string>
     <string name="preset_hex">হেক্স রং</string>
     <string name="widget_settings_title">উইজেট সেটিংস</string>
     <string name="widget_settings_sub">মোড বোতাম, মোড, লো লেটেন্সি</string>

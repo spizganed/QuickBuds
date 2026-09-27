@@ -199,7 +199,7 @@ class PresetEditActivity : Activity() {
     }
 
     private fun picker(i: Int): View = ColorPickerView(
-        this, preset.tokens[i],
+        this, preset.tokens[i], "${preset.id}:$i",
         onChange = { c ->
             preview.palette = preset.withToken(i, c)
             liveSwatch?.background = swatchDrawable(c)

@@ -228,6 +228,7 @@
     <string name="preset_hue">Hue</string>
     <string name="preset_saturation">Saturation</string>
     <string name="preset_brightness">Liwanag</string>
+    <string name="preset_recent">Kamakailan</string>
     <string name="preset_hex">Hex na kulay</string>
     <string name="widget_settings_title">Mga setting ng widget</string>
     <string name="widget_settings_sub">Mode button, mga mode, low latency</string>

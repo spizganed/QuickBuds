@@ -20,10 +20,15 @@ import java.util.Locale
  * greys are reachable, [USER] 2026-09-26): hue, saturation and brightness sliders, a hex field and
  * the five quick swatches. [onChange] fires while a slider drags; [onCommit] on finger lift, hex
  * done / focus loss, or a swatch tap. Used by Edit preset and by the built-in accent picker.
+ *
+ * Under the swatches, the last [MAX_RECENT] committed colours from any picker ([remember]).
+ * [target] names what this picker edits: a new commit to the same target replaces its last recent
+ * colour instead of adding one, so dragging three sliders leaves one entry, not three.
  */
 class ColorPickerView(
     context: Context,
     initial: Int,
+    private val target: String,
     private val onChange: (Int) -> Unit,
     private val onCommit: (Int, View) -> Unit
 ) : LinearLayout(context) {
@@ -41,7 +46,7 @@ class ColorPickerView(
                 hsv = this@ColorPickerView.hsv
                 contentDescription = context.getString(labels[ch])
                 onChange = { v -> this@ColorPickerView.hsv[ch] = v; sync(); onChange(color()) }
-                onRelease = { v -> this@ColorPickerView.hsv[ch] = v; sync(); onCommit(color(), this) }
+                onRelease = { v -> this@ColorPickerView.hsv[ch] = v; sync(); commit(color(), this) }
                 layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                     .apply { if (ch > 0) topMargin = dp(6f) }
             }
@@ -68,7 +73,7 @@ class ColorPickerView(
             layoutParams = LayoutParams(dp(112f), dp(44f))
             fun apply(v: TextView) {
                 val parsed = parseHex(v.text.toString())
-                if (parsed == null) v.text = hex(color()) else if (parsed != color()) onCommit(parsed, v)
+                if (parsed == null) v.text = hex(color()) else if (parsed != color()) commit(parsed, v)
             }
             setOnEditorActionListener { v, action, _ ->
                 if (action == EditorInfo.IME_ACTION_DONE) {
@@ -81,20 +86,45 @@ class ColorPickerView(
             setOnFocusChangeListener { v, focused -> if (!focused) apply(v as TextView) }
         })
         bottom.addView(View(context), LayoutParams(0, 1, 1f))
-        listOf(R.color.swatch_red, R.color.swatch_orange, R.color.swatch_green, R.color.swatch_blue, R.color.swatch_purple)
-            .forEachIndexed { k, res ->
-                val c = context.getColor(res)
-                bottom.addView(View(context).apply {
-                    background = GradientDrawable().apply {
-                        shape = GradientDrawable.OVAL
-                        setColor(c)
-                        if (c == initial) setStroke(dp(2f), p.text)
-                    }
-                    layoutParams = LayoutParams(dp(30f), dp(30f)).apply { if (k > 0) marginStart = dp(8f) }
-                    setOnClickListener { onCommit(c, it) }
-                })
-            }
+        swatches(bottom, listOf(R.color.swatch_red, R.color.swatch_orange, R.color.swatch_green,
+            R.color.swatch_blue, R.color.swatch_purple).map { context.getColor(it) }, initial)
         addView(bottom)
+
+        val recent = recent(context)
+        if (recent.isNotEmpty()) addView(LinearLayout(context).apply {
+            orientation = HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(10f), 0, 0)
+            addView(TextView(context).apply {
+                setText(R.string.preset_recent)
+                setTextColor(p.textSecondary)
+                textSize = 13f
+            })
+            addView(View(context), LayoutParams(0, 1, 1f))
+            swatches(this, recent, initial)
+        })
+    }
+
+    private fun swatches(row: LinearLayout, colors: List<Int>, initial: Int) {
+        val p = ThemeRes.palette(context)
+        colors.forEachIndexed { k, c ->
+            row.addView(View(context).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(c)
+                    // The outline keeps a swatch in the card's own colour visible.
+                    setStroke(dp(if (c == initial) 2f else 1f), if (c == initial) p.text else p.outline)
+                }
+                contentDescription = hex(c)
+                layoutParams = LayoutParams(dp(30f), dp(30f)).apply { if (k > 0) marginStart = dp(8f) }
+                setOnClickListener { commit(c, it) }
+            })
+        }
+    }
+
+    private fun commit(c: Int, v: View) {
+        remember(context, target, c)
+        onCommit(c, v)
     }
 
     private fun color() = Color.HSVToColor(hsv)
@@ -103,6 +133,29 @@ class ColorPickerView(
     private fun sync() = sliders.forEach { it.hsv = hsv }
 
     companion object {
+        private const val KEY_RECENT = "recentColors"
+        private const val KEY_RECENT_TARGET = "recentColorsTarget"
+        const val MAX_RECENT = 5
+
+        private fun prefs(context: Context) =
+            context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+
+        fun recent(context: Context): List<Int> =
+            prefs(context).getString(KEY_RECENT, "")!!.split(',').mapNotNull { parseHex(it) }
+
+        /** Most recent first, no duplicates; a repeat commit to [target] replaces its own entry. */
+        fun remember(context: Context, target: String, color: Int) {
+            val prefs = prefs(context)
+            val list = recent(context).toMutableList()
+            if (prefs.getString(KEY_RECENT_TARGET, null) == target && list.isNotEmpty()) list.removeAt(0)
+            list.remove(color)
+            list.add(0, color)
+            prefs.edit()
+                .putString(KEY_RECENT, list.take(MAX_RECENT).joinToString(",") { hex(it) })
+                .putString(KEY_RECENT_TARGET, target)
+                .apply()
+        }
+
         fun hex(color: Int) = String.format(Locale.US, "#%06X", color and 0xFFFFFF)
 
         fun parseHex(s: String): Int? {

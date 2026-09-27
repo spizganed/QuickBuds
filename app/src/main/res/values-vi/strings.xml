@@ -228,6 +228,7 @@
     <string name="preset_hue">Sắc độ</string>
     <string name="preset_saturation">Độ bão hòa</string>
     <string name="preset_brightness">Độ sáng</string>
+    <string name="preset_recent">Gần đây</string>
     <string name="preset_hex">Mã màu hex</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
