@@ -16,12 +16,12 @@ import android.view.animation.DecelerateInterpolator
  * holding equal-width 64dp segments, each a 22dp icon over an 11.5sp label. The accent fill SLIDES
  * to the active segment. A tap reports the segment index through [onSegmentTapped]; the fill only
  * moves when [selected] is set — i.e. when the buds' state says so. [selected] = -1 is the neutral
- * (disconnected) state: no fill.
+ * (disconnected) state: no fill. With no icons (Dev Tools' Human / Raw) it is a 48dp text-only switch.
  */
 class AncSegmentedView(
     context: Context,
     private val labels: List<String>,
-    iconRes: List<Int>
+    iconRes: List<Int> = emptyList()
 ) : View(context) {
 
     var onSegmentTapped: ((Int) -> Unit)? = null
@@ -55,13 +55,13 @@ class AncSegmentedView(
     }
     private val pillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.accent }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = dp(11.5f); textAlign = Paint.Align.CENTER
+        textSize = dp(if (iconRes.isEmpty()) 14f else 11.5f); textAlign = Paint.Align.CENTER
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
     private val box = RectF()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(62f).toInt())
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (icons.isEmpty()) 48f else 62f).toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -80,18 +80,20 @@ class AncSegmentedView(
 
         val iconSize = dp(22f)
         val iconTop = h / 2 - dp(17f)
-        val baseline = h / 2 + dp(16f)
+        val baseline = if (icons.isEmpty()) h / 2 + textPaint.textSize * 0.35f else h / 2 + dp(16f)
         labels.forEachIndexed { i, label ->
             // The segment under the moving fill brightens as the fill arrives.
             val closeness = if (pos < 0f) 0f else (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)
             val c = Palette.blend(p.textSecondary, p.onAccent, closeness)
             val cx = inset + segW * i + segW / 2
-            icons[i].setTint(c)
-            icons[i].setBounds(
-                (cx - iconSize / 2).toInt(), iconTop.toInt(),
-                (cx + iconSize / 2).toInt(), (iconTop + iconSize).toInt()
-            )
-            icons[i].draw(canvas)
+            icons.getOrNull(i)?.run {
+                setTint(c)
+                setBounds(
+                    (cx - iconSize / 2).toInt(), iconTop.toInt(),
+                    (cx + iconSize / 2).toInt(), (iconTop + iconSize).toInt()
+                )
+                draw(canvas)
+            }
             textPaint.color = c
             canvas.drawText(label, cx, baseline, textPaint)
         }

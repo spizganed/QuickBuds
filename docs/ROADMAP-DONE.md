@@ -80,6 +80,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Dead code sweep: lint `UnusedResources` (27 colours, dimens and strings in every locale, the unused
   launcher background drawable, the `Theme.App` alias) and unreferenced Kotlin (`EarStatusParser`, the
   widget state helpers, the `0x0422` spatial builders, `sendAncOn`, `hexToBytes`).
+- Dev Tools redesigned to match the app: Settings-style screen and title, a Human-readable / Raw hex
+  segmented switch, the five actions in one icon card (Crash test asks first), the log in a normal card
+  with TX / RX in the accent colour.
 
 ## Docs
 

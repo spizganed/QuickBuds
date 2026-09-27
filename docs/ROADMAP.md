@@ -19,11 +19,7 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Small items** ([USER] 2026-09-27):
-   - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment
-     Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
-     with a confirm), the log in a normal card with TX / RX in the accent colour.
-2. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
+1. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
@@ -46,7 +42,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
    - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
-3. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
+2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
    repo (`[USER]` 2026-09-27).

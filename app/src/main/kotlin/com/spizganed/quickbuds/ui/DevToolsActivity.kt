@@ -15,11 +15,18 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.widget.Button
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.view.Gravity
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.protocol.LogDecoder
 import java.io.File
@@ -42,17 +49,13 @@ class DevToolsActivity : Activity() {
     private companion object {
         /** Folder created under Download for exported logs. */
         const val EXPORT_DIR_NAME = "QuickBudsLogs"
+
+        val DIRECTION = Regex("\\b(TX|RX)\\b")
     }
 
     private lateinit var logText: TextView
     private lateinit var scroll: ScrollView
-    private lateinit var btnTabHuman: Button
-    private lateinit var btnTabRaw: Button
-    private lateinit var btnClear: Button
-    private lateinit var btnExport: Button
-    private lateinit var btnCrashTest: Button
-    private lateinit var btnReconnect: Button
-    private lateinit var btnDisconnect: Button
+    private lateinit var tabs: AncSegmentedView
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -70,81 +73,77 @@ class DevToolsActivity : Activity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Theme before super.onCreate, same as every other screen. Previously this
-        // screen hardcoded its own colours and never called setTheme at all, which
-        // is part of why it did not match the rest of the app.
         ThemeRes.select(this)
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dev_tools)
 
-        logText = findViewById<TextView>(R.id.logText)
-        scroll = findViewById<ScrollView>(R.id.scroll)
-        btnTabHuman = findViewById<Button>(R.id.btnTabHuman)
-        btnTabRaw = findViewById<Button>(R.id.btnTabRaw)
-        btnClear = findViewById<Button>(R.id.btnClear)
-        btnExport = findViewById<Button>(R.id.btnExport)
-        btnCrashTest = findViewById<Button>(R.id.btnCrashTest)
-        btnReconnect = findViewById<Button>(R.id.btnReconnect)
-        btnDisconnect = findViewById<Button>(R.id.btnDisconnect)
-        applyTheme()
+        // Same frame as Settings: screen, title, then cards. Labels stay English by design.
+        val dp = { v: Float -> ThemeRes.dp(this, v) }
+        val root = SettingRowFactory.screen(this)
+        root.addView(SettingRowFactory.title(this, R.string.action_dev_tools))
 
-        btnTabHuman.setOnClickListener { switchToHumanTab() }
-        btnTabRaw.setOnClickListener { switchToRawTab() }
-        btnClear.setOnClickListener {
+        tabs = AncSegmentedView(this, listOf("Human-readable", "Raw hex")).apply {
+            selected = 0
+            onSegmentTapped = { i -> if (i == 0) switchToHumanTab() else switchToRawTab() }
+        }
+        root.addView(tabs, spaced(dp(12f)))
+
+        val actions = SettingRowFactory.card(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(4f), 0, dp(4f), 0)
+        }
+        actions.addView(action(R.drawable.ic_update, "Export") { if (checkStoragePermission()) exportLog() })
+        actions.addView(action(R.drawable.ic_delete, "Clear") {
             PacketLogger.clear()
             logText.text = ""
             lastLineCount = 0
-        }
-        // Proves the crash logger catches a crash before any app logic: arms a throw at the
-        // very start of the next launch (QuickBudsApp.attachBaseContext), then closes the app.
-        btnCrashTest.setOnClickListener {
-            getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit()
-                .putBoolean(QuickBudsApp.PREF_CRASH_ON_LAUNCH, true).commit()
-            Toast.makeText(this, "Reopen the app: it crashes once at launch", Toast.LENGTH_LONG).show()
-            finishAffinity()
-            android.os.Process.killProcess(android.os.Process.myPid())
-        }
-        btnExport.setOnClickListener {
-            if (checkStoragePermission()) {
-                exportLog()
-            }
-        }
-
-        // CONNECTION CONTROLS, moved here from the main screen's settings cog at his
-        // request. They are connection plumbing rather than a setting, and Dev Tools
-        // is where the connection is already diagnosed.
-        //
-        // Sent as a service ACTION rather than through a bound manager: this screen
-        // does not bind BudsService, and ACTION_FORCE_CONNECT / ACTION_FORCE_DISCONNECT
-        // already exist and are already handled there, so this reuses a path that is
-        // known to work instead of adding a second one.
-        btnReconnect.setOnClickListener {
+        })
+        // Connection controls go through the service actions the rest of the app already uses:
+        // this screen does not bind BudsService.
+        actions.addView(action(R.drawable.ic_stat_buds, "Reconnect") {
             startService(
-                Intent(this, com.spizganed.quickbuds.bluetooth.BudsService::class.java)
-                    .setAction(com.spizganed.quickbuds.bluetooth.BudsService.ACTION_FORCE_CONNECT)
-                    .putExtra(com.spizganed.quickbuds.bluetooth.BudsService.EXTRA_WITH_AUDIO, true)
+                Intent(this, BudsService::class.java)
+                    .setAction(BudsService.ACTION_FORCE_CONNECT)
+                    .putExtra(BudsService.EXTRA_WITH_AUDIO, true)
             )
             showInLog("reconnect requested (FORCE_CONNECT)")
-        }
-        btnDisconnect.setOnClickListener {
-            startService(
-                Intent(this, com.spizganed.quickbuds.bluetooth.BudsService::class.java)
-                    .setAction(com.spizganed.quickbuds.bluetooth.BudsService.ACTION_FORCE_DISCONNECT)
-            )
+        })
+        actions.addView(action(R.drawable.ic_power, "Disconnect") {
+            startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FORCE_DISCONNECT))
             showInLog("disconnect requested (FORCE_DISCONNECT)")
-        }
+        })
+        // Proves the crash logger catches a crash before any app logic: arms a throw at the
+        // very start of the next launch (QuickBudsApp.attachBaseContext), then closes the app.
+        actions.addView(action(R.drawable.ic_warning, "Crash test") {
+            ConfirmDialog.show(
+                this, "Crash test?",
+                "The app closes now and crashes once on its next launch, to test the crash logger.",
+                "Crash test"
+            ) {
+                getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit()
+                    .putBoolean(QuickBudsApp.PREF_CRASH_ON_LAUNCH, true).commit()
+                Toast.makeText(this, "Reopen the app: it crashes once at launch", Toast.LENGTH_LONG).show()
+                finishAffinity()
+                android.os.Process.killProcess(android.os.Process.myPid())
+            }
+        })
+        root.addView(actions, spaced(dp(12f)))
 
-        // Long-press the log to copy its whole visible contents.
-        //
-        // This was previously missing: the TextView had textIsSelectable, so text
-        // COULD be selected, but there was no one-gesture copy and no clipboard
-        // write at all — which is why copying felt broken. Selectable stays on so
-        // precise partial selection still works; long-press now copies everything
-        // at once, which is what is actually wanted when pasting a capture out.
-        //
-        // Copies the CURRENTLY DISPLAYED tab (human-readable or raw hex), matching
-        // what is on screen, and says which so the toast is self-explanatory.
+        logText = TextView(this).apply {
+            setTextIsSelectable(true)
+            textSize = 12f
+            typeface = Typeface.MONOSPACE
+            setLineSpacing(dp(2f).toFloat(), 1f)
+            setTextColor(ThemeRes.color(this@DevToolsActivity, R.attr.appColorTextPrimary))
+            setPadding(dp(14f), dp(12f), dp(14f), dp(12f))
+        }
+        scroll = ScrollView(this).apply { addView(logText) }
+        val logCard = SettingRowFactory.card(this).apply { addView(scroll) }
+        root.addView(logCard, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply {
+            topMargin = dp(12f)
+        })
+        setContentView(root)
+
+        // Long press copies the visible tab; selection stays on for partial copies.
         logText.setOnLongClickListener {
             val body = logText.text?.toString().orEmpty()
             if (body.isBlank()) {
@@ -163,8 +162,36 @@ class DevToolsActivity : Activity() {
             true
         }
 
-        updateTabButtons()
         refreshLog()
+    }
+
+    private fun spaced(top: Int) = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+    ).apply { topMargin = top }
+
+    /** One action in the actions card: accent icon over a short label, equal width. */
+    private fun action(iconRes: Int, label: String, onClick: () -> Unit): LinearLayout {
+        val dp = { v: Float -> ThemeRes.dp(this, v) }
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, dp(68f), 1f)
+            background = ThemeRes.ripple(this@DevToolsActivity)
+            setOnClickListener { onClick() }
+            addView(ImageView(this@DevToolsActivity).apply {
+                setImageDrawable(ThemeRes.tint(this@DevToolsActivity, iconRes, ThemeRes.color(this@DevToolsActivity, R.attr.appColorAccent)))
+                layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
+            })
+            addView(TextView(this@DevToolsActivity).apply {
+                text = label
+                textSize = 11.5f
+                maxLines = 1
+                gravity = Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                setTextColor(ThemeRes.color(this@DevToolsActivity, R.attr.appColorTextPrimary))
+                setPadding(0, dp(5f), 0, 0)
+            })
+        }
     }
 
     override fun onResume() {
@@ -180,35 +207,15 @@ class DevToolsActivity : Activity() {
     private fun switchToHumanTab() {
         isHumanTab = true
         lastLineCount = -1
-        updateTabButtons()
+        tabs.selected = 0
         refreshLog()
     }
 
     private fun switchToRawTab() {
         isHumanTab = false
         lastLineCount = -1
-        updateTabButtons()
+        tabs.selected = 1
         refreshLog()
-    }
-
-    /**
-     * Paints the selected tab.
-     *
-     * Rewritten to use the shared chip drawables instead of flat background
-     * colours. The old version set the active tab's background to a hardcoded
-     * #CC0000, which is why the active log button rendered as red on a screen that
-     * otherwise has no red in it. The drawables read the theme, so this now matches
-     * the rest of the app in all three themes.
-     */
-    private fun updateTabButtons() {
-        val activeText = ThemeRes.palette(this).onAccent
-        val normalText = ThemeRes.color(this, R.attr.appColorTextPrimary)
-
-        btnTabHuman.background = ThemeRes.chip(this, isHumanTab)
-        btnTabHuman.setTextColor(if (isHumanTab) activeText else normalText)
-
-        btnTabRaw.background = ThemeRes.chip(this, !isHumanTab)
-        btnTabRaw.setTextColor(if (isHumanTab) normalText else activeText)
     }
 
     /**
@@ -225,8 +232,7 @@ class DevToolsActivity : Activity() {
      */
     private fun showInLog(message: String) {
         if (!isHumanTab) switchToHumanTab()
-        val existing = logText.text?.toString().orEmpty()
-        logText.text = existing + "\n[dev] " + message + "\n"
+        logText.append("\n[dev] $message\n")
         lastLineCount = PacketLogger.getLines().size
         scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
     }
@@ -258,7 +264,7 @@ class DevToolsActivity : Activity() {
             }
             sb.append(display).append("\n")
         }
-        logText.text = sb.toString()
+        logText.text = accentDirections(sb)
         if (wasAtBottom) {
             scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
         }
@@ -334,52 +340,13 @@ class DevToolsActivity : Activity() {
         return "${dir.absolutePath}/$name"
     }
 
-    /**
-     * Applies the theme to this screen.
-     *
-     * REWRITTEN to read the themed @color/app_* resources instead of hardcoding
-     * hex values. The old version used Color.WHITE for the background on the LIGHT
-     * branch and Color.BLACK for text in some paths, which is how the log screen
-     * ended up with white text on a white background: two independent literals that
-     * were not guaranteed to agree, and a "theme" that did not follow the palette
-     * the rest of the app uses.
-     *
-     * Using the same resources as every other screen means this cannot drift from
-     * the main screen's colours, and a palette change is one edit in one file.
-     */
-    private fun applyTheme() {
-        val bgColor = ThemeRes.color(this, R.attr.appColorBg)
-        val cardColor = ThemeRes.color(this, R.attr.appColorCard)
-        val txtColor = ThemeRes.color(this, R.attr.appColorTextPrimary)
-
-        findViewById<android.view.View>(R.id.devToolsRoot).let {
-            it.setBackgroundColor(bgColor)
-            ThemeRes.screenPadding(it)
+    /** TX / RX markers in the accent colour, so the two directions read apart at a glance. */
+    private fun accentDirections(text: CharSequence): SpannableString {
+        val out = SpannableString(text)
+        val accent = ThemeRes.color(this, R.attr.appColorAccent)
+        for (m in DIRECTION.findAll(text)) {
+            out.setSpan(ForegroundColorSpan(accent), m.range.first, m.range.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-        findViewById<android.view.View>(R.id.devActionsCard).background = ThemeRes.card(this)
-        logText.setBackgroundColor(cardColor)
-        logText.setTextColor(txtColor)
-        scroll.background = ThemeRes.card(this).apply { setColor(bgColor) }
-
-        // The title is now found by ID. It used to be found BY POSITION (child 0 of
-        // child 0 of the root), which only worked while this screen happened to keep
-        // that exact shape — the restyle moved the buttons into their own card, so a
-        // positional walk would have been one edit away from silently colouring the
-        // wrong view. The id makes the binding explicit.
-        findViewById<TextView>(R.id.devToolsTitle)?.setTextColor(txtColor)
-
-
-        // Every action button gets the shared chip drawable. The tab buttons are NOT
-        // here: updateTabButtons() repaints them, since it knows which one is selected.
-        for (b in listOf(
-            btnClear, btnExport, btnCrashTest,
-            btnReconnect, btnDisconnect
-        )) {
-            b.background = ThemeRes.chip(this, false)
-            b.setTextColor(txtColor)
-        }
-
-        // Re-apply active tab highlight
-        updateTabButtons()
+        return out
     }
 }

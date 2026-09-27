@@ -303,8 +303,10 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 
 ## Dev tools inside the app
 
-Dev Tools is the live packet log (Human-Readable / Raw Hex tabs, long press copies), Clear, Export
-(`Download/QuickBudsLogs/`), Reconnect, Disconnect and Crash test. The layout report, screenshot-to-text and
+Dev Tools is the live packet log (Human-readable / Raw hex, long press copies), Clear, Export
+(`Download/QuickBudsLogs/`), Reconnect, Disconnect and Crash test (confirm first). Built in code like Settings
+(no layout XML): an `AncSegmentedView` with no icons is the tab switch (text-only, 48dp), the actions are one
+card of icon + label columns, and TX / RX are accent-coloured spans in the log card. The layout report, screenshot-to-text and
 widget reports were deleted 2026-09-27 ([USER]): adb covers them (`uiautomator dump`, `screencap`, `logcat`).
 They are in git history before that date if ever needed.
 
