@@ -419,9 +419,10 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   reapplies a same-layout update onto its views, so the flipper cross-fades (`res/anim/widget_fade_*`, 220 ms,
   measured on device). The price: **every state `build()` sets must be set both ways** (visibility, click
   intents, null included), or the last update's value sticks. `setDisplayedChild` replays the fade-in even for the
-  same child, so `update()` sends it only in a full update when the layout or child changed and otherwise uses
-  `partiallyUpdateAppWidget` (merged into the service's cached views). Sending it every time made every refresh
-  flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
+  same child, and the service resends the whole cached views on every update (partial ones too, so
+  `partiallyUpdateAppWidget` does not help). So each page child (`w_page0..2`) gets its visibility set directly
+  every time, and `setDisplayedChild` goes out only in the update that changes the child (`widgetChild_<id>`).
+  Sending it every time made every widget flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
   the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back

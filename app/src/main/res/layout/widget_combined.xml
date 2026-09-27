@@ -5,7 +5,7 @@
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 <ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_bg" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
-<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
+<LinearLayout android:id="@+id/w_page0" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
 <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="84" android:orientation="horizontal">
 <FrameLayout android:id="@+id/w_panel_left" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" >
 <ImageView android:id="@+id/w_panel_left_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
@@ -52,7 +52,7 @@
 </FrameLayout>
 </LinearLayout>
 </LinearLayout>
-<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" android:padding="6dp">
+<FrameLayout android:id="@+id/w_page1" android:layout_width="match_parent" android:layout_height="match_parent" android:padding="6dp">
 <include layout="@layout/widget_grid" />
 </FrameLayout>
 </ViewFlipper>

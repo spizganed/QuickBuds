@@ -32,7 +32,7 @@
 </FrameLayout>
 </LinearLayout>
 <ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="156" android:layout_marginTop="6dp" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
-<LinearLayout android:id="@+id/w_controls" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+<LinearLayout android:id="@+id/w_page0" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
 <FrameLayout android:id="@+id/w_mode" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
 <ImageView android:id="@+id/w_mode_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <ImageView android:id="@+id/w_mode_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
@@ -56,7 +56,7 @@
 </LinearLayout>
 </FrameLayout>
 </LinearLayout>
-<include layout="@layout/widget_grid" />
+<include android:id="@+id/w_page1" layout="@layout/widget_grid" />
 </ViewFlipper>
 </LinearLayout>
 </FrameLayout>

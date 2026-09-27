@@ -29,13 +29,17 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
    every regional variant: Deutsch (Österreich), (Schweiz)…) with our own screen built from
    `SettingRowFactory` rows: System default, English, 简体中文, 繁體中文 and one entry per other
    language. `LocaleManager` on Android 13+, `applyOverrideConfiguration` in `ThemeRes` below that.
-3. **Small items** ([USER] 2026-09-27):
+3. **More languages, next session** ([USER] 2026-09-27: "all of them"): Russian, Ukrainian, Turkish,
+   Japanese, Korean, Malay, Filipino, Bengali, Czech, Hungarian, Greek, Swedish. Machine-drafted like the rest,
+   each with its line in `ThemeRes.LANGUAGES`. Right-to-left ones (Arabic, Urdu, Persian) are a separate step:
+   RTL support in the manifest and a mirrored check of every screen.
+4. **Small items** ([USER] 2026-09-27):
    - **Dead code sweep.** lint `UnusedResources` plus a scan for Kotlin symbols nothing references;
      delete what is unused.
    - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment
      Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
      with a confirm), the log in a normal card with TX / RX in the accent colour.
-4. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
+5. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
@@ -58,7 +62,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
    - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
-5. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
+6. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
    repo (`[USER]` 2026-09-27).

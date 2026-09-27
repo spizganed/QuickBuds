@@ -59,7 +59,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         for (id in ids) {
             WidgetSettings.setListOpenedAt(context, id, 0L)
             WidgetSettings.setPage(context, id, null)
-            shownView.remove(id)
+            WidgetSettings.setShownChild(context, id, null)
         }
     }
 
@@ -102,26 +102,28 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
         }
 
-        /** Per widget id, the layout and flipper child the host last got in a full update. */
-        private val shownView = HashMap<Int, Pair<Int, Int>>()
+        private val PAGES = intArrayOf(R.id.w_page0, R.id.w_page1, R.id.w_page2)
 
         /**
-         * ViewFlipper.setDisplayedChild replays the fade-in even when the child is unchanged, so an
-         * update that sends it every time made every refresh flash. A full update goes out only when
-         * the layout or child changes; otherwise a partial one, which the service merges into its
-         * cached views, so the last setDisplayedChild survives a host re-inflation.
+         * ViewFlipper.setDisplayedChild replays the fade-in even for the child already shown, and the
+         * service resends the whole cached views to the host on every update (partial ones too), so
+         * sending it each time made every refresh flash. Each page's visibility is set directly
+         * instead (no animation, right after a host re-inflation too); setDisplayedChild goes out
+         * only in the update that changes the child, which fades.
          */
         private fun update(context: Context, mgr: AppWidgetManager, id: Int, kind: Kind) {
             // A throw here would leave the host showing "Can't load widget" with no trace.
             try {
                 val (v, child) = build(context, WidgetStateStore.read(context), kind, id)
-                val shown = v.layoutId to child
-                if (shownView[id] == shown) mgr.partiallyUpdateAppWidget(id, v)
-                else {
-                    v.setDisplayedChild(R.id.w_pages, child)
-                    mgr.updateAppWidget(id, v)
-                    shownView[id] = shown
+                if (v.layoutId != R.layout.widget_disconnected) {
+                    val pages = if (v.layoutId == R.layout.widget_pages) 3 else 2
+                    if (WidgetSettings.shownChild(context, id) != child) {
+                        v.setDisplayedChild(R.id.w_pages, child)
+                        WidgetSettings.setShownChild(context, id, child)
+                    }
+                    for (i in 0 until pages) v.setViewVisibility(PAGES[i], if (i == child) View.VISIBLE else View.GONE)
                 }
+                mgr.updateAppWidget(id, v)
             } catch (t: Throwable) {
                 Log.e("BudsWidget", "update failed for $kind #$id", t)
             }

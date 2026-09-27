@@ -39,6 +39,7 @@ object WidgetSettings {
     private const val KEY_LIST_AT = "widgetListAt_"
     private const val KEY_DOUBLE_TAP = "widgetDoubleTap"
     private const val KEY_PAGE = "widgetPage_"
+    private const val KEY_CHILD = "widgetChild_"
 
     private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -91,6 +92,13 @@ object WidgetSettings {
 
     fun setPage(c: Context, id: Int, page: QuickBudsWidget.Kind?) {
         prefs(c).edit().apply { if (page == null) remove(KEY_PAGE + id) else putString(KEY_PAGE + id, page.name) }.apply()
+    }
+
+    /** The flipper child widget [id] last faded to (QuickBudsWidget.update), -1 when unknown. */
+    fun shownChild(c: Context, id: Int) = prefs(c).getInt(KEY_CHILD + id, -1)
+
+    fun setShownChild(c: Context, id: Int, child: Int?) {
+        prefs(c).edit().apply { if (child == null) remove(KEY_CHILD + id) else putInt(KEY_CHILD + id, child) }.apply()
     }
 
     /** When widget [id]'s list was opened, 0 when closed. */
