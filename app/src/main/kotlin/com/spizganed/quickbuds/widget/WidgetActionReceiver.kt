@@ -9,14 +9,20 @@ import android.os.Looper
 import android.util.Log
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
+import com.spizganed.quickbuds.ui.Haptics
 import com.spizganed.quickbuds.ui.MainActivity
 
 class WidgetActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action ?: return
-        if (action == WidgetActions.ACTION_NOOP) return
+        if (intent.action == null || intent.action == WidgetActions.ACTION_NOOP) return
+        // Every finger tap ticks at once, including a double tap's first one, which then waits.
+        Haptics.tick(context)
+        handle(context, intent)
+    }
 
+    private fun handle(context: Context, intent: Intent) {
+        val action = intent.action ?: return
         Log.d("BudsWidget", "[RX] Action: $action")
 
         val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
@@ -55,7 +61,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
                 }
                 // Next mode: the same send as a list pick, so the service path is unchanged.
                 val next = WidgetSettings.next(context, WidgetSettings.modeOf(state.ancMode))
-                return onReceive(context, Intent(context, WidgetActionReceiver::class.java)
+                return handle(context, Intent(context, WidgetActionReceiver::class.java)
                     .setAction(WidgetActions.ACTION_ANC_SELECT)
                     .putExtra(WidgetActions.EXTRA_ANC_TARGET, next.key))
             }
@@ -149,7 +155,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
         }
         val app = context.applicationContext
         val single = Intent(intent).apply { removeExtra(WidgetActions.EXTRA_PAGE) }
-        val run = Runnable { pending.remove(id); onReceive(app, single) }
+        val run = Runnable { pending.remove(id); handle(app, single) }
         pending[id] = run
         handler.postDelayed(run, WidgetSettings.DOUBLE_TAP_MS)
     }

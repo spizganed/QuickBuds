@@ -70,7 +70,7 @@ The three widgets below replace the previous widget designs.
 - **Battery / widget background tap:** does **nothing by default**. It opens QuickBuds only when "Open app on tap" is on.
 - **Disconnected:** show the disconnected layout. Controls are disabled and do nothing.
 - Each size is its own `AppWidgetProviderInfo` with a sensible `minWidth`/`minHeight` and `targetCellWidth`/`targetCellHeight` (API 31+). The alternative is one provider with size-mapped RemoteViews on API 31+. Choose whichever matches the existing widget code, and explain the choice in the plan.
-- **2x2 pages** (2026-09-27): the two 2x2 widgets are one widget with a battery page and a controls page, stored per widget. "QuickBuds battery" starts on the battery page, "QuickBuds controls" on the controls page. A corner swap button switches them, or a double tap when that is chosen in the settings (every single tap then waits ~400 ms).
+- **2x2 pages** (2026-09-27): the two 2x2 widgets are one widget with a battery page and a controls page, stored per widget. "QuickBuds battery" starts on the battery page, "QuickBuds controls" on the controls page. A corner swap button switches them, or a double tap when that is chosen in the settings (every single tap then waits ~400 ms). Page changes and the mode list cross-fade (ViewFlipper); every widget tap gives a haptic tick when Haptic feedback is on.
 - Every button needs a `contentDescription`. For example, the mode button reads "Noise control: ANC Medium, tap for next mode", and a list item reads "ANC High".
 
 ## 5. Widget settings screen — `w6`

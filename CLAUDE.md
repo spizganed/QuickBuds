@@ -143,7 +143,9 @@ phone-specific piece lives outside it.
   once per kind of control: `SettingRowFactory.buildSwitch` (its `performClick`, user taps only),
   `LevelSliderView` / `EqCurveView` / `ColorSliderView` release, `AncSegmentedView` tap, ANC level pills, EQ
   preset rows, `BottomSheetDialog` item selection, preset apply and preset colour commits. Do not add
-  it to programmatic state changes.
+  it to programmatic state changes. Widget taps use `Haptics.tick(context)` in `WidgetActionReceiver.onReceive`
+  (the vibrator, usage HARDWARE_FEEDBACK: the default TOUCH usage is dropped for a background app,
+  `ignored_background` in `dumpsys vibrator_manager`).
 
 ### Environment you need
 
@@ -396,7 +398,7 @@ packet-listener path.
 ## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md)
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
-generated as one family (`widget_battery/controls/combined/large/list/grid/disconnected`): **2x2 battery**
+generated as one family (`widget_pages/combined/large/grid/disconnected`): **2x2 battery**
 (`BatteryWidgetProvider`), **2x2 controls** (`SmallWidgetProvider`), **3x2 combined** (`AncWidgetProvider`),
 **3x3 combined** (`LargeWidgetProvider`). The old class names are kept so placed widgets survive; the 4x1 strip
 is gone. **The two 2x2s are one widget with two pages** (battery / controls, 2026-09-27): the page is stored per
@@ -412,8 +414,11 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
   (default) or Open list, the ordered checked modes (min 2, same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
-- **Mode list** is a layout swap (`widget_list`; the 3x3 swaps only `w_controls` for its included `w_grid`), never
-  an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
+- **Mode list and 2x2 pages are children of a `ViewFlipper` `w_pages`** (2026-09-27): 2x2 `widget_pages` = battery /
+  controls / list, 3x2 = content / list, 3x3 = controls / list. `build()` calls `setDisplayedChild`; the host
+  reapplies a same-layout update onto its views, so the flipper cross-fades (`res/anim/widget_fade_*`, 220 ms,
+  measured on device). The price: **every state `build()` sets must be set both ways** (visibility, click
+  intents, null included), or the last update's value sticks. Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
   the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back

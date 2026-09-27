@@ -10,5 +10,5 @@
     android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/widget_controls"
+    android:initialLayout="@layout/widget_pages"
     android:widgetCategory="home_screen" />

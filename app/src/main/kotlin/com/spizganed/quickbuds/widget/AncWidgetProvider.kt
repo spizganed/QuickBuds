@@ -37,7 +37,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  *
  * Drawn in the ACTIVE palette at update time: white shapes tinted with ImageView.setColorFilter
  * (every API level) and ring bitmaps drawn here. Disconnected, every size shows only the main
- * screen's Connect chip ([USER] 2026-09-27). The mode list is a layout swap, opened and closed by
+ * screen's Connect chip ([USER] 2026-09-27). The mode list is a ViewFlipper child, opened and closed by
  * [WidgetActionReceiver] (stamp in [WidgetSettings]); it never opens an Activity.
  *
  * The two 2x2 providers are one widget with two pages (battery, controls), stored per widget id
@@ -46,8 +46,8 @@ import com.spizganed.quickbuds.ui.ThemeRes
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
     enum class Kind(val layout: Int, val large: Boolean = false) {
-        BATTERY(R.layout.widget_battery),
-        CONTROLS(R.layout.widget_controls),
+        BATTERY(R.layout.widget_pages),
+        CONTROLS(R.layout.widget_pages),
         COMBINED(R.layout.widget_combined),
         LARGE(R.layout.widget_large, large = true)
     }
@@ -118,32 +118,42 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val twoPages = provider == Kind.BATTERY || provider == Kind.CONTROLS
             val kind = if (twoPages) WidgetSettings.page(context, id, provider) else provider
             val list = kind != Kind.BATTERY && WidgetSettings.listOpen(context, id)
-            val v = RemoteViews(context.packageName, if (list && kind != Kind.LARGE) R.layout.widget_list else kind.layout)
+            val v = RemoteViews(context.packageName, kind.layout)
+            // The host reapplies an update with the same layout onto the views it has, so switching
+            // the flipper's child cross-fades (res/anim/widget_fade_*). The flip side: every state
+            // set here must be set both ways (visibility, click), or the previous update's sticks.
+            v.setDisplayedChild(R.id.w_pages, when {
+                twoPages -> if (list) 2 else if (kind == Kind.BATTERY) 0 else 1
+                else -> if (list) 1 else 0
+            })
             v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
             // Double-tap mode: every tap on a 2x2 page carries the other page, so a second tap swaps.
             val other = if (kind == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
             val swap = if (twoPages && !list && WidgetSettings.doubleTapSwaps(context)) other else null
-            if (swap != null) v.setOnClickPendingIntent(R.id.w_root, receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = swap))
-            else if (WidgetSettings.openAppOnTap(context)) v.setOnClickPendingIntent(R.id.w_root, openAppPI(context))
-            if (twoPages && !list) {
-                if (swap != null) v.setViewVisibility(R.id.w_swap, View.GONE)
-                else {
-                    v.setInt(R.id.w_swap_icon, "setColorFilter", p.textSecondary)
-                    v.setContentDescription(R.id.w_swap, context.getString(R.string.widget_swap_desc))
-                    v.setOnClickPendingIntent(R.id.w_swap, receiverPI(context, WidgetActions.ACTION_PAGE_SWAP, id, swap = other))
-                }
-            }
+            v.setOnClickPendingIntent(R.id.w_root, when {
+                swap != null -> receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = swap)
+                WidgetSettings.openAppOnTap(context) -> openAppPI(context)
+                else -> null
+            })
+            if (twoPages) swapButtons(context, v, p, kind, id, other, shown = !list && swap == null)
 
-            if (list) {
-                grid(context, v, p, state, kind, id)
-                if (kind != Kind.LARGE) return v
-                v.setViewVisibility(R.id.w_controls, View.GONE)
-                v.setViewVisibility(R.id.w_grid, View.VISIBLE)
-            }
-            if (kind != Kind.CONTROLS) battery(context, v, p, state, kind)
+            if (list) grid(context, v, p, state, kind, id)
+            if (kind == Kind.LARGE || (kind != Kind.CONTROLS && !list)) battery(context, v, p, state, kind)
             if (kind != Kind.BATTERY && !list) controls(context, v, p, state, kind, id, swap)
             return v
+        }
+
+        /** The 2x2 swap button: at the end of the case bar on the battery page, top-right on the controls page. */
+        private fun swapButtons(context: Context, v: RemoteViews, p: Palette, kind: Kind, id: Int, other: Kind, shown: Boolean) {
+            for ((root, icon, page) in listOf(Triple(R.id.w_swap_b, R.id.w_swap_b_icon, Kind.BATTERY), Triple(R.id.w_swap, R.id.w_swap_icon, Kind.CONTROLS))) {
+                val on = shown && kind == page
+                v.setViewVisibility(root, if (on) View.VISIBLE else View.GONE)
+                if (!on) continue
+                v.setInt(icon, "setColorFilter", p.textSecondary)
+                v.setContentDescription(root, context.getString(R.string.widget_swap_desc))
+                v.setOnClickPendingIntent(root, receiverPI(context, WidgetActions.ACTION_PAGE_SWAP, id, swap = other))
+            }
         }
 
         /** Battery panel colour: `card` lightened ~4% toward `text` (WIDGETS.md 2). */
@@ -247,6 +257,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 v.setViewVisibility(LL.root, View.GONE)
                 return
             }
+            v.setViewVisibility(LL.root, View.VISIBLE)
             paint(v, LL, p, state.gameMode, kind.large)
             content(v, LL, p, state.gameMode, R.drawable.ic_low_latency, context.getString(R.string.widget_low_latency))
             v.setContentDescription(LL.root, context.getString(R.string.row_game_title))
@@ -263,11 +274,12 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val twoCols = kind == Kind.CONTROLS && modes.size <= 4
             val labels = !(kind == Kind.CONTROLS && modes.size > 4)
             val slots = if (twoCols) listOf(0, 1, 3, 4) else (0..5).toList()
-            if (twoCols) listOf(2, 5).forEach { v.setViewVisibility(CELLS[it].root, View.GONE) }
+            listOf(2, 5).forEach { v.setViewVisibility(CELLS[it].root, if (twoCols) View.GONE else View.VISIBLE) }
             slots.forEachIndexed { i, slot ->
                 val b = CELLS[slot]
                 val mode = modes.getOrNull(i)
-                if (mode == null) { v.setViewVisibility(b.root, View.INVISIBLE); return@forEachIndexed }
+                v.setViewVisibility(b.root, if (mode == null) View.INVISIBLE else View.VISIBLE)
+                if (mode == null) return@forEachIndexed
                 val selected = mode.key == current.key
                 paint(v, b, p, selected, kind.large)
                 content(v, b, p, selected, mode.icon, if (labels) context.getString(mode.short) else null)

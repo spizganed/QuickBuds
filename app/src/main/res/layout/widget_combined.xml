@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 3x2 combined widget (design/widgets/WIDGETS.md 3.3). Generated layout: colours, icons and texts are set at
+<!-- 3x2 combined widget (design/widgets/WIDGETS.md 3.3); the ViewFlipper's child 1 is the mode list. Generated layout: colours, icons and texts are set at
      runtime by widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 <ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_bg" android:scaleType="fitXY" android:importantForAccessibility="no" />
+<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
 <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="84" android:orientation="horizontal">
 <FrameLayout android:id="@+id/w_panel_left" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" >
@@ -51,4 +52,8 @@
 </FrameLayout>
 </LinearLayout>
 </LinearLayout>
+<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" android:padding="6dp">
+<include layout="@layout/widget_grid" />
+</FrameLayout>
+</ViewFlipper>
 </FrameLayout>
