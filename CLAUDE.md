@@ -436,7 +436,7 @@ generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages
 widget (`SmallWidgetProvider`) are gone. No model name on any widget ([USER] 2026-09-27).
 **Every size has two pages, battery and controls** ([USER] 2026-09-27): the page is
 stored per widget id (`widgetPage_<id>`, battery first) and swapped by the
-`w_swap` buttons (top-right corner, except the 2x2 / 3x3 battery page: end of the case bar) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 400 ms
+`w_swap` buttons (top-right corner, except the 2x2 / 3x3 battery page: end of the case bar) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 200 ms ([USER] 2026-09-28; 400 ms felt slow, and instant buttons left no room to double tap on the controls page)
 for a second one before running it (`WidgetActionReceiver.doubleTap`). Battery pages: 2x2 and 3x3 = two bud
 panels + case bar, 4x2 = three panels sized from `getAppWidgetOptions` (`ringDp`).
 **The mode button has two copies** (`w_mode_fills` / `w_mode_flip`, [USER] 2026-09-27: better switching
@@ -469,9 +469,6 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
 - **No automatic page change** ([USER] 2026-09-27): after a mode pick or Low latency toggle the widget stays on
   the controls page; the user swaps back (tried and dropped: sliding back to battery after the change).
-- **Double tap swaps only from the page itself** ([USER] 2026-09-28): the mode and Low latency buttons carry no
-  `EXTRA_PAGE`, so they act at once instead of waiting `DOUBLE_TAP_MS` (400 ms felt slow). On the controls page the
-  double tap lands on the frame and the gap between the buttons.
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
 

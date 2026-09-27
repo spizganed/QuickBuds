@@ -32,8 +32,8 @@ object WidgetSettings {
     /** The mode list has six cells; seven modes exist since Smart (2026-09-27). */
     const val MAX_ON = 6
     const val LIST_TIMEOUT_MS = 5_000L
-    /** How long a 2x2 tap waits for a second one in double-tap mode. */
-    const val DOUBLE_TAP_MS = 400L
+    /** How long a tap waits for a second one in double-tap mode ([USER] 2026-09-28: 400 ms felt slow). */
+    const val DOUBLE_TAP_MS = 200L
 
     private const val KEY_TAP_LIST = "widgetTapList"
     private const val KEY_ORDER = "widgetModeOrder"
