@@ -108,10 +108,10 @@ def mode_button(size):
 {img(f"w_mode_stroke{k}", "widget_panel_stroke")}
 </FrameLayout>''' for k in (0, 1))
     return f'''<FrameLayout android:id="@+id/w_mode" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
 {fills}
 </ViewFlipper>
-<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
 {mode_content(size, 0)}
 {mode_content(size, 1)}
 </ViewFlipper>
@@ -165,16 +165,21 @@ TITLE = {"s": "2x2", "m": "4x2", "l": "3x3"}
 for size, name in (("s", "widget_pages"), ("m", "widget_pages_m"), ("l", "widget_pages_l")):
     out = f'''<?xml version="1.0" encoding="utf-8"?>
 <!-- {TITLE[size]} widget (design/widgets/WIDGETS.md 3). Generated as one family with the other sizes. Outer ViewFlipper
-     w_pages (cross-fade): w_content, then the mode list w_page2. Inside w_content, ViewFlipper w_slide (slide): the
-     battery page w_page0 and the controls page w_page1. Colours, icons and texts are set at runtime by
+     w_pages: w_content, then the mode list w_page2. Inside w_content, one ViewFlipper per page, each an empty
+     FrameLayout then the page, so each page has its own direction: w_slide0 (the battery page w_page0, in and out on
+     the left) and w_slide1 (the controls page w_page1, in and out on the right). Colours, icons and texts are set at runtime by
      widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 {img("w_bg", "widget_bg")}
-<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
 <FrameLayout android:id="@+id/w_content" android:layout_width="match_parent" android:layout_height="match_parent">
-<ViewFlipper android:id="@+id/w_slide" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_slide0" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_left" android:animateFirstView="false">
+<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" />
 {battery(size)}
+</ViewFlipper>
+<ViewFlipper android:id="@+id/w_slide1" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_right" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
+<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" />
 {controls(size)}
 </ViewFlipper>
 </FrameLayout>

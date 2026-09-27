@@ -451,11 +451,13 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
   (default) or Open list, the ordered checked modes (2 to 6: the list has six cells and there are seven modes since Smart; same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
-- **One animation** ([USER] 2026-09-27): every widget flipper (pages, mode list, mode button) uses `widget_slide_*`
-  (280 ms): the new view comes in from the left, the old one leaves to the right. No fades; keep new flippers on it.
+- **Slides only, no fades** ([USER] 2026-09-27), 280 ms, `anim/widget_enter_*` / `widget_exit_*`. The pages move like
+  a carousel: battery enters and leaves on the left, controls on the right, so battery -> controls moves left and
+  back moves right. The mode list and the mode button enter from the left and leave to the right.
+  A RemoteViews flipper cannot change its animation at runtime, so each page has its own flipper.
 - **Two nested `ViewFlipper`s** (2026-09-27): outer `w_pages` holds
-  `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide` holds the
-  battery page `w_page0` and the controls page `w_page1`. The host reapplies a same-layout update onto its views,
+  `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide0` holds an empty view then the
+  battery page `w_page0`, and `w_slide1` an empty view then the controls page `w_page1` (child 1 = shown). The host reapplies a same-layout update onto its views,
   so a flipper animates when its child changes. The price: **every state `build()` sets must be set both ways**
   (visibility, click intents, null included), or the last update's value sticks. Both pages are filled on every
   update so the page sliding out shows current values. `setDisplayedChild` replays the animation even for the same
@@ -465,10 +467,8 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   0 battery, 1 controls, 2 list). Sending it every time made every widget flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
   the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
-- **Back to battery** ([USER] 2026-09-27): a mode change or Low latency toggle slides the widget back to the
-  battery page `WidgetSettings.BACK_TO_BATTERY_MS` (100 ms, [USER]: "100ms max or none") after the last tap
-  (`WidgetActionReceiver.backToBattery`, a main-thread handler; a page swap cancels it,
-  an open list skips it).
+- **No automatic page change** ([USER] 2026-09-27): after a mode pick or Low latency toggle the widget stays on
+  the controls page; the user swaps back (tried and dropped: sliding back to battery after the change).
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
 

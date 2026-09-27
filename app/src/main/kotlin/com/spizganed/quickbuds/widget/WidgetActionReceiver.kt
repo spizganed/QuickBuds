@@ -29,7 +29,6 @@ class WidgetActionReceiver : BroadcastReceiver() {
         val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
         val page = intent.getStringExtra(WidgetActions.EXTRA_PAGE)
         if (action == WidgetActions.ACTION_PAGE_SWAP) {
-            back.remove(widgetId)?.let(handler::removeCallbacks)
             WidgetSettings.setPage(context, widgetId, page?.let { QuickBudsWidget.Kind.valueOf(it) })
             AncWidgetProvider.refreshAll(context)
             return
@@ -54,7 +53,6 @@ class WidgetActionReceiver : BroadcastReceiver() {
             }
             WidgetActions.ACTION_LIST_CLOSE -> {
                 AncWidgetProvider.refreshAll(context)
-                backToBattery(context, widgetId)
                 return
             }
             WidgetActions.ACTION_MODE_TAP -> {
@@ -116,7 +114,6 @@ class WidgetActionReceiver : BroadcastReceiver() {
 
         WidgetStateStore.write(context, state)
         AncWidgetProvider.refreshAll(context)
-        backToBattery(context, widgetId)
 
         val finalShort = shortAction ?: return
 
@@ -166,32 +163,10 @@ class WidgetActionReceiver : BroadcastReceiver() {
         handler.postDelayed(run, WidgetSettings.DOUBLE_TAP_MS)
     }
 
-    /**
-     * After a mode or low latency change, widget [id] slides back to the battery page once
-     * [WidgetSettings.BACK_TO_BATTERY_MS] pass with no further tap ([USER] 2026-09-27). The wait
-     * lets the mode button's flip show and lets Next mode be tapped again. A process death during
-     * the wait leaves the controls page up.
-     */
-    private fun backToBattery(context: Context, id: Int) {
-        if (id == AppWidgetManager.INVALID_APPWIDGET_ID) return
-        back.remove(id)?.let(handler::removeCallbacks)
-        val app = context.applicationContext
-        val run = Runnable {
-            back.remove(id)
-            if (WidgetSettings.listOpen(app, id)) return@Runnable
-            WidgetSettings.setPage(app, id, QuickBudsWidget.Kind.BATTERY)
-            AncWidgetProvider.refreshAll(app)
-        }
-        back[id] = run
-        handler.postDelayed(run, WidgetSettings.BACK_TO_BATTERY_MS)
-    }
-
     private companion object {
         val handler = Handler(Looper.getMainLooper())
         /** The tap waiting for a second one, per widget id. */
         val pending = HashMap<Int, Runnable>()
-        /** The pending slide back to the battery page, per widget id. */
-        val back = HashMap<Int, Runnable>()
     }
 
     /**

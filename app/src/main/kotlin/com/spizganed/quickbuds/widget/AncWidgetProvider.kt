@@ -46,7 +46,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  *
  * Every size is one widget with two pages (battery, controls; [USER] 2026-09-27), stored per
  * widget id and swapped by a swap button or a double tap ([WidgetSettings.doubleTapSwaps]). The
- * pages slide (inner ViewFlipper `w_slide`); the mode list cross-fades over them (`w_pages`). The
+ * pages slide (`w_slide0` battery on the left, `w_slide1` controls on the right); the mode list slides over them (`w_pages`). The
  * mode button has two copies: a mode change fills the hidden one and flips to it ([modeButton]).
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
@@ -130,7 +130,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * the service resends the whole cached views to the host on every update (partial ones too),
          * so sending it each time made every refresh flash. Each child's visibility is set directly
          * instead (no animation, right after a host re-inflation too); setDisplayedChild goes out
-         * only in the update that changes that flipper's child: `w_slide` slides between the pages,
+         * only in the update that changes that flipper's child: `w_slide0` / `w_slide1` slide the pages,
          * `w_pages` fades the mode list in and out. Shown child: 0 battery, 1 controls, 2 list.
          */
         private fun update(context: Context, mgr: AppWidgetManager, id: Int, kind: Kind) {
@@ -143,7 +143,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                     val outer = if (child == 2) 1 else 0
                     val inner = if (child == 2) 1 else child
                     if (prev < 0 || (prev == 2) != (child == 2)) v.setDisplayedChild(R.id.w_pages, outer)
-                    if (prev < 0 || (if (prev == 2) 1 else prev) != inner) v.setDisplayedChild(R.id.w_slide, inner)
+                    // One flipper per page (child 1 = the page, 0 = empty), so battery moves on the left, controls on the right.
+                    if (prev < 0 || (if (prev == 2) 1 else prev) != inner) {
+                        v.setDisplayedChild(R.id.w_slide0, if (inner == 0) 1 else 0)
+                        v.setDisplayedChild(R.id.w_slide1, if (inner == 1) 1 else 0)
+                    }
                     if (prev != child) WidgetSettings.setShownChild(context, id, child)
                     v.setViewVisibility(R.id.w_content, if (outer == 0) View.VISIBLE else View.GONE)
                     v.setViewVisibility(R.id.w_page2, if (outer == 1) View.VISIBLE else View.GONE)

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 4x2 widget (design/widgets/WIDGETS.md 3). Generated as one family with the other sizes. Outer ViewFlipper
-     w_pages (cross-fade): w_content, then the mode list w_page2. Inside w_content, ViewFlipper w_slide (slide): the
-     battery page w_page0 and the controls page w_page1. Colours, icons and texts are set at runtime by
+     w_pages: w_content, then the mode list w_page2. Inside w_content, one ViewFlipper per page, each an empty
+     FrameLayout then the page, so each page has its own direction: w_slide0 (the battery page w_page0, in and out on
+     the left) and w_slide1 (the controls page w_page1, in and out on the right). Colours, icons and texts are set at runtime by
      widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 <ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_bg" android:scaleType="fitXY" android:importantForAccessibility="no" />
-<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
 <FrameLayout android:id="@+id/w_content" android:layout_width="match_parent" android:layout_height="match_parent">
-<ViewFlipper android:id="@+id/w_slide" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_slide0" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_left" android:animateFirstView="false">
+<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" />
 <FrameLayout android:id="@+id/w_page0" android:layout_width="match_parent" android:layout_height="match_parent">
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="6dp">
 <FrameLayout android:id="@+id/w_panel_left" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
@@ -40,10 +42,13 @@
 <ImageView android:id="@+id/w_swap_b_icon" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:src="@drawable/ic_swap_page" android:importantForAccessibility="no" />
 </FrameLayout>
 </FrameLayout>
+</ViewFlipper>
+<ViewFlipper android:id="@+id/w_slide1" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_right" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
+<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" />
 <FrameLayout android:id="@+id/w_page1" android:layout_width="match_parent" android:layout_height="match_parent">
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
 <FrameLayout android:id="@+id/w_mode" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
 <FrameLayout android:id="@+id/w_mode_fill0" android:layout_width="match_parent" android:layout_height="match_parent">
 <ImageView android:id="@+id/w_mode_bg0" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <ImageView android:id="@+id/w_mode_stroke0" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
@@ -53,7 +58,7 @@
 <ImageView android:id="@+id/w_mode_stroke1" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 </FrameLayout>
 </ViewFlipper>
-<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="false">
 <LinearLayout android:id="@+id/w_mode_content0" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_mode_icon0" android:layout_width="44dp" android:layout_height="44dp" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="14dp">

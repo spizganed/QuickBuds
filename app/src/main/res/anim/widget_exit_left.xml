@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Every widget change: the old view slides out to the right, fading. -->
+<!-- Widget: the battery page slides out to the left, fading. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:interpolator/decelerate_cubic"
     android:duration="280">
-    <translate android:fromXDelta="0" android:toXDelta="100%" />
+    <translate android:fromXDelta="0" android:toXDelta="-100%" />
     <alpha android:fromAlpha="1.0" android:toAlpha="0.0" />
 </set>
