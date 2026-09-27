@@ -6,7 +6,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 <ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_bg" android:scaleType="fitXY" android:importantForAccessibility="no" />
-<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 <FrameLayout android:id="@+id/w_content" android:layout_width="match_parent" android:layout_height="match_parent">
 <ViewFlipper android:id="@+id/w_slide" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 <LinearLayout android:id="@+id/w_page0" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
@@ -43,7 +43,7 @@
 <FrameLayout android:id="@+id/w_page1" android:layout_width="match_parent" android:layout_height="match_parent">
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp">
 <FrameLayout android:id="@+id/w_mode" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 <FrameLayout android:id="@+id/w_mode_fill0" android:layout_width="match_parent" android:layout_height="match_parent">
 <ImageView android:id="@+id/w_mode_bg0" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <ImageView android:id="@+id/w_mode_stroke0" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
@@ -53,7 +53,7 @@
 <ImageView android:id="@+id/w_mode_stroke1" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 </FrameLayout>
 </ViewFlipper>
-<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_tick_in" android:outAnimation="@anim/widget_tick_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 <LinearLayout android:id="@+id/w_mode_content0" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_mode_icon0" android:layout_width="60dp" android:layout_height="60dp" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="6dp">

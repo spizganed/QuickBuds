@@ -440,9 +440,8 @@ stored per widget id (`widgetPage_<id>`, battery first) and swapped by the
 for a second one before running it (`WidgetActionReceiver.doubleTap`). Battery pages: 2x2 and 3x3 = two bud
 panels + case bar, 4x2 = three panels sized from `getAppWidgetOptions` (`ringDp`).
 **The mode button has two copies** (`w_mode_fills` / `w_mode_flip`, [USER] 2026-09-27: better switching
-animations): a mode change fills the hidden copy and flips to it, the fill cross-fading while the icon and name
-tick up (`anim/widget_tick_*`). `WidgetSettings.modeSlot` stores the copy and the mode per widget; the flips
-follow the same rule as the pages below. The mode list is filled on every update, so a pick fades out lit. All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
+animations): a mode change fills the hidden copy and slides to it. `WidgetSettings.modeSlot` stores the copy and the mode per widget; the flips
+follow the same rule as the pages below. The mode list is filled on every update, so a pick slides out lit. All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
 and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
 **Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
 FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs
@@ -452,8 +451,10 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
   (default) or Open list, the ordered checked modes (2 to 6: the list has six cells and there are seven modes since Smart; same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
-- **Two nested `ViewFlipper`s** (2026-09-27): outer `w_pages` (cross-fade, `res/anim/widget_fade_*`, 220 ms) holds
-  `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide` (slide, `widget_slide_*`, 280 ms) holds the
+- **One animation** ([USER] 2026-09-27): every widget flipper (pages, mode list, mode button) uses `widget_slide_*`
+  (280 ms): the new view comes in from the left, the old one leaves to the right. No fades; keep new flippers on it.
+- **Two nested `ViewFlipper`s** (2026-09-27): outer `w_pages` holds
+  `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide` holds the
   battery page `w_page0` and the controls page `w_page1`. The host reapplies a same-layout update onto its views,
   so a flipper animates when its child changes. The price: **every state `build()` sets must be set both ways**
   (visibility, click intents, null included), or the last update's value sticks. Both pages are filled on every
@@ -465,8 +466,8 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
 - **Back to battery** ([USER] 2026-09-27): a mode change or Low latency toggle slides the widget back to the
-  battery page `WidgetSettings.BACK_TO_BATTERY_MS` (1.5 s) after the last tap, so the mode flip shows and Next
-  mode can be tapped again (`WidgetActionReceiver.backToBattery`, a main-thread handler; a page swap cancels it,
+  battery page `WidgetSettings.BACK_TO_BATTERY_MS` (100 ms, [USER]: "100ms max or none") after the last tap
+  (`WidgetActionReceiver.backToBattery`, a main-thread handler; a page swap cancels it,
   an open list skips it).
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.

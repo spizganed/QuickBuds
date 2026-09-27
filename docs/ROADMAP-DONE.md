@@ -94,8 +94,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   HeyMelody shows it (`138.138.105` on Buds 4, checked side by side). The reply has a count byte after
   the status that the OSS write-up missed (PROTOCOL.md §3).
 - The widget hides its mode button on a model with no noise control.
-- Widgets slide back to the battery page 1.5 s after a mode pick or a Low latency toggle on the
-  controls page; another tap restarts the wait (checked on device, 2026-09-27).
+- Widgets slide back to the battery page 100 ms after a mode pick or a Low latency toggle on the
+  controls page. Every widget animation is now one left-to-right slide (pages, mode list, mode
+  button); the fades and the tick-up are gone (checked on device, 2026-09-27).
 - New White preset: a cool grey page (#ECECF0) under white cards, darker text and outline; on light
   presets the switch thumb is the card colour on a darker track (it was a near-black dot), and a label
   on the accent is the lighter colour whenever that reaches 3:1 (white on pure red, not black).

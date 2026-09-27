@@ -35,7 +35,7 @@ object WidgetSettings {
     /** How long a 2x2 tap waits for a second one in double-tap mode. */
     const val DOUBLE_TAP_MS = 400L
     /** How long the controls page stays after a mode or low latency change. */
-    const val BACK_TO_BATTERY_MS = 1_500L
+    const val BACK_TO_BATTERY_MS = 100L
 
     private const val KEY_TAP_LIST = "widgetTapList"
     private const val KEY_ORDER = "widgetModeOrder"

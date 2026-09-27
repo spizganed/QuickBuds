@@ -108,10 +108,10 @@ def mode_button(size):
 {img(f"w_mode_stroke{k}", "widget_panel_stroke")}
 </FrameLayout>''' for k in (0, 1))
     return f'''<FrameLayout android:id="@+id/w_mode" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_fills" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 {fills}
 </ViewFlipper>
-<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_tick_in" android:outAnimation="@anim/widget_tick_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_mode_flip" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 {mode_content(size, 0)}
 {mode_content(size, 1)}
 </ViewFlipper>
@@ -171,7 +171,7 @@ for size, name in (("s", "widget_pages"), ("m", "widget_pages_m"), ("l", "widget
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 {img("w_bg", "widget_bg")}
-<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_fade_in" android:outAnimation="@anim/widget_fade_out" android:animateFirstView="false">
+<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 <FrameLayout android:id="@+id/w_content" android:layout_width="match_parent" android:layout_height="match_parent">
 <ViewFlipper android:id="@+id/w_slide" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_slide_in" android:outAnimation="@anim/widget_slide_out" android:animateFirstView="false">
 {battery(size)}
