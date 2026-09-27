@@ -260,6 +260,10 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
   on launch. Per-activity theming is the only supported path here.
 - **Prefs file name lives in one place**: `ThemeRes.PREFS_NAME` (`"QuickBudsPrefs"`). `QuickBudsApp`
   and `DevToolsActivity` used to hardcode the literal — keep all three in sync or prefs split in two.
+- **One font: `sans-serif`.** `Theme.App.Base` sets `android:fontFamily` because DeviceDefault text follows
+  the OEM font (Nothing's differs) while code-set typefaces (`DEFAULT_BOLD`, `sans-serif-medium`) and canvas
+  text are `sans-serif`, so screens mixed two ([USER] 2026-09-27). Widget TextViews set it too (the launcher's
+  theme applies there). Use weights of `sans-serif` only; never another family.
 - **Portrait only, no rotation** — `[USER]` 2026-09-22. Every `<activity>` in the manifest carries
   `android:screenOrientation="portrait"`; there is no `<application>`-level equivalent, so a new
   activity needs the attribute added by hand or it will rotate. No screen in this app has a landscape

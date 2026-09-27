@@ -24,6 +24,9 @@
     <attr name="appColorOutline" format="color" />
 
     <style name="Theme.App.Base" parent="android:Theme.DeviceDefault.NoActionBar">
+        <!-- One font for the whole app: DeviceDefault text follows the OEM font, while code-set
+             typefaces (DEFAULT_BOLD, sans-serif-medium) are sans-serif, so screens mixed two. -->
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:windowBackground">?attr/appColorBg</item>
         <item name="android:colorBackground">?attr/appColorBg</item>
         <item name="android:statusBarColor">?attr/appColorBg</item>

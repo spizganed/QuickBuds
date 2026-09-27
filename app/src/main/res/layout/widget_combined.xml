@@ -11,7 +11,7 @@
 <ImageView android:id="@+id/w_panel_left_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="4dp">
 <ImageView android:id="@+id/w_ring_left" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_pct_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13.5sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
+<TextView android:fontFamily="sans-serif" android:id="@+id/w_pct_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13.5sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
 <TextView android:id="@+id/w_label_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10.5sp" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
 </LinearLayout>
 </FrameLayout>
@@ -19,7 +19,7 @@
 <ImageView android:id="@+id/w_panel_case_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="4dp">
 <ImageView android:id="@+id/w_ring_case" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13.5sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
+<TextView android:fontFamily="sans-serif" android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13.5sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
 <TextView android:id="@+id/w_label_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10.5sp" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
 </LinearLayout>
 </FrameLayout>
@@ -27,7 +27,7 @@
 <ImageView android:id="@+id/w_panel_right_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="4dp">
 <ImageView android:id="@+id/w_ring_right" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_pct_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13.5sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
+<TextView android:fontFamily="sans-serif" android:id="@+id/w_pct_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13.5sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="2dp" />
 <TextView android:id="@+id/w_label_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10.5sp" android:fontFamily="sans-serif-medium" android:maxLines="1" android:ellipsize="end" android:gravity="center"  />
 </LinearLayout>
 </FrameLayout>
@@ -38,7 +38,7 @@
 <ImageView android:id="@+id/w_mode_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_mode_icon" android:layout_width="32dp" android:layout_height="32dp"  android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_mode_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginStart="10dp" />
+<TextView android:fontFamily="sans-serif" android:id="@+id/w_mode_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginStart="10dp" />
 <ImageView android:id="@+id/w_mode_hint" android:layout_width="16dp" android:layout_height="16dp" android:layout_marginStart="6dp" android:importantForAccessibility="no" />
 </LinearLayout>
 </FrameLayout>

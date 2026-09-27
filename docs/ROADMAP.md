@@ -20,9 +20,6 @@ Each step is done before the next one starts. The previous plan (Settings screen
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
 1. **Small items** ([USER] 2026-09-27):
-   - **"The font is not applied to everything"** (his report after the language work). Not yet
-     located: ask him which screen / language / text, or for a screenshot. The app has no font of
-     its own; everything uses the system font (some views set `sans-serif-medium` in code).
    - **Dead code sweep.** lint `UnusedResources` plus a scan for Kotlin symbols nothing references;
      delete what is unused.
    - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment

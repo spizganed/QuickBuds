@@ -75,6 +75,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Twelve more languages, machine-drafted: Russian, Ukrainian, Turkish, Japanese, Korean, Malay, Filipino,
   Bengali, Czech, Hungarian, Greek, Swedish (26 in all). Checked on device: home screen strings in ru, ja,
   fil, el, bn, and picking Čeština from the in-app list.
+- One font everywhere: the theme and the widget text set `sans-serif`, the family every code-set
+  typeface already used (the OEM font had leaked into theme-styled text).
 
 ## Docs
 
