@@ -251,4 +251,29 @@
     <string name="preset_saturation">ความอิ่มตัว</string>
     <string name="preset_brightness">ความสว่าง</string>
     <string name="preset_hex">สีแบบเลขฐานสิบหก</string>
+
+    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <string name="widget_settings_title">การตั้งค่าวิดเจ็ต</string>
+    <string name="widget_settings_sub">ปุ่มโหมด โหมด และเวลาแฝงต่ำ</string>
+    <string name="widget_tap_title">เมื่อแตะปุ่มโหมด</string>
+    <string name="widget_tap_next">โหมดถัดไป</string>
+    <string name="widget_tap_list">เปิดรายการ</string>
+    <string name="widget_tap_hint">โหมดถัดไปจะเปลี่ยนตามลำดับในรายการด้านล่าง เปิดรายการจะแสดงทุกโหมดให้เลือก และปิดเมื่อเลือกแล้วหรือหลัง 5 วินาที</string>
+    <string name="widget_modes_title">โหมด</string>
+    <string name="widget_modes_hint">เลือกอย่างน้อย 2 โหมดและลากเพื่อจัดลำดับ ทั้งสองตัวเลือกใช้โหมดชุดเดียวกัน</string>
+    <string name="widget_section">วิดเจ็ต</string>
+    <string name="widget_ll_title">ปุ่มเวลาแฝงต่ำ</string>
+    <string name="widget_ll_sub">แสดงข้างปุ่มโหมด</string>
+    <string name="widget_open_title">เปิดแอปเมื่อแตะ</string>
+    <string name="widget_open_sub">แตะที่แบตเตอรี่เพื่อเปิด QuickBuds</string>
+    <string name="widget_drag_desc">ลากเพื่อจัดลำดับ</string>
+    <string name="widget_mode_anc_low">ANC ต่ำ</string>
+    <string name="widget_mode_anc_medium">ANC กลาง</string>
+    <string name="widget_mode_anc_high">ANC สูง</string>
+    <string name="widget_low_latency">เวลาแฝงต่ำ</string>
+    <string name="widget_mode_desc_cycle">%1$s: %2$s แตะเพื่อไปโหมดถัดไป</string>
+    <string name="widget_mode_desc_list">%1$s: %2$s แตะเพื่อเลือกโหมด</string>
+    <string name="widget_battery_name">QuickBuds แบตเตอรี่</string>
+    <string name="widget_controls_name">QuickBuds ควบคุม</string>
+    <string name="widget_large_name">QuickBuds ใหญ่</string>
 </resources>

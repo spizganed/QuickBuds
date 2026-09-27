@@ -251,4 +251,29 @@
     <string name="preset_saturation">饱和度</string>
     <string name="preset_brightness">亮度</string>
     <string name="preset_hex">十六进制颜色</string>
+
+    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <string name="widget_settings_title">小组件设置</string>
+    <string name="widget_settings_sub">模式按钮、模式、低延迟</string>
+    <string name="widget_tap_title">点击模式按钮</string>
+    <string name="widget_tap_next">下一个模式</string>
+    <string name="widget_tap_list">打开列表</string>
+    <string name="widget_tap_hint">“下一个模式”按下方顺序依次切换。“打开列表”显示全部模式供选择；选择后或 5 秒后关闭。</string>
+    <string name="widget_modes_title">模式</string>
+    <string name="widget_modes_hint">至少勾选 2 项，拖动调整顺序。两种方式使用相同的模式。</string>
+    <string name="widget_section">小组件</string>
+    <string name="widget_ll_title">低延迟按钮</string>
+    <string name="widget_ll_sub">显示在模式按钮旁</string>
+    <string name="widget_open_title">点击打开应用</string>
+    <string name="widget_open_sub">点击电量区域打开 QuickBuds</string>
+    <string name="widget_drag_desc">拖动以排序</string>
+    <string name="widget_mode_anc_low">降噪 低</string>
+    <string name="widget_mode_anc_medium">降噪 中</string>
+    <string name="widget_mode_anc_high">降噪 高</string>
+    <string name="widget_low_latency">低延迟</string>
+    <string name="widget_mode_desc_cycle">%1$s：%2$s，点击切换下一个模式</string>
+    <string name="widget_mode_desc_list">%1$s：%2$s，点击选择模式</string>
+    <string name="widget_battery_name">QuickBuds 电量</string>
+    <string name="widget_controls_name">QuickBuds 控制</string>
+    <string name="widget_large_name">QuickBuds 大号</string>
 </resources>

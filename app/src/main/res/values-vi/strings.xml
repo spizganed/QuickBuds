@@ -251,4 +251,29 @@
     <string name="preset_saturation">Độ bão hòa</string>
     <string name="preset_brightness">Độ sáng</string>
     <string name="preset_hex">Mã màu hex</string>
+
+    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <string name="widget_settings_title">Cài đặt tiện ích</string>
+    <string name="widget_settings_sub">Nút chế độ, các chế độ, độ trễ thấp</string>
+    <string name="widget_tap_title">Khi chạm nút chế độ</string>
+    <string name="widget_tap_next">Chế độ tiếp theo</string>
+    <string name="widget_tap_list">Mở danh sách</string>
+    <string name="widget_tap_hint">Chế độ tiếp theo chuyển lần lượt theo thứ tự danh sách bên dưới. Mở danh sách hiện tất cả để chọn; danh sách đóng sau khi chọn hoặc sau 5 giây.</string>
+    <string name="widget_modes_title">Chế độ</string>
+    <string name="widget_modes_hint">Chọn ít nhất 2 và kéo để sắp xếp. Cả hai tùy chọn dùng cùng các chế độ này.</string>
+    <string name="widget_section">Tiện ích</string>
+    <string name="widget_ll_title">Nút độ trễ thấp</string>
+    <string name="widget_ll_sub">Hiện cạnh nút chế độ</string>
+    <string name="widget_open_title">Mở ứng dụng khi chạm</string>
+    <string name="widget_open_sub">Chạm vào pin để mở QuickBuds</string>
+    <string name="widget_drag_desc">Kéo để sắp xếp</string>
+    <string name="widget_mode_anc_low">ANC Thấp</string>
+    <string name="widget_mode_anc_medium">ANC Vừa</string>
+    <string name="widget_mode_anc_high">ANC Cao</string>
+    <string name="widget_low_latency">Độ trễ thấp</string>
+    <string name="widget_mode_desc_cycle">%1$s: %2$s, chạm để chuyển chế độ tiếp theo</string>
+    <string name="widget_mode_desc_list">%1$s: %2$s, chạm để chọn chế độ</string>
+    <string name="widget_battery_name">QuickBuds pin</string>
+    <string name="widget_controls_name">QuickBuds điều khiển</string>
+    <string name="widget_large_name">QuickBuds lớn</string>
 </resources>

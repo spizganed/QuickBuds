@@ -333,4 +333,29 @@
     <string name="preset_saturation">Saturation</string>
     <string name="preset_brightness">Brightness</string>
     <string name="preset_hex">Hex colour</string>
+
+    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <string name="widget_settings_title">Widget settings</string>
+    <string name="widget_settings_sub">Mode button, modes, low latency</string>
+    <string name="widget_tap_title">Tapping the mode button</string>
+    <string name="widget_tap_next">Next mode</string>
+    <string name="widget_tap_list">Open list</string>
+    <string name="widget_tap_hint">Next mode steps through the list below in order. Open list shows all of them to pick from; it closes after a pick or 5 seconds.</string>
+    <string name="widget_modes_title">Modes</string>
+    <string name="widget_modes_hint">Tick at least 2 and drag to set the order. The same modes are used for both options.</string>
+    <string name="widget_section">Widget</string>
+    <string name="widget_ll_title">Low latency button</string>
+    <string name="widget_ll_sub">Shown next to the mode button</string>
+    <string name="widget_open_title">Open app on tap</string>
+    <string name="widget_open_sub">Tapping the battery opens QuickBuds</string>
+    <string name="widget_drag_desc">Drag to reorder</string>
+    <string name="widget_mode_anc_low">ANC Low</string>
+    <string name="widget_mode_anc_medium">ANC Medium</string>
+    <string name="widget_mode_anc_high">ANC High</string>
+    <string name="widget_low_latency">Low latency</string>
+    <string name="widget_mode_desc_cycle">%1$s: %2$s, tap for next mode</string>
+    <string name="widget_mode_desc_list">%1$s: %2$s, tap to choose a mode</string>
+    <string name="widget_battery_name">QuickBuds battery</string>
+    <string name="widget_controls_name">QuickBuds controls</string>
+    <string name="widget_large_name">QuickBuds large</string>
 </resources>
