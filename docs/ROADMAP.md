@@ -42,6 +42,14 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
    - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
+   - **Sources checked 2026-09-27** ([USER]: reuse what the OSS clients already do). Both carry the same
+     137-model list (56 OPPO, 49 realme, 32 OnePlus). `Leaf-lsgtky/OppoPods` (Kotlin, Android) now has
+     product-id detection with a model registry, per-model ANC options (`noiseReductionMode`, legacy
+     ANC order), game mode `0x06` or `0x28`, spatial three-mode `0x0422` vs on/off `0x1B`, EQ presets and
+     device custom EQ, auto play/pause, dual connection. `OppoPodsManager` adds bass engine, hearing
+     enhancement `0x0B`, long battery `0x17`, voice enhancement `0x09`, spine health `0x22`, game sound
+     `0x27`, find device and the capability bitmap. Neither writes gestures; ours stays Buds 4 only
+     until another model is tested.
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
