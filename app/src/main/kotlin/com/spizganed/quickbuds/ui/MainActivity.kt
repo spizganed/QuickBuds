@@ -186,7 +186,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         val first = connectedUi == null
         connectedUi = connected
         statusView.connected = connected
-        // INVISIBLE, not GONE: the empty name keeps its space as the header's spacer.
+        // INVISIBLE, not GONE: the battery tile keeps its height, so nothing jumps on connect.
         deviceNameText.visibility = if (connected) View.VISIBLE else View.INVISIBLE
 
         val alpha = if (connected) 1f else DISABLED_ALPHA

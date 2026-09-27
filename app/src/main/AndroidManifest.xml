@@ -156,6 +156,7 @@
         <activity
             android:name=".ui.LanguageActivity"
             android:exported="false"
+            android:configChanges="locale|layoutDirection"
             android:screenOrientation="portrait" />
 
         <!--

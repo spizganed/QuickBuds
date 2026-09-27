@@ -24,19 +24,6 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/deviceNameText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/default_device_name"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:layout_marginEnd="8dp"
-            android:textSize="@dimen/header_title_size"
-            android:textStyle="bold"
-            android:textColor="?attr/appColorTextPrimary" />
-
         <!--
           CONNECTION STATUS PILL.
 
@@ -51,19 +38,21 @@
           must stay green/grey in every theme. The LABEL colour comes from the same
           state colours, set in MainActivity.renderConnectionPill.
 
-          `wrap_content` on both sides: the pill must not stretch, and it must not
-          reserve space for the longer word when showing the shorter one.
+          LEFT side of the header since 2026-09-27 ([USER]): the device name moved into the
+          battery tile, so long translations of "Disconnect" no longer cut it off. A minimum
+          width keeps Connect / Disconnect from making the pill jump in size much.
         -->
         <LinearLayout
             android:id="@+id/connPill"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/header_icon_button"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:gravity="center"
+            android:minWidth="128dp"
             android:clickable="true"
             android:focusable="true"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="18dp"
             android:layout_marginEnd="8dp">
 
             <ImageView
@@ -84,6 +73,19 @@
                 android:text="@string/conn_off"
                 android:textColor="?attr/appColorTextSecondary" />
         </LinearLayout>
+
+        <!-- Empty on the main screen (a spacer); Home layout puts its title here. -->
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginEnd="8dp"
+            android:textSize="@dimen/header_title_size"
+            android:textStyle="bold"
+            android:textColor="?attr/appColorTextPrimary" />
 
         <ImageButton
             android:id="@+id/btnDevTools"

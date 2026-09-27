@@ -43,7 +43,7 @@ class HomeLayoutActivity : Activity() {
 
         // Header: title, then Cancel and Apply in place of the chip / dev tools / cog.
         ThemeRes.screenPadding(findViewById(R.id.mainLayout))
-        findViewById<TextView>(R.id.deviceNameText).setText(R.string.layout_title)
+        findViewById<TextView>(R.id.headerTitle).setText(R.string.layout_title)
         findViewById<View>(R.id.connPill).visibility = View.GONE
         fun headerButton(id: Int, icon: Int, desc: Int, onClick: () -> Unit) = findViewById<ImageButton>(id).apply {
             background = ThemeRes.ripple(this@HomeLayoutActivity, ThemeRes.iconButton(this@HomeLayoutActivity))
@@ -57,6 +57,7 @@ class HomeLayoutActivity : Activity() {
         // The fixed tiles, as the main screen shows them now, but inert.
         val state = WidgetStateStore.read(this)
         findViewById<View>(R.id.batteryCard).background = ThemeRes.card(this)
+        findViewById<View>(R.id.deviceNameText).visibility = if (state.connected) View.VISIBLE else View.INVISIBLE
         findViewById<FrameLayout>(R.id.statusSlot).addView(BudsStatusView(this).apply {
             connected = state.connected
             setState(state.leftBattery, state.caseBattery, state.rightBattery, state.leftStatus, state.rightStatus)

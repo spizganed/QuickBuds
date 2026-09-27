@@ -186,6 +186,9 @@ object ThemeRes {
         applied[activity] = signature(activity, p)
     }
 
+    /** For an activity that handles a locale change in place: the new language is now applied. */
+    fun markApplied(activity: Activity) { applied[activity] = signature(activity, palette(activity)) }
+
     /** True when the preset changed since [activity] was themed (checked on resume). */
     fun isStale(activity: Activity): Boolean {
         val sig = applied[activity] ?: return false

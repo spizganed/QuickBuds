@@ -12,4 +12,20 @@
         android:id="@+id/statusSlot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <!-- The device name, under the rings (moved out of the header 2026-09-27, [USER]). -->
+    <TextView
+        android:id="@+id/deviceNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/default_device_name"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/appColorTextSecondary" />
 </LinearLayout>
