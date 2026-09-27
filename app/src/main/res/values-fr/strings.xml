@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Machine-drafted translation (2026-09-27); a native speaker should review it. Keys follow values/strings.xml. -->
+<!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Outils de développement</string>
     <string name="action_settings">Paramètres</string>

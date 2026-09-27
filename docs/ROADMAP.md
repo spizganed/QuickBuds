@@ -75,12 +75,6 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 - **Retake the README screenshots** once the UI and the widget are final. The current ones are
   placeholders. Rerun `scripts/readme-screenshots.sh`.
 
-## Later
-
-- **Translations** for the Asian OPPO / OnePlus markets: Simplified and Traditional Chinese, Hindi,
-  Indonesian, Vietnamese and Thai added 2026-09-26 (CLAUDE.md, Localisation). Machine-drafted: have a
-  native speaker review each one (26 languages since 2026-09-27).
-
 ## Parked
 
 - A build quickstart and a capture guide for contributors, only if the device file is not enough.
