@@ -56,6 +56,11 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      `control_<id>/config.json` with each action's function codes (their Enco X3 table); our writer
      already reads the slots from the bud, so those codes are the missing piece. Until then gestures stay
      Buds 4 only.
+   - **More sources (2026-09-27):** HeyMelody decompiled (see CLAUDE.md) gives `[VENDOR]` payloads for
+     every command. `GazzasaurusRex/oneplus-buds-omarchy` has read-back-verified profiles for Buds Pro
+     and Buds Pro 2 (ANC levels, EQ ids, `0x0105` firmware). `digisatapathy2025/oneplus-buds-mac` has a
+     OnePlus product-id catalogue. `maniacx/BudsLink` PR #94 and `thelok1s/orchestra` verify realme
+     models (dropped here).
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same

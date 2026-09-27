@@ -197,6 +197,15 @@ this PC, so the release page itself is made in the browser.
 Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VENDOR]` / `[OSS]` /
 `[CAPTURE]` / `[GUESS]`. The short version of what bites:
 
+- **HeyMelody's own code is the `[VENDOR]` source for bytes** (2026-09-27). Pull the APK with adb
+  (`pm path com.heytap.headset`), decompile with JADX 1.5.6 (the release zip runs on Termux:
+  , a few minutes). Names are obfuscated
+  but JADX keeps the original file names in `compiled from:` comments. Every SET is in
+  HeyMelody as `a(address, <cmd decimal>, <payload>)`
+  (`1028` = `0x0404`);  () is the capability bit -> command table;
+   holds Poll / Request / Notification managers. The per-model list
+  () is downloaded and AES-GCM encrypted, not in the APK. Keep the decompile in
+  the scratchpad, never in the repo.
 - **Never guess a payload.** Confirming a read is cheap; a guessed write to the buds fails
   silently. This is the single most expensive mistake in the project's history — see PROTOCOL.md's
   "History of Getting This Wrong".
