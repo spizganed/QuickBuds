@@ -174,7 +174,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val child = if (list) 2 else if (page == Kind.BATTERY) 0 else 1
             v.setImageViewResource(R.id.w_bg, if (provider.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
-            // Double-tap mode: every tap on a page carries the other page, so a second tap swaps.
+            // Double-tap mode: a tap on the page itself carries the other page, so a second tap swaps. The mode and
+            // low latency buttons carry none and act at once ([USER] 2026-09-28: the 400 ms wait felt slow).
             val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
             val swap = if (!list && WidgetSettings.doubleTapSwaps(context)) other else null
             v.setOnClickPendingIntent(R.id.w_root, when {
@@ -188,7 +189,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             // shows current values (a pick's highlight while the list closes).
             grid(context, v, p, state, provider, id)
             battery(context, v, p, state, provider, id)
-            if (!list) controls(context, v, p, state, provider, id, swap)
+            if (!list) controls(context, v, p, state, provider, id)
             return v to child
         }
 
@@ -306,7 +307,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             else -> context.getString(R.string.status_out)
         }
 
-        private fun modeControls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
+        private fun modeControls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
             val mode =WidgetSettings.modeOf(state.ancMode)
             val active = mode.key != "off"
             val name = context.getString(mode.name)
@@ -324,10 +325,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 if (opensList) R.string.widget_mode_desc_list else R.string.widget_mode_desc_cycle,
                 context.getString(R.string.anc_section), name
             ))
-            v.setOnClickPendingIntent(R.id.w_mode, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id, swap = swap))
+            v.setOnClickPendingIntent(R.id.w_mode, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id))
         }
 
-        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
+        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
             // A model with no noise control has no mode button, and low latency fills the page
             // (Android 12+; older ones keep its own height). Both set both ways, see update().
             // The dp heights are the ones scripts/widget-layouts.py gives w_ll.
@@ -337,7 +338,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 if (hasAnc) v.setViewLayoutHeight(LL.root, if (kind.small) 48f else if (kind.large) 66f else 50f, TypedValue.COMPLEX_UNIT_DIP)
                 else v.setViewLayoutHeight(LL.root, ViewGroup.LayoutParams.MATCH_PARENT.toFloat(), TypedValue.COMPLEX_UNIT_PX)
             }
-            if (hasAnc) modeControls(context, v, p, state, kind, id, swap)
+            if (hasAnc) modeControls(context, v, p, state, kind, id)
 
             if (!WidgetSettings.lowLatencyShown(context)) {
                 v.setViewVisibility(LL.root, View.GONE)
@@ -347,7 +348,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             paint(v, LL, p, state.gameMode, kind.large)
             content(v, LL, p, state.gameMode, R.drawable.ic_low_latency, context.getString(R.string.widget_low_latency))
             v.setContentDescription(LL.root, context.getString(R.string.row_game_title))
-            v.setOnClickPendingIntent(LL.root, receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap))
+            v.setOnClickPendingIntent(LL.root, receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id))
         }
 
         /**
