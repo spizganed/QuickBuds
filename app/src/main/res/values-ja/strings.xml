@@ -197,6 +197,8 @@
     <string name="about_license_title">ライセンス</string>
     <string name="about_license_body">QuickBuds は GNU General Public License v3.0 のもとで提供される自由ソフトウェアです。OppoPodsManager、OppoPods、Pods-Protocol-Reverse-Engineering、OPPO-Pods-Win、DevPods によるオープンなリバースエンジニアリングの成果に基づいています。クレジットの全文は GitHub にあります。</string>
     <string name="theme_builtin">組み込み</string>
+    <string name="theme_auto">システムに合わせる</string>
+    <string name="theme_auto_sub">ライトモードでは%1$s、ダークモードでは%2$s</string>
     <string name="theme_oled_black">OLED ブラック</string>
     <string name="theme_classic_dark">クラシックダーク</string>
     <string name="theme_white">ホワイト</string>

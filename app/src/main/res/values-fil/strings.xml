@@ -197,6 +197,8 @@
     <string name="about_license_title">Lisensya</string>
     <string name="about_license_body">Ang QuickBuds ay libreng software sa ilalim ng GNU General Public License v3.0. Nakabatay ito sa bukas na reverse-engineering na gawa ng OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win at DevPods; nasa GitHub ang buong listahan ng credits.</string>
     <string name="theme_builtin">Built-in</string>
+    <string name="theme_auto">Sundan ang system</string>
+    <string name="theme_auto_sub">%1$s sa light mode, %2$s sa dark mode</string>
     <string name="theme_oled_black">OLED Black</string>
     <string name="theme_classic_dark">Classic Dark</string>
     <string name="theme_white">White</string>

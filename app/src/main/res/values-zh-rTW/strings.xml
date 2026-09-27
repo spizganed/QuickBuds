@@ -197,6 +197,8 @@
     <string name="about_license_title">授權</string>
     <string name="about_license_body">QuickBuds 是採用 GNU 通用公共授權 v3.0 的自由軟體。它建立在 OppoPodsManager、OppoPods、Pods-Protocol-Reverse-Engineering、OPPO-Pods-Win 和 DevPods 的公開逆向工程成果之上；完整致謝見 GitHub。</string>
     <string name="theme_builtin">內建</string>
+    <string name="theme_auto">跟隨系統</string>
+    <string name="theme_auto_sub">淺色模式用%1$s，深色模式用%2$s</string>
     <string name="theme_oled_black">OLED 純黑</string>
     <string name="theme_classic_dark">經典深色</string>
     <string name="theme_white">白色</string>

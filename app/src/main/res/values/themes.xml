@@ -56,14 +56,16 @@
         <item name="appColorOutline">#34343A</item>
     </style>
 
-    <!-- White. Light bars, so the system icons flip to dark. -->
+    <!-- White (redesigned 2026-09-27). A cool grey page so the white cards stand off it, near-black
+         text, and an outline just dark enough to draw the cards' edges. Light bars, so the system
+         icons flip to dark. The light-theme derived colours (switches) are in Palette. -->
     <style name="Theme.App.Light" parent="Theme.App.Base">
-        <item name="appColorBg">#F2F2F4</item>
+        <item name="appColorBg">#ECECF0</item>
         <item name="appColorCard">#FFFFFF</item>
         <item name="appColorAccent">#D71920</item>
-        <item name="appColorTextPrimary">#111113</item>
-        <item name="appColorTextSecondary">#6B6B70</item>
-        <item name="appColorOutline">#DDDDE0</item>
+        <item name="appColorTextPrimary">#17171A</item>
+        <item name="appColorTextSecondary">#6A6A72</item>
+        <item name="appColorOutline">#DCDCE2</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>

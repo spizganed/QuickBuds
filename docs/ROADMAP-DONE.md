@@ -93,6 +93,12 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Firmware version `0x0105` is queried on connect and logged (`FIRMWARE:`); the Buds 4 reply confirmed
   the format with one correction, a count byte after the status (PROTOCOL.md §3).
 - The widget hides its mode button on a model with no noise control.
+- New White preset: a cool grey page (#ECECF0) under white cards, darker text and outline; on light
+  presets the switch thumb is the card colour on a darker track (it was a near-black dot), and a label
+  on the accent is the lighter colour whenever that reaches 3:1 (white on pure red, not black).
+- Match system (Theme & colors): White in light mode, OLED Black or Classic Dark in dark mode, following
+  a system change live, widgets included while the app process runs. Checked on device both ways.
+- The 300 s status keep-alive is gone: days of use without it showed no stale link ([USER]).
 - Colour picker: the last five committed colours under the quick swatches ("Recent"), shared by Edit
   preset and the built-in accent picker; swatches have a thin outline so a card-coloured one shows.
 

@@ -197,6 +197,8 @@
     <string name="about_license_title">Giấy phép</string>
     <string name="about_license_body">QuickBuds là phần mềm tự do theo Giấy phép Công cộng GNU v3.0. Ứng dụng dựa trên kết quả dịch ngược công khai của OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win và DevPods; ghi công đầy đủ có trên GitHub.</string>
     <string name="theme_builtin">Có sẵn</string>
+    <string name="theme_auto">Theo hệ thống</string>
+    <string name="theme_auto_sub">%1$s ở chế độ sáng, %2$s ở chế độ tối</string>
     <string name="theme_oled_black">Đen OLED</string>
     <string name="theme_classic_dark">Tối cổ điển</string>
     <string name="theme_white">Trắng</string>

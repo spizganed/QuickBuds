@@ -1,6 +1,7 @@
 package com.spizganed.quickbuds.ui
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.util.TypedValue
 import org.json.JSONArray
@@ -43,14 +44,25 @@ data class Palette(
 
     // ---- Derived colours (SPEC section 1): computed, never user-editable ----
 
-    /** Label on an accent fill: whichever of text / background reads better on the accent. */
-    val onAccent get() = if (contrast(text, accent) >= contrast(background, accent)) text else background
+    /**
+     * Label on an accent fill: the lighter of text / background when it reaches 3:1 (WCAG for
+     * large text and icons), else whichever reads better. A plain "better" rule put black labels
+     * on pure red (#FF0000: black 5.3, white 4.0), which reads as a mistake.
+     */
+    val onAccent: Int get() {
+        val (light, dark) = if (luminance(text) > luminance(background)) text to background else background to text
+        return if (contrast(light, accent) >= 3.0 || contrast(light, accent) >= contrast(dark, accent)) light else dark
+    }
 
-    /** Toggle track: outline, lightened a little on dark themes (mockup #2E2E30 -> #3A3A3C). */
-    val track get() = if (isLight) outline else blend(outline, text, 0.06f)
+    /**
+     * Toggle track: outline, lightened a little on dark themes (mockup #2E2E30 -> #3A3A3C). On a
+     * light theme the outline is too faint to hold a white thumb, so it is darkened toward text.
+     */
+    val track get() = if (isLight) blend(outline, text, 0.14f) else blend(outline, text, 0.06f)
 
-    /** Toggle thumb when off. */
-    val thumbOff get() = withAlpha(text, 0.9f)
+    /** Toggle thumb when off: text on dark themes; the card colour on light ones (a near-black
+     *  thumb looked like a hole in the row). */
+    val thumbOff get() = if (isLight) card else withAlpha(text, 0.9f)
 
     /** Disabled / empty elements: empty ring, placeholder glyphs. */
     val disabled get() = withAlpha(textSecondary, 0.5f)
@@ -108,6 +120,9 @@ object PaletteStore {
     private const val KEY_ACTIVE = "paletteActive"
     private const val KEY_CUSTOM = "paletteCustom"
     private const val KEY_ACCENT = "paletteAccent_"
+    /** Match system ([USER] 2026-09-27): White in light mode, [KEY_AUTO_DARK] in dark mode. */
+    private const val KEY_AUTO = "paletteAuto"
+    private const val KEY_AUTO_DARK = "paletteAutoDark"
     /** The pre-preset theme index (0 OLED, 1 Dark, 2 Light), migrated once. */
     private const val KEY_LEGACY = "theme"
 
@@ -117,14 +132,43 @@ object PaletteStore {
 
     fun activeId(c: Context): String {
         val p = prefs(c)
+        if (p.getBoolean(KEY_AUTO, false)) return if (systemLight(c)) WHITE else autoDark(c)
         p.getString(KEY_ACTIVE, null)?.let { return it }
         val migrated = when (p.getInt(KEY_LEGACY, 0)) { 1 -> DARK; 2 -> WHITE; else -> OLED }
         p.edit().putString(KEY_ACTIVE, migrated).remove(KEY_LEGACY).apply()
         return migrated
     }
 
+    /** The system's own light / dark setting, read from the application so it follows a change. */
+    fun systemLight(c: Context) = (c.applicationContext.resources.configuration.uiMode and
+        Configuration.UI_MODE_NIGHT_MASK) != Configuration.UI_MODE_NIGHT_YES
+
+    fun auto(c: Context) = prefs(c).getBoolean(KEY_AUTO, false)
+
+    /** The dark built-in Match system uses: OLED Black or Classic Dark. */
+    fun autoDark(c: Context) = prefs(c).getString(KEY_AUTO_DARK, null)?.takeIf { it == DARK } ?: OLED
+
+    /** Turning it on keeps the current dark built-in as the dark half; off keeps what shows now. */
+    fun setAuto(c: Context, on: Boolean) {
+        val current = activeId(c)
+        prefs(c).edit().apply {
+            if (on && current == DARK) putString(KEY_AUTO_DARK, DARK)
+            if (!on) putString(KEY_ACTIVE, current)
+            putBoolean(KEY_AUTO, on)
+        }.apply()
+        ThemeRes.invalidate()
+        com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(c)
+    }
+
+    /**
+     * Picks a preset. Under Match system a dark built-in becomes its dark half; any other pick
+     * (White, a custom preset) turns Match system off.
+     */
     fun setActive(c: Context, id: String) {
-        prefs(c).edit().putString(KEY_ACTIVE, id).apply()
+        val edit = prefs(c).edit()
+        if (auto(c) && (id == OLED || id == DARK)) edit.putString(KEY_AUTO_DARK, id)
+        else edit.putBoolean(KEY_AUTO, false).putString(KEY_ACTIVE, id)
+        edit.apply()
         ThemeRes.invalidate()
         com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(c)
     }

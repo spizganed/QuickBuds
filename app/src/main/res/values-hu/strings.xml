@@ -197,6 +197,8 @@
     <string name="about_license_title">Licenc</string>
     <string name="about_license_body">A QuickBuds szabad szoftver a GNU General Public License v3.0 alatt. Az OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win és DevPods nyílt visszafejtési munkájára épül; a teljes köszönetnyilvánítás a GitHubon található.</string>
     <string name="theme_builtin">Beépített</string>
+    <string name="theme_auto">Rendszer szerint</string>
+    <string name="theme_auto_sub">Világos módban %1$s, sötét módban %2$s</string>
     <string name="theme_oled_black">OLED fekete</string>
     <string name="theme_classic_dark">Klasszikus sötét</string>
     <string name="theme_white">Fehér</string>

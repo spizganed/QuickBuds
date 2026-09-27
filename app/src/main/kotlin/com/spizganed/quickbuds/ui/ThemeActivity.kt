@@ -114,6 +114,18 @@ class ThemeActivity : Activity() {
         }
         root.addView(grid)
 
+        // --- Match system: White in light mode, a dark built-in in dark mode ---
+        val autoSwitch = SettingRowFactory.buildSwitch(this, PaletteStore.auto(this))
+        autoSwitch.setOnCheckedChangeListener { _, on -> PaletteStore.setAuto(this, on); recreate() }
+        val autoRow = SettingRowFactory.build(this, 0, R.string.theme_auto, 0, autoSwitch) { autoSwitch.performClick() }
+        SettingRowFactory.subtitle(this, autoRow).text =
+            getString(R.string.theme_auto_sub, ThemeRes.builtInName(this, PaletteStore.WHITE),
+                ThemeRes.builtInName(this, PaletteStore.autoDark(this)))
+        root.addView(SettingRowFactory.card(this).apply {
+            (layoutParams as LinearLayout.LayoutParams).topMargin = dp(18f)
+            addView(autoRow)
+        })
+
         // --- Accent of the applied built-in preset ([USER] 2026-09-26) ---
         val active = ThemeRes.palette(this)
         if (active.builtIn) {

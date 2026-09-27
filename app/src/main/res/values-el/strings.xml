@@ -197,6 +197,8 @@
     <string name="about_license_title">Άδεια</string>
     <string name="about_license_body">Το QuickBuds είναι ελεύθερο λογισμικό με άδεια GNU General Public License v3.0. Βασίζεται στην ανοιχτή δουλειά αντίστροφης μηχανικής των OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win και DevPods· οι πλήρεις ευχαριστίες βρίσκονται στο GitHub.</string>
     <string name="theme_builtin">Ενσωματωμένα</string>
+    <string name="theme_auto">Όπως το σύστημα</string>
+    <string name="theme_auto_sub">%1$s σε φωτεινή λειτουργία, %2$s σε σκοτεινή</string>
     <string name="theme_oled_black">OLED Μαύρο</string>
     <string name="theme_classic_dark">Κλασικό Σκούρο</string>
     <string name="theme_white">Λευκό</string>

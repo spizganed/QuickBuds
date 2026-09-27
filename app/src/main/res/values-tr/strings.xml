@@ -197,6 +197,8 @@
     <string name="about_license_title">Lisans</string>
     <string name="about_license_body">QuickBuds, GNU General Public License v3.0 altında özgür bir yazılımdır. OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win ve DevPods\'un açık tersine mühendislik çalışmalarına dayanır; tüm katkıda bulunanlar GitHub\'da.</string>
     <string name="theme_builtin">Yerleşik</string>
+    <string name="theme_auto">Sistemi izle</string>
+    <string name="theme_auto_sub">Açık modda %1$s, koyu modda %2$s</string>
     <string name="theme_oled_black">OLED Siyah</string>
     <string name="theme_classic_dark">Klasik Koyu</string>
     <string name="theme_white">Beyaz</string>

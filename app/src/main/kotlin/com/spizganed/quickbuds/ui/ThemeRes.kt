@@ -101,9 +101,12 @@ object ThemeRes {
 
     @Volatile private var cached: Palette? = null
 
-    /** The active preset. Cached; [invalidate] after changing presets. */
-    fun palette(context: Context): Palette =
-        cached ?: PaletteStore.active(context.applicationContext).also { cached = it }
+    /** The active preset. Cached; [invalidate] after changing presets. Under Match system the
+     *  cache also drops when the system's light / dark setting no longer matches it. */
+    fun palette(context: Context): Palette {
+        cached?.let { if (!PaletteStore.auto(context) || it.isLight == PaletteStore.systemLight(context)) return it }
+        return PaletteStore.active(context.applicationContext).also { cached = it }
+    }
 
     fun invalidate() { cached = null }
 

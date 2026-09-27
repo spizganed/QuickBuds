@@ -101,7 +101,12 @@ phone-specific piece lives outside it.
   A custom preset uses the built-in style with the matching light/dark window plus `ThemeRes.PaletteFactory`,
   which swaps `?attr/appColor*` in inflated XML. Shape drawables are built in code (`ThemeRes.card/chip/iconButton/sheet`);
   do not add XML shapes with `?attr` colours, the factory cannot see inside them. `QuickBudsApp` recreates any
-  activity whose preset changed, on resume.
+  activity whose preset changed, on resume. Light presets have their own derived switch colours
+  (`Palette.track` / `thumbOff`), and `onAccent` prefers the lighter colour when it reaches 3:1.
+- **Match system** (`paletteAuto`, [USER] 2026-09-27): `PaletteStore.activeId` returns White in light mode
+  and `paletteAutoDark` (OLED or Classic Dark) in dark mode. Picking a dark built-in while it is on sets the
+  dark half; picking White or a custom preset turns it off. Activities recreate on the uiMode change by
+  themselves (never add `uiMode` to `configChanges`); `QuickBudsApp.onConfigurationChanged` repaints widgets.
 - **Compact sizing ([USER] 2026-09-26):** everything ~10-15% shorter than SPEC so home fits without scrolling:
   rows 62dp (SPEC 72), colour rows 54dp, rings 90dp, segments 56dp, level pills 36dp, screen padding 16dp,
   tile gaps 12dp. Touch targets stay >= 44dp (icon buttons, status chip).
@@ -333,8 +338,8 @@ button arms `devCrashOnLaunch`; the next launch throws once there, which proves 
 
 - **Slide up vs slide down** — settled, nothing to do: the firmware maps the two directions itself
   when the slide is set through our app, as with HeyMelody ([USER] 2026-09-26).
-- **Light theme** — replaced by the **White** preset (UI revision step 1, 2026-09-26). Check screens on
-  White and on a light custom preset when changing colours.
+- **Light theme** — replaced by the **White** preset (UI revision step 1, 2026-09-26; redesigned
+  2026-09-27). Check screens on White and on a light custom preset when changing colours.
 - **Case lid state** — settled 2026-09-25: no lasting lid state exists (PROTOCOL.md §8); a close only
   stops the reconnect retries. `ic_case.xml` stays (the status view uses it). Case charging is only
   reported with the lid open, so it is **not shown, by decision** (PROTOCOL.md §7).

@@ -6,12 +6,15 @@ import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import com.spizganed.quickbuds.bluetooth.BudsService
+import com.spizganed.quickbuds.ui.PaletteStore
 import com.spizganed.quickbuds.ui.ThemeRes
+import com.spizganed.quickbuds.widget.AncWidgetProvider
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -78,6 +81,16 @@ class QuickBudsApp : Application() {
         if (prefs.getBoolean(PREF_CRASH_ON_LAUNCH, false)) {
             prefs.edit().remove(PREF_CRASH_ON_LAUNCH).commit()
             throw RuntimeException("Crash test from Dev Tools (crash logger check)")
+        }
+    }
+
+    /** Match system: open screens recreate themselves (no uiMode in configChanges); widgets need a push. */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // ponytail: only while the process lives; a widget of a dead process repaints on its next update.
+        if (PaletteStore.auto(this)) {
+            ThemeRes.invalidate()
+            AncWidgetProvider.refreshAll(this)
         }
     }
 

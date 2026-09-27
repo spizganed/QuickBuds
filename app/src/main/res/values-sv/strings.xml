@@ -197,6 +197,8 @@
     <string name="about_license_title">Licens</string>
     <string name="about_license_body">QuickBuds är fri programvara under GNU General Public License v3.0. Den bygger på det öppna reverse engineering-arbetet i OppoPodsManager, OppoPods, Pods-Protocol-Reverse-Engineering, OPPO-Pods-Win och DevPods; alla tack finns på GitHub.</string>
     <string name="theme_builtin">Inbyggda</string>
+    <string name="theme_auto">Följ systemet</string>
+    <string name="theme_auto_sub">%1$s i ljust läge, %2$s i mörkt läge</string>
     <string name="theme_oled_black">OLED-svart</string>
     <string name="theme_classic_dark">Klassiskt mörkt</string>
     <string name="theme_white">Vitt</string>
