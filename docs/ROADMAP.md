@@ -19,9 +19,7 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
 widgets, 3.0.0) is finished; 3.1.0 is released.
 
-1. **Right-to-left languages** (Arabic, Urdu, Persian), when wanted: RTL support in the manifest and a
-   mirrored check of every screen.
-2. **Small items** ([USER] 2026-09-27):
+1. **Small items** ([USER] 2026-09-27):
    - **"The font is not applied to everything"** (his report after the language work). Not yet
      located: ask him which screen / language / text, or for a screenshot. The app has no font of
      its own; everything uses the system font (some views set `sans-serif-medium` in code).
@@ -30,7 +28,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
    - **Dev Tools redesign** to match the app: `SettingRowFactory` screen and header, a two-segment
      Human / Raw control, the actions in one card (Export, Clear, Reconnect, Disconnect, Crash test
      with a confirm), the log in a normal card with TX / RX in the accent colour.
-3. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
+2. **Other HeyMelody models: detect, then show what the model supports.** realme models are dropped
    (HeyMelody does not support them). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
    - **Detection** (`DeviceInfoManager`, `ModelCatalog`): the `0x8103` reply is `00` + a 3-byte
      little-endian product id (`100100`–`100102` normalise to `060414`, three more such ranges).
@@ -53,7 +51,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      with dots). Show it in the Earbud settings hub. Confirm the format against a Buds 4 reply first.
    - UI: the header's device name becomes a button that opens the model list (switch or override).
    - The capture script and contributor docs are not needed for this.
-4. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
+3. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
    repo (`[USER]` 2026-09-27).
@@ -86,6 +84,8 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 ## Decided against — do not re-suggest
 
+- Right-to-left languages (Arabic, Urdu, Persian, Hebrew): they need a mirrored layout and a check of
+  every custom-drawn view ([USER] 2026-09-27).
 - Ear tip fit test and Golden Sound: the only HeyMelody features we skip; he sees no use in them
   ([USER] 2026-09-27).
 - A lock-screen widget, a widget on/off switch, the Quick Settings tile (removed) and the
