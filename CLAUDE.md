@@ -464,6 +464,10 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   0 battery, 1 controls, 2 list). Sending it every time made every widget flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
   the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
   `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
+- **Back to battery** ([USER] 2026-09-27): a mode change or Low latency toggle slides the widget back to the
+  battery page `WidgetSettings.BACK_TO_BATTERY_MS` (1.5 s) after the last tap, so the mode flip shows and Next
+  mode can be tapped again (`WidgetActionReceiver.backToBattery`, a main-thread handler; a page swap cancels it,
+  an open list skips it).
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
 

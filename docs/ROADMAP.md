@@ -73,14 +73,12 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 ## Our own features
 
-- **Next: widget animations** ([USER] 2026-09-27): he likes the page slide (`w_slide`, `widget_slide_*`).
-  Use it for every widget action. After the user picks a noise mode or toggles Low latency on the
-  controls page, slide back to the battery page. Keep the rule from CLAUDE.md (Widgets): send
-  `setDisplayedChild` only in the update that changes the child.
-- **Next: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
+- **Question: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
   (the clock, the steps and the combined weather widget) ours look smaller than the cell they get.
-  Compare them on his home screen (`screencap` + the host's `getAppWidgetOptions` sizes) and remove
-  the extra padding / margins in `scripts/widget-layouts.py` (rerun it, never edit the XML).
+  Measured 2026-09-27 on his home screen: every size's card already fills its cell (the 2x2's edges
+  line up with the clock and weather widgets). What reads smaller is the inset inside the card: 6dp
+  card padding and 6dp gaps around the inner panels (`scripts/widget-layouts.py`). Cut them, and by
+  how much? His call.
 
 ## Docs cleanup
 
