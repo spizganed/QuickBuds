@@ -75,10 +75,12 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 - **Question: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
   (the clock, the steps and the combined weather widget) ours look smaller than the cell they get.
-  Measured 2026-09-27 on his home screen: every size's card already fills its cell (the 2x2's edges
-  line up with the clock and weather widgets). What reads smaller is the inset inside the card: 6dp
-  card padding and 6dp gaps around the inner panels (`scripts/widget-layouts.py`). Cut them, and by
-  how much? His call.
+  Measured 2026-09-27 (`uiautomator dump`): the Nothing launcher pads every widget host the same way
+  (28 px sides, 31 top, 83 bottom on a 488x546 px 2x2 cell), its own widgets included. Our 2x2 draws
+  432x432 px, exactly the box of Nothing's own 2x2 (the weather combo). It only looks smaller than the
+  clock + steps stack, because two 1-row widgets each get less padding (together 461 px tall). The host
+  clips to its padding, so we cannot draw past it. Left: shrink the inset inside our card (6dp padding
+  and gaps, `scripts/widget-layouts.py`), or leave it. His call.
 
 ## Docs cleanup
 
