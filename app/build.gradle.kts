@@ -28,8 +28,8 @@ android {
         // THE ONLY PLACE the version is declared. It used to live on <application> in the manifest,
         // where Android ignores it: every PC build up to 2026-09-23 shipped with NO version, which
         // UpdateActivity (reads PackageManager) and bundletool ("Version code not found") both hit.
-        versionCode = 6
-        versionName = "3.1.0"
+        versionCode = 7
+        versionName = "3.2.0"
     }
 
     signingConfigs {
