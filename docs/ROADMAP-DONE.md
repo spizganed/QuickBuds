@@ -97,6 +97,7 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Widget animations are slides only (the fades and the tick-up are gone). The pages move like a
   carousel: battery -> controls slides left, back slides right. The widget stays on the controls page
   after a change (sliding back to battery was tried and dropped). Checked on device, 2026-09-27.
+- Widget double tap waits 200 ms instead of 400 ms, so the buttons react faster (2026-09-28).
 - New White preset: a cool grey page (#ECECF0) under white cards, darker text and outline; on light
   presets the switch thumb is the card colour on a darker track (it was a near-black dot), and a label
   on the accent is the lighter colour whenever that reaches 3:1 (white on pure red, not black).

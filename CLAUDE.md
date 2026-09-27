@@ -80,6 +80,10 @@ phone-specific piece lives outside it.
 - `./gradlew` works. `core.filemode` is false (a leftover from shared storage), so git keeps
   `gradlew` at 755 whatever the local bits are. SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
 - The release key is in `local/keys/` here too, so `./gradlew assembleRelease` signs as on the PC.
+- **On-device tests over adb** ([USER] 2026-09-28): never leave auto-rotate on (reset
+  `settings put system accelerometer_rotation 0` after every test) and bring Termux back to the front when done.
+  The user-level Stop hook (`~/.claude/settings.json`) reposts a notification with sound and runs `am start` for
+  Termux after every reply. With the buds connected the sound plays in the buds, not the phone.
 - **Phone build tweaks, all outside the repo** (2026-09-27): `~/.gradle/init.d/quickbuds-phone.gradle.kts`
   moves build output to `~/qb-build/` (set up while the repo was on slow FUSE shared storage) and disables the `lintVital*` tasks;
   `~/.gradle/gradle.properties` turns on the configuration cache and raises heaps (Gradle 3g, Kotlin 2g).
