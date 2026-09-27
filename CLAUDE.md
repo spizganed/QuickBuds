@@ -10,7 +10,7 @@ Bluetooth **RFCOMM**, with no HeyMelody, no vendor app, no root, no Shizuku, no 
 
 - Package `com.spizganed.quickbuds` (final). App name **QuickBuds**. GitHub: `spizganed/QuickBuds`,
   branch `main`.
-- License **GPL-3.0**. Test device: **OnePlus Buds 4** on a **Nothing Phone (3a), Android 15**.
+- License **GPL-3.0**. Test device: **OnePlus Buds 4** on a **Nothing Phone (3a), Android 16** (API 36, seen 2026-09-27).
 - Single module, `:app`. All sources are Kotlin under `app/src/main/kotlin/`; no Java.
 
 **The north star is parity with HeyMelody**, then this project's own improvements on top (the widget,
