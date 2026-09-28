@@ -80,8 +80,10 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
   432x432 px, exactly the box of Nothing's own 2x2 (the weather combo). It only looks smaller than the
   clock + steps stack, because two 1-row widgets each get less padding (together 461 px tall). The host
   clips to its padding, so we cannot draw past it. Decided 2026-09-28: the tighter inset is part of the optional
-  Nothing widget style (CLAUDE.md, Widget style); Classic keeps 6dp.
-- **Nothing widget style** (in progress, 2026-09-28): finish the 2x2, then match the 4x2 and 3x3 to it.
+  Nothing widget style (CLAUDE.md, Widgets); Classic keeps 6dp at the sides.
+- **README screenshots**: the widgets changed on 2026-09-28 (Nothing style, controls page, case row); rerun
+  `scripts/readme-screenshots.sh` for the widget crops (it opens Widget settings by visible text, and that screen
+  lost its mode sections).
 
 ## Docs cleanup
 

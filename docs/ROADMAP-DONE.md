@@ -106,6 +106,10 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - The 300 s status keep-alive is gone: days of use without it showed no stale link ([USER]).
 - Colour picker: the last five committed colours under the quick swatches ("Recent"), shared by Edit
   preset and the built-in accent picker; swatches have a thin outline so a card-coloured one shows.
+- Widgets, 2026-09-28 (commit 3423990): an optional Nothing style (NDot57All text, no boxes, every graphic as a
+  dot matrix, numbers without %); a controls page of four quick buttons (ANC opens a level picker, T, A, LL) for
+  both styles; the cycle mode, mode button and mode list settings removed; the battery page's case row fills the
+  leftover height with the level inside the bar; the 3x3 is the 2x2 scaled. Details in CLAUDE.md, Widgets.
 
 ## Docs
 
