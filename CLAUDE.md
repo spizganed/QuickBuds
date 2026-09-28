@@ -190,7 +190,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 9 / versionName 3.4.0.**
+**Current: versionCode 10 / versionName 3.4.1.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
@@ -376,6 +376,11 @@ button arms `devCrashOnLaunch`; the next launch throws once there, which proves 
 ### Connection robustness — known rough edges
 
 From `bluetooth/BudsConnectionManager.kt`.
+
+- **Which device is "the buds"** is `BudsDevice.find()` (2026-09-28, GitHub issue #1): the saved `budsAddress`,
+  else the first bonded device with the `079A` / `1107` SPP UUID or a `models.json` name. `KeepAliveReceiver`
+  saves the address of whichever matching buds bring their link up. Up to 3.4.0 a hardcoded MAC (his Buds 4)
+  sat in three files, so no other user could connect. Never hardcode an address again.
 
 - The **UUID `00001107-...` never connects** on Buds 4 (~5 s timeout), so `0000079A-...` is tried
   first since 2026-09-25 — as HeyMelody does (bugreport 2026-09-24). `1107` stays second for other models.

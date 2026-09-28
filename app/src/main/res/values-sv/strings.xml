@@ -264,4 +264,5 @@
     <string name="model_auto">Automatiskt</string>
     <string name="model_detected">Identifierad: %1$s</string>
     <string name="model_not_detected">Inte identifierad än</string>
+    <string name="no_buds_paired">Inga parkopplade OPPO-, OnePlus- eller realme-lurar hittades. Parkoppla dem först i Bluetooth-inställningarna.</string>
 </resources>

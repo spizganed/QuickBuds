@@ -266,4 +266,5 @@
     <string name="model_auto">自動</string>
     <string name="model_detected">已識別：%1$s</string>
     <string name="model_not_detected">尚未識別</string>
+    <string name="no_buds_paired">找不到已配對的 OPPO、OnePlus 或 realme 耳機。請先在藍牙設定中配對。</string>
 </resources>

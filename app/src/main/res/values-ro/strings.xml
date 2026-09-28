@@ -264,4 +264,5 @@
     <string name="model_auto">Automat</string>
     <string name="model_detected">Detectat: %1$s</string>
     <string name="model_not_detected">Nedetectat încă</string>
+    <string name="no_buds_paired">Nu s-au găsit căști OPPO, OnePlus sau realme asociate. Asociază-le mai întâi din setările Bluetooth.</string>
 </resources>

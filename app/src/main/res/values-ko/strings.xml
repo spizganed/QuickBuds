@@ -264,4 +264,5 @@
     <string name="model_auto">자동</string>
     <string name="model_detected">감지됨: %1$s</string>
     <string name="model_not_detected">아직 감지되지 않음</string>
+    <string name="no_buds_paired">페어링된 OPPO, OnePlus 또는 realme 이어버드가 없습니다. 먼저 블루투스 설정에서 페어링하세요.</string>
 </resources>

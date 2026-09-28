@@ -264,4 +264,5 @@
     <string name="model_auto">Αυτόματα</string>
     <string name="model_detected">Εντοπίστηκε: %1$s</string>
     <string name="model_not_detected">Δεν εντοπίστηκε ακόμη</string>
+    <string name="no_buds_paired">Δεν βρέθηκαν συζευγμένα ακουστικά OPPO, OnePlus ή realme. Κάντε πρώτα σύζευξη στις ρυθμίσεις Bluetooth.</string>
 </resources>

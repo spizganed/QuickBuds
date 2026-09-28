@@ -264,4 +264,5 @@
     <string name="model_auto">Automatik</string>
     <string name="model_detected">Dikesan: %1$s</string>
     <string name="model_not_detected">Belum dikesan</string>
+    <string name="no_buds_paired">Tiada earbud OPPO, OnePlus atau realme yang dipasangkan. Pasangkan dahulu dalam tetapan Bluetooth.</string>
 </resources>

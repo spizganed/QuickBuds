@@ -266,4 +266,5 @@
     <string name="model_auto">Otomatis</string>
     <string name="model_detected">Terdeteksi: %1$s</string>
     <string name="model_not_detected">Belum terdeteksi</string>
+    <string name="no_buds_paired">Tidak ada earbud OPPO, OnePlus, atau realme yang dipasangkan. Pasangkan dulu di pengaturan Bluetooth.</string>
 </resources>

@@ -264,4 +264,5 @@
     <string name="model_auto">Automatikus</string>
     <string name="model_detected">Felismerve: %1$s</string>
     <string name="model_not_detected">Még nincs felismerve</string>
+    <string name="no_buds_paired">Nem található párosított OPPO, OnePlus vagy realme fülhallgató. Először párosítsd a Bluetooth-beállításokban.</string>
 </resources>

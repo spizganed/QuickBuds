@@ -264,4 +264,5 @@
     <string name="model_auto">Автоматически</string>
     <string name="model_detected">Определено: %1$s</string>
     <string name="model_not_detected">Пока не определено</string>
+    <string name="no_buds_paired">Сопряжённые наушники OPPO, OnePlus или realme не найдены. Сначала выполните сопряжение в настройках Bluetooth.</string>
 </resources>

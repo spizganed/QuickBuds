@@ -29,6 +29,7 @@ import android.provider.Settings
 import com.spizganed.quickbuds.CrashLogger
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
+import com.spizganed.quickbuds.bluetooth.BudsDevice
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.protocol.AncModes
@@ -93,7 +94,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /** Last state rendered, so a redundant notify does not rebuild the UI. */
     private var lastRendered: WidgetStateStore.State? = null
 
-    private val TARGET_MAC = "00:11:22:33:44:55"
     private val REQUEST_PERMISSIONS = 1001
 
     /** Card collapse/expand when the app connects or disconnects. */
@@ -1103,7 +1103,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             toast("Bluetooth is off.")
             return
         }
-        val device = adapter.getRemoteDevice(TARGET_MAC)
+        val device = BudsDevice.find(this)
+        if (device == null) {
+            toast(getString(R.string.no_buds_paired))
+            return
+        }
         manager.connect(device, withAudio = true)
     }
 

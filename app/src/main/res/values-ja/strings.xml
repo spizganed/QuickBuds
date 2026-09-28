@@ -264,4 +264,5 @@
     <string name="model_auto">自動</string>
     <string name="model_detected">検出: %1$s</string>
     <string name="model_not_detected">まだ検出されていません</string>
+    <string name="no_buds_paired">ペアリング済みの OPPO、OnePlus、realme のイヤホンが見つかりません。先に Bluetooth 設定でペアリングしてください。</string>
 </resources>

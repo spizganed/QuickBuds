@@ -264,4 +264,5 @@
     <string name="model_auto">Automático</string>
     <string name="model_detected">Detetado: %1$s</string>
     <string name="model_not_detected">Ainda não detetado</string>
+    <string name="no_buds_paired">Nenhum fone OPPO, OnePlus ou realme emparelhado. Emparelhe-os primeiro nas configurações de Bluetooth.</string>
 </resources>

@@ -10,8 +10,6 @@ import androidx.core.content.IntentCompat
 
 class KeepAliveReceiver : BroadcastReceiver() {
 
-    private val TARGET_MAC = "00:11:22:33:44:55"
-
     /** ACL-only fallback: long enough for A2DP/HFP to come up and connect first. */
     private val ACL_FALLBACK_MS = 8_000L
 
@@ -19,7 +17,7 @@ class KeepAliveReceiver : BroadcastReceiver() {
         val action = intent.action ?: return
         val device = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
 
-        if (device?.address != TARGET_MAC) return
+        if (device == null || !BudsDevice.isBuds(context, device)) return
 
         if (!BudsService.backgroundAllowed(context)) {
             Log.d("BudsConn", "KeepAlive: $action ignored (background service off)")
@@ -32,6 +30,7 @@ class KeepAliveReceiver : BroadcastReceiver() {
         // comes up (media audio switched off for the buds); it does nothing if already connected.
         when (action) {
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                BudsDevice.remember(context, device)
                 Log.d("BudsConn", "KeepAlive: ACL_CONNECTED (fallback connect in ${ACL_FALLBACK_MS}ms)")
                 fireForceConnect(context, ACL_FALLBACK_MS)
             }
@@ -42,7 +41,10 @@ class KeepAliveReceiver : BroadcastReceiver() {
             "android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED" -> {
                 val state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1)
                 Log.d("BudsConn", "KeepAlive: audio profile state=$state ($action)")
-                if (state == BluetoothProfile.STATE_CONNECTED) fireForceConnect(context, 0L)
+                if (state == BluetoothProfile.STATE_CONNECTED) {
+                    BudsDevice.remember(context, device)
+                    fireForceConnect(context, 0L)
+                }
             }
         }
     }

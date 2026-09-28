@@ -264,4 +264,5 @@
     <string name="model_auto">স্বয়ংক্রিয়</string>
     <string name="model_detected">শনাক্ত হয়েছে: %1$s</string>
     <string name="model_not_detected">এখনও শনাক্ত হয়নি</string>
+    <string name="no_buds_paired">কোনো পেয়ার করা OPPO, OnePlus বা realme বাডস পাওয়া যায়নি। আগে ব্লুটুথ সেটিংসে পেয়ার করুন।</string>
 </resources>

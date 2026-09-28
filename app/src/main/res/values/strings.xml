@@ -349,4 +349,5 @@
     <string name="model_auto">Automatic</string>
     <string name="model_detected">Detected: %1$s</string>
     <string name="model_not_detected">Not detected yet</string>
+    <string name="no_buds_paired">No paired OPPO, OnePlus or realme buds found. Pair them in Bluetooth settings first.</string>
 </resources>

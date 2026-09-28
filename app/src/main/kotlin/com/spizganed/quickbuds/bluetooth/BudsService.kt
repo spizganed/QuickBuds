@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -29,7 +28,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     var manager: BudsConnectionManager? = null
         private set
 
-    private val TARGET_MAC = "00:11:22:33:44:55"
     private val handler = Handler(Looper.getMainLooper())
 
     private fun statusLog(msg: String) {
@@ -101,8 +99,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 manager?.disconnect()
                 // Only the deliberate disconnect drops phone audio — the manager's own
                 // disconnect() also runs after a failed connect attempt.
-                getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
-                    ?.let { manager?.setPhoneAudio(it, on = false) }
+                BudsDevice.find(this)?.let { manager?.setPhoneAudio(it, on = false) }
             }
             ACTION_WIDGET_COMMAND -> {
                 val widgetAction = intent.getStringExtra(EXTRA_WIDGET_ACTION)
@@ -183,8 +180,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
         statusLog("[SVC] FORCE_CONNECT: connecting...")
         try {
-            val device = getSystemService(BluetoothManager::class.java)?.adapter?.getRemoteDevice(TARGET_MAC)
+            val device = BudsDevice.find(this)
             if (device != null) manager?.connect(device, withAudio)
+            else statusLog("[SVC] No paired OPPO / OnePlus / realme buds found")
         } catch (e: Exception) {
             statusLog("[SVC] Force connect failed: ${e.message}")
         }
