@@ -17,7 +17,6 @@ object WidgetSettings {
      */
     class Mode(val key: String, val store: String, val name: Int, val short: Int, val icon: Int)
 
-    /** Default order (WIDGETS.md 5). */
     val MODES = listOf(
         Mode("low", "ANC-Light", R.string.widget_mode_anc_low, R.string.anc_mode_low, R.drawable.ic_mode_anc_low),
         Mode("med", "ANC-Medium", R.string.widget_mode_anc_medium, R.string.anc_mode_medium, R.drawable.ic_mode_anc_medium),
@@ -27,16 +26,9 @@ object WidgetSettings {
         Mode("adapt", "Adaptive", R.string.anc_seg_adapt, R.string.anc_seg_adapt, R.drawable.ic_mode_adaptive),
         Mode("off", "Off", R.string.anc_seg_off, R.string.anc_seg_off, R.drawable.ic_mode_off)
     )
-    private val DEFAULT_ON = setOf("low", "med", "high", "trans")
-    const val MIN_ON = 2
-    /** The mode list has six cells; seven modes exist since Smart (2026-09-27). */
-    const val MAX_ON = 6
     /** How long a tap waits for a second one in double-tap mode ([USER] 2026-09-28: 400 ms felt slow). */
     const val DOUBLE_TAP_MS = 200L
 
-    private const val KEY_TAP_LIST = "widgetTapList"
-    private const val KEY_ORDER = "widgetModeOrder"
-    private const val KEY_ON = "widgetModesOn"
     private const val KEY_LOW_LATENCY = "widgetLowLatency"
     private const val KEY_OPEN_APP = "widgetOpenApp"
     private const val KEY_LIST_AT = "widgetListAt_"
@@ -44,8 +36,6 @@ object WidgetSettings {
     private const val KEY_NOTHING = "widgetStyleNothing"
     private const val KEY_PAGE = "widgetPage_"
     private const val KEY_CHILD = "widgetChild_"
-    private const val KEY_MODE = "widgetMode_"
-    private const val KEY_SLOT = "widgetModeSlot_"
 
     private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -58,36 +48,15 @@ object WidgetSettings {
     fun modeOf(ancMode: String): Mode =
         MODES.firstOrNull { it.store == ancMode } ?: MODES.first { it.key == if (ancMode.isEmpty()) "off" else "med" }
 
-    /** True: the mode button opens the list. False (default): it steps to the next mode. */
-    fun tapOpensList(c: Context) = prefs(c).getBoolean(KEY_TAP_LIST, false)
-    fun setTapOpensList(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_TAP_LIST, v) }
-
-    /** All modes in the user's order, checked or not. */
-    fun order(c: Context): List<Mode> {
-        val keys = prefs(c).getString(KEY_ORDER, null)?.split(",").orEmpty()
-        return keys.mapNotNull { k -> MODES.firstOrNull { it.key == k } } + MODES.filter { it.key !in keys }
-    }
-    fun setOrder(c: Context, modes: List<Mode>) = set(c) { it.putString(KEY_ORDER, modes.joinToString(",") { m -> m.key }) }
-
-    fun enabledKeys(c: Context): Set<String> = prefs(c).getStringSet(KEY_ON, null) ?: DEFAULT_ON
-    fun setEnabledKeys(c: Context, keys: Set<String>) = set(c) { it.putStringSet(KEY_ON, keys.toSet()) }
-
     /**
-     * The checked modes the connected buds have ([AncModes]), in order: what both the cycle and the
-     * list use. None checked there: every mode they have.
+     * The controls page's ANC level picker ([USER] 2026-09-28): the levels these buds have, no Off (the lit
+     * level turns ANC off, as a lit T or A button does).
      */
-    fun enabled(c: Context): List<Mode> {
+    fun ancPicker(c: Context): List<Mode> {
         val anc = AncModes.of(c)
-        val have = order(c).filter { anc.supports(it.store) }
-        return enabledKeys(c).let { on -> have.filter { it.key in on } }.ifEmpty { have }.take(MAX_ON)
+        return MODES.filter { it.key in PICKER && anc.supports(it.store) }
     }
-
-    /** The mode after [current] among the checked ones, wrapping; the first one if [current] is not checked. */
-    fun next(c: Context, current: Mode): Mode {
-        val on = enabled(c).ifEmpty { return current }
-        val i = on.indexOfFirst { it.key == current.key }
-        return on[(i + 1) % on.size]
-    }
+    private val PICKER = setOf("low", "med", "high", "smart")
 
     fun lowLatencyShown(c: Context) = prefs(c).getBoolean(KEY_LOW_LATENCY, true)
     fun setLowLatencyShown(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_LOW_LATENCY, v) }
@@ -121,24 +90,10 @@ object WidgetSettings {
         prefs(c).edit().apply { if (child == null) remove(KEY_CHILD + id) else putInt(KEY_CHILD + id, child) }.apply()
     }
 
-    /**
-     * Which of widget [id]'s two mode-button copies shows mode [key] (0 or 1), and whether it just
-     * changed to it (the renderer then flips). The first time: the stored copy, no flip.
-     */
-    fun modeSlot(c: Context, id: Int, key: String): Pair<Int, Boolean> {
-        val p = prefs(c)
-        val last = p.getString(KEY_MODE + id, null)
-        val slot = p.getInt(KEY_SLOT + id, 0)
-        if (last == key) return slot to false
-        val next = if (last == null) slot else 1 - slot
-        p.edit().putString(KEY_MODE + id, key).putInt(KEY_SLOT + id, next).apply()
-        return next to (last != null)
-    }
-
     /** Drops everything stored for widget [id] (removed from the home screen). */
     fun forget(c: Context, id: Int) {
         prefs(c).edit().apply {
-            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_MODE, KEY_SLOT)) remove(k + id)
+            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD)) remove(k + id)
         }.apply()
     }
 

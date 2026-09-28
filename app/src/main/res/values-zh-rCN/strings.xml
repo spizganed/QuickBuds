@@ -237,28 +237,19 @@
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
     <string name="widget_settings_title">小组件设置</string>
-    <string name="widget_settings_sub">模式按钮、模式、低延迟</string>
-    <string name="widget_tap_title">点击模式按钮</string>
-    <string name="widget_tap_next">下一个模式</string>
-    <string name="widget_tap_list">打开列表</string>
-    <string name="widget_tap_hint">“下一个模式”按下方顺序依次切换。“打开列表”显示全部模式供选择；选择后或 5 秒后关闭。</string>
-    <string name="widget_modes_title">模式</string>
-    <string name="widget_modes_hint">勾选 2 到 6 项，拖动调整顺序。两种方式使用相同的模式。</string>
+    <string name="widget_settings_sub">样式、页面、低延迟</string>
     <string name="widget_section">小组件</string>
     <string name="widget_style_title">样式</string>
     <string name="widget_style_classic">经典</string>
     <string name="widget_ll_title">低延迟按钮</string>
-    <string name="widget_ll_sub">显示在模式按钮旁</string>
+    <string name="widget_ll_sub">控制页上的按钮</string>
     <string name="widget_open_title">点击打开应用</string>
     <string name="widget_open_sub">点击电量区域打开 QuickBuds</string>
-    <string name="widget_drag_desc">拖动以排序</string>
     <string name="widget_mode_anc_low">降噪 低</string>
     <string name="widget_mode_anc_medium">降噪 中</string>
     <string name="widget_mode_anc_high">降噪 高</string>
     <string name="widget_mode_anc_smart">降噪 智能</string>
     <string name="widget_low_latency">低延迟</string>
-    <string name="widget_mode_desc_cycle">%1$s：%2$s，点击切换下一个模式</string>
-    <string name="widget_mode_desc_list">%1$s：%2$s，点击选择模式</string>
     <string name="widget_battery_name">QuickBuds 电量</string>
     <string name="widget_large_name">QuickBuds 大号</string>
     <string name="settings_language_title">语言</string>
@@ -266,7 +257,7 @@
     <string name="widget_pages_title">切换页面</string>
     <string name="widget_pages_button">切换按钮</string>
     <string name="widget_pages_double">双击</string>
-    <string name="widget_pages_hint">每个小组件都有两个页面：电量和降噪控制。选择双击后，每次单击都会等待约 0.4 秒，看是否有第二次点击。</string>
+    <string name="widget_pages_hint">每个小组件都有两个页面：电量和降噪控制。选择双击后，每次单击都会等待约 0.2 秒，看是否有第二次点击。</string>
     <string name="widget_swap_desc">切换页面</string>
     <string name="language_system">跟随系统</string>
 

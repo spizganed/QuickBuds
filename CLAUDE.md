@@ -428,42 +428,67 @@ listener also honours, or the neutral state would send a write) and repainted fr
 appends to a bounded in-memory tail. See the note above about not putting user-visible output on a
 packet-listener path.
 
-## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md)
+## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md; its mode button and cycle are superseded)
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
-generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus the mode list grids
-`widget_grid` / `widget_grid_l` (3x3, larger icons and labels) and `widget_disconnected`, each also as a `_n`
-Nothing-style copy; all come from `scripts/widget-layouts.py`, edit it and rerun, never the XML):
-**2x2** (`BatteryWidgetProvider`), **3x3** (`LargeWidgetProvider`, the 2x2 layout scaled up) and **4x2**
+generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus the level picker grids
+`widget_grid` / `widget_grid_l` and `widget_disconnected`, each also as a `_n` Nothing-style copy; all come from
+`scripts/widget-layouts.py`, edit it and rerun, never the XML):
+**2x2** (`BatteryWidgetProvider`), **3x3** (`LargeWidgetProvider`) and **4x2**
 (`AncWidgetProvider`, 3x2 until 2026-09-27) ([USER] 2026-09-27: no more sizes for now). All fixed size,
 `resizeMode="none"`. The old class names are kept so placed widgets survive; the 4x1 strip and the 2x2 controls
 widget (`SmallWidgetProvider`) are gone. No model name on any widget ([USER] 2026-09-27).
 **Every size has two pages, battery and controls** ([USER] 2026-09-27): the page is
 stored per widget id (`widgetPage_<id>`, battery first) and swapped by the
-`w_swap` buttons (top-right corner, except the 2x2 / 3x3 battery page: end of the case bar) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 200 ms ([USER] 2026-09-28; 400 ms felt slow, and instant buttons left no room to double tap on the controls page)
-for a second one before running it (`WidgetActionReceiver.doubleTap`). Battery pages: 2x2 and 3x3 = two bud
-panels + case bar, 4x2 = three panels sized from `getAppWidgetOptions` (`ringDp`).
-**The mode button has two copies** (`w_mode_fills` / `w_mode_flip`, [USER] 2026-09-27: better switching
-animations): a mode change fills the hidden copy and slides to it. `WidgetSettings.modeSlot` stores the copy and the mode per widget; the flips
-follow the same rule as the pages below. The mode list is filled on every update, so a pick slides out lit. All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
+`w_swap` buttons (top-right corner, except the 2x2 / 3x3 battery page: end of the case row) or, with `widgetDoubleTap`, a double tap: every tap then carries `EXTRA_PAGE` and the receiver waits 200 ms ([USER] 2026-09-28; 400 ms felt slow, and instant buttons left no room to double tap on the controls page)
+for a second one before running it (`WidgetActionReceiver.doubleTap`).
+All use the ACTIVE palette: white shapes tinted with `ImageView.setColorFilter` (every API level), ring
 and case-bar bitmaps drawn per update, so a palette change calls `refreshAll` (PaletteStore does).
 **Disconnected, every size shows only the main screen's Connect chip** ([USER] 2026-09-27); it sends
 FORCE_CONNECT with audio, or opens the app when the background service is off. A new id in a widget layout needs
-its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Check a widget change with
-`adb logcat` while the widget updates.
+its line in the renderer, or RemoteViews fails at apply time ("Can't load widget"). Never a plain `<View>` in a
+widget layout: RemoteViews refuses it too. Check a widget change with `adb logcat` while the widget updates.
 
-- **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
-  (default) or Open list, the ordered checked modes (2 to 6: the list has six cells and there are seven modes since Smart; same list for both), Low latency button (default on),
-  Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
+- **Classic and Nothing share one design** ([USER] 2026-09-28: the Nothing work applied to Classic): the same
+  structure from the script, differing in fonts, spacing (`GEO` in the script = `Geo` in the renderer, keep them
+  equal) and, at runtime, boxes and dot matrices. Classic keeps boxed panels, `sans-serif` and smooth drawings.
+- **The cycle mode is gone** ([USER] 2026-09-28), with the mode button, its two animated copies, the Low latency
+  bar, the tap setting, the checked / ordered mode list in settings and their strings. Do not bring them back.
+- **Controls page** (both styles): four equal quick buttons, ANC / T / A / LL (`controls()`; the script's `quick()`:
+  2x2 grid on the square sizes, a row on the 4x2). ANC opens the level picker (`w_page2`, `WidgetSettings.ancPicker`:
+  the buds' levels, no Off; the lit level turns ANC off) and shows the current level's icon (Medium's outside ANC);
+  T / A select their mode, or Off when already lit (`ACTION_QUICK`); LL toggles low latency. A button the buds (or
+  the Low latency setting) lack stays an empty cell. Picker labels: Nothing one letter (L M H S), Classic the short name.
+- **Battery page, 2x2 / 3x3** (both styles): two bud rings over the case row. Rings as wide as their panels
+  (`wrap_content` + `adjustViewBounds`, a square bitmap), percentage and wear text under them (Nothing: no wear text, the glyph's
+  shade says it and the ring's content description reads it; [USER] 2026-09-28: Classic keeps both). The case row takes all the height
+  the rings leave (weight 1, [USER] 2026-09-28: only paddings between them): the case icon fills its height and
+  `caseRowDp` computes that height from the widget size and `Geo`. The bar is 70% of the icon's height with the
+  level centred inside it (`bar()`); `w_pct_case` stays hidden and the bar carries the content description.
+  Nothing shows **numbers only, no `%`**; Classic keeps the `%` (`pctLabel`, [USER] 2026-09-28).
+- **Margins** (`page_pad()`, every page of every size): Nothing 3dp at the sides and 7 top and bottom (with the
+  panels' paddings the rings sit 6dp from the sides, 10 from the top, 6 apart: the facing sides pad 1dp); Classic 6
+  at the sides and 8 top and bottom, each ring centred in its box, tighter paddings so the case row has room next to
+  the wear text (about 38dp on the 2x2; [USER] 2026-09-28). 4dp more above and below than at the sides
+  ([USER] 2026-09-28).
+- **The 3x3 is the 2x2 scaled** ([USER] 2026-09-28: literally the same, scaled up): the script writes
+  `widget_pages_l*` / `widget_grid_l*` as the 2x2's XML with every dp and sp times `K` = 1.5645 (257.5 / 164.6dp,
+  the two sizes on the Nothing launcher), and the renderer computes the 3x3 in 2x2 dp times `LARGE_SCALE` (same
+  number, keep them equal), so it shows the same dot counts. Never add a 3x3-only value.
+- **4x2**: three rings (left, case, right, [USER] 2026-09-28), sized from `getAppWidgetOptions` (`ringDp`); Nothing
+  with the same 6dp side margins and gaps (the rings are width-bound, so they sit centred vertically).
+- **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): style, page switching
+  (swap button / double tap), Low latency button (default on), Open app on tap (default **off**: a background tap
+  does nothing). Every setter calls `refreshAll`.
 - **Slides only, no fades** ([USER] 2026-09-27), `@integer/widget_anim_ms` (280 ms, one value for every widget
   animation, [USER] 2026-09-28), `anim/widget_enter_*` / `widget_exit_*`. Every flipper has `animateFirstView="true"`:
   with false the first change on each screen was instant. Every clickable view has
   `stateListAnimator="@animator/widget_press"` (pushed to 92% while held, overshoot back; the host runs it). The pages move like
   a carousel: battery enters and leaves on the left, controls on the right, so battery -> controls moves left and
-  back moves right. The mode list and the mode button enter from the left and leave to the right.
+  back moves right. The level picker enters from the left and leaves to the right.
   A RemoteViews flipper cannot change its animation at runtime, so each page has its own flipper.
 - **Two nested `ViewFlipper`s** (2026-09-27): outer `w_pages` holds
-  `w_content` and the mode list `w_page2`; inside `w_content`, `w_slide0` holds an empty view then the
+  `w_content` and the level picker `w_page2`; inside `w_content`, `w_slide0` holds an empty view then the
   battery page `w_page0`, and `w_slide1` an empty view then the controls page `w_page1` (child 1 = shown). The host reapplies a same-layout update onto its views,
   so a flipper animates when its child changes. The price: **every state `build()` sets must be set both ways**
   (visibility, click intents, null included), or the last update's value sticks. Both pages are filled on every
@@ -471,30 +496,38 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   child, and the service resends the whole cached views on every update (partial ones too, so
   `partiallyUpdateAppWidget` does not help). So each flipper child gets its visibility set directly every time,
   and each flipper's `setDisplayedChild` goes out only in the update that changes its child (`widgetChild_<id>`:
-  0 battery, 1 controls, 2 list). Sending it every time made every widget flash ([USER] 2026-09-27). The mode list (never an Activity) stays open until a pick or a tap on the current mode ([USER] 2026-09-28: the old
+  0 battery, 1 controls, 2 picker). Sending it every time made every widget flash ([USER] 2026-09-27). The picker (never an Activity) stays open until a pick ([USER] 2026-09-28: the old
   5 s auto-close shut it while he was choosing); `WidgetActionReceiver` stamps `widgetListAt_<id>`, 0 = closed.
-- **No automatic page change** ([USER] 2026-09-27): after a mode pick or Low latency toggle the widget stays on
+- **No automatic page change** ([USER] 2026-09-27): after a pick or Low latency toggle the widget stays on
   the controls page; the user swaps back (tried and dropped: sliding back to battery after the change).
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
-  corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
+  corrects).
 
-### Widget style: Classic / Nothing (2026-09-28, in progress)
+### Widget style: Nothing (2026-09-28)
 
 `WidgetSettings.nothingStyle` (pref `widgetStyleNothing`, default **off**: Classic stays the default, [USER]), a
-segment at the top of widget settings. Nothing = the `_n` layouts (3dp inset, 4dp gaps, all text in Nothing OS's
-`NDot57All` family from `/system/etc/ntfonts.xml`, falling back to the default font elsewhere, nothing bundled) plus
-runtime changes in `AncWidgetProvider`: no boxes (`panelColor` / `paint` use `card`), OFF in capitals, no mode hint
-arrow, letter labels in the list (L M H S T A, first letter of the translated short name; OFF), and every graphic
-as a dot matrix:
+segment at the top of widget settings. Nothing = the `_n` layouts (all text in Nothing OS's `NDot57All` family from
+`/system/etc/ntfonts.xml` in synthetic bold, falling back to the default font elsewhere, nothing bundled; no heavier
+Nothing dot font exists, and bold draws every dot bigger) plus runtime changes in `AncWidgetProvider`: no boxes
+(`panelColor` / `paint` use `card`), and every graphic as a dot matrix:
 - `matrix()`: a drawing sampled on a grid at 8x, one dot per covered cell; `centre` sampling keeps thin cuts
   (bud head ring, case lid, LED). Rings: ring + glyph drawn together, `RING_CELLS` = 42 on every size.
-- `gridIcon()`: the mode icons and the bolt as pixel art on an odd grid (midpoint circles at the vector radii,
-  one-cell gaps). Converting the vectors merged the rings; dots along perfect circles looked too smooth.
-- Fixed dot rows per icon on every size (`ROWS_*`): **the 2x2 is the baseline**, bigger widgets show the same
-  icons with bigger dots ([USER] 2026-09-28). The case row scales by `dotDp(kind)`; the case bar is measured to
-  its slot (`barDp`) so its dots are never scaled. Unlit dots use `dim()` (the outline was too faint).
-- Open: finish the 2x2 first (open questions: bolt 1 or 2 dots thick, mode-button icon size), then make the 4x2
-  and 3x3 match it ([USER] 2026-09-28).
+- Fixed dots per icon on every size: **the 2x2 is the baseline**, bigger widgets show the same icons with bigger
+  dots ([USER] 2026-09-28). Every mode icon is on one grid, `MODE_GRID` = 31 (`modeIcon()`, drawn like the rings:
+  rings 2 cells wide on radii of k + 0.5, gaps 2+, the outer ring on the box's last dots; Transparency is 8 + 12
+  identical 3x3 blocks). The bolt (`gridIcon()`) has 2-dot lines. Unlit dots use `dim()` (the outline was too faint).
+  Icons fill their button's or cell's free height ([USER] 2026-09-28: too much dead space).
+- Wear shade (`nothingTint`): in ear `text`, out of ear `textSecondary` at 65% over the card, in case
+  `textSecondary` at 17% (30% sat too close to out of ear, 12% a touch too dark); hollow glyphs and hiding the glyph
+  were rejected. The glyphs fill more of the ring (`drawRing`'s `fill`: buds 1.18, case 1.22).
+- The case icon is dotted at the rings' pitch (`ringCellDp`), so the app's `ic_case` keeps its lid cut and LED
+  (`clearLed` always empties the LED's dot and the lid cut's row, the 4x2's case ring too: both fell between cell
+  centres at some sizes). The bar (`bar()`): dot rows at `dotDp` x 1.4, odd, corners rounded at a third of its height
+  (pill ends stepped like an octagon), the level cut out of its dots as 5x7 digits (`GLYPHS`) that read in the
+  background colour. Tried and rejected: a lit box around the digits, a pill split around the text, a cleared box, the
+  bar as tall as the icon, the case section in two lines, a third ring for the case on the 2x2.
+- Box radius matches Nothing OS's own widgets: `widget_bg_n` 19dp on every size (measured against the calendar
+  widget; Classic's 26 / 28dp looked rounder), inner shapes `widget_panel_n` / `_stroke_n` 16dp (`bgRes` / `panelRes`).
 
 ### Widget tap flow
 

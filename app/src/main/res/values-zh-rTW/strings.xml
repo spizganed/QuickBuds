@@ -237,28 +237,19 @@
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
     <string name="widget_settings_title">小工具設定</string>
-    <string name="widget_settings_sub">模式按鈕、模式、低延遲</string>
-    <string name="widget_tap_title">點按模式按鈕</string>
-    <string name="widget_tap_next">下一個模式</string>
-    <string name="widget_tap_list">開啟清單</string>
-    <string name="widget_tap_hint">「下一個模式」依下方順序依次切換。「開啟清單」顯示全部模式供選擇；選擇後或 5 秒後關閉。</string>
-    <string name="widget_modes_title">模式</string>
-    <string name="widget_modes_hint">勾選 2 到 6 項，拖曳調整順序。兩種方式使用相同的模式。</string>
+    <string name="widget_settings_sub">樣式、頁面、低延遲</string>
     <string name="widget_section">小工具</string>
     <string name="widget_style_title">樣式</string>
     <string name="widget_style_classic">經典</string>
     <string name="widget_ll_title">低延遲按鈕</string>
-    <string name="widget_ll_sub">顯示在模式按鈕旁</string>
+    <string name="widget_ll_sub">控制頁上的按鈕</string>
     <string name="widget_open_title">點按開啟應用程式</string>
     <string name="widget_open_sub">點按電量區域開啟 QuickBuds</string>
-    <string name="widget_drag_desc">拖曳以排序</string>
     <string name="widget_mode_anc_low">降噪 低</string>
     <string name="widget_mode_anc_medium">降噪 中</string>
     <string name="widget_mode_anc_high">降噪 高</string>
     <string name="widget_mode_anc_smart">降噪 智慧</string>
     <string name="widget_low_latency">低延遲</string>
-    <string name="widget_mode_desc_cycle">%1$s：%2$s，點按切換下一個模式</string>
-    <string name="widget_mode_desc_list">%1$s：%2$s，點按選擇模式</string>
     <string name="widget_battery_name">QuickBuds 電量</string>
     <string name="widget_large_name">QuickBuds 大型</string>
     <string name="settings_language_title">語言</string>
@@ -266,7 +257,7 @@
     <string name="widget_pages_title">切換頁面</string>
     <string name="widget_pages_button">切換按鈕</string>
     <string name="widget_pages_double">點兩下</string>
-    <string name="widget_pages_hint">每個小工具都有兩個頁面：電量和降噪控制。選擇點兩下後，每次單擊都會等待約 0.4 秒，看是否有第二次點按。</string>
+    <string name="widget_pages_hint">每個小工具都有兩個頁面：電量和降噪控制。選擇點兩下後，每次單擊都會等待約 0.2 秒，看是否有第二次點按。</string>
     <string name="widget_swap_desc">切換頁面</string>
     <string name="language_system">跟隨系統</string>
 

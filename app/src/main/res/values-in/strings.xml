@@ -237,28 +237,19 @@
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
     <string name="widget_settings_title">Pengaturan widget</string>
-    <string name="widget_settings_sub">Tombol mode, mode, latensi rendah</string>
-    <string name="widget_tap_title">Mengetuk tombol mode</string>
-    <string name="widget_tap_next">Mode berikutnya</string>
-    <string name="widget_tap_list">Buka daftar</string>
-    <string name="widget_tap_hint">Mode berikutnya berpindah sesuai urutan daftar di bawah. Buka daftar menampilkan semua mode untuk dipilih; daftar tertutup setelah memilih atau 5 detik.</string>
-    <string name="widget_modes_title">Mode</string>
-    <string name="widget_modes_hint">Centang 2 sampai 6 dan seret untuk mengatur urutan. Mode yang sama dipakai untuk kedua opsi.</string>
+    <string name="widget_settings_sub">Gaya, halaman, latensi rendah</string>
     <string name="widget_section">Widget</string>
     <string name="widget_style_title">Gaya</string>
     <string name="widget_style_classic">Klasik</string>
     <string name="widget_ll_title">Tombol latensi rendah</string>
-    <string name="widget_ll_sub">Ditampilkan di samping tombol mode</string>
+    <string name="widget_ll_sub">Tombol di halaman kontrol</string>
     <string name="widget_open_title">Buka aplikasi saat diketuk</string>
     <string name="widget_open_sub">Mengetuk baterai membuka QuickBuds</string>
-    <string name="widget_drag_desc">Seret untuk mengurutkan</string>
     <string name="widget_mode_anc_low">ANC Rendah</string>
     <string name="widget_mode_anc_medium">ANC Sedang</string>
     <string name="widget_mode_anc_high">ANC Tinggi</string>
     <string name="widget_mode_anc_smart">ANC Cerdas</string>
     <string name="widget_low_latency">Latensi rendah</string>
-    <string name="widget_mode_desc_cycle">%1$s: %2$s, ketuk untuk mode berikutnya</string>
-    <string name="widget_mode_desc_list">%1$s: %2$s, ketuk untuk memilih mode</string>
     <string name="widget_battery_name">QuickBuds baterai</string>
     <string name="widget_large_name">QuickBuds besar</string>
     <string name="settings_language_title">Bahasa</string>
@@ -266,7 +257,7 @@
     <string name="widget_pages_title">Beralih halaman</string>
     <string name="widget_pages_button">Tombol tukar</string>
     <string name="widget_pages_double">Ketuk dua kali</string>
-    <string name="widget_pages_hint">Setiap widget memiliki dua halaman: baterai dan kontrol bising. Dengan ketuk dua kali, setiap ketukan tunggal menunggu sekitar 0,4 dtk untuk ketukan kedua.</string>
+    <string name="widget_pages_hint">Setiap widget memiliki dua halaman: baterai dan kontrol bising. Dengan ketuk dua kali, setiap ketukan tunggal menunggu sekitar 0,2 dtk untuk ketukan kedua.</string>
     <string name="widget_swap_desc">Ganti halaman</string>
     <string name="language_system">Default sistem</string>
 

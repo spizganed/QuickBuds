@@ -4,14 +4,12 @@ package com.spizganed.quickbuds.bluetooth
 object WidgetActions {
     const val ACTION_NOOP       = "com.spizganed.quickbuds.action.NOOP"
     const val ACTION_ANC_SELECT = "com.spizganed.quickbuds.action.ANC_SELECT"
-    const val ACTION_ANC_CYCLE  = "com.spizganed.quickbuds.action.ANC_CYCLE"
-    const val ACTION_TRANS      = "com.spizganed.quickbuds.action.TRANS"
-    const val ACTION_OFF        = "com.spizganed.quickbuds.action.OFF"
     const val ACTION_GAME_TOGGLE = "com.spizganed.quickbuds.action.GAME_TOGGLE"
-    /** Widget mode button: next mode or open the list, per WidgetSettings.tapOpensList. */
-    const val ACTION_MODE_TAP   = "com.spizganed.quickbuds.action.MODE_TAP"
-    /** Widget mode list: close without a change (the current mode was tapped). */
-    const val ACTION_LIST_CLOSE = "com.spizganed.quickbuds.action.LIST_CLOSE"
+    /**
+     * Controls page ([USER] 2026-09-28): a quick button, target in [EXTRA_ANC_TARGET]. "anc" opens the
+     * level picker; "trans" / "adapt" select that mode, or Off when it is the current one.
+     */
+    const val ACTION_QUICK      = "com.spizganed.quickbuds.action.QUICK"
 
     /** 2x2 widget: show the page in [EXTRA_PAGE] (the swap button). */
     const val ACTION_PAGE_SWAP  = "com.spizganed.quickbuds.action.PAGE_SWAP"

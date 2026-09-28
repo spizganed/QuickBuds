@@ -237,28 +237,19 @@
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
     <string name="widget_settings_title">Cài đặt tiện ích</string>
-    <string name="widget_settings_sub">Nút chế độ, các chế độ, độ trễ thấp</string>
-    <string name="widget_tap_title">Khi chạm nút chế độ</string>
-    <string name="widget_tap_next">Chế độ tiếp theo</string>
-    <string name="widget_tap_list">Mở danh sách</string>
-    <string name="widget_tap_hint">Chế độ tiếp theo chuyển lần lượt theo thứ tự danh sách bên dưới. Mở danh sách hiện tất cả để chọn; danh sách đóng sau khi chọn hoặc sau 5 giây.</string>
-    <string name="widget_modes_title">Chế độ</string>
-    <string name="widget_modes_hint">Chọn từ 2 đến 6 và kéo để sắp xếp. Cả hai tùy chọn dùng cùng các chế độ này.</string>
+    <string name="widget_settings_sub">Kiểu, trang, độ trễ thấp</string>
     <string name="widget_section">Tiện ích</string>
     <string name="widget_style_title">Kiểu</string>
     <string name="widget_style_classic">Cổ điển</string>
     <string name="widget_ll_title">Nút độ trễ thấp</string>
-    <string name="widget_ll_sub">Hiện cạnh nút chế độ</string>
+    <string name="widget_ll_sub">Một nút trên trang điều khiển</string>
     <string name="widget_open_title">Mở ứng dụng khi chạm</string>
     <string name="widget_open_sub">Chạm vào pin để mở QuickBuds</string>
-    <string name="widget_drag_desc">Kéo để sắp xếp</string>
     <string name="widget_mode_anc_low">ANC Thấp</string>
     <string name="widget_mode_anc_medium">ANC Vừa</string>
     <string name="widget_mode_anc_high">ANC Cao</string>
     <string name="widget_mode_anc_smart">ANC Thông minh</string>
     <string name="widget_low_latency">Độ trễ thấp</string>
-    <string name="widget_mode_desc_cycle">%1$s: %2$s, chạm để chuyển chế độ tiếp theo</string>
-    <string name="widget_mode_desc_list">%1$s: %2$s, chạm để chọn chế độ</string>
     <string name="widget_battery_name">QuickBuds pin</string>
     <string name="widget_large_name">QuickBuds lớn</string>
     <string name="settings_language_title">Ngôn ngữ</string>
@@ -266,7 +257,7 @@
     <string name="widget_pages_title">Chuyển trang</string>
     <string name="widget_pages_button">Nút chuyển</string>
     <string name="widget_pages_double">Chạm hai lần</string>
-    <string name="widget_pages_hint">Mỗi tiện ích có hai trang: pin và kiểm soát tiếng ồn. Với chạm hai lần, mỗi lần chạm đơn sẽ chờ khoảng 0,4 giây xem có lần chạm thứ hai không.</string>
+    <string name="widget_pages_hint">Mỗi tiện ích có hai trang: pin và kiểm soát tiếng ồn. Với chạm hai lần, mỗi lần chạm đơn sẽ chờ khoảng 0,2 giây xem có lần chạm thứ hai không.</string>
     <string name="widget_swap_desc">Chuyển trang</string>
     <string name="language_system">Mặc định hệ thống</string>
 

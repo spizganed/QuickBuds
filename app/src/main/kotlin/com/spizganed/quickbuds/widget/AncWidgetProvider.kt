@@ -12,14 +12,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
-import android.os.Build
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.TypefaceSpan
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
@@ -47,8 +44,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  *
  * Every size is one widget with two pages (battery, controls; [USER] 2026-09-27), stored per
  * widget id and swapped by a swap button or a double tap ([WidgetSettings.doubleTapSwaps]). The
- * pages slide (`w_slide0` battery on the left, `w_slide1` controls on the right); the mode list slides over them (`w_pages`). The
- * mode button has two copies: a mode change fills the hidden one and flips to it ([modeButton]).
+ * pages slide (`w_slide0` battery on the left, `w_slide1` controls on the right); the level picker slides over them (`w_pages`).
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
@@ -93,16 +89,6 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             LargeWidgetProvider::class.java to Kind.LARGE
         )
 
-        /** The mode button's two copies ([modeButton]); both tap through the frame `w_mode`. */
-        private val MODE = listOf(
-            Btn(R.id.w_mode, R.id.w_mode_bg0, R.id.w_mode_stroke0, R.id.w_mode_icon0, R.id.w_mode_name0),
-            Btn(R.id.w_mode, R.id.w_mode_bg1, R.id.w_mode_stroke1, R.id.w_mode_icon1, R.id.w_mode_name1)
-        )
-        private val MODE_FILLS = intArrayOf(R.id.w_mode_fill0, R.id.w_mode_fill1)
-        private val MODE_CONTENT = intArrayOf(R.id.w_mode_content0, R.id.w_mode_content1)
-        private val MODE_HINT = intArrayOf(R.id.w_mode_hint0, R.id.w_mode_hint1)
-        private val MODE_CAPTION = intArrayOf(R.id.w_mode_caption0, R.id.w_mode_caption1)
-        private val LL = Btn(R.id.w_ll, R.id.w_ll_bg, R.id.w_ll_stroke, R.id.w_ll_icon, R.id.w_ll_label)
         private val CONN = Btn(R.id.w_conn, R.id.w_conn_bg, R.id.w_conn_stroke, R.id.w_conn_dot, R.id.w_conn_text)
         private val CELLS = listOf(
             Btn(R.id.w_cell0, R.id.w_cell0_bg, R.id.w_cell0_stroke, R.id.w_cell0_icon, R.id.w_cell0_label),
@@ -111,6 +97,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             Btn(R.id.w_cell3, R.id.w_cell3_bg, R.id.w_cell3_stroke, R.id.w_cell3_icon, R.id.w_cell3_label),
             Btn(R.id.w_cell4, R.id.w_cell4_bg, R.id.w_cell4_stroke, R.id.w_cell4_icon, R.id.w_cell4_label),
             Btn(R.id.w_cell5, R.id.w_cell5_bg, R.id.w_cell5_stroke, R.id.w_cell5_icon, R.id.w_cell5_label)
+        )
+
+        /** The controls page's quick buttons: ANC, T, A, LL ([controls]). */
+        private val QUICK = listOf(
+            Btn(R.id.w_q0, R.id.w_q0_bg, R.id.w_q0_stroke, R.id.w_q0_icon, R.id.w_q0_label),
+            Btn(R.id.w_q1, R.id.w_q1_bg, R.id.w_q1_stroke, R.id.w_q1_icon, R.id.w_q1_label),
+            Btn(R.id.w_q2, R.id.w_q2_bg, R.id.w_q2_stroke, R.id.w_q2_icon, R.id.w_q2_label),
+            Btn(R.id.w_q3, R.id.w_q3_bg, R.id.w_q3_stroke, R.id.w_q3_icon, R.id.w_q3_label)
         )
 
         /** Battery panel ids per slot (0 left, 1 case, 2 right): panel fill, ring, percentage, label. */
@@ -175,7 +169,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             // a flipper's child animates. The flip side: every state set here must be set both ways
             // (visibility, click), or the previous update's sticks.
             val child = if (list) 2 else if (page == Kind.BATTERY) 0 else 1
-            v.setImageViewResource(R.id.w_bg, if (provider.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
+            v.setImageViewResource(R.id.w_bg, bgRes(context, provider.large))
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
             // Double-tap mode: every tap on a page carries the other page, so a second tap swaps.
             val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
@@ -211,6 +205,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
         }
 
+        /** The widget box: Nothing's own widgets' radius in the Nothing style ([USER] 2026-09-28), else per size. */
+        private fun bgRes(c: Context, large: Boolean) =
+            if (WidgetSettings.nothingStyle(c)) R.drawable.widget_bg_n else if (large) R.drawable.widget_bg_l else R.drawable.widget_bg
+
+        /** A panel or button inside the box, its corners parallel to the box's in the Nothing style. */
+        private fun panelRes(c: Context, large: Boolean) =
+            if (WidgetSettings.nothingStyle(c)) R.drawable.widget_panel_n else if (large) R.drawable.widget_panel_l else R.drawable.widget_panel
+
         /**
          * Battery panel colour: `card` lightened ~4% toward `text` (WIDGETS.md 2). The Nothing style has
          * no boxes: `card` itself, so panels melt into the widget background.
@@ -223,9 +225,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * or no box at all (Nothing).
          */
         private fun paint(c: Context, v: RemoteViews, b: Btn, p: Palette, selected: Boolean, large: Boolean) {
-            v.setImageViewResource(b.bg, if (large) R.drawable.widget_panel_l else R.drawable.widget_panel)
+            v.setImageViewResource(b.bg, panelRes(c, large))
             v.setInt(b.bg, "setColorFilter", if (selected) p.accent else panelColor(c, p))
-            v.setImageViewResource(b.stroke, if (large) R.drawable.widget_panel_stroke_l else R.drawable.widget_panel_stroke)
+            v.setImageViewResource(b.stroke, if (WidgetSettings.nothingStyle(c)) R.drawable.widget_panel_stroke_n else if (large) R.drawable.widget_panel_stroke_l else R.drawable.widget_panel_stroke)
             v.setInt(b.stroke, "setColorFilter", if (selected) p.accent else if (WidgetSettings.nothingStyle(c)) p.card else p.outline)
         }
 
@@ -244,7 +246,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
         private fun disconnected(context: Context, p: Palette, kind: Kind): RemoteViews {
             val v = RemoteViews(context.packageName, if (WidgetSettings.nothingStyle(context)) R.layout.widget_disconnected_n else R.layout.widget_disconnected)
-            v.setImageViewResource(R.id.w_bg, if (kind.large) R.drawable.widget_bg_l else R.drawable.widget_bg)
+            v.setImageViewResource(R.id.w_bg, bgRes(context, kind.large))
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
             paint(context, v, CONN, p, false, kind.large)
             content(context, v, CONN, p, false, R.drawable.ic_status_dot_empty, context.getString(R.string.conn_action_connect), 10f, 10f / 5)
@@ -263,22 +265,31 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val slots = if (caseBar) listOf(0, 2) else listOf(0, 1, 2)
             for (slot in slots) {
                 val (bgId, ringId, pct, label) = PANELS[slot].toList()
-                v.setImageViewResource(bgId, if (kind.large) R.drawable.widget_panel_l else R.drawable.widget_panel)
+                v.setImageViewResource(bgId, panelRes(context, kind.large))
                 v.setInt(bgId, "setColorFilter", panelColor(context, p))
                 v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp))
-                pctText(v, pct, p, levels[slot])
+                pctText(context, v, pct, p, levels[slot])
                 val inEar = statuses[slot] == 3 || statuses[slot] == 7
                 val text = if (slot == 1) context.getString(names[slot]) else wearLabel(context, statuses[slot]) ?: context.getString(names[slot])
-                v.setTextViewText(label, if (inEar && !WidgetSettings.nothingStyle(context)) semibold(text) else text)
+                // Nothing: no wear text, the glyph's shade says it ([nothingTint]) and the ring's content description reads it.
+                val noLabel = WidgetSettings.nothingStyle(context)
+                v.setViewVisibility(label, if (noLabel) View.GONE else View.VISIBLE)
+                v.setContentDescription(ringId, if (slot == 1) text else context.getString(names[slot]) + ", " + text)
+                v.setTextViewText(label, if (inEar && !noLabel) semibold(text) else text)
                 v.setTextColor(label, if (inEar) p.text else p.textSecondary)
             }
             if (caseBar) {
-                v.setImageViewResource(R.id.w_bar_bg, if (kind.large) R.drawable.widget_panel_l else R.drawable.widget_panel)
+                v.setImageViewResource(R.id.w_bar_bg, panelRes(context, kind.large))
                 v.setInt(R.id.w_bar_bg, "setColorFilter", panelColor(context, p))
-                icon(context, v, R.id.w_case_icon, R.drawable.ic_case, if (kind.large) 39f else 28f, (if (kind.large) 39f else 28f) / ROWS_CASE)
+                // The case icon takes all the height the rings leave ([caseRowDp]). Nothing: at the rings' dot pitch,
+                // so the big icon keeps the app's case details (lid cut, LED).
+                val caseDp = caseRowDp(context, kind, id)
+                icon(context, v, R.id.w_case_icon, R.drawable.ic_case, caseDp, ringCellDp(context, kind, id))
                 v.setInt(R.id.w_case_icon, "setColorFilter", p.text)
-                v.setImageViewBitmap(R.id.w_case_bar, bar(context, p, state.caseBattery, kind, id))
-                pctText(v, R.id.w_pct_case, p, state.caseBattery)
+                v.setImageViewBitmap(R.id.w_case_bar, bar(context, p, state.caseBattery, kind, id, caseDp))
+                // The level is drawn into the bar ([bar]); the bar reads it out.
+                v.setViewVisibility(R.id.w_pct_case, View.GONE)
+                v.setContentDescription(R.id.w_case_bar, context.getString(R.string.status_case) + ", " + pctLabel(context, state.caseBattery))
             }
         }
 
@@ -289,21 +300,28 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * over a gap.
          */
         private fun ringDp(context: Context, kind: Kind, id: Int): Float {
-            if (kind.square) return if (kind.large) 110f else 56f
+            // Drawn large enough; the layout shrinks it to the panel's width.
+            if (kind.square) return 96f * scale(kind)
             val o = AppWidgetManager.getInstance(context).getAppWidgetOptions(id)
             val w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
             val h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
             if (w <= 0 || h <= 0) return 56f
-            // Widget padding 12, panel padding 8; texts: percentage + label lines.
-            val texts = 18f * 1.3f + 12f * 1.3f + 2f
-            val byHeight = h - 12f - 8f - texts - 6f
+            if (WidgetSettings.nothingStyle(context)) {
+                // Mirrors scripts/widget-layouts.py: widget inset 3 (7 top and bottom), gaps 4, panel paddings 3 outside /
+                // 1 inside and 3 top and bottom, percentage margin 5: the rings 6dp from the sides and apart, as on the 2x2.
+                val pct = pctPaint(context, kind).fontMetrics.let { it.descent - it.ascent } / context.resources.displayMetrics.density
+                return minOf(h - 20f - 5f - pct, (w - 6f - 8f) / 3 - 4f).coerceIn(28f, 160f)
+            }
+            // Page padding 12 across, 20 down; panel padding 8; texts: percentage + label lines.
+            val texts = if (WidgetSettings.nothingStyle(context)) 20f * 1.3f + 2f else 18f * 1.3f + 12f * 1.3f + 2f
+            val byHeight = h - 20f - 8f - texts - 6f
             val byWidth = (w - 12f - 6f * 2) / 3 - 8f
             return minOf(byHeight, byWidth).coerceIn(28f, 120f)
         }
 
         /** Percentage, always `text`: nothing in the battery display changes colour by level ([USER] 2026-09-27). */
-        private fun pctText(v: RemoteViews, id: Int, p: Palette, level: Int) {
-            v.setTextViewText(id, if (level in 0..100) "$level%" else "—")
+        private fun pctText(context: Context, v: RemoteViews, id: Int, p: Palette, level: Int) {
+            v.setTextViewText(id, pctLabel(context, level))
             v.setTextColor(id, p.text)
         }
 
@@ -318,85 +336,54 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             else -> context.getString(R.string.status_out)
         }
 
-        private fun modeControls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
-            val mode =WidgetSettings.modeOf(state.ancMode)
-            val active = mode.key != "off"
-            // Nothing: OFF in capitals, as in its mode list.
-            val name = context.getString(mode.name).let { if (!active && WidgetSettings.nothingStyle(context)) it.uppercase() else it }
-            val opensList = WidgetSettings.tapOpensList(context)
-            val k = modeButton(context, v, id, mode.key)
-            paint(context, v, MODE[k], p, active, kind.large)
-            content(context, v, MODE[k], p, active, mode.icon, name, (if (kind.small) 40f else if (kind.large) 60f else 44f), (if (kind.small) 40f else if (kind.large) 60f else 44f) / ROWS_MODE)
-            icon(context, v, MODE_HINT[k], if (opensList) R.drawable.ic_hint_list else R.drawable.ic_hint_cycle, 16f, 16f / 9)
-            v.setInt(MODE_HINT[k], "setColorFilter", if (active) p.onAccent else p.textSecondary)
-            // Nothing: no hint arrow, the dot name stands alone.
-            v.setViewVisibility(MODE_HINT[k], if (WidgetSettings.nothingStyle(context)) View.GONE else View.VISIBLE)
-            if (!kind.square) {
-                v.setTextViewText(MODE_CAPTION[k], context.getString(R.string.anc_section))
-                v.setTextColor(MODE_CAPTION[k], Palette.withAlpha(if (active) p.onAccent else p.textSecondary, 0.8f))
-            }
-            v.setContentDescription(R.id.w_mode, context.getString(
-                if (opensList) R.string.widget_mode_desc_list else R.string.widget_mode_desc_cycle,
-                context.getString(R.string.anc_section), name
-            ))
-            v.setOnClickPendingIntent(R.id.w_mode, receiverPI(context, WidgetActions.ACTION_MODE_TAP, id, swap = swap))
-        }
-
-        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
-            // A model with no noise control has no mode button, and low latency fills the page
-            // (Android 12+; older ones keep its own height). Both set both ways, see update().
-            // The dp heights are the ones scripts/widget-layouts.py gives w_ll.
-            val hasAnc = !AncModes.of(context).isEmpty
-            v.setViewVisibility(R.id.w_mode, if (hasAnc) View.VISIBLE else View.GONE)
-            if (Build.VERSION.SDK_INT >= 31) {
-                if (hasAnc) v.setViewLayoutHeight(LL.root, if (kind.small) 48f else if (kind.large) 66f else 50f, TypedValue.COMPLEX_UNIT_DIP)
-                else v.setViewLayoutHeight(LL.root, ViewGroup.LayoutParams.MATCH_PARENT.toFloat(), TypedValue.COMPLEX_UNIT_PX)
-            }
-            if (hasAnc) modeControls(context, v, p, state, kind, id, swap)
-
-            if (!WidgetSettings.lowLatencyShown(context)) {
-                v.setViewVisibility(LL.root, View.GONE)
-                return
-            }
-            v.setViewVisibility(LL.root, View.VISIBLE)
-            paint(context, v, LL, p, state.gameMode, kind.large)
-            content(context, v, LL, p, state.gameMode, R.drawable.ic_low_latency, context.getString(R.string.widget_low_latency), llIconDp(context, kind), llIconDp(context, kind) / ROWS_BOLT)
-            v.setContentDescription(LL.root, context.getString(R.string.row_game_title))
-            v.setOnClickPendingIntent(LL.root, receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap))
-        }
-
         /**
-         * Which of the mode button's two copies shows [key], flipping to the other copy when the
-         * mode changed: its fill cross-fades and its icon and name tick up. As with the pages
-         * ([update]), each copy's visibility is set every time and setDisplayedChild goes out only
-         * in the update that changes it, or every refresh would replay the animation.
+         * The controls page ([USER] 2026-09-28; Classic too since then, the cycle mode is gone): ANC, T, A, LL. ANC opens the level picker (the mode
+         * list with [WidgetSettings.ancPicker]) and shows the current level's icon, Medium's while not in ANC;
+         * T and A select their mode, or Off when lit; LL toggles low latency. A button the buds (or the Low
+         * latency setting) do not have stays as an empty cell. Everything set both ways, see [build].
          */
-        private fun modeButton(context: Context, v: RemoteViews, id: Int, key: String): Int {
-            val (k, changed) = WidgetSettings.modeSlot(context, id, key)
-            if (changed) {
-                v.setDisplayedChild(R.id.w_mode_fills, k)
-                v.setDisplayedChild(R.id.w_mode_flip, k)
+        private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
+            val anc = AncModes.of(context)
+            val current = WidgetSettings.modeOf(state.ancMode)
+            val levels = WidgetSettings.ancPicker(context)
+            val inAnc = levels.any { it.key == current.key }
+            fun mode(key: String) = WidgetSettings.MODES.first { it.key == key }
+            /** First letters of the words, capitals: "Low latency" -> "LL" (translated names too). */
+            fun initials(res: Int) = context.getString(res).split(' ').filter { it.isNotEmpty() }.joinToString("") { it.take(1) }.uppercase()
+            class Q(val shown: Boolean, val lit: Boolean, val icon: Int, val label: String, val desc: String, val pi: PendingIntent)
+            val qs = listOf(
+                Q(levels.isNotEmpty(), inAnc, if (inAnc) current.icon else R.drawable.ic_mode_anc_medium, "ANC",
+                    context.getString(if (inAnc) current.name else R.string.anc_section),
+                    receiverPI(context, WidgetActions.ACTION_QUICK, id, "anc", swap)),
+                Q(anc.supports(mode("trans").store), current.key == "trans", mode("trans").icon, initials(R.string.anc_seg_trans),
+                    context.getString(R.string.anc_seg_trans), receiverPI(context, WidgetActions.ACTION_QUICK, id, "trans", swap)),
+                Q(anc.supports(mode("adapt").store), current.key == "adapt", mode("adapt").icon, initials(R.string.anc_seg_adapt),
+                    context.getString(R.string.anc_seg_adapt), receiverPI(context, WidgetActions.ACTION_QUICK, id, "adapt", swap)),
+                Q(WidgetSettings.lowLatencyShown(context), state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
+                    context.getString(R.string.row_game_title), receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap))
+            )
+            qs.forEachIndexed { i, q ->
+                val b = QUICK[i]
+                v.setViewVisibility(b.root, if (q.shown) View.VISIBLE else View.INVISIBLE)
+                if (!q.shown) return@forEachIndexed
+                paint(context, v, b, p, q.lit, kind.large)
+                // Nothing: the bolt on 25 rows keeps its 2-dot lines close to the mode icons' weight; mode icons have their own grid.
+                content(context, v, b, p, q.lit, q.icon, q.label, 25f, 1f)
+                v.setContentDescription(b.root, q.desc)
+                v.setOnClickPendingIntent(b.root, q.pi)
             }
-            for (i in 0..1) {
-                val shown = if (i == k) View.VISIBLE else View.GONE
-                v.setViewVisibility(MODE_FILLS[i], shown)
-                v.setViewVisibility(MODE_CONTENT[i], shown)
-            }
-            return k
         }
 
         /**
-         * The open mode list: 2x2 when a 2x2 / 3x3 widget has <= 4 modes, 3x2 otherwise, icons
-         * only when a 2x2 widget has 5-6 (WIDGETS.md 3.2). Tapping the current mode only closes it.
+         * The ANC button's level picker ([controls]): 2x2 when a 2x2 / 3x3 widget has <= 4 levels, 3x2 otherwise.
+         * No Off: the lit level turns ANC off.
          */
         private fun grid(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int) {
-            val modes = WidgetSettings.enabled(context)
+            val modes = WidgetSettings.ancPicker(context)
             val current = WidgetSettings.modeOf(state.ancMode)
             val twoCols = kind.square && modes.size <= 4
-            // Nothing: a one-letter label always fits (L, M, H, S, T, A; Off stays a word), and the dot
-            // icons need it, since the ANC levels' fine rings blur at dot resolution.
+            // Nothing: a one-letter label (L, M, H, S), since the ANC levels' fine rings blur at dot resolution.
             val letters = WidgetSettings.nothingStyle(context)
-            val labels = letters || !(kind.small && modes.size > 4)
             val slots = if (twoCols) listOf(0, 1, 3, 4) else (0..5).toList()
             listOf(2, 5).forEach { v.setViewVisibility(CELLS[it].root, if (twoCols) View.GONE else View.VISIBLE) }
             // Modes that fit one row: the first row takes the whole height.
@@ -409,14 +396,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 val selected = mode.key == current.key
                 paint(context, v, b, p, selected, kind.large)
                 content(context, v, b, p, selected, mode.icon, when {
-                    letters -> context.getString(mode.short).let { if (mode.key == "off") it.uppercase() else it.take(1).uppercase() }
-                    labels -> context.getString(mode.short)
-                    else -> null
-                }, if (kind.large) 38f else 26f, (if (kind.large) 38f else 26f) / ROWS_LIST)
+                    letters -> context.getString(mode.short).take(1).uppercase()
+                    else -> context.getString(mode.short)
+                }, 26f)
                 v.setContentDescription(b.root, context.getString(mode.name))
-                v.setOnClickPendingIntent(b.root,
-                    if (selected) receiverPI(context, WidgetActions.ACTION_LIST_CLOSE, id)
-                    else receiverPI(context, WidgetActions.ACTION_ANC_SELECT, id, mode.key))
+                v.setOnClickPendingIntent(b.root, receiverPI(context, WidgetActions.ACTION_ANC_SELECT, id, if (selected) "off" else mode.key))
             }
         }
 
@@ -433,9 +417,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 // the 2x2's image scaled.
                 // A translucent tint is made opaque over the card, since a dot is either there or not.
                 val n = RING_CELLS
-                val tint = BudsStatusView.wearTint(p, slot == 1, status)
-                val opaque = Palette.blend(p.card, tint or 0xFF000000.toInt(), Color.alpha(tint) / 255f)
-                return matrix(n, n, px / n.toFloat()) { c, size -> drawRing(context, c, size, p, level, slot, opaque, size * 2.6f / n, dim(p)) }
+                return matrix(n, n, px / n.toFloat()) { c, size ->
+                    val g = drawRing(context, c, size, p, level, slot, nothingTint(p, slot == 1, status), size * 2.6f / n, dim(p), if (slot == 1) 1.22f else 1.18f)
+                    if (slot == 1) clearLed(c, g, size / n)
+                }
             }
             val bmp = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
             drawRing(context, Canvas(bmp), px.toFloat(), p, level, slot, BudsStatusView.wearTint(p, slot == 1, status))
@@ -443,7 +428,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /** Outline track, accent arc from 12 o'clock, and the glyph in [tint] at its true ratio, in a [size] square. */
-        private fun drawRing(context: Context, c: Canvas, size: Float, p: Palette, level: Int, slot: Int, tint: Int, stroke: Float = size * 0.085f, track: Int = p.outline) {
+        /** [fill] scales the glyph's box: Nothing's thin ring sits closer around a bigger glyph ([USER] 2026-09-28). */
+        private fun drawRing(context: Context, c: Canvas, size: Float, p: Palette, level: Int, slot: Int, tint: Int, stroke: Float = size * 0.085f, track: Int = p.outline, fill: Float = 1f): android.graphics.Rect {
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = stroke; strokeCap = Paint.Cap.ROUND }
             val box = RectF(stroke / 2, stroke / 2, size - stroke / 2, size - stroke / 2)
             paint.color = track
@@ -458,89 +444,118 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             )!!.mutate()
             val ratio = if (isCase) 496f / 400f else 176f / 272f
             // Largest boxes whose corners still clear the ring's inner edge.
-            val boxH = size * (if (isCase) 0.46f else 0.6f)
-            val boxW = size * (if (isCase) 0.62f else 0.42f)
+            val boxH = size * (if (isCase) 0.46f else 0.6f) * fill
+            val boxW = size * (if (isCase) 0.62f else 0.42f) * fill
             val (w, h) = if (ratio < boxW / boxH) boxH * ratio to boxH else boxW to boxW / ratio
             glyph.setTint(tint)
             glyph.setBounds(((size - w) / 2).toInt(), ((size - h) / 2).toInt(), ((size + w) / 2).toInt(), ((size + h) / 2).toInt())
             glyph.draw(c)
+            return glyph.bounds
         }
 
         /**
-         * The Low latency icon's size. Nothing: 22 / 24dp, a little bigger so the bolt ([bolt]) keeps
-         * its shape in dots.
+         * Nothing: clears the dot-matrix cells ([cell] px) of the case glyph drawn in [g] that hold its details, so they
+         * always show: the LED (a 9-unit hole at 247.6, 316.5 of 496 x 400) empties one dot, the lid cut (y 137 to
+         * 152.6) one row. Both are under a cell tall and fell between cell centres at some sizes.
          */
-        private fun llIconDp(context: Context, kind: Kind) =
-            if (WidgetSettings.nothingStyle(context)) (if (kind.small) 22f else 24f)
-            else if (kind.small) 18f else if (kind.large) 25f else 20f
+        private fun clearLed(c: Canvas, g: android.graphics.Rect, cell: Float) {
+            val clear = Paint().apply { xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR) }
+            fun cellOf(v: Float) = Math.floor(v / cell.toDouble()).toFloat() * cell
+            val x = cellOf(g.left + 247.6f / 496 * g.width())
+            val y = cellOf(g.top + 316.5f / 400 * g.height())
+            c.drawRect(x, y, x + cell, y + cell, clear)
+            val lid = cellOf(g.top + 144.8f / 400 * g.height())
+            c.drawRect(g.left.toFloat(), lid, g.right.toFloat(), lid + cell, clear)
+        }
 
         /**
-         * The mode icons and the bolt as pixel art on the dot grid ([USER] 2026-09-28: dotted circles
-         * looked too smooth, converted vectors too uneven). The grid is odd so rings have a centre
-         * cell; rings are midpoint circles (one clean step per cell) at the vector's radii rounded to
-         * whole cells (24 units: ball 2.2, rings 5.2 / 8.2 / 11, so one-cell gaps), dashed rings keep
-         * every other pair of dots, the sparkle is a plus, the Off slash runs ring to ring. White.
-         * Null: not one of them.
+         * The mode icons and the bolt as dot art. White. Null: not one of them.
+         *
+         * Mode icons are drawn like the battery rings ([USER] 2026-09-28): strokes 1.5 cells, gaps 1.5+
+         * (2 cells merged High's rings), on a [MODE_GRID] grid, one dot per covered cell ([matrix]). Thin one-dot rings read as lines,
+         * not dots, and grid-snapped thin circles came out square. Each icon fills its box: the outer ring
+         * touches the edge. Sizes in cells from the centre.
+         *
+         * The bolt: pixel art on its own grid (the rows asked for), lines two dots thick.
          */
         private fun gridIcon(res: Int, rowsIn: Int): Bitmap? {
+            if (res != R.drawable.ic_low_latency) return modeIcon(res)
             val n = rowsIn or 1                          // odd
             val k = n / 24f                              // cells per vector unit
             val cells = HashSet<Int>()
             fun set(x: Int, y: Int) { if (x in 0 until n && y in 0 until n) cells.add(y * n + x) }
             fun cx(u: Float) = Math.round(u * k - 0.5f + (n - 24 * k) / 2f)
-            val c = n / 2
-            /** Midpoint circle of radius [r] cells around ([x0], [y0]), each point with its angle (0 = east, clockwise). */
-            fun circle(x0: Int, y0: Int, r: Int): List<Triple<Int, Int, Double>> {
-                val pts = HashSet<Pair<Int, Int>>()
-                var x = r; var y = 0; var err = 1 - r
-                while (x >= y) {
-                    for ((dx, dy) in listOf(x to y, y to x, -y to x, -x to y, -x to -y, -y to -x, y to -x, x to -y)) pts.add(dx to dy)
-                    y++
-                    if (err < 0) err += 2 * y + 1 else { x--; err += 2 * (y - x) + 1 }
-                }
-                return pts.map { (dx, dy) -> Triple(x0 + dx, y0 + dy, (Math.toDegrees(Math.atan2(dy.toDouble(), dx.toDouble())) + 360) % 360) }
-            }
-            fun ring(x0: Int, y0: Int, units: Float, keep: (Double) -> Boolean = { true }) =
-                circle(x0, y0, Math.round(units * k)).forEach { (x, y, a) -> if (keep(a)) set(x, y) }
-            fun dashed(units: Float) = circle(c, c, Math.round(units * k)).sortedBy { it.third }
-                .forEachIndexed { i, (x, y, _) -> if (i % 4 < 2) set(x, y) }
-            fun ball(x0: Int, y0: Int) {
-                val r = (2.2f * k).toInt().coerceAtLeast(1)   // rounded down: 5x5 at 17 cells was too heavy
-                for (y in -r..r) for (x in -r..r) if (x * x + y * y <= r * r + r) set(x0 + x, y0 + y)
-            }
-            fun star(x0: Int, y0: Int) {
-                val arm = Math.round(3.4f * k).coerceAtLeast(1)
-                for (d in -arm..arm) { set(x0 + d, y0); set(x0, y0 + d) }
-            }
+            /** Two dots thick ([USER] 2026-09-28): the second dot beside a steep line, under a flat one. */
             fun line(x1: Float, y1: Float, x2: Float, y2: Float) {
-                val steps = Math.max(Math.abs(cx(x2) - cx(x1)), Math.abs(cx(y2) - cx(y1))).coerceAtLeast(1)
-                for (i in 0..steps) set(Math.round(cx(x1) + (cx(x2) - cx(x1)) * i / steps.toFloat()), Math.round(cx(y1) + (cx(y2) - cx(y1)) * i / steps.toFloat()))
-            }
-            when (res) {
-                R.drawable.ic_mode_anc_low -> { ball(c, c); ring(c, c, 5.2f) }
-                R.drawable.ic_mode_anc_medium -> { ball(c, c); ring(c, c, 5.2f); ring(c, c, 8.2f) }
-                R.drawable.ic_mode_anc_high -> { ball(c, c); ring(c, c, 5.2f); ring(c, c, 8.2f); ring(c, c, 11f) }
-                // The outer arc leaves the top-right open for the sparkle, as in the vector.
-                R.drawable.ic_mode_anc_smart -> {
-                    ball(c, c); ring(c, c, 5.2f); ring(c, c, 8.2f) { (it + 10) % 360 <= 290 }; star(cx(19f), cx(5f))
+                val dx = cx(x2) - cx(x1); val dy = cx(y2) - cx(y1)
+                val steps = Math.max(Math.abs(dx), Math.abs(dy)).coerceAtLeast(1)
+                val steep = Math.abs(dy) > Math.abs(dx)
+                for (i in 0..steps) {
+                    val x = Math.round(cx(x1) + dx * i / steps.toFloat()); val y = Math.round(cx(y1) + dy * i / steps.toFloat())
+                    set(x, y); if (steep) set(x + 1, y) else set(x, y + 1)
                 }
-                R.drawable.ic_mode_transparency -> { ball(c, c); dashed(5.6f); dashed(9.8f) }
-                R.drawable.ic_mode_adaptive -> { val y0 = cx(13f); ball(c, y0); ring(c, y0, 5.8f); star(cx(19f), cx(5.2f)) }
-                R.drawable.ic_mode_off -> {
-                    val r = Math.round(8.5f * k)
-                    ring(c, c, 8.5f)
-                    val d = Math.round(r * 0.7071f)
-                    for (i in -d..d) set(c + i, c + i)
-                }
-                R.drawable.ic_low_latency -> { line(15f, 1.5f, 6.5f, 12.5f); line(6.5f, 12.5f, 17.5f, 11.5f); line(17.5f, 11.5f, 9f, 22.5f) }
-                else -> return null
             }
+            line(15f, 1.5f, 6.5f, 12.5f); line(6.5f, 12.5f, 17.5f, 11.5f); line(17.5f, 11.5f, 9f, 22.5f)
             val pitch = 8f
             val out = Bitmap.createBitmap((n * pitch).toInt(), (n * pitch).toInt(), Bitmap.Config.ARGB_8888)
             val cv = Canvas(out)
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
             for (i in cells) cv.drawCircle((i % n + 0.5f) * pitch, (i / n + 0.5f) * pitch, pitch * 0.42f, paint)
             return out
+        }
+
+        /**
+         * A mode icon (see [gridIcon]), or null. Sizes in cells of the [MODE_GRID] grid, from the centre (15.5).
+         * Rings are 2 cells wide on radii of k + 0.5, so each covers exactly the dots k and k + 1 out along an
+         * axis: edges on cell boundaries left stray dots between rings. Gaps are 2+ cells.
+         */
+        private fun modeIcon(res: Int): Bitmap? {
+            val n = MODE_GRID
+            val m = n / 2f
+            val out = m - 1f                             // the outer ring: dots 14 and 15, the last ones in the box
+            val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; style = Paint.Style.STROKE; strokeWidth = 2f; strokeCap = Paint.Cap.ROUND }
+            val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+            val draw: (Canvas) -> Unit = when (res) {
+                R.drawable.ic_mode_anc_low -> { c -> c.drawCircle(m, m, 5.4f, fill); c.drawCircle(m, m, out, stroke) }
+                R.drawable.ic_mode_anc_medium -> { c -> c.drawCircle(m, m, 3.9f, fill); c.drawCircle(m, m, out - 5f, stroke); c.drawCircle(m, m, out, stroke) }
+                R.drawable.ic_mode_anc_high -> { c -> c.drawCircle(m, m, 3.4f, fill); for (r in 0..2) c.drawCircle(m, m, out - 4f * r, stroke) }
+                // The outer arc leaves the top-right open for the sparkle, as in the vector.
+                R.drawable.ic_mode_anc_smart -> { c ->
+                    c.drawCircle(m, m, 3.9f, fill); c.drawCircle(m, m, out - 5f, stroke)
+                    c.drawArc(RectF(m - out, m - out, m + out, m + out), -20f, 280f, false, stroke)
+                    sparkle(c, n - 5.5f, 5.5f, 3.7f, stroke)
+                }
+                // Identical 3x3-dot blocks spaced evenly (8 inner, 12 outer), half a step off the axes so the pattern is
+                // symmetric: grid-sampled dashes each came out a different shape ([USER] 2026-09-28).
+                R.drawable.ic_mode_transparency -> { c ->
+                    c.drawCircle(m, m, 3.9f, fill)
+                    for ((r, count) in listOf(9.2f to 8, 13.9f to 12)) for (i in 0 until count) {
+                        val a = 2 * Math.PI * (i + 0.5) / count
+                        // Snapped to whole cells, so every block covers the same 3x3 dots.
+                        val x = Math.round(m + r * Math.cos(a).toFloat() - 1.5f).toFloat()
+                        val y = Math.round(m + r * Math.sin(a).toFloat() - 1.5f).toFloat()
+                        c.drawRect(x, y, x + 3f, y + 3f, fill)
+                    }
+                }
+                R.drawable.ic_mode_adaptive -> { c ->
+                    val x = m - 2f; val y = m + 2f; val r = out - 2f
+                    c.drawCircle(x, y, 3.9f, fill); c.drawCircle(x, y, r, stroke)
+                    sparkle(c, n - 5.5f, 5.5f, 3.7f, stroke)
+                }
+                R.drawable.ic_mode_off -> { c ->
+                    c.drawCircle(m, m, out, stroke)
+                    val d = out * 0.7071f
+                    c.drawLine(m - d, m - d, m + d, m + d, stroke)
+                }
+                else -> return null
+            }
+            return matrix(n, n, 8f) { c, size -> c.save(); c.scale(size / n, size / n); draw(c); c.restore() }
+        }
+
+        /** A plus-shaped sparkle centred on ([x], [y]), arms [arm] cells long. */
+        private fun sparkle(c: Canvas, x: Float, y: Float, arm: Float, stroke: Paint) {
+            c.drawLine(x - arm, y, x + arm, y, stroke)
+            c.drawLine(x, y - arm, x, y + arm, stroke)
         }
 
         /**
@@ -555,16 +570,40 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * rows of the icon.
          */
         private const val RING_CELLS = 42
-        private const val ROWS_LIST = 16
-        private const val ROWS_MODE = 24
-        private const val ROWS_BOLT = 12
-        private const val ROWS_CASE = 21
+        /**
+         * The mode icons' grid, the same in the list and on the controls page of every size: per-size grids
+         * rounded the rings differently, so the same icon changed shape between screens ([USER] 2026-09-28).
+         * 31: 21 made the icons' circles square once they filled their boxes ([USER] 2026-09-28). High's ball and
+         * three 2-cell rings with 2-cell gaps fit.
+         */
+        private const val MODE_GRID = 31
 
         /**
-         * The case row's dot pitch (case icon, case bar) on a [kind] of widget: [DOT_DP] scaled down like
-         * the text on the smaller sizes (4x2 18sp, 2x2 16sp vs 22sp), close to the rings' scaled grid.
+         * The 3x3 is the 2x2 scaled by this ([USER] 2026-09-28: literally the same, scaled up), in its layout
+         * (scripts/widget-layouts.py K, keep them equal) and in every size computed here. 257.5 / 164.6dp, the 3x3 /
+         * 2x2 widget sizes measured on the Nothing launcher.
+         * ponytail: one launcher's ratio; another launcher's leftover goes to the case row, which fills the height.
          */
-        private fun dotDp(kind: Kind) = DOT_DP * if (kind.small) 16f / 22f else if (kind.large) 1f else 18f / 22f
+        private const val LARGE_SCALE = 1.5645f
+
+        /** 1 on the 2x2 (and 4x2), [LARGE_SCALE] on the 3x3. */
+        private fun scale(kind: Kind) = if (kind.large) LARGE_SCALE else 1f
+
+        /** The case bar's dot pitch: [DOT_DP] scaled like the 2x2's percentage text (20 vs 22sp), times [scale]. */
+        private fun dotDp(kind: Kind) = DOT_DP * 20f / 22f * scale(kind)
+
+        /**
+         * The Nothing style's glyph shade, which replaces the wear text ([USER] 2026-09-28): in ear `text`, out of
+         * ear `textSecondary` at 65% over the card, in case a third, darker grey, below the ring's unlit dots ([dim]) so it is not
+         * mistaken for them. Opaque, since a dot is either there or not. The case glyph is always `text`.
+         */
+        private fun nothingTint(p: Palette, isCase: Boolean, status: Int): Int = when {
+            isCase || status == 3 || status == 7 -> p.text
+            // Almost invisible: 0.3 sat too close to out of ear, 0.12 a touch too dark ([USER] 2026-09-28).
+            status == 4 || status == 0 -> Palette.blend(p.card, p.textSecondary, 0.17f)
+            // Plain `textSecondary` read too close to white ([USER] 2026-09-28).
+            else -> Palette.blend(p.card, p.textSecondary, 0.65f)
+        }
 
         /** Unlit dots (a ring's or the case bar's empty part): halfway to the secondary text, the outline was too faint. */
         private fun dim(p: Palette) = Palette.blend(p.card, p.textSecondary, 0.5f)
@@ -583,7 +622,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val cols = Math.round(rows * d.intrinsicWidth.toFloat() / d.intrinsicHeight).coerceAtLeast(1)
             v.setImageViewBitmap(id, when (res) {
                 // Cuts to keep (the lid, the LED): sample cell centres.
-                R.drawable.ic_case -> dots(d, cols, rows, 8, min = 128, centre = true)
+                // The LED always empties one dot ([clearLed]).
+                R.drawable.ic_case -> matrix(cols, rows, 8f, 128, Color.WHITE, true) { c, w ->
+                    d.setTint(Color.WHITE); d.setBounds(0, 0, c.width, c.height); d.draw(c)
+                    clearLed(c, d.bounds, w / cols)
+                }
                 R.drawable.ic_mode_transparency -> dots(d, cols, rows, 8, min = 220, centre = true)
                 // Plain shapes: whole-cell coverage keeps thin diagonals (the bolt's tips).
                 else -> dots(d, cols, rows, 8, min = 90)
@@ -633,60 +676,164 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /**
-         * The 2x2 / 3x3 battery's case bar: 6dp, `outline` track, `accent` fill, round ends. Nothing
-         * style: five dot rows, 1.4x the widget's pitch, lit column by column up to the level, the corner
-         * dots left out so the ends are round. Drawn exactly as wide as its slot ([barDp]), so the dots
+         * The 2x2 / 3x3 battery's case bar, 70% of the case icon's height, the level inside it. Classic: `outline`
+         * track, `accent` fill, corners rounded at a third of its height, the number cut out of it. Nothing
+         * style: dot rows 1.4x the widget's pitch, 70% of the case icon's height, the percentage cut out of the dots ([GLYPHS]),
+         * lit column by column up to the level, the corner dots left out so the corners are round. Drawn exactly as wide as its slot ([barDp]), so the dots
          * are never scaled.
          */
-        private fun bar(context: Context, p: Palette, level: Int, kind: Kind, id: Int): Bitmap {
+        private fun bar(context: Context, p: Palette, level: Int, kind: Kind, id: Int, caseDp: Float): Bitmap {
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.outline }
             if (WidgetSettings.nothingStyle(context)) {
-                // [USER] 2026-09-28: thicker, then fewer dots at that height: 5 rows of 7 rows' height.
-                val rows = 5
+                // [USER] 2026-09-28: thicker, then fewer dots at that height (5 rows of 7 rows' height), then thicker
+                // again: 7 rows at that pitch, then as many as fill 70% of the case icon's height, the percentage inside.
                 val pitch = dotDp(kind) * 7 / 5 * context.resources.displayMetrics.density
-                val cols = (ThemeRes.dp(context, barDp(context, kind, id, level)) / pitch).toInt().coerceAtLeast(rows + 1)
+                // 70% of the case icon's height ([USER] 2026-09-28: as tall as the icon was too big); odd, so the 7-row
+                // digits sit exactly in the middle.
+                val rows = ((ThemeRes.dp(context, caseDp * 0.7f) / pitch).toInt() - 1 or 1).coerceAtLeast(9)
+                val cols = (ThemeRes.dp(context, barDp(context, kind, id, caseDp)) / pitch).toInt().coerceAtLeast(rows + 1)
                 val bmp = Bitmap.createBitmap(Math.round(cols * pitch), Math.round(rows * pitch), Bitmap.Config.ARGB_8888)
                 val c = Canvas(bmp)
+                // The percentage is part of the matrix ([USER] 2026-09-28): 5x7 digits whose dots are left out, so they
+                // read in the widget's background colour. Centred; a label wider than the bar is left out.
+                val label = pctLabel(context, level).mapNotNull { GLYPHS[it] }
+                val tw = label.size * 6 - 1
+                val a = (cols - tw) / 2                        // first text column
+                val b = (rows - 7) / 2                         // first text row
+                fun text(x: Int, y: Int): Boolean {
+                    if (tw > cols - 2 || x < a || x >= a + tw || y < b || y >= b + 7 || (x - a) % 6 == 5) return false
+                    return label[(x - a) / 6][y - b][(x - a) % 6] == '1'
+                }
                 val lit = if (level in 1..100) maxOf(1, Math.round(cols * level / 100f)) else 0
                 for (x in 0 until cols) for (y in 0 until rows) {
-                    // Round ends: drop the cells whose centre lies outside a half-circle of radius rows/2.
-                    val edge = minOf(x, cols - 1 - x) + 0.5f
-                    val dy = y + 0.5f - rows / 2f
-                    val r = rows / 2f
-                    if (edge < r && (r - edge) * (r - edge) + dy * dy > r * r) continue
+                    if (text(x, y)) continue
+                    // Rounded corners, radius a third of the height ([USER] 2026-09-28: the old pill ends, a curve of
+                    // r + 0.4, stepped like an octagon once the bar grew): drop the cells whose centre lies outside.
+                    val r = rows / 3f
+                    val dx = r - minOf(x, cols - 1 - x) - 0.5f
+                    val dy = r - minOf(y, rows - 1 - y) - 0.5f
+                    if (dx > 0 && dy > 0 && dx * dx + dy * dy > (r - 0.3f) * (r - 0.3f)) continue
                     paint.color = if (x < lit) p.accent else dim(p)
                     c.drawCircle((x + 0.5f) * pitch, (y + 0.5f) * pitch, pitch * 0.42f, paint)
                 }
                 return bmp
             }
-            val w = ThemeRes.dp(context, 80f)
-            val h = ThemeRes.dp(context, 6f).coerceAtLeast(1)
+            // Classic ([USER] 2026-09-28: the Nothing layout's ideas, smooth): as wide as its slot, the number knocked out.
+            val w = ThemeRes.dp(context, barDp(context, kind, id, caseDp)).coerceAtLeast(1)
+            val h = ThemeRes.dp(context, caseDp * 0.7f).coerceAtLeast(1)
             val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
             val c = Canvas(bmp)
-            c.drawRoundRect(RectF(0f, 0f, w.toFloat(), h.toFloat()), h / 2f, h / 2f, paint)
+            val box = RectF(0f, 0f, w.toFloat(), h.toFloat())
+            c.drawRoundRect(box, h / 3f, h / 3f, paint)
             if (level in 1..100) {
                 paint.color = p.accent
-                c.drawRoundRect(RectF(0f, 0f, maxOf(h.toFloat(), w * level / 100f), h.toFloat()), h / 2f, h / 2f, paint)
+                c.save()
+                c.clipRect(0f, 0f, w * level / 100f, h.toFloat())
+                c.drawRoundRect(box, h / 3f, h / 3f, paint)
+                c.restore()
             }
+            val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
+                textSize = h * 0.6f
+                textAlign = Paint.Align.CENTER
+                xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
+            }
+            val fm = text.fontMetrics
+            c.drawText(pctLabel(context, level), w / 2f, h / 2f - (fm.ascent + fm.descent) / 2, text)
             return bmp
         }
 
         /**
-         * The case bar's slot width in dp: the widget's width less everything else in the row (paddings,
-         * the case icon, margins, the percentage as Ndot measures it, the swap button when shown).
-         * Falls back to 40 / 80dp when the host gives no size.
+         * The 2x2 battery page's spacing in dp, per style. Mirrors scripts/widget-layouts.py `GEO`; keep them equal.
+         * [side] / [vert] the page padding, [gap] between boxes, ring panel paddings [top], [outer] (widget side),
+         * [inner] (the other ring's side) and [bottom], [row] the case row's padding, [pm] the percentage's top margin.
          */
-        private fun barDp(context: Context, kind: Kind, id: Int, level: Int): Float {
-            val w = AppWidgetManager.getInstance(context).getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-            if (w <= 0) return if (kind.large) 80f else 40f
-            val d = context.resources.displayMetrics.density
-            val pct = Paint().apply {
-                typeface = android.graphics.Typeface.create("NDot57All", android.graphics.Typeface.NORMAL)
-                textSize = (if (kind.large) 22f else 16f) * context.resources.displayMetrics.scaledDensity
-            }.measureText(if (level in 0..100) "$level%" else "—") / d
-            val swap = if (WidgetSettings.doubleTapSwaps(context)) 0f else 20f
-            return (w - 6f - 24f - (if (kind.large) 48f else 35f) - 16f - pct - swap - 2f).coerceAtLeast(12f)
+        private class Geo(val side: Float, val vert: Float, val gap: Float, val top: Float, val outer: Float, val inner: Float, val bottom: Float, val row: Float, val pm: Float)
+        private val GEO_NOTHING = Geo(3f, 7f, 4f, 3f, 3f, 1f, 4f, 3f, 5f)
+        private val GEO_CLASSIC = Geo(6f, 8f, 6f, 4f, 7f, 7f, 3f, 4f, 2f)
+        private fun geo(c: Context) = if (WidgetSettings.nothingStyle(c)) GEO_NOTHING else GEO_CLASSIC
+
+        /** The height of a battery text as the layout draws it ([pctPaint]), in dp. */
+        private fun textDp(context: Context, paint: Paint) = paint.fontMetrics.let { it.descent - it.ascent } / context.resources.displayMetrics.density
+
+        /** 2x2 / 3x3: a battery ring's size in dp, as wide as its panel (in 2x2 dp, then scaled: [LARGE_SCALE]). */
+        private fun ringWidthDp(context: Context, kind: Kind, w: Int): Float {
+            val g = geo(context)
+            val k = scale(kind)
+            return k * ((w / k - 2 * g.side - g.gap) / 2 - g.outer - g.inner)
         }
+
+        /**
+         * The case bar's slot width in dp: the widget's width less everything else in the row (page and row
+         * paddings, the case icon and its margin, the swap button when shown). The level sits inside the bar.
+         * Falls back to 60dp (scaled) when the host gives no size.
+         */
+        private fun barDp(context: Context, kind: Kind, id: Int, caseDp: Float): Float {
+            val w = AppWidgetManager.getInstance(context).getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+            val k = scale(kind)
+            if (w <= 0) return 60f * k
+            val g = geo(context)
+            val swap = if (WidgetSettings.doubleTapSwaps(context)) 0f else 20f
+            return k * (w / k - 2 * g.side - 2 * g.row - caseDp / k * 496f / 400f - 6f - swap - 2f).coerceAtLeast(20f)
+        }
+
+        /**
+         * 2x2 / 3x3: the case row's content height in dp, all the height the rings leave ([USER] 2026-09-28: only
+         * paddings between them): page padding, ring panel (paddings, ring, percentage with its margin, Classic's
+         * wear label), gap, case row padding ([Geo]). Falls back to 30dp (scaled) when the host gives no size.
+         */
+        private fun caseRowDp(context: Context, kind: Kind, id: Int): Float {
+            val o = AppWidgetManager.getInstance(context).getAppWidgetOptions(id)
+            val w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+            val h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+            val k = scale(kind)
+            if (w <= 0 || h <= 0) return 30f * k
+            val g = geo(context)
+            // In 2x2 dp (the 3x3 divided by [LARGE_SCALE]), then scaled back.
+            val ring = ringWidthDp(context, kind, w) / k
+            val pct = textDp(context, pctPaint(context, Kind.BATTERY))
+            val label = if (WidgetSettings.nothingStyle(context)) 0f else textDp(context, Paint().apply {
+                typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
+                textSize = 11.5f * context.resources.displayMetrics.scaledDensity
+            })
+            return k * (h / k - 2 * g.vert - (g.top + ring + g.pm + pct + label + g.bottom) - g.gap - 2 * g.row).coerceIn(20f, 120f)
+        }
+
+        /** Nothing, 2x2 / 3x3: the battery rings' dot pitch in dp ([RING_CELLS] across the ring). */
+        private fun ringCellDp(context: Context, kind: Kind, id: Int): Float {
+            val w = AppWidgetManager.getInstance(context).getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+            if (w <= 0) return DOT_DP * scale(kind)
+            return ringWidthDp(context, kind, w) / RING_CELLS
+        }
+
+        /**
+         * A percentage as the layout draws it: Nothing NDot57All bold 17sp on the 2x2 (scaled on the 3x3), 20sp on
+         * the 4x2; Classic sans-serif bold 16sp on the 2x2 (scaled on the 3x3).
+         */
+        private fun pctPaint(context: Context, kind: Kind) = Paint().apply {
+            val nothing = WidgetSettings.nothingStyle(context)
+            typeface = android.graphics.Typeface.create(if (nothing) "NDot57All" else "sans-serif", android.graphics.Typeface.BOLD)
+            textSize = (if (kind.square) (if (nothing) 17f else 16f) * scale(kind) else 20f) * context.resources.displayMetrics.scaledDensity
+        }
+
+        /** 5x7 dot digits for the case bar's percentage ([bar]), rows top to bottom. */
+        private val GLYPHS = mapOf(
+            '0' to listOf("01110", "10001", "10001", "10001", "10001", "10001", "01110"),
+            '1' to listOf("00100", "01100", "00100", "00100", "00100", "00100", "01110"),
+            '2' to listOf("01110", "10001", "00001", "00010", "00100", "01000", "11111"),
+            '3' to listOf("11111", "00010", "00100", "00010", "00001", "10001", "01110"),
+            '4' to listOf("00010", "00110", "01010", "10010", "11111", "00010", "00010"),
+            '5' to listOf("11111", "10000", "11110", "00001", "00001", "10001", "01110"),
+            '6' to listOf("00110", "01000", "10000", "11110", "10001", "10001", "01110"),
+            '7' to listOf("11111", "00001", "00010", "00100", "01000", "01000", "01000"),
+            '8' to listOf("01110", "10001", "10001", "01110", "10001", "10001", "01110"),
+            '9' to listOf("01110", "10001", "10001", "01111", "00001", "00010", "01100"),
+            '—' to listOf("00000", "00000", "00000", "11111", "00000", "00000", "00000")
+        )
+
+        /** The level as the widgets show it: "57%" (Classic), just the number (Nothing, [USER] 2026-09-28), or a dash. */
+        private fun pctLabel(context: Context, level: Int) =
+            if (level !in 0..100) "—" else if (WidgetSettings.nothingStyle(context)) "$level" else "$level%"
 
         private fun openAppPI(context: Context): PendingIntent = PendingIntent.getActivity(
             context, 400, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),

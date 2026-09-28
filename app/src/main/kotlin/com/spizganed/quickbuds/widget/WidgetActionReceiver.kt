@@ -51,21 +51,15 @@ class WidgetActionReceiver : BroadcastReceiver() {
                 }.onFailure { Log.e("BudsWidget", "[RX] open app failed", it) }
                 return
             }
-            WidgetActions.ACTION_LIST_CLOSE -> {
-                AncWidgetProvider.refreshAll(context)
-                return
-            }
-            WidgetActions.ACTION_MODE_TAP -> {
-                if (WidgetSettings.tapOpensList(context)) {
-                    openList(context, widgetId)
-                    return
-                }
-                // Next mode: the same send as a list pick, so the service path is unchanged.
-                val next = WidgetSettings.next(context, WidgetSettings.modeOf(state.ancMode))
+            WidgetActions.ACTION_QUICK -> {
+                val target = intent.getStringExtra(WidgetActions.EXTRA_ANC_TARGET) ?: return
+                if (target == "anc") return openList(context, widgetId)
+                // The lit mode's button turns noise control off; the send is a list pick's.
+                val pick = if (WidgetSettings.modeOf(state.ancMode).key == target) "off" else target
                 return handle(context, Intent(context, WidgetActionReceiver::class.java)
                     .setAction(WidgetActions.ACTION_ANC_SELECT)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-                    .putExtra(WidgetActions.EXTRA_ANC_TARGET, next.key))
+                    .putExtra(WidgetActions.EXTRA_ANC_TARGET, pick))
             }
             WidgetActions.ACTION_ANC_SELECT -> {
                 val target = intent.getStringExtra(WidgetActions.EXTRA_ANC_TARGET) ?: return
@@ -87,24 +81,6 @@ class WidgetActionReceiver : BroadcastReceiver() {
             WidgetActions.ACTION_GAME_TOGGLE -> {
                 state.gameMode = !state.gameMode
                 shortAction = "GAME_TOGGLE"
-            }
-            WidgetActions.ACTION_ANC_CYCLE -> {
-                state.ancMode = when (state.ancMode) {
-                    "Off" -> "ANC-Light"
-                    "ANC-Light" -> "ANC-Medium"
-                    "ANC-Medium" -> "ANC-Deep"
-                    "ANC-Deep" -> "ANC-Light"
-                    "Transparency" -> "ANC-Light"
-                    else -> "ANC-Light"
-                }
-                shortAction = "ANC_CYCLE"
-                sendAncMode = state.ancMode
-            }
-            WidgetActions.ACTION_TRANS -> {
-                state.ancMode = "Transparency"; shortAction = "TRANS"
-            }
-            WidgetActions.ACTION_OFF -> {
-                state.ancMode = "Off"; shortAction = "OFF"
             }
             else -> {
                 Log.d("BudsWidget", "[RX] Unknown action, ignoring")
@@ -170,7 +146,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Shows widget [id]'s mode list. It stays open until a pick or a tap on the current mode
+     * Shows widget [id]'s level picker. It stays open until a pick (the lit level turns ANC off)
      * ([USER] 2026-09-28: the 5 s auto-close shut it while he was still choosing).
      */
     private fun openList(context: Context, id: Int) {

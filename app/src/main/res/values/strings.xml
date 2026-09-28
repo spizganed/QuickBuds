@@ -315,29 +315,20 @@
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
     <string name="widget_settings_title">Widget settings</string>
-    <string name="widget_settings_sub">Mode button, modes, low latency</string>
-    <string name="widget_tap_title">Tapping the mode button</string>
-    <string name="widget_tap_next">Next mode</string>
-    <string name="widget_tap_list">Open list</string>
-    <string name="widget_tap_hint">Next mode steps through the list below in order. Open list shows all of them to pick from; it closes after a pick or 5 seconds.</string>
-    <string name="widget_modes_title">Modes</string>
-    <string name="widget_modes_hint">Tick 2 to 6 and drag to set the order. The same modes are used for both options.</string>
+    <string name="widget_settings_sub">Style, pages, low latency</string>
     <string name="widget_section">Widget</string>
     <string name="widget_style_title">Style</string>
     <string name="widget_style_classic">Classic</string>
     <string name="widget_style_nothing" translatable="false">Nothing</string>
     <string name="widget_ll_title">Low latency button</string>
-    <string name="widget_ll_sub">Shown next to the mode button</string>
+    <string name="widget_ll_sub">A button on the controls page</string>
     <string name="widget_open_title">Open app on tap</string>
     <string name="widget_open_sub">Tapping the battery opens QuickBuds</string>
-    <string name="widget_drag_desc">Drag to reorder</string>
     <string name="widget_mode_anc_low">ANC Low</string>
     <string name="widget_mode_anc_medium">ANC Medium</string>
     <string name="widget_mode_anc_high">ANC High</string>
     <string name="widget_mode_anc_smart">ANC Smart</string>
     <string name="widget_low_latency">Low latency</string>
-    <string name="widget_mode_desc_cycle">%1$s: %2$s, tap for next mode</string>
-    <string name="widget_mode_desc_list">%1$s: %2$s, tap to choose a mode</string>
     <string name="widget_battery_name">QuickBuds battery</string>
     <string name="widget_large_name">QuickBuds large</string>
     <string name="settings_language_title">Language</string>
@@ -345,7 +336,7 @@
     <string name="widget_pages_title">Switching pages</string>
     <string name="widget_pages_button">Swap button</string>
     <string name="widget_pages_double">Double tap</string>
-    <string name="widget_pages_hint">Every widget has two pages, battery and noise control. With double tap, every single tap on it waits about 0.4 s to see if a second one follows.</string>
+    <string name="widget_pages_hint">Every widget has two pages, battery and noise control. With double tap, every single tap on it waits about 0.2 s to see if a second one follows.</string>
     <string name="widget_swap_desc">Switch page</string>
     <string name="language_system">System default</string>
 
