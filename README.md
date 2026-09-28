@@ -1,6 +1,8 @@
 # QuickBuds
 
-> Control OnePlus / OPPO / realme earbuds straight over Bluetooth. No HeyMelody, no root.
+> Open-source HeyMelody alternative for Android. Control OnePlus / OPPO / realme earbuds over
+> Bluetooth, no root: battery, noise cancellation (ANC), equalizer, gestures, wear detection, find my
+> earbuds, dual connection, low latency mode and home screen widgets.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
