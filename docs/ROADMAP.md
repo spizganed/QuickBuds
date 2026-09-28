@@ -14,10 +14,9 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
 
-- **Golden Sound** (hearing enhancement, feature `0x0B`, `hearingEnhancement` in the model list; Buds 4 has it).
-- **Ear tip fit test** (`fitDetection` in the model list).
-
-Both need the HeyMelody decompile for the bytes and a capture on Buds 4 before any write.
+- **Golden Sound: the test itself.** The on/off switch is done (PROTOCOL.md §9); making a profile (ear
+  scan + hearing test, records on the phone) is a long exchange that needs an HCI capture of HeyMelody
+  running it first. Until then a profile comes from HeyMelody.
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list

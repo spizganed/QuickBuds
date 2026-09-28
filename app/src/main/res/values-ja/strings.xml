@@ -299,4 +299,25 @@
     <string name="model_detected">検出: %1$s</string>
     <string name="model_not_detected">まだ検出されていません</string>
     <string name="no_buds_paired">ペアリング済みの OPPO、OnePlus、realme のイヤホンが見つかりません。先に Bluetooth 設定でペアリングしてください。</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">ゴールデンサウンド</string>
+    <string name="row_golden_sub">聴力テストに合わせて調整したサウンド</string>
+    <string name="fit_title">イヤホンのフィットテスト</string>
+    <string name="fit_sub">ノイズキャンセリングの効果を高めるために耳の穴にぴったり合うイヤーチップを選んでください。</string>
+    <string name="fit_hint">イヤーチップがぴったりと耳の穴にはまり、ノイズキャンセルが十分機能していることを確認してください。「再生」をタップすると試聴できます。</string>
+    <string name="fit_play">再生</string>
+    <string name="fit_playing">再生中...</string>
+    <string name="fit_keep">イヤホンを差し込んだままにしてください</string>
+    <string name="fit_good">良好</string>
+    <string name="fit_average">普通</string>
+    <string name="fit_poor">弱い</string>
+    <string name="fit_perfect">ぴったりと装着されています。</string>
+    <string name="fit_adjust">イヤホンを調整してください</string>
+    <string name="fit_adjust_tips">%1$s の位置を調整するか、別のサイズのイヤーチップにしてもう一度試聴してください。</string>
+    <string name="fit_both">イヤホン</string>
+    <string name="fit_left">左のイヤホン</string>
+    <string name="fit_right">右のイヤホン</string>
+    <string name="fit_again">もう一度確認する</string>
+    <string name="fit_insert">イヤホンを差し込んでください</string>
+    <string name="fit_failed">テストが失敗しました。再試行してください。</string>
 </resources>

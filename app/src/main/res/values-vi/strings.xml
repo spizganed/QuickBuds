@@ -301,4 +301,25 @@
     <string name="model_detected">Đã nhận diện: %1$s</string>
     <string name="model_not_detected">Chưa nhận diện</string>
     <string name="no_buds_paired">Không tìm thấy tai nghe OPPO, OnePlus hoặc realme đã ghép nối. Hãy ghép nối trong cài đặt Bluetooth trước.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Âm thanh Vàng</string>
+    <string name="row_golden_sub">Âm thanh điều chỉnh theo bài kiểm tra thính lực của bạn</string>
+    <string name="fit_title">Kiểm tra độ vừa tai nghe</string>
+    <string name="fit_sub">Chọn nút tai bịt kín ống tai để khử tiếng ồn tốt hơn.</string>
+    <string name="fit_hint">Đảm bảo nút tai bịt kín ống tai để khử tiếng ồn tốt hơn. Nhấn \"Phát\" để bắt đầu kiểm tra.</string>
+    <string name="fit_play">Phát</string>
+    <string name="fit_playing">Đang phát...</string>
+    <string name="fit_keep">Giữ tai nghe trong tai</string>
+    <string name="fit_good">Tốt</string>
+    <string name="fit_average">Trung bình</string>
+    <string name="fit_poor">Kém</string>
+    <string name="fit_perfect">Vừa vặn hoàn hảo!</string>
+    <string name="fit_adjust">Điều chỉnh tai nghe</string>
+    <string name="fit_adjust_tips">Điều chỉnh vị trí của %1$s hoặc thử nút tai cỡ khác, sau đó kiểm tra lại.</string>
+    <string name="fit_both">tai nghe</string>
+    <string name="fit_left">tai nghe trái</string>
+    <string name="fit_right">tai nghe phải</string>
+    <string name="fit_again">Kiểm tra lại</string>
+    <string name="fit_insert">Hãy đeo tai nghe vào</string>
+    <string name="fit_failed">Kiểm tra thất bại. Vui lòng thử lại.</string>
 </resources>

@@ -31,6 +31,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var alertSlider: LevelSliderView
     private lateinit var alertSpeaker: ImageView
     private var firmwareText: TextView? = null
+    private var fitSheet: FitTestSheet? = null
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -73,6 +74,14 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             Capabilities.hasFeature(this, OpoProtocol.FEATURE_AUTO_PLAY_PAUSE))
         link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java,
             Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS))
+        // Earbud fit test: a sheet, as in HeyMelody's More settings (PROTOCOL.md §9).
+        if (Capabilities.supports(this, OpoProtocol.CMD_FIT_TEST)) {
+            if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
+            card.addView(SettingRowFactory.build(this, R.drawable.ic_bud_right, R.string.fit_title, R.string.fit_sub,
+                SettingRowFactory.buildChevron(this)) {
+                fitSheet = FitTestSheet(this) { on -> manager?.fitTest(on) }.also { it.show() }
+            })
+        }
         if (card.childCount > 0) root.addView(card)
         if (Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) sounds(root)
 
@@ -154,6 +163,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         alertSlider.value = level
         paintSpeaker(level)
     }
+
+    override fun onFitResult(left: Int, right: Int) { fitSheet?.result(left, right) }
 
     override fun onStatus(msg: String) {}
     override fun onConnected(connected: Boolean) {}

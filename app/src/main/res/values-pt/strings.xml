@@ -299,4 +299,25 @@
     <string name="model_detected">Detetado: %1$s</string>
     <string name="model_not_detected">Ainda não detetado</string>
     <string name="no_buds_paired">Nenhum fone OPPO, OnePlus ou realme emparelhado. Emparelhe-os primeiro nas configurações de Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Som ajustado ao seu teste auditivo</string>
+    <string name="fit_title">Teste de ajuste dos auriculares</string>
+    <string name="fit_sub">Escolha pontas que vedem bem os canais auditivos para um melhor cancelamento de ruído.</string>
+    <string name="fit_hint">Certifique-se de que as pontas vedam bem os canais auditivos para um melhor cancelamento de ruído. Toque em \"Reproduzir\" para iniciar o teste.</string>
+    <string name="fit_play">Reproduzir</string>
+    <string name="fit_playing">A reproduzir...</string>
+    <string name="fit_keep">Mantenha os auriculares colocados</string>
+    <string name="fit_good">Bom</string>
+    <string name="fit_average">Médio</string>
+    <string name="fit_poor">Fraco</string>
+    <string name="fit_perfect">Ajuste perfeito!</string>
+    <string name="fit_adjust">Ajuste os auriculares</string>
+    <string name="fit_adjust_tips">Ajuste a posição de %1$s ou experimente pontas de outro tamanho e repita o teste.</string>
+    <string name="fit_both">ambos os auriculares</string>
+    <string name="fit_left">auricular esquerdo</string>
+    <string name="fit_right">auricular direito</string>
+    <string name="fit_again">Testar novamente</string>
+    <string name="fit_insert">Coloque os auriculares</string>
+    <string name="fit_failed">O teste falhou. Tente novamente.</string>
 </resources>

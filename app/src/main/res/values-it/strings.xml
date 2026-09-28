@@ -299,4 +299,25 @@
     <string name="model_detected">Rilevato: %1$s</string>
     <string name="model_not_detected">Non ancora rilevato</string>
     <string name="no_buds_paired">Nessun auricolare OPPO, OnePlus o realme associato. Associali prima nelle impostazioni Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Suono regolato sul tuo test dell\'udito</string>
+    <string name="fit_title">Test di aderenza degli auricolari</string>
+    <string name="fit_sub">Scegli gommini che sigillino bene il condotto uditivo per una migliore cancellazione del rumore.</string>
+    <string name="fit_hint">Assicurati che i gommini sigillino bene il condotto uditivo per una migliore cancellazione del rumore. Tocca \"Riproduci\" per avviare il test.</string>
+    <string name="fit_play">Riproduci</string>
+    <string name="fit_playing">Riproduzione...</string>
+    <string name="fit_keep">Tieni gli auricolari inseriti</string>
+    <string name="fit_good">Buona</string>
+    <string name="fit_average">Media</string>
+    <string name="fit_poor">Scarsa</string>
+    <string name="fit_perfect">Aderenza perfetta!</string>
+    <string name="fit_adjust">Regola gli auricolari</string>
+    <string name="fit_adjust_tips">Regola la posizione di %1$s o prova gommini di un\'altra misura, poi ripeti il test.</string>
+    <string name="fit_both">entrambi gli auricolari</string>
+    <string name="fit_left">auricolare sinistro</string>
+    <string name="fit_right">auricolare destro</string>
+    <string name="fit_again">Ripeti il test</string>
+    <string name="fit_insert">Inserisci gli auricolari</string>
+    <string name="fit_failed">Test non riuscito. Riprova.</string>
 </resources>

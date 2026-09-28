@@ -299,4 +299,25 @@
     <string name="model_detected">Визначено: %1$s</string>
     <string name="model_not_detected">Ще не визначено</string>
     <string name="no_buds_paired">Не знайдено спарених навушників OPPO, OnePlus чи realme. Спершу спаруйте їх у налаштуваннях Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Оптимальний звук</string>
+    <string name="row_golden_sub">Звук, налаштований за тестом слуху</string>
+    <string name="fit_title">Перевірка прилягання навушника-вкладиша</string>
+    <string name="fit_sub">Вибирайте насадки для навушників, які щільно вставляються у вушні канали. Це забезпечить краще зниження шумів.</string>
+    <string name="fit_hint">Переконайтеся, що насадки для навушників щільно вставлені у вушні канали. Це забезпечить краще зниження шумів. Торкніться кнопки \"Відтворити\", щоб розпочати тест.</string>
+    <string name="fit_play">Відтворити</string>
+    <string name="fit_playing">Відтворення…</string>
+    <string name="fit_keep">Не виймайте навушники-вкладиші</string>
+    <string name="fit_good">Добре</string>
+    <string name="fit_average">Нормально</string>
+    <string name="fit_poor">Погана</string>
+    <string name="fit_perfect">Чудово пасує!</string>
+    <string name="fit_adjust">Відрегулюйте навушники-вкладиші</string>
+    <string name="fit_adjust_tips">Відрегулюйте положення %1$s або спробуйте насадку іншого розміру, а потім знову виконайте перевірку.</string>
+    <string name="fit_both">навушники-вкладиші</string>
+    <string name="fit_left">лівого навушника-вкладиша</string>
+    <string name="fit_right">правого навушника-вкладиша</string>
+    <string name="fit_again">Перевірити ще раз</string>
+    <string name="fit_insert">Вставте навушники-вкладиші</string>
+    <string name="fit_failed">Перевірку не пройдено. Спробуйте ще раз.</string>
 </resources>

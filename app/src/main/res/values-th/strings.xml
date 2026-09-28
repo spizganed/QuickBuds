@@ -301,4 +301,25 @@
     <string name="model_detected">ตรวจพบ: %1$s</string>
     <string name="model_not_detected">ยังไม่พบ</string>
     <string name="no_buds_paired">ไม่พบหูฟัง OPPO, OnePlus หรือ realme ที่จับคู่ไว้ โปรดจับคู่ในการตั้งค่าบลูทูธก่อน</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">เสียงแบบโกลเด้น</string>
+    <string name="row_golden_sub">เสียงที่ปรับตามผลทดสอบการได้ยินของคุณ</string>
+    <string name="fit_title">การทดสอบความพอดีของหูฟังเอียร์บัด</string>
+    <string name="fit_sub">เลือกจุกหูฟังที่พอดีกับช่องหูของคุณเพื่อลดเสียงรบกวนได้มากขึ้น</string>
+    <string name="fit_hint">ตรวจสอบว่าจุกหูฟังของคุณผนึกกับช่องหูได้เป็นอย่างดีเพื่อการตัดเสียงรบกวนที่ดียิ่งขึ้น แตะ \"เล่น\" เพื่อเริ่มทดสอบ</string>
+    <string name="fit_play">เล่น</string>
+    <string name="fit_playing">กำลังเล่น...</string>
+    <string name="fit_keep">สวมหูฟังเอียร์บัดของคุณเอาไว้</string>
+    <string name="fit_good">ดี</string>
+    <string name="fit_average">ปานกลาง</string>
+    <string name="fit_poor">แย่</string>
+    <string name="fit_perfect">สวมใส่พอดี</string>
+    <string name="fit_adjust">ปรับหูฟังเอียร์บัดของคุณ</string>
+    <string name="fit_adjust_tips">ปรับตำแหน่งของ %1$s หรือลองใช้จุกหูฟังขนาดอื่น แล้วลองทำการทดสอบอีกครั้ง</string>
+    <string name="fit_both">หูฟังเอียร์บัด</string>
+    <string name="fit_left">หูฟังเอียร์บัดข้างซ้าย</string>
+    <string name="fit_right">หูฟังเอียร์บัดข้างขวา</string>
+    <string name="fit_again">ตรวจสอบอีกครั้ง</string>
+    <string name="fit_insert">สวมหูฟังเอียร์บัดของคุณ</string>
+    <string name="fit_failed">การทดสอบล้มเหลว กรุณาลองใหม่อีกครั้ง</string>
 </resources>

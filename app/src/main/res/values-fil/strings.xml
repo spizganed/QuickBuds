@@ -299,4 +299,25 @@
     <string name="model_detected">Natukoy: %1$s</string>
     <string name="model_not_detected">Hindi pa natutukoy</string>
     <string name="no_buds_paired">Walang nakapares na OPPO, OnePlus o realme buds. I-pair muna sila sa Bluetooth settings.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Tunog na inayon sa iyong hearing test</string>
+    <string name="fit_title">Pagsusuri ng sukat ng earbuds</string>
+    <string name="fit_sub">Pumili ng ear tips na mahigpit na nakasara sa ear canal para sa mas mahusay na noise canceling.</string>
+    <string name="fit_hint">Tiyaking mahigpit na nakasara ang ear tips sa ear canal para sa mas mahusay na noise canceling. I-tap ang \"I-play\" para simulan ang pagsusuri.</string>
+    <string name="fit_play">I-play</string>
+    <string name="fit_playing">Nagpe-play...</string>
+    <string name="fit_keep">Panatilihing nakasuot ang earbuds</string>
+    <string name="fit_good">Maayos</string>
+    <string name="fit_average">Katamtaman</string>
+    <string name="fit_poor">Mahina</string>
+    <string name="fit_perfect">Perpektong sukat!</string>
+    <string name="fit_adjust">Ayusin ang earbuds</string>
+    <string name="fit_adjust_tips">Ayusin ang posisyon ng %1$s o subukan ang ear tip na ibang laki, at saka ulitin ang pagsusuri.</string>
+    <string name="fit_both">earbuds</string>
+    <string name="fit_left">kaliwang earbud</string>
+    <string name="fit_right">kanang earbud</string>
+    <string name="fit_again">Suriin muli</string>
+    <string name="fit_insert">Isuot ang earbuds</string>
+    <string name="fit_failed">Nabigo ang pagsusuri. Pakisubukan muli.</string>
 </resources>

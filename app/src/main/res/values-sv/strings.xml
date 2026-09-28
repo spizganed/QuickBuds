@@ -299,4 +299,25 @@
     <string name="model_detected">Identifierad: %1$s</string>
     <string name="model_not_detected">Inte identifierad än</string>
     <string name="no_buds_paired">Inga parkopplade OPPO-, OnePlus- eller realme-lurar hittades. Parkoppla dem först i Bluetooth-inställningarna.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Ljud anpassat efter ditt hörseltest</string>
+    <string name="fit_title">Passformstest för hörlurar</string>
+    <string name="fit_sub">Välj öronproppar som tätar väl mot hörselgången för bättre brusreducering.</string>
+    <string name="fit_hint">Se till att öronpropparna tätar väl mot hörselgången för bättre brusreducering. Tryck på ”Spela upp” för att starta testet.</string>
+    <string name="fit_play">Spela upp</string>
+    <string name="fit_playing">Spelar upp...</string>
+    <string name="fit_keep">Behåll hörlurarna i öronen</string>
+    <string name="fit_good">Bra</string>
+    <string name="fit_average">Medel</string>
+    <string name="fit_poor">Dålig</string>
+    <string name="fit_perfect">Perfekt passform!</string>
+    <string name="fit_adjust">Justera hörlurarna</string>
+    <string name="fit_adjust_tips">Justera läget för %1$s eller prova öronproppar i en annan storlek och gör sedan om testet.</string>
+    <string name="fit_both">båda hörlurarna</string>
+    <string name="fit_left">vänster hörlur</string>
+    <string name="fit_right">höger hörlur</string>
+    <string name="fit_again">Kontrollera igen</string>
+    <string name="fit_insert">Sätt i hörlurarna</string>
+    <string name="fit_failed">Testet misslyckades. Försök igen.</string>
 </resources>

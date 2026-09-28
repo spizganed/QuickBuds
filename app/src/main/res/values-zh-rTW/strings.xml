@@ -301,4 +301,25 @@
     <string name="model_detected">已識別：%1$s</string>
     <string name="model_not_detected">尚未識別</string>
     <string name="no_buds_paired">找不到已配對的 OPPO、OnePlus 或 realme 耳機。請先在藍牙設定中配對。</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">黃金聽感</string>
+    <string name="row_golden_sub">依你的聽力測試調校聲音</string>
+    <string name="fit_title">貼合度偵測</string>
+    <string name="fit_sub">根據貼合度確定合適的耳塞尺寸，取得最佳降噪效果</string>
+    <string name="fit_hint">為了取得最佳的降噪效果，請將耳塞放入耳朵時保持完全貼合，然後按下播放鍵開始檢測。</string>
+    <string name="fit_play">播放</string>
+    <string name="fit_playing">正在播放...</string>
+    <string name="fit_keep">請勿取下耳機</string>
+    <string name="fit_good">良好</string>
+    <string name="fit_average">一般</string>
+    <string name="fit_poor">較差</string>
+    <string name="fit_perfect">雙耳貼合度良好</string>
+    <string name="fit_adjust">請調整耳塞</string>
+    <string name="fit_adjust_tips">請調整%1$s在耳内的位置或更換其他尺寸的耳塞後重新檢測。</string>
+    <string name="fit_both">兩側耳機</string>
+    <string name="fit_left">左耳機</string>
+    <string name="fit_right">右耳機</string>
+    <string name="fit_again">重新檢測</string>
+    <string name="fit_insert">請將耳機放入雙耳</string>
+    <string name="fit_failed">偵測失敗，請重試。</string>
 </resources>

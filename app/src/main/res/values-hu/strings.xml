@@ -299,4 +299,25 @@
     <string name="model_detected">Felismerve: %1$s</string>
     <string name="model_not_detected">Még nincs felismerve</string>
     <string name="no_buds_paired">Nem található párosított OPPO, OnePlus vagy realme fülhallgató. Először párosítsd a Bluetooth-beállításokban.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">A hallásteszthez hangolt hang</string>
+    <string name="fit_title">Fülhallgató illeszkedési teszt</string>
+    <string name="fit_sub">Válasszon olyan fülilleszték-méretet, amely jól lezárja a hallójáratot a jobb zajszűrésért.</string>
+    <string name="fit_hint">Győződjön meg róla, hogy a fülillesztékek jól lezárják a hallójáratot a jobb zajszűrésért. A teszt indításához koppintson a „Lejátszás” gombra.</string>
+    <string name="fit_play">Lejátszás</string>
+    <string name="fit_playing">Lejátszás...</string>
+    <string name="fit_keep">Tartsa a fülében a fülhallgatót</string>
+    <string name="fit_good">Jó</string>
+    <string name="fit_average">Közepes</string>
+    <string name="fit_poor">Gyenge</string>
+    <string name="fit_perfect">Tökéletes illeszkedés!</string>
+    <string name="fit_adjust">Igazítsa meg a fülhallgatót</string>
+    <string name="fit_adjust_tips">Igazítsa meg ezt: %1$s, vagy próbáljon más méretű fülillesztéket, majd ismételje meg a tesztet.</string>
+    <string name="fit_both">mindkét fülhallgató</string>
+    <string name="fit_left">bal fülhallgató</string>
+    <string name="fit_right">jobb fülhallgató</string>
+    <string name="fit_again">Újra ellenőrzés</string>
+    <string name="fit_insert">Helyezze be a fülhallgatót</string>
+    <string name="fit_failed">A teszt sikertelen. Próbálja újra.</string>
 </resources>

@@ -299,4 +299,25 @@
     <string name="model_detected">Erkannt: %1$s</string>
     <string name="model_not_detected">Noch nicht erkannt</string>
     <string name="no_buds_paired">Keine gekoppelten OPPO-, OnePlus- oder realme-Earbuds gefunden. Kopple sie zuerst in den Bluetooth-Einstellungen.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Goldener Klang</string>
+    <string name="row_golden_sub">Klang nach Ihrem Hörtest abgestimmt</string>
+    <string name="fit_title">Ohrhörer-Sitzprüfung</string>
+    <string name="fit_sub">Wählen Sie Ohrhörer, die Ihre Gehörgänge gut abdichten, um eine bessere Geräuschunterdrückung zu erreichen.</string>
+    <string name="fit_hint">Stellen Sie sicher, dass Ihre Ohrhörer Ihre Gehörgänge gut abdichten, damit Geräusche besser unterdrückt werden. Tippen Sie auf „Wiedergeben“, um den Test zu starten.</string>
+    <string name="fit_play">Wiedergeben</string>
+    <string name="fit_playing">Wiedergabe läuft...</string>
+    <string name="fit_keep">Ohrhörer im Ohr lassen</string>
+    <string name="fit_good">Gut</string>
+    <string name="fit_average">Durchschnitt</string>
+    <string name="fit_poor">Schlecht</string>
+    <string name="fit_perfect">Perfekter Sitz!</string>
+    <string name="fit_adjust">Ohrhörer anpassen</string>
+    <string name="fit_adjust_tips">Stellen Sie die Position der %1$s ein oder versuchen Sie es mit einem Ohrhörer in einer anderen Größe und führen Sie den Test dann erneut durch.</string>
+    <string name="fit_both">Ohrhörer</string>
+    <string name="fit_left">linken Ohrhörer</string>
+    <string name="fit_right">rechten Ohrhörer</string>
+    <string name="fit_again">Nochmals prüfen</string>
+    <string name="fit_insert">Ohrhörer einsetzen</string>
+    <string name="fit_failed">Test fehlgeschlagen, Versuchen sie es erneut.</string>
 </resources>

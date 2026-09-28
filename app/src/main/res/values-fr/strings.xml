@@ -299,4 +299,25 @@
     <string name="model_detected">Détecté : %1$s</string>
     <string name="model_not_detected">Pas encore détecté</string>
     <string name="no_buds_paired">Aucun écouteur OPPO, OnePlus ou realme associé. Associez-les d\'abord dans les paramètres Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Son d\'or</string>
+    <string name="row_golden_sub">Son adapté à votre test auditif</string>
+    <string name="fit_title">Test d\'ajustement des écouteurs</string>
+    <string name="fit_sub">Choisissez des embouts garantissant une bonne étanchéité de votre conduit auditif pour une meilleure suppression du bruit.</string>
+    <string name="fit_hint">Veillez à ce que les embouts épousent la forme de votre conduit auditif pour une meilleure annulation du bruit. Touchez « Lecture » pour démarrer le test.</string>
+    <string name="fit_play">Lecture</string>
+    <string name="fit_playing">En cours de lecture...</string>
+    <string name="fit_keep">Gardez les écouteurs en position insérée</string>
+    <string name="fit_good">Bon</string>
+    <string name="fit_average">Moyen</string>
+    <string name="fit_poor">Faible</string>
+    <string name="fit_perfect">Ajustement parfait !</string>
+    <string name="fit_adjust">Ajustez vos écouteurs</string>
+    <string name="fit_adjust_tips">Ajustez la position de : %1$s. Ou essayez une autre taille d\'embout. Ensuite, refaites un test.</string>
+    <string name="fit_both">écouteurs</string>
+    <string name="fit_left">écouteur gauche</string>
+    <string name="fit_right">écouteur droit</string>
+    <string name="fit_again">Vérifiez à nouveau</string>
+    <string name="fit_insert">Insérez vos écouteurs</string>
+    <string name="fit_failed">Échec du test. Merci de réessayer.</string>
 </resources>

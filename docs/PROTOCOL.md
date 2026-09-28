@@ -224,9 +224,9 @@ AA 12 00 00 00 82 03 0B 00 00 09 01 02 03 04 08 0B F1 F2 F3
 | `0x01` | Battery push |
 | `0x02` | Wearing push |
 | `0x03` | **ANC push** |
-| `0x04` | `[GUESS]` something state-related; not subscribed by us |
-| `0x08` | `[GUESS]` |
-| `0x0B` | `[GUESS]` |
+| `0x04` | **Fit test result** `[VENDOR]`+`[CAPTURE]`, subscribed when the buds have `0x0405` (§9) |
+| `0x08` | Golden Sound test status `[VENDOR]` (`HEARING_ENHANCE_DETECTION_STATUS_CHANGED`: `02 <status>` hearing test, `04 <status>` ear scan); not subscribed |
+| `0x0B` | Personalised noise reduction result `[VENDOR]`; not subscribed |
 | `0xF1`–`0xF3` | `[OSS]` debug/JSON channels |
 
 **Read this reply before assuming an event is unsupported.** It is the quickest
@@ -239,7 +239,10 @@ way to settle "is the buds' silence real, or are we just not subscribed?".
 ```
 02 01 02        count=2: battery + wearing
 03 01 02 03     count=3: battery + wearing + ANC   <- current
+04 01 02 03 04  the same + fit test result, when the buds list 0x0405 (2026-09-29)
 ```
+
+`[VENDOR]` HeyMelody registers every id the buds list in `0x8200` (`registerMultiNotification`).
 
 **Do not write `01 01 02 02`.** Under the count-first shape that means "count=1,
 register battery only", with `02 02` left over. The firmware ACKs it happily and
@@ -1122,6 +1125,33 @@ devices use `0x28` does not hold for HeyMelody: its `0x010D` query builder
 decimal, `0x04` wear detection, `0x09` vocal enhance, `0x0B` hearing enhancement, `0x11` dual
 device, `0x18` Hi-Res, `0x1B` spatial, `0x1C` auto volume, `0x1D` bass engine, `0x22`-`0x24`
 spine health, `0x30` adaptive volume, `0x31` adaptive ear, `0x34` meeting assistant.
+
+### Golden Sound (hearing enhancement, feature `0x0B`) — `[VENDOR]` + read back 2026-09-29
+
+On / off is a plain feature switch: `0403 0B 01` / `0403 0B 00` (`setSwitchFeature(11)`, HeyMelody's
+record switch). Buds 4 lists `0x0B` in `0x810D`; toggled from the app, the ack was `00` and the
+re-read `0x810D` showed `0B 00` then `0B 01`. The switch applies the profile already stored on the
+buds; HeyMelody keeps the records (a named list, one active) on the phone.
+
+The **test** that makes a profile is a long exchange, not wired: ear canal scan (about 7 s), then a
+hearing test of 6 steps per ear (a tone per frequency, the user drags a slider to where it just
+disappears), progress in event `0x08`, frequency curves pushed back by the buds, the result written
+with the restore-data and detection-data commands (`0x040D`, `0x040E`, `0x0411`, `0x0415`,
+`0x0425`, `0x0428`, `0x0429`, `0x0131`; names in `HearingEnhancementRepositoryServerImpl` and
+`HeadsetCoreService`). Needs an HCI capture of HeyMelody running it before any of it is sent.
+
+### Earbud fit test — `0x0405` — `[VENDOR]` + `[CAPTURE]` 2026-09-29, wired
+
+| Direction | Frame |
+|---|---|
+| Start / stop | `0405 01` / `0405 00` (`switchCompactnessDetectionStatus`); ack `8405 00` |
+| Result | `0x0204` event `04 [dev status] [dev status]`, dev `01` left / `02` right |
+
+Status `1` good, `0` average, `6` poor, anything else an error (`FitDetectionDTO.isDetectError`).
+HeyMelody needs both buds in an ear, fails after 15 s without a result, and sends the stop when its
+sheet closes. Buds 4 from the app: `TX 0405 01`, ack `00`, then ~8.6 s later
+`RX AA 0C 00 00 04 02 08 05 00 04 01 01 02 01` (both good). Event `0x04` only arrives when
+registered (§4).
 
 ### Batch status query — `0x010D`
 

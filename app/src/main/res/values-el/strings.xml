@@ -299,4 +299,25 @@
     <string name="model_detected">Εντοπίστηκε: %1$s</string>
     <string name="model_not_detected">Δεν εντοπίστηκε ακόμη</string>
     <string name="no_buds_paired">Δεν βρέθηκαν συζευγμένα ακουστικά OPPO, OnePlus ή realme. Κάντε πρώτα σύζευξη στις ρυθμίσεις Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Ήχος ρυθμισμένος στο τεστ ακοής σας</string>
+    <string name="fit_title">Τεστ εφαρμογής ακουστικών</string>
+    <string name="fit_sub">Επιλέξτε άκρα που σφραγίζουν καλά τον ακουστικό πόρο για καλύτερη ακύρωση θορύβου.</string>
+    <string name="fit_hint">Βεβαιωθείτε ότι τα άκρα σφραγίζουν καλά τον ακουστικό πόρο για καλύτερη ακύρωση θορύβου. Πατήστε «Αναπαραγωγή» για να ξεκινήσει το τεστ.</string>
+    <string name="fit_play">Αναπαραγωγή</string>
+    <string name="fit_playing">Αναπαραγωγή...</string>
+    <string name="fit_keep">Κρατήστε τα ακουστικά στα αυτιά</string>
+    <string name="fit_good">Καλή</string>
+    <string name="fit_average">Μέτρια</string>
+    <string name="fit_poor">Κακή</string>
+    <string name="fit_perfect">Τέλεια εφαρμογή!</string>
+    <string name="fit_adjust">Προσαρμόστε τα ακουστικά</string>
+    <string name="fit_adjust_tips">Προσαρμόστε τη θέση: %1$s ή δοκιμάστε άκρα άλλου μεγέθους και επαναλάβετε το τεστ.</string>
+    <string name="fit_both">και τα δύο ακουστικά</string>
+    <string name="fit_left">αριστερό ακουστικό</string>
+    <string name="fit_right">δεξί ακουστικό</string>
+    <string name="fit_again">Νέος έλεγχος</string>
+    <string name="fit_insert">Τοποθετήστε τα ακουστικά</string>
+    <string name="fit_failed">Το τεστ απέτυχε. Δοκιμάστε ξανά.</string>
 </resources>

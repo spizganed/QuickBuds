@@ -299,4 +299,25 @@
     <string name="model_detected">Detectat: %1$s</string>
     <string name="model_not_detected">Nedetectat încă</string>
     <string name="no_buds_paired">Nu s-au găsit căști OPPO, OnePlus sau realme asociate. Asociază-le mai întâi din setările Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Sunet reglat după testul tău de auz</string>
+    <string name="fit_title">Test de potrivire a căștilor</string>
+    <string name="fit_sub">Alege dopuri care etanșează bine canalul urechii pentru o anulare mai bună a zgomotului.</string>
+    <string name="fit_hint">Asigură-te că dopurile etanșează bine canalul urechii pentru o anulare mai bună a zgomotului. Atinge „Redă” pentru a începe testul.</string>
+    <string name="fit_play">Redă</string>
+    <string name="fit_playing">Se redă...</string>
+    <string name="fit_keep">Ține căștile în urechi</string>
+    <string name="fit_good">Bună</string>
+    <string name="fit_average">Medie</string>
+    <string name="fit_poor">Slabă</string>
+    <string name="fit_perfect">Potrivire perfectă!</string>
+    <string name="fit_adjust">Ajustează căștile</string>
+    <string name="fit_adjust_tips">Ajustează poziția pentru %1$s sau încearcă dopuri de altă mărime, apoi repetă testul.</string>
+    <string name="fit_both">ambele căști</string>
+    <string name="fit_left">casca stângă</string>
+    <string name="fit_right">casca dreaptă</string>
+    <string name="fit_again">Verifică din nou</string>
+    <string name="fit_insert">Pune căștile în urechi</string>
+    <string name="fit_failed">Testul a eșuat. Încearcă din nou.</string>
 </resources>

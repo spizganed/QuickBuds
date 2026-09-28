@@ -384,4 +384,25 @@
     <string name="model_detected">Detected: %1$s</string>
     <string name="model_not_detected">Not detected yet</string>
     <string name="no_buds_paired">No paired OPPO, OnePlus or realme buds found. Pair them in Bluetooth settings first.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Sound tuned to your hearing test</string>
+    <string name="fit_title">Earbud fit test</string>
+    <string name="fit_sub">Choose ear tips that make a good seal with your ear canals for better noise canceling.</string>
+    <string name="fit_hint">Ensure that your ear tips make a good seal with your ear canals for better noise canceling. Tap \"Play\" to start the test.</string>
+    <string name="fit_play">Play</string>
+    <string name="fit_playing">Playing...</string>
+    <string name="fit_keep">Keep your earbuds inserted</string>
+    <string name="fit_good">Good</string>
+    <string name="fit_average">Average</string>
+    <string name="fit_poor">Poor</string>
+    <string name="fit_perfect">Perfect fit!</string>
+    <string name="fit_adjust">Adjust your earbuds</string>
+    <string name="fit_adjust_tips">Adjust the position of the %1$s or try a different-sized ear tip, and then perform the test again.</string>
+    <string name="fit_both">earbuds</string>
+    <string name="fit_left">left earbud</string>
+    <string name="fit_right">right earbud</string>
+    <string name="fit_again">Check again</string>
+    <string name="fit_insert">Insert your earbuds</string>
+    <string name="fit_failed">Test failed. Please try again.</string>
 </resources>

@@ -168,6 +168,13 @@ object LogDecoder {
                                 sb.append(if (on) " ON" else " OFF")
                             }
                         }
+                        OpoProtocol.EVT_FIT_TEST -> {
+                            // `04 [dev status] [dev status]`, status 1 good / 0 average / 6 poor.
+                            sb.append("Active report: fit test ")
+                            sb.append(payload.drop(1).chunked(2).filter { it.size == 2 }.joinToString(", ") {
+                                "${if (it[0].toInt() == 1) "L" else "R"}=${it[1].toInt() and 0xFF}"
+                            })
+                        }
                         AncEventParser.EVT_ANC -> {
                             sb.append("Active report: ANC ")
                             sb.append(AncEventParser.describe(payload))

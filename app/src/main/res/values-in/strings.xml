@@ -301,4 +301,25 @@
     <string name="model_detected">Terdeteksi: %1$s</string>
     <string name="model_not_detected">Belum terdeteksi</string>
     <string name="no_buds_paired">Tidak ada earbud OPPO, OnePlus, atau realme yang dipasangkan. Pasangkan dulu di pengaturan Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden sound</string>
+    <string name="row_golden_sub">Suara yang disesuaikan dengan tes pendengaran Anda</string>
+    <string name="fit_title">Tes pengepasan earbud</string>
+    <string name="fit_sub">Pilih karet earphone yang menutup rapat lubang telinga Anda agar peredaman bising lebih baik.</string>
+    <string name="fit_hint">Pastikan karet earphone menutup rapat lubang telinga Anda agar peredaman bising lebih baik. Ketuk \"Mainkan\" untuk memulai tes.</string>
+    <string name="fit_play">Mainkan</string>
+    <string name="fit_playing">Memainkan...</string>
+    <string name="fit_keep">Pertahankan earbud yang dimasukkan</string>
+    <string name="fit_good">Bagus</string>
+    <string name="fit_average">Rata-rata</string>
+    <string name="fit_poor">Buruk</string>
+    <string name="fit_perfect">Sangat pas!</string>
+    <string name="fit_adjust">Sesuaikan earbud Anda</string>
+    <string name="fit_adjust_tips">Sesuaikan posisi %1$s atau coba karet earphone ukuran berbeda, kemudian lakukan lagi tes.</string>
+    <string name="fit_both">earbud</string>
+    <string name="fit_left">earbud kiri</string>
+    <string name="fit_right">earbud kanan</string>
+    <string name="fit_again">Periksa lagi</string>
+    <string name="fit_insert">Masukkan earbud Anda</string>
+    <string name="fit_failed">Tes gagal. Cobalah lagi.</string>
 </resources>

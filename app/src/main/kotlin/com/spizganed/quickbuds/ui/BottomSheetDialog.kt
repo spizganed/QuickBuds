@@ -74,8 +74,21 @@ class BottomSheetDialog(private val activity: Activity) {
     private var dialog: Dialog? = null
     private var listColumn: LinearLayout? = null
     private var messageView: TextView? = null
+    private var titleView: TextView? = null
+    private var confirmView: TextView? = null
+    private var content: View? = null
+    private var onDismiss: (() -> Unit)? = null
 
-    fun title(text: String?) = apply { titleText = text }
+    fun title(text: String?) = apply {
+        titleText = text
+        titleView?.text = text
+    }
+
+    /** A view shown between the message and the rows (e.g. the fit test's buds). */
+    fun content(view: View) = apply { content = view }
+
+    /** Called once when the sheet closes, however it was closed. */
+    fun onDismiss(block: () -> Unit) = apply { onDismiss = block }
 
     fun message(text: String?) = apply {
         messageText = text
@@ -95,6 +108,7 @@ class BottomSheetDialog(private val activity: Activity) {
     fun confirm(label: String, onClick: () -> Unit) = apply {
         confirmText = label
         onConfirm = onClick
+        confirmView?.text = label
     }
 
     private var inputInitial: String? = null
@@ -144,6 +158,7 @@ class BottomSheetDialog(private val activity: Activity) {
 
         titleText?.let {
             root.addView(TextView(activity).apply {
+                titleView = this
                 setText(it)
                 setTextColor(primary)
                 textSize = 16f
@@ -164,6 +179,7 @@ class BottomSheetDialog(private val activity: Activity) {
         messageView = msgView
         renderMessage(msgView)
         root.addView(msgView)
+        content?.let { root.addView(it) }
 
         val column = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
         listColumn = column
@@ -203,6 +219,7 @@ class BottomSheetDialog(private val activity: Activity) {
 
         confirmText?.let { label ->
             root.addView(TextView(activity).apply {
+                confirmView = this
                 setText(label)
                 textSize = 15f
                 typeface = ThemeRes.bold(context)
@@ -246,7 +263,7 @@ class BottomSheetDialog(private val activity: Activity) {
             )
         }
 
-        d.setOnDismissListener { dialog = null }
+        d.setOnDismissListener { dialog = null; onDismiss?.invoke() }
         dialog = d
         d.show()
     }

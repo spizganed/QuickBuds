@@ -299,4 +299,25 @@
     <string name="model_detected">শনাক্ত হয়েছে: %1$s</string>
     <string name="model_not_detected">এখনও শনাক্ত হয়নি</string>
     <string name="no_buds_paired">কোনো পেয়ার করা OPPO, OnePlus বা realme বাডস পাওয়া যায়নি। আগে ব্লুটুথ সেটিংসে পেয়ার করুন।</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">গোল্ডেন সাউন্ড</string>
+    <string name="row_golden_sub">আপনার শ্রবণ পরীক্ষা অনুযায়ী টিউন করা শব্দ</string>
+    <string name="fit_title">ইয়ারবাড ফিট পরীক্ষা</string>
+    <string name="fit_sub">ভালো নয়েজ ক্যান্সেলিংয়ের জন্য কানের নালিতে ভালোভাবে আটকে থাকা ইয়ার টিপ বেছে নিন।</string>
+    <string name="fit_hint">ভালো নয়েজ ক্যান্সেলিংয়ের জন্য ইয়ার টিপ কানের নালিতে ভালোভাবে আটকে আছে কিনা নিশ্চিত করুন। পরীক্ষা শুরু করতে \"চালান\" ট্যাপ করুন।</string>
+    <string name="fit_play">চালান</string>
+    <string name="fit_playing">চলছে...</string>
+    <string name="fit_keep">ইয়ারবাড কানে রাখুন</string>
+    <string name="fit_good">ভালো</string>
+    <string name="fit_average">মাঝারি</string>
+    <string name="fit_poor">দুর্বল</string>
+    <string name="fit_perfect">একদম ঠিক ফিট!</string>
+    <string name="fit_adjust">ইয়ারবাড ঠিক করুন</string>
+    <string name="fit_adjust_tips">%1$s-এর অবস্থান ঠিক করুন বা অন্য মাপের ইয়ার টিপ ব্যবহার করুন, তারপর আবার পরীক্ষা করুন।</string>
+    <string name="fit_both">ইয়ারবাড</string>
+    <string name="fit_left">বাম ইয়ারবাড</string>
+    <string name="fit_right">ডান ইয়ারবাড</string>
+    <string name="fit_again">আবার পরীক্ষা করুন</string>
+    <string name="fit_insert">ইয়ারবাড কানে পরুন</string>
+    <string name="fit_failed">পরীক্ষা ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</string>
 </resources>

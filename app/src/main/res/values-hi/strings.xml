@@ -301,4 +301,25 @@
     <string name="model_detected">पहचाना गया: %1$s</string>
     <string name="model_not_detected">अभी पहचाना नहीं गया</string>
     <string name="no_buds_paired">कोई पेयर किए गए OPPO, OnePlus या realme बड्स नहीं मिले। पहले ब्लूटूथ सेटिंग्स में पेयर करें।</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">स्वर्णिम ध्वनि</string>
+    <string name="row_golden_sub">आपके हियरिंग टेस्ट के अनुसार ट्यून की गई ध्वनि</string>
+    <string name="fit_title">इयरबड की फिटिंग का परिक्षण</string>
+    <string name="fit_sub">बेहतर तरीके से शोर को रोकने के लिए, ऐसी इयर टिप चुनें जो आपके कान के भीतरी हिस्से में अच्छी तरह फ़िट हो जाएँ।</string>
+    <string name="fit_hint">सुनिश्चित करें कि बेहतर तरीके से शोर को रोकने के लिए, आपकी एयर टिप आपके कान के बाहरी हिस्से में अच्छी तरह फ़िट हो जाती हैं। टेस्ट शुरू करने के लिए \"चलाएं\" पर टैप करें।</string>
+    <string name="fit_play">चलाएं</string>
+    <string name="fit_playing">चल रहा है...</string>
+    <string name="fit_keep">अपने इयरबड लगाकर रखें</string>
+    <string name="fit_good">अच्छा</string>
+    <string name="fit_average">औसत</string>
+    <string name="fit_poor">खराब</string>
+    <string name="fit_perfect">सही फ़िट!</string>
+    <string name="fit_adjust">अपने इयरबड को एडजस्ट करें</string>
+    <string name="fit_adjust_tips">%1$s की पोज़ीशन को एडजस्ट करें या अलग-आकार वाली एयर टिप लगाएं और फिर दोबारा टेस्ट करें।</string>
+    <string name="fit_both">इयरबड</string>
+    <string name="fit_left">बायां इयरबड</string>
+    <string name="fit_right">दायां इयरबड</string>
+    <string name="fit_again">फिर से चेक करें</string>
+    <string name="fit_insert">अपने इयरबड लगाएं</string>
+    <string name="fit_failed">परीक्षण विफल रहा। कृपया फिर से कोशिश करें।</string>
 </resources>

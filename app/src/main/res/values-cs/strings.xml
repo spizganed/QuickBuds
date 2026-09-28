@@ -299,4 +299,25 @@
     <string name="model_detected">Rozpoznáno: %1$s</string>
     <string name="model_not_detected">Zatím nerozpoznáno</string>
     <string name="no_buds_paired">Nebyla nalezena žádná spárovaná sluchátka OPPO, OnePlus ani realme. Nejprve je spárujte v nastavení Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Zvuk vyladěný podle testu sluchu</string>
+    <string name="fit_title">Test usazení sluchátek</string>
+    <string name="fit_sub">Vyberte špunty, které dobře utěsní zvukovod, pro lepší potlačení hluku.</string>
+    <string name="fit_hint">Ujistěte se, že špunty dobře utěsňují zvukovod, pro lepší potlačení hluku. Test spustíte klepnutím na „Přehrát“.</string>
+    <string name="fit_play">Přehrát</string>
+    <string name="fit_playing">Přehrávání...</string>
+    <string name="fit_keep">Nechte sluchátka v uších</string>
+    <string name="fit_good">Dobré</string>
+    <string name="fit_average">Průměrné</string>
+    <string name="fit_poor">Slabé</string>
+    <string name="fit_perfect">Dokonalé usazení!</string>
+    <string name="fit_adjust">Upravte sluchátka</string>
+    <string name="fit_adjust_tips">Upravte polohu (%1$s) nebo zkuste špunty jiné velikosti a test opakujte.</string>
+    <string name="fit_both">obě sluchátka</string>
+    <string name="fit_left">levé sluchátko</string>
+    <string name="fit_right">pravé sluchátko</string>
+    <string name="fit_again">Zkontrolovat znovu</string>
+    <string name="fit_insert">Vložte sluchátka do uší</string>
+    <string name="fit_failed">Test se nezdařil. Zkuste to znovu.</string>
 </resources>

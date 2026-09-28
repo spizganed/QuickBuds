@@ -25,6 +25,8 @@ object OpoProtocol {
     const val CMD_QUERY_PRODUCT_ID = 0x0103
     const val CMD_QUERY_BROADCAST = 0x0200
     const val CMD_FIND_BUDS = 0x0400
+    /** Earbud fit test, `01` start / `00` stop. `[VENDOR]` `switchCompactnessDetectionStatus` (PROTOCOL.md §9). */
+    const val CMD_FIT_TEST = 0x0405
     const val CMD_SET_FEATURE = 0x0403
     const val CMD_SET_ANC = 0x0404
     const val CMD_SET_SPATIAL = 0x0422
@@ -84,6 +86,7 @@ object OpoProtocol {
     const val CMD_REGISTER_NOTIFY = 0x0205    // subscribe to spontaneous notifications
     const val EVT_WEARING = 0x02              // 0x0204 subType: wearing status changed
     const val EVT_GAME_MODE = 0x05            // 0x0204 subType: game mode changed
+    const val EVT_FIT_TEST = 0x04             // 0x0204 subType: fit test result, [VENDOR]
 
     const val FEATURE_GAME_MODE = 0x06
     /** Firmware auto play/pause on wear. `04 01` / `04 00`, `[CAPTURE]` 2026-09-25. */
@@ -94,6 +97,8 @@ object OpoProtocol {
     const val FEATURE_HIRES_CODEC = 0x18
     /** BassWave on/off. Level is its own command, [setBassWaveLevel]. `[CAPTURE]` 2026-09-23. */
     const val FEATURE_BASSWAVE = 0x1D
+    /** Golden Sound (hearing enhancement) on/off. `[VENDOR]` `setSwitchFeature(11)` (PROTOCOL.md §9). */
+    const val FEATURE_GOLDEN_SOUND = 0x0B
 
     private var seqCounter = 0x01
 
@@ -155,9 +160,19 @@ object OpoProtocol {
      * to a different mode cycle. If ANC ever stops following gestures, check the ACK
      * still lists `01 02 03` first — a firmware that rejects the longer list would ACK
      * a shorter one.
+     *
+     * 0x04 (fit test result) is added when the buds have the fit test (`0x0405`), 2026-09-29:
+     * HeyMelody registers every id the buds list in 0x8200 (`registerMultiNotification`).
      */
-    fun registerNotifications(): ByteArray =
-        buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(0x03, 0x01, 0x02, 0x03))
+    fun registerNotifications(fitTest: Boolean = false): ByteArray = buildPacket(
+        CMD_REGISTER_NOTIFY,
+        payload = if (fitTest) byteArrayOf(0x04, 0x01, 0x02, 0x03, EVT_FIT_TEST.toByte())
+        else byteArrayOf(0x03, 0x01, 0x02, 0x03)
+    )
+
+    /** Earbud fit test: `0x0405` `01` start / `00` stop (HeyMelody stops it when its sheet closes). */
+    fun fitTest(on: Boolean): ByteArray =
+        buildPacket(CMD_FIT_TEST, payload = byteArrayOf(if (on) 0x01 else 0x00))
 
     /**
      * SET_ANC (0x0404): `01 01` then a little-endian bit field with bit [bit] set, `index / 8 + 1`

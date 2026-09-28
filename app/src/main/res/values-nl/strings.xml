@@ -299,4 +299,25 @@
     <string name="model_detected">Herkend: %1$s</string>
     <string name="model_not_detected">Nog niet herkend</string>
     <string name="no_buds_paired">Geen gekoppelde OPPO-, OnePlus- of realme-oordopjes gevonden. Koppel ze eerst in de Bluetooth-instellingen.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Gouden geluid</string>
+    <string name="row_golden_sub">Geluid afgestemd op je gehoortest</string>
+    <string name="fit_title">Pasvormtest oordopjes</string>
+    <string name="fit_sub">Kies oordopjes die uw gehoorgangen goed afdichten voor een betere ruisonderdrukking.</string>
+    <string name="fit_hint">Zorg ervoor dat uw oordopjes uw gehoorgangen goed afdichten voor een betere ruisonderdrukking. Tik op \'Afspelen\' om de test te starten.</string>
+    <string name="fit_play">Afspelen</string>
+    <string name="fit_playing">Bezig met afspelen…</string>
+    <string name="fit_keep">Houd uw oordopjes in uw oren</string>
+    <string name="fit_good">Goed</string>
+    <string name="fit_average">Gemiddeld</string>
+    <string name="fit_poor">Slecht</string>
+    <string name="fit_perfect">Zit perfect!</string>
+    <string name="fit_adjust">Plaats uw oordopjes goed</string>
+    <string name="fit_adjust_tips">Pas de positie van %1$s aan of probeer een andere maat en voer de test opnieuw uit.</string>
+    <string name="fit_both">de oordopjes</string>
+    <string name="fit_left">het linkeroordopje</string>
+    <string name="fit_right">het rechteroordopje</string>
+    <string name="fit_again">Opnieuw controleren</string>
+    <string name="fit_insert">Plaats uw oordopjes</string>
+    <string name="fit_failed">Test mislukt. Probeer het opnieuw.</string>
 </resources>

@@ -253,6 +253,14 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
 - The reply is printed in three places, so a capture is readable even if the parse is wrong: the raw
   `RX:` line, `BudsConnectionManager`'s `KEYFN:` line, and `LogDecoder` — **all end with `RAW=[...]`**.
 
+### Golden Sound and the fit test (2026-09-29)
+
+Golden Sound is only its on/off switch (`FEATURE_GOLDEN_SOUND` `0x0B`, a home row keyed `golden`); the
+test that makes a profile is not wired and needs a capture first (PROTOCOL.md §9). The fit test is
+`FitTestSheet` (from Earbud settings), `0x0405` plus event `0x04`, which `registerNotifications` adds
+only when the buds list `0x0405`. `BottomSheetDialog` can now change its title and button in place and
+take a `content` view.
+
 ### Where ANC lives
 
 Adding an ANC mode means touching all of these, or the surfaces drift apart:

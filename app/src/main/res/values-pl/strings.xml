@@ -299,4 +299,25 @@
     <string name="model_detected">Wykryto: %1$s</string>
     <string name="model_not_detected">Jeszcze nie wykryto</string>
     <string name="no_buds_paired">Nie znaleziono sparowanych słuchawek OPPO, OnePlus ani realme. Najpierw sparuj je w ustawieniach Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Złote brzmienie</string>
+    <string name="row_golden_sub">Dźwięk dopasowany do testu słuchu</string>
+    <string name="fit_title">Test dopasowania słuchawek</string>
+    <string name="fit_sub">Wybierz wkładki douszne, które będą dobrze dopasowane do kanałów słuchowych, aby lepiej eliminować hałas z otoczenia.</string>
+    <string name="fit_hint">Aby zapewnić skuteczną eliminację hałasu z otoczenia, dokładnie dopasuj wkładki douszne do kanałów usznych. Stuknij „Odtwarzaj”, aby zacząć test.</string>
+    <string name="fit_play">Odtwarzaj</string>
+    <string name="fit_playing">Odtwarzanie...</string>
+    <string name="fit_keep">Trzymaj słuchawki włożone</string>
+    <string name="fit_good">Dobrze</string>
+    <string name="fit_average">Przeciętnie</string>
+    <string name="fit_poor">Słaby</string>
+    <string name="fit_perfect">Idealne dopasowanie!</string>
+    <string name="fit_adjust">Dopasuj słuchawki</string>
+    <string name="fit_adjust_tips">Dopasuj ułożenie %1$s albo dobierz wkładki w innym rozmiarze i powtórz test.</string>
+    <string name="fit_both">obu słuchawek</string>
+    <string name="fit_left">lewej słuchawki</string>
+    <string name="fit_right">prawej słuchawki</string>
+    <string name="fit_again">Sprawdź ponownie</string>
+    <string name="fit_insert">Włóż słuchawki</string>
+    <string name="fit_failed">Test zakończony niepowodzeniem. Spróbuj ponownie.</string>
 </resources>

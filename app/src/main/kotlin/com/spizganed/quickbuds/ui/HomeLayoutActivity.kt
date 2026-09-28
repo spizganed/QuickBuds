@@ -166,6 +166,7 @@ class HomeLayoutActivity : Activity() {
             "game" to Triple(R.drawable.ic_bolt, R.string.row_game_title, R.string.row_game_sub),
             "hires" to Triple(R.drawable.ic_hires, R.string.row_hires_title, R.string.row_hires_sub),
             "spatial" to Triple(R.drawable.ic_spatial, R.string.row_spatial_title, R.string.row_spatial_sub),
+            "golden" to Triple(R.drawable.ic_hearing, R.string.row_golden_title, R.string.row_golden_sub),
             "eq" to Triple(R.drawable.ic_equalizer, R.string.row_eq_title, R.string.row_eq_sub),
             "dual" to Triple(R.drawable.ic_devices, R.string.row_dual_title, R.string.row_dual_sub),
             "earbuds" to Triple(R.drawable.ic_bud_left, R.string.row_earbuds_title, R.string.row_earbuds_sub)

@@ -299,4 +299,25 @@
     <string name="model_detected">Dikesan: %1$s</string>
     <string name="model_not_detected">Belum dikesan</string>
     <string name="no_buds_paired">Tiada earbud OPPO, OnePlus atau realme yang dipasangkan. Pasangkan dahulu dalam tetapan Bluetooth.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Golden Sound</string>
+    <string name="row_golden_sub">Bunyi ditala mengikut ujian pendengaran anda</string>
+    <string name="fit_title">Ujian padanan fon telinga</string>
+    <string name="fit_sub">Pilih hujung telinga yang mengedap saluran telinga dengan baik untuk pembatalan hingar yang lebih baik.</string>
+    <string name="fit_hint">Pastikan hujung telinga mengedap saluran telinga dengan baik untuk pembatalan hingar yang lebih baik. Ketik \"Main\" untuk memulakan ujian.</string>
+    <string name="fit_play">Main</string>
+    <string name="fit_playing">Sedang dimainkan...</string>
+    <string name="fit_keep">Pastikan fon telinga kekal dipakai</string>
+    <string name="fit_good">Baik</string>
+    <string name="fit_average">Sederhana</string>
+    <string name="fit_poor">Lemah</string>
+    <string name="fit_perfect">Padanan sempurna!</string>
+    <string name="fit_adjust">Laraskan fon telinga anda</string>
+    <string name="fit_adjust_tips">Laraskan kedudukan %1$s atau cuba hujung telinga saiz lain, kemudian uji sekali lagi.</string>
+    <string name="fit_both">kedua-dua fon telinga</string>
+    <string name="fit_left">fon telinga kiri</string>
+    <string name="fit_right">fon telinga kanan</string>
+    <string name="fit_again">Semak semula</string>
+    <string name="fit_insert">Pakai fon telinga anda</string>
+    <string name="fit_failed">Ujian gagal. Sila cuba lagi.</string>
 </resources>

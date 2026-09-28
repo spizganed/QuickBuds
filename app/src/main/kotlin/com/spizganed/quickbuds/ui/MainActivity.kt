@@ -90,6 +90,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private var hiresSwitch: Switch? = null
     private var hiresSubtitle: TextView? = null
     private var spatialSwitch: Switch? = null
+    private var goldenSwitch: Switch? = null
 
     /** Last state rendered, so a redundant notify does not rebuild the UI. */
     private var lastRendered: WidgetStateStore.State? = null
@@ -207,7 +208,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // The buds' real state is repainted on connect.
         syncingFeatures = true
         gameSwitch?.isChecked = connected && gameModeOn
-        if (!connected) { hiresSwitch?.isChecked = false; spatialSwitch?.isChecked = false }
+        if (!connected) { hiresSwitch?.isChecked = false; spatialSwitch?.isChecked = false; goldenSwitch?.isChecked = false }
         syncingFeatures = false
         if (connected && ::manager.isInitialized) onFeatureStates(manager.featureStates)
         renderAnc(activeAncMode)
@@ -826,6 +827,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         hiresSwitch = null
         hiresSubtitle = null
         spatialSwitch = null
+        goldenSwitch = null
 
         // --- 1. Game mode / low latency ---
         val game = SettingRowFactory.buildSwitch(this, gameModeOn)
@@ -894,6 +896,20 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { spatial.performClick() }
         )
 
+        // --- Golden Sound: the hearing profile on the buds, feature 0x0B [VENDOR] (PROTOCOL.md §9) ---
+        // The profile itself comes from HeyMelody's hearing test until ours exists.
+        val golden = SettingRowFactory.buildSwitch(this, false)
+        goldenSwitch = golden
+        golden.setOnCheckedChangeListener { _, isChecked ->
+            if (syncingFeatures) return@setOnCheckedChangeListener
+            manager.setFeatures(OpoProtocol.FEATURE_GOLDEN_SOUND to isChecked)
+        }
+        addRow("golden",
+            SettingRowFactory.build(
+                this, R.drawable.ic_hearing, R.string.row_golden_title, R.string.row_golden_sub, golden
+            ) { golden.performClick() }
+        )
+
         // --- 4. Equalizer ---
         addRow("eq", 
             SettingRowFactory.build(
@@ -955,6 +971,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         states[OpoProtocol.FEATURE_SPATIAL_SOUND]?.let { v ->
             spatialSwitch?.let { setSwitchQuiet(it, v == 1) }
         }
+        states[OpoProtocol.FEATURE_GOLDEN_SOUND]?.let { v ->
+            goldenSwitch?.let { setSwitchQuiet(it, v == 1) }
+        }
     }
 
     override fun onCapabilities() { showModelName(); relayoutIfSupportChanged() }
@@ -975,6 +994,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         "game" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GAME_MODE)
         "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC)
         "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND)
+        "golden" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GOLDEN_SOUND)
         "eq" -> Capabilities.supports(this, OpoProtocol.CMD_SET_EQ)
         "dual" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_DUAL_DEVICE)
         else -> true

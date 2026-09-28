@@ -299,4 +299,25 @@
     <string name="model_detected">Algılandı: %1$s</string>
     <string name="model_not_detected">Henüz algılanmadı</string>
     <string name="no_buds_paired">Eşlenmiş OPPO, OnePlus veya realme kulaklık bulunamadı. Önce Bluetooth ayarlarından eşleyin.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Altın Ses</string>
+    <string name="row_golden_sub">İşitme testinize göre ayarlanan ses</string>
+    <string name="fit_title">Kulaklık uyum testi</string>
+    <string name="fit_sub">Gürültüyü daha iyi önlemek için kulak kanallarınızı iyi bir şekilde kapatan kulak uçları seçin.</string>
+    <string name="fit_hint">Gürültüyü daha iyi önlemek için kulak uçlarınızın kulak kanallarınızı iyi bir şekilde kapattığından emin olun. Testi başlatmak için \"Çal\"a basın.</string>
+    <string name="fit_play">Oynat</string>
+    <string name="fit_playing">Oynatılıyor...</string>
+    <string name="fit_keep">Kulak içi kulaklıklarınızı takılı tutun</string>
+    <string name="fit_good">İyi</string>
+    <string name="fit_average">Orta</string>
+    <string name="fit_poor">Kötü</string>
+    <string name="fit_perfect">Mükemmel oturuş!</string>
+    <string name="fit_adjust">Kulak içi kulaklıklarınızı ayarlayın</string>
+    <string name="fit_adjust_tips">%1$s öğesini konumunu ayarlayın veya farklı boyutta bir kulak ucu deneyin ve testi tekrar gerçekleştirin.</string>
+    <string name="fit_both">kulak içi kulaklıklar</string>
+    <string name="fit_left">sol kulak içi kulaklık</string>
+    <string name="fit_right">sağ kulak içi kulaklık</string>
+    <string name="fit_again">Tekrar kontrol edin</string>
+    <string name="fit_insert">Kulak içi kulaklıklarınızı takın</string>
+    <string name="fit_failed">Test başarısız. Lütfen yeniden deneyin.</string>
 </resources>

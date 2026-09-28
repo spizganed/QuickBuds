@@ -299,4 +299,25 @@
     <string name="model_detected">감지됨: %1$s</string>
     <string name="model_not_detected">아직 감지되지 않음</string>
     <string name="no_buds_paired">페어링된 OPPO, OnePlus 또는 realme 이어버드가 없습니다. 먼저 블루투스 설정에서 페어링하세요.</string>
+    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">골든 사운드</string>
+    <string name="row_golden_sub">청력 테스트에 맞춘 사운드</string>
+    <string name="fit_title">이어버드 착용감 테스트</string>
+    <string name="fit_sub">노이즈 캔슬링 효과를 높이려면 귀에 잘 밀착되는 이어팁을 선택하세요.</string>
+    <string name="fit_hint">노이즈 캔슬링 효과를 높이려면 이어팁이 귀에 잘 밀착되는지 확인하세요. \"재생\"을 눌러 테스트를 시작하세요.</string>
+    <string name="fit_play">재생</string>
+    <string name="fit_playing">재생 중...</string>
+    <string name="fit_keep">이어버드를 귀에 착용한 상태로 유지하세요</string>
+    <string name="fit_good">좋음</string>
+    <string name="fit_average">보통</string>
+    <string name="fit_poor">나쁨</string>
+    <string name="fit_perfect">완벽하게 맞습니다!</string>
+    <string name="fit_adjust">이어버드를 조정하세요</string>
+    <string name="fit_adjust_tips">%1$s의 위치를 조정하거나 다른 크기의 이어팁으로 바꾼 후 다시 테스트하세요.</string>
+    <string name="fit_both">양쪽 이어버드</string>
+    <string name="fit_left">왼쪽 이어버드</string>
+    <string name="fit_right">오른쪽 이어버드</string>
+    <string name="fit_again">다시 확인</string>
+    <string name="fit_insert">이어버드를 착용하세요</string>
+    <string name="fit_failed">테스트에 실패했습니다. 다시 시도하세요.</string>
 </resources>

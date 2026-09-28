@@ -30,6 +30,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   Changes made on the buds show up in the app.
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
+- Earbud fit test (2026-09-29): HeyMelody's sheet, `0x0405` and event `0x04`, confirmed on Buds 4.
+- Golden Sound on/off (2026-09-29): a home row, feature `0x0B`, read back on Buds 4.
 - Gestures per model (2026-09-29): rows and options from HeyMelody's `control` / `callControl` lists,
   plus volume up / down and switch devices (PROTOCOL.md §6).
 - Dual connection: switch plus connected-device list (a home screen row), HeyMelody's exact write

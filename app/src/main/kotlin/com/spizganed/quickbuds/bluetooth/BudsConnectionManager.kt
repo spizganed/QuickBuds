@@ -70,6 +70,12 @@ class BudsConnectionManager(private val context: Context) {
         fun onGameModeState(on: Boolean) {}
 
         /**
+         * Fit test result (`0x0204` subType `0x04`), per bud: 1 good, 0 average, 6 poor, anything
+         * else an error (`[VENDOR]` `FitDetectionDTO`); -1 = that bud not reported.
+         */
+        fun onFitResult(left: Int, right: Int) {}
+
+        /**
          * ANC mode changed on the BUDS themselves (0x0204 subType 0x03).
          *
          * Mirrors onGameModeState: raised for a buds gesture AND for our own command
@@ -271,7 +277,8 @@ class BudsConnectionManager(private val context: Context) {
                     if (!Capabilities.supports(context, cmd)) { log("skip $label: not supported"); return }
                     delay(200); sendRawBlocking(packet, label)
                 }
-                query(OpoProtocol.CMD_REGISTER_NOTIFY, OpoProtocol.registerNotifications(), "register notify")
+                query(OpoProtocol.CMD_REGISTER_NOTIFY,
+                    OpoProtocol.registerNotifications(Capabilities.supports(context, OpoProtocol.CMD_FIT_TEST)), "register notify")
                 query(OpoProtocol.CMD_QUERY_STATUS, OpoProtocol.queryStatus(), "query status")
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
                 query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
@@ -493,6 +500,9 @@ class BudsConnectionManager(private val context: Context) {
             }
         }.start()
     }
+
+    /** Starts (`true`) or stops the earbud fit test; the result comes as [Listener.onFitResult]. */
+    fun fitTest(on: Boolean) = sendRaw(OpoProtocol.fitTest(on), "Fit test ${if (on) "start" else "stop"}")
 
     /** Alert-sound volume 1..10 from `0x8130` / `0x8427`, null until read. `[CAPTURE]` 2026-09-25. */
     @Volatile var alertVolume: Int? = null
@@ -1150,6 +1160,20 @@ class BudsConnectionManager(private val context: Context) {
                     if (game != null) it.onGameModeState(game == 1)
                 }
             }
+            return
+        }
+
+        // --- Fit test result: 0x0204 subType 0x04, `04 [dev status] [dev status]` [VENDOR] ---
+        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 5 &&
+            payload[0].toInt() == OpoProtocol.EVT_FIT_TEST) {
+            var left = -1
+            var right = -1
+            for (i in intArrayOf(1, 3)) when (payload[i].toInt()) {
+                1 -> left = payload[i + 1].toInt() and 0xFF
+                2 -> right = payload[i + 1].toInt() and 0xFF
+            }
+            log("FIT: left=$left right=$right")
+            handler.post { listeners.forEach { it.onFitResult(left, right) } }
             return
         }
 
