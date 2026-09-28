@@ -178,7 +178,7 @@ phone-specific piece lives outside it.
   live and save on commit (slider lift, hex done/focus loss, swatch tap); the colour rows are rebuilt
   then, never mid-drag. The picker is `ColorPickerView`: hue, saturation and brightness `ColorSliderView`s
   (white, black and greys need the last two, [USER] 2026-09-26), hex field, quick swatches.
-- **Built-in accent** ([USER] 2026-09-26): Theme & colors shows an "Accent color" row under the built-in
+- **Built-in accent** ([USER] 2026-09-26): Themes, colors & styles shows an "Accent color" row under the built-in
   tiles while a built-in is active. `PaletteStore.setAccentOverride` stores it per preset
   (`paletteAccent_<id>`; the style's own red removes it) and `builtIn()` applies it. A built-in with an
   override goes through the custom path in `ThemeRes.select` (its own style + `PaletteFactory`). Quick swatches are `@color/swatch_*` (picker choices, not app colours). Contrast
@@ -504,7 +504,7 @@ widget layout: RemoteViews refuses it too. Check a widget change with `adb logca
 ### Widget style: Nothing (2026-09-28)
 
 `WidgetSettings.nothingStyle` = `ThemeRes.nothing` (pref `styleNothing`, default **off**: Classic stays the default,
-[USER]): ONE style for the app and the widgets, the segment at the top of Theme & colors (see *App style* below). Nothing = the `_n` layouts (all text in Nothing OS's `NDot57All` family from
+[USER]): ONE style for the app and the widgets, the segment at the top of Themes, colors & styles (see *App style* below). Nothing = the `_n` layouts (all text in Nothing OS's `NDot57All` family from
 `/system/etc/ntfonts.xml` in synthetic bold, falling back to the default font elsewhere, nothing bundled; no heavier
 Nothing dot font exists, and bold draws every dot bigger) plus runtime changes in `AncWidgetProvider`: no boxes
 (`panelColor` / `paint` use `card`), and every graphic as a dot matrix:

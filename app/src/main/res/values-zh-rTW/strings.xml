@@ -198,7 +198,7 @@
     <string name="disconnect_body">此手機上的音訊將停止播放。</string>
     <string name="eq_done">完成</string>
     <string name="eq_duplicate">複製預設</string>
-    <string name="theme_title">主題與色彩</string>
+    <string name="theme_title">主題、色彩與風格</string>
     <string name="settings_appearance">外觀</string>
     <string name="settings_general">一般</string>
     <string name="settings_app">應用程式</string>

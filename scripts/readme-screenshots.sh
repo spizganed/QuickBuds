@@ -77,7 +77,7 @@ adb shell pkill -f com.mobilenext.mobilecli || true
 adb shell am start -W -f 0x14000000 -n com.spizganed.quickbuds/.ui.MainActivity >/dev/null
 sleep 2
 # The style first: its segment has no text, only the content description "Style"; Classic is its left half.
-tap "Settings"; tap "Theme & colors"
+tap "Settings"; tap "Themes, colors & styles"
 b=$(dump | tr '>' '\n' | grep -E 'content-desc="Style"' | head -1 | grep -oE 'bounds="[^"]+"' | grep -oE '[0-9]+' | tr '\n' ' ')
 set -- $b
 q=$([ "$STYLE" = nothing ] && echo 3 || echo 1)
@@ -93,7 +93,7 @@ tap "Earbud gestures";  shot gestures; back
 tap "Wear detection";   shot wear;     back
 tap "Find my earbuds";  shot find;     back; back
 tap "Settings";         shot settings
-tap "Theme & colors";   shot theme
+tap "Themes, colors & styles";   shot theme
 if tap "Edit preset" optional; then shot preset; back; fi
 back
 tap "Home layout";      shot home-layout;     back

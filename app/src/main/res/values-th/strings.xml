@@ -198,7 +198,7 @@
     <string name="disconnect_body">เสียงบนโทรศัพท์เครื่องนี้จะหยุดเล่น</string>
     <string name="eq_done">เสร็จ</string>
     <string name="eq_duplicate">ทำซ้ำ</string>
-    <string name="theme_title">ธีมและสี</string>
+    <string name="theme_title">ธีม สี และสไตล์</string>
     <string name="settings_appearance">รูปลักษณ์</string>
     <string name="settings_general">ทั่วไป</string>
     <string name="settings_app">แอป</string>

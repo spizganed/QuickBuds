@@ -12,7 +12,16 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## Parity: firmware features still missing
 
-None known (2026-09-25). A new one needs a HeyMelody capture first.
+Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
+
+- **Golden Sound** (hearing enhancement, feature `0x0B`, `hearingEnhancement` in the model list; Buds 4 has it).
+- **Ear tip fit test** (`fitDetection` in the model list).
+
+Both need the HeyMelody decompile for the bytes and a capture on Buds 4 before any write.
+
+**The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
+model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
+is eventually either built or explicitly decided against, not just the ones Buds 4 has.
 
 ## The plan, in order (`[USER]` 2026-09-27)
 
@@ -39,6 +48,7 @@ Each step is done before the next one starts.
    - **Done 2026-09-29: built-in EQ presets per model.** HeyMelody's `equalizerMode` names and numbers
      them per model (PROTOCOL.md §9); a picked Nord Buds 2r showed Balanced / Bass / Bold as HeyMelody
      does. Buds 4 unchanged.
+   - **Next session: gestures on other models** (the `control_<id>/config.json` function codes, below).
    - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
      Galaxy S24). Asked to update in-app, clean install if it still fails, and send a Dev Tools export
      with what works. Their logs are the first non-Buds 4 evidence: read before changing anything.
@@ -100,8 +110,6 @@ From his notes, 2026-09-28 ([USER]), in order:
 
 - Right-to-left languages (Arabic, Urdu, Persian, Hebrew): they need a mirrored layout and a check of
   every custom-drawn view ([USER] 2026-09-27).
-- Ear tip fit test and Golden Sound: the only HeyMelody features we skip; he sees no use in them
-  ([USER] 2026-09-27).
 - A lock-screen widget, a widget on/off switch, the Quick Settings tile (removed) and the
   fixed-level hold ([USER] 2026-09-26).
 - Slide up vs slide down: nothing to do. The firmware maps up/down itself (volume up/down, next/prev)

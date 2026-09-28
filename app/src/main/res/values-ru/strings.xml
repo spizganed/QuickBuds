@@ -198,7 +198,7 @@
     <string name="disconnect_body">Звук перестанет воспроизводиться на этом телефоне.</string>
     <string name="eq_done">Готово</string>
     <string name="eq_duplicate">Дублировать</string>
-    <string name="theme_title">Тема и цвета</string>
+    <string name="theme_title">Темы, цвета и стили</string>
     <string name="settings_appearance">Оформление</string>
     <string name="settings_general">Общие</string>
     <string name="settings_app">Приложение</string>

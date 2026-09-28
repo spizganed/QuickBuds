@@ -198,7 +198,7 @@
     <string name="disconnect_body">এই ফোনে অডিও বাজা বন্ধ হবে।</string>
     <string name="eq_done">সম্পন্ন</string>
     <string name="eq_duplicate">ডুপ্লিকেট</string>
-    <string name="theme_title">থিম ও রং</string>
+    <string name="theme_title">থিম, রং ও স্টাইল</string>
     <string name="settings_appearance">চেহারা</string>
     <string name="settings_general">সাধারণ</string>
     <string name="settings_app">অ্যাপ</string>

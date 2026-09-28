@@ -198,7 +198,7 @@
     <string name="disconnect_body">El audio dejará de sonar en este teléfono.</string>
     <string name="eq_done">Listo</string>
     <string name="eq_duplicate">Duplicar</string>
-    <string name="theme_title">Tema y colores</string>
+    <string name="theme_title">Temas, colores y estilos</string>
     <string name="settings_appearance">Apariencia</string>
     <string name="settings_general">General</string>
     <string name="settings_app">App</string>

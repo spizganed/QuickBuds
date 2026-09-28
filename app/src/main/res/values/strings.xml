@@ -273,7 +273,7 @@
     <string name="disconnect_body">Audio will stop playing on this phone.</string>
     <string name="eq_done">Done</string>
     <string name="eq_duplicate">Duplicate</string>
-    <string name="theme_title">Theme &amp; colors</string>
+    <string name="theme_title">Themes, colors &amp; styles</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_general">General</string>
     <string name="settings_app">App</string>

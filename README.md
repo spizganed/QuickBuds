@@ -23,7 +23,7 @@ home-screen widget.
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/earbuds.png" width="200"> | <img src="docs/screenshots/gestures.png" width="200"> | <img src="docs/screenshots/wear.png" width="200"> | <img src="docs/screenshots/find.png" width="200"> |
 
-| Settings | Theme & colors | Edit preset | Home layout |
+| Settings | Themes, colors & styles | Edit preset | Home layout |
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/settings.png" width="200"> | <img src="docs/screenshots/theme.png" width="200"> | <img src="docs/screenshots/preset.png" width="200"> | <img src="docs/screenshots/home-layout.png" width="200"> |
 
@@ -41,7 +41,7 @@ Every size has a battery page and a controls page; switch with the swap button o
 
 ### Nothing style
 
-An optional style for the app and the widgets (Theme & colors > Style): Nothing's dot font, no cards,
+An optional style for the app and the widgets (Themes, colors & styles > Style): Nothing's dot font, no cards,
 dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing](docs/screenshots/nothing).
 
 | Main screen | 3x3 widget |
