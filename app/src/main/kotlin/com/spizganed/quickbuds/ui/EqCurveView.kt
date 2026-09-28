@@ -54,7 +54,7 @@ class EqCurveView(context: Context) : View(context) {
         // dark dots on the EQ sheet), and the grid a full dot wide (thinner fell under DotArt's minimum).
         if (nothing) {
             dotFill.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
-            gridPaint.strokeWidth = dp(DotArt.PITCH_DP)
+            gridPaint.strokeWidth = DotArt.pitchPx(context)
         }
     }
     private val axisPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

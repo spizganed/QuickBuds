@@ -23,16 +23,24 @@ object DotArt {
     private const val MIN_ALPHA = 50
     /** [draw] with `solid` (icons): a cell at least this covered gets a fully opaque dot; kept alpha read as grey. */
     private const val SOLID_MIN = 90
+    /** [draw] with a `color` (switch parts): a cell at least half covered, so a small disc reads round, not square. */
+    private const val HALF = 128
 
     private var small: Bitmap? = null
     private var px = IntArray(0)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    /** Draws [draw] (in the view's own px) into [target] as dots over a [w] x [h] px area. Main thread only. */
-    fun draw(context: Context, target: Canvas, w: Int, h: Int, pitchDp: Float = PITCH_DP, solid: Boolean = false, draw: (Canvas) -> Unit) {
-        val pitch = android.util.TypedValue.applyDimension(
-            android.util.TypedValue.COMPLEX_UNIT_DIP, pitchDp, context.resources.displayMetrics
-        ).coerceAtLeast(2f)
+    /** The pitch in whole px: a fractional pitch put every dot at a different sub-pixel offset, so no two looked alike. */
+    fun pitchPx(context: Context, pitchDp: Float = PITCH_DP): Float = Math.round(
+        android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, pitchDp, context.resources.displayMetrics)
+    ).coerceAtLeast(2).toFloat()
+
+    /**
+     * Draws [draw] (in the view's own px) into [target] as dots over a [w] x [h] px area. Main thread only.
+     * With [color], [draw] only gives the coverage and every lit dot is [color].
+     */
+    fun draw(context: Context, target: Canvas, w: Int, h: Int, pitchDp: Float = PITCH_DP, solid: Boolean = false, color: Int? = null, draw: (Canvas) -> Unit) {
+        val pitch = pitchPx(context, pitchDp)
         val cols = (w / pitch).toInt().coerceAtLeast(1)
         val rows = (h / pitch).toInt().coerceAtLeast(1)
         val bmp = small?.takeIf { it.width == cols && it.height == rows }
@@ -44,8 +52,8 @@ object DotArt {
         bmp.getPixels(px, 0, cols, 0, 0, cols, rows)
         for (y in 0 until rows) for (x in 0 until cols) {
             val v = px[y * cols + x]
-            if (v ushr 24 < if (solid) SOLID_MIN else MIN_ALPHA) continue
-            paint.color = if (solid) v or 0xFF000000.toInt() else v
+            if (v ushr 24 < if (color != null) HALF else if (solid) SOLID_MIN else MIN_ALPHA) continue
+            paint.color = color ?: if (solid) v or 0xFF000000.toInt() else v
             target.drawCircle((x + 0.5f) * pitch, (y + 0.5f) * pitch, pitch * 0.42f, paint)
         }
     }
@@ -81,23 +89,31 @@ object DotArt {
 
     /**
      * A switch part as dots: [shape] draws it in its bounds with the paint it is given, in [color]
-     * (a state list: checked / not). The Switch moves the thumb by changing its bounds.
+     * (a state list: checked / not). The Switch moves the thumb by changing its bounds, so every part
+     * uses the host's grid (cells from its 0,0) and shrinks its box to the whole cells inside its bounds:
+     * track and thumb dots line up, and a shape centred in its box is symmetric on the grid.
      */
     class Part(
         private val context: Context, private val wDp: Float, private val hDp: Float,
         private val color: android.content.res.ColorStateList,
         private val shape: (Canvas, android.graphics.RectF, Paint) -> Unit
     ) : Drawable() {
-        private val p = Paint(Paint.ANTI_ALIAS_FLAG)
+        private val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK }
         private val box = android.graphics.RectF()
         private var current = color.defaultColor
 
         override fun draw(canvas: Canvas) {
             val b = bounds
-            p.color = current
+            val pitch = pitchPx(context)
+            val l = Math.ceil(b.left / pitch.toDouble()).toFloat() * pitch
+            val t = Math.ceil(b.top / pitch.toDouble()).toFloat() * pitch
+            val w = Math.floor(b.right / pitch.toDouble()).toFloat() * pitch - l
+            val h = Math.floor(b.bottom / pitch.toDouble()).toFloat() * pitch - t
+            if (w <= 0f || h <= 0f) return
+            box.set(0f, 0f, w, h)
             canvas.save()
-            canvas.translate(b.left.toFloat(), b.top.toFloat())
-            DotArt.draw(context, canvas, b.width(), b.height()) { c -> box.set(0f, 0f, b.width().toFloat(), b.height().toFloat()); shape(c, box, p) }
+            canvas.translate(l, t)
+            DotArt.draw(context, canvas, w.toInt(), h.toInt(), solid = true, color = current) { c -> shape(c, box, p) }
             canvas.restore()
         }
 
@@ -110,8 +126,8 @@ object DotArt {
         }
         override fun getIntrinsicWidth() = ThemeRes.dp(context, wDp)
         override fun getIntrinsicHeight() = ThemeRes.dp(context, hDp)
-        override fun setAlpha(alpha: Int) { p.alpha = alpha }
-        override fun setColorFilter(cf: android.graphics.ColorFilter?) { p.colorFilter = cf }
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(cf: android.graphics.ColorFilter?) {}
         @Deprecated("Deprecated in Java")
         override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
     }

@@ -81,7 +81,8 @@ phone-specific piece lives outside it.
   `gradlew` at 755 whatever the local bits are. SDK shell scripts need `java -jar .../lib/<tool>.jar` (no `/bin/bash`).
 - The release key is in `local/keys/` here too, so `./gradlew assembleRelease` signs as on the PC.
 - **On-device tests over adb** ([USER] 2026-09-28): never leave auto-rotate on (reset
-  `settings put system accelerometer_rotation 0` after every test) and bring Termux back to the front when done
+  `settings put system accelerometer_rotation 0` after every test; launch apps with `am start -n`, never
+  `monkey`, whose random event can be a rotation toggle) and bring Termux back to the front when done
   (not over SSH: the shell is on the PC then, [USER] 2026-09-28).
   The user-level Stop hook (`~/.claude/settings.json`) reposts a notification with sound and runs `am start` for
   Termux after every reply, except when `$SSH_CONNECTION` is set. With the buds connected the sound plays in the
@@ -544,10 +545,13 @@ part of the activity signature, so a change recreates open screens. Nothing:
 - Home: `BudsStatusView` draws the widget's `QuickBudsWidget.dotRing` (one bitmap per whole percent while
   animating), numbers without `%`; `AncSegmentedView` draws `QuickBudsWidget.modeIcon` (home icons mapped to the
   widget's mode icons, 28dp). Both tints still blend over `card`, as on the widget.
-- `DotArt`: live views drawn as dots, one sample per cell (cheap enough per drag frame), pitch 2.2dp, coverage
-  under alpha 50 leaves a cell empty. `LevelSliderView`, `EqCurveView` and `ColorSliderView` run their shape
+- `DotArt`: live views drawn as dots, one sample per cell (cheap enough per drag frame), pitch 2.2dp rounded
+  to whole px (`DotArt.pitchPx`; a fractional pitch drew every dot differently), coverage under alpha 50 leaves a
+  cell empty. `LevelSliderView`, `EqCurveView` and `ColorSliderView` run their shape
   drawing through it (text stays text; knobs hollow via CLEAR; the EQ grid a full dot wide), and
-  `SettingRowFactory.buildSwitch` swaps in `DotArt.Part` track / thumb drawables coloured by the switch tints.
+  `SettingRowFactory.buildSwitch` swaps in `DotArt.Part` track / thumb drawables coloured by the switch tints. Parts share the
+  Switch's grid (cells from its 0,0, box shrunk to whole cells) so the thumb lines up with the track, and light a
+  dot only when half covered, so the thumb reads round.
 - Icons: `ThemeRes.tint` returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
   alpha read as grey), so every tinted icon (rows, chevrons, header buttons, checks) is dotted. Row dividers are one
   row of dots. Still solid: the status dot, the launcher icon on About, shapes (buttons, chips, dialogs, sheets).

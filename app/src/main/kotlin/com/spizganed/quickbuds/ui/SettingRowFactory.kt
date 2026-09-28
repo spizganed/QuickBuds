@@ -206,7 +206,7 @@ object SettingRowFactory {
         val outline = ThemeRes.color(context, R.attr.appColorOutline)
         if (ThemeRes.nothing(context)) {
             // Nothing style: one row of dots (DotArt), a dot tall.
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ThemeRes.dp(context, DotArt.PITCH_DP))
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, DotArt.pitchPx(context).toInt())
             background = DotArt.Part(context, 0f, DotArt.PITCH_DP, android.content.res.ColorStateList.valueOf(outline)) { c, b, p -> c.drawRect(b, p) }
             return@apply
         }

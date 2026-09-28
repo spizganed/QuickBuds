@@ -73,20 +73,23 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 ## Our own features
 
-From his notes, 2026-09-28 ([USER]):
+From his notes, 2026-09-28 ([USER]), in order:
 
-- **Next: widget icons in the app.** Use the widget's mode icons (ANC and the rest) in the app, in both
-  styles: the app's own ones look off in Classic and Nothing alike.
-- **Next: home noise control behaves like the widget.** Tapping ANC slides to a level picker, then the
-  level is chosen there (the widget's `w_page2` flow), instead of the segment plus level pills.
-- **Next: refine the home switches** (low latency, Hi-Res, 3D audio). What exactly is still open.
-- **Next: Nothing style, no wear text on home.** No "In ear" / "In case" labels under the rings, as on
-  the Nothing widget (the glyph's shade says it).
+- **Done 2026-09-28: Nothing switches.** Each switch drew its dots differently (fractional pitch) and the
+  thumb sat off the track's grid; see CLAUDE.md, App style.
+- **Next: Classic widget without wear text.** The app keeps "In ear" / "In case" under the rings in both
+  styles; the widgets drop it in both (wasted space). Nothing already does; Classic still shows it.
+- **Next: home noise control behaves like the widget.** Keep the Off / ANC / Adaptive / Transparency pill;
+  tapping ANC slides the pill to the level picker (the levels plus the smart option), as the widget's
+  ANC button does, instead of the level pills under it.
+- **Next: icons.** The Equalizer row icon looks off, and the low latency / Hi-Res / 3D audio row icons
+  should match the widget's icon language, in both styles.
 - **Next: GitHub discoverability.** README wording, repo description and topics, so the repo turns up
   in Google for related searches.
-- **Open: custom UI styles as a file.** Styles beyond Classic / Nothing that users can export and
-  import as one file, covering both the widget and the app.
-- **Before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
+- **Open, last before the cleanup: custom UI styles as a file.** Classic and Nothing become styles
+  loaded from a definition, so users can import and export a new one as one file for the widget and
+  the app. Testing it properly needs a third style.
+- **Last before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
 
 - **Question: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
   (the clock, the steps and the combined weather widget) ours look smaller than the cell they get.
