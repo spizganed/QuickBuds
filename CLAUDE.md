@@ -206,6 +206,8 @@ GitHub release tagged `v<version>`. The in-app updater compares the tag against 
 version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is installed and logged in on
 both the PC (2026-09-28) and the phone, so
 `gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"` works (v3.4.0).
+**Release notes cover every user-visible change since the last tag**: read `git log v<previous>..HEAD` first
+(3.4.1's notes first listed only the last fix and missed a day of work).
 
 ## Protocol work — the rules that were paid for
 
