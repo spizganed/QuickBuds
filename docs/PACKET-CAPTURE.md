@@ -14,19 +14,12 @@ real sessions more than once, and a wrong write to the buds fails completely sil
 
 1. Force-stop the app, reopen it, connect, and let the init burst finish.
 2. Dev Tools → **Clear** (so the export is one clean session with no dead gaps).
-3. Be in the app **before** each gesture, so the mark and the gesture land in the right order.
-   There is no need to open Dev Tools between gestures.
-4. For each thing you want to capture:
-   - perform the gesture / action on the buds,
-   - press **MARK** within about 2 seconds after it,
-   - wait at least 3 seconds before the next one.
-5. Repeat the whole cycle **twice**, so a one-off frame gets a chance to appear again.
-6. Dev Tools → **Export**. Files land in `Download/QuickBudsLogs/` via MediaStore.
+3. For each thing you want to capture: do the gesture / action on the buds, note the time, and wait
+   at least 3 seconds before the next one.
+4. Repeat the whole cycle **twice**, so a one-off frame gets a chance to appear again.
+5. Dev Tools → **Export**. Files land in `Download/QuickBudsLogs/` via MediaStore.
 
-Hand over only the lines between the first and last `MARK`, plus the two lines either side of each
-one.
-
-### Automated pull — no MARK/Export needed at all (confirmed working, 2026-09-20)
+### Automated pull — no export needed (confirmed working, 2026-09-20)
 
 The same log can be pulled straight off the device over adb, with no manual export step —
 `PacketLogger` (`bluetooth/Packet_Logger.kt`) already writes every line to two places:
@@ -44,7 +37,7 @@ The same log can be pulled straight off the device over adb, with no manual expo
   adb logcat -d -s QuickBuds-Packets:D
   ```
 
-Either way, just do the gesture on the buds and say so — no MARK, no Dev Tools trip, no export.
+Either way, just do the gesture on the buds and say so — no Dev Tools trip, no export.
 This is the fast path for "does the thing that already works still work" / "what did that gesture
 just send". Reach for Option B/C only when the question needs the HCI layer itself (something the
 app doesn't decode at all, or doesn't attribute to any command).
@@ -101,7 +94,6 @@ serves for Option A captures.
 
 | Line | What it is |
 |---|---|
-| `MARK #n` | A manual timestamp. Press it *after* the gesture. |
 | `BTN EVT:` | The `0xF1` user-interaction family, decoded — side, button, action, modifier, context. |
 | `UNATTR RX:` | Any frame the app does not already decode, with payload head. |
 | `TX[...]: AA ..` | A command the app sent. |
@@ -133,11 +125,5 @@ which no amount of reconnecting our app could ever answer on its own.
 
 ## Still open, and capturable
 
-- The on-call act-to-row LABELS (`0x02`/`0x06` believed double-tap/long-hold, `[INFERRED]` — see
-  PROTOCOL.md §6). The bytes are `[CAPTURE]`-confirmed; only a real call, watching which switch does
-  which thing, can confirm the English labels are the right way round.
 - `act 0x03` in the on-call group (`btn 0x06`) — a third slot HeyMelody's UI has never exercised.
-- `0x0500` / `0x0501` — empty payloads, so they cannot be gesture bindings. Seen right after ANC
-  writes; possibly this firmware's alternate ANC notification.
-- Broadcast codes `0x04` / `0x08` / `0x0B`.
-- The `0x810D` batch-status reply layout.
+- Broadcast codes `0x04` / `0x08` / `0x0B` and the other undecoded families (PROTOCOL.md §12).

@@ -335,10 +335,9 @@ little endian across the bytes after the `01 01` prefix, so `AncAdaptive`
 only mode that cannot be expressed as an index", which is WRONG.** `ancPayload(11)`
 does reproduce these bytes — the helper was never the problem, the number handed to it
 was. 8 is just the plausible-looking wrong answer: the vendor's list reads like
-"0-7, then the next one". The builder deliberately spells the four bytes literally
-instead, to match `AncAdaptive = { 0x01, 0x01, 0x00, 0x08 }` verbatim rather than
-re-deriving a number that was already derived wrong once. Every other row above is
-reproduced correctly by the index algorithm. `LogDecoder.ancPayloadToString()` was
+"0-7, then the next one". Today every mode, Adaptive included, goes through
+`OpoProtocol.anc(bit)` with the bit from the model's `protocolIndex` ([AncModes]), which
+the vendor data gives as 11 for Adaptive; the old literal `ancAdaptive()` builder is gone. `LogDecoder.ancPayloadToString()` was
 also reading `0x0100` for Adaptive and now reads `0x0800`, so an Adaptive command no
 longer prints as `Unknown (0x0800)` in our own log.
 
@@ -501,7 +500,7 @@ RX  AA 0C 00 00 0C 81 <seq> 05 00 00 02 01 07 08  mask now 07 08 (was 07 00 befo
 
 **THIS SETTLES THE BIT THEORY: the mask is [ancPayload]'s OWN bit numbering, not a separate scheme.**
 Adding Adaptive moved the mask from `0x0007` to `0x0807` — bits 0/1/2 unchanged, bit 11 (`0x0800`)
-newly set. Bit 11 is exactly Adaptive's bit in the plain SET_ANC table (§5 above, `ancAdaptive()`).
+newly set. Bit 11 is exactly Adaptive's bit in the plain SET_ANC table (§5 above).
 Off = bit 0, Transparency = bit 2 both match `ancPayload()` too; bit 1 remains the one bit with no
 independent isolation — every capture so far shows it set, consistent with it being a generic "On"
 that resolves to the last hand-set level, but no test has tried clearing it alone.

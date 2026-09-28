@@ -114,6 +114,7 @@ realme Buds Wireless 2S, realme Buds Wireless 3, realme Buds Wireless 3 Neo, rea
 DIZO Wireless, DIZO GoPods D, DIZO GoPods.
 
 </details>
+
 ## For developers
 
 Start with [CLAUDE.md](./CLAUDE.md) (toolchain and conventions) and

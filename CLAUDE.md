@@ -50,17 +50,48 @@ Plain desktop Gradle.
 - `./gradlew bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`
 - Deploy with `adb install -r <apk>`. **adb over USB is the debugging path**; use `adb logcat` for
   anything the in-app logs do not show.
-- **Wireless adb also works, confirmed 2026-09-22** — used to pull an `adb bugreport` for a
-  Wireshark/tshark capture with no cable. Phone: Developer options → Wireless debugging → "Pair
-  device with pairing code" gives an `IP:port` + 6-digit code; `adb pair <that ip:port> <code>`
-  (code is one-shot and expires in well under a minute, so run the pair command immediately after
-  reading it off screen — a stale code fails as `protocol fault (couldn't read status message)`,
-  which looks like a network problem but usually isn't one). Then `adb connect` the **different**
-  `IP:port` shown on the main Wireless debugging screen (not the pairing one) to actually attach.
-  Phone and PC do not need to be on the same LAN in the traditional sense — this was verified over a
-  Tailscale link (a `100.64.0.0/10` address), so a VPN mesh between them is enough as long as the
-  pairing/connect ports are reachable.
+- **Wireless adb** (Developer options → Wireless debugging): `adb pair <pairing ip:port> <code>` right after
+  reading the code (a stale one fails as `protocol fault (couldn't read status message)`), then `adb connect` the
+  **other** `ip:port` on the main Wireless debugging screen. Works over Tailscale too.
 - `local.properties` must contain `sdk.dir=...`; it is git-ignored and must not be committed.
+- One-time setup: JDK 17+ (built with JBR 21: `~/.jdks/jbr-21*`, not the IDE's bundled JBR) and the SDK's
+  `platforms;android-37.0` and `platform-tools`. The `./gradlew` wrapper brings Gradle.
+
+### Signing — release key since v2.0.0
+
+**Releases are signed** with the key in `local/keys/quickbuds-release.jks` (PKCS12, alias
+`quickbuds`, RSA 4096, valid 100 years), created 2026-09-23 at his request. Its passwords are in
+`local/keys/keystore.properties`, which `app/build.gradle.kts` reads. Both are git-ignored and
+on the PC and the phone only (never in git). **He must keep a backup of both files**: the in-app updater can only install over an app
+signed with the same key, and losing it means every user has to uninstall first. Never commit
+them and never print the password.
+
+Without that file (a fresh clone), `assembleRelease` falls back to an unsigned APK, as before.
+Device testing uses `assembleRelease` too. **Debug and release builds cannot be installed over
+each other**, and switching needs an uninstall.
+v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs one.
+
+### Versioning — `build.gradle.kts` defaultConfig is the single source
+
+`versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
+**Current: versionCode 10 / versionName 3.4.1.**
+
+They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
+up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
+and `bundleRelease` failed with "Version code not found in manifest". Verify with
+`aapt2 dump badging <apk>`, not by reading a source file. `UpdateActivity` still reads the installed
+version through `PackageManager`, and `buildConfig` stays off.
+
+### Release flow
+
+`./gradlew assembleRelease bundleRelease` gives the signed APK and AAB. Name them
+`QuickBuds<version>.apk` / `.aab` (copies kept in `local/release/v<version>/`) and attach **both** to a
+GitHub release tagged `v<version>`. The in-app updater compares the tag against the installed
+version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is installed and logged in on
+both the PC (2026-09-28) and the phone, so
+`gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"` works (v3.4.0).
+**Release notes cover every user-visible change since the last tag**: read `git log v<previous>..HEAD` first
+(3.4.1's notes first listed only the last fix and missed a day of work).
 
 ## Phone sessions (Termux, reached over SSH from the PC)
 
@@ -96,7 +127,7 @@ phone-specific piece lives outside it.
 
 ## UI revision (design/SPEC.md)
 - design/SPEC.md is the source of truth for the UI work; design/*.png are visual references.
-- **Theming exception:** SPEC.md section 1 suggests a view-tree PaletteApplier. That is wrong for this codebase. Keep the attribute-based ThemeRes approach and extend it so custom presets apply at inflation time too. Propose the design in the plan step before coding.
+- SPEC.md section 1's view-tree PaletteApplier is wrong for this codebase: theming stays attribute-based (see Palette below).
 - UI work never touches protocol, RFCOMM, packet parsing or wear-state logic.
 - Completed SPEC steps: 1 (palette), 2 (shared components), 3 (home), 4 (disconnect dialog, EQ header), 5 (settings screen), 6 (theme & colors, edit preset), 7 (haptics). All SPEC steps done and shipped (3.1.0).
 - **Palette (step 1):** six token attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/Outline`),
@@ -161,54 +192,6 @@ phone-specific piece lives outside it.
   (the vibrator, usage HARDWARE_FEEDBACK: the default TOUCH usage is dropped for a background app,
   `ignored_background` in `dumpsys vibrator_manager`).
 
-### Environment you need
-
-One-time setup.
-
-| Need | Version / note |
-|---|---|
-| JDK | **17+**, built with JBR 21. Point `JAVA_HOME` at Android Studio's `~/.jdks/jbr-21*`, not the IDE's own bundled JBR. |
-| Android SDK | `platforms;android-37.0` (for `compileSdk 37`) and `platform-tools` (for adb). `build-tools` matching AGP. |
-| Gradle | None — the committed `./gradlew` wrapper downloads it. |
-| adb | For deploying to the phone and reading `logcat`. |
-| kotlin-stdlib | **No** manual install — it comes with the Kotlin Gradle plugin. The only app dependency is `androidx.core:core:1.13.1`. |
-
-### Signing — release key since v2.0.0
-
-**Releases are signed** with the key in `local/keys/quickbuds-release.jks` (PKCS12, alias
-`quickbuds`, RSA 4096, valid 100 years), created 2026-09-23 at his request. Its passwords are in
-`local/keys/keystore.properties`, which `app/build.gradle.kts` reads. Both are git-ignored and
-on the PC and the phone only (never in git). **He must keep a backup of both files**: the in-app updater can only install over an app
-signed with the same key, and losing it means every user has to uninstall first. Never commit
-them and never print the password.
-
-Without that file (a fresh clone), `assembleRelease` falls back to an unsigned APK, as before.
-Device testing uses `assembleRelease` too. **Debug and release builds cannot be installed over
-each other**, and switching needs an uninstall.
-v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs one.
-
-### Versioning — `build.gradle.kts` defaultConfig is the single source
-
-`versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 10 / versionName 3.4.1.**
-
-They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
-up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
-and `bundleRelease` failed with "Version code not found in manifest". Verify with
-`aapt2 dump badging <apk>`, not by reading a source file. `UpdateActivity` still reads the installed
-version through `PackageManager`, and `buildConfig` stays off.
-
-### Release flow
-
-`./gradlew assembleRelease bundleRelease` gives the signed APK and AAB. Name them
-`QuickBuds<version>.apk` / `.aab` (copies kept in `local/release/v<version>/`) and attach **both** to a
-GitHub release tagged `v<version>`. The in-app updater compares the tag against the installed
-version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is installed and logged in on
-both the PC (2026-09-28) and the phone, so
-`gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"` works (v3.4.0).
-**Release notes cover every user-visible change since the last tag**: read `git log v<previous>..HEAD` first
-(3.4.1's notes first listed only the last fix and missed a day of work).
-
 ## Protocol work — the rules that were paid for
 
 Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VENDOR]` / `[OSS]` /
@@ -252,7 +235,7 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
   PROTOCOL.md §6. **Do not re-derive them**; a previous session declared the theory refuted on the
   strength of one frame that turned out not to be the same kind of event at all.
 - **`writeGestureBinding(side, ...)` takes NO button list from our code.** It writes every slot the
-  bud actually has for that action, excluding only the `BUTTON_ON_CALL_GUESS` (`0x06`) group.
+  bud actually has for that action, excluding only the `KeyFunctionParser.BUTTON_ON_CALL` (`0x06`) group.
   **Never reintroduce a hardcoded button group** — the bud's slot layout differs per bud and
   normalises itself between writes, so any fixed group is wrong about half the time. This broke
   slide twice, in opposite directions.
@@ -345,12 +328,9 @@ They are in git history before that date if ever needed.
 button arms `devCrashOnLaunch`; the next launch throws once there, which proves an early crash is caught
 (verified on device 2026-09-27).
 
-## Current open items
+## Settled points
 
-- **Slide up vs slide down** — settled, nothing to do: the firmware maps the two directions itself
-  when the slide is set through our app, as with HeyMelody ([USER] 2026-09-26).
-- **Light theme** — replaced by the **White** preset (UI revision step 1, 2026-09-26; redesigned
-  2026-09-27). Check screens on White and on a light custom preset when changing colours.
+- **Light colours:** check screens on the White preset and on a light custom preset when changing colours.
 - **Case lid state** — settled 2026-09-25: no lasting lid state exists (PROTOCOL.md §8); a close only
   stops the reconnect retries. `ic_case.xml` stays (the status view uses it). Case charging is only
   reported with the lid open, so it is **not shown, by decision** (PROTOCOL.md §7).
@@ -375,7 +355,7 @@ button arms `devCrashOnLaunch`; the next launch throws once there, which proves 
   Also `0x0510`, a Spatial Audio notify. **Do not guess any of these from a couple of samples.**
   See PROTOCOL.md §12.
 
-### Connection robustness — known rough edges
+## Connection robustness — known rough edges
 
 From `bluetooth/BudsConnectionManager.kt`.
 
@@ -442,11 +422,11 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
 is disabled recursively; switches are set neutral **quietly** (`syncingFeatures`, which the game-mode
 listener also honours, or the neutral state would send a write) and repainted from the buds on connect.
 
-**The main screen carries no log**, by design — Dev Tools owns logging. `appendStatus()` only
-appends to a bounded in-memory tail. See the note above about not putting user-visible output on a
+**The main screen carries no log**, by design — Dev Tools owns logging. `onStatus()` is empty on
+purpose. See the note above about not putting user-visible output on a
 packet-listener path.
 
-## Widgets (redesigned 2026-09-27, design/widgets/WIDGETS.md; its mode button and cycle are superseded)
+## Widgets (redesigned 2026-09-27)
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
 generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus the level picker grids

@@ -16,8 +16,7 @@ None known (2026-09-25). A new one needs a HeyMelody capture first.
 
 ## The plan, in order (`[USER]` 2026-09-27)
 
-Each step is done before the next one starts. The previous plan (Settings screen, Home layout, themes,
-widgets, 3.0.0) is finished; 3.1.0 is released.
+Each step is done before the next one starts.
 
 1. **Other HeyMelody models: detect, then show what the model supports.** realme (and DIZO) models
    are in HeyMelody's list and in ours ([USER] 2026-09-27). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
@@ -26,7 +25,7 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      PROTOCOL.md §4). The product id is read and logged.
    - **Done 2026-09-27: per-model noise control.** HeyMelody's `noiseReductionMode` per product id
      (`assets/models.json`, `AncModes.kt`, PROTOCOL.md §5) sets the bits both ways and decides which
-     segments, level pills and widget modes show. Buds 4 unchanged on device; other models unverified
+     segments, levels and widget buttons show. Buds 4 unchanged on device; other models unverified
      until an owner reads a write back.
    - **Done 2026-09-27: detection and the model list.** `ModelCatalog` folds the colour ranges and
      matches id and Bluetooth name as HeyMelody does (PROTOCOL.md §4). The device name under the rings
@@ -81,33 +80,9 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 From his notes, 2026-09-28 ([USER]), in order:
 
-- **Done 2026-09-28:** Nothing switches, check and EQ curve on the dot grid; the Equalizer icon as spectrum
-  bars (both styles); no wear text on the Nothing home (Classic keeps it in the app and on the widget); the
-  Nothing case bar's digits in inverted dots (on trial); home ANC slides to the widget's level picker (the
-  segment shows the level, auto-close after 2 s); crisp Nothing mode icons; icon and label centred.
-- **Done 2026-09-28: GitHub discoverability.** README "Supported earbuds" (127 models by brand), any Android
-  phone, the two styles; topics without model numbers; social preview image uploaded.
 - **Later:** a write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless
   PC), then links from Reddit / XDA.
 - **Last before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
-
-- **Question: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
-  (the clock, the steps and the combined weather widget) ours look smaller than the cell they get.
-  Measured 2026-09-27 (`uiautomator dump`): the Nothing launcher pads every widget host the same way
-  (28 px sides, 31 top, 83 bottom on a 488x546 px 2x2 cell), its own widgets included. Our 2x2 draws
-  432x432 px, exactly the box of Nothing's own 2x2 (the weather combo). It only looks smaller than the
-  clock + steps stack, because two 1-row widgets each get less padding (together 461 px tall). The host
-  clips to its padding, so we cannot draw past it. Decided 2026-09-28: the tighter inset is part of the optional
-  Nothing widget style (CLAUDE.md, Widgets); Classic keeps 6dp at the sides.
-
-## Docs cleanup
-
-- Done 2026-09-26: README is short and user-facing, CREDITS.md folded into its Credits section,
-  outdated Appearance notes in ROADMAP-DONE replaced.
-- Done 2026-09-27: README screenshots retaken (model list and the redesigned widgets included).
-  Rerun `scripts/readme-screenshots.sh` after any visible UI change.
-- Done 2026-09-29: retaken in Classic, plus a Nothing set in `docs/screenshots/nothing/` (README shows its main
-  screen and 3x3 widget). The script takes the style as its first argument.
 
 ## Parked
 
@@ -129,6 +104,8 @@ From his notes, 2026-09-28 ([USER]), in order:
 - Slide up vs slide down: nothing to do. The firmware maps up/down itself (volume up/down, next/prev)
   when the slide is set through our app, exactly as with HeyMelody ([USER] 2026-09-26).
 
+- Widgets bigger than the launcher's padding allows: the host clips to it; ours already fill the same box
+  as Nothing's own widgets (measured 2026-09-27).
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.
 - A log on the main screen: Dev Tools owns logging.

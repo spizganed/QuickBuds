@@ -22,6 +22,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   on auto-connect (2026-09-25). `Headset.connect()` is refused for ordinary apps, and the
   system brings HFP up itself ~10 s later. Found in a btsnoop + bugreport of HeyMelody, 2026-09-24.
 
+- Auto-connect when the phone's audio link comes up (A2DP / HFP), confirmed by him 2026-09-27.
+
 ## Controls
 
 - ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen and widget.
@@ -42,6 +44,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Find my earbuds: the buds' own tone on both buds, with an in-ear warning.
 - Wear detection screen: the firmware's auto play/pause, and our own smart auto-pause (pause only
   when both buds are out, never auto-play). The two are mutually exclusive.
+- Smart as a fourth ANC level (app and widget, confirmed on Buds 4, 2026-09-27).
+- Firmware version (`0x0105`) in Earbud settings › About earbuds, formatted as HeyMelody shows it
+  (PROTOCOL.md §3).
 - Alert-sound volume slider (HeyMelody style, muted icon at the lowest step) in Earbud settings → Sounds (PROTOCOL.md §9).
 - In-app updater from GitHub releases.
 
@@ -50,69 +55,34 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - UI revision after design/SPEC.md (2026-09-26): six-token themes (OLED Black, Classic Dark, White),
   an accent per built-in theme, up to 3 custom colour presets with a live preview, a full Settings
   screen, and a home screen whose rows can be dragged and hidden. Details in CLAUDE.md.
-- Wear and case icons traced verbatim from `local/svgs/` (confirmed as the newest design 2026-09-24);
-  adaptive launcher icon.
-- Portrait-locked on every screen.
+- White preset redesigned and Match system (White in light mode, OLED Black or Classic Dark in dark
+  mode, live, widgets included), 2026-09-27. Checked on device both ways.
+- Colour picker: the last five committed colours under the quick swatches.
+- Classic / Nothing style for the app and the widgets, one switch in Theme & colors (2026-09-28):
+  Nothing's dot font, no cards, dot-matrix rings, icons, switches, sliders and EQ curve.
+- One font family per style (`sans-serif` in Classic; the OEM font no longer leaks in).
+- Home noise control: the ANC segment slides into the level picker (Smart included) and shows the level.
+- Launcher and notification icons from the app's own bud glyphs; the themed icon is one bud.
+- 27 languages (26 machine-drafted), picked in the app's own Language screen. Checked on device.
+- Wear and case icons traced verbatim from `local/svgs/`. Portrait-locked on every screen.
+
+## Widgets
+
+- 2x2, 3x3 (the 2x2 scaled) and 4x2, fixed size, each with a battery page and a controls page (ANC with a
+  level picker, Transparency, Adaptive, Low latency), swapped by a button or a double tap (200 ms).
+- Slides only, like a carousel; the widget stays on the controls page after a change. Haptic tick on taps.
+- Both styles share one design (`scripts/widget-layouts.py`); the cycle mode and mode button are gone.
+  Details in CLAUDE.md, Widgets.
 
 ## Tooling and release
 
-- Dev Tools screen: human-readable log, raw hex log, Mark / Clear / Export, Reconnect / Disconnect.
-- Dev Tools trimmed to the log, Export, link controls and Crash test (2026-09-27); the layout,
-  screenshot and widget reports were deleted, adb covers them.
+- Dev Tools: Human-readable / Raw hex log, Clear, Export, Reconnect, Disconnect, Crash test, styled like
+  Settings (2026-09-27). The layout, screenshot and widget reports were deleted; adb covers them.
+- Crash handler installed in `QuickBudsApp.attachBaseContext`, before any app code; verified on device.
+- Dead code sweep (2026-09-27): lint `UnusedResources` and unreferenced Kotlin.
 - Signed release builds with a version set in one place (`app/build.gradle.kts`).
-
-## 2026-09-27
-
-- CLAUDE.md: cloud session rules removed; test phone is on Android 16.
-- Crash handler installed in `QuickBudsApp.attachBaseContext`, before any app code; Dev Tools' Crash
-  test verified on device (report written, next-launch dialog shown).
-- Widget mode list: a pick no longer waits up to 5 s (the list close no longer holds the broadcast
-  with `goAsync`). Confirmed by him.
-- One 2x2 widget with two pages (battery / controls), switched by a swap button or a double tap
-  (Widget settings); the page is stored per widget. Page changes and the mode list cross-fade on every
-  size, and widget taps give a haptic tick. Confirmed by him.
-- In-app language screen (`LanguageActivity`) replaces the link to Android's per-app screen. Confirmed
-  by him.
-- Twelve more languages, machine-drafted: Russian, Ukrainian, Turkish, Japanese, Korean, Malay, Filipino,
-  Bengali, Czech, Hungarian, Greek, Swedish (26 in all). Checked on device: home screen strings in ru, ja,
-  fil, el, bn, and picking Čeština from the in-app list.
-- One font everywhere: the theme and the widget text set `sans-serif`, the family every code-set
-  typeface already used (the OEM font had leaked into theme-styled text).
-- Dead code sweep: lint `UnusedResources` (27 colours, dimens and strings in every locale, the unused
-  launcher background drawable, the `Theme.App` alias) and unreferenced Kotlin (`EarStatusParser`, the
-  widget state helpers, the `0x0422` spatial builders, `sendAncOn`, `hexToBytes`).
-- Dev Tools redesigned to match the app: Settings-style screen and title, a Human-readable / Raw hex
-  segmented switch, the five actions in one icon card (Crash test asks first), the log in a normal card
-  with TX / RX in the accent colour.
-- Widgets 3x2 and 3x3 redesigned like the 2x2 (2026-09-27): battery and controls pages on every size,
-  swapped by the swap button or a double tap, sliding between pages; bigger rings sized from the widget,
-  the model name on the bigger battery pages; a mode list with three modes or fewer fills one row.
-- Later the same day ([USER]): widgets are 2x2, 3x3 (the 2x2 scaled up) and 4x2, all fixed size, with
-  no model name; the 2x2 controls widget is gone. The mode button flips between two copies on a change
-  (fill cross-fades, icon and name tick up). Smart ANC as a fourth level (app and widget, confirmed on
-  Buds 4). New launcher and notification icon from the app's own bud glyphs; no bud icons on Find my
-  earbuds. Dev tools button moved into Settings › General; the Language screen has its title back.
-- Auto-connect when the audio link comes up: confirmed by him.
-- Firmware version `0x0105`, read on connect and shown in Earbud settings › About earbuds exactly as
-  HeyMelody shows it (`138.138.105` on Buds 4, checked side by side). The reply has a count byte after
-  the status that the OSS write-up missed (PROTOCOL.md §3).
-- The widget hides its mode button on a model with no noise control.
-- Widget animations are slides only (the fades and the tick-up are gone). The pages move like a
-  carousel: battery -> controls slides left, back slides right. The widget stays on the controls page
-  after a change (sliding back to battery was tried and dropped). Checked on device, 2026-09-27.
-- Widget double tap waits 200 ms instead of 400 ms, so the buttons react faster (2026-09-28).
-- New White preset: a cool grey page (#ECECF0) under white cards, darker text and outline; on light
-  presets the switch thumb is the card colour on a darker track (it was a near-black dot), and a label
-  on the accent is the lighter colour whenever that reaches 3:1 (white on pure red, not black).
-- Match system (Theme & colors): White in light mode, OLED Black or Classic Dark in dark mode, following
-  a system change live, widgets included while the app process runs. Checked on device both ways.
-- The 300 s status keep-alive is gone: days of use without it showed no stale link ([USER]).
-- Colour picker: the last five committed colours under the quick swatches ("Recent"), shared by Edit
-  preset and the built-in accent picker; swatches have a thin outline so a card-coloured one shows.
-- Widgets, 2026-09-28 (commit 3423990): an optional Nothing style (NDot57All text, no boxes, every graphic as a
-  dot matrix, numbers without %); a controls page of four quick buttons (ANC opens a level picker, T, A, LL) for
-  both styles; the cycle mode, mode button and mode list settings removed; the battery page's case row fills the
-  leftover height with the level inside the bar; the 3x3 is the 2x2 scaled. Details in CLAUDE.md, Widgets.
+- The 60-minute wakelock is gone (2026-09-28); `dumpsys power` shows it no longer taken.
+- README screenshots scripted (`scripts/readme-screenshots.sh`, Classic and Nothing sets).
 
 ## Docs
 
