@@ -700,9 +700,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         levelView.visibility = View.VISIBLE
         levelView.animate().translationX(0f).setDuration(ms).withEndAction(null)
         ancView.animate().translationX(w).setDuration(ms).withEndAction { ancView.visibility = View.INVISIBLE }
-        // No pick within a second after the slide: back by itself ([USER] 2026-09-28).
+        // No pick within 2 s after the slide: back by itself ([USER] 2026-09-28: 1 s was too fast).
         levelView.removeCallbacks(autoClose)
-        levelView.postDelayed(autoClose, ms + 1000)
+        levelView.postDelayed(autoClose, ms + 2000)
     }
 
     private val autoClose = Runnable { closeLevels(animate = true) }

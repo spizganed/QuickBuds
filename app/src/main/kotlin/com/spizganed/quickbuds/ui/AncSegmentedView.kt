@@ -53,16 +53,21 @@ class AncSegmentedView(
     private val labels = labels.toMutableList()
     private val icons: MutableList<Drawable> = iconRes.map { context.getDrawable(it)!!.mutate() }.toMutableList()
 
-    /** Nothing style: the widget's dot-matrix mode icons ([QuickBudsWidget.modeIcon]), white, tinted when drawn. */
+    /**
+     * Nothing style: the widget's dot-matrix mode icons ([QuickBudsWidget.modeIcon]), white, tinted when drawn.
+     * Rendered at a whole-pixel pitch (about 1.15dp) and drawn unscaled: shrunk from the widget's 8 px pitch to
+     * 28dp, each dot fell on fractional pixels and smeared ([USER] 2026-09-28).
+     */
+    private val dotPitch = Math.round(dp(1.15f)).coerceAtLeast(2).toFloat()
     private val dots: MutableList<Bitmap?> =
-        if (ThemeRes.nothing(context)) iconRes.map { QuickBudsWidget.modeIcon(WIDGET_ICON[it] ?: it) }.toMutableList() else mutableListOf()
+        if (ThemeRes.nothing(context)) iconRes.map { QuickBudsWidget.modeIcon(WIDGET_ICON[it] ?: it, dotPitch) }.toMutableList() else mutableListOf()
 
     /** Changes segment [i]'s label and icon (the home ANC segment shows the current level, as the widget's button). */
     fun setSegment(i: Int, label: String, iconRes: Int) {
         if (i !in labels.indices) return
         labels[i] = label
         if (i in icons.indices) icons[i] = context.getDrawable(iconRes)!!.mutate()
-        if (i in dots.indices) dots[i] = QuickBudsWidget.modeIcon(WIDGET_ICON[iconRes] ?: iconRes)
+        if (i in dots.indices) dots[i] = QuickBudsWidget.modeIcon(WIDGET_ICON[iconRes] ?: iconRes, dotPitch)
         invalidate()
     }
     private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -79,7 +84,8 @@ class AncSegmentedView(
     private val box = RectF()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (icons.isEmpty()) 48f else 62f).toInt())
+        // Nothing: taller, for the bigger unscaled dot icons.
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (icons.isEmpty()) 48f else if (dots.isNotEmpty()) 72f else 62f).toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -108,8 +114,8 @@ class AncSegmentedView(
             val dot = dots.getOrNull(i)
             if (dot != null) {
                 dotPaint.colorFilter = PorterDuffColorFilter(c, PorterDuff.Mode.SRC_IN)
-                box.set(cx - iconSize / 2, iconTop, cx + iconSize / 2, iconTop + iconSize)
-                canvas.drawBitmap(dot, null, box, dotPaint)
+                // Unscaled, on whole pixels.
+                canvas.drawBitmap(dot, Math.round(cx - dot.width / 2f).toFloat(), Math.round(h / 2 + dp(5f) - dot.height).toFloat(), dotPaint)
             } else icons.getOrNull(i)?.run {
                 setTint(c)
                 setBounds(

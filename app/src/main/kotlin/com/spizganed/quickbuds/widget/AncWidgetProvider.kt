@@ -512,7 +512,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * Rings are 2 cells wide on radii of k + 0.5, so each covers exactly the dots k and k + 1 out along an
          * axis: edges on cell boundaries left stray dots between rings. Gaps are 2+ cells.
          */
-        fun modeIcon(res: Int): Bitmap? {
+        fun modeIcon(res: Int, pitch: Float = 8f): Bitmap? {
             val n = MODE_GRID
             val m = n / 2f
             val out = m - 1f                             // the outer ring: dots 14 and 15, the last ones in the box
@@ -552,7 +552,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 }
                 else -> return null
             }
-            return matrix(n, n, 8f) { c, size -> c.save(); c.scale(size / n, size / n); draw(c); c.restore() }
+            return matrix(n, n, pitch) { c, size -> c.save(); c.scale(size / n, size / n); draw(c); c.restore() }
         }
 
         /** A plus-shaped sparkle centred on ([x], [y]), arms [arm] cells long. */

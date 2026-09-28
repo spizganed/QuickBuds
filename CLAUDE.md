@@ -418,7 +418,7 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
 2. `ancRow` — "Noise control" label and `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
    neutral). The ANC segment slides in the widget's level picker (a second `AncSegmentedView` in `ancSlot`: the
    buds' levels with the widget's icons, Smart included; in from the left, the pill out to the right, 280 ms). A pick
-   applies it and slides back; the lit level turns ANC off; with no pick it slides back by itself a second after
+   applies it and slides back; the lit level turns ANC off; with no pick it slides back by itself 2 s after
    opening ([USER] 2026-09-28; it replaced the Low/Medium/High pills). In ANC the segment shows the level's icon and
    "ANC L" / "ANC M" / "ANC H" / "ANC S" (`AncSegmentedView.setSegment`), as the widget's button does. Buds with one level apply it directly
    (`homeAncLevel`).
@@ -549,7 +549,8 @@ part of the activity signature, so a change recreates open screens. Nothing:
 - Home: `BudsStatusView` draws the widget's `QuickBudsWidget.dotRing` (one bitmap per whole percent while
   animating), numbers without `%`, no label line under them (the wear state is only in the glyph's shade and the
   content description; Classic keeps "In ear" / "In case" in the app and on the widget, [USER] 2026-09-28); `AncSegmentedView` draws `QuickBudsWidget.modeIcon` (home icons mapped to the
-  widget's mode icons, 28dp). Both tints still blend over `card`, as on the widget.
+  widget's mode icons) rendered at a whole-pixel pitch (~1.15dp, 3 px at 420 dpi) and drawn unscaled, 72dp tall
+  (scaled down from the widget's 8 px pitch the dots smeared, [USER] 2026-09-28). Both tints still blend over `card`, as on the widget.
 - `DotArt`: live views drawn as dots, one sample per cell (cheap enough per drag frame), pitch 2.2dp rounded
   to whole px (`DotArt.pitchPx`; a fractional pitch drew every dot differently), coverage under alpha 50 leaves a
   cell empty. `LevelSliderView`, `EqCurveView` and `ColorSliderView` run their shape
