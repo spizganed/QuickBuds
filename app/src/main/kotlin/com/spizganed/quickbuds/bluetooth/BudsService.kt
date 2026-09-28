@@ -15,7 +15,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.os.PowerManager
 import android.util.Log
 import android.view.KeyEvent
 import com.spizganed.quickbuds.R
@@ -30,7 +29,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     var manager: BudsConnectionManager? = null
         private set
 
-    private var wakeLock: PowerManager.WakeLock? = null
     private val TARGET_MAC = "00:11:22:33:44:55"
     private val handler = Handler(Looper.getMainLooper())
 
@@ -72,10 +70,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     override fun onCreate() {
         super.onCreate()
         statusLog("[SVC] onCreate")
-        val pm = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "QuickBuds::GattWakeLock")
-        wakeLock?.setReferenceCounted(false)
-        wakeLock?.acquire(60 * 60 * 1000L)
 
         manager = BudsConnectionManager(this).also { it.addListener(this) }
 
@@ -266,8 +260,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         try { manager?.disconnect() } catch (_: Exception) {}
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}
-        try { wakeLock?.release() } catch (_: Exception) {}
-        wakeLock = null
         super.onDestroy()
     }
 
