@@ -82,6 +82,7 @@ class AncSegmentedView(
         typeface = ThemeRes.medium(context)
     }
     private val box = RectF()
+    private val capBounds = android.graphics.Rect()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // Nothing: taller, for the bigger unscaled dot icons.
@@ -104,8 +105,13 @@ class AncSegmentedView(
 
         // The dot icons get more room: 31 dots in 22dp would blur into a grey disc.
         val iconSize = dp(if (dots.isEmpty()) 22f else 28f)
-        val iconTop = h / 2 + dp(5f) - iconSize
-        val baseline = if (icons.isEmpty()) h / 2 + textPaint.textSize * 0.35f else h / 2 + dp(16f)
+        // Icon, gap and the label's cap height as one block, centred in the height, so the space above the
+        // icon and below the label are equal ([USER] 2026-09-28).
+        val iconH = dots.firstOrNull { it != null }?.height?.toFloat() ?: iconSize
+        textPaint.getTextBounds("H", 0, 1, capBounds)
+        val capH = capBounds.height().toFloat()
+        val iconTop = Math.round((h - (iconH + dp(5f) + capH)) / 2).toFloat()
+        val baseline = if (icons.isEmpty()) h / 2 + capH / 2 else iconTop + iconH + dp(5f) + capH
         labels.forEachIndexed { i, label ->
             // The segment under the moving fill brightens as the fill arrives.
             val closeness = if (pos < 0f) 0f else (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)
@@ -115,7 +121,7 @@ class AncSegmentedView(
             if (dot != null) {
                 dotPaint.colorFilter = PorterDuffColorFilter(c, PorterDuff.Mode.SRC_IN)
                 // Unscaled, on whole pixels.
-                canvas.drawBitmap(dot, Math.round(cx - dot.width / 2f).toFloat(), Math.round(h / 2 + dp(5f) - dot.height).toFloat(), dotPaint)
+                canvas.drawBitmap(dot, Math.round(cx - dot.width / 2f).toFloat(), iconTop, dotPaint)
             } else icons.getOrNull(i)?.run {
                 setTint(c)
                 setBounds(
