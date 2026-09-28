@@ -41,11 +41,14 @@ import com.spizganed.quickbuds.bluetooth.BudsService
 class GestureActivity : Activity() {
 
     private var side: GestureSide = GestureSide.LEFT
+    /** The model's rows and options, read on every render (a model pick can change it). */
+    private lateinit var model: GestureModel
 
     private lateinit var btnLeft: Button
     private lateinit var btnRight: Button
     private lateinit var gestureList: LinearLayout
     private lateinit var onCallList: LinearLayout
+    private lateinit var onCallLabel: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Before super.onCreate — see ThemeRes.select.
@@ -98,7 +101,8 @@ class GestureActivity : Activity() {
         // No Left/Right selector reads into this card — `[USER]`-confirmed 2026-09-22,
         // these two rows are ONE shared setting for both buds, unlike everything above.
         // See PROTOCOL.md §6 and [OnCallGesture].
-        column.addView(SettingRowFactory.sectionLabel(this, R.string.gesture_section_on_call))
+        onCallLabel = SettingRowFactory.sectionLabel(this, R.string.gesture_section_on_call)
+        column.addView(onCallLabel)
 
         onCallList = SettingRowFactory.card(this)
         column.addView(onCallList)
@@ -196,7 +200,7 @@ class GestureActivity : Activity() {
      * `fn`. Writing only the currently-selected side would leave the OTHER bud's table entry
      * disagreeing with what the cycle actually does on it. A third write, to
      * [BudsService.ACTION_SET_HOLD_MODES], carries WHICH modes are in the cycle
-     * ([GestureAction.holdMaskFor], `setSupportNoiseReduction`, `[CAPTURE]` 2026-09-22) — that
+     * ([GestureModel.holdMask], `setSupportNoiseReduction`, `[CAPTURE]` 2026-09-22) — that
      * command has no per-side concept at all, so there is only ever one of it. Three separate
      * commands, kept separate here too, so a failure in any one is attributable — see
      * [GestureConfigStore] and PROTOCOL.md §5.
@@ -214,7 +218,7 @@ class GestureActivity : Activity() {
                 action = BudsService.ACTION_SET_GESTURE
                 putExtra(BudsService.EXTRA_GESTURE_DEVICE, s.deviceType)
                 putExtra(BudsService.EXTRA_GESTURE_ACTION, gesture.keyFnAction)
-                putExtra(BudsService.EXTRA_GESTURE_FUNCTION, GestureAction.functionByteFor(actions))
+                putExtra(BudsService.EXTRA_GESTURE_FUNCTION, model.functionByteFor(actions))
             }
             startService(intent)
         }
@@ -222,7 +226,7 @@ class GestureActivity : Activity() {
         if (gesture == Gesture.TAP_HOLD) {
             val maskIntent = Intent(this, BudsService::class.java).apply {
                 action = BudsService.ACTION_SET_HOLD_MODES
-                putExtra(BudsService.EXTRA_HOLD_MASK, GestureAction.holdMaskFor(actions))
+                putExtra(BudsService.EXTRA_HOLD_MASK, model.holdMask(actions))
             }
             startService(maskIntent)
         }
@@ -236,13 +240,13 @@ class GestureActivity : Activity() {
      * whole reason the selector exists is that they differ.
      */
     private fun render() {
+        model = GestureModel.of(this)
 
         paintSideButton(btnLeft, side == GestureSide.LEFT)
         paintSideButton(btnRight, side == GestureSide.RIGHT)
 
         gestureList.removeAllViews()
-        val gestures = Gesture.values()
-        for ((index, gesture) in gestures.withIndex()) {
+        for ((index, gesture) in model.rows.keys.withIndex()) {
             if (index > 0) gestureList.addView(SettingRowFactory.buildDivider(this))
             gestureList.addView(buildGestureRow(gesture))
         }
@@ -251,8 +255,9 @@ class GestureActivity : Activity() {
         // not depend on `side` — one repaint path is simpler than tracking which parts of
         // the screen a side switch actually touches.
         onCallList.removeAllViews()
-        val onCallGestures = OnCallGesture.values()
-        for ((index, gesture) in onCallGestures.withIndex()) {
+        onCallLabel.visibility = if (model.onCall.isEmpty()) View.GONE else View.VISIBLE
+        onCallList.visibility = onCallLabel.visibility
+        for ((index, gesture) in model.onCall.withIndex()) {
             if (index > 0) onCallList.addView(SettingRowFactory.buildDivider(this))
             onCallList.addView(buildOnCallRow(gesture))
         }
@@ -370,7 +375,7 @@ class GestureActivity : Activity() {
         Gesture.DOUBLE_TAP -> R.drawable.ic_tap_double
         Gesture.TRIPLE_TAP -> R.drawable.ic_tap_triple
         Gesture.SLIDE -> R.drawable.ic_chevron_right
-        Gesture.TAP_HOLD -> R.drawable.ic_bolt
+        Gesture.LONG_PRESS, Gesture.EXTRA_LONG_PRESS, Gesture.TAP_HOLD -> R.drawable.ic_bolt
     }
 
     /**
@@ -388,7 +393,7 @@ class GestureActivity : Activity() {
      * just closes without writing.
      */
     private fun showActionDialog(gesture: Gesture) {
-        val options = actionsFor(gesture)
+        val options = model.rows[gesture].orEmpty()
         val selected = GestureConfigStore.load(this, side, gesture).toMutableList()
 
         if (!gesture.multiSelect) {

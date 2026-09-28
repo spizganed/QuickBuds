@@ -159,6 +159,7 @@
     <string name="gesture_triple">세 번 탭</string>
     <string name="gesture_slide">슬라이드</string>
     <string name="gesture_hold">길게 누르기</string>
+    <string name="gesture_extra_long">더 길게 누르기</string>
     <string name="gesture_on_call_double_tap">두 번 탭</string>
     <string name="gesture_on_call_long_hold">오래 누르기</string>
     <string name="gesture_on_call_answer_end">받기 / 종료</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">게임 모드</string>
     <string name="gesture_action_volume">볼륨 조절</string>
     <string name="gesture_action_switch_track">곡 전환</string>
+    <string name="gesture_action_volume_up">볼륨 높이기</string>
+    <string name="gesture_action_volume_down">볼륨 낮추기</string>
+    <string name="gesture_action_switch_device">기기 전환</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">적응형</string>
     <string name="gesture_action_anc_transparency">주변음 허용</string>

@@ -159,6 +159,7 @@
     <string name="gesture_triple">Triple appui</string>
     <string name="gesture_slide">Glissement</string>
     <string name="gesture_hold">Appui long</string>
+    <string name="gesture_extra_long">Appui très long</string>
     <string name="gesture_on_call_double_tap">Double appui</string>
     <string name="gesture_on_call_long_hold">Appui prolongé</string>
     <string name="gesture_on_call_answer_end">Répondre / raccrocher</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Mode jeu</string>
     <string name="gesture_action_volume">Réglage du volume</string>
     <string name="gesture_action_switch_track">Changer de piste</string>
+    <string name="gesture_action_volume_up">Augmenter le volume</string>
+    <string name="gesture_action_volume_down">Réduire le volume</string>
+    <string name="gesture_action_switch_device">Changer d\'appareil</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptatif</string>
     <string name="gesture_action_anc_transparency">Transparence</string>

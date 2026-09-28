@@ -159,6 +159,7 @@
     <string name="gesture_triple">Triple toque</string>
     <string name="gesture_slide">Deslizar</string>
     <string name="gesture_hold">Mantener</string>
+    <string name="gesture_extra_long">Mantener más tiempo</string>
     <string name="gesture_on_call_double_tap">Doble toque</string>
     <string name="gesture_on_call_long_hold">Mantener pulsado</string>
     <string name="gesture_on_call_answer_end">Contestar / colgar</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Modo juego</string>
     <string name="gesture_action_volume">Control de volumen</string>
     <string name="gesture_action_switch_track">Cambiar de pista</string>
+    <string name="gesture_action_volume_up">Subir volumen</string>
+    <string name="gesture_action_volume_down">Bajar volumen</string>
+    <string name="gesture_action_switch_device">Cambiar dispositivos</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptativo</string>
     <string name="gesture_action_anc_transparency">Transparencia</string>

@@ -159,6 +159,7 @@
     <string name="gesture_triple">Tripla koppintás</string>
     <string name="gesture_slide">Csúsztatás</string>
     <string name="gesture_hold">Nyomva tartás</string>
+    <string name="gesture_extra_long">Hosszú nyomva tartás</string>
     <string name="gesture_on_call_double_tap">Dupla koppintás</string>
     <string name="gesture_on_call_long_hold">Hosszú nyomva tartás</string>
     <string name="gesture_on_call_answer_end">Hívás fogadása / befejezése</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Játék mód</string>
     <string name="gesture_action_volume">Hangerő-szabályozás</string>
     <string name="gesture_action_switch_track">Számváltás</string>
+    <string name="gesture_action_volume_up">Hangerő fel</string>
+    <string name="gesture_action_volume_down">Hangerő le</string>
+    <string name="gesture_action_switch_device">Eszközváltás</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptív</string>
     <string name="gesture_action_anc_transparency">Átengedés</string>

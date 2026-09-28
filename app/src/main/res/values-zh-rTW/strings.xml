@@ -159,6 +159,7 @@
     <string name="gesture_triple">三擊</string>
     <string name="gesture_slide">滑動</string>
     <string name="gesture_hold">長按</string>
+    <string name="gesture_extra_long">超長按</string>
     <string name="gesture_on_call_double_tap">雙擊</string>
     <string name="gesture_on_call_long_hold">長按</string>
     <string name="gesture_on_call_answer_end">接聽/掛斷</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">遊戲模式</string>
     <string name="gesture_action_volume">音量調整</string>
     <string name="gesture_action_switch_track">切換曲目</string>
+    <string name="gesture_action_volume_up">增大音量</string>
+    <string name="gesture_action_volume_down">減小音量</string>
+    <string name="gesture_action_switch_device">裝置切換</string>
     <string name="gesture_action_anc_on">降噪</string>
     <string name="gesture_action_anc_adaptive">自適應</string>
     <string name="gesture_action_anc_transparency">通透</string>

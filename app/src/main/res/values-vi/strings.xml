@@ -159,6 +159,7 @@
     <string name="gesture_triple">Chạm ba lần</string>
     <string name="gesture_slide">Vuốt</string>
     <string name="gesture_hold">Nhấn giữ</string>
+    <string name="gesture_extra_long">Nhấn giữ lâu</string>
     <string name="gesture_on_call_double_tap">Chạm hai lần</string>
     <string name="gesture_on_call_long_hold">Nhấn giữ lâu</string>
     <string name="gesture_on_call_answer_end">Nghe / kết thúc cuộc gọi</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Chế độ game</string>
     <string name="gesture_action_volume">Điều chỉnh âm lượng</string>
     <string name="gesture_action_switch_track">Chuyển bài</string>
+    <string name="gesture_action_volume_up">Tăng âm lượng</string>
+    <string name="gesture_action_volume_down">Giảm âm lượng</string>
+    <string name="gesture_action_switch_device">Chuyển thiết bị</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Thích ứng</string>
     <string name="gesture_action_anc_transparency">Xuyên âm</string>

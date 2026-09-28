@@ -159,6 +159,7 @@
     <string name="gesture_triple">Üç kez dokunma</string>
     <string name="gesture_slide">Kaydırma</string>
     <string name="gesture_hold">Basılı tutma</string>
+    <string name="gesture_extra_long">Uzun basılı tutma</string>
     <string name="gesture_on_call_double_tap">Çift dokunma</string>
     <string name="gesture_on_call_long_hold">Uzun basılı tutma</string>
     <string name="gesture_on_call_answer_end">Cevapla / bitir</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Oyun modu</string>
     <string name="gesture_action_volume">Ses düzeyi</string>
     <string name="gesture_action_switch_track">Parça değiştir</string>
+    <string name="gesture_action_volume_up">Sesi artır</string>
+    <string name="gesture_action_volume_down">Sesi kıs</string>
+    <string name="gesture_action_switch_device">Cihazlar arasında geçiş yap</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Uyarlanabilir</string>
     <string name="gesture_action_anc_transparency">Şeffaflık</string>

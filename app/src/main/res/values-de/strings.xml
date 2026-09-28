@@ -159,6 +159,7 @@
     <string name="gesture_triple">Dreimal tippen</string>
     <string name="gesture_slide">Wischen</string>
     <string name="gesture_hold">Halten</string>
+    <string name="gesture_extra_long">Lange halten</string>
     <string name="gesture_on_call_double_tap">Zweimal tippen</string>
     <string name="gesture_on_call_long_hold">Lange halten</string>
     <string name="gesture_on_call_answer_end">Anruf annehmen / beenden</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Spielmodus</string>
     <string name="gesture_action_volume">Lautstärke</string>
     <string name="gesture_action_switch_track">Titel wechseln</string>
+    <string name="gesture_action_volume_up">Lautstärke erhöhen</string>
+    <string name="gesture_action_volume_down">Lautstärke verringern</string>
+    <string name="gesture_action_switch_device">Geräte wechseln</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptiv</string>
     <string name="gesture_action_anc_transparency">Transparenz</string>

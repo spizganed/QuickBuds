@@ -30,6 +30,8 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   Changes made on the buds show up in the app.
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
+- Gestures per model (2026-09-29): rows and options from HeyMelody's `control` / `callControl` lists,
+  plus volume up / down and switch devices (PROTOCOL.md §6).
 - Dual connection: switch plus connected-device list (a home screen row), HeyMelody's exact write
   sequence (PROTOCOL.md §9, capture 2026-09-25), and HeyMelody's "Add device" pairing instructions.
 - Voice assistant gesture on double / triple tap, same options as HeyMelody; `0x03` confirmed

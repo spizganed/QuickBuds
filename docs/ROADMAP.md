@@ -48,7 +48,12 @@ Each step is done before the next one starts.
    - **Done 2026-09-29: built-in EQ presets per model.** HeyMelody's `equalizerMode` names and numbers
      them per model (PROTOCOL.md §9); a picked Nord Buds 2r showed Balanced / Bass / Bold as HeyMelody
      does. Buds 4 unchanged.
-   - **Next session: gestures on other models** (the `control_<id>/config.json` function codes, below).
+   - **Done 2026-09-29: gestures per model.** The rows and options come from HeyMelody's own `control` /
+     `callControl` lists (PROTOCOL.md §6); Buds 4 unchanged, a picked Nord Buds 2r showed its own rows.
+     Unverified on other models until an owner reads a write back.
+   - **Open: the gesture rows still hidden** (their row is left out rather than written by guess): per-bud
+     hold cycles (`longPressType`, 8 models: Nord Buds 4 / 4 Pro, Buds Ace 3, Enco Air5 family), hold with
+     top-level ANC levels (3 models), on-call rows on single / double tap (callControl 32/33, 36/37).
    - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
      Galaxy S24). Asked to update in-app, clean install if it still fails, and send a Dev Tools export
      with what works. Their logs are the first non-Buds 4 evidence: read before changing anything.
@@ -75,10 +80,8 @@ Each step is done before the next one starts.
    - **The model list is HeyMelody's own** (pulled from the HeyMelody APK, [USER] 2026-09-27), so which
      features a model has is `[VENDOR]`; only the packet builders are `[OSS]`. OppoPods' `docs/` has two
      JADX write-ups of HeyMelody (`HeyMelody_Official_App_Protocol_Findings.md`,
-     `HeyMelody_Bluetooth_Protocol_Notes.md`). Gestures on other models: HeyMelody downloads a per-model
-     `control_<id>/config.json` with each action's function codes (their Enco X3 table); our writer
-     already reads the slots from the bud, so those codes are the missing piece. Until then gestures stay
-     Buds 4 only.
+     `HeyMelody_Bluetooth_Protocol_Notes.md`). Gestures on other models: done from the model list's
+     `control` entries (the downloaded `control_<id>/config.json` turned out not to be needed).
    - **More sources (2026-09-27):** HeyMelody decompiled (see CLAUDE.md) gives `[VENDOR]` payloads for
      every command. `GazzasaurusRex/oneplus-buds-omarchy` has read-back-verified profiles for Buds Pro
      and Buds Pro 2 (ANC levels, EQ ids, `0x0105` firmware). `digisatapathy2025/oneplus-buds-mac` has a

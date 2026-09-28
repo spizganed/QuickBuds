@@ -159,6 +159,7 @@
     <string name="gesture_triple">Ketik tiga kali</string>
     <string name="gesture_slide">Leret</string>
     <string name="gesture_hold">Tahan</string>
+    <string name="gesture_extra_long">Tahan lebih lama</string>
     <string name="gesture_on_call_double_tap">Ketik dua kali</string>
     <string name="gesture_on_call_long_hold">Tahan lama</string>
     <string name="gesture_on_call_answer_end">Jawab / tamatkan panggilan</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Mod permainan</string>
     <string name="gesture_action_volume">Kawalan kelantangan</string>
     <string name="gesture_action_switch_track">Tukar lagu</string>
+    <string name="gesture_action_volume_up">Naikkan kelantangan</string>
+    <string name="gesture_action_volume_down">Turunkan kelantangan</string>
+    <string name="gesture_action_switch_device">Tukar peranti</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptif</string>
     <string name="gesture_action_anc_transparency">Ketelusan</string>

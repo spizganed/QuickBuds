@@ -159,6 +159,7 @@
     <string name="gesture_triple">トリプルタップ</string>
     <string name="gesture_slide">スライド</string>
     <string name="gesture_hold">長押し</string>
+    <string name="gesture_extra_long">超長押し</string>
     <string name="gesture_on_call_double_tap">ダブルタップ</string>
     <string name="gesture_on_call_long_hold">長押し（長め）</string>
     <string name="gesture_on_call_answer_end">応答 / 終了</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">ゲームモード</string>
     <string name="gesture_action_volume">音量調整</string>
     <string name="gesture_action_switch_track">曲の切り替え</string>
+    <string name="gesture_action_volume_up">音量を上げる</string>
+    <string name="gesture_action_volume_down">音量を下げる</string>
+    <string name="gesture_action_switch_device">デバイスの切り替え</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">適応</string>
     <string name="gesture_action_anc_transparency">外音取り込み</string>

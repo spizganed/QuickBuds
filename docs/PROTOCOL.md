@@ -678,7 +678,7 @@ working. The same gesture, with two different slot values, gave two self-consist
 | `0x07` volume | `0x0B` | `0x0C` | resolves to volume up / volume down |
 
 So `0x0A` and `0x07` are **composites** that resolve per direction, and **`0x0B` = volume up,
-`0x0C` = volume down** (the pairings are measured; the two NAMES are inferred, and marked so).
+`0x0C` = volume down** (the pairings are measured; the names, first inferred, are confirmed by HeyMelody's own map, see below).
 This is also the cleanest demonstration of why `byte3` cannot be read as just "the stored
 byte" — it reports what the gesture EFFECTIVELY does.
 
@@ -773,10 +773,10 @@ against what he reported binding (zero contradictions; two values confirmed twic
 |---|---|---|---|---|
 | `0x00` | none / unbound | | `0x08` | **ANC cycle** (the hold) |
 | `0x01` | play/pause | | `0x0A` | switch track |
-| `0x03` | voice assistant `[CAPTURE]` | | `0x0B` | volume up `[INFERRED]` |
-| `0x05` | previous track | | `0x0C` | volume down `[INFERRED]` |
-| `0x06` | next track | | `0x11` | game mode |
-| `0x07` | volume | | | |
+| `0x03` | voice assistant `[CAPTURE]` | | `0x0B` | volume up `[VENDOR]` |
+| `0x05` | previous track | | `0x0C` | volume down `[VENDOR]` |
+| `0x06` | next track | | `0x0D` | switch devices `[VENDOR]` |
+| `0x07` | volume | | `0x11` | game mode |
 
 `0x03` is also confirmed from HeyMelody's own write, 2026-09-25: left double tap to Voice Assistant
 sent `0401 01 01 01 02 03` and back to None `0401 01 01 01 02 00`, each re-read as `01 01 02 03` / `00`
@@ -784,11 +784,50 @@ sent `0401 01 01 01 02 03` and back to None `0401 01 01 01 02 00`, each re-read 
 
 `0x0B`/`0x0C` come from **`F1` byte3 during a slide**, where the same gesture resolved
 per direction (see `byte3` in §6.1): a slot holding `0x07` (volume) reported `0x0B` going up
-and `0x0C` going down. The PAIRING is measured; the two **names are inferred**, which is why
-they are marked. `0x0A` and `0x07` are **composites** — they resolve per direction, so an
+and `0x0C` going down. The PAIRING is measured; the names are `[VENDOR]` (see *Other models* below). `0x0A` and `0x07` are **composites** — they resolve per direction, so an
 `F1` frame never reports them directly.
 
-Unseen: `0x02`, `0x04`, `0x09`, `0x0D`–`0x10`, `0x12`+.
+Unseen on the wire: `0x02`, `0x04`, `0x09`, `0x0D`–`0x10`, `0x12`+.
+
+#### Other models: HeyMelody's `control` list `[VENDOR]` (2026-09-29)
+
+HeyMelody's own label -> byte map (`DeviceControlPreferenceUtils.getFunctionCommand`, )
+agrees with every measured value above and adds: `0x02` listening music, `0x09` favourite music,
+`0x0B` / `0x0C` volume up / down (the inferred names were right), `0x0D` switch devices, `0x11` game
+mode, `0x12` zen mode, `0x16` collect music, `0x19` AI summary, `0x1A` / `0x1B` AI translation,
+`0x1C` / `0x1D` decline / answer call (our on-call bytes), `0x20` spy tap. **On "OnePlus Buds" and
+"OnePlus Buds Z" only, previous / next track are `0x04` / `0x05`** (`c.I()`, by Bluetooth name).
+
+Each model's `function.control` (and `callControl`) in the model list, copied into
+`assets/models.json`, is one entry per gesture row: `{action, support, minSelectCount}`. `support` is
+a mask of options, one bit per function (, shown in that order):
+
+| bit | option | `fn` | | bit | option | `fn` |
+|---|---|---|---|---|---|---|
+| 512 | none | `0x00` | | 16 | volume down | `0x0C` |
+| 128 | noise switch | `0x08` | | 256 | favourite music | `0x09` |
+| 4 | play/pause | `0x01` | | 1024 | volume | `0x07` |
+| 32 | previous | `0x05` | | 2048 | switch track | `0x0A` |
+| 64 | next | `0x06` | | 4096 | switch devices | `0x0D` |
+| 1 | voice assistant | `0x03` | | 8192 | game mode | `0x11` |
+| 8 | volume up | `0x0B` | | 32768 / 65536 / 131072 | collect music / zen / AI summary | `0x16` / `0x12` / `0x19` |
+
+Bit 2 (listening music) is never shown. Buds 4 gives exactly the menus he read off HeyMelody's
+screen (`1:516 2:8807 3:3154531 5:3584`, hold `27`).
+
+The `action` numbers map to the key-function `act` (`BaseEarControlFragment`): 1-6 are themselves
+(4 = hold with a plain choice, 6 = HeyMelody's "super long press"), 16/17/18 are acts 1/2/3 (stem
+press models), 11, 20 and 27 are the hold's ANC cycle on act 4 (no `support`; the options are the
+model's top-level noise modes), callControl 29 / 31 are on-call acts 2 / 6 (answer / decline, as
+captured), 30 is act 3 (AI summary). Entries 7, 8, 12-15 are fixed rows that show a text only.
+
+**The hold's cycle mask uses each top-level noise mode's `protocolIndex`**
+(`getNoiseReductionInfoDTO`), so its bits differ per model: Buds 4 ANC 1 / Adaptive 11 /
+Transparency 2 / Off 0 (as captured), but several OPPO models have ANC 0 / Off 1. Models with
+`longPressType` set (8833, eight models) send the mask per bud with noise type 3 (left) / 4 (right)
+instead of 1. The app builds its gesture screen from this (`GestureModel`); unverified on any model
+but Buds 4 until an owner reads a write back. Not handled yet, so their rows are hidden: the
+per-bud cycles, top-level ANC levels in a hold (3 models) and the on-call variants 32/33 and 36/37.
 
 #### The table's SHAPE IS NOT FIXED — do not hardcode a count OR a button group
 

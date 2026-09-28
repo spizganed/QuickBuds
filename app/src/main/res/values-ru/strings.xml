@@ -159,6 +159,7 @@
     <string name="gesture_triple">Тройное касание</string>
     <string name="gesture_slide">Свайп</string>
     <string name="gesture_hold">Удержание</string>
+    <string name="gesture_extra_long">Долгое удержание</string>
     <string name="gesture_on_call_double_tap">Двойное касание</string>
     <string name="gesture_on_call_long_hold">Долгое удержание</string>
     <string name="gesture_on_call_answer_end">Ответить / завершить</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Игровой режим</string>
     <string name="gesture_action_volume">Громкость</string>
     <string name="gesture_action_switch_track">Смена трека</string>
+    <string name="gesture_action_volume_up">Увеличение громкости</string>
+    <string name="gesture_action_volume_down">Уменьшение громкости</string>
+    <string name="gesture_action_switch_device">Переключить устройства</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Адаптивный</string>
     <string name="gesture_action_anc_transparency">Прозрачность</string>

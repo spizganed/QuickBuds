@@ -159,6 +159,7 @@
     <string name="gesture_triple">Потрійний дотик</string>
     <string name="gesture_slide">Свайп</string>
     <string name="gesture_hold">Утримання</string>
+    <string name="gesture_extra_long">Довге утримання</string>
     <string name="gesture_on_call_double_tap">Подвійний дотик</string>
     <string name="gesture_on_call_long_hold">Довге утримання</string>
     <string name="gesture_on_call_answer_end">Відповісти / завершити</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Ігровий режим</string>
     <string name="gesture_action_volume">Гучність</string>
     <string name="gesture_action_switch_track">Зміна треку</string>
+    <string name="gesture_action_volume_up">Збільшити гучність</string>
+    <string name="gesture_action_volume_down">Зменшити гучність</string>
+    <string name="gesture_action_switch_device">Переключати пристрої</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Адаптивний</string>
     <string name="gesture_action_anc_transparency">Прозорість</string>

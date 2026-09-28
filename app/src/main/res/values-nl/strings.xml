@@ -159,6 +159,7 @@
     <string name="gesture_triple">Drievoudige tik</string>
     <string name="gesture_slide">Vegen</string>
     <string name="gesture_hold">Vasthouden</string>
+    <string name="gesture_extra_long">Lang vasthouden</string>
     <string name="gesture_on_call_double_tap">Dubbele tik</string>
     <string name="gesture_on_call_long_hold">Lang vasthouden</string>
     <string name="gesture_on_call_answer_end">Opnemen / ophangen</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Gamemodus</string>
     <string name="gesture_action_volume">Volumeregeling</string>
     <string name="gesture_action_switch_track">Nummer wisselen</string>
+    <string name="gesture_action_volume_up">Volume omhoog</string>
+    <string name="gesture_action_volume_down">Volume omlaag</string>
+    <string name="gesture_action_switch_device">Schakelen tussen apparaten</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptief</string>
     <string name="gesture_action_anc_transparency">Transparantie</string>

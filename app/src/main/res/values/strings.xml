@@ -201,6 +201,7 @@
     <string name="gesture_triple">Triple tap</string>
     <string name="gesture_slide">Slide</string>
     <string name="gesture_hold">Hold</string>
+    <string name="gesture_extra_long">Extra-long hold</string>
 
     <!--
       On-call gestures (btn 0x06). Shared between both buds, so this section has no
@@ -220,6 +221,9 @@
     <string name="gesture_action_game">Game mode</string>
     <string name="gesture_action_volume">Volume control</string>
     <string name="gesture_action_switch_track">Switch track</string>
+    <string name="gesture_action_volume_up">Volume up</string>
+    <string name="gesture_action_volume_down">Volume down</string>
+    <string name="gesture_action_switch_device">Switch devices</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptive</string>
     <string name="gesture_action_anc_transparency">Transparency</string>

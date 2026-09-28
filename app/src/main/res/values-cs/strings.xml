@@ -159,6 +159,7 @@
     <string name="gesture_triple">Trojité klepnutí</string>
     <string name="gesture_slide">Posun</string>
     <string name="gesture_hold">Podržení</string>
+    <string name="gesture_extra_long">Dlouhé podržení</string>
     <string name="gesture_on_call_double_tap">Dvojité klepnutí</string>
     <string name="gesture_on_call_long_hold">Dlouhé podržení</string>
     <string name="gesture_on_call_answer_end">Přijmout / ukončit hovor</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Herní režim</string>
     <string name="gesture_action_volume">Ovládání hlasitosti</string>
     <string name="gesture_action_switch_track">Přepnout skladbu</string>
+    <string name="gesture_action_volume_up">Zesílit</string>
+    <string name="gesture_action_volume_down">Zeslabit</string>
+    <string name="gesture_action_switch_device">Přepnout zařízení</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptivní</string>
     <string name="gesture_action_anc_transparency">Propustnost</string>

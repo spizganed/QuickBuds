@@ -239,6 +239,9 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
   **Never reintroduce a hardcoded button group** — the bud's slot layout differs per bud and
   normalises itself between writes, so any fixed group is wrong about half the time. This broke
   slide twice, in opposite directions.
+- **Which rows and options a model has is `GestureModel`** (2026-09-29), from HeyMelody's `control` /
+  `callControl` lists in `assets/models.json` (PROTOCOL.md §6). The hold's mask bits come from the model's
+  noise modes, never from constants. A new option needs its `supportBit` in `GestureAction` and `ORDER`.
 - `KeyFunctionParser.HEADER_SIZE = 2` — the reply is `<status> <count> <entries>`. The OSS source
   models one entry, not the envelope, and taking `payload[0]` as the count cost an off-by-one.
 - **The hold's function byte does not control the ANC cycle.** Clearing it to `0x00` does not stop

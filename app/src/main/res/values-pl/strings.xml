@@ -159,6 +159,7 @@
     <string name="gesture_triple">Trzy dotknięcia</string>
     <string name="gesture_slide">Przesunięcie</string>
     <string name="gesture_hold">Przytrzymanie</string>
+    <string name="gesture_extra_long">Długie przytrzymanie</string>
     <string name="gesture_on_call_double_tap">Dwa dotknięcia</string>
     <string name="gesture_on_call_long_hold">Długie przytrzymanie</string>
     <string name="gesture_on_call_answer_end">Odbierz / zakończ połączenie</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Tryb gry</string>
     <string name="gesture_action_volume">Głośność</string>
     <string name="gesture_action_switch_track">Zmiana utworu</string>
+    <string name="gesture_action_volume_up">Zwiększ głośność</string>
+    <string name="gesture_action_volume_down">Zmniejsz głośność</string>
+    <string name="gesture_action_switch_device">Przełącz urządzenia</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptacyjny</string>
     <string name="gesture_action_anc_transparency">Przezroczystość</string>

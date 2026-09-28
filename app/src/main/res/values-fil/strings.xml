@@ -159,6 +159,7 @@
     <string name="gesture_triple">Tatlong tap</string>
     <string name="gesture_slide">Slide</string>
     <string name="gesture_hold">Pindutin nang matagal</string>
+    <string name="gesture_extra_long">Pindutin nang mas matagal</string>
     <string name="gesture_on_call_double_tap">Dobleng tap</string>
     <string name="gesture_on_call_long_hold">Mas matagal na pindot</string>
     <string name="gesture_on_call_answer_end">Sagutin / tapusin ang tawag</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">Game mode</string>
     <string name="gesture_action_volume">Kontrol ng volume</string>
     <string name="gesture_action_switch_track">Lumipat ng track</string>
+    <string name="gesture_action_volume_up">Lakasan ang volume</string>
+    <string name="gesture_action_volume_down">Hinaan ang volume</string>
+    <string name="gesture_action_switch_device">Lumipat ng device</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">Adaptive</string>
     <string name="gesture_action_anc_transparency">Transparency</string>

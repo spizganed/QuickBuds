@@ -2,8 +2,13 @@ package com.spizganed.quickbuds.ui
 
 import android.content.Context
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.AncModes
+import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * Gesture configuration — the model behind the Earbud controls screen.
@@ -26,7 +31,7 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
  *
  * WHICH MODES THE CYCLE CONTAINS is settable through a DIFFERENT command —
  * `setSupportNoiseReduction` (`0x0404` action `02`, payload `[02][01][modeMask LE]`,
- * `[CAPTURE]` 2026-09-22 — see [GestureAction.holdMaskBit] and PROTOCOL.md §5), with `0x010C`
+ * `[CAPTURE]` 2026-09-22 — see [GestureModel.holdMask] and PROTOCOL.md §5), with `0x010C`
  * `02 01` reading the mask back. `GestureActivity.writeToBuds()` sends this as a SEPARATE
  * write from the key-function bind, deliberately: two commands, so a failure in either is
  * attributable, never merged into one "save".
@@ -73,11 +78,17 @@ enum class Gesture(
      * as `0x08`. Both directions are driven by that one `0x05` binding — which is why the
      * write needs one entry, not the two that `reportBytes` would suggest.
      */
-    val keyFnAction: Int = 0
+    val keyFnAction: Int = 0,
+    /**
+     * `[VENDOR]` The `action` values of HeyMelody's per-model `control` list that are this row
+     * (`BaseEarControlFragment`: 16/17/18 are the stem-press models' 1/2/3, and 11, 20 and 27 are
+     * all the hold's ANC cycle on `act 0x04`). See [GestureModel].
+     */
+    val controlActions: IntArray = intArrayOf()
 ) {
-    SINGLE_TAP(R.string.gesture_single, intArrayOf(0x00), false, keyFnAction = 0x01),
-    DOUBLE_TAP(R.string.gesture_double, intArrayOf(0x02), false, keyFnAction = 0x02),
-    TRIPLE_TAP(R.string.gesture_triple, intArrayOf(0x03), false, keyFnAction = 0x03),
+    SINGLE_TAP(R.string.gesture_single, intArrayOf(0x00), false, keyFnAction = 0x01, controlActions = intArrayOf(1, 16)),
+    DOUBLE_TAP(R.string.gesture_double, intArrayOf(0x02), false, keyFnAction = 0x02, controlActions = intArrayOf(2, 17)),
+    TRIPLE_TAP(R.string.gesture_triple, intArrayOf(0x03), false, keyFnAction = 0x03, controlActions = intArrayOf(3, 18)),
 
     /**
      * SLIDE IS ONE ROW, TWO REPORT BYTES, AND A MOVING TARGET.
@@ -106,9 +117,18 @@ enum class Gesture(
      * back into one `btn 0x01` slot once both are given the same function. Writing every
      * matching slot is also what makes both halves agree, which is what triggers that.
      */
-    SLIDE(R.string.gesture_slide, intArrayOf(0x07, 0x08), false, keyFnAction = 0x05),
+    SLIDE(R.string.gesture_slide, intArrayOf(0x07, 0x08), false, keyFnAction = 0x05, controlActions = intArrayOf(5)),
 
-    TAP_HOLD(R.string.gesture_hold, intArrayOf(0x04), true, keyFnAction = 0x04)
+    /**
+     * `[VENDOR]` A plain single-select hold on `act 0x04` (volume up / down on most models that
+     * have it). No model has both this and [TAP_HOLD], so it shares the "Hold" label.
+     */
+    LONG_PRESS(R.string.gesture_hold, intArrayOf(0x04), false, keyFnAction = 0x04, controlActions = intArrayOf(4)),
+
+    /** `[VENDOR]` HeyMelody's "super long press", `act 0x06` (volume or switch devices). */
+    EXTRA_LONG_PRESS(R.string.gesture_extra_long, intArrayOf(), false, keyFnAction = 0x06, controlActions = intArrayOf(6)),
+
+    TAP_HOLD(R.string.gesture_hold, intArrayOf(0x04), true, keyFnAction = 0x04, controlActions = intArrayOf(11, 20, 27))
 }
 
 /**
@@ -140,24 +160,34 @@ enum class GestureAction(
      * EVERY VALUE HERE IS MEASURED, NOT GUESSED. The enum was filled in from a
      * `0x8108` diff: he rebound slots in the vendor app and reported what he set each
      * one to, and every value matched the reply with no contradictions (two of them
-     * twice, on two different slots). See PROTOCOL.md §6.
+     * twice, on two different slots). See PROTOCOL.md §6. HeyMelody's own label -> byte map
+     * (`DeviceControlPreferenceUtils.getFunctionCommand`) agrees on every one, and is the
+     * `[VENDOR]` source for volume up / down and switch devices.
      */
     val functionByte: Int = 0x00,
     /**
-     * The bit this action sets in [com.spizganed.quickbuds.protocol.OpoProtocol.setHoldAncModes]'s
-     * mask, or -1 for every action that is not an ANC mode. `[CAPTURE]` — see
-     * [OpoProtocol.HOLD_MASK_BIT_OFF] etc. and PROTOCOL.md §5.
+     * `[VENDOR]` This action's bit in a `control` entry's `support` mask
+     * (`DeviceControlPreferenceUtils`, ). 0 = not offered through `support` (the ANC modes).
      */
-    val holdMaskBit: Int = -1
+    val supportBit: Int = 0,
+    /**
+     * The ANC mode's HeyMelody `modeType` (as in [com.spizganed.quickbuds.protocol.AncModes]), or -1
+     * for every action that is not an ANC mode. Its bit in the hold's cycle mask is that mode's
+     * `protocolIndex`, which differs per model — see [GestureModel.holdBits].
+     */
+    val holdModeType: Int = -1
 ) {
-    NONE(R.string.gesture_action_none),
-    PLAY_PAUSE(R.string.gesture_action_play_pause, functionByte = 0x01),
-    PREV_TRACK(R.string.gesture_action_prev, functionByte = 0x05),
-    NEXT_TRACK(R.string.gesture_action_next, functionByte = 0x06),
-    VOICE_ASSISTANT(R.string.gesture_action_assistant, functionByte = 0x03),
-    GAME_MODE(R.string.gesture_action_game, functionByte = 0x11),
-    VOLUME(R.string.gesture_action_volume, functionByte = 0x07),
-    SWITCH_TRACK(R.string.gesture_action_switch_track, functionByte = 0x0A),
+    NONE(R.string.gesture_action_none, supportBit = 512),
+    PLAY_PAUSE(R.string.gesture_action_play_pause, functionByte = 0x01, supportBit = 4),
+    PREV_TRACK(R.string.gesture_action_prev, functionByte = 0x05, supportBit = 32),
+    NEXT_TRACK(R.string.gesture_action_next, functionByte = 0x06, supportBit = 64),
+    VOICE_ASSISTANT(R.string.gesture_action_assistant, functionByte = 0x03, supportBit = 1),
+    VOLUME_UP(R.string.gesture_action_volume_up, functionByte = 0x0B, supportBit = 8),
+    VOLUME_DOWN(R.string.gesture_action_volume_down, functionByte = 0x0C, supportBit = 16),
+    VOLUME(R.string.gesture_action_volume, functionByte = 0x07, supportBit = 1024),
+    SWITCH_TRACK(R.string.gesture_action_switch_track, functionByte = 0x0A, supportBit = 2048),
+    SWITCH_DEVICE(R.string.gesture_action_switch_device, functionByte = 0x0D, supportBit = 4096),
+    GAME_MODE(R.string.gesture_action_game, functionByte = 0x11, supportBit = 8192),
 
     // ALL FOUR ANC ACTIONS SHARE THE SAME `functionByte` (0x08), and that is not a mistake.
     //
@@ -166,109 +196,158 @@ enum class GestureAction(
     // 0x08; another time, same byte, the same gesture cycled FOUR modes. So the cycle's
     // MEMBERSHIP was never stored in this byte — it lives in a DIFFERENT command,
     // `setSupportNoiseReduction` (`0x0404` action `02`), confirmed `[CAPTURE]` 2026-09-22
-    // (PROTOCOL.md §5). [holdMaskBit] is that command's bit for each mode, and
-    // `GestureActivity.writeToBuds()` sends BOTH writes for the hold: the key-function bind
-    // (`functionByte`, bind/unbind the gesture to "cycles ANC" at all) and the mask
-    // (`holdMaskBit`, which modes it cycles through) — two separate commands on purpose, so
-    // a failure in either is attributable, never merged into one "save".
-    ANC_ON(R.string.gesture_action_anc_on, functionByte = 0x08, holdMaskBit = 1),
+    // (PROTOCOL.md §5). `GestureActivity.writeToBuds()` sends BOTH writes for the hold: the
+    // key-function bind (`functionByte`, bind/unbind the gesture to "cycles ANC" at all) and the
+    // mask ([GestureModel.holdMask], which modes it cycles through) — two separate commands on
+    // purpose, so a failure in either is attributable, never merged into one "save".
+    ANC_ON(R.string.gesture_action_anc_on, functionByte = 0x08, holdModeType = 5),
     ANC_ADAPTIVE(
         R.string.gesture_action_anc_adaptive,
         R.string.gesture_action_anc_adaptive_short,
         functionByte = 0x08,
-        holdMaskBit = 11
+        holdModeType = 10
     ),
     ANC_TRANSPARENCY(
         R.string.gesture_action_anc_transparency,
         R.string.gesture_action_anc_transparency_short,
         functionByte = 0x08,
-        holdMaskBit = 2
+        holdModeType = 2
     ),
     ANC_OFF(
         R.string.gesture_action_anc_off,
         R.string.gesture_action_anc_off_short,
         functionByte = 0x08,
-        holdMaskBit = 0
+        holdModeType = 1
     );
 
     /** Label for the row summary — the short form when one is defined. */
     fun summaryLabelRes(): Int = if (shortLabelRes != 0) shortLabelRes else labelRes
-
-    companion object {
-        /**
-         * The byte to WRITE for a whole selection — a list, not one action, because
-         * tap-and-hold is multi-select and the collapse described on ANC_ON above
-         * happens here.
-         *
-         * Empty -> `0x00` (unbind). Non-empty -> the FIRST action's byte, which for
-         * every gesture except the hold is simply that action (the gestures are
-         * single-select, so the list holds one item). For the hold, any non-empty
-         * selection is the ANC cycle `0x08`, whichever of the four modes is ticked.
-         *
-         * Uses `firstOrNull` and not `single()` deliberately: the hold's multi-select
-         * can legitimately hold several actions, and a crash on the user's own valid
-         * selection would be the worst possible outcome here.
-         */
-        fun functionByteFor(actions: List<GestureAction>): Int =
-            actions.firstOrNull()?.functionByte ?: 0x00
-
-        /**
-         * The hold's ANC-cycle mask for a whole selection. Only meaningful for
-         * [Gesture.TAP_HOLD]'s selection — every other gesture's actions all have
-         * [holdMaskBit] `-1` and contribute nothing.
-         */
-        fun holdMaskFor(actions: List<GestureAction>): Int =
-            actions.fold(0) { acc, a -> if (a.holdMaskBit >= 0) acc or (1 shl a.holdMaskBit) else acc }
-    }
 }
 
 /**
- * Which actions each gesture may be bound to, exactly as specified.
+ * Which gesture rows the current model has and what each may be bound to — `[VENDOR]`, from
+ * HeyMelody's per-model `control` / `callControl` lists (copied into `assets/models.json`,
+ * PROTOCOL.md §6). A row is a `control` entry; its options are the [GestureAction.supportBit]s in
+ * its `support` mask, in HeyMelody's own order (`DeviceControlPreferenceUtils.f2769a`). For Buds 4
+ * this gives exactly the rows and options the screen had when they were hand-written from
+ * HeyMelody's UI (`[USER]` 2026-09-21).
  *
- * Kept as a function rather than a field on the enum so the vocabulary and the
- * permitted pairings stay separate: adding an action does not mean adding it to
- * every gesture, and the allowed set is the part a user can see.
+ * The hold ([Gesture.TAP_HOLD]) offers the model's top-level noise modes, and its cycle mask
+ * uses each mode's `protocolIndex` (`BaseEarControlFragment.getNoiseReductionInfoDTO`), so the
+ * bits differ per model (Buds 4: ANC 1, Adaptive 11, Transparency 2, Off 0, as captured).
  */
-fun actionsFor(gesture: Gesture): List<GestureAction> = when (gesture) {
-    Gesture.SINGLE_TAP -> listOf(GestureAction.NONE, GestureAction.PLAY_PAUSE)
+class GestureModel private constructor(
+    /** Rows in [Gesture] order, each with its options. */
+    val rows: Map<Gesture, List<GestureAction>>,
+    /** ANC mode -> its bit in the hold's cycle mask. */
+    private val holdBits: Map<GestureAction, Int>,
+    /** The on-call rows this model has. */
+    val onCall: List<OnCallGesture>,
+    /** OnePlus Buds / Buds Z number previous / next track 4 / 5 (see [functionByte]). */
+    private val oldTrackBytes: Boolean
+) {
+    val isEmpty get() = rows.isEmpty() && onCall.isEmpty()
 
-    Gesture.DOUBLE_TAP -> listOf(
-        GestureAction.NONE, GestureAction.PLAY_PAUSE, GestureAction.PREV_TRACK,
-        GestureAction.NEXT_TRACK, GestureAction.VOICE_ASSISTANT, GestureAction.GAME_MODE
-    )
+    /**
+     * `[VENDOR]` `getFunctionCommand`: previous / next track are 4 / 5 on "OnePlus Buds" and
+     * "OnePlus Buds Z", 5 / 6 everywhere else.
+     */
+    fun functionByte(action: GestureAction): Int = when {
+        oldTrackBytes && action == GestureAction.PREV_TRACK -> 0x04
+        oldTrackBytes && action == GestureAction.NEXT_TRACK -> 0x05
+        else -> action.functionByte
+    }
 
-    Gesture.TRIPLE_TAP -> listOf(
-        GestureAction.NONE, GestureAction.PREV_TRACK, GestureAction.NEXT_TRACK,
-        GestureAction.VOICE_ASSISTANT, GestureAction.GAME_MODE
-    )
+    /**
+     * The byte to WRITE for a whole selection. Empty -> `0x00` (unbind). Non-empty -> the FIRST
+     * action's byte: every gesture but the hold is single-select, and for the hold any non-empty
+     * selection is the ANC cycle `0x08`, whichever modes are ticked (see ANC_ON above). Uses
+     * `firstOrNull`, not `single()`: the hold's multi-select holds several actions.
+     */
+    fun functionByteFor(actions: List<GestureAction>): Int = actions.firstOrNull()?.let { functionByte(it) } ?: 0x00
 
-    Gesture.SLIDE -> listOf(
-        GestureAction.NONE, GestureAction.VOLUME, GestureAction.SWITCH_TRACK
-    )
+    /** The hold's ANC-cycle mask for a selection. */
+    fun holdMask(actions: List<GestureAction>): Int =
+        actions.fold(0) { acc, a -> holdBits[a]?.let { acc or (1 shl it) } ?: acc }
 
-    // Tap-and-hold: the ANC modes, and nothing else.
-    //
-    // THE SELECTION HERE IS NOT WHAT GETS WRITTEN, and that is deliberate rather than
-    // unfinished. All four actions share ONE function byte (0x08), because the device
-    // models the hold as a single "ANC cycle" whose MEMBERSHIP lives in the firmware and
-    // is not part of this protocol: he once set the hold to two modes and once to four,
-    // and the byte was 0x08 both times. So this list is what the user picks from, and
-    // `GestureAction.functionByteFor` collapses any non-empty selection to that one byte.
-    //
-    // The list is kept rather than replaced by a single on/off switch because it is how
-    // the vendor app presents the hold, and because collapsing the UI too would silently
-    // discard the user's intent — see the note in `functionByteFor`. If he prefers a plain
-    // on/off, that is a UI change he decides, not one to sneak in here.
-    //
-    // THIS VOCABULARY IS NO LONGER JUST HIS SPEC — it matches what the vendor app itself
-    // allows. [USER] 2026-09-21: on the hold it offers the ANC modes and nothing else in
-    // exactly this order, and GAME_MODE is offered on double and triple tap only. So the
-    // constraint is the DEVICE's, not a preference of ours, and it must not be widened to
-    // "offer everything everywhere".
-    Gesture.TAP_HOLD -> listOf(
-        GestureAction.ANC_ON, GestureAction.ANC_ADAPTIVE,
-        GestureAction.ANC_TRANSPARENCY, GestureAction.ANC_OFF
-    )
+    /** The hold's selection that a cycle mask read from the buds stands for. */
+    fun holdActions(mask: Int): List<GestureAction> =
+        rows[Gesture.TAP_HOLD].orEmpty().filter { a -> holdBits[a]?.let { (mask shr it) and 1 == 1 } == true }
+
+    companion object {
+        private const val BUDS4 = "065414"
+        /** `[VENDOR]` HeyMelody's option order (`f2769a`), limited to the options the app has. */
+        private val ORDER = intArrayOf(512, 4, 32, 64, 1, 8, 16, 1024, 2048, 4096, 8192)
+        private val EMPTY = GestureModel(emptyMap(), emptyMap(), emptyList(), false)
+
+        @Volatile private var cached: Pair<String, GestureModel>? = null
+
+        /**
+         * The current model's gestures. Nothing detected yet = Buds 4, as [AncModes.of] does; a
+         * product id HeyMelody does not list gets none (its function codes are unknown).
+         */
+        fun of(context: Context): GestureModel {
+            val model = ModelCatalog.current(context)
+                ?: ModelCatalog.all(context).firstOrNull { it.id == BUDS4 }?.takeIf {
+                    context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+                        .getString(Capabilities.KEY_PRODUCT_ID, null) == null
+                }
+                ?: return EMPTY
+            cached?.let { if (it.first == model.id) return it.second }
+            return runCatching { parse(model.json, model.name) }.getOrDefault(EMPTY).also { cached = model.id to it }
+        }
+
+        private fun parse(json: JSONObject, name: String): GestureModel {
+            val control = json.optJSONArray("control") ?: JSONArray()
+            val rows = LinkedHashMap<Gesture, List<GestureAction>>()
+            var holdBits = emptyMap<GestureAction, Int>()
+            for (gesture in Gesture.values()) {
+                val entry = (0 until control.length()).map { control.getJSONObject(it) }
+                    .firstOrNull { it.getInt("action") in gesture.controlActions } ?: continue
+                if (gesture == Gesture.TAP_HOLD) {
+                    holdBits = holdBits(json) ?: continue
+                    rows[gesture] = holdBits.keys.toList()
+                } else {
+                    val support = entry.optInt("support")
+                    val options = ORDER.filter { support and it != 0 }
+                        .map { bit -> GestureAction.values().first { it.supportBit == bit } }
+                    if (options.isNotEmpty()) rows[gesture] = options
+                }
+            }
+            // `[VENDOR]` callControl actions 29 and 31 are `act 0x02` / `0x06` in the on-call group;
+            // a row is only a choice if it offers None (512). ponytail: the 32/33 and 36/37
+            // variants (on single/double tap, 6 models) are not shown yet.
+            val call = json.optJSONArray("callControl") ?: JSONArray()
+            fun hasCall(action: Int) = (0 until call.length()).map { call.getJSONObject(it) }
+                .any { it.getInt("action") == action && it.optInt("support") and 512 != 0 }
+            val onCall = listOfNotNull(
+                OnCallGesture.DOUBLE_TAP.takeIf { hasCall(29) },
+                OnCallGesture.LONG_HOLD.takeIf { hasCall(31) }
+            )
+            return GestureModel(rows, holdBits, onCall, name == "OnePlus Buds" || name == "OnePlus Buds Z")
+        }
+
+        /**
+         * The hold's options and their mask bits: the model's top-level noise modes, in its own
+         * order. Null (no hold row) when a mode has no action here or the cycle is per bud.
+         * ponytail: top-level ANC levels (3 models) and `longPressType`'s per-bud cycles (8
+         * models, noise types 3 / 4) are not handled; they hide the row rather than write a guess.
+         */
+        private fun holdBits(json: JSONObject): Map<GestureAction, Int>? {
+            if (json.has("longPressType")) return null
+            val modes = json.optJSONArray("noiseReductionMode") ?: return null
+            val bits = LinkedHashMap<GestureAction, Int>()
+            for (i in 0 until modes.length()) {
+                val mode = modes.getJSONObject(i)
+                // HeyMelody shows these only if a per-bud read says so, which we do not make.
+                if (mode.optBoolean("decideByEarDevice")) continue
+                val action = GestureAction.values().firstOrNull { it.holdModeType == mode.getInt("modeType") }
+                    ?: return null
+                bits[action] = mode.getInt("protocolIndex")
+            }
+            return bits.takeIf { it.isNotEmpty() }
+        }
+    }
 }
 
 /**
@@ -309,7 +388,7 @@ object GestureConfigStore {
         //
         // "Nothing" is the honest default until the buds report their own state: any
         // preset would guess which modes the user wants, and the mask write (see
-        // [GestureAction.holdMaskBit]) is real now — guessing a default membership
+        // [GestureModel.holdMask]) is real now — guessing a default membership
         // would send a write nobody asked for. Every other gesture defaults to NONE,
         // so this is also consistent.
         Gesture.TAP_HOLD -> emptyList()
@@ -379,16 +458,17 @@ object GestureConfigStore {
      * `functionByte` (0x08), so this table alone cannot say which modes are in the cycle.
      *
      * Silently SKIPS a slot rather than guessing when the device's `function` byte is not one
-     * this gesture's own vocabulary offers ([actionsFor]) — e.g. a stray value from firmware or a
+     * this gesture's own vocabulary offers ([GestureModel.rows]) — e.g. a stray value from firmware or a
      * future vendor feature. Storing an action the UI would never have offered is worse than
      * leaving the old (possibly also-stale) local value in place.
      */
     fun syncFromDevice(context: Context, table: KeyFunctionParser.Table) {
+        val model = GestureModel.of(context)
         for (side in GestureSide.values()) {
-            for (gesture in Gesture.values()) {
+            for ((gesture, options) in model.rows) {
                 if (gesture == Gesture.TAP_HOLD) continue
                 val entry = deviceEntryFor(table, side, gesture.keyFnAction) ?: continue
-                val action = actionsFor(gesture).firstOrNull { it.functionByte == entry.function }
+                val action = options.firstOrNull { model.functionByte(it) == entry.function }
                     ?: continue
                 save(context, side, gesture, listOf(action))
             }
@@ -398,7 +478,7 @@ object GestureConfigStore {
     /**
      * Hold's local record needs BOTH signals together: whether it is bound at all (the
      * key-function `fn`, `0x08` vs `0x00`) and, if bound, which modes (the separate cycle mask —
-     * see [GestureAction.holdMaskBit] and PROTOCOL.md §5). Called whenever either one arrives
+     * see [GestureModel.holdMask] and PROTOCOL.md §5). Called whenever either one arrives
      * with the other already cached, from either `0x8108` or `0x010C` `02 01` handling in
      * `BudsConnectionManager`.
      *
@@ -415,9 +495,7 @@ object GestureConfigStore {
             save(context, GestureSide.LEFT, Gesture.TAP_HOLD, emptyList())
             return
         }
-        val actions = GestureAction.values().filter {
-            it.holdMaskBit >= 0 && (mask shr it.holdMaskBit) and 1 == 1
-        }
+        val actions = GestureModel.of(context).holdActions(mask)
         if (actions.isNotEmpty()) save(context, GestureSide.LEFT, Gesture.TAP_HOLD, actions)
     }
 }

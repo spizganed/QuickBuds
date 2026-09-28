@@ -159,6 +159,7 @@
     <string name="gesture_triple">แตะสามครั้ง</string>
     <string name="gesture_slide">ปัด</string>
     <string name="gesture_hold">กดค้าง</string>
+    <string name="gesture_extra_long">กดค้างนาน</string>
     <string name="gesture_on_call_double_tap">แตะสองครั้ง</string>
     <string name="gesture_on_call_long_hold">กดค้างนาน</string>
     <string name="gesture_on_call_answer_end">รับ / วางสาย</string>
@@ -171,6 +172,9 @@
     <string name="gesture_action_game">โหมดเกม</string>
     <string name="gesture_action_volume">ปรับระดับเสียง</string>
     <string name="gesture_action_switch_track">เปลี่ยนเพลง</string>
+    <string name="gesture_action_volume_up">เพิ่มเสียง</string>
+    <string name="gesture_action_volume_down">ลดเสียง</string>
+    <string name="gesture_action_switch_device">เปลี่ยนอุปกรณ์</string>
     <string name="gesture_action_anc_on">ANC</string>
     <string name="gesture_action_anc_adaptive">ปรับอัตโนมัติ</string>
     <string name="gesture_action_anc_transparency">โปร่งใส</string>
