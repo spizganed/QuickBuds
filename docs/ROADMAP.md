@@ -36,6 +36,9 @@ Each step is done before the next one starts.
    - **Done 2026-09-28: connect to any paired buds** (GitHub issue #1). The target was a hardcoded
      MAC (his Buds 4), so no other user could connect; `BudsDevice` now picks by saved address, SPP
      UUID or model name. Confirmed on Buds 4.
+   - **Done 2026-09-29: built-in EQ presets per model.** HeyMelody's `equalizerMode` names and numbers
+     them per model (PROTOCOL.md §9); a picked Nord Buds 2r showed Balanced / Bass / Bold as HeyMelody
+     does. Buds 4 unchanged.
    - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
      Galaxy S24). Asked to update in-app, clean install if it still fails, and send a Dev Tools export
      with what works. Their logs are the first non-Buds 4 evidence: read before changing anything.

@@ -29,8 +29,11 @@ import android.widget.Toast
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
+import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.EqCodec
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
+import org.json.JSONArray
 
 /**
  * Equalizer — HeyMelody's layout: built-in presets, BassWave, custom presets with a 6-band editor.
@@ -44,10 +47,69 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
  */
 class EqActivity : Activity(), BudsConnectionManager.Listener {
 
+    /**
+     * The model's built-in presets as (`0x0406` id, name), in HeyMelody's order. `[VENDOR]` its per-model
+     * `equalizerMode` (`assets/models.json`): each `modeType` names a preset and its `protocolIndex` is
+     * the id, so the same id is a different preset on another model (Nord Buds 2R: 1 = Bold). Names
+     * are `DisplayContentUtils.d()`. Nothing detected yet = Buds 4; a model without the list gets none.
+     */
+    private fun builtInPresets(): List<Pair<Int, Int>> {
+        val model = ModelCatalog.current(this)
+        val modes = when {
+            model != null -> model.json.optJSONArray("equalizerMode") ?: return emptyList()
+            getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(Capabilities.KEY_PRODUCT_ID, null) != null ->
+                return emptyList()
+            else -> JSONArray("""[{"modeType":11,"protocolIndex":0},{"modeType":14,"protocolIndex":1},{"modeType":12,"protocolIndex":2}]""")
+        }
+        // Types 1-4 have other names on these models (`f(name) == 2` is the `equalizer` field).
+        val alt = model != null && (model.name == "OPPO Enco R" || model.name == "OPPO Enco Air2" || model.json.optInt("equalizer") == 2)
+        return (0 until modes.length()).mapNotNull { i ->
+            val mode = modes.getJSONObject(i)
+            val name = when (mode.getInt("modeType")) {
+                1 -> if (alt) R.string.eq_nature_balance else R.string.eq_classic
+                2 -> if (alt) R.string.eq_bass_boost else R.string.eq_dynamic_bass
+                3, 14, 32 -> R.string.eq_clear_vocals
+                4 -> if (model?.name == "OPPO Enco R") R.string.eq_gentle else R.string.eq_clear
+                5, 35 -> R.string.eq_default
+                6, 36 -> R.string.eq_dyn_simple
+                7, 37 -> R.string.eq_dyn_warm
+                8, 38 -> R.string.eq_dyn_punchy
+                9, 39 -> R.string.eq_dyn_real
+                10 -> R.string.eq_hisaishi
+                11, 17 -> R.string.eq_balanced
+                12 -> R.string.eq_bass
+                13 -> R.string.eq_bold
+                15 -> R.string.eq_gentle
+                16 -> R.string.eq_enco_x_classic
+                18 -> R.string.eq_reno_dawn
+                19 -> R.string.eq_hans_zimmer
+                20 -> R.string.eq_natural_inspiration
+                21 -> R.string.eq_reno_sunrise
+                22 -> R.string.eq_nature_balance
+                23 -> R.string.eq_punchy
+                24 -> R.string.eq_spacious
+                25 -> R.string.eq_reno_galaxy
+                26 -> R.string.eq_ultimate
+                27 -> R.string.eq_hd_clarity
+                28 -> R.string.eq_pure_vocals
+                29 -> R.string.eq_thundering_bass
+                30 -> R.string.eq_dyn_featured
+                31 -> R.string.eq_bass_boost
+                33 -> R.string.eq_galactic
+                34 -> R.string.eq_vibrant
+                40 -> R.string.eq_dyn_vocal
+                41 -> R.string.eq_clear_crisp
+                else -> null  // unnamed in HeyMelody too
+            } ?: return@mapNotNull null
+            mode.getInt("protocolIndex") to name
+        }
+    }
+
     private var manager: BudsConnectionManager? = null
     private var bound = false
 
     private lateinit var notConnected: TextView
+    private lateinit var builtInLabel: TextView
     private lateinit var builtInCard: LinearLayout
     private lateinit var bassSwitch: Switch
     private lateinit var bassSlider: LevelSliderView
@@ -97,7 +159,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         notConnected = sectionLabel(R.string.eq_not_connected)
         root.addView(notConnected)
 
-        root.addView(sectionLabel(R.string.eq_recommended))
+        builtInLabel = sectionLabel(R.string.eq_recommended)
+        root.addView(builtInLabel)
         builtInCard = card()
         root.addView(builtInCard)
 
@@ -197,11 +260,10 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         shownNames = custom.map { it.name }.toSet()
 
         builtInCard.removeAllViews()
-        listOf(
-            EqCodec.BALANCED to R.string.eq_balanced,
-            EqCodec.CLEAR_VOCALS to R.string.eq_clear_vocals,
-            EqCodec.BASS to R.string.eq_bass
-        ).forEachIndexed { i, (id, label) ->
+        val builtIns = builtInPresets()
+        builtInLabel.visibility = if (builtIns.isEmpty()) View.GONE else View.VISIBLE
+        builtInCard.visibility = builtInLabel.visibility
+        builtIns.forEachIndexed { i, (id, label) ->
             if (i > 0) builtInCard.addView(SettingRowFactory.buildDivider(this))
             builtInCard.addView(choiceRow(getString(label), current == id, prevSelection == id) {
                 manager?.selectBuiltInEq(id)

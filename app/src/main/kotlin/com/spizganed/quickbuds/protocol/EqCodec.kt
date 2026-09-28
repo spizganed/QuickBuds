@@ -10,11 +10,6 @@ package com.spizganed.quickbuds.protocol
  */
 object EqCodec {
 
-    /** HeyMelody's built-in presets, selected by id with `0x0406`. Ids 04+ are custom. */
-    const val BALANCED = 0
-    const val CLEAR_VOCALS = 1
-    const val BASS = 2
-
     const val GAIN_MIN = -6
     const val GAIN_MAX = 6
 

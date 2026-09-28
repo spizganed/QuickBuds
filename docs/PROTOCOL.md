@@ -271,7 +271,7 @@ fewer, the firmware rejected part of the list.
 
 The bits below are Buds 4's. Other models number their modes differently, so the app takes them
 from HeyMelody's per-model `noiseReductionMode` (`app/src/main/assets/models.json`, cut from the
-137-model `DeviceModels.json` to `id`, `name` and that field; `protocol/AncModes.kt`). Each entry is
+137-model `DeviceModels.json` to `id`, `name`, that field and the EQ fields of §9; `protocol/AncModes.kt`). Each entry is
 `{modeType, protocolIndex, childrenMode}`. modeType, from HeyMelody's own labels
 (`NoiseReductionItem`, ): `1` Off, `2` Transparency, `3` weak (our Light), `8` middle
 (Medium), `4` strong (Deep), `5` noise reduction (a parent of the levels, or a mode alone), `7`
@@ -1168,7 +1168,16 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
   `02` SAVE/SELECT, `03` DELETE (whole preset sent; the selection falls back to `00` Balanced).
   **Ids are renumbered** after a delete/create (xdd went 05 -> 04), so always re-read `0x0122`.
   HeyMelody's UI caps custom presets at **3** (`[USER]`).
-- **Built-in presets are not in the `0x0122` list**; they are ids 00-02 on `0x0406` / `0x010F`.
+- **Built-in presets are not in the `0x0122` list**; they are ids on `0x0406` / `0x010F`.
+- **Built-in presets differ per model** `[VENDOR]` (2026-09-29). HeyMelody's per-model `equalizerMode`
+  (in `assets/models.json`) lists `{modeType, protocolIndex}`: `protocolIndex` is the `0x0406` / `0x010F`
+  id, `modeType` names the preset (`DisplayContentUtils.d()`), in list order on screen. The same id is a
+  different preset on another model: Buds 4 `11`->0 Balanced, `14`->1 Clear Vocals, `12`->2 Bass;
+  Nord Buds 2r `11`->0, `13`->1 Bold, `12`->2. `0x0406`'s payload is that id, one byte
+  (`HeadsetCoreService.H0`). Types 1-4 take other names where the model's `equalizer` field is `2` (or
+  on Enco R / Air2). 67 of 137 models have no list, and HeyMelody shows no built-ins for them.
+  Not used yet: `equalizerModeCompat` / `equalizerModeByVersion` (extra presets from a minimum
+  firmware) and `customEqFrequency` (10 bands on 8 models; ours are 6).
 - `FA 06` and `FB 05` are constant in every frame; meaning unknown (`05` may be the level max).
 
 ### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, wired
