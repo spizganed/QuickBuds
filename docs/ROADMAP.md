@@ -77,10 +77,10 @@ From his notes, 2026-09-28 ([USER]), in order:
 
 - **Done 2026-09-28:** Nothing switches, check and EQ curve on the dot grid; the Equalizer icon as spectrum
   bars (both styles); no wear text on the Nothing home (Classic keeps it in the app and on the widget); the
-  Nothing case bar's digits in inverted dots (on trial); home ANC slides to the widget's level picker.
-- **Next: GitHub discoverability.** A "Supported earbuds" section in the README (model names, from
-  `models.json`), a line that it works on any Android phone, weaker topics swapped for model topics, a social
-  preview image (uploaded by him on the web).
+  Nothing case bar's digits in inverted dots (on trial); home ANC slides to the widget's level picker (the
+  segment shows the level, auto-close after 2 s); crisp Nothing mode icons; icon and label centred.
+- **Done 2026-09-28: GitHub discoverability.** README "Supported earbuds" (127 models by brand), any Android
+  phone, the two styles; topics without model numbers; social preview image uploaded.
 - **Later:** a write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless
   PC), then links from Reddit / XDA.
 - **Last before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
