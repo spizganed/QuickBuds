@@ -262,12 +262,12 @@ object ThemeRes {
      */
     fun tint(context: Context, drawableRes: Int, color: Int): android.graphics.drawable.Drawable {
         val nothing = nothing(context)
-        // Nothing style: the check's thin diagonal sampled as a ragged line, so it has a bolder copy.
-        val res = if (nothing && drawableRes == R.drawable.ic_check) R.drawable.ic_check_dots else drawableRes
-        val d = context.getDrawable(res)!!.mutate()
+        // Nothing style: the check's thin diagonal sampled as a ragged line, so it has a bolder copy at a coarser pitch.
+        val check = nothing && drawableRes == R.drawable.ic_check
+        val d = context.getDrawable(if (check) R.drawable.ic_check_dots else drawableRes)!!.mutate()
         d.setTint(color)
         // Nothing style: every tinted icon as dots (row icons, chevrons, header buttons, checks).
-        return if (nothing) DotArt.Icon(context, d) else d
+        return if (nothing) DotArt.Icon(context, d, if (check) DotArt.CHECK_PITCH_DP else DotArt.ICON_PITCH_DP) else d
     }
 
     /** A rounded rectangle in token colours: cards, pills, chips, sheet backgrounds. */

@@ -1,39 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Equalizer. Five spectrum bars of different heights, each with a floating peak cap (a Winamp-style
-  visualiser, [USER] 2026-09-28: the old four sliders read as four lines).
+  Equalizer. Five square-edged spectrum bars of different heights, a Winamp-style visualiser
+  ([USER] 2026-09-28: the old four sliders read as four lines). Drawn on a 21-cell grid (24/21 units a cell):
+  the Nothing style's 24dp row icon is 21 dots across at 420 dpi, so every edge falls between dots.
+  Bars 3 cells wide, 1 apart; tops at cells 10, 4, 7, 2, 12; bottoms at 20.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M 2 12 L 4.8 12 L 4.8 21 L 2 21 Z" />
+        android:pathData="M 1.143 11.429 L 4.571 11.429 L 4.571 22.857 L 1.143 22.857 Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M 2 9.1 L 4.8 9.1 L 4.8 10.5 L 2 10.5 Z" />
+        android:pathData="M 5.714 4.571 L 9.143 4.571 L 9.143 22.857 L 5.714 22.857 Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M 6.3 6.5 L 9.1 6.5 L 9.1 21 L 6.3 21 Z" />
+        android:pathData="M 10.286 8 L 13.714 8 L 13.714 22.857 L 10.286 22.857 Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M 6.3 3.6 L 9.1 3.6 L 9.1 5.0 L 6.3 5.0 Z" />
+        android:pathData="M 14.857 2.286 L 18.286 2.286 L 18.286 22.857 L 14.857 22.857 Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M 10.6 9.5 L 13.4 9.5 L 13.4 21 L 10.6 21 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 10.6 6.6 L 13.4 6.6 L 13.4 8.0 L 10.6 8.0 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 14.9 4.5 L 17.7 4.5 L 17.7 21 L 14.9 21 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 14.9 1.6 L 17.7 1.6 L 17.7 3.0 L 14.9 3.0 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 19.2 13.5 L 22.0 13.5 L 22.0 21 L 19.2 21 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 19.2 10.6 L 22.0 10.6 L 22.0 12.0 L 19.2 12.0 Z" />
+        android:pathData="M 19.429 13.714 L 22.857 13.714 L 22.857 22.857 L 19.429 22.857 Z" />
 </vector>

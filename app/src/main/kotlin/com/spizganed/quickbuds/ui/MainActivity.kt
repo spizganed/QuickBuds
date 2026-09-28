@@ -645,6 +645,16 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         val level = ancModes.levels.indexOf(mode)
         levelView.selected = level
         if (level >= 0) lastAncLevel = mode
+        // The ANC segment shows the current level as the widget's button does: its icon and "ANC L" / "ANC M"...
+        val seg = ancSegments.indexOfFirst { it.first == "ANC" }
+        if (seg >= 0) {
+            val m = WidgetSettings.MODES.firstOrNull { it.store == mode && level >= 0 }
+            ancView.setSegment(
+                seg,
+                if (m == null) getString(ancSegments[seg].second) else getString(ancSegments[seg].second) + " " + getString(m.short).take(1).uppercase(),
+                m?.icon ?: ancSegments[seg].third
+            )
+        }
     }
 
     /** The ANC strength the ANC segment applies; the last one seen, else the buds' middle one. */
@@ -673,6 +683,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             visibility = View.GONE
             onSegmentTapped = { i ->
                 val mode = ancModes.levels[i]
+                levelView.removeCallbacks(autoClose)
                 closeLevels(animate = true)
                 selectAnc(if (mode == activeAncMode) "Off" else mode)
             }
@@ -689,11 +700,18 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         levelView.visibility = View.VISIBLE
         levelView.animate().translationX(0f).setDuration(ms).withEndAction(null)
         ancView.animate().translationX(w).setDuration(ms).withEndAction { ancView.visibility = View.INVISIBLE }
+        // No pick within a second after the slide: back by itself ([USER] 2026-09-28).
+        levelView.removeCallbacks(autoClose)
+        levelView.postDelayed(autoClose, ms + 1000)
     }
+
+    private val autoClose = Runnable { closeLevels(animate = true) }
 
     /** The picker leaves to the right, the mode pill comes back from the left. */
     private fun closeLevels(animate: Boolean) {
-        if (!::levelView.isInitialized || levelView.visibility != View.VISIBLE) return
+        if (!::levelView.isInitialized) return
+        levelView.removeCallbacks(autoClose)
+        if (levelView.visibility != View.VISIBLE) return
         levelView.animate().cancel(); ancView.animate().cancel()
         ancView.visibility = View.VISIBLE
         if (!animate) {

@@ -160,7 +160,8 @@ object SettingRowFactory {
             if (ThemeRes.nothing(context)) {
                 trackDrawable = DotArt.Part(context, 44f, 24f, track) { c, b, p -> c.drawRoundRect(b, b.height() / 2, b.height() / 2, p) }
                 thumbDrawable = DotArt.Part(context, 24f, 24f, thumb) { c, b, p ->
-                    c.drawCircle(b.centerX(), b.centerY(), b.height() / 2 - ThemeRes.dp(context, 4f), p)
+                    // As tall as the track ([USER] 2026-09-28: no padding around the thumb).
+                    c.drawCircle(b.centerX(), b.centerY(), b.height() / 2, p)
                 }
                 thumbTintList = null
                 trackTintList = null

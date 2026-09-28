@@ -23,7 +23,7 @@ import com.spizganed.quickbuds.widget.QuickBudsWidget
  */
 class AncSegmentedView(
     context: Context,
-    private val labels: List<String>,
+    labels: List<String>,
     iconRes: List<Int> = emptyList()
 ) : View(context) {
 
@@ -50,11 +50,21 @@ class AncSegmentedView(
     private fun dp(v: Float) = ThemeRes.dp(context, v).toFloat()
 
     private val p = ThemeRes.palette(context)
-    private val icons: List<Drawable> = iconRes.map { context.getDrawable(it)!!.mutate() }
+    private val labels = labels.toMutableList()
+    private val icons: MutableList<Drawable> = iconRes.map { context.getDrawable(it)!!.mutate() }.toMutableList()
 
     /** Nothing style: the widget's dot-matrix mode icons ([QuickBudsWidget.modeIcon]), white, tinted when drawn. */
-    private val dots: List<Bitmap?> =
-        if (ThemeRes.nothing(context)) iconRes.map { QuickBudsWidget.modeIcon(WIDGET_ICON[it] ?: it) } else emptyList()
+    private val dots: MutableList<Bitmap?> =
+        if (ThemeRes.nothing(context)) iconRes.map { QuickBudsWidget.modeIcon(WIDGET_ICON[it] ?: it) }.toMutableList() else mutableListOf()
+
+    /** Changes segment [i]'s label and icon (the home ANC segment shows the current level, as the widget's button). */
+    fun setSegment(i: Int, label: String, iconRes: Int) {
+        if (i !in labels.indices) return
+        labels[i] = label
+        if (i in icons.indices) icons[i] = context.getDrawable(iconRes)!!.mutate()
+        if (i in dots.indices) dots[i] = QuickBudsWidget.modeIcon(WIDGET_ICON[iconRes] ?: iconRes)
+        invalidate()
+    }
     private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.card }

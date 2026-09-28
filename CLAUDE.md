@@ -418,8 +418,9 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
 2. `ancRow` — "Noise control" label and `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
    neutral). The ANC segment slides in the widget's level picker (a second `AncSegmentedView` in `ancSlot`: the
    buds' levels with the widget's icons, Smart included; in from the left, the pill out to the right, 280 ms). A pick
-   applies it and slides back; the lit level turns ANC off; like the widget it stays open until a pick
-   ([USER] 2026-09-28; it replaced the Low/Medium/High pills). Buds with one level apply it directly
+   applies it and slides back; the lit level turns ANC off; with no pick it slides back by itself a second after
+   opening ([USER] 2026-09-28; it replaced the Low/Medium/High pills). In ANC the segment shows the level's icon and
+   "ANC L" / "ANC M" / "ANC H" / "ANC S" (`AncSegmentedView.setSegment`), as the widget's button does. Buds with one level apply it directly
    (`homeAncLevel`).
 3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio, EQ,
    **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_bud_left`; the SPEC's
@@ -555,8 +556,8 @@ part of the activity signature, so a change recreates open screens. Nothing:
   drawing through it (text stays text; knobs hollow via CLEAR; the EQ grid a full dot wide, on a dot column's centre), and
   `SettingRowFactory.buildSwitch` swaps in `DotArt.Part` track / thumb drawables coloured by the switch tints. Parts share the
   Switch's grid (cells from its 0,0, box shrunk to whole cells) so the thumb lines up with the track, and light a
-  dot only when half covered, so the thumb reads round.
-- Icons: `ThemeRes.tint` swaps `ic_check` for `ic_check_dots` (a 3.6 stroke; the thin one sampled ragged) and returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
+  dot only when half covered, so the thumb reads round. The thumb is as tall as the track (no inset, [USER] 2026-09-28).
+- Icons: `ThemeRes.tint` swaps `ic_check` for `ic_check_dots` (a 3.6 stroke at `CHECK_PITCH_DP` 2dp; the thin one sampled ragged) and returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
   alpha read as grey), so every tinted icon (rows, chevrons, header buttons, checks) is dotted. Row dividers are one
   row of dots. Still solid: the status dot, the launcher icon on About, shapes (buttons, chips, dialogs, sheets).
 

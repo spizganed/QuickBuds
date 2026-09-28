@@ -20,6 +20,8 @@ object DotArt {
     const val PITCH_DP = 2.2f
     /** Icons (row icons, chevrons, header buttons): finer, about 20 dots across a 24dp icon. */
     const val ICON_PITCH_DP = 1.2f
+    /** The check ([USER] 2026-09-28): fewer, bigger dots; at the icon pitch its diagonal looked ragged. */
+    const val CHECK_PITCH_DP = 2f
     private const val MIN_ALPHA = 50
     /** [draw] with `solid` (icons): a cell at least this covered gets a fully opaque dot; kept alpha read as grey. */
     private const val SOLID_MIN = 90
@@ -62,7 +64,7 @@ object DotArt {
      * An icon as dots ([ThemeRes.tint] in the Nothing style): [inner] rendered once per size and tint at
      * [ICON_PITCH_DP], then reused, so a list of rows costs one render per icon.
      */
-    class Icon(private val context: Context, private val inner: Drawable) : Drawable() {
+    class Icon(private val context: Context, private val inner: Drawable, private val pitchDp: Float = ICON_PITCH_DP) : Drawable() {
         private var cache: Bitmap? = null
 
         override fun draw(canvas: Canvas) {
@@ -70,7 +72,7 @@ object DotArt {
             if (b.width() <= 0 || b.height() <= 0) return
             val bmp = cache?.takeIf { it.width == b.width() && it.height == b.height() }
                 ?: Bitmap.createBitmap(b.width(), b.height(), Bitmap.Config.ARGB_8888).also { out ->
-                    DotArt.draw(context, Canvas(out), b.width(), b.height(), ICON_PITCH_DP, solid = true) { c ->
+                    DotArt.draw(context, Canvas(out), b.width(), b.height(), pitchDp, solid = true) { c ->
                         inner.setBounds(0, 0, b.width(), b.height()); inner.draw(c)
                     }
                     cache = out
