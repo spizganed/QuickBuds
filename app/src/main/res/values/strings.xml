@@ -323,6 +323,9 @@
     <string name="widget_modes_title">Modes</string>
     <string name="widget_modes_hint">Tick 2 to 6 and drag to set the order. The same modes are used for both options.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Style</string>
+    <string name="widget_style_classic">Classic</string>
+    <string name="widget_style_nothing" translatable="false">Nothing</string>
     <string name="widget_ll_title">Low latency button</string>
     <string name="widget_ll_sub">Shown next to the mode button</string>
     <string name="widget_open_title">Open app on tap</string>

@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Mga mode</string>
     <string name="widget_modes_hint">Mag-check ng 2 hanggang 6 at i-drag para itakda ang pagkakasunod. Parehong mga mode ang ginagamit sa dalawang opsyon.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Istilo</string>
+    <string name="widget_style_classic">Classic</string>
     <string name="widget_ll_title">Low latency button</string>
     <string name="widget_ll_sub">Ipinapakita sa tabi ng mode button</string>
     <string name="widget_open_title">Buksan ang app sa pag-tap</string>

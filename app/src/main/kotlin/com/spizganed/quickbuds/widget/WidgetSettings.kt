@@ -31,7 +31,6 @@ object WidgetSettings {
     const val MIN_ON = 2
     /** The mode list has six cells; seven modes exist since Smart (2026-09-27). */
     const val MAX_ON = 6
-    const val LIST_TIMEOUT_MS = 5_000L
     /** How long a tap waits for a second one in double-tap mode ([USER] 2026-09-28: 400 ms felt slow). */
     const val DOUBLE_TAP_MS = 200L
 
@@ -42,6 +41,7 @@ object WidgetSettings {
     private const val KEY_OPEN_APP = "widgetOpenApp"
     private const val KEY_LIST_AT = "widgetListAt_"
     private const val KEY_DOUBLE_TAP = "widgetDoubleTap"
+    private const val KEY_NOTHING = "widgetStyleNothing"
     private const val KEY_PAGE = "widgetPage_"
     private const val KEY_CHILD = "widgetChild_"
     private const val KEY_MODE = "widgetMode_"
@@ -99,6 +99,13 @@ object WidgetSettings {
     fun doubleTapSwaps(c: Context) = prefs(c).getBoolean(KEY_DOUBLE_TAP, false)
     fun setDoubleTapSwaps(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_DOUBLE_TAP, v) }
 
+    /**
+     * True: the Nothing style (no boxes, tighter inset, Nothing OS's Ndot digits; layouts `widget_*_n`).
+     * False (default): Classic ([USER] 2026-09-28: optional, not the default).
+     */
+    fun nothingStyle(c: Context) = prefs(c).getBoolean(KEY_NOTHING, false)
+    fun setNothingStyle(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_NOTHING, v) }
+
     /** The page widget [id] shows, BATTERY or CONTROLS; [default] is its provider's own. */
     fun page(c: Context, id: Int, default: QuickBudsWidget.Kind): QuickBudsWidget.Kind =
         prefs(c).getString(KEY_PAGE + id, null)?.let { runCatching { QuickBudsWidget.Kind.valueOf(it) }.getOrNull() } ?: default
@@ -138,8 +145,7 @@ object WidgetSettings {
     /** When widget [id]'s list was opened, 0 when closed. */
     fun listOpenedAt(c: Context, id: Int) = prefs(c).getLong(KEY_LIST_AT + id, 0L)
 
-    /** Open for less than [LIST_TIMEOUT_MS]: an older stamp (the process died before the close ran) reads as closed. */
-    fun listOpen(c: Context, id: Int) = System.currentTimeMillis() - listOpenedAt(c, id) < LIST_TIMEOUT_MS
+    fun listOpen(c: Context, id: Int) = listOpenedAt(c, id) != 0L
 
     fun setListOpenedAt(c: Context, id: Int, at: Long) {
         prefs(c).edit().apply { if (at == 0L) remove(KEY_LIST_AT + id) else putLong(KEY_LIST_AT + id, at) }.apply()

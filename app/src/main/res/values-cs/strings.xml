@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Režimy</string>
     <string name="widget_modes_hint">Zaškrtněte 2 až 6 a přetažením nastavte pořadí. Pro obě možnosti se používají stejné režimy.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Styl</string>
+    <string name="widget_style_classic">Klasický</string>
     <string name="widget_ll_title">Tlačítko nízké latence</string>
     <string name="widget_ll_sub">Zobrazeno vedle tlačítka režimu</string>
     <string name="widget_open_title">Otevřít aplikaci klepnutím</string>

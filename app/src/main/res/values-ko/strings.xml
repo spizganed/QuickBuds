@@ -243,6 +243,8 @@
     <string name="widget_modes_title">모드</string>
     <string name="widget_modes_hint">2~6개를 체크하고 드래그해 순서를 정하세요. 두 옵션 모두 같은 모드를 사용합니다.</string>
     <string name="widget_section">위젯</string>
+    <string name="widget_style_title">스타일</string>
+    <string name="widget_style_classic">클래식</string>
     <string name="widget_ll_title">저지연 버튼</string>
     <string name="widget_ll_sub">모드 버튼 옆에 표시</string>
     <string name="widget_open_title">탭하면 앱 열기</string>

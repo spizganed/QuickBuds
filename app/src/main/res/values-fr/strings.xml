@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Modes</string>
     <string name="widget_modes_hint">Cochez-en de 2 à 6 et faites glisser pour choisir l\'ordre. Les deux options utilisent les mêmes modes.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Style</string>
+    <string name="widget_style_classic">Classique</string>
     <string name="widget_ll_title">Bouton faible latence</string>
     <string name="widget_ll_sub">Affiché à côté du bouton de mode</string>
     <string name="widget_open_title">Ouvrir l\'app au toucher</string>

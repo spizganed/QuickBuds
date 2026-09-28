@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Moduri</string>
     <string name="widget_modes_hint">Bifează între 2 și 6 și trage pentru a stabili ordinea. Ambele opțiuni folosesc aceleași moduri.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stil</string>
+    <string name="widget_style_classic">Clasic</string>
     <string name="widget_ll_title">Buton latență redusă</string>
     <string name="widget_ll_sub">Afișat lângă butonul de mod</string>
     <string name="widget_open_title">Deschide aplicația la atingere</string>

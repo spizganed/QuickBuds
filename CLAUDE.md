@@ -432,8 +432,8 @@ packet-listener path.
 
 One provider per size in `widget/AncWidgetProvider.kt`, one renderer (`QuickBudsWidget.build`), layouts
 generated as one family (`widget_pages` 2x2, `widget_pages_m` 4x2, `widget_pages_l` 3x3, plus the mode list grids
-`widget_grid` / `widget_grid_l` (3x3, larger icons and labels) and `widget_disconnected`; all but the last come from
-`scripts/widget-layouts.py`, edit it and rerun, never the XML):
+`widget_grid` / `widget_grid_l` (3x3, larger icons and labels) and `widget_disconnected`, each also as a `_n`
+Nothing-style copy; all come from `scripts/widget-layouts.py`, edit it and rerun, never the XML):
 **2x2** (`BatteryWidgetProvider`), **3x3** (`LargeWidgetProvider`, the 2x2 layout scaled up) and **4x2**
 (`AncWidgetProvider`, 3x2 until 2026-09-27) ([USER] 2026-09-27: no more sizes for now). All fixed size,
 `resizeMode="none"`. The old class names are kept so placed widgets survive; the 4x1 strip and the 2x2 controls
@@ -455,7 +455,10 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
 - **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): tap = Next mode
   (default) or Open list, the ordered checked modes (2 to 6: the list has six cells and there are seven modes since Smart; same list for both), Low latency button (default on),
   Open app on tap (default **off**: a background tap does nothing). Every setter calls `refreshAll`.
-- **Slides only, no fades** ([USER] 2026-09-27), 280 ms, `anim/widget_enter_*` / `widget_exit_*`. The pages move like
+- **Slides only, no fades** ([USER] 2026-09-27), `@integer/widget_anim_ms` (280 ms, one value for every widget
+  animation, [USER] 2026-09-28), `anim/widget_enter_*` / `widget_exit_*`. Every flipper has `animateFirstView="true"`:
+  with false the first change on each screen was instant. Every clickable view has
+  `stateListAnimator="@animator/widget_press"` (pushed to 92% while held, overshoot back; the host runs it). The pages move like
   a carousel: battery enters and leaves on the left, controls on the right, so battery -> controls moves left and
   back moves right. The mode list and the mode button enter from the left and leave to the right.
   A RemoteViews flipper cannot change its animation at runtime, so each page has its own flipper.
@@ -468,13 +471,30 @@ its line in the renderer, or RemoteViews fails at apply time ("Can't load widget
   child, and the service resends the whole cached views on every update (partial ones too, so
   `partiallyUpdateAppWidget` does not help). So each flipper child gets its visibility set directly every time,
   and each flipper's `setDisplayedChild` goes out only in the update that changes its child (`widgetChild_<id>`:
-  0 battery, 1 controls, 2 list). Sending it every time made every widget flash ([USER] 2026-09-27). Never an Activity. `WidgetActionReceiver` stamps `widgetListAt_<id>`, and a plain 5 s main-thread handler closes it if
-  the stamp is unchanged; `build()` treats a stamp older than 5 s as closed in case the process died. **Never
-  `goAsync` for that wait**: it holds the receiver, broadcasts queue behind it, and a pick lagged up to 5 s.
+  0 battery, 1 controls, 2 list). Sending it every time made every widget flash ([USER] 2026-09-27). The mode list (never an Activity) stays open until a pick or a tap on the current mode ([USER] 2026-09-28: the old
+  5 s auto-close shut it while he was choosing); `WidgetActionReceiver` stamps `widgetListAt_<id>`, 0 = closed.
 - **No automatic page change** ([USER] 2026-09-27): after a mode pick or Low latency toggle the widget stays on
   the controls page; the user swaps back (tried and dropped: sliding back to battery after the change).
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects). Next mode is computed in the receiver and sent as an `ANC_SELECT`.
+
+### Widget style: Classic / Nothing (2026-09-28, in progress)
+
+`WidgetSettings.nothingStyle` (pref `widgetStyleNothing`, default **off**: Classic stays the default, [USER]), a
+segment at the top of widget settings. Nothing = the `_n` layouts (3dp inset, 4dp gaps, all text in Nothing OS's
+`NDot57All` family from `/system/etc/ntfonts.xml`, falling back to the default font elsewhere, nothing bundled) plus
+runtime changes in `AncWidgetProvider`: no boxes (`panelColor` / `paint` use `card`), OFF in capitals, no mode hint
+arrow, letter labels in the list (L M H S T A, first letter of the translated short name; OFF), and every graphic
+as a dot matrix:
+- `matrix()`: a drawing sampled on a grid at 8x, one dot per covered cell; `centre` sampling keeps thin cuts
+  (bud head ring, case lid, LED). Rings: ring + glyph drawn together, `RING_CELLS` = 42 on every size.
+- `gridIcon()`: the mode icons and the bolt as pixel art on an odd grid (midpoint circles at the vector radii,
+  one-cell gaps). Converting the vectors merged the rings; dots along perfect circles looked too smooth.
+- Fixed dot rows per icon on every size (`ROWS_*`): **the 2x2 is the baseline**, bigger widgets show the same
+  icons with bigger dots ([USER] 2026-09-28). The case row scales by `dotDp(kind)`; the case bar is measured to
+  its slot (`barDp`) so its dots are never scaled. Unlit dots use `dim()` (the outline was too faint).
+- Open: finish the 2x2 first (open questions: bolt 1 or 2 dots thick, mode-button icon size), then make the 4x2
+  and 3x3 match it ([USER] 2026-09-28).
 
 ### Widget tap flow
 

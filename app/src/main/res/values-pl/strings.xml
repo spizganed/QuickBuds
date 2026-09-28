@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Tryby</string>
     <string name="widget_modes_hint">Zaznacz od 2 do 6 i przeciągnij, aby ustalić kolejność. Obie opcje używają tych samych trybów.</string>
     <string name="widget_section">Widżet</string>
+    <string name="widget_style_title">Styl</string>
+    <string name="widget_style_classic">Klasyczny</string>
     <string name="widget_ll_title">Przycisk niskiego opóźnienia</string>
     <string name="widget_ll_sub">Wyświetlany obok przycisku trybu</string>
     <string name="widget_open_title">Otwieraj aplikację po dotknięciu</string>

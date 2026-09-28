@@ -245,6 +245,8 @@
     <string name="widget_modes_title">模式</string>
     <string name="widget_modes_hint">勾选 2 到 6 项，拖动调整顺序。两种方式使用相同的模式。</string>
     <string name="widget_section">小组件</string>
+    <string name="widget_style_title">样式</string>
+    <string name="widget_style_classic">经典</string>
     <string name="widget_ll_title">低延迟按钮</string>
     <string name="widget_ll_sub">显示在模式按钮旁</string>
     <string name="widget_open_title">点击打开应用</string>

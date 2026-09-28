@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Módok</string>
     <string name="widget_modes_hint">Jelöljön be 2–6-ot, és húzással állítsa be a sorrendet. Mindkét lehetőség ugyanazokat a módokat használja.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stílus</string>
+    <string name="widget_style_classic">Klasszikus</string>
     <string name="widget_ll_title">Alacsony késleltetés gomb</string>
     <string name="widget_ll_sub">A módgomb mellett jelenik meg</string>
     <string name="widget_open_title">Alkalmazás megnyitása koppintásra</string>

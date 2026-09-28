@@ -245,6 +245,8 @@
     <string name="widget_modes_title">模式</string>
     <string name="widget_modes_hint">勾選 2 到 6 項，拖曳調整順序。兩種方式使用相同的模式。</string>
     <string name="widget_section">小工具</string>
+    <string name="widget_style_title">樣式</string>
+    <string name="widget_style_classic">經典</string>
     <string name="widget_ll_title">低延遲按鈕</string>
     <string name="widget_ll_sub">顯示在模式按鈕旁</string>
     <string name="widget_open_title">點按開啟應用程式</string>

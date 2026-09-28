@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Modalità</string>
     <string name="widget_modes_hint">Selezionane da 2 a 6 e trascina per impostare l\'ordine. Entrambe le opzioni usano le stesse modalità.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stile</string>
+    <string name="widget_style_classic">Classico</string>
     <string name="widget_ll_title">Pulsante bassa latenza</string>
     <string name="widget_ll_sub">Mostrato accanto al pulsante modalità</string>
     <string name="widget_open_title">Apri l\'app al tocco</string>

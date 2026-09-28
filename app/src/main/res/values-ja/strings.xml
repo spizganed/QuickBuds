@@ -243,6 +243,8 @@
     <string name="widget_modes_title">モード</string>
     <string name="widget_modes_hint">2〜6 個にチェックを入れ、ドラッグで順番を決めます。どちらのオプションでも同じモードが使われます。</string>
     <string name="widget_section">ウィジェット</string>
+    <string name="widget_style_title">スタイル</string>
+    <string name="widget_style_classic">クラシック</string>
     <string name="widget_ll_title">低遅延ボタン</string>
     <string name="widget_ll_sub">モードボタンの隣に表示</string>
     <string name="widget_open_title">タップでアプリを開く</string>

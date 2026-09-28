@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget buttons: pushed down while held, springing back on release ([USER] 2026-09-28). Set on every
+     clickable widget view by scripts/widget-layouts.py; the host runs it, so it needs no code. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <set>
+            <objectAnimator android:propertyName="scaleX" android:valueTo="0.92" android:duration="@integer/widget_anim_ms" android:interpolator="@android:interpolator/decelerate_quad" />
+            <objectAnimator android:propertyName="scaleY" android:valueTo="0.92" android:duration="@integer/widget_anim_ms" android:interpolator="@android:interpolator/decelerate_quad" />
+        </set>
+    </item>
+    <item>
+        <set>
+            <objectAnimator android:propertyName="scaleX" android:valueTo="1" android:duration="@integer/widget_anim_ms" android:interpolator="@android:interpolator/overshoot" />
+            <objectAnimator android:propertyName="scaleY" android:valueTo="1" android:duration="@integer/widget_anim_ms" android:interpolator="@android:interpolator/overshoot" />
+        </set>
+    </item>
+</selector>

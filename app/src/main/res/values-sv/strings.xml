@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Lägen</string>
     <string name="widget_modes_hint">Markera 2 till 6 och dra för att ställa in ordningen. Samma lägen används för båda alternativen.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stil</string>
+    <string name="widget_style_classic">Klassisk</string>
     <string name="widget_ll_title">Knapp för låg latens</string>
     <string name="widget_ll_sub">Visas bredvid lägesknappen</string>
     <string name="widget_open_title">Öppna appen vid tryck</string>

@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Mod</string>
     <string name="widget_modes_hint">Tandakan 2 hingga 6 dan seret untuk menetapkan tertib. Mod yang sama digunakan untuk kedua-dua pilihan.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Gaya</string>
+    <string name="widget_style_classic">Klasik</string>
     <string name="widget_ll_title">Butang kependaman rendah</string>
     <string name="widget_ll_sub">Ditunjukkan di sebelah butang mod</string>
     <string name="widget_open_title">Buka aplikasi apabila diketik</string>

@@ -79,8 +79,9 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
   (28 px sides, 31 top, 83 bottom on a 488x546 px 2x2 cell), its own widgets included. Our 2x2 draws
   432x432 px, exactly the box of Nothing's own 2x2 (the weather combo). It only looks smaller than the
   clock + steps stack, because two 1-row widgets each get less padding (together 461 px tall). The host
-  clips to its padding, so we cannot draw past it. Left: shrink the inset inside our card (6dp padding
-  and gaps, `scripts/widget-layouts.py`), or leave it. His call.
+  clips to its padding, so we cannot draw past it. Decided 2026-09-28: the tighter inset is part of the optional
+  Nothing widget style (CLAUDE.md, Widget style); Classic keeps 6dp.
+- **Nothing widget style** (in progress, 2026-09-28): finish the 2x2, then match the 4x2 and 3x3 to it.
 
 ## Docs cleanup
 

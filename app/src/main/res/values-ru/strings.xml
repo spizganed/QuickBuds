@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Режимы</string>
     <string name="widget_modes_hint">Отметьте от 2 до 6 и перетащите, чтобы задать порядок. Эти же режимы используются в обоих вариантах.</string>
     <string name="widget_section">Виджет</string>
+    <string name="widget_style_title">Стиль</string>
+    <string name="widget_style_classic">Классический</string>
     <string name="widget_ll_title">Кнопка низкой задержки</string>
     <string name="widget_ll_sub">Показывается рядом с кнопкой режима</string>
     <string name="widget_open_title">Открывать приложение по нажатию</string>

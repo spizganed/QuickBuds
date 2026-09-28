@@ -44,6 +44,15 @@ class WidgetSettingsActivity : Activity() {
             setPadding(ThemeRes.dp(this@WidgetSettingsActivity, 4f), ThemeRes.dp(this@WidgetSettingsActivity, 8f), 0, 0)
         }
 
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_style_title))
+        root.addView(AncSegmentedView(this, listOf(getString(R.string.widget_style_classic), getString(R.string.widget_style_nothing))).apply {
+            selected = if (WidgetSettings.nothingStyle(this@WidgetSettingsActivity)) 1 else 0
+            onSegmentTapped = { i ->
+                selected = i
+                WidgetSettings.setNothingStyle(this@WidgetSettingsActivity, i == 1)
+            }
+        })
+
         root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_tap_title))
         root.addView(AncSegmentedView(
             this, listOf(getString(R.string.widget_tap_next), getString(R.string.widget_tap_list)),

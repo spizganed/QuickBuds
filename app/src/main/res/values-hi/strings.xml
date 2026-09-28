@@ -245,6 +245,8 @@
     <string name="widget_modes_title">मोड</string>
     <string name="widget_modes_hint">2 से 6 चुनें और क्रम बदलने के लिए खींचें। दोनों विकल्पों में यही मोड इस्तेमाल होते हैं।</string>
     <string name="widget_section">विजेट</string>
+    <string name="widget_style_title">स्टाइल</string>
+    <string name="widget_style_classic">क्लासिक</string>
     <string name="widget_ll_title">लो लेटेंसी बटन</string>
     <string name="widget_ll_sub">मोड बटन के बगल में दिखता है</string>
     <string name="widget_open_title">टैप करने पर ऐप खोलें</string>

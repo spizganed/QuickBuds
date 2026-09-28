@@ -243,6 +243,8 @@
     <string name="widget_modes_title">মোড</string>
     <string name="widget_modes_hint">2 থেকে 6টি টিক দিন এবং ক্রম ঠিক করতে টানুন। দুটি বিকল্পেই একই মোড ব্যবহৃত হয়।</string>
     <string name="widget_section">উইজেট</string>
+    <string name="widget_style_title">স্টাইল</string>
+    <string name="widget_style_classic">ক্লাসিক</string>
     <string name="widget_ll_title">লো লেটেন্সি বোতাম</string>
     <string name="widget_ll_sub">মোড বোতামের পাশে দেখানো হয়</string>
     <string name="widget_open_title">ট্যাপে অ্যাপ খুলুন</string>

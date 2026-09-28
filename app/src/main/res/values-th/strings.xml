@@ -245,6 +245,8 @@
     <string name="widget_modes_title">โหมด</string>
     <string name="widget_modes_hint">เลือก 2 ถึง 6 โหมดและลากเพื่อจัดลำดับ ทั้งสองตัวเลือกใช้โหมดชุดเดียวกัน</string>
     <string name="widget_section">วิดเจ็ต</string>
+    <string name="widget_style_title">สไตล์</string>
+    <string name="widget_style_classic">คลาสสิก</string>
     <string name="widget_ll_title">ปุ่มเวลาแฝงต่ำ</string>
     <string name="widget_ll_sub">แสดงข้างปุ่มโหมด</string>
     <string name="widget_open_title">เปิดแอปเมื่อแตะ</string>

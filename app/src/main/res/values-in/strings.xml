@@ -245,6 +245,8 @@
     <string name="widget_modes_title">Mode</string>
     <string name="widget_modes_hint">Centang 2 sampai 6 dan seret untuk mengatur urutan. Mode yang sama dipakai untuk kedua opsi.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Gaya</string>
+    <string name="widget_style_classic">Klasik</string>
     <string name="widget_ll_title">Tombol latensi rendah</string>
     <string name="widget_ll_sub">Ditampilkan di samping tombol mode</string>
     <string name="widget_open_title">Buka aplikasi saat diketuk</string>

@@ -2,7 +2,7 @@
 <!-- Widget: a view slides in from the left (the battery page, the mode list, the mode button; [USER] 2026-09-27). -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:interpolator/decelerate_cubic"
-    android:duration="280">
+    android:duration="@integer/widget_anim_ms">
     <translate android:fromXDelta="-100%" android:toXDelta="0" />
     <alpha android:fromAlpha="0.0" android:toAlpha="1.0" />
 </set>

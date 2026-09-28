@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Modi</string>
     <string name="widget_modes_hint">Vink er 2 tot 6 aan en sleep om de volgorde te bepalen. Beide opties gebruiken dezelfde modi.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stijl</string>
+    <string name="widget_style_classic">Klassiek</string>
     <string name="widget_ll_title">Knop voor lage latentie</string>
     <string name="widget_ll_sub">Getoond naast de modusknop</string>
     <string name="widget_open_title">App openen bij tikken</string>

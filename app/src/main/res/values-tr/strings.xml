@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Modlar</string>
     <string name="widget_modes_hint">2 ile 6 arasında işaretleyin ve sıralamak için sürükleyin. Aynı modlar iki seçenekte de kullanılır.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stil</string>
+    <string name="widget_style_classic">Klasik</string>
     <string name="widget_ll_title">Düşük gecikme düğmesi</string>
     <string name="widget_ll_sub">Mod düğmesinin yanında gösterilir</string>
     <string name="widget_open_title">Dokununca uygulamayı aç</string>

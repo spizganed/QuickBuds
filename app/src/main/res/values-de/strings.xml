@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Modi</string>
     <string name="widget_modes_hint">Wähle 2 bis 6 aus und ziehe sie in die gewünschte Reihenfolge. Beide Optionen nutzen dieselben Modi.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Stil</string>
+    <string name="widget_style_classic">Klassisch</string>
     <string name="widget_ll_title">Button für niedrige Latenz</string>
     <string name="widget_ll_sub">Wird neben dem Modus-Button angezeigt</string>
     <string name="widget_open_title">App beim Tippen öffnen</string>

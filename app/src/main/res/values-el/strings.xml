@@ -243,6 +243,8 @@
     <string name="widget_modes_title">Λειτουργίες</string>
     <string name="widget_modes_hint">Επιλέξτε από 2 έως 6 και σύρετε για να ορίσετε τη σειρά. Οι ίδιες λειτουργίες χρησιμοποιούνται και στις δύο επιλογές.</string>
     <string name="widget_section">Widget</string>
+    <string name="widget_style_title">Στυλ</string>
+    <string name="widget_style_classic">Κλασικό</string>
     <string name="widget_ll_title">Κουμπί χαμηλής καθυστέρησης</string>
     <string name="widget_ll_sub">Εμφανίζεται δίπλα στο κουμπί λειτουργίας</string>
     <string name="widget_open_title">Άνοιγμα εφαρμογής με πάτημα</string>

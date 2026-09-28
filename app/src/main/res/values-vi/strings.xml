@@ -245,6 +245,8 @@
     <string name="widget_modes_title">Chế độ</string>
     <string name="widget_modes_hint">Chọn từ 2 đến 6 và kéo để sắp xếp. Cả hai tùy chọn dùng cùng các chế độ này.</string>
     <string name="widget_section">Tiện ích</string>
+    <string name="widget_style_title">Kiểu</string>
+    <string name="widget_style_classic">Cổ điển</string>
     <string name="widget_ll_title">Nút độ trễ thấp</string>
     <string name="widget_ll_sub">Hiện cạnh nút chế độ</string>
     <string name="widget_open_title">Mở ứng dụng khi chạm</string>
