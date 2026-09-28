@@ -75,20 +75,14 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 From his notes, 2026-09-28 ([USER]), in order:
 
-- **Done 2026-09-28: Nothing switches.** Each switch drew its dots differently (fractional pitch) and the
-  thumb sat off the track's grid; see CLAUDE.md, App style.
-- **Next: Classic widget without wear text.** The app keeps "In ear" / "In case" under the rings in both
-  styles; the widgets drop it in both (wasted space). Nothing already does; Classic still shows it.
-- **Next: home noise control behaves like the widget.** Keep the Off / ANC / Adaptive / Transparency pill;
-  tapping ANC slides the pill to the level picker (the levels plus the smart option), as the widget's
-  ANC button does, instead of the level pills under it.
-- **Next: icons.** The Equalizer row icon looks off, and the low latency / Hi-Res / 3D audio row icons
-  should match the widget's icon language, in both styles.
-- **Next: GitHub discoverability.** README wording, repo description and topics, so the repo turns up
-  in Google for related searches.
-- **Open, last before the cleanup: custom UI styles as a file.** Classic and Nothing become styles
-  loaded from a definition, so users can import and export a new one as one file for the widget and
-  the app. Testing it properly needs a third style.
+- **Done 2026-09-28:** Nothing switches, check and EQ curve on the dot grid; the Equalizer icon as spectrum
+  bars (both styles); no wear text on the Nothing home (Classic keeps it in the app and on the widget); the
+  Nothing case bar's digits in inverted dots (on trial); home ANC slides to the widget's level picker.
+- **Next: GitHub discoverability.** A "Supported earbuds" section in the README (model names, from
+  `models.json`), a line that it works on any Android phone, weaker topics swapped for model topics, a social
+  preview image (uploaded by him on the web).
+- **Later:** a write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless
+  PC), then links from Reddit / XDA.
 - **Last before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
 
 - **Question: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
@@ -111,6 +105,9 @@ From his notes, 2026-09-28 ([USER]), in order:
   Rerun `scripts/readme-screenshots.sh` after any visible UI change.
 
 ## Parked
+
+- Custom UI styles as a file (import / export, widget and app): the very last thing, maybe after the PC
+  app, if at all ([USER] 2026-09-28). Testing it needs a third style.
 
 - A build quickstart and a capture guide for contributors, only if the device file is not enough.
 - Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,

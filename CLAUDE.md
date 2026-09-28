@@ -415,9 +415,12 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    Disconnected: same size, track only, disabled glyphs, "—", bare names.
    The device name under the rings is `ModelCatalog.current()` (detected by product id + Bluetooth
    name, or picked by hand); the header's `btnModel`, before the connect pill, opens `ModelActivity`.
-2. `ancRow` — "Noise control" label, `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
-   neutral) and `ancLevels`, the Low/Medium/High pills shown only in ANC. They replaced the strength bottom
-   sheet and the caption. The ANC segment applies the last level seen (`homeAncLevel`, default Medium).
+2. `ancRow` — "Noise control" label and `AncSegmentedView` (4 icon+label segments, accent fill slides; -1 =
+   neutral). The ANC segment slides in the widget's level picker (a second `AncSegmentedView` in `ancSlot`: the
+   buds' levels with the widget's icons, Smart included; in from the left, the pill out to the right, 280 ms). A pick
+   applies it and slides back; the lit level turns ANC off; like the widget it stays open until a pick
+   ([USER] 2026-09-28; it replaced the Low/Medium/High pills). Buds with one level apply it directly
+   (`homeAncLevel`).
 3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio, EQ,
    **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_bud_left`; the SPEC's
    `ic_earbud` rendered broken and was dropped), which opens `EarbudSettingsActivity`, the hub for the buds

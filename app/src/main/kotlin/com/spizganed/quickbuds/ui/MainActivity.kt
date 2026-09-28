@@ -36,6 +36,7 @@ import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.widget.AncWidgetProvider
+import com.spizganed.quickbuds.widget.WidgetSettings
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
 /**
@@ -79,7 +80,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     // AncSegmentedView. They replaced two cards of ImageViews/ProgressBars and four ANC buttons.
     private lateinit var statusView: BudsStatusView
     private lateinit var ancView: AncSegmentedView
-    private lateinit var ancLevels: LinearLayout
+    /** The ANC level picker: the widget's, in the mode pill's place while open ([openLevels]). */
+    private lateinit var levelView: AncSegmentedView
     private lateinit var tiles: LinearLayout
 
     // Settings rows that hold live state
@@ -321,7 +323,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
         statusView = BudsStatusView(this)
         findViewById<android.widget.FrameLayout>(R.id.statusSlot).addView(statusView)
-        ancLevels = findViewById<LinearLayout>(R.id.ancLevels)
         buildAnc()
 
         tiles = findViewById<LinearLayout>(R.id.tiles)
@@ -637,18 +638,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun renderAnc(mode: String) {
         if (connectedUi == false) {
             ancView.selected = -1
-            ancLevels.visibility = View.GONE
+            closeLevels(animate = false)
             return
         }
         ancView.selected = ancSegments.indexOfFirst { it.first == circleFor(mode) }
-        // The level row shows only while ANC is on (SPEC 3.1), with the active strength outlined,
-        // and only for buds with more than one level.
         val level = ancModes.levels.indexOf(mode)
-        ancLevels.visibility = if (level >= 0 && ancModes.levels.size > 1) View.VISIBLE else View.GONE
-        if (level >= 0) {
-            lastAncLevel = mode
-            for (k in 0 until ancLevels.childCount) paintLevelPill(ancLevels.getChildAt(k) as TextView, k == level)
-        }
+        levelView.selected = level
+        if (level >= 0) lastAncLevel = mode
     }
 
     /** The ANC strength the ANC segment applies; the last one seen, else the buds' middle one. */
@@ -662,8 +658,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private var ancSegments = ANC_SEGMENTS
 
     /**
-     * The segments and the Low / Medium / High pills under them (they replaced the old strength
-     * bottom sheet), for the modes these buds have. Rebuilt when the model changes.
+     * The segments and the level picker, for the modes these buds have. Rebuilt when the model changes.
+     * The picker is the widget's ([USER] 2026-09-28; it replaced the Low / Medium / High pills): the ANC
+     * segment slides it in, a pick applies that level and slides back, the lit level turns ANC off.
      */
     private fun buildAnc() {
         ancModes = AncModes.of(this)
@@ -671,38 +668,43 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         ancView = AncSegmentedView(this, ancSegments.map { getString(it.second) }, ancSegments.map { it.third }).apply {
             onSegmentTapped = { onAncCircleTapped(ancSegments[it].first) }
         }
-        findViewById<android.widget.FrameLayout>(R.id.ancSlot).apply { removeAllViews(); addView(ancView) }
-        ancLevels.removeAllViews()
-        val names = intArrayOf(R.string.anc_mode_low, R.string.anc_mode_medium, R.string.anc_mode_high, R.string.anc_mode_smart)
-        ancModes.levels.forEachIndexed { i, mode ->
-            ancLevels.addView(TextView(this).apply {
-                setText(names[AncModes.LEVELS.indexOf(mode)])
-                textSize = 14f
-                gravity = android.view.Gravity.CENTER
-                minWidth = ThemeRes.dp(this@MainActivity, 72f)
-                setPadding(ThemeRes.dp(this@MainActivity, 20f), 0, ThemeRes.dp(this@MainActivity, 20f), 0)
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, ThemeRes.dp(this@MainActivity, 36f)
-                ).apply { if (i > 0) marginStart = ThemeRes.dp(this@MainActivity, 8f) }
-                paintLevelPill(this, false)
-                setOnClickListener { Haptics.commit(it); selectAnc(mode) }
-            })
+        val levels = ancModes.levels.map { m -> WidgetSettings.MODES.first { it.store == m } }
+        levelView = AncSegmentedView(this, levels.map { getString(it.short) }, levels.map { it.icon }).apply {
+            visibility = View.GONE
+            onSegmentTapped = { i ->
+                val mode = ancModes.levels[i]
+                closeLevels(animate = true)
+                selectAnc(if (mode == activeAncMode) "Off" else mode)
+            }
         }
+        findViewById<android.widget.FrameLayout>(R.id.ancSlot).apply { removeAllViews(); addView(ancView); addView(levelView) }
     }
 
-    private fun paintLevelPill(pill: TextView, selected: Boolean) {
-        val pal = ThemeRes.palette(this)
-        pill.background = ThemeRes.ripple(
-            this, ThemeRes.shape(
-                this, pal.background, if (selected) pal.accent else pal.outline, 20f,
-                if (selected) 1.5f else 1f
-            )
-        )
-        pill.setTextColor(if (selected) pal.text else pal.textSecondary)
-        pill.typeface = if (selected) ThemeRes.medium(this)
-        else ThemeRes.regular(this)
+    /** Slides the level picker in from the left, the mode pill out to the right (the widget's carousel). */
+    private fun openLevels() {
+        val w = ancView.width.toFloat()
+        val ms = resources.getInteger(R.integer.widget_anim_ms).toLong()
+        levelView.animate().cancel(); ancView.animate().cancel()
+        levelView.translationX = -w
+        levelView.visibility = View.VISIBLE
+        levelView.animate().translationX(0f).setDuration(ms).withEndAction(null)
+        ancView.animate().translationX(w).setDuration(ms).withEndAction { ancView.visibility = View.INVISIBLE }
     }
 
+    /** The picker leaves to the right, the mode pill comes back from the left. */
+    private fun closeLevels(animate: Boolean) {
+        if (!::levelView.isInitialized || levelView.visibility != View.VISIBLE) return
+        levelView.animate().cancel(); ancView.animate().cancel()
+        ancView.visibility = View.VISIBLE
+        if (!animate) {
+            levelView.visibility = View.GONE; ancView.translationX = 0f; return
+        }
+        val w = ancView.width.toFloat()
+        val ms = resources.getInteger(R.integer.widget_anim_ms).toLong()
+        ancView.translationX = -w
+        ancView.animate().translationX(0f).setDuration(ms).withEndAction(null)
+        levelView.animate().translationX(w).setDuration(ms).withEndAction { levelView.visibility = View.GONE }
+    }
 
     /**
      * Which circle a stored mode lights.
@@ -729,11 +731,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         PacketLogger.log("ANC TAP: circle=$circle current=$activeAncMode")
 
         when (circle) {
-            // ANC opens the chooser UNCONDITIONALLY — it no longer applies a level
-            // directly or requires the circle to already be active. Choosing which
-            // strength to use is the whole point of the button, and requiring a
-            // second tap on an already-lit circle was an unnecessary step.
-            "ANC" -> selectAnc(lastAncLevel)
+            // ANC opens the level picker unconditionally, lit or not, as the widget's button does.
+            // More than one level: the widget's picker. One: apply it.
+            "ANC" -> if (ancModes.levels.size > 1) openLevels() else selectAnc(lastAncLevel)
             "Off" -> selectAnc("Off")
             // Adaptive is a plain state, not a chooser: unlike ANC it has no
             // strengths to pick between, so the tap applies it directly.
