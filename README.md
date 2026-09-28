@@ -13,7 +13,7 @@ home-screen widget.
 
 ## Screenshots
 
-<!-- Retaken with scripts/readme-screenshots.sh; see CLAUDE.md. -->
+<!-- Retaken with scripts/readme-screenshots.sh classic, then nothing; see CLAUDE.md. -->
 
 | Main screen | Model | Equalizer | Curve editor |
 | :---: | :---: | :---: | :---: |
@@ -37,7 +37,16 @@ Every size has a battery page and a controls page; switch with the swap button o
 
 | 2x2 | 3x3 | 4x2 |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-3x3-controls.png" width="220"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
+| <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-3x3-battery.png" width="220"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
+
+### Nothing style
+
+An optional style for the app and the widgets (Theme & colors > Style): Nothing's dot font, no cards,
+dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing](docs/screenshots/nothing).
+
+| Main screen | 3x3 widget |
+| :---: | :---: |
+| <img src="docs/screenshots/nothing/main.png" width="200"> | <img src="docs/screenshots/nothing/widget-3x3-battery.png" width="220"> |
 
 ## Features
 

@@ -622,7 +622,10 @@ a shared one hung.
 - Runtime `*.log` files written by the app are ignored — they are regenerated every run. Handed-over
   captures (`*.log.txt`) are evidence and **are** tracked.
 - **README screenshots** live in `docs/screenshots/` and are retaken with
-  `scripts/readme-screenshots.sh [adb-serial]` (buds connected, phone in English, Pillow installed; on Termux `pkg install python-pillow`). It
+  `scripts/readme-screenshots.sh classic|nothing [adb-serial]` (buds connected, phone in English, Pillow installed; on Termux `pkg install python-pillow`).
+  Classic (the default) goes to `docs/screenshots/`, Nothing to `docs/screenshots/nothing/` (the README shows only its main
+  screen and 3x3 widget and links the folder, [USER] 2026-09-29). It sets the style through the Style segment's content
+  description and leaves it set, so run the user's own style last. Otherwise it
   opens every screen by visible text (never toggles anything), so renaming a row or screen label breaks it. It stops mobile-mcp's
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.
   Widgets: each placed size on the LAST home screen page is cropped to `widget-<size>.png`.

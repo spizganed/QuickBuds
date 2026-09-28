@@ -1,21 +1,23 @@
 #!/usr/bin/env bash
 # Retakes the README screenshots into docs/screenshots/ over adb: every screen, then every widget.
 # Needs: the phone on adb with the buds connected in QuickBuds and the phone in English, and
-# Python with Pillow (`pip install pillow`) for cropping. It only OPENS screens: nothing is
-# toggled, so the buds and the app settings are left as they were.
+# Python with Pillow (`pip install pillow`) for cropping. It sets the app style it shoots (Theme &
+# colors > Style) and leaves it that way; otherwise it only OPENS screens, nothing is toggled.
+# Classic (the default style) goes to docs/screenshots/, Nothing to docs/screenshots/nothing/.
 # Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file,
 # widget-<size>-<page> (2x2, 3x3, 4x2; battery or controls, whichever page it shows); sizes that
 # are not placed are skipped.
-# Usage: scripts/readme-screenshots.sh [adb-serial]
+# Usage: scripts/readme-screenshots.sh classic|nothing [adb-serial]
 set -euo pipefail
 export MSYS_NO_PATHCONV=1  # Git Bash would rewrite /sdcard/... into a Windows path
 cd "$(dirname "$0")/.."
 
 ADB_BIN=$(command -v adb || echo "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe")
-SERIAL=${1:-}
+STYLE=${1:?usage: $0 classic|nothing [adb-serial]}
+SERIAL=${2:-}
 # </dev/null: adb reads stdin, which would eat the widget list the loop at the end reads.
 adb() { if [ -n "$SERIAL" ]; then "$ADB_BIN" -s "$SERIAL" "$@" </dev/null; else "$ADB_BIN" "$@" </dev/null; fi; }
-OUT=docs/screenshots
+OUT=docs/screenshots$([ "$STYLE" = nothing ] && echo /nothing || true)
 mkdir -p "$OUT"
 
 dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null; adb exec-out cat /sdcard/ui.xml; }
@@ -63,6 +65,8 @@ insets=$(adb shell dumpsys window)
 TOP=$(grep -m1 -oE 'type=statusBars frame=\[0,0\]\[[0-9]+,[0-9]+\]' <<<"$insets" | grep -oE '[0-9]+' | tail -1)
 BOTTOM=$(grep -m1 -oE 'type=navigationBars frame=\[0,[0-9]+\]' <<<"$insets" | grep -oE '[0-9]+' | tail -1)
 W=$(adb shell wm size | grep -oE '[0-9]+x' | tr -d x | tail -1)
+# Gesture navigation reports an empty nav bar (frame [0,0][0,0]): keep the full height then.
+[ "${BOTTOM:-0}" -gt 0 ] || BOTTOM=$(adb shell wm size | grep -oE 'x[0-9]+' | tr -d x | tail -1)
 
 # mobile-mcp's device server holds UiAutomation, which makes `uiautomator dump` die with
 # "already registered". mobile-mcp starts it again on its next call.
@@ -72,6 +76,13 @@ adb shell pkill -f com.mobilenext.mobilecli || true
 # stop would drop the buds.
 adb shell am start -W -f 0x14000000 -n com.spizganed.quickbuds/.ui.MainActivity >/dev/null
 sleep 2
+# The style first: its segment has no text, only the content description "Style"; Classic is its left half.
+tap "Settings"; tap "Theme & colors"
+b=$(dump | tr '>' '\n' | grep -E 'content-desc="Style"' | head -1 | grep -oE 'bounds="[^"]+"' | grep -oE '[0-9]+' | tr '\n' ' ')
+set -- $b
+q=$([ "$STYLE" = nothing ] && echo 3 || echo 1)
+adb shell input tap $(( $1 + ($3 - $1) * q / 4 )) $(( ($2 + $4) / 2 ))
+sleep 2; back; back
 shot main
 tap "Model";            shot models;   back
 tap "Equalizer";        shot eq
@@ -108,7 +119,7 @@ for n in ET.parse(sys.argv[1]).iter("node"):
     # so a square wider than half the screen is the 3x3.
     have = ids(n)
     l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
-    page = "battery" if "w_panel_left" in have else "controls" if "w_mode" in have else None
+    page = "battery" if "w_panel_left" in have else "controls" if "w_q0" in have else None
     if not page:
         continue
     size = "4x2" if (r - l) > 1.3 * (b - t) else "3x3" if (r - l) > 0.5 * WIDTH else "2x2"

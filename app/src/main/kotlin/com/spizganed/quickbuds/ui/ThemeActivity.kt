@@ -71,6 +71,8 @@ class ThemeActivity : Activity() {
         root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_style_title))
         root.addView(AncSegmentedView(this, listOf(getString(R.string.widget_style_classic), getString(R.string.widget_style_nothing))).apply {
             selected = if (ThemeRes.nothing(this@ThemeActivity)) 1 else 0
+            // Found by this in scripts/readme-screenshots.sh, which taps its left or right half.
+            contentDescription = getString(R.string.widget_style_title)
             onSegmentTapped = { i ->
                 if (i != selected) {
                     ThemeRes.setNothing(this@ThemeActivity, i == 1)

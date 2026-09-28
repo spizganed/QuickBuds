@@ -99,9 +99,6 @@ From his notes, 2026-09-28 ([USER]), in order:
   clock + steps stack, because two 1-row widgets each get less padding (together 461 px tall). The host
   clips to its padding, so we cannot draw past it. Decided 2026-09-28: the tighter inset is part of the optional
   Nothing widget style (CLAUDE.md, Widgets); Classic keeps 6dp at the sides.
-- **README screenshots**: the widgets changed on 2026-09-28 (Nothing style, controls page, case row); rerun
-  `scripts/readme-screenshots.sh` for the widget crops (it opens Widget settings by visible text, and that screen
-  lost its mode sections).
 
 ## Docs cleanup
 
@@ -109,6 +106,8 @@ From his notes, 2026-09-28 ([USER]), in order:
   outdated Appearance notes in ROADMAP-DONE replaced.
 - Done 2026-09-27: README screenshots retaken (model list and the redesigned widgets included).
   Rerun `scripts/readme-screenshots.sh` after any visible UI change.
+- Done 2026-09-29: retaken in Classic, plus a Nothing set in `docs/screenshots/nothing/` (README shows its main
+  screen and 3x3 widget). The script takes the style as its first argument.
 
 ## Parked
 
