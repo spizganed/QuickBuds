@@ -4,6 +4,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 
 ## Connection and push
 
+- Any paired OPPO / OnePlus / realme buds connect, not only his Buds 4 (2026-09-28, GitHub issue #1):
+  `BudsDevice` replaced a hardcoded MAC left from the single-device days; saved address, else the first
+  bonded device with the `079A` / `1107` UUID or a `models.json` name.
 - Packet logging: every received `AA` frame and every sent command, timestamped.
 - Wear, battery, ANC and Game Mode are pushed by the buds (PROTOCOL.md). Nothing is polled: the
   300 s status keep-alive was dropped 2026-09-27 after days of use without it showed no stale link.

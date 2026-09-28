@@ -34,6 +34,12 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
      every model by brand (OnePlus, OPPO, realme, DIZO); a pick
      overrides detection until other buds connect. Checked on device (Buds 4 detected; a manual Buds
      Pro swapped the noise segments). Next: per-feature packets.
+   - **Done 2026-09-28: connect to any paired buds** (GitHub issue #1). The target was a hardcoded
+     MAC (his Buds 4), so no other user could connect; `BudsDevice` now picks by saved address, SPP
+     UUID or model name. Confirmed on Buds 4.
+   - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
+     Galaxy S24). Asked to update in-app, clean install if it still fails, and send a Dev Tools export
+     with what works. Their logs are the first non-Buds 4 evidence: read before changing anything.
    - **Model list**: `Assets/Oplus/Data/DeviceModels.json`, HeyMelody's own per-model config.
      `whiteList` has 137 models: `id` (Buds 4 = `065414`), RFCOMM `uuid` (Buds 4 `0000079A-…`, ours),
      and a `function` map: feature flags, `noiseReductionMode` with a `protocolIndex` per ANC mode
