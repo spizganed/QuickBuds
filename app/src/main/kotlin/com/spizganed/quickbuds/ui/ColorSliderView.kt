@@ -49,7 +49,14 @@ class ColorSliderView(context: Context, private val channel: Int) : View(context
         else -> intArrayOf(Color.HSVToColor(floatArrayOf(hsv[0], hsv[1], 0f)), Color.HSVToColor(floatArrayOf(hsv[0], hsv[1], 1f)))
     }
 
+    private val nothing = ThemeRes.nothing(context)
+
+    /** Nothing style: the gradient and the knob as dots (DotArt). */
     override fun onDraw(c: Canvas) {
+        if (nothing) DotArt.draw(context, c, width, height) { shapes(it) } else shapes(c)
+    }
+
+    private fun shapes(c: Canvas) {
         val cy = height / 2f
         track.shader = LinearGradient(dp(14f), 0f, width - dp(14f), 0f, stops(), null, Shader.TileMode.CLAMP)
         box.set(0f, cy - dp(13f), width.toFloat(), cy + dp(13f))

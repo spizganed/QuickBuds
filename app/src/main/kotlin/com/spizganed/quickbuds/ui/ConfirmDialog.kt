@@ -2,7 +2,6 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.app.Dialog
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.Window
@@ -30,7 +29,7 @@ object ConfirmDialog {
         fun pill(text: String, filled: Boolean, onClick: () -> Unit) = TextView(activity).apply {
             this.text = text
             textSize = 15f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = ThemeRes.bold(context)
             gravity = Gravity.CENTER
             setTextColor(if (filled) p.onAccent else p.text)
             setPadding(dp(22f), 0, dp(22f), 0)
@@ -51,7 +50,7 @@ object ConfirmDialog {
             addView(TextView(activity).apply {
                 text = title
                 textSize = 19f
-                typeface = Typeface.DEFAULT_BOLD
+                typeface = ThemeRes.bold(context)
                 setTextColor(p.text)
             })
             if (body != null) addView(TextView(activity).apply {

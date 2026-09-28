@@ -57,7 +57,8 @@ class HomeLayoutActivity : Activity() {
 
         // The fixed tiles, as the main screen shows them now, but inert.
         val state = WidgetStateStore.read(this)
-        findViewById<View>(R.id.batteryCard).background = ThemeRes.card(this)
+        findViewById<View>(R.id.batteryCard).background = ThemeRes.group(this)
+        findViewById<TextView>(R.id.deviceNameText).typeface = ThemeRes.medium(this)
         findViewById<View>(R.id.deviceNameText).visibility = if (state.connected) View.VISIBLE else View.INVISIBLE
         findViewById<FrameLayout>(R.id.statusSlot).addView(BudsStatusView(this).apply {
             connected = state.connected
@@ -76,7 +77,7 @@ class HomeLayoutActivity : Activity() {
         }, 0)
 
         list = findViewById(R.id.featureList)
-        list.background = ThemeRes.card(this)
+        list.background = ThemeRes.group(this)
         list.clipToOutline = true
         ROWS.forEach { (key, def) -> rows[key] = previewRow(key, def) }
         list.setOnDragListener { _, e -> onDrag(e) }

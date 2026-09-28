@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.ui
 import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -60,7 +59,7 @@ class UpdateActivity : Activity() {
             addView(TextView(this@UpdateActivity).apply {
                 text = value
                 textSize = 22f
-                typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                typeface = ThemeRes.medium(context)
                 setTextColor(p.text)
                 gravity = Gravity.CENTER
                 tag = "value"
@@ -106,7 +105,7 @@ class UpdateActivity : Activity() {
 
         action = TextView(this).apply {
             textSize = 15f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = ThemeRes.bold(context)
             gravity = Gravity.CENTER
             setTextColor(p.onAccent)
             background = ThemeRes.ripple(this@UpdateActivity, ThemeRes.shape(this@UpdateActivity, p.accent, null, 22f))

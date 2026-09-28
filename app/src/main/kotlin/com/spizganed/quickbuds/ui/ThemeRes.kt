@@ -8,6 +8,7 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
 import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
@@ -114,7 +115,39 @@ object ThemeRes {
     private val applied = WeakHashMap<Activity, String>()
 
     // The language is part of it so a language change below Android 13 rebuilds open screens too.
-    private fun signature(context: Context, p: Palette) = p.id + p.tokens.contentToString() + language(context)
+    // The style too, so a Classic / Nothing change rebuilds open screens.
+    private fun signature(context: Context, p: Palette) = p.id + p.tokens.contentToString() + language(context) + nothing(context)
+
+    private const val KEY_NOTHING = "styleNothing"
+
+    /**
+     * The app's style, shared with the widgets ([USER] 2026-09-28: one switch for both). True: Nothing (NDot57All
+     * text, no cards, dot-matrix rings and mode icons). False (default): Classic.
+     */
+    fun nothing(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NOTHING, false)
+
+    fun setNothing(context: Context, on: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_NOTHING, on).apply()
+        com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(context)
+    }
+
+    /** A system font family, or null when this phone lacks it (Typeface.create falls back to DEFAULT). */
+    private fun family(name: String): Typeface? = Typeface.create(name, Typeface.NORMAL).takeIf { it != Typeface.DEFAULT }
+
+    /**
+     * Text weights for code-built views: Classic sans-serif; Nothing all NDot57All, the widget's dot font
+     * ([USER] 2026-09-28: NType82 made everything look off), synthetic bold for medium and bold.
+     */
+    fun regular(context: Context): Typeface =
+        (if (nothing(context)) family("NDot57All") else null) ?: Typeface.DEFAULT
+    fun medium(context: Context): Typeface =
+        (if (nothing(context)) family("NDot57All")?.let { Typeface.create(it, Typeface.BOLD) } else null)
+            ?: Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    fun bold(context: Context): Typeface =
+        (if (nothing(context)) family("NDot57All")?.let { Typeface.create(it, Typeface.BOLD) } else null) ?: Typeface.DEFAULT_BOLD
+
+    /** Screen titles and big numbers: [bold] (NDot57All bold in the Nothing style, like the widget). */
+    fun headline(context: Context): Typeface = bold(context)
 
     /**
      * The in-app language screen's choices: BCP 47 tag to native name, "" = system default
@@ -186,6 +219,8 @@ object ThemeRes {
             @Suppress("DEPRECATION")
             activity.window.navigationBarColor = p.background
         }
+        // Nothing: NDot57All for every text the theme sets (XML and plain code-built TextViews).
+        if (nothing(activity)) activity.theme.applyStyle(R.style.ThemeOverlay_App_Nothing, true)
         applied[activity] = signature(activity, p)
     }
 
@@ -223,12 +258,13 @@ object ThemeRes {
      * Tints a vector drawable for the current theme.
      *
      * Every glyph here is drawn with fillColor="#FFFFFF" because it is used
-     * white-on-dark in the widget, so icons are tinted explicitly.
+     * white-on-dark in the widget, so icons are tinted explicitly. Nothing style: as dots ([DotArt.Icon]).
      */
     fun tint(context: Context, drawableRes: Int, color: Int): android.graphics.drawable.Drawable {
         val d = context.getDrawable(drawableRes)!!.mutate()
         d.setTint(color)
-        return d
+        // Nothing style: every tinted icon as dots (row icons, chevrons, header buttons, checks).
+        return if (nothing(context)) DotArt.Icon(context, d) else d
     }
 
     /** A rounded rectangle in token colours: cards, pills, chips, sheet backgrounds. */
@@ -240,6 +276,12 @@ object ThemeRes {
         cornerRadius = dp(context, radiusDp).toFloat()
         if (stroke != null) setStroke(dp(context, strokeDp).coerceAtLeast(1), stroke)
     }
+
+    /**
+     * A group of rows or a home tile: [card], or nothing in the Nothing style ([USER] 2026-09-28: no cards,
+     * sections split by their labels, as on the Nothing widget).
+     */
+    fun group(context: Context): GradientDrawable? = if (nothing(context)) null else card(context)
 
     /** The standard card: `card` fill, 1dp `outline` stroke. */
     fun card(context: Context, radiusDp: Float = 24f): GradientDrawable {

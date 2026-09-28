@@ -477,7 +477,7 @@ widget layout: RemoteViews refuses it too. Check a widget change with `adb logca
   number, keep them equal), so it shows the same dot counts. Never add a 3x3-only value.
 - **4x2**: three rings (left, case, right, [USER] 2026-09-28), sized from `getAppWidgetOptions` (`ringDp`); Nothing
   with the same 6dp side margins and gaps (the rings are width-bound, so they sit centred vertically).
-- **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): style, page switching
+- **Settings** (`WidgetSettings`, screen `WidgetSettingsActivity` under Settings > Appearance): page switching
   (swap button / double tap), Low latency button (default on), Open app on tap (default **off**: a background tap
   does nothing). Every setter calls `refreshAll`.
 - **Slides only, no fades** ([USER] 2026-09-27), `@integer/widget_anim_ms` (280 ms, one value for every widget
@@ -505,8 +505,8 @@ widget layout: RemoteViews refuses it too. Check a widget change with `adb logca
 
 ### Widget style: Nothing (2026-09-28)
 
-`WidgetSettings.nothingStyle` (pref `widgetStyleNothing`, default **off**: Classic stays the default, [USER]), a
-segment at the top of widget settings. Nothing = the `_n` layouts (all text in Nothing OS's `NDot57All` family from
+`WidgetSettings.nothingStyle` = `ThemeRes.nothing` (pref `styleNothing`, default **off**: Classic stays the default,
+[USER]): ONE style for the app and the widgets, the segment at the top of Theme & colors (see *App style* below). Nothing = the `_n` layouts (all text in Nothing OS's `NDot57All` family from
 `/system/etc/ntfonts.xml` in synthetic bold, falling back to the default font elsewhere, nothing bundled; no heavier
 Nothing dot font exists, and bold draws every dot bigger) plus runtime changes in `AncWidgetProvider`: no boxes
 (`panelColor` / `paint` use `card`), and every graphic as a dot matrix:
@@ -528,6 +528,27 @@ Nothing dot font exists, and bold draws every dot bigger) plus runtime changes i
   bar as tall as the icon, the case section in two lines, a third ring for the case on the 2x2.
 - Box radius matches Nothing OS's own widgets: `widget_bg_n` 19dp on every size (measured against the calendar
   widget; Classic's 26 / 28dp looked rounder), inner shapes `widget_panel_n` / `_stroke_n` 16dp (`bgRes` / `panelRes`).
+
+### App style: Classic / Nothing (2026-09-28)
+
+The widget's style applied to the app ([USER] 2026-09-28: one switch for both, no cards). `ThemeRes.nothing` is
+part of the activity signature, so a change recreates open screens. Nothing:
+- Fonts: everything in `NDot57All`, the widget's dot font ([USER] 2026-09-28: NType82 made everything look off).
+  `ThemeOverlay.App.Nothing` (applied in `ThemeRes.select`) sets it for theme-set text; code-set text uses
+  `ThemeRes.regular / medium / bold / headline` (never `Typeface.create("sans-serif-medium")` or `DEFAULT_BOLD`
+  directly; medium and bold are synthetic bold). A Nothing OS system font, sans-serif elsewhere.
+- No cards: row groups and home tiles use `ThemeRes.group()` (null in Nothing). Dialogs, sheets, icon buttons,
+  chips and the segmented control keep their shapes.
+- Home: `BudsStatusView` draws the widget's `QuickBudsWidget.dotRing` (one bitmap per whole percent while
+  animating), numbers without `%`; `AncSegmentedView` draws `QuickBudsWidget.modeIcon` (home icons mapped to the
+  widget's mode icons, 28dp). Both tints still blend over `card`, as on the widget.
+- `DotArt`: live views drawn as dots, one sample per cell (cheap enough per drag frame), pitch 2.2dp, coverage
+  under alpha 50 leaves a cell empty. `LevelSliderView`, `EqCurveView` and `ColorSliderView` run their shape
+  drawing through it (text stays text; knobs hollow via CLEAR; the EQ grid a full dot wide), and
+  `SettingRowFactory.buildSwitch` swaps in `DotArt.Part` track / thumb drawables coloured by the switch tints.
+- Icons: `ThemeRes.tint` returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
+  alpha read as grey), so every tinted icon (rows, chevrons, header buttons, checks) is dotted. Row dividers are one
+  row of dots. Still solid: the status dot, the launcher icon on About, shapes (buttons, chips, dialogs, sheets).
 
 ### Widget tap flow
 

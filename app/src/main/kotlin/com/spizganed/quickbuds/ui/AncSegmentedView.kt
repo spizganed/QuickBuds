@@ -2,14 +2,17 @@ package com.spizganed.quickbuds.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.RectF
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import com.spizganed.quickbuds.widget.QuickBudsWidget
 
 /**
  * Noise-control switcher (design/SPEC.md 3.1): a card-style container (22dp radius, 4dp padding)
@@ -49,6 +52,11 @@ class AncSegmentedView(
     private val p = ThemeRes.palette(context)
     private val icons: List<Drawable> = iconRes.map { context.getDrawable(it)!!.mutate() }
 
+    /** Nothing style: the widget's dot-matrix mode icons ([QuickBudsWidget.modeIcon]), white, tinted when drawn. */
+    private val dots: List<Bitmap?> =
+        if (ThemeRes.nothing(context)) iconRes.map { QuickBudsWidget.modeIcon(WIDGET_ICON[it] ?: it) } else emptyList()
+    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+
     private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.card }
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE; strokeWidth = dp(1f); color = p.outline
@@ -56,7 +64,7 @@ class AncSegmentedView(
     private val pillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = p.accent }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dp(if (iconRes.isEmpty()) 14f else 11.5f); textAlign = Paint.Align.CENTER
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        typeface = ThemeRes.medium(context)
     }
     private val box = RectF()
 
@@ -78,15 +86,21 @@ class AncSegmentedView(
             canvas.drawRoundRect(box, dp(18f), dp(18f), pillPaint)
         }
 
-        val iconSize = dp(22f)
-        val iconTop = h / 2 - dp(17f)
+        // The dot icons get more room: 31 dots in 22dp would blur into a grey disc.
+        val iconSize = dp(if (dots.isEmpty()) 22f else 28f)
+        val iconTop = h / 2 + dp(5f) - iconSize
         val baseline = if (icons.isEmpty()) h / 2 + textPaint.textSize * 0.35f else h / 2 + dp(16f)
         labels.forEachIndexed { i, label ->
             // The segment under the moving fill brightens as the fill arrives.
             val closeness = if (pos < 0f) 0f else (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)
             val c = Palette.blend(p.textSecondary, p.onAccent, closeness)
             val cx = inset + segW * i + segW / 2
-            icons.getOrNull(i)?.run {
+            val dot = dots.getOrNull(i)
+            if (dot != null) {
+                dotPaint.colorFilter = PorterDuffColorFilter(c, PorterDuff.Mode.SRC_IN)
+                box.set(cx - iconSize / 2, iconTop, cx + iconSize / 2, iconTop + iconSize)
+                canvas.drawBitmap(dot, null, box, dotPaint)
+            } else icons.getOrNull(i)?.run {
                 setTint(c)
                 setBounds(
                     (cx - iconSize / 2).toInt(), iconTop.toInt(),
@@ -111,4 +125,14 @@ class AncSegmentedView(
     }
 
     override fun performClick(): Boolean = super.performClick()
+
+    companion object {
+        /** The home screen's noise icons as the widget's mode icons, the ones drawn as dots. */
+        private val WIDGET_ICON = mapOf(
+            com.spizganed.quickbuds.R.drawable.ic_noise_off to com.spizganed.quickbuds.R.drawable.ic_mode_off,
+            com.spizganed.quickbuds.R.drawable.ic_anc to com.spizganed.quickbuds.R.drawable.ic_mode_anc_medium,
+            com.spizganed.quickbuds.R.drawable.ic_adaptive to com.spizganed.quickbuds.R.drawable.ic_mode_adaptive,
+            com.spizganed.quickbuds.R.drawable.ic_transparency to com.spizganed.quickbuds.R.drawable.ic_mode_transparency
+        )
+    }
 }

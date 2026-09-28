@@ -33,7 +33,6 @@ object WidgetSettings {
     private const val KEY_OPEN_APP = "widgetOpenApp"
     private const val KEY_LIST_AT = "widgetListAt_"
     private const val KEY_DOUBLE_TAP = "widgetDoubleTap"
-    private const val KEY_NOTHING = "widgetStyleNothing"
     private const val KEY_PAGE = "widgetPage_"
     private const val KEY_CHILD = "widgetChild_"
 
@@ -70,10 +69,9 @@ object WidgetSettings {
 
     /**
      * True: the Nothing style (no boxes, tighter inset, Nothing OS's Ndot digits; layouts `widget_*_n`).
-     * False (default): Classic ([USER] 2026-09-28: optional, not the default).
+     * The app's style ([ThemeRes.nothing], set in Theme & colors), shared with the app.
      */
-    fun nothingStyle(c: Context) = prefs(c).getBoolean(KEY_NOTHING, false)
-    fun setNothingStyle(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_NOTHING, v) }
+    fun nothingStyle(c: Context) = ThemeRes.nothing(c)
 
     /** The page widget [id] shows, BATTERY or CONTROLS; [default] is its provider's own. */
     fun page(c: Context, id: Int, default: QuickBudsWidget.Kind): QuickBudsWidget.Kind =

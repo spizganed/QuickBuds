@@ -53,8 +53,18 @@ class LevelSliderView(
     private val dotRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = accent; style = Paint.Style.STROKE; strokeWidth = dp(2.5f)
     }
+    private val nothing = ThemeRes.nothing(context)
     private val valuePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = accent; textSize = dp(14f); textAlign = Paint.Align.CENTER; isFakeBoldText = true
+        color = accent; textSize = dp(14f); textAlign = Paint.Align.CENTER
+        if (nothing) typeface = ThemeRes.headline(context) else isFakeBoldText = true
+    }
+
+    init {
+        // Nothing style: the knobs are hollow (their middle cleared, not painted in `background`, which showed as
+        // dark dots on the EQ sheet).
+        if (nothing) {
+            dotFill.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
+        }
     }
 
     private val left get() = dp(22f)
@@ -68,13 +78,17 @@ class LevelSliderView(
     }
 
     override fun onDraw(canvas: Canvas) {
+        // Nothing style: the same drawing as dots (DotArt); the value stays text.
+        if (nothing) DotArt.draw(context, canvas, width, height) { shapes(it) } else shapes(canvas)
+        if (showValue) canvas.drawText(if (value > 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
+    }
+
+    private fun shapes(canvas: Canvas) {
         canvas.drawLine(left, trackY, right, trackY, trackPaint)
         canvas.drawLine(left, trackY, x(pos), trackY, fillPaint)
-
         val r = if (dragging) dp(10f) else dp(8f)
         canvas.drawCircle(x(pos), trackY, r, dotFill)
         canvas.drawCircle(x(pos), trackY, r, dotRing)
-        if (showValue) canvas.drawText(if (value > 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {

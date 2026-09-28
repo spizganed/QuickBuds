@@ -9,7 +9,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.widget.WidgetSettings
 
 /**
- * Widget settings (design/widgets/WIDGETS.md 5, w6): the style, how the pages swap, and two toggles.
+ * Widget settings (design/widgets/WIDGETS.md 5, w6): how the pages swap (the style is the app's, Theme & colors), and two toggles.
  * Every change is saved at once and repaints the placed widgets.
  */
 class WidgetSettingsActivity : Activity() {
@@ -27,15 +27,6 @@ class WidgetSettingsActivity : Activity() {
             textSize = 13f
             setPadding(ThemeRes.dp(this@WidgetSettingsActivity, 4f), ThemeRes.dp(this@WidgetSettingsActivity, 8f), 0, 0)
         }
-
-        root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_style_title))
-        root.addView(AncSegmentedView(this, listOf(getString(R.string.widget_style_classic), getString(R.string.widget_style_nothing))).apply {
-            selected = if (WidgetSettings.nothingStyle(this@WidgetSettingsActivity)) 1 else 0
-            onSegmentTapped = { i ->
-                selected = i
-                WidgetSettings.setNothingStyle(this@WidgetSettingsActivity, i == 1)
-            }
-        })
 
         root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_pages_title))
         root.addView(AncSegmentedView(

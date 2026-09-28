@@ -2,7 +2,6 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -147,7 +146,7 @@ class GestureActivity : Activity() {
             minWidth = 0
             minHeight = dp(42f)
             textSize = 13f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = ThemeRes.bold(context)
             setOnClickListener { onClick() }
         }
     }

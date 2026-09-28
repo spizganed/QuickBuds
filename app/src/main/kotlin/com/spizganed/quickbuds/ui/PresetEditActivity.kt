@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.ui
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -76,7 +75,7 @@ class PresetEditActivity : Activity() {
             setText(preset.name)
             setTextColor(p.text)
             textSize = 16f
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            typeface = ThemeRes.medium(context)
             isSingleLine = true
             filters = arrayOf(InputFilter.LengthFilter(24))
             imeOptions = EditorInfo.IME_ACTION_DONE

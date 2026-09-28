@@ -2,7 +2,6 @@ package com.spizganed.quickbuds.ui
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.InputFilter
 import android.view.Gravity
@@ -63,7 +62,7 @@ class ColorPickerView(
             setTextColor(p.text)
             textSize = 15f
             fontFeatureSettings = "tnum"
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            typeface = ThemeRes.medium(context)
             isSingleLine = true
             filters = arrayOf(InputFilter.LengthFilter(7))
             imeOptions = EditorInfo.IME_ACTION_DONE

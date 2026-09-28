@@ -11,7 +11,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.IBinder
@@ -296,7 +295,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             text = p.name
             setTextColor(ThemeRes.color(this@EqActivity, R.attr.appColorTextPrimary))
             textSize = 17f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = ThemeRes.bold(context)
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }

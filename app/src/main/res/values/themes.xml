@@ -36,6 +36,12 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
     </style>
 
+    <!-- Nothing style (ThemeRes.nothing): applied over any preset. NDot57All is a Nothing OS system font;
+         other phones fall back to the default. -->
+    <style name="ThemeOverlay.App.Nothing" parent="">
+        <item name="android:fontFamily">NDot57All</item>
+    </style>
+
     <!-- OLED Black (default). True black so the panel shuts pixels off. -->
     <style name="Theme.App.OLED" parent="Theme.App.Base">
         <item name="appColorBg">#000000</item>

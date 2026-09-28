@@ -2,7 +2,6 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
@@ -35,7 +34,7 @@ class AboutActivity : Activity() {
         root.addView(TextView(this).apply {
             setText(R.string.app_name)
             textSize = 24f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = ThemeRes.headline(context)
             setTextColor(p.text)
             gravity = Gravity.CENTER
             setPadding(0, dp(10f), 0, 0)
@@ -68,7 +67,7 @@ class AboutActivity : Activity() {
             addView(TextView(this@AboutActivity).apply {
                 setText(label)
                 textSize = 15f
-                typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                typeface = ThemeRes.medium(context)
                 setTextColor(p.text)
             })
             setOnClickListener { open(url) }

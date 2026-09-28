@@ -2,7 +2,6 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.app.Dialog
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.text.InputFilter
 import android.view.Gravity
@@ -148,7 +147,7 @@ class BottomSheetDialog(private val activity: Activity) {
                 setText(it)
                 setTextColor(primary)
                 textSize = 16f
-                typeface = Typeface.DEFAULT_BOLD
+                typeface = ThemeRes.bold(context)
                 setPadding(dp(14f), 0, dp(14f), dp(4f))
             })
         }
@@ -206,7 +205,7 @@ class BottomSheetDialog(private val activity: Activity) {
             root.addView(TextView(activity).apply {
                 setText(label)
                 textSize = 15f
-                typeface = Typeface.DEFAULT_BOLD
+                typeface = ThemeRes.bold(context)
                 gravity = Gravity.CENTER
                 setTextColor(ThemeRes.palette(activity).onAccent)
                 background = ThemeRes.chip(activity, true)

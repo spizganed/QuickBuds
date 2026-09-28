@@ -610,9 +610,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         connPill.background = ThemeRes.ripple(this, ThemeRes.iconButton(this, 22f))
         btnDevTools.background = ThemeRes.ripple(this, ThemeRes.iconButton(this))
         btnSettings.background = ThemeRes.ripple(this, ThemeRes.iconButton(this))
-        batteryCard.background = ThemeRes.card(this)
-        featureList.background = ThemeRes.card(this)
+        batteryCard.background = ThemeRes.group(this)
+        featureList.background = ThemeRes.group(this)
         featureList.clipToOutline = true
+        connText.typeface = ThemeRes.medium(this)
+        deviceNameText.typeface = ThemeRes.medium(this)
         btnDevTools.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_dev_tools, ThemeRes.color(this, R.attr.appColorAccent)))
         btnSettings.setImageDrawable(ThemeRes.tint(this, R.drawable.ic_settings_cog, ThemeRes.color(this, R.attr.appColorAccent)))
     }
@@ -697,8 +699,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             )
         )
         pill.setTextColor(if (selected) pal.text else pal.textSecondary)
-        pill.typeface = if (selected) android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
-        else android.graphics.Typeface.DEFAULT
+        pill.typeface = if (selected) ThemeRes.medium(this)
+        else ThemeRes.regular(this)
     }
 
 

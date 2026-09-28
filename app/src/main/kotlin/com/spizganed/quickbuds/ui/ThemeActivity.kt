@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -17,7 +16,7 @@ import android.widget.TextView
 import com.spizganed.quickbuds.R
 
 /**
- * Theme & colors (design/SPEC.md 3.7): the three built-in presets as preview tiles, then the
+ * Theme & colors (design/SPEC.md 3.7): the style (Classic / Nothing), the three built-in presets as preview tiles, then the
  * custom presets (at most 3) as rows, then "New preset". Tapping a tile or a row applies that
  * preset at once; the pencil opens [PresetEditActivity].
  */
@@ -68,6 +67,18 @@ class ThemeActivity : Activity() {
         activeTile = null
         root.addView(SettingRowFactory.title(this, R.string.theme_title))
 
+        // --- Style: Classic or Nothing, for the app and the widgets ([USER] 2026-09-28) ---
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_style_title))
+        root.addView(AncSegmentedView(this, listOf(getString(R.string.widget_style_classic), getString(R.string.widget_style_nothing))).apply {
+            selected = if (ThemeRes.nothing(this@ThemeActivity)) 1 else 0
+            onSegmentTapped = { i ->
+                if (i != selected) {
+                    ThemeRes.setNothing(this@ThemeActivity, i == 1)
+                    recreate()
+                }
+            }
+        })
+
         // --- Built-in: 3-column grid of preview tiles ---
         root.addView(SettingRowFactory.sectionLabel(this, R.string.theme_builtin))
         val grid = LinearLayout(this).apply {
@@ -108,7 +119,7 @@ class ThemeActivity : Activity() {
                 gravity = Gravity.CENTER
                 setPadding(0, dp(8f), 0, 0)
                 setTextColor(if (isActive) p.text else p.textSecondary)
-                if (isActive) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                if (isActive) typeface = ThemeRes.medium(context)
             })
             grid.addView(column)
         }

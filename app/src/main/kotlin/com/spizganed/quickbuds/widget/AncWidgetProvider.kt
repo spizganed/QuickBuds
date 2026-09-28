@@ -411,20 +411,23 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          */
         private fun ring(context: Context, p: Palette, level: Int, slot: Int, status: Int, sizeDp: Float): Bitmap {
             val px = ThemeRes.dp(context, sizeDp).coerceAtLeast(1)
-            if (WidgetSettings.nothingStyle(context)) {
-                // Nothing style: ring and glyph drawn as one, then turned into one dot matrix, so the
-                // ring's dots sit on the glyph's grid. The same [RING_CELLS] on every size, so each ring is
-                // the 2x2's image scaled.
-                // A translucent tint is made opaque over the card, since a dot is either there or not.
-                val n = RING_CELLS
-                return matrix(n, n, px / n.toFloat()) { c, size ->
-                    val g = drawRing(context, c, size, p, level, slot, nothingTint(p, slot == 1, status), size * 2.6f / n, dim(p), if (slot == 1) 1.22f else 1.18f)
-                    if (slot == 1) clearLed(c, g, size / n)
-                }
-            }
+            if (WidgetSettings.nothingStyle(context)) return dotRing(context, p, level, slot, nothingTint(p, slot == 1, status), px)
             val bmp = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
             drawRing(context, Canvas(bmp), px.toFloat(), p, level, slot, BudsStatusView.wearTint(p, slot == 1, status))
             return bmp
+        }
+
+        /**
+         * Nothing style: ring and glyph drawn as one, then turned into one dot matrix, so the ring's dots sit on the
+         * glyph's grid, [px] square. The same [RING_CELLS] on every size, so each ring is the 2x2's image scaled.
+         * [tint] opaque, since a dot is either there or not. Also the app's home rings (BudsStatusView).
+         */
+        fun dotRing(context: Context, p: Palette, level: Int, slot: Int, tint: Int, px: Int): Bitmap {
+            val n = RING_CELLS
+            return matrix(n, n, px / n.toFloat()) { c, size ->
+                val g = drawRing(context, c, size, p, level, slot, tint, size * 2.6f / n, dim(p), if (slot == 1) 1.22f else 1.18f)
+                if (slot == 1) clearLed(c, g, size / n)
+            }
         }
 
         /** Outline track, accent arc from 12 o'clock, and the glyph in [tint] at its true ratio, in a [size] square. */
@@ -505,11 +508,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /**
-         * A mode icon (see [gridIcon]), or null. Sizes in cells of the [MODE_GRID] grid, from the centre (15.5).
+         * A mode icon (see [gridIcon]), or null. Also the app's noise-control segments (AncSegmentedView). Sizes in cells of the [MODE_GRID] grid, from the centre (15.5).
          * Rings are 2 cells wide on radii of k + 0.5, so each covers exactly the dots k and k + 1 out along an
          * axis: edges on cell boundaries left stray dots between rings. Gaps are 2+ cells.
          */
-        private fun modeIcon(res: Int): Bitmap? {
+        fun modeIcon(res: Int): Bitmap? {
             val n = MODE_GRID
             val m = n / 2f
             val out = m - 1f                             // the outer ring: dots 14 and 15, the last ones in the box
@@ -597,7 +600,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * ear `textSecondary` at 65% over the card, in case a third, darker grey, below the ring's unlit dots ([dim]) so it is not
          * mistaken for them. Opaque, since a dot is either there or not. The case glyph is always `text`.
          */
-        private fun nothingTint(p: Palette, isCase: Boolean, status: Int): Int = when {
+        fun nothingTint(p: Palette, isCase: Boolean, status: Int): Int = when {
             isCase || status == 3 || status == 7 -> p.text
             // Almost invisible: 0.3 sat too close to out of ear, 0.12 a touch too dark ([USER] 2026-09-28).
             status == 4 || status == 0 -> Palette.blend(p.card, p.textSecondary, 0.17f)

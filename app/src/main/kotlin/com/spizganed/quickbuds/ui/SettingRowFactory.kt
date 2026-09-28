@@ -1,7 +1,6 @@
 package com.spizganed.quickbuds.ui
 
 import android.content.Context
-import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.graphics.PorterDuff
@@ -26,8 +25,6 @@ import com.spizganed.quickbuds.R
  * state of its own, so a custom ViewGroup would be ceremony with no payoff.
  */
 object SettingRowFactory {
-
-    private val SEMIBOLD: Typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
 
     /**
      * One settings row (SPEC section 2): 72dp, 16dp padding, 14dp gap, 24dp accent icon (none
@@ -87,7 +84,7 @@ object SettingRowFactory {
             tag = TITLE_TAG
             setTextColor(ThemeRes.color(context, R.attr.appColorTextPrimary))
             textSize = 16f
-            typeface = SEMIBOLD
+            typeface = ThemeRes.medium(context)
         })
         if (subtitleRes != 0) {
             textColumn.addView(TextView(context).apply {
@@ -159,6 +156,16 @@ object SettingRowFactory {
             trackTintMode = PorterDuff.Mode.SRC_IN
             // No press halo: the stock ripple drew a see-through circle twice the knob's size.
             background = null
+            // Nothing style: a dotted pill track and a dot-disc thumb (DotArt), coloured by the same tint lists.
+            if (ThemeRes.nothing(context)) {
+                trackDrawable = DotArt.Part(context, 44f, 24f, track) { c, b, p -> c.drawRoundRect(b, b.height() / 2, b.height() / 2, p) }
+                thumbDrawable = DotArt.Part(context, 24f, 24f, thumb) { c, b, p ->
+                    c.drawCircle(b.centerX(), b.centerY(), b.height() / 2 - ThemeRes.dp(context, 4f), p)
+                }
+                thumbTintList = null
+                trackTintList = null
+                switchMinWidth = 0
+            }
         }
     }
 
@@ -194,16 +201,23 @@ object SettingRowFactory {
         }
     }
 
-    /** 1dp `outline` divider between rows inside a card. Not drawn after the last row. */
+    /** 1dp `outline` divider between rows inside a card (Nothing: a row of dots). Not drawn after the last row. */
     fun buildDivider(context: Context): View = View(context).apply {
+        val outline = ThemeRes.color(context, R.attr.appColorOutline)
+        if (ThemeRes.nothing(context)) {
+            // Nothing style: one row of dots (DotArt), a dot tall.
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ThemeRes.dp(context, DotArt.PITCH_DP))
+            background = DotArt.Part(context, 0f, DotArt.PITCH_DP, android.content.res.ColorStateList.valueOf(outline)) { c, b, p -> c.drawRect(b, p) }
+            return@apply
+        }
         layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ThemeRes.dp(context, 1f))
-        setBackgroundColor(ThemeRes.color(context, R.attr.appColorOutline))
+        setBackgroundColor(outline)
     }
 
-    /** Card (SPEC section 2): 24dp radius, `outline` stroke, rows clipped to the corners. */
+    /** Card (SPEC section 2): 24dp radius, `outline` stroke, rows clipped to the corners. None in the Nothing style. */
     fun card(context: Context): LinearLayout = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
-        background = ThemeRes.card(context)
+        background = ThemeRes.group(context)
         clipToOutline = true
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -216,12 +230,12 @@ object SettingRowFactory {
         card.addView(row)
     }
 
-    /** Screen title: 24sp bold, 4dp start inset. */
+    /** Screen title: 24sp bold (Nothing: NDot57, [ThemeRes.headline]), 4dp start inset. */
     fun title(context: Context, textRes: Int): TextView = TextView(context).apply {
         setText(textRes)
         setTextColor(ThemeRes.color(context, R.attr.appColorTextPrimary))
         textSize = 24f
-        typeface = Typeface.DEFAULT_BOLD
+        typeface = ThemeRes.headline(context)
         setPadding(ThemeRes.dp(context, 4f), 0, 0, ThemeRes.dp(context, 4f))
     }
 

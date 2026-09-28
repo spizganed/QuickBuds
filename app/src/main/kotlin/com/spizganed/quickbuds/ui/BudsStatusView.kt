@@ -5,11 +5,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.widget.QuickBudsWidget
 import kotlin.math.min
 
 /**
@@ -32,11 +32,16 @@ class BudsStatusView(context: Context) : View(context) {
         var shown = 0f          // animated ring fraction 0..1
         var status = -1
         var anim: ValueAnimator? = null
+        var dots: android.graphics.Bitmap? = null   // Nothing: the dot-matrix ring, redrawn when [dotsKey] changes
+        var dotsKey = ""
     }
 
     private fun dp(v: Float) = ThemeRes.dp(context, v).toFloat()
 
     private val p = ThemeRes.palette(context)
+
+    /** Nothing style: dot-matrix rings (the widget's, [QuickBudsWidget.dotRing]), NDot57 numbers without `%`. */
+    private val nothing = ThemeRes.nothing(context)
 
     /** False draws the disconnected state (SPEC 3.2). */
     var connected = true
@@ -63,13 +68,13 @@ class BudsStatusView(context: Context) : View(context) {
     }
     private val pctPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dp(21f); textAlign = Paint.Align.CENTER
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        typeface = if (nothing) ThemeRes.headline(context) else ThemeRes.medium(context)
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dp(13f); textAlign = Paint.Align.CENTER; color = p.textSecondary
     }
     private val arcBox = RectF()
-    private val semibold = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    private val semibold = ThemeRes.medium(context)
 
     /** 90dp (SPEC 104, made ~13% shorter, [USER] 2026-09-26), shrunk only if three columns cannot fit on a very narrow screen. */
     private val ringSize get() = min(dp(90f), width / 3f - dp(8f))
@@ -100,7 +105,7 @@ class BudsStatusView(context: Context) : View(context) {
         invalidate()
     }
 
-    private fun pctText(level: Int) = if (level < 0 || !connected) "—" else "$level%"
+    private fun pctText(level: Int) = if (level < 0 || !connected) "—" else if (nothing) "$level" else "$level%"
 
     private fun wearLabel(status: Int) = when (status) {
         3, 7 -> context.getString(R.string.status_in_ear)
@@ -116,18 +121,30 @@ class BudsStatusView(context: Context) : View(context) {
         val scale = ring / dp(104f)
         slots.forEachIndexed { i, s ->
             val cx = colW * i + colW / 2
-            val r = ring / 2 - trackPaint.strokeWidth / 2
-            arcBox.set(cx - r, cy - r, cx + r, cy + r)
-            canvas.drawOval(arcBox, trackPaint)
-            if (connected && s.shown > 0f) canvas.drawArc(arcBox, -90f, 360f * s.shown, false, arcPaint)
+            if (nothing) {
+                // One bitmap per animation step (whole percents), so an animation redraws at most 100 of them.
+                val level = if (connected && s.level >= 0) Math.round(s.shown * 100) else -1
+                val tint = if (connected) QuickBudsWidget.nothingTint(p, i == 1, s.status) else p.disabled
+                val key = "$level/$tint/${ring.toInt()}"
+                if (s.dotsKey != key) {
+                    s.dots = QuickBudsWidget.dotRing(context, p, level, i, tint, ring.toInt().coerceAtLeast(1))
+                    s.dotsKey = key
+                }
+                canvas.drawBitmap(s.dots!!, cx - ring / 2, 0f, null)
+            } else {
+                val r = ring / 2 - trackPaint.strokeWidth / 2
+                arcBox.set(cx - r, cy - r, cx + r, cy + r)
+                canvas.drawOval(arcBox, trackPaint)
+                if (connected && s.shown > 0f) canvas.drawArc(arcBox, -90f, 360f * s.shown, false, arcPaint)
 
-            // Glyph: fit the SPEC box, keeping the SVG's own ratio.
-            val bw = dp(s.boxW) * scale
-            val bh = dp(s.boxH) * scale
-            val (iw, ih) = if (s.iconRatio < bw / bh) bh * s.iconRatio to bh else bw to bw / s.iconRatio
-            s.icon.setTint(if (connected) wearTint(p, i == 1, s.status) else p.disabled)
-            s.icon.setBounds((cx - iw / 2).toInt(), (cy - ih / 2).toInt(), (cx + iw / 2).toInt(), (cy + ih / 2).toInt())
-            s.icon.draw(canvas)
+                // Glyph: fit the SPEC box, keeping the SVG's own ratio.
+                val bw = dp(s.boxW) * scale
+                val bh = dp(s.boxH) * scale
+                val (iw, ih) = if (s.iconRatio < bw / bh) bh * s.iconRatio to bh else bw to bw / s.iconRatio
+                s.icon.setTint(if (connected) wearTint(p, i == 1, s.status) else p.disabled)
+                s.icon.setBounds((cx - iw / 2).toInt(), (cy - ih / 2).toInt(), (cx + iw / 2).toInt(), (cy + ih / 2).toInt())
+                s.icon.draw(canvas)
+            }
 
             pctPaint.color = p.text
             canvas.drawText(pctText(s.level), cx, ring + dp(30f), pctPaint)
@@ -136,7 +153,7 @@ class BudsStatusView(context: Context) : View(context) {
             val label = wear ?: names[i]
             val inEar = wear != null && (s.status == 3 || s.status == 7)
             labelPaint.color = if (inEar) p.text else p.textSecondary
-            labelPaint.typeface = if (inEar) semibold else Typeface.DEFAULT
+            labelPaint.typeface = if (inEar) semibold else ThemeRes.regular(context)
             // "Out of ear" can be wider than a narrow column: shrink to fit, never clip.
             labelPaint.textSize = dp(13f)
             val room = colW - dp(6f)

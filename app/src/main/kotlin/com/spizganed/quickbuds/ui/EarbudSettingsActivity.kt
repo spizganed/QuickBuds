@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.IBinder
 import android.view.Gravity
@@ -117,7 +116,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 setText(R.string.row_alert_title)
                 setTextColor(ThemeRes.color(this@EarbudSettingsActivity, R.attr.appColorTextPrimary))
                 textSize = 15f
-                typeface = Typeface.DEFAULT_BOLD
+                typeface = ThemeRes.bold(context)
             })
             addView(LinearLayout(this@EarbudSettingsActivity).apply {
                 orientation = LinearLayout.HORIZONTAL

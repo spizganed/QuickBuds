@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.LinearLayout
@@ -102,7 +101,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
                     text = d.name
                     setTextColor(ThemeRes.color(this@DualDeviceActivity, R.attr.appColorTextPrimary))
                     textSize = 15f
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = ThemeRes.bold(context)
                 })
                 addView(TextView(this@DualDeviceActivity).apply {
                     setText(if (d.name == own) R.string.dual_connected_this else R.string.dual_connected)

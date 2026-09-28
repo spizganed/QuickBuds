@@ -43,14 +43,25 @@ class EqCurveView(context: Context) : View(context) {
     private val dotRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = accent; style = Paint.Style.STROKE; strokeWidth = dp(2.5f)
     }
+    private val nothing = ThemeRes.nothing(context)
     private val valuePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = accent; textSize = dp(14f); textAlign = Paint.Align.CENTER; isFakeBoldText = true
+        color = accent; textSize = dp(14f); textAlign = Paint.Align.CENTER
+        if (nothing) typeface = ThemeRes.headline(context) else isFakeBoldText = true
+    }
+
+    init {
+        // Nothing style: the knobs are hollow (their middle cleared, not painted in `background`, which showed as
+        // dark dots on the EQ sheet), and the grid a full dot wide (thinner fell under DotArt's minimum).
+        if (nothing) {
+            dotFill.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
+            gridPaint.strokeWidth = dp(DotArt.PITCH_DP)
+        }
     }
     private val axisPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = secondary; textSize = dp(12f); textAlign = Paint.Align.CENTER
+        color = secondary; textSize = dp(12f); textAlign = Paint.Align.CENTER; typeface = ThemeRes.regular(context)
     }
     private val scalePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = secondary; textSize = dp(12f); textAlign = Paint.Align.LEFT
+        color = secondary; textSize = dp(12f); textAlign = Paint.Align.LEFT; typeface = ThemeRes.regular(context)
     }
 
     // Plot area.
@@ -95,6 +106,18 @@ class EqCurveView(context: Context) : View(context) {
             val label = if (g > 0) "+$g dB" else "$g dB"
             canvas.drawText(label, dp(4f), y(g.toFloat()) + dp(4f), scalePaint)
         }
+        // Nothing style: grid, fill, curve and points as dots (DotArt); the numbers stay text.
+        if (nothing) DotArt.draw(context, canvas, width, height) { shapes(it) } else shapes(canvas)
+
+        for (i in gains.indices) {
+            val v = gains[i]
+            canvas.drawText(if (v > 0) "+$v" else "$v", x(i), dp(22f), valuePaint)
+            val f = freqs.getOrNull(i) ?: 0
+            canvas.drawText(if (f >= 1000) "${f / 1000}k" else "$f", x(i), height - dp(10f), axisPaint)
+        }
+    }
+
+    private fun shapes(canvas: Canvas) {
         for (i in gains.indices) canvas.drawLine(x(i), top, x(i), bottom, gridPaint)
 
         // Smooth curve: horizontal-tangent cubic between neighbours, so it never overshoots a point.
@@ -115,10 +138,6 @@ class EqCurveView(context: Context) : View(context) {
             val r = if (i == active) dp(9f) else dp(7f)
             canvas.drawCircle(x(i), y(pos[i]), r, dotFill)
             canvas.drawCircle(x(i), y(pos[i]), r, dotRing)
-            val v = gains[i]
-            canvas.drawText(if (v > 0) "+$v" else "$v", x(i), dp(22f), valuePaint)
-            val f = freqs.getOrNull(i) ?: 0
-            canvas.drawText(if (f >= 1000) "${f / 1000}k" else "$f", x(i), height - dp(10f), axisPaint)
         }
     }
 

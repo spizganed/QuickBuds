@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.graphics.Typeface
 import android.view.View
 import com.spizganed.quickbuds.R
 
@@ -29,7 +28,7 @@ class PalettePreviewView(context: Context, private val detailed: Boolean) : View
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER }
-    private val medium = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    private val medium = ThemeRes.medium(context)
     private val box = RectF()
     private val rowIcon = context.getDrawable(R.drawable.ic_hires)!!.mutate()
 
@@ -113,7 +112,7 @@ class PalettePreviewView(context: Context, private val detailed: Boolean) : View
             ring(c, cx, t + dp(30f), dp(18f), dp(4f), levels[i] / 100f)
             text.color = p.text; text.textSize = dp(13f); text.typeface = medium
             c.drawText("${levels[i]}%", cx, t + dp(70f), text)
-            text.color = p.textSecondary; text.textSize = dp(10.5f); text.typeface = Typeface.DEFAULT
+            text.color = p.textSecondary; text.textSize = dp(10.5f); text.typeface = ThemeRes.regular(context)
             c.drawText(labels[i], cx, t + dp(86f), text)
         }
         // Toggle row.
@@ -127,7 +126,7 @@ class PalettePreviewView(context: Context, private val detailed: Boolean) : View
         text.textAlign = Paint.Align.LEFT
         text.color = p.text; text.textSize = dp(13.5f); text.typeface = medium
         c.drawText(context.getString(R.string.row_hires_title), l + dp(46f), mid - dp(3f), text)
-        text.color = p.textSecondary; text.textSize = dp(11f); text.typeface = Typeface.DEFAULT
+        text.color = p.textSecondary; text.textSize = dp(11f); text.typeface = ThemeRes.regular(context)
         c.drawText(context.getString(R.string.row_hires_sub), l + dp(46f), mid + dp(13f), text)
         text.textAlign = Paint.Align.CENTER
         // Switch, on: derived track + accent thumb.
