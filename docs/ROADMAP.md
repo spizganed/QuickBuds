@@ -73,6 +73,21 @@ widgets, 3.0.0) is finished; 3.1.0 is released.
 
 ## Our own features
 
+From his notes, 2026-09-28 ([USER]):
+
+- **Next: widget icons in the app.** Use the widget's mode icons (ANC and the rest) in the app, in both
+  styles: the app's own ones look off in Classic and Nothing alike.
+- **Next: home noise control behaves like the widget.** Tapping ANC slides to a level picker, then the
+  level is chosen there (the widget's `w_page2` flow), instead of the segment plus level pills.
+- **Next: refine the home switches** (low latency, Hi-Res, 3D audio). What exactly is still open.
+- **Next: Nothing style, no wear text on home.** No "In ear" / "In case" labels under the rings, as on
+  the Nothing widget (the glyph's shade says it).
+- **Next: GitHub discoverability.** README wording, repo description and topics, so the repo turns up
+  in Google for related searches.
+- **Open: custom UI styles as a file.** Styles beyond Classic / Nothing that users can export and
+  import as one file, covering both the widget and the app.
+- **Before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
+
 - **Question: widgets use their full size** ([USER] 2026-09-27): next to his other home screen widgets
   (the clock, the steps and the combined weather widget) ours look smaller than the cell they get.
   Measured 2026-09-27 (`uiautomator dump`): the Nothing launcher pads every widget host the same way
