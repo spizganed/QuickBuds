@@ -93,8 +93,8 @@ From his notes, 2026-09-28 ([USER]), in order:
   app, if at all ([USER] 2026-09-28). Testing it needs a third style.
 
 - A build quickstart and a capture guide for contributors, only if the device file is not enough.
-- Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family,
-  `0x0510`): see PROTOCOL.md §12. Do not guess from a couple of samples.
+- Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family): see PROTOCOL.md §12.
+  (`0x0510` is decoded: the spatial type push, PROTOCOL.md §9.) Do not guess from a couple of samples.
 
 ## Decided against — do not re-suggest
 

@@ -352,7 +352,7 @@ button arms `devCrashOnLaunch`; the next launch throws once there, which proves 
 - **Undecoded families** — broadcast codes `0x04`/`0x08`/`0x0B`, the recurring
   `F1` family (`AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`), and `02 01 08 0C 02` /
   `02 01 07 0B 02` (these carry non-multiples of ten — possibly a fine-grained battery/case field).
-  Also `0x0510`, a Spatial Audio notify. **Do not guess any of these from a couple of samples.**
+  (`0x0510` is decoded since 2026-09-29: the spatial type push, PROTOCOL.md §9.) **Do not guess any of these from a couple of samples.**
   See PROTOCOL.md §12.
 
 ## Connection robustness — known rough edges

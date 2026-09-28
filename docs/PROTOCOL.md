@@ -1076,9 +1076,13 @@ feature IDs to vendor method names:
 | `0x11` | **Dual device** | | `0x31` | Adaptive ear |
 | `0x18` | **Hi-Res (LHDC 96/192 kHz, 400 kbps)** `[CAPTURE]` | | `0x3A` | Sleep detection |
 
-`[OSS]` **Worth knowing:** newer devices put game mode on `0x28`, older on `0x06`.
-This project uses `0x06`. If game mode misbehaves on a different model, that is
-the first thing to try.
+`[VENDOR]` (2026-09-29) **Game mode is `0x06` on every model.** The OSS claim that newer
+devices use `0x28` does not hold for HeyMelody: its `0x010D` query builder
+(`PollCommandManager.k()`, ) asks `0x06` for game mode and
+`0x27` + `0x28` as a pair for **game sound** (`gameSoundList`). The same builder confirms, in
+decimal, `0x04` wear detection, `0x09` vocal enhance, `0x0B` hearing enhancement, `0x11` dual
+device, `0x18` Hi-Res, `0x1B` spatial, `0x1C` auto volume, `0x1D` bass engine, `0x22`-`0x24`
+spine health, `0x30` adaptive volume, `0x31` adaptive ear, `0x34` meeting assistant.
 
 ### Batch status query — `0x010D`
 
@@ -1110,6 +1114,13 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
   in the order above, behind an Accept/Decline warning.
 - **Any `0x18` change drops the link** — the buds reconnect ~4 s later (fresh `0x0100` handshake).
 - `0x0422` (three-mode spatial) is **not** what this firmware's HeyMelody sends.
+- **Which one HeyMelody uses** `[VENDOR]` (2026-09-29, `SpatialAudioItem`): if the `0x8100` bitmap
+  enables `0x012A` (bit 47), `HeadSetSpatialAudioVMV2` sends `0x0422 <type>`; otherwise
+  `HeadSetSpatialAudioVM` toggles feature `0x1B`. Types come from the model's `spatialTypes`:
+  `0` off, `1` fixed (on), `2` head tracking (3 models). The buds push the current type as
+  **`0x0510 <type>`** (`HeadsetCoreService`, `case 1296`, `payload[0]`). The `0x812A` reply layout
+  was not found (that decompile path failed). **Not wired**: Buds 4 is a `0x1B` model, and no
+  `0x012A` owner has reported yet.
 - **`0x18` is a quality switch, not a codec switch** `[CAPTURE]` (phone `dumpsys bluetooth_manager`,
   2026-09-25, same session, music playing). The codec is LHDC V5 either way; the phone picks it.
   What changes is what the buds advertise for LHDC V5:
