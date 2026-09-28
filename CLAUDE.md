@@ -521,9 +521,12 @@ a shared one hung.
 - **The case icon keeps its LED dot**, and the lid cut stays full width — no hinge bulge or opening.
 - **Icons keep their SVG's true ratio** (buds 176x272, case 496x400). `BudsStatusView` fits each into
   its ring by that ratio; the widget still uses its own sized boxes.
-- **Launcher and notification icon** ([USER] 2026-09-27): the app's own bud glyphs (`ic_bud_right` on the
-  left facing left, `ic_bud_left` on the right facing right), 4 units apart, as large as the adaptive safe
-  circle allows (`ic_launcher_foreground.xml` has the measurement). `ic_stat_buds` is the same pair. minSdk 26
+- **Launcher and notification icon** ([USER] 2026-09-28, his own files): the app's own bud glyphs
+  (`ic_bud_left` on the left facing right, `ic_bud_right` on the right facing left, eartips facing each other),
+  each with a bolt hole in the stem, 32 units tall so it sits with Nothing-style themed icons (the header of
+  `ic_launcher_foreground.xml` has the numbers). `ic_stat_buds` is the same pair without the bolts. The themed
+  layer (`ic_launcher_monochrome.xml`) is ONE bud: Nothing's launcher fits a themed icon's longest side to a fixed
+  size, so the wide pair came out short; scaling the artwork changes nothing there (measured). minSdk 26
   means only the adaptive icon is used; the legacy PNG mipmaps were deleted. Find my earbuds shows no bud icons.
 
 ## Repo hygiene
