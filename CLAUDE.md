@@ -312,6 +312,10 @@ Adding an ANC mode means touching all of these, or the surfaces drift apart:
 
 ## Working with the developer
 
+- **Commits are authored as `spizganed <spizganed@gmail.com>`** ([USER] 2026-09-28: they must show on his GitHub
+  profile). A session whose git identity is anything else (a cloud session commits as `Claude <noreply@anthropic.com>`)
+  runs `git config user.name spizganed && git config user.email spizganed@gmail.com` before its first commit. The
+  `Co-Authored-By` trailer stays.
 - **He handles device testing and design decisions.** The agent handles reverse-engineering, parsers,
   protocol work and code, including git commits. **Ask before every push, every time**, whether he
   says "commit" or the agent proposes it — a standing "yes" to
