@@ -80,7 +80,8 @@ class BudsStatusView(context: Context) : View(context) {
     private val ringSize get() = min(dp(90f), width / 3f - dp(8f))
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(148f).toInt())
+        // Nothing style: no label line ([USER] 2026-09-28: the glyph's shade shows wear, as on the Nothing widget).
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (nothing) 127f else 148f).toInt())
     }
 
     /** Feed the current store values; rings animate only when a level actually changes. */
@@ -101,7 +102,9 @@ class BudsStatusView(context: Context) : View(context) {
                 }
             }
         }
-        contentDescription = "${names[0]} ${pctText(left)}, ${names[1]} ${pctText(case)}, ${names[2]} ${pctText(right)}"
+        // The wear state is read out too: the Nothing style does not draw it.
+        val wear = { st: Int -> if (connected) wearLabel(st)?.let { " $it" } ?: "" else "" }
+        contentDescription = "${names[0]} ${pctText(left)}${wear(leftStatus)}, ${names[1]} ${pctText(case)}, ${names[2]} ${pctText(right)}${wear(rightStatus)}"
         invalidate()
     }
 
@@ -149,6 +152,7 @@ class BudsStatusView(context: Context) : View(context) {
             pctPaint.color = p.text
             canvas.drawText(pctText(s.level), cx, ring + dp(30f), pctPaint)
 
+            if (nothing) return@forEachIndexed
             val wear = if (i == 1 || !connected) null else wearLabel(s.status)
             val label = wear ?: names[i]
             val inEar = wear != null && (s.status == 3 || s.status == 7)

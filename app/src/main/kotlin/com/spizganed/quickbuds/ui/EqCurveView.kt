@@ -118,7 +118,12 @@ class EqCurveView(context: Context) : View(context) {
     }
 
     private fun shapes(canvas: Canvas) {
-        for (i in gains.indices) canvas.drawLine(x(i), top, x(i), bottom, gridPaint)
+        // Nothing style: each line on one dot column's centre; between two it lit both under the fill (the "bleed").
+        val pitch = DotArt.pitchPx(context)
+        for (i in gains.indices) {
+            val gx = if (nothing) (Math.floor(x(i) / pitch.toDouble()).toFloat() + 0.5f) * pitch else x(i)
+            canvas.drawLine(gx, top, gx, bottom, gridPaint)
+        }
 
         // Smooth curve: horizontal-tangent cubic between neighbours, so it never overshoots a point.
         curve.reset()

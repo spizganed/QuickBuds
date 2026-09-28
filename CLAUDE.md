@@ -526,8 +526,8 @@ Nothing dot font exists, and bold draws every dot bigger) plus runtime changes i
 - The case icon is dotted at the rings' pitch (`ringCellDp`), so the app's `ic_case` keeps its lid cut and LED
   (`clearLed` always empties the LED's dot and the lid cut's row, the 4x2's case ring too: both fell between cell
   centres at some sizes). The bar (`bar()`): dot rows at `dotDp` x 1.4, odd, corners rounded at a third of its height
-  (pill ends stepped like an octagon), the level cut out of its dots as 5x7 digits (`GLYPHS`) that read in the
-  background colour. Tried and rejected: a lit box around the digits, a pill split around the text, a cleared box, the
+  (pill ends stepped like an octagon), the level drawn in its dots as 5x7 digits (`GLYPHS`) in inverted dots: dim over
+  the lit part, lit past it ([USER] 2026-09-28, on trial; they used to be cut out, in the background colour). Tried and rejected: a lit box around the digits, a pill split around the text, a cleared box, the
   bar as tall as the icon, the case section in two lines, a third ring for the case on the 2x2.
 - Box radius matches Nothing OS's own widgets: `widget_bg_n` 19dp on every size (measured against the calendar
   widget; Classic's 26 / 28dp looked rounder), inner shapes `widget_panel_n` / `_stroke_n` 16dp (`bgRes` / `panelRes`).
@@ -543,16 +543,17 @@ part of the activity signature, so a change recreates open screens. Nothing:
 - No cards: row groups and home tiles use `ThemeRes.group()` (null in Nothing). Dialogs, sheets, icon buttons,
   chips and the segmented control keep their shapes.
 - Home: `BudsStatusView` draws the widget's `QuickBudsWidget.dotRing` (one bitmap per whole percent while
-  animating), numbers without `%`; `AncSegmentedView` draws `QuickBudsWidget.modeIcon` (home icons mapped to the
+  animating), numbers without `%`, no label line under them (the wear state is only in the glyph's shade and the
+  content description; Classic keeps "In ear" / "In case" in the app and on the widget, [USER] 2026-09-28); `AncSegmentedView` draws `QuickBudsWidget.modeIcon` (home icons mapped to the
   widget's mode icons, 28dp). Both tints still blend over `card`, as on the widget.
 - `DotArt`: live views drawn as dots, one sample per cell (cheap enough per drag frame), pitch 2.2dp rounded
   to whole px (`DotArt.pitchPx`; a fractional pitch drew every dot differently), coverage under alpha 50 leaves a
   cell empty. `LevelSliderView`, `EqCurveView` and `ColorSliderView` run their shape
-  drawing through it (text stays text; knobs hollow via CLEAR; the EQ grid a full dot wide), and
+  drawing through it (text stays text; knobs hollow via CLEAR; the EQ grid a full dot wide, on a dot column's centre), and
   `SettingRowFactory.buildSwitch` swaps in `DotArt.Part` track / thumb drawables coloured by the switch tints. Parts share the
   Switch's grid (cells from its 0,0, box shrunk to whole cells) so the thumb lines up with the track, and light a
   dot only when half covered, so the thumb reads round.
-- Icons: `ThemeRes.tint` returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
+- Icons: `ThemeRes.tint` swaps `ic_check` for `ic_check_dots` (a 3.6 stroke; the thin one sampled ragged) and returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
   alpha read as grey), so every tinted icon (rows, chevrons, header buttons, checks) is dotted. Row dividers are one
   row of dots. Still solid: the status dot, the launcher icon on About, shapes (buttons, chips, dialogs, sheets).
 

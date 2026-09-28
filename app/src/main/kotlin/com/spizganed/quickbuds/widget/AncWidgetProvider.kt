@@ -697,8 +697,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 val cols = (ThemeRes.dp(context, barDp(context, kind, id, caseDp)) / pitch).toInt().coerceAtLeast(rows + 1)
                 val bmp = Bitmap.createBitmap(Math.round(cols * pitch), Math.round(rows * pitch), Bitmap.Config.ARGB_8888)
                 val c = Canvas(bmp)
-                // The percentage is part of the matrix ([USER] 2026-09-28): 5x7 digits whose dots are left out, so they
-                // read in the widget's background colour. Centred; a label wider than the bar is left out.
+                // The percentage is part of the matrix ([USER] 2026-09-28): 5x7 digits in inverted dots. Centred; a label
+                // wider than the bar is left out.
                 val label = pctLabel(context, level).mapNotNull { GLYPHS[it] }
                 val tw = label.size * 6 - 1
                 val a = (cols - tw) / 2                        // first text column
@@ -709,14 +709,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 }
                 val lit = if (level in 1..100) maxOf(1, Math.round(cols * level / 100f)) else 0
                 for (x in 0 until cols) for (y in 0 until rows) {
-                    if (text(x, y)) continue
                     // Rounded corners, radius a third of the height ([USER] 2026-09-28: the old pill ends, a curve of
                     // r + 0.4, stepped like an octagon once the bar grew): drop the cells whose centre lies outside.
                     val r = rows / 3f
                     val dx = r - minOf(x, cols - 1 - x) - 0.5f
                     val dy = r - minOf(y, rows - 1 - y) - 0.5f
                     if (dx > 0 && dy > 0 && dx * dx + dy * dy > (r - 0.3f) * (r - 0.3f)) continue
-                    paint.color = if (x < lit) p.accent else dim(p)
+                    // The digits' dots are inverted ([USER] 2026-09-28): unlit over the level, lit past it.
+                    paint.color = if ((x < lit) != text(x, y)) p.accent else dim(p)
                     c.drawCircle((x + 0.5f) * pitch, (y + 0.5f) * pitch, pitch * 0.42f, paint)
                 }
                 return bmp
