@@ -523,10 +523,11 @@ a shared one hung.
   its ring by that ratio; the widget still uses its own sized boxes.
 - **Launcher and notification icon** ([USER] 2026-09-28, his own files): the app's own bud glyphs
   (`ic_bud_left` on the left facing right, `ic_bud_right` on the right facing left, eartips facing each other),
-  each with a bolt hole in the stem, 32 units tall so it sits with Nothing-style themed icons (the header of
-  `ic_launcher_foreground.xml` has the numbers). `ic_stat_buds` is the same pair without the bolts. The themed
+  each with a bolt hole in the stem, about 45 units tall (the header of
+  `ic_launcher_foreground.xml` has the numbers). The themed
   layer (`ic_launcher_monochrome.xml`) is ONE bud: Nothing's launcher fits a themed icon's longest side to a fixed
-  size, so the wide pair came out short; scaling the artwork changes nothing there (measured). minSdk 26
+  size, so the wide pair came out short; scaling the artwork changes nothing there (measured).
+  `ic_stat_buds` (notification, Dev Tools Reconnect) is that same single bud ([USER] 2026-09-28). minSdk 26
   means only the adaptive icon is used; the legacy PNG mipmaps were deleted. Find my earbuds shows no bud icons.
 
 ## Repo hygiene
