@@ -451,8 +451,8 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /** No local update for create/delete: the buds assign and renumber ids, so only the re-read knows. */
-    fun createCustomEq(name: String) =
-        sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_CREATE, EqCodec.newPreset(name)) to "EQ create '$name'")
+    fun createCustomEq(name: String, freqs: List<Int>) =
+        sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_CREATE, EqCodec.newPreset(name, freqs)) to "EQ create '$name'")
 
     fun deleteCustomEq(p: EqCodec.Preset) =
         sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_DELETE, p) to "EQ delete ${p.id} '${p.name}'")
@@ -462,16 +462,19 @@ class BudsConnectionManager(private val context: Context) {
         sendThenRead(OpoProtocol.setBassWaveLevel(level) to "BassWave level $level")
     }
 
-    /** Optional write, then the three EQ reads, in order on one thread. */
+    /** Optional write, then the EQ reads these buds list (see Capabilities), in order on one thread. */
     private fun sendThenRead(write: Pair<ByteArray, String>? = null) {
         Thread {
             try {
                 if (write != null) { sendRawBlocking(write.first, write.second); Thread.sleep(250) }
-                sendRawBlocking(OpoProtocol.queryEq(), "query EQ")
-                Thread.sleep(120)
-                sendRawBlocking(OpoProtocol.queryEqAll(), "query custom EQ")
-                Thread.sleep(120)
-                sendRawBlocking(OpoProtocol.queryBassWaveLevel(), "query BassWave level")
+                for ((cmd, read) in listOf(
+                        OpoProtocol.CMD_QUERY_EQ to (OpoProtocol.queryEq() to "query EQ"),
+                        OpoProtocol.CMD_QUERY_EQ_ALL to (OpoProtocol.queryEqAll() to "query custom EQ"),
+                        OpoProtocol.CMD_QUERY_BASSWAVE_LEVEL to (OpoProtocol.queryBassWaveLevel() to "query BassWave level"))) {
+                    if (!Capabilities.supports(context, cmd)) continue
+                    sendRawBlocking(read.first, read.second)
+                    Thread.sleep(120)
+                }
             } catch (e: Exception) {
                 log("EQ: ${e.message}")
             }

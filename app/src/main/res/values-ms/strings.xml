@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Bunyi</string>
     <string name="earbuds_section_about">Perihal fon telinga</string>
     <string name="row_firmware_title">Versi perisian tegar</string>
+    <string name="firmware_dialog_title">Kemas kini perisian tegar</string>
+    <string name="firmware_dialog_body">QuickBuds tidak mengemas kini perisian tegar fon telinga: kemas kini yang gagal boleh menyebabkannya tidak boleh digunakan. Kemas kini melalui HeyMelody.</string>
     <string name="settings_title">Tetapan</string>
     <string name="row_wear_title">Pengesanan pemakaian</string>
     <string name="row_wear_sub">Jeda apabila anda menanggalkan fon telinga</string>

@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Dźwięki</string>
     <string name="earbuds_section_about">O słuchawkach</string>
     <string name="row_firmware_title">Wersja oprogramowania</string>
+    <string name="firmware_dialog_title">Aktualizacje oprogramowania</string>
+    <string name="firmware_dialog_body">QuickBuds nie aktualizuje oprogramowania słuchawek: nieudana aktualizacja może je unieruchomić. Zaktualizuj je w HeyMelody.</string>
     <string name="settings_title">Ustawienia</string>
     <string name="row_wear_title">Wykrywanie noszenia</string>
     <string name="row_wear_sub">Pauza po wyjęciu słuchawek</string>

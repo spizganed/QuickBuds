@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Ήχοι</string>
     <string name="earbuds_section_about">Σχετικά με τα ακουστικά</string>
     <string name="row_firmware_title">Έκδοση υλικολογισμικού</string>
+    <string name="firmware_dialog_title">Ενημερώσεις υλικολογισμικού</string>
+    <string name="firmware_dialog_body">Το QuickBuds δεν ενημερώνει το υλικολογισμικό των ακουστικών: μια αποτυχημένη ενημέρωση μπορεί να τα καταστήσει άχρηστα. Ενημερώστε τα από το HeyMelody.</string>
     <string name="settings_title">Ρυθμίσεις</string>
     <string name="row_wear_title">Ανίχνευση εφαρμογής</string>
     <string name="row_wear_sub">Παύση όταν βγάζετε τα ακουστικά</string>

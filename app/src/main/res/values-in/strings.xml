@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Suara</string>
     <string name="earbuds_section_about">Tentang earbud</string>
     <string name="row_firmware_title">Versi firmware</string>
+    <string name="firmware_dialog_title">Pembaruan firmware</string>
+    <string name="firmware_dialog_body">QuickBuds tidak memperbarui firmware earbud: pembaruan yang gagal dapat membuatnya tidak bisa digunakan. Perbarui dari HeyMelody.</string>
     <string name="settings_title">Pengaturan</string>
     <string name="row_wear_title">Deteksi pemakaian</string>
     <string name="row_wear_sub">Jeda saat earbud dilepas</string>

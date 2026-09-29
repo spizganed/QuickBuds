@@ -5,8 +5,8 @@ package com.spizganed.quickbuds.protocol
  * `[CAPTURE]` 2026-09-23, confirmed against HeyMelody screenshots; see PROTOCOL.md §9.
  *
  * List entry: `<flag> <tag 2B> <id> <nameLen> <name> <bandCount> [freq u16 LE, gain s8]...`
- * `flag` 01 = selected. `tag` is `FA 06` in every frame seen; it is kept verbatim and echoed
- * back rather than hardcoded, since its meaning is unknown.
+ * `flag` 01 = selected. `tag` is `FA 06` in every frame seen: `[VENDOR]` the gain range, min -6 then
+ * max +6, which HeyMelody sets on a new preset. It is kept verbatim and echoed back.
  */
 object EqCodec {
 
@@ -64,26 +64,24 @@ object EqCodec {
     const val ACTION_DELETE = 0x03
 
     /** The tag every captured preset carries; used for a new preset, which has none of its own yet. */
-    val DEFAULT_TAG = byteArrayOf(0xFA.toByte(), 0x06)
+    val DEFAULT_TAG = byteArrayOf(GAIN_MIN.toByte(), GAIN_MAX.toByte())
+    /** HeyMelody's bands where the model list gives none (`customEqFrequency`: 10 bands on 8 models). */
     val DEFAULT_FREQS = listOf(62, 250, 1000, 4000, 8000, 16000)
 
-    /** HeyMelody's limit — its UI allows three custom presets. */
-    const val MAX_CUSTOM = 3
+    fun newPreset(name: String, freqs: List<Int>) = Preset(0, name, freqs, List(freqs.size) { 0 }, false, DEFAULT_TAG)
 
-    fun newPreset(name: String) = Preset(0, name, DEFAULT_FREQS, List(DEFAULT_FREQS.size) { 0 }, false, DEFAULT_TAG)
-
-    /** Share text for a preset: `QB-EQ:<gain,...>:<name>`. Gains only; the bands are the fixed six. */
+    /** Share text for a preset: `QB-EQ:<gain,...>:<name>`. Gains only; the bands are the model's. */
     private const val TEXT_PREFIX = "QB-EQ:"
 
     fun toText(p: Preset) = TEXT_PREFIX + p.gains.joinToString(",") + ":" + p.name
 
-    /** Name and gains from [toText]'s format, or null if it is not one. The name may contain ':'. */
-    fun fromText(text: String): Pair<String, List<Int>>? {
+    /** Name and gains from [toText]'s format with [bands] gains, or null if it is not one. The name may contain ':'. */
+    fun fromText(text: String, bands: Int): Pair<String, List<Int>>? {
         val parts = text.trim().takeIf { it.startsWith(TEXT_PREFIX) }
             ?.removePrefix(TEXT_PREFIX)?.split(":", limit = 2) ?: return null
         val gains = parts[0].split(",").map { it.trim().toIntOrNull() ?: return null }
         val name = parts.getOrNull(1)?.trim().orEmpty()
-        if (gains.size != DEFAULT_FREQS.size || gains.any { it !in GAIN_MIN..GAIN_MAX }) return null
+        if (gains.size != bands || gains.any { it !in GAIN_MIN..GAIN_MAX }) return null
         if (name.isEmpty() || name.length > 20) return null
         return name to gains
     }

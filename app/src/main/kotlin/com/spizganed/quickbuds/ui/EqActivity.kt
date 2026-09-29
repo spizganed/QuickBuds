@@ -47,6 +47,37 @@ import org.json.JSONArray
  */
 class EqActivity : Activity(), BudsConnectionManager.Listener {
 
+    companion object {
+        /** The model's flag in HeyMelody's list; nothing detected counts as Buds 4, which has them all. */
+        private fun flag(context: Context, key: String) =
+            ModelCatalog.current(context)?.json?.let { it.optInt(key) == 1 } ?: true
+
+        /** `[VENDOR]` HeyMelody: the model's `customEqualizer` flag and `0x0418` in the command bitmap. */
+        fun hasCustom(context: Context) =
+            flag(context, "customEqualizer") && Capabilities.supports(context, OpoProtocol.CMD_SAVE_CUSTOM_EQ)
+
+        /** `[VENDOR]` HeyMelody: the model's `bassEngineSupport` flag and `0x041B` in the command bitmap. */
+        fun hasBassWave(context: Context) =
+            flag(context, "bassEngineSupport") && Capabilities.supports(context, OpoProtocol.CMD_SET_BASSWAVE_LEVEL)
+
+        /** `[VENDOR]` HeyMelody's EQ row: built-in presets (`equalizer` 1-4) or custom presets. */
+        fun hasEq(context: Context) = hasCustom(context) ||
+            ((ModelCatalog.current(context)?.json?.optInt("equalizer") ?: 1) in 1..4 &&
+                Capabilities.supports(context, OpoProtocol.CMD_SET_EQ))
+
+        /** `[VENDOR]` `customEqMax`, else HeyMelody's default of 3. */
+        fun maxCustom(context: Context) =
+            ModelCatalog.current(context)?.json?.optInt("customEqMax")?.takeIf { it > 0 } ?: 3
+
+        /** `[VENDOR]` `customEqFrequency` (10 bands on 8 models), else HeyMelody's six. */
+        fun modelFreqs(context: Context): List<Int> =
+            ModelCatalog.current(context)?.json?.optJSONArray("customEqFrequency")
+                ?.let { a -> (0 until a.length()).map { a.getInt(it) } } ?: EqCodec.DEFAULT_FREQS
+    }
+
+    /** The bands a new or imported preset gets: the buds' own presets' if they have any. */
+    private fun freqs() = manager?.eqCustom?.firstOrNull()?.freqs ?: modelFreqs(this)
+
     /**
      * The model's built-in presets as (`0x0406` id, name), in HeyMelody's order. `[VENDOR]` its per-model
      * `equalizerMode` (`assets/models.json`): each `modeType` names a preset and its `protocolIndex` is
@@ -189,6 +220,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         bassCard.addView(bassSlider)
         root.addView(bassCard.apply {
             (layoutParams as? LinearLayout.LayoutParams)?.topMargin = dp(14f)
+            if (!hasBassWave(this@EqActivity)) visibility = View.GONE
         })
 
         customHeader = sectionLabel(R.string.eq_custom)
@@ -284,15 +316,15 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             customCard.addView(row)
             if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames) slide(row, open = true)
         }
-        customCard.visibility = if (custom.isEmpty()) View.GONE else View.VISIBLE
+        customCard.visibility = if (custom.isEmpty() || !hasCustom(this)) View.GONE else View.VISIBLE
 
         // New / Import live under the card, apart from the presets themselves.
         customActions.removeAllViews()
-        if (connected && custom.size < EqCodec.MAX_CUSTOM) {
+        if (connected && hasCustom(this) && custom.size < maxCustom(this)) {
             customActions.addView(actionButton(R.drawable.ic_plus, R.string.eq_add) {
                 val used = custom.map { it.name }.toSet()
                 val name = (1..9).map { "Custom$it" }.first { it !in used }
-                manager?.createCustomEq(name)
+                manager?.createCustomEq(name, freqs())
             })
             customActions.addView(actionButton(R.drawable.ic_paste, R.string.eq_import) { showImport(custom) }
                 .apply { (layoutParams as LinearLayout.LayoutParams).marginStart = ThemeRes.dp(this@EqActivity, 10f) })
@@ -394,15 +426,15 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             gravity = Gravity.END
             setPadding(0, dp(10f), dp(6f), 0)
             addView(iconButton(R.drawable.ic_copy, R.string.eq_duplicate) {
-                if (shownNames.size >= EqCodec.MAX_CUSTOM) return@iconButton
+                if (shownNames.size >= maxCustom(this@EqActivity)) return@iconButton
                 d.dismiss()
                 val used = shownNames
                 val name = (2..9).map { "${p.name.take(18)} $it" }.firstOrNull { it !in used } ?: return@iconButton
                 pendingImport = name to p.gains
-                manager?.createCustomEq(name)
+                manager?.createCustomEq(name, p.freqs)
             }.apply {
                 fortyEight(this)
-                isEnabled = shownNames.size < EqCodec.MAX_CUSTOM
+                isEnabled = shownNames.size < maxCustom(this@EqActivity)
                 alpha = if (isEnabled) 1f else 0.35f
                 setOnLongClickListener {
                     (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
@@ -449,9 +481,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             .primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString().orEmpty()
         val sheet = BottomSheetDialog(this)
         sheet.title(getString(R.string.eq_import_title))
-            .input(if (EqCodec.fromText(clip) != null) clip.trim() else "", 120)
+            .input(if (EqCodec.fromText(clip, freqs().size) != null) clip.trim() else "", 120)
             .confirm(getString(R.string.eq_import_confirm)) {
-                val parsed = EqCodec.fromText(sheet.inputValue())
+                val parsed = EqCodec.fromText(sheet.inputValue(), freqs().size)
                 if (parsed == null) {
                     Toast.makeText(this, R.string.eq_import_bad, Toast.LENGTH_SHORT).show()
                     return@confirm
@@ -462,7 +494,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 val name = (listOf(parsed.first) + (2..9).map { "${parsed.first.take(18)} $it" })
                     .first { it !in used }
                 pendingImport = name to parsed.second
-                manager?.createCustomEq(name)
+                manager?.createCustomEq(name, freqs())
             }
             .show()
     }

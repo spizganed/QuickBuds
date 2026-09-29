@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Mga tunog</string>
     <string name="earbuds_section_about">Tungkol sa earbuds</string>
     <string name="row_firmware_title">Bersyon ng firmware</string>
+    <string name="firmware_dialog_title">Mga update ng firmware</string>
+    <string name="firmware_dialog_body">Hindi ina-update ng QuickBuds ang firmware ng earbuds: maaaring hindi na magamit ang mga ito kapag pumalya ang update. I-update ang mga ito mula sa HeyMelody.</string>
     <string name="settings_title">Mga Setting</string>
     <string name="row_wear_title">Pagtukoy ng pagsuot</string>
     <string name="row_wear_sub">I-pause kapag inalis mo ang earbuds</string>

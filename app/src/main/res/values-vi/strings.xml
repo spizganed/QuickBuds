@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Âm thanh</string>
     <string name="earbuds_section_about">Giới thiệu tai nghe</string>
     <string name="row_firmware_title">Phiên bản firmware</string>
+    <string name="firmware_dialog_title">Cập nhật firmware</string>
+    <string name="firmware_dialog_body">QuickBuds không cập nhật firmware của tai nghe: cập nhật thất bại có thể khiến tai nghe không dùng được. Hãy cập nhật từ HeyMelody.</string>
     <string name="settings_title">Cài đặt</string>
     <string name="row_wear_title">Phát hiện đeo</string>
     <string name="row_wear_sub">Tạm dừng khi tháo tai nghe</string>

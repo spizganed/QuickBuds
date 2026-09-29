@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">声音</string>
     <string name="earbuds_section_about">关于耳机</string>
     <string name="row_firmware_title">固件版本</string>
+    <string name="firmware_dialog_title">固件更新</string>
+    <string name="firmware_dialog_body">QuickBuds 不更新耳机固件：更新失败可能导致耳机无法使用。请在 HeyMelody 中更新。</string>
     <string name="settings_title">设置</string>
     <string name="row_wear_title">佩戴检测</string>
     <string name="row_wear_sub">摘下耳机时暂停</string>

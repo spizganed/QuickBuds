@@ -14,13 +14,13 @@ import com.spizganed.quickbuds.R
  * Centred confirm dialog (design/SPEC.md 3.4): `card` background, 24dp radius, `outline` stroke,
  * a 19sp bold title, a 14sp secondary body, and two 44dp pills at the end — Cancel (outlined)
  * and the action (accent fill). A plain Dialog, no Material dependency. Used for Disconnect and
- * for deleting a preset (3.8).
+ * for deleting a preset (3.8). With no [cancelRes] it is a notice with one button.
  */
 object ConfirmDialog {
 
     fun show(
         activity: Activity, title: String, body: String?, action: String,
-        cancelRes: Int = R.string.dialog_cancel, onConfirm: () -> Unit
+        cancelRes: Int? = R.string.dialog_cancel, onConfirm: () -> Unit = {}
     ) {
         val p = ThemeRes.palette(activity)
         val dp = { v: Float -> ThemeRes.dp(activity, v) }
@@ -63,7 +63,7 @@ object ConfirmDialog {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.END
                 setPadding(0, dp(24f), 0, 0)
-                addView(pill(activity.getString(cancelRes), false) { d.dismiss() })
+                cancelRes?.let { addView(pill(activity.getString(it), false) { d.dismiss() }) }
                 addView(pill(action, true) { d.dismiss(); onConfirm() })
             })
         }

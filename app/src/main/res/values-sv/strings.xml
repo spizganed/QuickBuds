@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Ljud</string>
     <string name="earbuds_section_about">Om hörlurarna</string>
     <string name="row_firmware_title">Firmwareversion</string>
+    <string name="firmware_dialog_title">Firmwareuppdateringar</string>
+    <string name="firmware_dialog_body">QuickBuds uppdaterar inte hörlurarnas firmware: en misslyckad uppdatering kan göra dem oanvändbara. Uppdatera dem i HeyMelody.</string>
     <string name="settings_title">Inställningar</string>
     <string name="row_wear_title">Bäraravkänning</string>
     <string name="row_wear_sub">Pausa när du tar ut hörlurarna</string>

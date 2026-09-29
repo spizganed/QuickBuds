@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">サウンド</string>
     <string name="earbuds_section_about">イヤホンについて</string>
     <string name="row_firmware_title">ファームウェアバージョン</string>
+    <string name="firmware_dialog_title">ファームウェアの更新</string>
+    <string name="firmware_dialog_body">QuickBuds はイヤホンのファームウェアを更新しません。更新に失敗すると使用できなくなる場合があります。HeyMelody から更新してください。</string>
     <string name="settings_title">設定</string>
     <string name="row_wear_title">装着検出</string>
     <string name="row_wear_sub">イヤホンを外すと一時停止</string>

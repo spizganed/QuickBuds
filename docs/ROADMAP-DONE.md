@@ -86,6 +86,10 @@ back.
 - The rest of HeyMelody's model-list features (2026-09-29), same section: conversation awareness,
   adaptive sound (asks before turning on), touch and hold volume, head gestures with the nod / shake
   choice `0x0431`, Windows Swift Pair. The voice features were decided against (PROTOCOL.md §9).
+- Equalizer per model (2026-09-29): the EQ row, custom presets and BassWave appear only where HeyMelody
+  shows them; new presets get the model's bands (10 on 8 models) and its preset cap (PROTOCOL.md §9).
+  Checked on device with models picked by hand; Buds 4 unchanged. The firmware row explains that updates
+  belong in HeyMelody.
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

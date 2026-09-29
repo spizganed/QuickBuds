@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">소리</string>
     <string name="earbuds_section_about">이어버드 정보</string>
     <string name="row_firmware_title">펌웨어 버전</string>
+    <string name="firmware_dialog_title">펌웨어 업데이트</string>
+    <string name="firmware_dialog_body">QuickBuds는 이어버드 펌웨어를 업데이트하지 않습니다. 업데이트에 실패하면 이어버드를 사용할 수 없게 될 수 있습니다. HeyMelody에서 업데이트하세요.</string>
     <string name="settings_title">설정</string>
     <string name="row_wear_title">착용 감지</string>
     <string name="row_wear_sub">이어버드를 빼면 일시정지</string>

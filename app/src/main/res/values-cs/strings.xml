@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Zvuky</string>
     <string name="earbuds_section_about">O sluchátkách</string>
     <string name="row_firmware_title">Verze firmwaru</string>
+    <string name="firmware_dialog_title">Aktualizace firmwaru</string>
+    <string name="firmware_dialog_body">QuickBuds neaktualizuje firmware sluchátek: nezdařená aktualizace je může učinit nepoužitelnými. Aktualizujte je v aplikaci HeyMelody.</string>
     <string name="settings_title">Nastavení</string>
     <string name="row_wear_title">Detekce nošení</string>
     <string name="row_wear_sub">Pozastavit, když sluchátka vyndáte</string>

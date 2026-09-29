@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">ध्वनियां</string>
     <string name="earbuds_section_about">ईयरबड्स के बारे में</string>
     <string name="row_firmware_title">फ़र्मवेयर संस्करण</string>
+    <string name="firmware_dialog_title">फ़र्मवेयर अपडेट</string>
+    <string name="firmware_dialog_body">QuickBuds ईयरबड्स का फ़र्मवेयर अपडेट नहीं करता: विफल अपडेट उन्हें बेकार कर सकता है। उन्हें HeyMelody से अपडेट करें।</string>
     <string name="settings_title">सेटिंग्स</string>
     <string name="row_wear_title">वियर डिटेक्शन</string>
     <string name="row_wear_sub">ईयरबड्स निकालने पर रोकें</string>

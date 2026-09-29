@@ -79,6 +79,8 @@
     <string name="earbuds_section_sounds">Sounds</string>
     <string name="earbuds_section_about">About earbuds</string>
     <string name="row_firmware_title">Firmware version</string>
+    <string name="firmware_dialog_title">Firmware updates</string>
+    <string name="firmware_dialog_body">QuickBuds does not update the earbuds\' firmware: a failed update can leave them unusable. Update them from HeyMelody.</string>
     <string name="settings_title">Settings</string>
     <string name="row_wear_title">Wear detection</string>
     <string name="row_wear_sub">Pause when you take the earbuds out</string>

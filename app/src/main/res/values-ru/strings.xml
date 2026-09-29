@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Звуки</string>
     <string name="earbuds_section_about">О наушниках</string>
     <string name="row_firmware_title">Версия прошивки</string>
+    <string name="firmware_dialog_title">Обновления прошивки</string>
+    <string name="firmware_dialog_body">QuickBuds не обновляет прошивку наушников: неудачное обновление может вывести их из строя. Обновляйте их через HeyMelody.</string>
     <string name="settings_title">Настройки</string>
     <string name="row_wear_title">Определение ношения</string>
     <string name="row_wear_sub">Пауза, когда вы снимаете наушники</string>

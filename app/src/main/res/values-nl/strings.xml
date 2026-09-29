@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Geluiden</string>
     <string name="earbuds_section_about">Over de oordopjes</string>
     <string name="row_firmware_title">Firmwareversie</string>
+    <string name="firmware_dialog_title">Firmware-updates</string>
+    <string name="firmware_dialog_body">QuickBuds werkt de firmware van de oordopjes niet bij: een mislukte update kan ze onbruikbaar maken. Werk ze bij via HeyMelody.</string>
     <string name="settings_title">Instellingen</string>
     <string name="row_wear_title">Draagdetectie</string>
     <string name="row_wear_sub">Pauzeren als je de oordopjes uitdoet</string>

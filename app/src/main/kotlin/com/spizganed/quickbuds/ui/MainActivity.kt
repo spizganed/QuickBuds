@@ -1060,7 +1060,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC)
         "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND) || spatialByType()
         "golden" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GOLDEN_SOUND)
-        "eq" -> Capabilities.supports(this, OpoProtocol.CMD_SET_EQ)
+        "eq" -> EqActivity.hasEq(this)
         "dual" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_DUAL_DEVICE)
         else -> true
     }

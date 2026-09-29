@@ -23,6 +23,12 @@ Each step is done before the next one starts.
      3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
      write on another model stays unverified until an owner reads one back.
+   - **Next: the rest of the parity check** (2026-09-29, every item on HeyMelody's device page against the app).
+     In this order, each only if quick ([USER]): personalized noise cancellation (ear canal test, 9 models),
+     tap sensitivity (double / triple tap, 2 models), the dual connection manager (connect / disconnect /
+     unpair / priority per device, 11 models), and a check of HeyMelody's separate "high audio" screen
+     (Enco X2, Air3 Pro, Free3) against our Hi-Res row. Also open: the EQ presets that need a minimum
+     firmware (`equalizerModeCompat`, 8 models).
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
@@ -61,6 +67,13 @@ In this order, once the Android app is finished ([USER] 2026-09-29):
 - Neck health (`0x22`-`0x24`, needs OPPO's Health app) and meeting assistant (`0x34`, voiceprint enrolment
   for one meeting app) ([USER] 2026-09-29).
 - The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).
+- Firmware updates: too risky, a failed flash can brick the buds. The firmware row says to update from
+  HeyMelody ([USER] 2026-09-29).
+- From HeyMelody's device page ([USER] 2026-09-29): Zen mode (sound packs from OPPO's servers flashed to the
+  buds) and Sound space / white noise (the same idea); the tap camera shutter (HeyMelody shows it only with
+  OPPO's camera app); realme's "More functions" (it only opens the realme Link app); AI translation, summary
+  and clear call (locked to ColorOS); skins, guides, tutorials, feedback, log collection and diagnostics
+  (Dev Tools and the crash log cover ours).
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.
 - A log on the main screen: Dev Tools owns logging.

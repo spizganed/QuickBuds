@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Suoni</string>
     <string name="earbuds_section_about">Informazioni sugli auricolari</string>
     <string name="row_firmware_title">Versione firmware</string>
+    <string name="firmware_dialog_title">Aggiornamenti firmware</string>
+    <string name="firmware_dialog_body">QuickBuds non aggiorna il firmware degli auricolari: un aggiornamento non riuscito può renderli inutilizzabili. Aggiornali da HeyMelody.</string>
     <string name="settings_title">Impostazioni</string>
     <string name="row_wear_title">Rilevamento indossamento</string>
     <string name="row_wear_sub">Pausa quando togli gli auricolari</string>

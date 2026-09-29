@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Sesler</string>
     <string name="earbuds_section_about">Kulaklık hakkında</string>
     <string name="row_firmware_title">Donanım yazılımı sürümü</string>
+    <string name="firmware_dialog_title">Donanım yazılımı güncellemeleri</string>
+    <string name="firmware_dialog_body">QuickBuds kulaklıkların donanım yazılımını güncellemez: başarısız bir güncelleme onları kullanılamaz hale getirebilir. HeyMelody üzerinden güncelleyin.</string>
     <string name="settings_title">Ayarlar</string>
     <string name="row_wear_title">Takılma algılama</string>
     <string name="row_wear_sub">Kulaklıkları çıkardığınızda duraklat</string>

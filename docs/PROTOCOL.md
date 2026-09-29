@@ -1351,7 +1351,7 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
   (HeyMelody sent id `00`, name `Custom1`, all gains 0; the buds assign the id — ack `8418 00 06`),
   `02` SAVE/SELECT, `03` DELETE (whole preset sent; the selection falls back to `00` Balanced).
   **Ids are renumbered** after a delete/create (xdd went 05 -> 04), so always re-read `0x0122`.
-  HeyMelody's UI caps custom presets at **3** (`[USER]`).
+  HeyMelody's UI caps custom presets at **3** (`[USER]`; per model, see below).
 - **Built-in presets are not in the `0x0122` list**; they are ids on `0x0406` / `0x010F`.
 - **Built-in presets differ per model** `[VENDOR]` (2026-09-29). HeyMelody's per-model `equalizerMode`
   (in `assets/models.json`) lists `{modeType, protocolIndex}`: `protocolIndex` is the `0x0406` / `0x010F`
@@ -1361,8 +1361,16 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
   Types 1-4 take other names where the model's `equalizer` field is `2` (or
   on Enco R / Air2). 67 of 137 models have no list, and HeyMelody shows no built-ins for them.
   Not used yet: `equalizerModeCompat` / `equalizerModeByVersion` (extra presets from a minimum
-  firmware) and `customEqFrequency` (10 bands on 8 models; ours are 6).
-- `FA 06` and `FB 05` are constant in every frame; meaning unknown (`05` may be the level max).
+  firmware).
+- **What each model has** `[VENDOR]` (2026-09-29, wired): HeyMelody shows the EQ row only where the model's
+  `equalizer` is 1-4 (built-in presets) or it has custom presets; custom presets only with the model's
+  `customEqualizer` flag and `0x0418` in the `0x8100` bitmap; BassWave only with `bassEngineSupport` and
+  `0x041B`. A new preset gets the model's `customEqFrequency` bands (10 bands, `31 62 125 250 500 1k 2k 4k
+  8k 16k`, on 8 models), else the six above, gains -6..+6 on both. `customEqMax` caps the presets (2 or 3
+  on 4 models, 3 elsewhere). The app does the same (`EqActivity`), and a new preset copies the bands of a
+  preset the buds already hold. The EQ reads go out only where the bitmap lists them.
+- `FA 06` is the gain range, min -6 then max +6 `[VENDOR]`: HeyMelody builds a new preset with those two
+  values. `FB 05` (BassWave) is the same shape, -5..+5.
 
 ### Find my earbuds — `0x0400` — `[CAPTURE]` 2026-09-23, wired
 

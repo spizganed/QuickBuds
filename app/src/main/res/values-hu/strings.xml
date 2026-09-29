@@ -55,6 +55,8 @@
     <string name="earbuds_section_sounds">Hangok</string>
     <string name="earbuds_section_about">A fülhallgatóról</string>
     <string name="row_firmware_title">Firmware-verzió</string>
+    <string name="firmware_dialog_title">Firmware-frissítések</string>
+    <string name="firmware_dialog_body">A QuickBuds nem frissíti a fülhallgató firmware-ét: egy sikertelen frissítés használhatatlanná teheti. Frissítsd a HeyMelody alkalmazásból.</string>
     <string name="settings_title">Beállítások</string>
     <string name="row_wear_title">Viselésérzékelés</string>
     <string name="row_wear_sub">Szünet, ha kiveszi a fülhallgatót</string>

@@ -95,7 +95,12 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         // --- About: the firmware version as HeyMelody shows it (read on connect, `0x0105`) ---
         if (Capabilities.supports(this, OpoProtocol.CMD_QUERY_FIRMWARE)) {
             root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_about))
-            val row = SettingRowFactory.build(this, R.drawable.ic_info, R.string.row_firmware_title, 0, null)
+            // No firmware updates here ([USER] 2026-09-29): a failed flash can brick the buds, so a tap
+            // points to HeyMelody instead.
+            val row = SettingRowFactory.build(this, R.drawable.ic_info, R.string.row_firmware_title, 0, null) {
+                ConfirmDialog.show(this, getString(R.string.firmware_dialog_title),
+                    getString(R.string.firmware_dialog_body), getString(R.string.dialog_close), cancelRes = null)
+            }
             firmwareText = SettingRowFactory.subtitle(this, row)
             paintFirmware()
             root.addView(cardView().apply { addView(row) })
