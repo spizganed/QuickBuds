@@ -33,7 +33,7 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
 - **Device testing always uses `./gradlew assembleRelease`** `[USER]`, never the debug APK (signature
   clash; switching needs an uninstall). Install with `adb install -r`. Use `adb logcat` for what in-app
   logs miss.
-- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 15 / 3.8.0).
+- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 16 / 3.8.1).
   Android ignores them on `<application>`. Verify with `aapt2 dump badging <apk>`.
 - `local.properties` (`sdk.dir=...`) is git-ignored.
 - PC: `export JAVA_HOME=$(ls -d ~/.jdks/jbr-21* | head -1)` first. Output in `app/build/outputs/`.
