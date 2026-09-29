@@ -84,7 +84,7 @@ object GoldenSound {
     /** `<action> <length little-endian> <data> <uid>` (event `0x0E` after its id, `0x811E` after its status). */
     fun parseScan(p: ByteArray, from: Int): Pair<Int, ByteArray>? {
         if (p.size < from + 3) return null
-        val len = (p[from + 1].toInt() and 0xFF) or ((p[from + 2].toInt() and 0xFF) shl 8)
+        val len = OpoProtocol.u16(p, from + 1)
         val start = from + 3
         if (len == 0 || p.size < start + len + 4) return null
         return int32(p, start + len) to p.copyOfRange(start, start + len)
@@ -98,13 +98,13 @@ object GoldenSound {
      */
     fun parseCurves(p: ByteArray, scan: Boolean): Triple<Int, FloatArray, FloatArray>? {
         if (p.size < 11 || p[5].toInt() != 4) return null
-        val le = { i: Int -> (p[i].toInt() and 0xFF) or ((p[i + 1].toInt() and 0xFF) shl 8) }
+        val le = { i: Int -> OpoProtocol.u16(p, i) }
         val fs = if (scan) le(6) else 44100
         val count = if (scan) le(8) else le(6)
         val start = if (scan) 11 else 10
         if (count == 0 || count % 12 != 0 || p.size < start + count * 4) return null
         val f = FloatArray(count) { java.lang.Float.intBitsToFloat(
-            (p[start + it * 4].toInt() and 0xFF) or ((p[start + it * 4 + 1].toInt() and 0xFF) shl 8) or
+            OpoProtocol.u16(p, start + it * 4) or
             ((p[start + it * 4 + 2].toInt() and 0xFF) shl 16) or ((p[start + it * 4 + 3].toInt() and 0xFF) shl 24)) }
         return Triple(fs, f.copyOfRange(0, count / 2), f.copyOfRange(count / 2, count))
     }

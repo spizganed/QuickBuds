@@ -263,8 +263,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         super.onDestroy()
     }
 
-    override fun onStatus(msg: String) {}
-
     override fun onConnected(connected: Boolean) {
         val st = WidgetStateStore.read(this)
         st.connected = connected
@@ -291,8 +289,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         AncWidgetProvider.refreshAll(this)
     }
 
-    override fun onPacketReceived(bytes: ByteArray) {}
-
     override fun onBattery(
         left: Int?, case: Int?, right: Int?,
         chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean
@@ -310,10 +306,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         WidgetStateStore.write(this, st)
         AncWidgetProvider.refreshAll(this)
     }
-
-    override fun onBudState(state: String) {}
-
-    override fun onEarStatus(leftInBox: Boolean, rightInBox: Boolean) {}
 
     override fun onWearState(left: Int, right: Int, caseSt: Int) {
         val st = WidgetStateStore.read(this)

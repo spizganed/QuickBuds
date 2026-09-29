@@ -22,8 +22,6 @@ object WearingStatusParser {
     const val ST_IN_CASE = 4
 
     data class Result(
-        val leftInCase: Boolean,
-        val rightInCase: Boolean,
         val leftValid: Boolean,
         val rightValid: Boolean,
         val leftStatus: Int = -1,    // raw st for left bud, -1 = not reported
@@ -39,8 +37,6 @@ object WearingStatusParser {
         val count = p[off].toInt() and 0xFF
         if (count == 0 || count > 8) return null
 
-        var leftInCase = false
-        var rightInCase = false
         var leftValid = false
         var rightValid = false
         var leftStatus = -1
@@ -55,8 +51,8 @@ object WearingStatusParser {
             val st = p[pos + 1].toInt() and 0xFF
             if (!isPlausibleComp(comp) || !isPlausibleSt(st)) return null
             when (comp) {
-                1 -> { leftInCase = (st == ST_IN_CASE); leftValid = true; leftStatus = st }
-                2 -> { rightInCase = (st == ST_IN_CASE); rightValid = true; rightStatus = st }
+                1 -> { leftValid = true; leftStatus = st }
+                2 -> { rightValid = true; rightStatus = st }
                 3 -> { caseStatus = st }
             }
             used++
@@ -64,7 +60,7 @@ object WearingStatusParser {
             i++
         }
         if (used == 0) return null
-        return Result(leftInCase, rightInCase, leftValid, rightValid, leftStatus, rightStatus, caseStatus)
+        return Result(leftValid, rightValid, leftStatus, rightStatus, caseStatus)
     }
 
     /** Parse a 0x8109 wearing query response payload. */

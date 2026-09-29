@@ -127,8 +127,6 @@ class PresetEditActivity : Activity() {
         setStroke(dp(1f), p.outline)
     }
 
-    private fun hex(color: Int) = ColorPickerView.hex(color)
-
     private fun colorRow(i: Int): View {
         val color = preset.tokens[i]
         val swatch = View(this).apply {
@@ -136,7 +134,7 @@ class PresetEditActivity : Activity() {
             layoutParams = LinearLayout.LayoutParams(dp(30f), dp(30f))
         }
         val hexView = TextView(this).apply {
-            text = hex(color)
+            text = ColorPickerView.hex(color)
             setTextColor(p.textSecondary)
             textSize = 14f
             fontFeatureSettings = "tnum"
@@ -202,7 +200,7 @@ class PresetEditActivity : Activity() {
         onChange = { c ->
             preview.palette = preset.withToken(i, c)
             liveSwatch?.background = swatchDrawable(c)
-            liveHex?.text = hex(c)
+            liveHex?.text = ColorPickerView.hex(c)
         },
         onCommit = { c, v -> commit(i, c, v) }
     ).apply { setPadding(dp(16f), dp(4f), dp(16f), dp(16f)) }

@@ -228,7 +228,7 @@ Header (model button `btnModel`, status chip = Connect/Disconnect, spacer, dev t
   the hub**).
 - Disconnected: nothing collapses; tiles go to alpha 0.35, disabled, switches set neutral **quietly**
   (`syncingFeatures`) so no write goes out.
-- **No log on the main screen**; `onStatus()` is empty on purpose. **Never put user-visible output on a
+- **No log on the main screen** (the `onStatus` listener callback was removed). **Never put user-visible output on a
   packet-listener path** (fires per packet, storms the UI).
 
 ### Icons

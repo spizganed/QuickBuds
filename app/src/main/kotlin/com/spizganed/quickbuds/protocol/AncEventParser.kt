@@ -73,7 +73,7 @@ object AncEventParser {
      */
     fun rawValue(payload: ByteArray): Int {
         if (payload.size < 5) return -1
-        return (payload[3].toInt() and 0xFF) or ((payload[4].toInt() and 0xFF) shl 8)
+        return OpoProtocol.u16(payload, 3)
     }
 
     /**

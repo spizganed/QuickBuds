@@ -111,15 +111,15 @@ object LogDecoder {
     private fun describePacket(raw: ByteArray, direction: Direction, label: String?): String {
         val data = OppoPacketFramer.normalise(raw)
         if (data.isEmpty() || data[0] != 0xAA.toByte()) {
-            return data.joinToString(" ") { "%02X".format(it) }
+            return OpoProtocol.bytesToHex(data)
         }
 
         if (data.size < 9) {
-            return "Malformed: ${data.joinToString(" ") { "%02X".format(it) }}"
+            return "Malformed: ${OpoProtocol.bytesToHex(data)}"
         }
 
-        val cmd = (data[4].toInt() and 0xFF) or ((data[5].toInt() and 0xFF) shl 8)
-        val payLen = (data[7].toInt() and 0xFF) or ((data[8].toInt() and 0xFF) shl 8)
+        val cmd = OpoProtocol.u16(data, 4)
+        val payLen = OpoProtocol.u16(data, 7)
         val payload = if (data.size >= 9 + payLen) data.copyOfRange(9, 9 + payLen) else ByteArray(0)
 
         val cmdHex = "0x${"%04X".format(cmd)}"
@@ -188,7 +188,7 @@ object LogDecoder {
                             // A subType we don't decode. Annotated with its payload head
                             // so an unattributed gesture frame (e.g. subType 0xFF /
                             // "02 FF 06 00 F1 ...") stays visible on this screen.
-                            val head = payload.take(6).joinToString(" ") { "%02X".format(it) }
+                            val head = OpoProtocol.bytesToHex(payload.take(6).toByteArray())
                             sb.append("Unattributed active report: subType=0x${"%02X".format(subType)} [$head]")
                         }
                     }
@@ -221,7 +221,7 @@ object LogDecoder {
                 // The caveat, stated so the line is not over-trusted: for the SWITCH-LIST
                 // query (`02 01`) the reply's shape is unknown, so the name is only meaningful
                 // for the current-mode query. The hex is the part that is always true.
-                val hex = payload.joinToString(" ") { "%02X".format(it) }
+                val hex = OpoProtocol.bytesToHex(payload)
                 "ANC query response (0x810C): ${AncEventParser.describe(payload)} [$hex]"
             }
             0x8109 -> {
@@ -232,13 +232,16 @@ object LogDecoder {
                 sb.toString()
             }
             0x810D -> "Status query response ($cmdHex)"
-            0x8105 -> "Firmware version response ($cmdHex): ${data.joinToString(" ") { "%02X".format(it) }}"
+            0x8105 -> "Firmware version response ($cmdHex): ${OpoProtocol.bytesToHex(data)}"
             0x8122 -> "EQ query response ($cmdHex)"
-            0x8130 -> "Alert volume response ($cmdHex): ${data.joinToString(" ") { "%02X".format(it) }}"
-            0x0501 -> {
-                BudStateParser.parse(data)?.let { state ->
-                    "Bud state: ${stateToString(state)}"
-                } ?: "Bud state (unparsed)"
+            0x8130 -> "Alert volume response ($cmdHex): ${OpoProtocol.bytesToHex(data)}"
+            // Byte values observed, not confirmed.
+            0x0501 -> if (payload.isEmpty()) "Bud state (unparsed)" else "Bud state: " + when (val v = payload[0].toInt() and 0xFF) {
+                0x00 -> "Both in case"
+                0x01, 0x02 -> "Both out"
+                0x05 -> "Right out"
+                0x06 -> "Left out"
+                else -> "Unknown(0x${"%02X".format(v)})"
             }
             // Acks for the 0x04xx SET commands come back as 0x84xx (cmd | 0x8000). NAMED
             // rather than left to the catch-all, because an unnamed ack is a large part of
@@ -253,7 +256,7 @@ object LogDecoder {
                 else "status=0x%02X".format(payload[0].toInt() and 0xFF)
                 "Ack for set 0x%04X (%s%s)".format(setCmd, status, if (ok) " = ok" else "")
             }
-            else -> "$cmdHex - ${data.joinToString(" ") { "%02X".format(it) }}"
+            else -> "$cmdHex - ${OpoProtocol.bytesToHex(data)}"
         }
     }
 
@@ -307,13 +310,5 @@ object LogDecoder {
             else -> "Feature 0x${"%02X".format(fid)}"
         }
         return "$name ${if (on) "ON" else "OFF"}"
-    }
-
-    private fun stateToString(state: BudStateParser.State): String = when (state) {
-        is BudStateParser.State.BothInCase -> "Both in case"
-        is BudStateParser.State.BothOut -> "Both out"
-        is BudStateParser.State.LeftOut -> "Left out"
-        is BudStateParser.State.RightOut -> "Right out"
-        is BudStateParser.State.Unknown -> "Unknown(0x${"%02X".format(state.raw)})"
     }
 }

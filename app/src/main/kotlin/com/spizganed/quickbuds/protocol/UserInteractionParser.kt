@@ -135,7 +135,7 @@ object UserInteractionParser {
         val options = mutableListOf<Int>()
         var pos = 5
         while (pos + 1 < payload.size) {
-            options.add((payload[pos].toInt() and 0xFF) or ((payload[pos + 1].toInt() and 0xFF) shl 8))
+            options.add(OpoProtocol.u16(payload, pos))
             pos += 2
         }
 

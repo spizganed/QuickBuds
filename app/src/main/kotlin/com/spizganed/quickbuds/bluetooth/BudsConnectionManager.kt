@@ -45,12 +45,9 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     interface Listener {
-        fun onStatus(msg: String)
         fun onConnected(connected: Boolean)
-        fun onPacketReceived(bytes: ByteArray)
+        fun onPacketReceived(bytes: ByteArray) {}
         fun onBattery(left: Int?, case: Int?, right: Int?, chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean)
-        fun onBudState(state: String)
-        fun onEarStatus(leftInBox: Boolean, rightInBox: Boolean) {}
 
         /**
          * Full wear state (raw status codes from 0x0109 / 0x0204):
@@ -175,8 +172,6 @@ class BudsConnectionManager(private val context: Context) {
     private var lastRight: BatteryParser.Info? = null
     private var lastCase: BatteryParser.Info? = null
 
-    private var lastLeftInCase = false
-    private var lastRightInCase = false
     private var lastLeftStatus = -1
     private var lastRightStatus = -1
     private var lastCaseStatus = -1
@@ -410,7 +405,7 @@ class BudsConnectionManager(private val context: Context) {
 
     /** One entry of the buds' paired-device list (`0x8112`, `0x0204` subType `06`). */
     data class PairedDevice(val mac: String, val name: String, val connected: Boolean,
-        val thisPhone: Boolean = false, val inUse: Boolean = false)
+        val thisPhone: Boolean = false)
 
     /** Latest device list, empty until read. See [refreshDevices]. */
     @Volatile var devices: List<PairedDevice> = emptyList()
@@ -453,7 +448,7 @@ class BudsConnectionManager(private val context: Context) {
             val flags = p[o + 8].toInt()
             val len = p[o + 9].toInt() and 0xFF
             if (o + 10 + len > p.size) return null
-            out += PairedDevice(mac, String(p, o + 10, len, Charsets.UTF_8), connected, flags and 1 != 0, flags and 4 != 0)
+            out += PairedDevice(mac, String(p, o + 10, len, Charsets.UTF_8), connected, flags and 1 != 0)
             o += 10 + len
         }
         return out
@@ -687,8 +682,8 @@ class BudsConnectionManager(private val context: Context) {
 
     /**
      * The hold's ANC-cycle membership — `setSupportNoiseReduction`, `[CAPTURE]` 2026-09-22
-     * (PROTOCOL.md §5). `mask` uses [OpoProtocol.HOLD_MASK_BIT_OFF]/`_ON`/`_TRANSPARENCY`/
-     * `_ADAPTIVE`. Verified the same way every gesture write is: re-read after a delay and log
+     * (PROTOCOL.md §5). `mask` bits use [OpoProtocol.anc]'s numbering (Off 0, On 1,
+     * Transparency 2, Adaptive 11). Verified the same way every gesture write is: re-read after a delay and log
      * the diff, because a wrong command number here would be ignored exactly as silently as
      * everywhere else in this protocol.
      */
@@ -1008,7 +1003,7 @@ class BudsConnectionManager(private val context: Context) {
 
     private fun payloadOf(packet: ByteArray): ByteArray {
         if (packet.size < 9) return ByteArray(0)
-        val payLen = (packet[7].toInt() and 0xFF) or ((packet[8].toInt() and 0xFF) shl 8)
+        val payLen = OpoProtocol.u16(packet, 7)
         val end = minOf(9 + payLen, packet.size)
         return if (end > 9) packet.copyOfRange(9, end) else ByteArray(0)
     }
@@ -1045,7 +1040,7 @@ class BudsConnectionManager(private val context: Context) {
      */
     private fun noteUnattributed(packet: ByteArray) {
         if (packet.size < 9) return
-        val cmd = (packet[4].toInt() and 0xFF) or ((packet[5].toInt() and 0xFF) shl 8)
+        val cmd = OpoProtocol.u16(packet, 4)
         val payload = payloadOf(packet)
 
         val explained = cmd == 0x8100 ||                 // handshake
@@ -1068,7 +1063,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == OpoProtocol.CMD_REGISTER_NOTIFY
         if (explained) return
 
-        val head = payload.take(4).joinToString(" ") { "%02X".format(it) }
+        val head = OpoProtocol.bytesToHex(payload.take(4).toByteArray())
         log("UNATTR RX: cmd=0x${"%04X".format(cmd)} len=${payload.size} " +
             "head=[$head] ancFlush=${if (System.currentTimeMillis() - lastAncFlushAt < 4000) "YES" else "no"}")
     }
@@ -1079,7 +1074,7 @@ class BudsConnectionManager(private val context: Context) {
         handler.post { listeners.forEach { it.onPacketReceived(packet) } }
 
         if (packet.size < 9) return
-        val cmd = (packet[4].toInt() and 0xFF) or ((packet[5].toInt() and 0xFF) shl 8)
+        val cmd = OpoProtocol.u16(packet, 4)
         val payload = payloadOf(packet)
 
         // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
@@ -1131,11 +1126,9 @@ class BudsConnectionManager(private val context: Context) {
         }
         if (wearing != null) {
             if (wearing.leftValid) {
-                lastLeftInCase = wearing.leftInCase
                 lastLeftStatus = wearing.leftStatus
             }
             if (wearing.rightValid) {
-                lastRightInCase = wearing.rightInCase
                 lastRightStatus = wearing.rightStatus
             }
             if (wearing.caseStatus >= 0) lastCaseStatus = wearing.caseStatus
@@ -1147,7 +1140,6 @@ class BudsConnectionManager(private val context: Context) {
                 "case=${wearLabel(lastCaseStatus)}")
             handler.post {
                 listeners.forEach {
-                    it.onEarStatus(lastLeftInCase, lastRightInCase)
                     it.onWearState(lastLeftStatus, lastRightStatus, lastCaseStatus)
                 }
             }
@@ -1350,7 +1342,7 @@ class BudsConnectionManager(private val context: Context) {
             return
         }
         if (cmd == 0x8123 && payload.size >= 3 && payload[0].toInt() == 0) {
-            val mask = (payload[1].toInt() and 0xFF) or ((payload[2].toInt() and 0xFF) shl 8)
+            val mask = OpoProtocol.u16(payload, 1)
             // HeyMelody drops LHDC (7) when LHDC V5 (8) is offered too.
             codecs = (1..8).filter { mask and (1 shl (it - 1)) != 0 }.let { if (8 in it) it - 7 else it }
             log("CODECS: $codecs RAW=[${OpoProtocol.bytesToHex(payload)}]")
@@ -1506,6 +1498,5 @@ class BudsConnectionManager(private val context: Context) {
     private fun log(msg: String) {
         Log.d("BudsConn", msg)
         PacketLogger.log(msg)
-        handler.post { listeners.forEach { it.onStatus(msg) } }
     }
 }

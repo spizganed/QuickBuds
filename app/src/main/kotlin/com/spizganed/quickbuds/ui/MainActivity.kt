@@ -1240,7 +1240,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * The connect/disconnect toasts are GONE at his request — routine events should
      * not interrupt. This remains so a future fatal case has somewhere to go that is
      * not a view on a packet path; the 800ms debounce is the guard that stopped an
-     * earlier version producing a toast storm when onStatus was wired straight to it.
+     * earlier version producing a toast storm when it was wired to a per-packet callback.
      */
     private var lastToastAt = 0L
 
@@ -1253,29 +1253,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     // ==================== BudsConnectionManager.Listener ====================
 
-    override fun onStatus(msg: String) {
-        // NO TOASTS. He asked for them off: they are noise for routine connect and
-        // disconnect events, and the connection state is now shown properly in the
-        // header (the status pill).
-        //
-        // Kept silent rather than deleted so the ONE case that is genuinely worth
-        // interrupting for can be added later. Nothing here should become a general
-        // channel again: onStatus fires per packet on some paths, and an earlier
-        // version wired toasts straight to it and produced a toast storm.
-        //
-        // A failure that the user MUST know about goes through the header pill and
-        // the log, not a toast. If a genuinely fatal case appears (a crash), that is
-        // CrashLogger's job, not this method's.
-    }
-
-    // ==================== BudsConnectionManager.Listener ====================
-
     override fun onConnected(connected: Boolean) {
         // The connection state is rendered from WidgetStateStore in renderWear
         // (header pill + setConnectedUi), so there is one source for it.
     }
-
-    override fun onPacketReceived(bytes: ByteArray) {}
 
     override fun onBattery(
         left: Int?, case: Int?, right: Int?,
@@ -1286,7 +1267,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // Nothing to do here beyond letting the store listener above handle it.
     }
 
-    override fun onBudState(state: String) {}
     override fun onWearState(left: Int, right: Int, caseSt: Int) {}
 
     override fun onGameModeState(on: Boolean) {

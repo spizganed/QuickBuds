@@ -180,7 +180,7 @@ object KeyFunctionParser {
      * keep the buds' own order, which is itself a fact about their action enum.
      */
     fun describe(payload: ByteArray): String {
-        val raw = payload.joinToString(" ") { "%02X".format(it) }
+        val raw = OpoProtocol.bytesToHex(payload)
         if (payload.isEmpty()) return "getKeyFunction reply: EMPTY payload RAW=[]"
 
         val r = parse(payload)
@@ -203,7 +203,7 @@ object KeyFunctionParser {
                 .append('[').append(g).append(']')
         }
         if (r.trailing.isNotEmpty()) {
-            sb.append(" trailing=[").append(r.trailing.joinToString(" ") { "%02X".format(it) })
+            sb.append(" trailing=[").append(OpoProtocol.bytesToHex(r.trailing))
             sb.append(']')
         }
         if (r.layoutMismatch) {

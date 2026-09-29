@@ -564,13 +564,10 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         if (connected) manager?.refreshEq()
         render()
     }
-    override fun onStatus(msg: String) {}
-    override fun onPacketReceived(bytes: ByteArray) {}
     override fun onBattery(
         left: Int?, case: Int?, right: Int?,
         chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean
     ) {}
-    override fun onBudState(state: String) {}
 
     // ---------------------------------------------------------------- small builders
 

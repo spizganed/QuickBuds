@@ -68,7 +68,7 @@ object Capabilities {
      */
     fun productId(payload: ByteArray): String? {
         if (payload.size != 4 || payload[0].toInt() != 0) return null
-        val id = (payload[1].toInt() and 0xFF) or ((payload[2].toInt() and 0xFF) shl 8) or
+        val id = OpoProtocol.u16(payload, 1) or
             ((payload[3].toInt() and 0xFF) shl 16)
         return "%06X".format(ModelCatalog.normalise(id))
     }

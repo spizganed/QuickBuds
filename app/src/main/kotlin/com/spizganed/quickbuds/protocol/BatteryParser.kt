@@ -17,9 +17,9 @@ object BatteryParser {
      */
     fun parse(data: ByteArray): Result? {
         if (data.size < 9 || data[0] != 0xAA.toByte()) return null
-        val cmd = (data[4].toInt() and 0xFF) or ((data[5].toInt() and 0xFF) shl 8)
+        val cmd = OpoProtocol.u16(data, 4)
         if (cmd != 0x8106) return null
-        val payLen = (data[7].toInt() and 0xFF) or ((data[8].toInt() and 0xFF) shl 8)
+        val payLen = OpoProtocol.u16(data, 7)
         if (data.size < 9 + payLen) return null
 
         var l: Info? = null
@@ -46,9 +46,9 @@ object BatteryParser {
      */
     fun parseActive(data: ByteArray): Result? {
         if (data.size < 9 || data[0] != 0xAA.toByte()) return null
-        val cmd = (data[4].toInt() and 0xFF) or ((data[5].toInt() and 0xFF) shl 8)
+        val cmd = OpoProtocol.u16(data, 4)
         if (cmd != 0x0204) return null
-        val payLen = (data[7].toInt() and 0xFF) or ((data[8].toInt() and 0xFF) shl 8)
+        val payLen = OpoProtocol.u16(data, 7)
         if (data.size < 9 + payLen || payLen < 2) return null
         if ((data[9].toInt() and 0xFF) != 0x01) return null
         val count = data[10].toInt() and 0xFF

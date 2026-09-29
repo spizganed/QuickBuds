@@ -282,7 +282,7 @@ setting**; clearing `fn` to `0x00` does not stop the cycle `[CAPTURE]`.
 | Write | `0x0404 02 <type> <mask LE>`, type `01` shared, `03` left / `04` right on per-bud holds |
 
 - The mask uses **the SET bits** `[CAPTURE]`: adding Adaptive in HeyMelody moved it `0x0007` →
-  `0x0807`. Buds 4 bits: Off 0, ANC 1, Transparency 2, Adaptive 11 (`OpoProtocol.HOLD_MASK_BIT_*`).
+  `0x0807`. Buds 4 bits: Off 0, ANC 1, Transparency 2, Adaptive 11 (same numbering as `OpoProtocol.anc`).
   Other models use their top-level modes' `protocolIndex` `[VENDOR]`.
 - The mask is sent in as few bytes as needed, 1-4 `[VENDOR]`: `02 01 03` acked and read back as
   `0x0003` `[CAPTURE]`.

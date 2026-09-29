@@ -329,7 +329,6 @@ object OpoProtocol {
     fun setFeature(featureId: Int, on: Boolean): ByteArray =
         buildPacket(CMD_SET_FEATURE, payload = featurePayload(featureId, on))
 
-
     fun queryFirmware(): ByteArray = buildPacket(CMD_QUERY_FIRMWARE)
 
     /**
@@ -408,12 +407,6 @@ object OpoProtocol {
             payload = byteArrayOf(0x02, type.toByte()) + ByteArray(len) { (mask ushr (it * 8)).toByte() }
         )
     }
-
-    /** Bits in [setHoldAncModes]'s mask — the same numbering [anc] uses. `[CAPTURE]`. */
-    const val HOLD_MASK_BIT_OFF = 0
-    const val HOLD_MASK_BIT_ON = 1
-    const val HOLD_MASK_BIT_TRANSPARENCY = 2
-    const val HOLD_MASK_BIT_ADAPTIVE = 11
 
     /**
      * setKeyFunction write for the on-call group (`btn 0x06`) — `[CAPTURE]`, same capture as
@@ -573,6 +566,9 @@ object OpoProtocol {
             0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C
         )
     )
+
+    /** Little-endian unsigned 16-bit value at [i]. */
+    fun u16(b: ByteArray, i: Int) = (b[i].toInt() and 0xFF) or ((b[i + 1].toInt() and 0xFF) shl 8)
 
     fun bytesToHex(bytes: ByteArray): String =
         bytes.joinToString(" ") { "%02X".format(it) }

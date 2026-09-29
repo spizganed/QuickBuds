@@ -374,7 +374,6 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     override fun onPersonalNoiseResult(result: Int) = personalNoise.result(result)
     override fun onPersonalNoiseAck(status: Int) = personalNoise.ack(status)
 
-    override fun onStatus(msg: String) {}
     override fun onConnected(connected: Boolean) {}
     override fun onPacketReceived(bytes: ByteArray) {
         // A firmware reply (`0x8105`, `00 <count>` + text) that lands while this screen is open.
@@ -385,5 +384,4 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         left: Int?, case: Int?, right: Int?,
         chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean
     ) {}
-    override fun onBudState(state: String) {}
 }

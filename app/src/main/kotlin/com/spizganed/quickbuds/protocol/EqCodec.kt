@@ -49,7 +49,7 @@ object EqCodec {
             val freqs = ArrayList<Int>(bands)
             val gains = ArrayList<Int>(bands)
             repeat(bands) {
-                freqs += (payload[o].toInt() and 0xFF) or ((payload[o + 1].toInt() and 0xFF) shl 8)
+                freqs += OpoProtocol.u16(payload, o)
                 gains += payload[o + 2].toInt() // signed byte
                 o += 3
             }
