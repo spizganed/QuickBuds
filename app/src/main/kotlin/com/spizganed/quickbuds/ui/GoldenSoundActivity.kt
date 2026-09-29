@@ -92,7 +92,10 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         root.addView(SettingRowFactory.sectionLabel(this, R.string.golden_profiles))
         list = SettingRowFactory.card(this)
         root.addView(list)
+        // The last active record, so its saved radar shows before the buds answer.
+        cachedRadar()?.get(0)?.toIntOrNull()?.let { activeUid = it }
         paintList()
+        paintRadar()
 
         if (Capabilities.supports(this, OpoProtocol.CMD_GOLDEN_DETECT)) {
             root.addView(SettingRowFactory.card(this).apply {
@@ -117,14 +120,28 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         ).toTypedArray())
     }
 
+    /** Until the buds' filters arrive, the last radar drawn for this record (saved on the phone). */
     private fun paintRadar() {
         val h = hearingCurves[activeUid]
-        radarCard.visibility = if (h == null) android.view.View.GONE else android.view.View.VISIBLE
-        if (h == null) return
-        val s = scanCurves[activeUid]
-        radar.values = if (ear == 0) GoldenSound.radar(h.first, s?.second, s?.first ?: 44100)
-        else GoldenSound.radar(h.second, s?.third, s?.first ?: 44100)
+        val both = if (h != null) {
+            val s = scanCurves[activeUid]
+            listOf(GoldenSound.radar(h.first, s?.second, s?.first ?: 44100),
+                GoldenSound.radar(h.second, s?.third, s?.first ?: 44100)).also { saveRadar(it) }
+        } else loadRadar()
+        radarCard.visibility = if (both == null) android.view.View.GONE else android.view.View.VISIBLE
+        radar.values = both?.get(ear) ?: return
     }
+
+    private val prefs get() = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+
+    /** Pref `goldenRadar`: `uid;left radii;right radii`, comma-separated. */
+    private fun saveRadar(both: List<FloatArray>) = prefs.edit()
+        .putString(KEY_RADAR, "$activeUid;" + both.joinToString(";") { it.joinToString(",") }).apply()
+
+    private fun cachedRadar() = prefs.getString(KEY_RADAR, null)?.split(";")?.takeIf { it.size == 3 }
+
+    private fun loadRadar() = cachedRadar()?.takeIf { it[0] == "$activeUid" }
+        ?.drop(1)?.map { e -> e.split(",").map { it.toFloat() }.toFloatArray() }
 
     private fun startTest() {
         // Ear scan only where HeyMelody's model list has it (`earScan`, PROTOCOL.md §9).
@@ -228,4 +245,6 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         left: Int?, case: Int?, right: Int?,
         chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean
     ) {}
+
+    private companion object { const val KEY_RADAR = "goldenRadar" }
 }
