@@ -37,6 +37,9 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
 - Earbud fit test (2026-09-29): HeyMelody's sheet, `0x0405` and event `0x04`, confirmed on Buds 4.
 - Golden Sound on/off (2026-09-29): a home row, feature `0x0B`, read back on Buds 4.
+- The last hidden gesture rows (2026-09-29, `[VENDOR]`, PROTOCOL.md §6): per-bud holds (`longPressType`,
+  8 models), top-level ANC levels in the hold (Buds Pro, Buds Z2, Enco X), on-call single tap / double tap
+  decline (callControl 32 / 33). Shown on device by picking the models by hand; no write on those models yet.
 - Gestures per model (2026-09-29): rows and options from HeyMelody's `control` / `callControl` lists,
   plus volume up / down and switch devices (PROTOCOL.md §6).
 - Dual connection: switch plus connected-device list (a home screen row), HeyMelody's exact write

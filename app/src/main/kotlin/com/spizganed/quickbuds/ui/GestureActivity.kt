@@ -12,6 +12,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
+import com.spizganed.quickbuds.protocol.AncModes
+import com.spizganed.quickbuds.widget.WidgetStateStore
 
 /**
  * Earbud controls — bind a gesture to an action, per bud.
@@ -36,7 +38,7 @@ import com.spizganed.quickbuds.bluetooth.BudsService
  * and diffs it, because a wrong command number fails in complete silence. The
  * `function` bytes in [GestureAction] are MEASURED, not guessed — see [GestureConfig]
  * and PROTOCOL.md §6. The on-call writes ([OnCallGesture]) are a single small entry
- * instead of a full-table rewrite — see BudsConnectionManager.sendOnCallDoubleTap().
+ * instead of a full-table rewrite — see BudsConnectionManager.sendOnCall().
  */
 class GestureActivity : Activity() {
 
@@ -212,7 +214,8 @@ class GestureActivity : Activity() {
             return
         }
 
-        val sides = if (gesture == Gesture.TAP_HOLD) GestureSide.values().toList() else listOf(side)
+        // A per-bud hold (GestureModel.perBudHold) is written to the selected bud only.
+        val sides = if (gesture == Gesture.TAP_HOLD && !model.perBudHold) GestureSide.values().toList() else listOf(side)
         for (s in sides) {
             val intent = Intent(this, BudsService::class.java).apply {
                 action = BudsService.ACTION_SET_GESTURE
@@ -223,10 +226,13 @@ class GestureActivity : Activity() {
             startService(intent)
         }
 
-        if (gesture == Gesture.TAP_HOLD) {
+        // Only the noise cycle has a mask; a per-bud hold's other choices are the key function alone.
+        if (gesture == Gesture.TAP_HOLD && actions.any { it.holdModeType >= 0 }) {
+            val levelBit = AncModes.of(this).bit(WidgetStateStore.read(this).ancMode)
             val maskIntent = Intent(this, BudsService::class.java).apply {
                 action = BudsService.ACTION_SET_HOLD_MODES
-                putExtra(BudsService.EXTRA_HOLD_MASK, model.holdMask(actions))
+                putExtra(BudsService.EXTRA_HOLD_MASK, model.holdMask(actions, levelBit))
+                putExtra(BudsService.EXTRA_HOLD_TYPE, model.holdType(side))
             }
             startService(maskIntent)
         }
@@ -392,7 +398,11 @@ class GestureActivity : Activity() {
      * switch modes. Done with an empty selection (only reachable from a never-set hold)
      * just closes without writing.
      */
-    private fun showActionDialog(gesture: Gesture) {
+    private fun showActionDialog(gesture: Gesture, noiseModes: Boolean = false) {
+        if (gesture == Gesture.TAP_HOLD && model.perBudHold && !noiseModes) {
+            showHoldChoiceDialog()
+            return
+        }
         val options = model.rows[gesture].orEmpty()
         val selected = GestureConfigStore.load(this, side, gesture).toMutableList()
 
@@ -422,7 +432,8 @@ class GestureActivity : Activity() {
         sheet.title(getString(gesture.labelRes))
             .dismissOnSelect(false)
             .confirm(getString(R.string.gesture_done)) {
-                if (working.isNotEmpty()) {
+                // Below the model's minimum it closes without a write (only a never-set hold can be).
+                if (working.size >= model.holdMin) {
                     // Persist in the declared order, not tap order, so the cycle is
                     // deterministic and matches the list the user just saw.
                     val ordered = options.filter { working.contains(it) }
@@ -439,17 +450,47 @@ class GestureActivity : Activity() {
                     label = getString(action.labelRes),
                     selected = working.contains(action),
                     onClick = {
-                        // The last ticked mode cannot be unticked — minimum one, as HeyMelody.
-                        if (working.contains(action)) { if (working.size > 1) working.remove(action) }
+                        // Never below the model's minimum (1 or 2, GestureModel.holdMin), as HeyMelody.
+                        if (working.contains(action)) { if (working.size > model.holdMin) working.remove(action) }
                         else working.add(action)
                         refresh()
                     }
                 )
             })
-            sheet.message(if (working.size == 1) getString(R.string.gesture_hold_rule) else null)
+            sheet.message(if (working.size == 1 && model.holdMin == 1) getString(R.string.gesture_hold_rule) else null)
         }
 
         refresh()
         sheet.show()
+    }
+
+    /**
+     * A per-bud hold's first sheet (`[VENDOR]` `CustomLongPressPreferenceFragment`): one choice
+     * among [GestureModel.holdChoices]. Noise control opens the mode sheet, the others commit here.
+     */
+    private fun showHoldChoiceDialog() {
+        val current = GestureConfigStore.load(this, side, Gesture.TAP_HOLD)
+        val noise = current.any { it.holdModeType >= 0 }
+        BottomSheetDialog(this)
+            .title(getString(Gesture.TAP_HOLD.labelRes))
+            .items(model.holdChoices.map { bit ->
+                if (bit == GestureModel.HOLD_NOISE) BottomSheetDialog.Item(
+                    label = getString(R.string.anc_section),
+                    selected = noise,
+                    onClick = { showActionDialog(Gesture.TAP_HOLD, noiseModes = true) }
+                ) else {
+                    val action = GestureAction.values().first { it.supportBit == bit }
+                    BottomSheetDialog.Item(
+                        label = getString(action.labelRes),
+                        selected = current == listOf(action),
+                        onClick = {
+                            GestureConfigStore.save(this, side, Gesture.TAP_HOLD, listOf(action))
+                            writeToBuds(Gesture.TAP_HOLD, listOf(action))
+                            render()
+                        }
+                    )
+                }
+            })
+            .show()
     }
 }

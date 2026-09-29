@@ -299,12 +299,21 @@ object OpoProtocol {
      * through was decided entirely on the vendor side. The mode list lives HERE instead, and
      * this read is the cheap, read-only way to see it before anyone writes `0x0404`.
      *
-     * READ-ONLY, so it cannot change a binding. Only `02 01` is sent, not all three
-     * variants: sending three near-identical queries would clutter the capture, and the
-     * first one is the best-supported. If it comes back empty, try `02 03` / `02 04` next.
+     * READ-ONLY, so it cannot change a binding. `[VENDOR]` `PollCommandManager.s()`: `02 01` on
+     * most models, `02 03` (left) and `02 04` (right) on models with a per-bud hold
+     * (`longPressType`), see [HOLD_TYPE_SHARED].
      */
-    fun queryNoiseSwitchModes(): ByteArray =
-        buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x02, 0x01))
+    fun queryNoiseSwitchModes(type: Int = HOLD_TYPE_SHARED): ByteArray =
+        buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x02, type.toByte()))
+
+    /**
+     * The hold cycle's noise type, the second byte of [setHoldAncModes] and [queryNoiseSwitchModes].
+     * `[VENDOR]` `BaseEarControlFragment.s()`: 1 for one cycle shared by both buds, 3 (left) / 4
+     * (right) on models whose `longPressType` gives each bud its own hold.
+     */
+    const val HOLD_TYPE_SHARED = 1
+    const val HOLD_TYPE_LEFT = 3
+    const val HOLD_TYPE_RIGHT = 4
 
     /**
      * setSupportNoiseReduction — WRITE which ANC modes the hold cycles through.
@@ -327,10 +336,15 @@ object OpoProtocol {
      * byte selects the question: `01 01 <bits>` sets the CURRENT mode (see [ancOff] etc.),
      * `02 01 <mask LE>` sets the cycle's MEMBERSHIP. Do not merge these two payload shapes.
      */
-    fun setHoldAncModes(mask: Int): ByteArray = buildPacket(
-        CMD_SET_ANC,
-        payload = byteArrayOf(0x02, 0x01, (mask and 0xFF).toByte(), ((mask shr 8) and 0xFF).toByte())
-    )
+    fun setHoldAncModes(mask: Int, type: Int = HOLD_TYPE_SHARED): ByteArray {
+        // `[VENDOR]` `NoiseReductionInfo.getData()`: the mask in as few bytes as it needs (1-4), LE.
+        var len = 4
+        while (len > 1 && (mask ushr ((len - 1) * 8)) and 0xFF == 0) len--
+        return buildPacket(
+            CMD_SET_ANC,
+            payload = byteArrayOf(0x02, type.toByte()) + ByteArray(len) { (mask ushr (it * 8)).toByte() }
+        )
+    }
 
     /** Bits in [setHoldAncModes]'s mask — the same numbering [anc] uses. `[CAPTURE]`. */
     const val HOLD_MASK_BIT_OFF = 0
@@ -376,15 +390,14 @@ object OpoProtocol {
         fn.toByte()
     )
 
-    fun setOnCallDoubleTap(enabled: Boolean): ByteArray = buildPacket(
-        CMD_SET_KEY_FUNCTION,
-        payload = onCallPayload(ON_CALL_ACT_DOUBLE_TAP, if (enabled) ON_CALL_FN_ANSWER_END else 0x00)
-    )
+    /**
+     * `[VENDOR]` `BaseEarControlFragment.u()`: callControl 28 / 32 are `act 0x01` (single tap),
+     * 29 / 33 / 36 `act 0x02`, 30 / 34 `act 0x03`, 31 / 35 `act 0x06`; all `btn 0x06`, `dev 0x04`.
+     */
+    const val ON_CALL_ACT_SINGLE_TAP = 0x01
 
-    fun setOnCallLongHold(enabled: Boolean): ByteArray = buildPacket(
-        CMD_SET_KEY_FUNCTION,
-        payload = onCallPayload(ON_CALL_ACT_LONG_HOLD, if (enabled) ON_CALL_FN_DECLINE else 0x00)
-    )
+    fun setOnCall(act: Int, fn: Int): ByteArray =
+        buildPacket(CMD_SET_KEY_FUNCTION, payload = onCallPayload(act, fn))
 
     // --- Equalizer, all [CAPTURE] 2026-09-23 (PROTOCOL.md §9) ---
 

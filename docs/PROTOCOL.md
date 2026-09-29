@@ -415,7 +415,7 @@ RX  AA 0C 00 00 0C 81 05 05 00 00 01 01 08 00
 | Request | Question |
 |---------|----------|
 | `01 01` | current mode (above) |
-| `02 01` / `02 03` / `02 04` | **which modes the hold cycles through** (`getNoiseReductionSwitchMode`) |
+| `02 01` / `02 03` / `02 04` | **which modes the hold cycles through** (`getNoiseReductionSwitchMode`): `01` shared, `03` left / `04` right on per-bud holds (`[VENDOR]` `PollCommandManager.s()`, §6) |
 | `04 01` | intelligent noise reduction mode |
 
 #### `[CAPTURE]` 2026-09-20 — the switch-list reply, ANSWERED
@@ -829,8 +829,24 @@ captured), 30 is act 3 (AI summary). Entries 7, 8, 12-15 are fixed rows that sho
 Transparency 2 / Off 0 (as captured), but several OPPO models have ANC 0 / Off 1. Models with
 `longPressType` set (8833, eight models) send the mask per bud with noise type 3 (left) / 4 (right)
 instead of 1. The app builds its gesture screen from this (`GestureModel`); unverified on any model
-but Buds 4 until an owner reads a write back. Not handled yet, so their rows are hidden: the
-per-bud cycles, top-level ANC levels in a hold (3 models) and the on-call variants 32/33 and 36/37.
+but Buds 4 until an owner reads a write back.
+
+`[VENDOR]` 2026-09-29, `BaseEarControlFragment` / `CustomLongPressPreferenceFragment`:
+
+- **Per-bud hold** (`longPressType`): a bitmask of choices in  order, 512 none, 128 noise
+  cycle, 1 voice assistant, 8192 game mode (8388608 spy tap, skipped). Each bud is written on its own:
+  `0x0401` `dev` 1 / 2, `act 0x04`, `fn` 0x00 / 0x08 / 0x03 / 0x11; the noise cycle adds its mask with
+  noise type 3 / 4. Read with `0x010C` `02 03` and `02 04` instead of `02 01`.
+- **Minimum modes in the cycle**: the entry's `minSelectCount`, else 2 on OnePlus models and per-bud
+  holds, else 1 (Buds 4 has `minSelectCount` 1).
+- **Top-level ANC levels**: Buds Z2 and Enco X list "strong" (4) and "weak" (3) as modes of their own,
+  each with its own bit. OnePlus Buds Pro (`060C14`, HeyMelody's special case `396308`) shows 3 / 4 / 7 as
+  one "ANC" option whose bit is the buds' current ANC level's, or Smart's (bit 4) outside ANC.
+- **On-call rows**: callControl 28 / 32 are `act 0x01`, 29 / 33 / 36 `act 0x02`, 30 / 34 `act 0x03`,
+  31 / 35 `act 0x06`, all `btn 0x06` `dev 0x04`. Support 524288 is answer / end (`fn 0x1D`), 262144
+  decline (`0x1C`), 131072 AI summary. A row without None (512) has one fixed option and nothing to
+  write (36 / 37 everywhere, and 32 / 33 on four models), so only 32 / 33 on Buds Pro 3 and Enco X3 are
+  new choices: single tap answers, double tap declines.
 
 #### The table's SHAPE IS NOT FIXED — do not hardcode a count OR a button group
 
@@ -913,8 +929,9 @@ app (two modes here, four earlier) — same `fn` byte both times.
 So the key-function table only *describes* the hold; the cycle itself lives in the separate
 **`setSupportNoiseReduction` (`0x0404`)**, payload `[action=2][noiseType][modeMask LE]`
 (`OppoProtocol.LongPressNoisePayload`), read back with `0x010C` payloads
-`02 01` / `02 03` / `02 04`. `[OSS]`, untested. **Not wired** — it is a different command
-and folding it into the key-function save would make a failure impossible to attribute.
+`02 01` / `02 03` / `02 04`. Wired since 2026-09-22 as its own write, never folded into the key-function
+save, so a failure stays attributable. `[VENDOR]` `NoiseReductionInfo.getData()` sends the mask in as
+few bytes as it needs (1-4, LE): `02 01 07` for `0x0007`, `02 01 07 08` for `0x0807`; the app does the same.
 The read reply's 2-byte header is our own finding — see just below.
 
 `[USER]` 2026-09-22 asked whether the hold could be given a Low/Medium/High choice, since

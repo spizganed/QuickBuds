@@ -74,7 +74,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 12 / versionName 3.5.1.**
+**Current: versionCode 13 / versionName 3.6.0.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
@@ -248,7 +248,8 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
   models one entry, not the envelope, and taking `payload[0]` as the count cost an off-by-one.
 - **The hold's function byte does not control the ANC cycle.** Clearing it to `0x00` does not stop
   the cycle. The cycle's membership is a *separate* command, `setSupportNoiseReduction`
-  (`0x0404`), read back with `0x010C` payloads `02 01` / `02 03` / `02 04`. Not wired yet.
+  (`0x0404`), read back with `0x010C` payloads `02 01` (shared) or `02 03` / `02 04` (per-bud holds,
+  `GestureModel.perBudHold`, PROTOCOL.md §6).
 - Baseline for the diff is persisted in its own prefs (`QuickBudsKeyFnDiff`) because the experiment
   needs a reconnect that can restart the process. **An empty reply must never overwrite a good
   baseline.**

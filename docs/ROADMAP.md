@@ -14,8 +14,7 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
 
-- **Hearing profile extras** (Open): HeyMelody's before / after preview on the result (`0x040E 01` / `02`,
-  PROTOCOL.md §9).
+- Nothing open for Buds 4.
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
@@ -49,9 +48,9 @@ Each step is done before the next one starts.
    - **Done 2026-09-29: gestures per model.** The rows and options come from HeyMelody's own `control` /
      `callControl` lists (PROTOCOL.md §6); Buds 4 unchanged, a picked Nord Buds 2r showed its own rows.
      Unverified on other models until an owner reads a write back.
-   - **Open: the gesture rows still hidden** (their row is left out rather than written by guess): per-bud
-     hold cycles (`longPressType`, 8 models: Nord Buds 4 / 4 Pro, Buds Ace 3, Enco Air5 family), hold with
-     top-level ANC levels (3 models), on-call rows on single / double tap (callControl 32/33, 36/37).
+   - **Done 2026-09-29: the last hidden gesture rows**, from HeyMelody's code (PROTOCOL.md §6): per-bud
+     holds, the hold with top-level ANC levels, on-call single / double tap. Unverified until an owner reads
+     a write back.
    - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
      Galaxy S24). Asked to update in-app, clean install if it still fails, and send a Dev Tools export
      with what works. Their logs are the first non-Buds 4 evidence: read before changing anything.
@@ -118,6 +117,7 @@ From his notes, 2026-09-28 ([USER]), in order:
 
 - Widgets bigger than the launcher's padding allows: the host clips to it; ours already fill the same box
   as Nothing's own widgets (measured 2026-09-27).
+- The hearing profile's before / after preview (`0x040E 01` / `02`) ([USER] 2026-09-29).
 - Renaming a hearing profile: the date and time label each one well enough ([USER] 2026-09-29).
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.

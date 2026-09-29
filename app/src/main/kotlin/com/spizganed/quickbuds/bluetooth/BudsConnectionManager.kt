@@ -23,6 +23,7 @@ import com.spizganed.quickbuds.protocol.OppoPacketFramer
 import com.spizganed.quickbuds.protocol.UserInteractionParser
 import com.spizganed.quickbuds.protocol.WearingStatusParser
 import com.spizganed.quickbuds.ui.GestureConfigStore
+import com.spizganed.quickbuds.ui.GestureModel
 import com.spizganed.quickbuds.ui.OnCallConfigStore
 import com.spizganed.quickbuds.ui.ThemeRes
 import java.io.IOException
@@ -305,7 +306,8 @@ class BudsConnectionManager(private val context: Context) {
                 // The current gesture bindings, the table every gesture write is built from.
                 query(OpoProtocol.CMD_QUERY_KEY_FUNCTION, OpoProtocol.queryKeyFunction(), "query key function")
                 // The hold's ANC cycle, see OpoProtocol.queryNoiseSwitchModes().
-                query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryNoiseSwitchModes(), "query noise switch")
+                for (type in GestureModel.of(context).holdTypes())
+                    query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryNoiseSwitchModes(type), "query noise switch $type")
                 // Logged only until a Buds 4 reply confirms the [OSS] format (ROADMAP, firmware version).
                 query(OpoProtocol.CMD_QUERY_FIRMWARE, OpoProtocol.queryFirmware(), "query firmware")
             } catch (e: Exception) {
@@ -567,12 +569,12 @@ class BudsConnectionManager(private val context: Context) {
      * the diff, because a wrong command number here would be ignored exactly as silently as
      * everywhere else in this protocol.
      */
-    fun sendHoldAncModes(mask: Int) {
-        sendRaw(OpoProtocol.setHoldAncModes(mask), "Hold ANC modes -> 0x%04X".format(mask))
+    fun sendHoldAncModes(mask: Int, type: Int) {
+        sendRaw(OpoProtocol.setHoldAncModes(mask, type), "Hold ANC modes ($type) -> 0x%04X".format(mask))
         Thread {
             try {
                 Thread.sleep(400)
-                sendRawBlocking(OpoProtocol.queryNoiseSwitchModes(), "verify hold ANC modes")
+                sendRawBlocking(OpoProtocol.queryNoiseSwitchModes(type), "verify hold ANC modes")
             } catch (e: Exception) {
                 log("HOLD MODES WRITE: verify query failed: ${e.message}")
             }
@@ -587,13 +589,8 @@ class BudsConnectionManager(private val context: Context) {
      * sides themselves. Verified the same way — re-read and let the `KEYFN DIFF:` line show
      * what actually changed.
      */
-    fun sendOnCallDoubleTap(enabled: Boolean) {
-        sendRaw(OpoProtocol.setOnCallDoubleTap(enabled), "On-call double tap -> $enabled")
-        verifyKeyFunctionAfterDelay()
-    }
-
-    fun sendOnCallLongHold(enabled: Boolean) {
-        sendRaw(OpoProtocol.setOnCallLongHold(enabled), "On-call long hold -> $enabled")
+    fun sendOnCall(act: Int, fn: Int) {
+        sendRaw(OpoProtocol.setOnCall(act, fn), "On-call act 0x%02X -> fn 0x%02X".format(act, fn))
         verifyKeyFunctionAfterDelay()
     }
 
@@ -654,15 +651,13 @@ class BudsConnectionManager(private val context: Context) {
     private var lastKeyFnTable: KeyFunctionParser.Table? = null
 
     /**
-     * The hold's ANC-cycle mask, as last read from `0x010C` `02 01` (`[CAPTURE]`,
-     * PROTOCOL.md §5). Bits per [OpoProtocol.HOLD_MASK_BIT_OFF] etc. Null until the first
-     * reply arrives — same "do not invent it" rule as [lastKeyFnTable], though there is
+     * The hold's ANC-cycle masks, as last read from `0x010C` `02 <type>` (`[CAPTURE]`,
+     * PROTOCOL.md §5), by noise type ([OpoProtocol.HOLD_TYPE_SHARED], or `_LEFT` / `_RIGHT`).
+     * Empty until the first reply arrives — same "do not invent it" rule as [lastKeyFnTable], though there is
      * nothing here that writes FROM this field; it exists purely so a UI can show the
      * current cycle without threading its own query/response plumbing.
      */
-    @Volatile
-    var lastHoldAncMask: Int? = null
-        private set
+    val lastHoldAncMasks: MutableMap<Int, Int> = java.util.concurrent.ConcurrentHashMap()
 
     /**
      * Changes ONE binding on ONE bud and writes the whole table back.
@@ -1063,17 +1058,19 @@ class BudsConnectionManager(private val context: Context) {
                 // GestureConfigStore.syncFromDevice() / OnCallConfigStore.syncFromDevice().
                 GestureConfigStore.syncFromDevice(context, table)
                 OnCallConfigStore.syncFromDevice(context, table)
-                lastHoldAncMask?.let { GestureConfigStore.syncHoldFromDevice(context, table, it) }
+                GestureConfigStore.syncHoldFromDevice(context, table, lastHoldAncMasks)
             }
             return
         }
 
         // --- ANC query reply: 0x810C, carries several questions (see OpoProtocol) ---
         // Shape for both branches below: `[status][echo x2][value LE]`, `[CAPTURE]`.
-        if (cmd == 0x810C && payload.size >= 5) {
+        if (cmd == 0x810C && payload.size >= 4) {
             val echo1 = payload[1].toInt() and 0xFF
             val echo2 = payload[2].toInt() and 0xFF
-            val value = (payload[3].toInt() and 0xFF) or ((payload[4].toInt() and 0xFF) shl 8)
+            // The value is as long as it needs to be (`NoiseReductionInfo`, 1-4 bytes LE).
+            var value = 0
+            for (i in minOf(payload.size, 7) - 1 downTo 3) value = (value shl 8) or (payload[i].toInt() and 0xFF)
 
             // Current-mode answer, echo `01 01` — queried once on every connect
             // (OpoProtocol.queryAncMode()). FIXED 2026-09-22: this used to be un-handled here
@@ -1094,12 +1091,12 @@ class BudsConnectionManager(private val context: Context) {
 
             // Hold's switch-list answer, echo `02 01`/`02 03`/`02 04` — see OpoProtocol.setHoldAncModes().
             if (echo1 == 0x02) {
-                lastHoldAncMask = value
-                log("HOLD MODES: mask=0x%04X".format(lastHoldAncMask))
+                lastHoldAncMasks[echo2] = value
+                log("HOLD MODES ($echo2): mask=0x%04X".format(value))
                 // Same repaint as GestureConfigStore.syncFromDevice() above, from the other
                 // direction: the mask usually arrives AFTER the key-function table in the init
                 // sequence, so this is the hook that actually fires the hold's sync in practice.
-                lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, value) }
+                lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, lastHoldAncMasks) }
             }
         }
 

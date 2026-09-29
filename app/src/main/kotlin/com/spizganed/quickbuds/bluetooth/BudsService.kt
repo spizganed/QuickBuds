@@ -18,6 +18,8 @@ import android.util.Log
 import android.view.KeyEvent
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
+import com.spizganed.quickbuds.protocol.OpoProtocol
+import com.spizganed.quickbuds.ui.OnCallGesture
 import com.spizganed.quickbuds.ui.ThemeRes
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetStateStore
@@ -148,7 +150,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 } else if (manager?.isConnected() != true) {
                     statusLog("<< SET_HOLD_MODES: not connected, not sent")
                 } else {
-                    manager?.sendHoldAncModes(mask)
+                    manager?.sendHoldAncModes(mask, intent.getIntExtra(EXTRA_HOLD_TYPE, OpoProtocol.HOLD_TYPE_SHARED))
                 }
             }
             ACTION_FIND_BUDS -> {
@@ -162,10 +164,10 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 statusLog("<< SET_ON_CALL: row=$row enabled=$enabled")
                 if (manager?.isConnected() != true) {
                     statusLog("<< SET_ON_CALL: not connected, not sent")
-                } else when (row) {
-                    "double_tap" -> manager?.sendOnCallDoubleTap(enabled)
-                    "long_hold" -> manager?.sendOnCallLongHold(enabled)
-                    else -> statusLog("<< SET_ON_CALL: unknown row '$row', ignored")
+                } else {
+                    val g = OnCallGesture.values().firstOrNull { it.serviceRow == row }
+                    if (g == null) statusLog("<< SET_ON_CALL: unknown row '$row', ignored")
+                    else manager?.sendOnCall(g.act, if (enabled) g.enabledFn else 0x00)
                 }
             }
             else -> statusLog("[SVC] onStartCommand (no action)")
@@ -404,6 +406,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         /** The hold's ANC-cycle membership. See BudsConnectionManager.sendHoldAncModes(). */
         const val ACTION_SET_HOLD_MODES = "com.spizganed.quickbuds.SET_HOLD_MODES"
         const val EXTRA_HOLD_MASK = "hold_mask"
+        const val EXTRA_HOLD_TYPE = "hold_type"
 
         /** On-call gestures (`btn 0x06`). See BudsConnectionManager.sendOnCall*(). */
         const val ACTION_SET_ON_CALL = "com.spizganed.quickbuds.SET_ON_CALL"
@@ -422,7 +425,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         fun backgroundAllowed(c: Context) =
             c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREF_BACKGROUND, true)
         const val EXTRA_FIND_ON = "find_on"
-        const val EXTRA_ON_CALL_ROW = "on_call_row"   // "double_tap" | "long_hold"
+        const val EXTRA_ON_CALL_ROW = "on_call_row"   // OnCallGesture.serviceRow
         const val EXTRA_ON_CALL_ENABLED = "on_call_enabled"
     }
 }
