@@ -1152,7 +1152,7 @@ a write back yet.
 | ID | Switch (HeyMelody's name) | Model-list flag |
 |----|---------------------------|-----------------|
 | `0x09` | Vocal enhancement | `vocalEnhance` |
-| `0x17` | Power saving mode. Toggling it restarts the buds, so HeyMelody asks first | none |
+| `0x17` | Power saving mode. Toggling it restarts the buds, so HeyMelody asks first. **Buds 4 lists it** (see below) | `longPowerMode` (server config only) |
 | `0x1C` | Smart volume control (volume follows ambient noise) | `controlAutoVolumeSupport` |
 | `0x27` | Game sound effects ("Enhanced sound effects") | `gameSoundList` (ours: `gameSound`) |
 | `0x30` | Adaptive volume | none |
@@ -1164,6 +1164,16 @@ a write back yet.
 | `0x38` | Adaptive sound (ear canal and fit). HeyMelody asks before turning it on (battery) | none |
 | `0x3B` | Head gestures (nod / shake to answer or decline calls) | none |
 
+- **Power saving `0x17` on Buds 4** `[CAPTURE]` 2026-09-29: the buds answer `17=0` in `0x810D`, so the row
+  shows. `0x0403 17 01` restarts them: the RFCOMM link drops at once, returns about 12 s later, and `0x810D`
+  then reads `17=1`. `17 00` restarts them again. While it was on, every ANC push read Off (`0x0008`); whether
+  power saving blocks noise control is not confirmed. What else it turns off is not known yet.
+  `[VENDOR]` HeyMelody asks the buds for `0x17` only when the model's server config sets `longPowerMode`
+  (the bundled list has it on no model), and its detail page never adds the row: the global app does not
+  show it. The ColorOS / OxygenOS system app (`com.oplus.melody` 16.10.0) is the same: the row is never added,
+  and neither app greys out any other control while the mode is on. All the power-saving strings are Chinese
+  only in both apps, so the feature is a China-market one. Their one description is "turns off non-essential
+  functions to extend battery life"; which functions is decided by the firmware, not the app.
 - **Head gestures' mapping** `[VENDOR]` (2026-09-29, wired, unverified on buds): `0x0431 <type>`, `00` =
   nod answers / shake declines, `01` = shake answers / nod declines (HeyMelody's two menus both write this one
   byte). Read with `0x0134` (empty); HeyMelody parses the type only from the push `0x0204 F5 <type>`, so the

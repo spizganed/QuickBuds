@@ -74,6 +74,10 @@ back.
 - The switches Buds 4 lacks (2026-09-29), in Earbud settings › Features: vocal enhancement, game sound
   effects, smart volume, adaptive volume, adaptive ear, pause when asleep, power saving (asks first). Game
   mode writes `0x28` on game-sound buds (PROTOCOL.md §9).
+- Device check of the model-list features (2026-09-29, HEAD build on Buds 4): on Automatic, Earbud settings ›
+  Features shows none of the new rows (only power saving, which Buds 4 lists itself); Nord Buds 4 picked by hand
+  shows Swift Pair and the game sound rows, Open Buds shows touch and hold volume and smart volume. No feature
+  write reached the buds.
 - 3D audio's type form `0x0422` (2026-09-29): Off / Fixed / Head tracking on Buds Pro 2, Buds Pro 3 and
   Enco X3, a type switch on other `0x012A` buds; game sound's type `0x0423` as a sheet (PROTOCOL.md §9).
 - The rest of HeyMelody's model-list features (2026-09-29), same section: conversation awareness,
