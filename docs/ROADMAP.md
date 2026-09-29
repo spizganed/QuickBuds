@@ -15,22 +15,16 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
 
 - Nothing open for Buds 4.
-- **Next: the features Buds 4 lacks, built in code and UI** ([USER] 2026-09-29). Each gets its
-  `[VENDOR]` bytes in PROTOCOL.md, a row gated on the buds' own `0x810D` list / `0x8100` bitmap, and
-  is checked in the app with a model picked by hand (the row shows, the screen opens); a write stays
-  unverified until an owner reads it back. The `0x0403` feature ids (PROTOCOL.md §9):
-  - vocal enhance `0x09`
-  - game sound `0x27` + `0x28`
-  - auto volume `0x1C`
-  - bass engine `0x1D` (constant and level commands exist, no UI)
-  - spine health `0x22`-`0x24` (neck posture reminders from the head-tracking sensor)
-  - adaptive volume `0x30`, adaptive ear `0x31`
-  - meeting assistant `0x34`
-  - sleep detection `0x3A`
+- **Done 2026-09-29: the plain switches Buds 4 lacks**, in Earbud settings › Features (PROTOCOL.md §9):
+  vocal enhancement `0x09`, game sound effects `0x27`, smart volume `0x1C`, adaptive volume `0x30`,
+  adaptive ear `0x31`, pause when asleep `0x3A`, power saving `0x17`. Game mode writes `0x28` on
+  buds with `0x0423`. Shown from the buds' `0x810D` list or, for a hand-picked model, HeyMelody's flag
+  (the model list does have flags for `0x09`, `0x1C`, `0x27`). Unverified until an owner reads a write back.
+- **Open: the rest of the Buds 4 gaps**, each needing more than a switch:
+  - neck health `0x22`-`0x24` (needs OPPO's Health app for the data)
+  - meeting assistant `0x34` (voiceprint enrolment for one meeting app)
   - spatial audio's three-mode form (`0x0422`, for models that are not `0x1B` on/off)
-  - long battery `0x17` (OSS only so far)
-  `models.json` carries no flags for these, so only the buds' own lists decide. A Buds 4 hides them
-  all, so the in-app check needs a way to show a row the connected buds lack (to settle with the first one).
+  - game sound's type command `0x0423`
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list

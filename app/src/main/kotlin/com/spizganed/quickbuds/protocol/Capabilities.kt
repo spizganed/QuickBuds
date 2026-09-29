@@ -84,6 +84,17 @@ object Capabilities {
         return saved.split(',').any { it.substringBefore('=').toIntOrNull() == id }
     }
 
+    /**
+     * The buds listed [id] in their last `0x810D` reply, or the model picked by hand has [flag] in
+     * HeyMelody's list (`assets/models.json`). Unlike [hasFeature], nothing read means no: these rows
+     * are new, and a Buds 4 has none of them.
+     */
+    fun offered(context: Context, id: Int, flag: String?): Boolean {
+        val saved = prefs(context).getString(KEY_FEATURES, null).orEmpty()
+        if (saved.split(',').any { it.substringBefore('=').toIntOrNull() == id }) return true
+        return flag != null && ModelCatalog.manual(context) != null && ModelCatalog.current(context)?.json?.optInt(flag) == 1
+    }
+
     fun save(context: Context, commands: Set<Int>) {
         prefs(context).edit().putString(KEY_COMMANDS, commands.sorted().joinToString(",")).apply()
     }

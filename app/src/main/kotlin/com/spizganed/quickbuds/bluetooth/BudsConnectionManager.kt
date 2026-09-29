@@ -362,8 +362,11 @@ class BudsConnectionManager(private val context: Context) {
         sendRaw(OpoProtocol.anc(bit), "ANC $mode")
     }
 
-    fun setGameMode(on: Boolean) =
-        sendRaw(if (on) OpoProtocol.gameModeOn() else OpoProtocol.gameModeOff(), "GameMode")
+    fun setGameMode(on: Boolean) = sendRaw(OpoProtocol.setFeature(gameModeId(), on), "GameMode")
+
+    /** `0x28` on buds with game sound, `0x06` elsewhere, both ways (`[VENDOR]`, PROTOCOL.md §9). */
+    private fun gameModeId() = if (Capabilities.supports(context, OpoProtocol.CMD_GAME_SOUND))
+        OpoProtocol.FEATURE_GAME_MODE_MAIN else OpoProtocol.FEATURE_GAME_MODE
 
     /**
      * Dual connection, in HeyMelody's exact order (`[CAPTURE]` 2026-09-25): `0x0403 11 xx`, a status
@@ -1187,7 +1190,7 @@ class BudsConnectionManager(private val context: Context) {
             log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(it.key, it.value) })
             // Game mode has its own push (0x0204 subType 0x05) but none at connect time; this is
             // the connect-time read, fed through the same path so the widget follows too.
-            val game = states[OpoProtocol.FEATURE_GAME_MODE]
+            val game = states[gameModeId()]
             handler.post {
                 listeners.forEach {
                     it.onFeatureStates(states)

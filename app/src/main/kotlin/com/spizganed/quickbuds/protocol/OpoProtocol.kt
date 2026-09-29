@@ -101,6 +101,20 @@ object OpoProtocol {
     const val FEATURE_BASSWAVE = 0x1D
     /** Golden Sound (hearing enhancement) on/off. `[VENDOR]` `setSwitchFeature(11)` (PROTOCOL.md §9). */
     const val FEATURE_GOLDEN_SOUND = 0x0B
+    /**
+     * Game mode's switch on buds whose `0x8100` bitmap has [CMD_GAME_SOUND]: HeyMelody writes and reads
+     * `0x28` there instead of [FEATURE_GAME_MODE], and `0x27` is its game sound effects. `[VENDOR]` (PROTOCOL.md §9).
+     */
+    const val FEATURE_GAME_MODE_MAIN = 0x28
+    const val FEATURE_GAME_SOUND = 0x27
+    const val CMD_GAME_SOUND = 0x0423
+    /** Plain on/off switches from HeyMelody, `[VENDOR]`, unverified on buds (PROTOCOL.md §9). */
+    const val FEATURE_VOCAL_ENHANCE = 0x09
+    const val FEATURE_POWER_SAVING = 0x17
+    const val FEATURE_SMART_VOLUME = 0x1C
+    const val FEATURE_ADAPTIVE_VOLUME = 0x30
+    const val FEATURE_ADAPTIVE_EAR = 0x31
+    const val FEATURE_SLEEP_PAUSE = 0x3A
 
     private var seqCounter = 0x01
 
@@ -254,9 +268,6 @@ object OpoProtocol {
 
     private fun featurePayload(featureId: Int, on: Boolean): ByteArray =
         byteArrayOf(featureId.toByte(), if (on) 0x01 else 0x00)
-
-    fun gameModeOn(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_GAME_MODE, true))
-    fun gameModeOff(): ByteArray = buildPacket(CMD_SET_FEATURE, payload = featurePayload(FEATURE_GAME_MODE, false))
 
     /** Find my earbuds — `0x0400` `01` start / `00` stop, both buds, no side byte. `[CAPTURE]` 2026-09-23. */
     fun findTone(on: Boolean): ByteArray =
@@ -482,9 +493,10 @@ object OpoProtocol {
         CMD_QUERY_STATUS,
         seq = 0x00,
         payload = byteArrayOf(
-            // count, then feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too.
-            0x0C, 0x05, 0x04, 0x0B, 0x11, 0x13,
-            0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D
+            // count, then feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too;
+            // 0x09 onwards on the second line 2026-09-29, the Earbud settings Features switches.
+            0x11, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
+            0x09, 0x17, 0x30, 0x31, 0x3A
         )
     )
 

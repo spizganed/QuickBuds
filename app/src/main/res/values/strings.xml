@@ -90,6 +90,22 @@
     <string name="wear_smart_sub">Pause only when both earbuds are out. Never auto-plays. Needs the background service</string>
     <string name="row_find_title">Find my earbuds</string>
     <string name="row_find_sub">Ring both earbuds</string>
+    <string name="earbuds_section_features">Features</string>
+    <string name="row_vocal_title">Vocal enhancement</string>
+    <string name="row_vocal_sub">Clearer vocals in songs</string>
+    <string name="row_game_sound_title">Game sound effects</string>
+    <string name="row_game_sound_sub">Enhanced sound when a game starts</string>
+    <string name="row_smart_volume_title">Smart volume</string>
+    <string name="row_smart_volume_sub">Adjusts volume to ambient noise</string>
+    <string name="row_adaptive_volume_title">Adaptive volume</string>
+    <string name="row_adaptive_volume_sub">Follows changes in ambient noise</string>
+    <string name="row_adaptive_ear_title">Adaptive left and right</string>
+    <string name="row_adaptive_ear_sub">Detects which ear each bud is in</string>
+    <string name="row_sleep_title">Pause when asleep</string>
+    <string name="row_sleep_sub">Stops music if you fall asleep</string>
+    <string name="row_power_saving_title">Power saving</string>
+    <string name="row_power_saving_sub">Turns off extras for longer battery life</string>
+    <string name="power_saving_confirm">The earbuds will restart.</string>
     <string name="row_update_title">App update</string>
 
     <!-- Find my earbuds screen. -->

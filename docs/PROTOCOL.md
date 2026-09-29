@@ -202,8 +202,8 @@ Used by `protocol/Capabilities.kt` to hide what a model does not have (2026-09-2
   our list carries) and those whose `id` equals the product id. An entry in both wins, then the first
   name match, then the first id match. `ModelCatalog.find` does the same; a model picked by hand
   in the model list overrides it until other buds connect.
-- **`0x810D` lists only the feature switches the firmware has.** We ask for 12 ids; Buds 4 answers
-  8 (`05 04 0B 11 18 06 1B 1D`, not `13 1C 27 28`). An id missing from the reply is a switch those
+- **`0x810D` lists only the feature switches the firmware has.** We asked for 12 ids; Buds 4 answers
+  8 (`05 04 0B 11 18 06 1B 1D`, not `13 1C 27 28`). Since 2026-09-29 we ask 17 (adding `09 17 30 31 3A`, §9). An id missing from the reply is a switch those
   buds do not have. `[OSS]` oneplus-buds-omarchy saw the same on Buds Pro 2 ("presence establishes
   capability").
 
@@ -1141,6 +1141,33 @@ asks `0x06` for game mode and
 decimal, `0x04` wear detection, `0x09` vocal enhance, `0x0B` hearing enhancement, `0x11` dual
 device, `0x18` Hi-Res, `0x1B` spatial, `0x1C` auto volume, `0x1D` bass engine, `0x22`-`0x24`
 spine health, `0x30` adaptive volume, `0x31` adaptive ear, `0x34` meeting assistant.
+
+### The switches Buds 4 lacks — `[VENDOR]` 2026-09-29, wired, unverified on buds
+
+HeyMelody writes each of these as a plain `0x0403 [id] [01/00]`, like every other switch. The app
+shows them in Earbud settings › Features, each only where the buds list the id in `0x810D`, or where
+a model picked by hand has the flag in HeyMelody's model list (`assets/models.json`). No owner has read
+a write back yet.
+
+| ID | Switch (HeyMelody's name) | Model-list flag |
+|----|---------------------------|-----------------|
+| `0x09` | Vocal enhancement | `vocalEnhance` |
+| `0x17` | Power saving mode. Toggling it restarts the buds, so HeyMelody asks first | none |
+| `0x1C` | Smart volume control (volume follows ambient noise) | `controlAutoVolumeSupport` |
+| `0x27` | Game sound effects ("Enhanced sound effects") | `gameSoundList` (ours: `gameSound`) |
+| `0x30` | Adaptive volume | none |
+| `0x31` | Adaptive left / right ear (channels and controls follow the ear) | none |
+| `0x3A` | Pause playback when asleep | none |
+
+- **Game mode on game-sound buds is `0x28`, not `0x06`.** When the `0x8100` bitmap enables `0x0423`
+  (bit 49), HeyMelody's game mode switch writes and reads `0x28` ("main"); elsewhere `0x06`. The app
+  does the same (`BudsConnectionManager.gameModeId()`). `0x0423`'s own payload was not needed and is
+  not wired.
+- Buds 4's model entry has `controlAutoVolumeSupport`, yet its `0x810D` reply leaves out `0x1C`: the
+  buds' list wins while they are connected.
+- **Not built:** neck health (`0x22` live posture monitor, `0x23` / `0x24` reminders), which needs
+  OPPO's Health app for the data, and meeting assistant (`0x34`), a voiceprint enhancement for one
+  meeting app that needs an enrolment flow first.
 
 ### Golden Sound (hearing enhancement, feature `0x0B`) — `[VENDOR]` + read back 2026-09-29
 

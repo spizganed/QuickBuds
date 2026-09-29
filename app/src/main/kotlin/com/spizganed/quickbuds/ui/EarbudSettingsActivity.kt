@@ -32,11 +32,14 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var alertSpeaker: ImageView
     private var firmwareText: TextView? = null
     private var fitSheet: FitTestSheet? = null
+    private val featureSwitches = HashMap<Int, android.widget.Switch>()
+    private var syncing = false
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             manager = (service as BudsService.LocalBinder).getService().manager
             manager?.addListener(this@EarbudSettingsActivity)
+            manager?.featureStates?.let { onFeatureStates(it) }
             if (::alertSlider.isInitialized) {
                 manager?.alertVolume?.let { onAlertVolume(it) }
                 manager?.refreshAlertVolume()
@@ -83,6 +86,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             })
         }
         if (card.childCount > 0) root.addView(card)
+        features(root)
         if (Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) sounds(root)
 
         // --- About: the firmware version as HeyMelody shows it (read on connect, `0x0105`) ---
@@ -100,6 +104,54 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private fun paintFirmware(version: String? = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
         .getString(BudsConnectionManager.KEY_FIRMWARE, null)) {
         firmwareText?.text = version ?: "—"
+    }
+
+    /**
+     * `0x0403` on/off switches HeyMelody has and Buds 4 lacks (PROTOCOL.md §9), each shown only where
+     * [Capabilities.offered]. Unverified on buds until an owner reads a write back.
+     */
+    private fun features(root: LinearLayout) {
+        val card = cardView()
+        fun switch(id: Int, flag: String?, icon: Int, title: Int, sub: Int, confirm: Int = 0) {
+            if (!Capabilities.offered(this, id, flag)) return
+            val sw = SettingRowFactory.buildSwitch(this, manager?.featureStates?.get(id) == 1)
+            featureSwitches[id] = sw
+            sw.setOnCheckedChangeListener { _, on ->
+                if (syncing) return@setOnCheckedChangeListener
+                if (confirm == 0) return@setOnCheckedChangeListener manager?.setFeatures(id to on) ?: Unit
+                // Power saving restarts the buds, so it asks first, as HeyMelody does.
+                quiet { sw.isChecked = !on }
+                ConfirmDialog.show(this, getString(title), getString(confirm), getString(R.string.dual_add_ok)) {
+                    quiet { sw.isChecked = on }
+                    manager?.setFeatures(id to on)
+                }
+            }
+            if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
+            card.addView(SettingRowFactory.build(this, icon, title, sub, sw) { sw.performClick() })
+        }
+        switch(OpoProtocol.FEATURE_VOCAL_ENHANCE, "vocalEnhance", R.drawable.ic_equalizer,
+            R.string.row_vocal_title, R.string.row_vocal_sub)
+        switch(OpoProtocol.FEATURE_GAME_SOUND, "gameSound", R.drawable.ic_low_latency,
+            R.string.row_game_sound_title, R.string.row_game_sound_sub)
+        switch(OpoProtocol.FEATURE_SMART_VOLUME, "controlAutoVolumeSupport", R.drawable.ic_volume,
+            R.string.row_smart_volume_title, R.string.row_smart_volume_sub)
+        switch(OpoProtocol.FEATURE_ADAPTIVE_VOLUME, null, R.drawable.ic_volume,
+            R.string.row_adaptive_volume_title, R.string.row_adaptive_volume_sub)
+        switch(OpoProtocol.FEATURE_ADAPTIVE_EAR, null, R.drawable.ic_bud_left,
+            R.string.row_adaptive_ear_title, R.string.row_adaptive_ear_sub)
+        switch(OpoProtocol.FEATURE_SLEEP_PAUSE, null, R.drawable.ic_bud_right,
+            R.string.row_sleep_title, R.string.row_sleep_sub)
+        switch(OpoProtocol.FEATURE_POWER_SAVING, null, R.drawable.ic_power,
+            R.string.row_power_saving_title, R.string.row_power_saving_sub, R.string.power_saving_confirm)
+        if (card.childCount == 0) return
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_features))
+        root.addView(card)
+    }
+
+    private fun quiet(block: () -> Unit) { syncing = true; block(); syncing = false }
+
+    override fun onFeatureStates(states: Map<Int, Int>) = quiet {
+        for ((id, sw) in featureSwitches) states[id]?.let { sw.isChecked = it == 1 }
     }
 
     private fun sounds(root: LinearLayout) {
