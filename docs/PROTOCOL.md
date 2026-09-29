@@ -1152,10 +1152,15 @@ phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
 | Clear | `0x040E 02` + `0x0415 02`; after the test, `0x040E 01 00 00000000` + `0x0415 01 00 00 00000000` (mode 1, empty) |
 | Other | `0x040F 01` (`C0`, 1039) once after apply; progress event `0x08`: `08 04 05` (scan), `08 02 05` / `08 02 06` (test) |
 
-Each ear: 6 frequencies, each started at value `e2` (-30), then one tone per slider stop; `88` (-120)
-appears between levels. The value saved for a frequency is not always the last one played, so how
-the slider maps to the value is **not settled** `[GUESS]`. Switching records in HeyMelody re-sends the
-whole apply sequence with the other record, so the buds hold only the active one.
+**Values** `[VENDOR]` (`EnhanceDataUtils`, `HearingEnhancementDetectingFragmentV2`) + `[CAPTURE]`: the
+slider has 25 stops, each one a tone value:
+`-120 -88 -55 -52 -49 -45 -41 -38 -35 -30 -25 -22 -19 -15 -11 -8 -5 -1 3 5 7 10 13 15 17`.
+Each move plays a tone at the stop's value (at most one every 300 ms); each frequency starts near
+`-30`. On Next, the value saved is the stop's value snapped to the nearest of 12 result values,
+`-55 -49 -41 -35 -25 -19 -11 -5 3 7 13 17`. That explains the capture: a last tone of `-120` is
+saved as `-55`. HeyMelody warns once about loudness when a stop reaches `10` or more. Switching records
+in HeyMelody re-sends the whole apply sequence with the other record, so the buds hold only the
+active one.
 
 ### Earbud fit test — `0x0405` — `[VENDOR]` + `[CAPTURE]` 2026-09-29, wired
 

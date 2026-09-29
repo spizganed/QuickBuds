@@ -16,7 +16,7 @@ Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 202
 
 - **Golden Sound: the test itself.** The on/off switch is done (PROTOCOL.md §9); making a profile (ear
   scan + hearing test, records on the phone) is captured and decoded (PROTOCOL.md §9, 2026-09-29).
-  Open before building it: how the slider's position maps to the saved value per frequency.
+  Everything needed to build it is known, the slider's value table included.
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
