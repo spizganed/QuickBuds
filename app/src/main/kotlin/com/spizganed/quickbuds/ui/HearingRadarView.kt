@@ -46,7 +46,7 @@ class HearingRadarView(context: Context) : View(context) {
     private val radius get() = minOf(width, height) / 2f - dp(30f)
 
     private fun point(i: Int, r: Float): Pair<Float, Float> {
-        val a = -Math.PI / 2 + i * 2 * Math.PI / GoldenSound.AXES.size
+        val a = -2 * Math.PI / 3 + i * 2 * Math.PI / GoldenSound.AXES.size
         return (cx + Math.cos(a) * radius * r / 10).toFloat() to (cy + Math.sin(a) * radius * r / 10).toFloat()
     }
 
@@ -65,7 +65,15 @@ class HearingRadarView(context: Context) : View(context) {
     }
 
     private fun shapes(canvas: Canvas) {
-        for (ring in listOf(2.5f, 5f, 7.5f, 10f)) canvas.drawPath(polygon(FloatArray(GoldenSound.AXES.size) { ring }), gridPaint)
+        val boost = polygon(FloatArray(GoldenSound.AXES.size) { 10f })
+        shapePaint.style = Paint.Style.FILL
+        shapePaint.color = secondary and 0x00FFFFFF or 0x1A000000
+        canvas.drawPath(boost, shapePaint)
+        shapePaint.style = Paint.Style.STROKE
+        shapePaint.strokeWidth = dp(2f)
+        shapePaint.color = secondary
+        canvas.drawPath(boost, shapePaint)
+        for (ring in listOf(2.5f, 5f, 7.5f)) canvas.drawPath(polygon(FloatArray(GoldenSound.AXES.size) { ring }), gridPaint)
         GoldenSound.AXES.indices.forEach { i ->
             val (x, y) = point(i, 10f)
             canvas.drawLine(cx, cy, x, y, gridPaint)
