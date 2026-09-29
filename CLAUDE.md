@@ -85,7 +85,7 @@ version through `PackageManager`, and `buildConfig` stays off.
 ### Release flow
 
 `./gradlew assembleRelease bundleRelease` gives the signed APK and AAB. Name them
-`QuickBuds<version>.apk` / `.aab` (copies kept in `local/release/v<version>/`) and attach **both** to a
+`QuickBuds<version>.apk` / `.aab` (no local copies: GitHub releases are the archive, [USER] 2026-09-29) and attach **both** to a
 GitHub release tagged `v<version>`. The in-app updater compares the tag against the installed
 version and needs the **`.apk`** asset; the `.aab` alone is invisible to it. `gh` is installed and logged in on
 both the PC (2026-09-28) and the phone, so
@@ -610,8 +610,9 @@ a shared one hung.
 
 ## Repo hygiene
 
-- **`local/` holds two folders now**: `logs/` (packet captures cited as evidence by PROTOCOL.md) and
-  `svgs/` (the source SVGs the wear icons were traced from, named in the drawables' own headers).
+- **`local/` holds**: `keys/` (the release key, see *Signing*), `logs/` (packet captures cited as evidence by
+  PROTOCOL.md) and, where present, `svgs/` (the source SVGs the wear icons were traced from, named in the
+  drawables' own headers; not on the phone). Nothing else: old release builds live on GitHub only.
   **`local/` is local-only (PC and phone) — git-ignored, never committed or pushed** (`[USER]` 2026-09-22; it was
   tracked until then and still sits in older commits' history). Doc references to `local/logs/`
   point at the developer's machine, not the repo.
