@@ -78,6 +78,16 @@ means it's on.
    **not** add `-c N` together with `-Y` — that combination returns an empty result on the tshark
    build tested here).
 
+**On the phone (Termux)** — used 2026-09-29: tshark comes with `wireshark-qt` from the x11 repo
+(`pkg install x11-repo && pkg install wireshark-qt`). If the log begins after the RFCOMM link came up
+(the setup is in the previous log), tshark never learns which L2CAP channel carries RFCOMM and the
+filter above returns nothing. Find the channels with
+`tshark -r <log> -Y btl2cap -T fields -e btl2cap.cid | sort | uniq -c` (the audio stream is by far the
+biggest) and decode the others by hand, e.g. `-d btl2cap.cid==0x3040,btrfcomm -d btl2cap.cid==0x0071,btrfcomm`
+(one per direction). Frames over 127 bytes have a two-byte `TotalLen` (LEB128, PROTOCOL.md §2) and can
+be split over several RFCOMM frames, so reassemble per direction before cutting at `AA`; `data.data`
+also carries HFP's AT commands on other RFCOMM channels.
+
 This trades Option A's speed for HCI-layer visibility, at the cost of `adb bugreport`'s latency and
 pulling a whole-system capture rather than just this app's session.
 
