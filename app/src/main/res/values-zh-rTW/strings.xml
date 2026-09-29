@@ -405,4 +405,7 @@
     <string name="pnc_fail_wind">檢測時請避開強風。</string>
     <string name="pnc_fail_still">請保持不動：檢測時不要說話、吞嚥或轉頭。</string>
     <string name="pnc_fail_audio">檢測時請不要播放音訊或通話。</string>
+    <string name="tap_level_title">輕點靈敏度</string>
+    <string name="tap_level_hint">用於雙擊和三擊。檔位越低越容易觸發。</string>
+    <string name="tap_level_warning">低於預設檔位時可能誤觸，例如戴帽子或眼鏡、撥頭髮或運動時。</string>
 </resources>

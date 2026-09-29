@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">পরীক্ষার সময় জোরালো বাতাস এড়িয়ে চলুন।</string>
     <string name="pnc_fail_still">স্থির থাকুন: পরীক্ষার সময় কথা বলা, ঢোক গেলা বা মাথা নাড়া নয়।</string>
     <string name="pnc_fail_audio">পরীক্ষার সময় অডিও চালাবেন না বা কল ধরবেন না।</string>
+    <string name="tap_level_title">ট্যাপ সংবেদনশীলতা</string>
+    <string name="tap_level_hint">ডাবল ও ট্রিপল ট্যাপের জন্য। কম লেভেলে সহজে চালু হয়।</string>
+    <string name="tap_level_warning">ডিফল্টের নিচে ট্যাপ ভুলবশত চালু হতে পারে, যেমন টুপি বা চশমা পরলে, চুলে হাত দিলে বা ব্যায়ামের সময়।</string>
 </resources>

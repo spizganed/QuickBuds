@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Unikaj silnego wiatru podczas testu.</string>
     <string name="pnc_fail_still">Nie ruszaj się: nie mów, nie przełykaj i nie ruszaj głową podczas testu.</string>
     <string name="pnc_fail_audio">Nie odtwarzaj dźwięku i nie rozmawiaj przez telefon podczas testu.</string>
+    <string name="tap_level_title">Czułość stuknięć</string>
+    <string name="tap_level_hint">Dla podwójnych i potrójnych stuknięć. Niższy poziom łatwiej reaguje.</string>
+    <string name="tap_level_warning">Poniżej poziomu domyślnego stuknięcia mogą zadziałać przypadkiem, np. w czapce lub okularach, przy dotykaniu włosów lub podczas ćwiczeń.</string>
 </resources>

@@ -405,4 +405,7 @@
     <string name="pnc_fail_wind">Tránh gió mạnh trong khi kiểm tra.</string>
     <string name="pnc_fail_still">Giữ yên: không nói, nuốt hay cử động đầu trong khi kiểm tra.</string>
     <string name="pnc_fail_audio">Không phát âm thanh hay gọi điện trong khi kiểm tra.</string>
+    <string name="tap_level_title">Độ nhạy chạm</string>
+    <string name="tap_level_hint">Cho chạm hai và ba lần. Mức thấp hơn dễ kích hoạt hơn.</string>
+    <string name="tap_level_warning">Dưới mức mặc định, thao tác chạm có thể bị kích hoạt nhầm, ví dụ khi đội mũ, đeo kính, chạm vào tóc hoặc tập thể dục.</string>
 </resources>

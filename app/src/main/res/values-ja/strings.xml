@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">テスト中は強い風を避けてください。</string>
     <string name="pnc_fail_still">動かないでください：テスト中は話す、飲み込む、頭を動かすのを避けてください。</string>
     <string name="pnc_fail_audio">テスト中は音声の再生や通話をしないでください。</string>
+    <string name="tap_level_title">タップ感度</string>
+    <string name="tap_level_hint">ダブルタップとトリプルタップ用。レベルが低いほど反応しやすくなります。</string>
+    <string name="tap_level_warning">既定より低いと、帽子や眼鏡の着用時、髪に触れたとき、運動中などに誤って反応することがあります。</string>
 </resources>

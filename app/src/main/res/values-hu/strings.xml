@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">A teszt alatt kerüld az erős szelet.</string>
     <string name="pnc_fail_still">Maradj mozdulatlan: ne beszélj, ne nyelj és ne mozgasd a fejed a teszt alatt.</string>
     <string name="pnc_fail_audio">A teszt alatt ne játssz le hangot és ne telefonálj.</string>
+    <string name="tap_level_title">Koppintási érzékenység</string>
+    <string name="tap_level_hint">Dupla és tripla koppintáshoz. Alacsonyabb szinten könnyebben reagál.</string>
+    <string name="tap_level_warning">Az alapértelmezett szint alatt a koppintás véletlenül is működésbe léphet, például sapkában vagy szemüvegben, hajigazításkor vagy edzés közben.</string>
 </resources>

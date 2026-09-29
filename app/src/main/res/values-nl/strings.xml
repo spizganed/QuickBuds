@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Vermijd harde wind tijdens de test.</string>
     <string name="pnc_fail_still">Blijf stil: niet praten, slikken of je hoofd bewegen tijdens de test.</string>
     <string name="pnc_fail_audio">Speel geen audio af en bel niet tijdens de test.</string>
+    <string name="tap_level_title">Tikgevoeligheid</string>
+    <string name="tap_level_hint">Voor dubbel en driedubbel tikken. Een lager niveau reageert makkelijker.</string>
+    <string name="tap_level_warning">Onder het standaardniveau kunnen tikken per ongeluk reageren, bijvoorbeeld met een pet of bril, als je je haar aanraakt of tijdens het sporten.</string>
 </resources>

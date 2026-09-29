@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Elakkan angin kuat semasa ujian.</string>
     <string name="pnc_fail_still">Jangan bergerak: jangan bercakap, menelan atau menggerakkan kepala semasa ujian.</string>
     <string name="pnc_fail_audio">Jangan mainkan audio atau membuat panggilan semasa ujian.</string>
+    <string name="tap_level_title">Kepekaan ketikan</string>
+    <string name="tap_level_hint">Untuk ketik dua dan tiga kali. Tahap lebih rendah lebih mudah dicetuskan.</string>
+    <string name="tap_level_warning">Di bawah tahap lalai, ketikan boleh tercetus tanpa sengaja, contohnya ketika memakai topi atau cermin mata, menyentuh rambut atau bersenam.</string>
 </resources>

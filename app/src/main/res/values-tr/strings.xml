@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Test sırasında sert rüzgârdan kaçının.</string>
     <string name="pnc_fail_still">Kıpırdamayın: test sırasında konuşmayın, yutkunmayın, başınızı oynatmayın.</string>
     <string name="pnc_fail_audio">Test sırasında ses çalmayın ve arama yapmayın.</string>
+    <string name="tap_level_title">Dokunma hassasiyeti</string>
+    <string name="tap_level_hint">Çift ve üçlü dokunma için. Daha düşük seviye daha kolay tetiklenir.</string>
+    <string name="tap_level_warning">Varsayılan seviyenin altında dokunmalar yanlışlıkla tetiklenebilir; örneğin şapka veya gözlük takarken, saçınıza dokunurken ya da spor yaparken.</string>
 </resources>

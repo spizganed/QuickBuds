@@ -405,4 +405,7 @@
     <string name="pnc_fail_wind">जाँच के दौरान तेज़ हवा से बचें।</string>
     <string name="pnc_fail_still">स्थिर रहें: जाँच के दौरान न बोलें, न निगलें, न सिर हिलाएँ।</string>
     <string name="pnc_fail_audio">जाँच के दौरान ऑडियो न चलाएँ और कॉल न करें।</string>
+    <string name="tap_level_title">टैप संवेदनशीलता</string>
+    <string name="tap_level_hint">डबल और ट्रिपल टैप के लिए। कम लेवल आसानी से चालू होता है।</string>
+    <string name="tap_level_warning">डिफ़ॉल्ट से कम लेवल पर टैप गलती से चालू हो सकते हैं, जैसे टोपी या चश्मा पहनने, बाल छूने या व्यायाम के दौरान।</string>
 </resources>

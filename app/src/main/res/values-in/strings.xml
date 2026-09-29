@@ -405,4 +405,7 @@
     <string name="pnc_fail_wind">Hindari angin kencang selama tes.</string>
     <string name="pnc_fail_still">Tetap diam: jangan bicara, menelan, atau menggerakkan kepala selama tes.</string>
     <string name="pnc_fail_audio">Jangan putar audio atau menelepon selama tes.</string>
+    <string name="tap_level_title">Sensitivitas ketukan</string>
+    <string name="tap_level_hint">Untuk ketuk dua dan tiga kali. Level lebih rendah lebih mudah terpicu.</string>
+    <string name="tap_level_warning">Di bawah level default, ketukan bisa terpicu tanpa sengaja, misalnya saat memakai topi atau kacamata, menyentuh rambut, atau berolahraga.</string>
 </resources>

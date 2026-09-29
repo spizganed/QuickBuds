@@ -143,6 +143,9 @@ object OpoProtocol {
     const val PERSONAL_NOISE_TEST = 1
     const val PERSONAL_NOISE_USE_STORED = 2
     const val PERSONAL_NOISE_CANCEL = 3
+    /** Tap sensitivity 1..5 (lower triggers more easily): `0x042D <level>`, read `0x0133` -> `00 <level> <default>`. `[VENDOR]` */
+    const val CMD_SET_TAP_LEVEL = 0x042D
+    const val CMD_QUERY_TAP_LEVEL = 0x0133
 
     private var seqCounter = 0x01
 
@@ -274,6 +277,8 @@ object OpoProtocol {
 
     fun personalNoise(action: Int): ByteArray = buildPacket(CMD_PERSONAL_NOISE, payload = byteArrayOf(action.toByte()))
     fun queryPersonalNoise(): ByteArray = buildPacket(CMD_QUERY_PERSONAL_NOISE)
+    fun setTapLevel(level: Int): ByteArray = buildPacket(CMD_SET_TAP_LEVEL, payload = byteArrayOf(level.toByte()))
+    fun queryTapLevel(): ByteArray = buildPacket(CMD_QUERY_TAP_LEVEL)
 
     /** Earbud fit test: `0x0405` `01` start / `00` stop (HeyMelody stops it when its sheet closes). */
     fun fitTest(on: Boolean): ByteArray =

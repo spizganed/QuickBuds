@@ -83,6 +83,8 @@ class BudsConnectionManager(private val context: Context) {
         fun onPersonalNoiseResult(result: Int) {}
         /** Personalized ANC: the `0x8412` ack status (0 = accepted). */
         fun onPersonalNoiseAck(status: Int) {}
+        /** Tap sensitivity from `0x8133`: the level (1..5) and the buds' default. */
+        fun onTapLevel(level: Int, default: Int) {}
 
         /** Golden Sound test status (`0x0204` subType `0x08`): kind 2 hearing test / 4 ear scan. */
         fun onGoldenStatus(kind: Int, status: Int) {}
@@ -608,6 +610,21 @@ class BudsConnectionManager(private val context: Context) {
     fun personalNoise(action: Int) = sendRaw(OpoProtocol.personalNoise(action), "Personalized ANC $action")
     fun queryPersonalNoise() = sendRaw(OpoProtocol.queryPersonalNoise(), "query personalized ANC")
 
+    fun refreshTapLevel() = sendRaw(OpoProtocol.queryTapLevel(), "query tap level")
+
+    /** Write, then read back. */
+    fun setTapLevel(level: Int) {
+        Thread {
+            try {
+                sendRawBlocking(OpoProtocol.setTapLevel(level), "Tap level $level")
+                Thread.sleep(250)
+                sendRawBlocking(OpoProtocol.queryTapLevel(), "query tap level")
+            } catch (e: Exception) {
+                log("TAP LEVEL write failed: ${e.message}")
+            }
+        }.start()
+    }
+
     /** Starts (`true`) or stops the earbud fit test; the result comes as [Listener.onFitResult]. */
     fun fitTest(on: Boolean) = sendRaw(OpoProtocol.fitTest(on), "Fit test ${if (on) "start" else "stop"}")
 
@@ -1009,6 +1026,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
             cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || cmd == 0x811F || // Golden Sound replies
             cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
+            cmd == 0x811A || cmd == 0x8133 ||            // personalized ANC, tap sensitivity
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd == OpoProtocol.CMD_REGISTER_NOTIFY
         if (explained) return
@@ -1348,6 +1366,11 @@ class BudsConnectionManager(private val context: Context) {
         if (cmd == 0x811A && payload.size >= 2 && payload[0].toInt() == 0) {
             log("PERSONAL ANC stored=${payload[1]}")
             handler.post { listeners.forEach { it.onPersonalNoiseStored(payload[1].toInt() != 0) } }
+            return
+        }
+        if (cmd == 0x8133 && payload.size >= 3 && payload[0].toInt() == 0) {
+            log("TAP LEVEL: ${payload[1]} default ${payload[2]}")
+            handler.post { listeners.forEach { it.onTapLevel(payload[1].toInt(), payload[2].toInt()) } }
             return
         }
         if (cmd == 0x8412 && payload.isNotEmpty()) {

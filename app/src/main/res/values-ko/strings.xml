@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">테스트 중에는 강한 바람을 피하세요.</string>
     <string name="pnc_fail_still">움직이지 마세요: 테스트 중에는 말하기, 삼키기, 고개 움직이기를 피하세요.</string>
     <string name="pnc_fail_audio">테스트 중에는 오디오를 재생하거나 통화하지 마세요.</string>
+    <string name="tap_level_title">탭 감도</string>
+    <string name="tap_level_hint">두 번 탭과 세 번 탭에 적용됩니다. 레벨이 낮을수록 쉽게 인식됩니다.</string>
+    <string name="tap_level_warning">기본값보다 낮으면 모자나 안경을 쓸 때, 머리를 만질 때, 운동할 때 등 탭이 실수로 인식될 수 있습니다.</string>
 </resources>

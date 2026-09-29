@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Během testu se vyhněte silnému větru.</string>
     <string name="pnc_fail_still">Nehýbejte se: během testu nemluvte, nepolykejte a nehýbejte hlavou.</string>
     <string name="pnc_fail_audio">Během testu nepřehrávejte zvuk ani netelefonujte.</string>
+    <string name="tap_level_title">Citlivost klepnutí</string>
+    <string name="tap_level_hint">Pro dvojité a trojité klepnutí. Nižší úroveň reaguje snáz.</string>
+    <string name="tap_level_warning">Pod výchozí úrovní se klepnutí může spustit omylem, třeba s čepicí nebo brýlemi, při dotyku vlasů nebo při cvičení.</string>
 </resources>

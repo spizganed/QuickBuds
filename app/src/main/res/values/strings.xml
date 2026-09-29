@@ -489,4 +489,7 @@
     <string name="pnc_fail_wind">Avoid strong wind during the test.</string>
     <string name="pnc_fail_still">Keep still: no talking, swallowing or head movements during the test.</string>
     <string name="pnc_fail_audio">Do not play audio or take calls during the test.</string>
+    <string name="tap_level_title">Tap sensitivity</string>
+    <string name="tap_level_hint">For double and triple taps. A lower level triggers more easily.</string>
+    <string name="tap_level_warning">Below the default level, taps can trigger by accident, for example with a hat or glasses, when touching your hair or during exercise.</string>
 </resources>

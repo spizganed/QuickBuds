@@ -92,6 +92,8 @@ back.
   belong in HeyMelody.
 - Personalized noise cancellation (2026-09-29), Earbud settings › Features: the ear canal test, the stored
   result offered first, the failure reasons (PROTOCOL.md §9). Unverified on buds (Buds 4 lacks it).
+- Tap sensitivity (2026-09-29), Earbud settings: levels 1..5 with the below-default warning (PROTOCOL.md
+  §9). Unverified on buds.
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

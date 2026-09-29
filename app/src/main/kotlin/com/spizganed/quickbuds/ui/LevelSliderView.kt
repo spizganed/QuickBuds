@@ -80,7 +80,7 @@ class LevelSliderView(
     override fun onDraw(canvas: Canvas) {
         // Nothing style: the same drawing as dots (DotArt); the value stays text.
         if (nothing) DotArt.draw(context, canvas, width, height) { shapes(it) } else shapes(canvas)
-        if (showValue) canvas.drawText(if (value > 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
+        if (showValue) canvas.drawText(if (value > 0 && min < 0) "+$value" else "$value", x(pos), trackY - dp(18f), valuePaint)
     }
 
     private fun shapes(canvas: Canvas) {

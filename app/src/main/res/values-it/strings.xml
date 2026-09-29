@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Evita il vento forte durante il test.</string>
     <string name="pnc_fail_still">Stai fermo: non parlare, deglutire o muovere la testa durante il test.</string>
     <string name="pnc_fail_audio">Non riprodurre audio e non telefonare durante il test.</string>
+    <string name="tap_level_title">Sensibilità del tocco</string>
+    <string name="tap_level_hint">Per doppi e tripli tocchi. Un livello più basso si attiva più facilmente.</string>
+    <string name="tap_level_warning">Sotto il livello predefinito i tocchi possono attivarsi per errore, ad esempio con cappello o occhiali, toccando i capelli o durante l\'attività fisica.</string>
 </resources>

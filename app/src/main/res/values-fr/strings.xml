@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Évitez le vent fort pendant le test.</string>
     <string name="pnc_fail_still">Restez immobile : ne parlez pas, n\'avalez pas et ne bougez pas la tête pendant le test.</string>
     <string name="pnc_fail_audio">Ne lisez pas d\'audio et ne téléphonez pas pendant le test.</string>
+    <string name="tap_level_title">Sensibilité des tapotements</string>
+    <string name="tap_level_hint">Pour les doubles et triples tapotements. Un niveau plus bas se déclenche plus facilement.</string>
+    <string name="tap_level_warning">Sous le niveau par défaut, les tapotements peuvent se déclencher par erreur, par exemple avec un chapeau ou des lunettes, en touchant vos cheveux ou pendant le sport.</string>
 </resources>

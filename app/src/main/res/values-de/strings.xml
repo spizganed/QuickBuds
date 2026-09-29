@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Vermeide starken Wind während des Tests.</string>
     <string name="pnc_fail_still">Halte still: kein Sprechen, Schlucken oder Kopfbewegen während des Tests.</string>
     <string name="pnc_fail_audio">Spiele während des Tests kein Audio ab und telefoniere nicht.</string>
+    <string name="tap_level_title">Tippempfindlichkeit</string>
+    <string name="tap_level_hint">Für Doppel- und Dreifachtippen. Eine niedrigere Stufe löst leichter aus.</string>
+    <string name="tap_level_warning">Unter der Standardstufe kann Tippen versehentlich auslösen, etwa mit Mütze oder Brille, beim Berühren der Haare oder beim Sport.</string>
 </resources>

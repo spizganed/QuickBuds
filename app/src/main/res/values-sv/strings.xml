@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Undvik stark vind under testet.</string>
     <string name="pnc_fail_still">Håll dig stilla: prata, svälj eller rör inte huvudet under testet.</string>
     <string name="pnc_fail_audio">Spela inte upp ljud och ring inte under testet.</string>
+    <string name="tap_level_title">Tryckkänslighet</string>
+    <string name="tap_level_hint">För dubbel- och trippeltryck. En lägre nivå reagerar lättare.</string>
+    <string name="tap_level_warning">Under standardnivån kan tryck utlösas av misstag, till exempel med mössa eller glasögon, när du rör håret eller tränar.</string>
 </resources>

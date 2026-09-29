@@ -1217,6 +1217,13 @@ HeyMelody wants both buds in an ear, waits 5 s for the `0x811A` answer and 15 s 
 when its dialog closes. `[CAPTURE]` Buds 4 answer `0C 00` in `0x810D` but lack bit 26, and their model entry
 has no `personalNoise`: the row stays hidden there, as in HeyMelody.
 
+### Tap sensitivity — `0x042D` — `[VENDOR]` 2026-09-29, wired, unverified on buds
+
+Model flag `tapLevelSetting` (OnePlus Open Buds, OPPO Enco Clip), `0x0133` / `0x042D` in the bitmap.
+`0x042D <level>`, levels 1..5, a lower level triggers double and triple taps more easily. Read `0x0133`
+(empty) → `8133 00 <level> <default>`. HeyMelody warns while the level is below the default (accidental
+taps with a hat or glasses, touching hair, exercise) and offers a reset to it.
+
 ### Golden Sound (hearing enhancement, feature `0x0B`) — `[VENDOR]` + read back 2026-09-29
 
 On / off is a plain feature switch: `0403 0B 01` / `0403 0B 00` (`setSwitchFeature(11)`, HeyMelody's

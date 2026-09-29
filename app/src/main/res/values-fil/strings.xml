@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Iwasan ang malakas na hangin habang nagte-test.</string>
     <string name="pnc_fail_still">Huwag gumalaw: bawal magsalita, lumunok o igalaw ang ulo habang nagte-test.</string>
     <string name="pnc_fail_audio">Huwag mag-play ng audio o tumawag habang nagte-test.</string>
+    <string name="tap_level_title">Sensitivity ng tap</string>
+    <string name="tap_level_hint">Para sa double at triple tap. Mas madaling ma-trigger ang mas mababang level.</string>
+    <string name="tap_level_warning">Kapag mas mababa sa default, maaaring ma-trigger nang hindi sinasadya ang tap, halimbawa kapag may sumbrero o salamin, humahawak sa buhok o nag-eehersisyo.</string>
 </resources>

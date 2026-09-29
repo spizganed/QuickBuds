@@ -403,4 +403,7 @@
     <string name="pnc_fail_wind">Evită vântul puternic în timpul testului.</string>
     <string name="pnc_fail_still">Nu te mișca: nu vorbi, nu înghiți și nu mișca capul în timpul testului.</string>
     <string name="pnc_fail_audio">Nu reda sunet și nu vorbi la telefon în timpul testului.</string>
+    <string name="tap_level_title">Sensibilitatea atingerii</string>
+    <string name="tap_level_hint">Pentru atingeri duble și triple. Un nivel mai mic se declanșează mai ușor.</string>
+    <string name="tap_level_warning">Sub nivelul implicit, atingerile se pot declanșa din greșeală, de exemplu cu pălărie sau ochelari, când îți atingi părul sau în timpul sportului.</string>
 </resources>

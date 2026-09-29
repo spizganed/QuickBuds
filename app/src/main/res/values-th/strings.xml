@@ -405,4 +405,7 @@
     <string name="pnc_fail_wind">หลีกเลี่ยงลมแรงระหว่างทดสอบ</string>
     <string name="pnc_fail_still">อยู่นิ่งๆ: ไม่พูด ไม่กลืน และไม่ขยับศีรษะระหว่างทดสอบ</string>
     <string name="pnc_fail_audio">ไม่เล่นเสียงหรือโทรระหว่างทดสอบ</string>
+    <string name="tap_level_title">ความไวในการแตะ</string>
+    <string name="tap_level_hint">สำหรับการแตะสองครั้งและสามครั้ง ระดับต่ำจะตอบสนองง่ายขึ้น</string>
+    <string name="tap_level_warning">ต่ำกว่าค่าเริ่มต้น การแตะอาจทำงานโดยไม่ตั้งใจ เช่น เมื่อสวมหมวกหรือแว่นตา จับผม หรือออกกำลังกาย</string>
 </resources>

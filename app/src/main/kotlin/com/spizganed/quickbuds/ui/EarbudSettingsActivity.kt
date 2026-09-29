@@ -8,6 +8,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.Gravity
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -32,6 +33,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var alertSlider: LevelSliderView
     private lateinit var alertSpeaker: ImageView
     private var firmwareText: TextView? = null
+    private var tapSlider: LevelSliderView? = null
+    private var tapWarning: TextView? = null
     private var gameSoundText: TextView? = null
     private var headMotionText: TextView? = null
     private var fitSheet: FitTestSheet? = null
@@ -50,6 +53,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 manager?.alertVolume?.let { onAlertVolume(it) }
                 manager?.refreshAlertVolume()
             }
+            if (tapSlider != null && Capabilities.supports(this@EarbudSettingsActivity, OpoProtocol.CMD_QUERY_TAP_LEVEL))
+                manager?.refreshTapLevel()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -92,6 +97,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             })
         }
         if (card.childCount > 0) root.addView(card)
+        tapSensitivity(root)
         features(root)
         if (Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) sounds(root)
 
@@ -143,7 +149,9 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             card.addView(SettingRowFactory.build(this, icon, title, sub, sw) { sw.performClick() })
         }
         // Personalized ANC: off is a plain switch write, on runs HeyMelody's test flow (PROTOCOL.md §9).
-        if (Capabilities.offered(this, OpoProtocol.FEATURE_PERSONAL_NOISE, "personalNoise") &&
+        // The model's flag too: HeyMelody gates on it alone, and Buds 4 list 0x0C without having the feature.
+        if ((ModelCatalog.current(this)?.json?.optInt("personalNoise") ?: 1) == 1 &&
+            Capabilities.offered(this, OpoProtocol.FEATURE_PERSONAL_NOISE, "personalNoise") &&
             (Capabilities.supports(this, OpoProtocol.CMD_PERSONAL_NOISE) || ModelCatalog.manual(this) != null)) {
             val id = OpoProtocol.FEATURE_PERSONAL_NOISE
             val sw = SettingRowFactory.buildSwitch(this, manager?.featureStates?.get(id) == 1)
@@ -298,6 +306,42 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     private fun cardView() = SettingRowFactory.card(this)
+
+    /**
+     * Tap sensitivity 1..5 (`0x042D`, read `0x0133`), where HeyMelody's model list has `tapLevelSetting`;
+     * the warning shows below the buds' default, as in HeyMelody (PROTOCOL.md §9).
+     */
+    private fun tapSensitivity(root: LinearLayout) {
+        if (ModelCatalog.current(this)?.json?.optInt("tapLevelSetting") != 1) return
+        if (!Capabilities.supports(this, OpoProtocol.CMD_SET_TAP_LEVEL) && ModelCatalog.manual(this) == null) return
+        val dp = { v: Float -> ThemeRes.dp(this, v) }
+        val secondary = ThemeRes.color(this, R.attr.appColorTextSecondary)
+        tapSlider = LevelSliderView(this, 1, 5).apply { onRelease = { manager?.setTapLevel(it) } }
+        tapWarning = TextView(this).apply {
+            setText(R.string.tap_level_warning)
+            setTextColor(secondary)
+            textSize = 13f
+            setPadding(0, 0, dp(8f), dp(10f))
+            visibility = View.GONE
+        }
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.tap_level_title))
+        root.addView(cardView().apply {
+            setPadding(dp(18f), dp(14f), dp(10f), dp(6f))
+            addView(TextView(this@EarbudSettingsActivity).apply {
+                setText(R.string.tap_level_hint)
+                setTextColor(secondary)
+                textSize = 13f
+            })
+            addView(tapSlider)
+            addView(tapWarning)
+        })
+    }
+
+    override fun onTapLevel(level: Int, default: Int) {
+        if (tapSlider?.dragging == true) return
+        tapSlider?.value = level
+        tapWarning?.visibility = if (level < default) View.VISIBLE else View.GONE
+    }
 
     private fun paintSpeaker(level: Int) {
         alertSpeaker.setImageDrawable(ThemeRes.tint(
