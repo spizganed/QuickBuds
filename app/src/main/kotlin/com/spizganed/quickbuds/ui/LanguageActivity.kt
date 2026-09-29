@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.ui
 import android.app.Activity
 import android.content.res.Configuration
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import com.spizganed.quickbuds.R
@@ -44,10 +43,7 @@ class LanguageActivity : Activity() {
         val card = SettingRowFactory.card(this)
         for ((tag, name) in ThemeRes.LANGUAGES) {
             val selected = tag == current || (!exact && base != "zh" && tag == base)
-            val check = if (!selected) null else ImageView(this).apply {
-                setImageDrawable(ThemeRes.tint(this@LanguageActivity, R.drawable.ic_check, p.accent))
-            }
-            val row = SettingRowFactory.build(this, 0, 0, 0, check) {
+            val row = SettingRowFactory.build(this, 0, 0, 0, null) {
                 if (selected) return@build
                 Haptics.commit(card)
                 ThemeRes.setLanguage(this, tag)
@@ -58,6 +54,7 @@ class LanguageActivity : Activity() {
                 text = name ?: getString(R.string.language_system)
                 if (selected) setTextColor(p.accent)
             }
+            if (selected) row.foreground = ThemeRes.selectedBorder(this, p.accent)
             SettingRowFactory.addRow(card, row)
         }
         root.addView(card)

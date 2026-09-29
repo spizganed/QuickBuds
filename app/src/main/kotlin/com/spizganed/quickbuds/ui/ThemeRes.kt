@@ -283,6 +283,21 @@ object ThemeRes {
     fun group(context: Context): GradientDrawable? = if (nothing(context)) null else card(context)
 
     /** The standard card: `card` fill, 1dp `outline` stroke. */
+    /**
+     * The selection mark ([USER] 2026-09-30: an outline, never a check), set as a row's or tile's foreground:
+     * a 2dp [color] outline, in the dot style one cell of dots.
+     */
+    fun selectedBorder(context: Context, color: Int, radiusDp: Float = 14f): android.graphics.drawable.Drawable {
+        val r = dp(context, radiusDp).toFloat()
+        if (!nothing(context)) return GradientDrawable().apply { cornerRadius = r; setStroke(dp(context, 2f), color) }
+        return DotArt.Part(context, 0f, 0f, android.content.res.ColorStateList.valueOf(color)) { c, box, paint ->
+            val e = DotArt.pitchPx(context) / 2
+            paint.style = android.graphics.Paint.Style.STROKE
+            paint.strokeWidth = 0f
+            c.drawRoundRect(box.left + e, box.top + e, box.right - e, box.bottom - e, r, r, paint)
+        }
+    }
+
     fun card(context: Context, radiusDp: Float = 24f): GradientDrawable {
         val p = palette(context)
         return shape(context, p.card, p.outline, radiusDp)

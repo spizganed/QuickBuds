@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Switch
@@ -177,21 +176,18 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         for (r in records) {
             if (list.childCount > 0) list.addView(SettingRowFactory.buildDivider(this))
             val active = r.uid == activeUid
-            val check = if (active) ImageView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(ThemeRes.dp(this@GoldenSoundActivity, 20f), ThemeRes.dp(this@GoldenSoundActivity, 20f))
-                setImageDrawable(ThemeRes.tint(this@GoldenSoundActivity, R.drawable.ic_check, accent))
-            } else null
             val row = SettingRowFactory.build(this, 0, 0, 0,
                 SettingRowFactory.iconButton(this, R.drawable.ic_delete, R.string.eq_delete) {
                     ConfirmDialog.show(this, getString(R.string.eq_delete_confirm, r.name), null, getString(R.string.eq_delete)) {
                         GoldenSound.delete(this, r.uid)
                         paintList()
                     }
-                }, value = check) { apply(r) }
+                }) { apply(r) }
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).apply {
                 text = r.name
                 if (active) setTextColor(accent)
             }
+            if (active) row.foreground = ThemeRes.selectedBorder(this, accent)
             list.addView(row)
         }
     }

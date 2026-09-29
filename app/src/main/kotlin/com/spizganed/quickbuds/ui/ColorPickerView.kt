@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
 import android.text.InputFilter
 import android.view.Gravity
@@ -126,8 +125,6 @@ class ColorPickerView(
      */
     class Swatch(context: Context, color: Int, private val ring: Int, private val ringDp: Float = 1f) : View(context) {
         private val nothing = ThemeRes.nothing(context)
-        private val paint = Paint()
-
         var color = color
             set(v) { field = v; paint() }
 
@@ -148,21 +145,7 @@ class ColorPickerView(
         }
 
         override fun onDraw(canvas: Canvas) {
-            if (!nothing) return
-            DotArt.draw(context, canvas, width, height) { c ->
-                val pitch = DotArt.pitchPx(context)
-                for (y in 0 until SWATCH_CELLS) for (x in 0 until SWATCH_CELLS) {
-                    if (!inDisc(x, y)) continue
-                    val edge = !(inDisc(x + 1, y) && inDisc(x - 1, y) && inDisc(x, y + 1) && inDisc(x, y - 1))
-                    paint.color = if (edge) ring else color
-                    c.drawRect(x * pitch, y * pitch, (x + 1) * pitch, (y + 1) * pitch, paint)
-                }
-            }
-        }
-
-        private fun inDisc(x: Int, y: Int): Boolean {
-            val m = SWATCH_CELLS / 2
-            return x in 0 until SWATCH_CELLS && y in 0 until SWATCH_CELLS && (x - m) * (x - m) + (y - m) * (y - m) <= 42
+            if (nothing) DotArt.draw(context, canvas, width, height) { DotArt.disc(context, it, 0, 0, SWATCH_CELLS, color, ring) }
         }
     }
 

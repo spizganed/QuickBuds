@@ -93,6 +93,21 @@ object DotArt {
     }
 
     /**
+     * A fixed disc of [n] x [n] cells with its top-left cell at ([x0], [y0]), inside a [draw] block: the edge
+     * cells in [ring], the rest in [fill]. Swatches use it; scaled circles came out uneven, like the knob.
+     */
+    fun disc(context: Context, c: Canvas, x0: Int, y0: Int, n: Int, fill: Int, ring: Int) {
+        val pitch = pitchPx(context)
+        val m = (n - 1) / 2f
+        fun inside(x: Int, y: Int) = x in 0 until n && y in 0 until n && (x - m) * (x - m) + (y - m) * (y - m) <= n * n / 4f
+        for (y in 0 until n) for (x in 0 until n) {
+            if (!inside(x, y)) continue
+            knobPaint.color = if (inside(x + 1, y) && inside(x - 1, y) && inside(x, y + 1) && inside(x, y - 1)) fill else ring
+            c.drawRect((x0 + x) * pitch, (y0 + y) * pitch, (x0 + x + 1) * pitch, (y0 + y + 1) * pitch, knobPaint)
+        }
+    }
+
+    /**
      * An icon as dots ([ThemeRes.tint] in the Nothing style): [inner] rendered once per size and tint at
      * [ICON_PITCH_DP] (scaled up past 24dp tall), then reused, so a list of rows costs one render per icon.
      */

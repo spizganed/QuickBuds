@@ -2,7 +2,6 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import com.spizganed.quickbuds.R
@@ -36,9 +35,7 @@ class ModelActivity : Activity() {
         root.addView(SettingRowFactory.title(this, R.string.model_title))
 
         fun row(title: String, subtitle: String?, selected: Boolean, onPick: () -> Unit) =
-            SettingRowFactory.build(this, 0, 0, 0, if (!selected) null else ImageView(this).apply {
-                setImageDrawable(ThemeRes.tint(this@ModelActivity, R.drawable.ic_check, p.accent))
-            }) {
+            SettingRowFactory.build(this, 0, 0, 0, null) {
                 if (selected) return@build
                 Haptics.commit(root)
                 onPick()
@@ -50,6 +47,7 @@ class ModelActivity : Activity() {
                     if (selected) setTextColor(p.accent)
                 }
                 if (subtitle != null) SettingRowFactory.subtitle(this, r).text = subtitle
+                if (selected) r.foreground = ThemeRes.selectedBorder(this, p.accent)
             }
 
         val auto = SettingRowFactory.card(this)

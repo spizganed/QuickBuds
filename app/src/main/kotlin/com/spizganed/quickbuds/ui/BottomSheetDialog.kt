@@ -9,7 +9,6 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -319,20 +318,7 @@ class BottomSheetDialog(private val activity: Activity) {
             )
         })
 
-        if (item.selected) {
-            row.addView(ImageView(activity).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(20f), dp(20f))
-                scaleType = ImageView.ScaleType.FIT_CENTER
-                setImageDrawable(
-                    ThemeRes.tint(
-                        activity,
-                        R.drawable.ic_check,
-                        if (item.enabled) accent else secondary
-                    )
-                )
-                contentDescription = ""
-            })
-        }
+        if (item.selected) row.foreground = ThemeRes.selectedBorder(activity, if (item.enabled) accent else secondary)
 
         return row
     }

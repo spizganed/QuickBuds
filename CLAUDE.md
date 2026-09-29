@@ -173,6 +173,8 @@ A change recreates open screens (part of the activity signature).
 - `DotArt`: live views as dots, pitch 2.2dp rounded to whole px, drawn without antialiasing so every dot of
   a shape is one shade: `LevelSliderView`, `EqCurveView`,
   `ColorSliderView`, switch track/thumb (`DotArt.Part`, thumb as tall as the track).
+  Swatches and small discs are `DotArt.disc` (a fixed cell pattern, like the knob). Dot outlines are the
+  shape filled in the outline colour with the fill a cell inside, never a thin stroke (it skips cells).
   **Every knob is `DotArt.knob`** `[USER]`: one fixed 7x7 dot ring snapped to the grid (scaled circles came out a
   different shape at every position). Never draw a dot-style knob with `drawCircle`.
 - Icons: `ThemeRes.tint` returns a `DotArt.Icon` (1.2dp, solid dots); `ic_check` becomes
@@ -184,6 +186,8 @@ A change recreates open screens (part of the activity signature).
   `buildChevron`, `buildDivider`, `iconButton`. New screens use these. SPEC §5 icons are in
   `res/drawable`.
 - Confirm dialogs go through `ConfirmDialog.show()`.
+- **Selection is an outline, never a checkmark** `[USER]`: `ThemeRes.selectedBorder()` as the row's or
+  tile's foreground (dots in the dot style). `ic_check` stays only on Done buttons.
 - **Compact sizing** `[USER]`: ~10-15% under SPEC so home fits without scrolling (rows 62dp, rings 90dp,
   segments 56dp, padding 16dp, gaps 12dp); touch targets stay ≥ 44dp.
 - No Material Components `[USER]`.

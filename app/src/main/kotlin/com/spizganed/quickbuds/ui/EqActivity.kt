@@ -19,7 +19,6 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -607,18 +606,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                     }
                 } else setTextColor(to)
             })
-            if (selected || changed) addView(ImageView(this@EqActivity).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(20f), dp(20f))
-                setImageDrawable(ThemeRes.tint(this@EqActivity, R.drawable.ic_check, accent))
-                if (changed) {
-                    val from = if (selected) 0f else 1f
-                    scaleX = from; scaleY = from; alpha = from
-                    val to = 1f - from
-                    animate().scaleX(to).scaleY(to).alpha(to).setDuration(260)
-                        .setInterpolator(if (selected) OvershootInterpolator(2.5f) else DecelerateInterpolator())
-                        .start()
-                }
-            })
+            if (selected) foreground = ThemeRes.selectedBorder(this@EqActivity, accent)
             if (onEdit != null) addView(iconButton(R.drawable.ic_pencil, R.string.eq_edit, onEdit).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(34f), dp(34f)).apply { marginStart = dp(12f) }
                 setPadding(dp(8f), dp(8f), dp(8f), dp(8f))

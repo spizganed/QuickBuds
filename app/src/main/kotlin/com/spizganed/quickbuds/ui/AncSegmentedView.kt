@@ -89,19 +89,47 @@ class AncSegmentedView(
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (icons.isEmpty()) 48f else if (dots.isNotEmpty()) 72f else 62f).toInt())
     }
 
+    private val nothing = ThemeRes.nothing(context)
+
+    /** Track and outline, dots in the dot style (one-cell outline). */
+    private fun track(canvas: Canvas) {
+        val h = height.toFloat()
+        if (nothing) {
+            // The outline as the shape in its colour with the track a cell inside, and a radius a little under
+            // half the height: a stroke, or a full half-height radius, left a lone dot at each end.
+            val pitch = DotArt.pitchPx(context)
+            box.set(0f, 0f, width.toFloat(), (h / pitch).toInt() * pitch)
+            val rad = minOf(dp(22f), box.height() / 2 * 0.85f)
+            canvas.drawRoundRect(box, rad, rad, strokePaint.apply { style = Paint.Style.FILL })
+            box.inset(pitch, pitch)
+            canvas.drawRoundRect(box, rad - pitch, rad - pitch, trackPaint)
+            return
+        }
+        val e = if (nothing) DotArt.pitchPx(context) / 2 else dp(0.5f)
+        box.set(e, e, width - e, h - e)
+        canvas.drawRoundRect(box, dp(22f), dp(22f), trackPaint)
+        strokePaint.strokeWidth = if (nothing) 0f else dp(1f)
+        canvas.drawRoundRect(box, dp(22f), dp(22f), strokePaint)
+    }
+
+    /** The sliding fill: solid in both styles, so the icon and label on it stay readable. */
+    private fun pill(canvas: Canvas) {
+        val h = height.toFloat()
+        if (pos >= 0f) {
+            val inset = dp(4f)
+            val left = inset + (width - inset * 2) / labels.size * pos
+            box.set(left, inset, left + (width - inset * 2) / labels.size, h - inset)
+            canvas.drawRoundRect(box, dp(18f), dp(18f), pillPaint)
+        }
+    }
+
     override fun onDraw(canvas: Canvas) {
         val h = height.toFloat()
-        box.set(dp(0.5f), dp(0.5f), width - dp(0.5f), h - dp(0.5f))
-        canvas.drawRoundRect(box, dp(22f), dp(22f), trackPaint)
-        canvas.drawRoundRect(box, dp(22f), dp(22f), strokePaint)
+        if (nothing) DotArt.draw(context, canvas, width, height) { track(it) } else track(canvas)
+        pill(canvas)
 
         val inset = dp(4f)
         val segW = (width - inset * 2) / labels.size
-        if (pos >= 0f) {
-            val left = inset + segW * pos
-            box.set(left, inset, left + segW, h - inset)
-            canvas.drawRoundRect(box, dp(18f), dp(18f), pillPaint)
-        }
 
         // The dot icons get more room: 31 dots in 22dp would blur into a grey disc.
         val iconSize = dp(if (dots.isEmpty()) 22f else 28f)

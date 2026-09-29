@@ -105,15 +105,6 @@ class ThemeActivity : Activity() {
                 active = isActive
                 if (isActive) activeTile = this
             })
-            // Active: a 24dp accent check badge overlapping the top-right corner.
-            if (isActive) frame.addView(ImageView(this).apply {
-                setImageDrawable(ThemeRes.tint(this@ThemeActivity, R.drawable.ic_check, p.onAccent))
-                background = ThemeRes.shape(this@ThemeActivity, p.accent, null, 12f)
-                setPadding(dp(4f), dp(4f), dp(4f), dp(4f))
-                layoutParams = FrameLayout.LayoutParams(dp(24f), dp(24f), Gravity.TOP or Gravity.END)
-                translationX = dp(6f).toFloat()
-                translationY = -dp(6f).toFloat()
-            })
             column.addView(frame)
             column.addView(TextView(this).apply {
                 text = preset.name
@@ -200,6 +191,8 @@ class ThemeActivity : Activity() {
                 this, 0, 0, 0, pencil, leading = SwatchGrid(this, preset), minHeightDp = 62f
             ) { apply(preset.id, card) }
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).text = preset.name
+            // Active: the selection border, like the built-in tiles.
+            if (preset.id == activeId) row.foreground = ThemeRes.selectedBorder(this, p.accent)
             SettingRowFactory.addRow(card, row)
         }
         val left = PaletteStore.MAX_CUSTOM - custom.size
@@ -237,8 +230,12 @@ class ThemeActivity : Activity() {
         const val KEY_ACCENT_OPEN = "accentOpen"
     }
 
-    /** 3x2 grid of a preset's six colours, 42dp wide, each dot outlined so dark dots stay visible. */
+    /**
+     * 3x2 grid of a preset's six colours, 42dp wide, each dot outlined so dark dots stay visible.
+     * Dot style: six 6-cell discs a cell apart ([DotArt.disc]).
+     */
     private class SwatchGrid(context: Context, private val preset: Palette) : View(context) {
+        private val nothing = ThemeRes.nothing(context)
         private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
         private val ring = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.STROKE
@@ -246,10 +243,20 @@ class ThemeActivity : Activity() {
             color = ThemeRes.palette(context).outline
         }
 
-        override fun onMeasure(w: Int, h: Int) =
-            setMeasuredDimension(ThemeRes.dp(context, 42f), ThemeRes.dp(context, 28f))
+        override fun onMeasure(w: Int, h: Int) = if (nothing) {
+            val pitch = DotArt.pitchPx(context).toInt()
+            setMeasuredDimension(pitch * (3 * DISC + 2), pitch * (2 * DISC + 1))
+        } else setMeasuredDimension(ThemeRes.dp(context, 42f), ThemeRes.dp(context, 28f))
 
         override fun onDraw(c: Canvas) {
+            if (nothing) {
+                DotArt.draw(context, c, width, height) { dc ->
+                    preset.tokens.forEachIndexed { i, color ->
+                        DotArt.disc(context, dc, (i % 3) * (DISC + 1), (i / 3) * (DISC + 1), DISC, color, ring.color)
+                    }
+                }
+                return
+            }
             val cell = width / 3f
             val r = cell / 2 - ThemeRes.dp(context, 1.5f)
             preset.tokens.forEachIndexed { i, color ->
@@ -260,5 +267,7 @@ class ThemeActivity : Activity() {
                 c.drawCircle(cx, cy, r, ring)
             }
         }
+
+        private companion object { const val DISC = 6 }
     }
 }
