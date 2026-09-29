@@ -121,7 +121,7 @@ object ThemeRes {
     private const val KEY_NOTHING = "styleNothing"
 
     /**
-     * The app's style, shared with the widgets ([USER] 2026-09-28: one switch for both). True: Nothing (NDot57All
+     * The app's style, shared with the widgets ([USER] 2026-09-28: one switch for both). True: Dot matrix (Doto
      * text, no cards, dot-matrix rings and mode icons). False (default): Classic.
      */
     fun nothing(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NOTHING, false)
@@ -131,22 +131,18 @@ object ThemeRes {
         com.spizganed.quickbuds.widget.AncWidgetProvider.refreshAll(context)
     }
 
-    /** A system font family, or null when this phone lacks it (Typeface.create falls back to DEFAULT). */
-    private fun family(name: String): Typeface? = Typeface.create(name, Typeface.NORMAL).takeIf { it != Typeface.DEFAULT }
+    /** The dot style's font: Doto (SIL OFL, bundled in res/font, weight 900 with round dots, license in assets). */
+    fun dotFont(context: Context): Typeface = androidx.core.content.res.ResourcesCompat.getFont(context, R.font.doto) ?: Typeface.DEFAULT
 
-    /**
-     * Text weights for code-built views: Classic sans-serif; Nothing all NDot57All, the widget's dot font
-     * ([USER] 2026-09-28: NType82 made everything look off), synthetic bold for medium and bold.
-     */
+    /** Text weights for code-built views: Classic sans-serif; the dot style Doto everywhere, synthetic bold for medium and bold. */
     fun regular(context: Context): Typeface =
-        (if (nothing(context)) family("NDot57All") else null) ?: Typeface.DEFAULT
+        if (nothing(context)) dotFont(context) else Typeface.DEFAULT
     fun medium(context: Context): Typeface =
-        (if (nothing(context)) family("NDot57All")?.let { Typeface.create(it, Typeface.BOLD) } else null)
-            ?: Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        if (nothing(context)) Typeface.create(dotFont(context), Typeface.BOLD) else Typeface.create("sans-serif-medium", Typeface.NORMAL)
     fun bold(context: Context): Typeface =
-        (if (nothing(context)) family("NDot57All")?.let { Typeface.create(it, Typeface.BOLD) } else null) ?: Typeface.DEFAULT_BOLD
+        if (nothing(context)) Typeface.create(dotFont(context), Typeface.BOLD) else Typeface.DEFAULT_BOLD
 
-    /** Screen titles and big numbers: [bold] (NDot57All bold in the Nothing style, like the widget). */
+    /** Screen titles and big numbers: [bold] (Doto in the dot style, like the widget). */
     fun headline(context: Context): Typeface = bold(context)
 
     /**
@@ -219,7 +215,7 @@ object ThemeRes {
             @Suppress("DEPRECATION")
             activity.window.navigationBarColor = p.background
         }
-        // Nothing: NDot57All for every text the theme sets (XML and plain code-built TextViews).
+        // Dot matrix: Doto for every text the theme sets (XML and plain code-built TextViews).
         if (nothing(activity)) activity.theme.applyStyle(R.style.ThemeOverlay_App_Nothing, true)
         applied[activity] = signature(activity, p)
     }

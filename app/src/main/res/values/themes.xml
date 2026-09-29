@@ -36,10 +36,9 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
     </style>
 
-    <!-- Nothing style (ThemeRes.nothing): applied over any preset. NDot57All is a Nothing OS system font;
-         other phones fall back to the default. -->
+    <!-- Dot matrix style (ThemeRes.nothing): applied over any preset. Doto is bundled (res/font, SIL OFL). -->
     <style name="ThemeOverlay.App.Nothing" parent="">
-        <item name="android:fontFamily">NDot57All</item>
+        <item name="android:fontFamily">@font/doto</item>
     </style>
 
     <!-- OLED Black (default). True black so the panel shuts pixels off. -->

@@ -950,7 +950,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // Keeps this card to what changes the sound. App update moved to the cog.
         addRow("earbuds", 
             SettingRowFactory.build(
-                this, R.drawable.ic_bud_left, R.string.row_earbuds_title, R.string.row_earbuds_sub,
+                this, R.drawable.ic_earbud, R.string.row_earbuds_title, R.string.row_earbuds_sub,
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, EarbudSettingsActivity::class.java)) }
         )
@@ -1301,7 +1301,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         /** Noise-control segments, left to right: the tap name onAncCircleTapped() takes, label, icon. */
         val ANC_SEGMENTS = listOf(
             Triple("Off", R.string.anc_seg_off, R.drawable.ic_noise_off),
-            Triple("ANC", R.string.anc_seg_anc, R.drawable.ic_anc),
+            Triple("ANC", R.string.anc_seg_anc, R.drawable.ic_mode_anc_medium),
             Triple("Adaptive", R.string.anc_seg_adapt, R.drawable.ic_adaptive),
             Triple("Transparency", R.string.anc_seg_trans, R.drawable.ic_transparency)
         )

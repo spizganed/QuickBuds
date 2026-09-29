@@ -3,21 +3,21 @@
 # Needs: the phone on adb with the buds connected in QuickBuds and the phone in English, and
 # Python with Pillow (`pip install pillow`) for cropping. It sets the app style it shoots (Theme &
 # colors > Style) and leaves it that way; otherwise it only OPENS screens, nothing is toggled.
-# Classic (the default style) goes to docs/screenshots/, Nothing to docs/screenshots/nothing/.
+# Classic (the default style) goes to docs/screenshots/, Dot matrix to docs/screenshots/dot-matrix/.
 # Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file,
 # widget-<size>-<page> (2x2, 3x3, 4x2; battery or controls, whichever page it shows); sizes that
 # are not placed are skipped.
-# Usage: scripts/readme-screenshots.sh classic|nothing [adb-serial]
+# Usage: scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]
 set -euo pipefail
 export MSYS_NO_PATHCONV=1  # Git Bash would rewrite /sdcard/... into a Windows path
 cd "$(dirname "$0")/.."
 
 ADB_BIN=$(command -v adb || echo "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe")
-STYLE=${1:?usage: $0 classic|nothing [adb-serial]}
+STYLE=${1:?usage: $0 classic|dot-matrix [adb-serial]}
 SERIAL=${2:-}
 # </dev/null: adb reads stdin, which would eat the widget list the loop at the end reads.
 adb() { if [ -n "$SERIAL" ]; then "$ADB_BIN" -s "$SERIAL" "$@" </dev/null; else "$ADB_BIN" "$@" </dev/null; fi; }
-OUT=docs/screenshots$([ "$STYLE" = nothing ] && echo /nothing || true)
+OUT=docs/screenshots$([ "$STYLE" = dot-matrix ] && echo /dot-matrix || true)
 mkdir -p "$OUT"
 
 dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null; adb exec-out cat /sdcard/ui.xml; }
@@ -80,7 +80,7 @@ sleep 2
 tap "Settings"; tap "Themes, colors & styles"
 b=$(dump | tr '>' '\n' | grep -E 'content-desc="Style"' | head -1 | grep -oE 'bounds="[^"]+"' | grep -oE '[0-9]+' | tr '\n' ' ')
 set -- $b
-q=$([ "$STYLE" = nothing ] && echo 3 || echo 1)
+q=$([ "$STYLE" = dot-matrix ] && echo 3 || echo 1)
 adb shell input tap $(( $1 + ($3 - $1) * q / 4 )) $(( ($2 + $4) / 2 ))
 sleep 2; back; back
 shot main

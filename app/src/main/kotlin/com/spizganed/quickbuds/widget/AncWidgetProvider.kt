@@ -239,8 +239,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             if (text == null) v.setViewVisibility(b.label, View.GONE)
             else {
                 v.setViewVisibility(b.label, View.VISIBLE)
-                v.setTextViewText(b.label, text)
-                v.setTextColor(b.label, fg)
+                setText(context, v, b.label, text, fg)
             }
         }
 
@@ -275,8 +274,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 val noLabel = WidgetSettings.nothingStyle(context)
                 v.setViewVisibility(label, if (noLabel) View.GONE else View.VISIBLE)
                 v.setContentDescription(ringId, if (slot == 1) text else context.getString(names[slot]) + ", " + text)
-                v.setTextViewText(label, if (inEar && !noLabel) semibold(text) else text)
-                v.setTextColor(label, if (inEar) p.text else p.textSecondary)
+                setText(context, v, label, if (inEar && !noLabel) semibold(text) else text, if (inEar) p.text else p.textSecondary)
             }
             if (caseBar) {
                 v.setImageViewResource(R.id.w_bar_bg, panelRes(context, kind.large))
@@ -321,8 +319,32 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
         /** Percentage, always `text`: nothing in the battery display changes colour by level ([USER] 2026-09-27). */
         private fun pctText(context: Context, v: RemoteViews, id: Int, p: Palette, level: Int) {
-            v.setTextViewText(id, pctLabel(context, level))
-            v.setTextColor(id, p.text)
+            setText(context, v, id, pctLabel(context, level), p.text)
+        }
+
+        /**
+         * A widget text. Classic: a TextView. Dot matrix: an ImageView showing the text drawn in Doto, because launchers
+         * ignore `@font/` in widget XML. The layout sets the view's height (sp x 1.2, Doto's line height) and the bitmap
+         * scales to it, so this draws at one fixed size.
+         */
+        private fun setText(context: Context, v: RemoteViews, id: Int, text: CharSequence, color: Int) {
+            if (!WidgetSettings.nothingStyle(context)) {
+                v.setTextViewText(id, text)
+                v.setTextColor(id, color)
+                return
+            }
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                typeface = com.spizganed.quickbuds.ui.ThemeRes.dotFont(context)
+                textSize = 32f * context.resources.displayMetrics.density
+                this.color = color
+            }
+            val s = text.toString()
+            val fm = paint.fontMetrics
+            val bmp = Bitmap.createBitmap(maxOf(1, Math.ceil(paint.measureText(s).toDouble()).toInt()),
+                Math.ceil((fm.descent - fm.ascent).toDouble()).toInt(), Bitmap.Config.ARGB_8888)
+            Canvas(bmp).drawText(s, 0f, -fm.ascent, paint)
+            v.setImageViewBitmap(id, bmp)
+            v.setContentDescription(id, s)
         }
 
         private fun semibold(text: String) = SpannableString(text).apply {
@@ -810,12 +832,12 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /**
-         * A percentage as the layout draws it: Nothing NDot57All bold 17sp on the 2x2 (scaled on the 3x3), 20sp on
+         * A percentage as the layout draws it: dot style Doto bold 17sp on the 2x2 (scaled on the 3x3), 20sp on
          * the 4x2; Classic sans-serif bold 16sp on the 2x2 (scaled on the 3x3).
          */
         private fun pctPaint(context: Context, kind: Kind) = Paint().apply {
             val nothing = WidgetSettings.nothingStyle(context)
-            typeface = android.graphics.Typeface.create(if (nothing) "NDot57All" else "sans-serif", android.graphics.Typeface.BOLD)
+            typeface = android.graphics.Typeface.create(if (nothing) com.spizganed.quickbuds.ui.ThemeRes.dotFont(context) else android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             textSize = (if (kind.square) (if (nothing) 17f else 16f) * scale(kind) else 20f) * context.resources.displayMetrics.scaledDensity
         }
 

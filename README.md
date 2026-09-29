@@ -13,7 +13,7 @@ home-screen widget.
 
 ## Screenshots
 
-<!-- Retaken with scripts/readme-screenshots.sh classic, then nothing; see CLAUDE.md. -->
+<!-- Retaken with scripts/readme-screenshots.sh classic, then dot-matrix; see CLAUDE.md. -->
 
 | Main screen | Earbud settings | Equalizer | Hearing profile |
 | :---: | :---: | :---: | :---: |
@@ -29,14 +29,14 @@ Every size has a battery page and a controls page; switch with the swap button o
 | :---: | :---: | :---: |
 | <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-3x3-battery.png" width="220"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
 
-### Nothing style
+### Dot matrix style
 
-An optional style for the app and the widgets (Themes, colors & styles > Style): Nothing's dot font, no cards,
-dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing](docs/screenshots/nothing).
+An optional style for the app and the widgets (Themes, colors & styles > Style): a dot font, no cards,
+dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matrix](docs/screenshots/dot-matrix).
 
 | Main screen | 3x3 widget |
 | :---: | :---: |
-| <img src="docs/screenshots/nothing/main.png" width="200"> | <img src="docs/screenshots/nothing/widget-3x3-battery.png" width="220"> |
+| <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-3x3-battery.png" width="220"> |
 
 ## Features
 
@@ -60,8 +60,7 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing]
   smart / adaptive volume, power saving and more, each shown only where the earbuds support it.
 - **Home-screen widgets** in three sizes (2×2, 3×3, 4×2). Each has a battery page and a noise
   control + Low latency page, in your theme's colours.
-- **Two styles:** Classic, or a Nothing-style dot-matrix look (Nothing OS's dot font) for the app and
-  the widgets.
+- **Two styles:** Classic, or a dot-matrix look for the app and the widgets.
 - **Themes:** OLED Black, Classic Dark and White, or match the system's light / dark setting. Your own
   accent colour and up to 3 custom colour presets. Reorder or hide the home screen rows.
 - **27 languages**, switchable inside the app.
@@ -143,6 +142,9 @@ first; PROTOCOL.md marks every fact taken from them `[OSS]`.
 
 Everything else was captured on real hardware and tested on the device: the gesture values, the
 equalizer writes, the hold's noise control cycle and more (see PROTOCOL.md).
+
+The Dot matrix style's font is [Doto](https://github.com/oliverlalan/Doto) (SIL Open Font License 1.1,
+bundled with its license in `app/src/main/assets/Doto-OFL.txt`).
 
 ## License
 

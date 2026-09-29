@@ -117,7 +117,7 @@ serves for Option A captures.
 This was believed impossible for a long time — it was declared "verified 3 times" that ANC raises no
 event — because `noteUnattributed` blanket-excluded cmd `0x0204`, so an undecoded subType printed
 nothing at all and genuine silence looked identical to unparsed data. The lesson is in
-[PROTOCOL.md](./PROTOCOL.md) §5 ("History of Getting This Wrong"): **absence of a log line is not
+[PROTOCOL.md](./PROTOCOL.md) §5 ("Mistakes not to repeat"): **absence of a log line is not
 absence of a frame.**
 
 Also settled by capture: `F1` `byte3` carries the resolved function, and a hold's `F1` frame still

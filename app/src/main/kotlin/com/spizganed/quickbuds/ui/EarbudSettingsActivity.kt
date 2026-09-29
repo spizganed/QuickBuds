@@ -84,14 +84,14 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         }
         link(R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub, GestureActivity::class.java,
             Capabilities.supports(this, OpoProtocol.CMD_SET_KEY_FUNCTION) && !GestureModel.of(this).isEmpty)
-        link(R.drawable.ic_bud_left, R.string.row_wear_title, R.string.row_wear_sub, WearActivity::class.java,
+        link(R.drawable.ic_earbud, R.string.row_wear_title, R.string.row_wear_sub, WearActivity::class.java,
             Capabilities.hasFeature(this, OpoProtocol.FEATURE_AUTO_PLAY_PAUSE))
         link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java,
             Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS))
         // Earbud fit test: a sheet, as in HeyMelody's More settings (PROTOCOL.md §9).
         if (Capabilities.supports(this, OpoProtocol.CMD_FIT_TEST)) {
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
-            card.addView(SettingRowFactory.build(this, R.drawable.ic_bud_right, R.string.fit_title, R.string.fit_sub,
+            card.addView(SettingRowFactory.build(this, R.drawable.ic_earbud, R.string.fit_title, R.string.fit_sub,
                 SettingRowFactory.buildChevron(this)) {
                 fitSheet = FitTestSheet(this) { on -> manager?.fitTest(on) }.also { it.show() }
             })
@@ -184,9 +184,9 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             R.string.row_smart_volume_title, R.string.row_smart_volume_sub)
         switch(OpoProtocol.FEATURE_ADAPTIVE_VOLUME, null, R.drawable.ic_volume,
             R.string.row_adaptive_volume_title, R.string.row_adaptive_volume_sub)
-        switch(OpoProtocol.FEATURE_ADAPTIVE_EAR, null, R.drawable.ic_bud_left,
+        switch(OpoProtocol.FEATURE_ADAPTIVE_EAR, null, R.drawable.ic_earbud,
             R.string.row_adaptive_ear_title, R.string.row_adaptive_ear_sub)
-        switch(OpoProtocol.FEATURE_SLEEP_PAUSE, null, R.drawable.ic_bud_right,
+        switch(OpoProtocol.FEATURE_SLEEP_PAUSE, null, R.drawable.ic_earbud,
             R.string.row_sleep_title, R.string.row_sleep_sub)
         switch(OpoProtocol.FEATURE_SPEECH_PERCEPTION, null, R.drawable.ic_transparency,
             R.string.row_speech_title, R.string.row_speech_sub)

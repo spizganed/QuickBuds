@@ -202,8 +202,8 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
   per-model facts tagged `[VENDOR]`. Never vendor class, method or file names, code, or how-to notes;
   those stay in the agent's private memory and the scratchpad.
 - **Never guess a payload.** Confirming a read is cheap; a guessed write to the buds fails
-  silently. This is the single most expensive mistake in the project's history — see PROTOCOL.md's
-  "History of Getting This Wrong".
+  silently. This is the single most expensive mistake in the project's history — see PROTOCOL.md §5
+  "Mistakes not to repeat".
 - **The SET and NOTIFY ANC encodings are different tables** and are not supposed to agree.
 - **Adaptive's SET mask is `0x0800` (bit 11), not bit 8.** Its payload is `01 01 00 08`. The value
   `8` produced `01 01 00 01`, a different mode. Derive an index from the mask, never from a mode's
@@ -436,8 +436,7 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    models a tap picks the codec and the switch is live only with LDAC / LHDC V5, PROTOCOL.md §9), 3D audio (feature
    `0x1B`, or `0x0422` where the bitmap has `0x012A`; head-tracking models open an Off / Fixed / Head tracking
    sheet from the row), Hearing profile, EQ,
-   **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_bud_left`; the SPEC's
-   `ic_earbud` rendered broken and was dropped), which opens `EarbudSettingsActivity`, the hub for the buds
+   **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_earbud`), which opens `EarbudSettingsActivity`, the hub for the buds
    themselves. New firmware settings go in the hub, not on the main card.
 
 **Disconnected (`setConnectedUi`)**: nothing collapses. Every tile but the battery goes to alpha 0.35 and
@@ -523,12 +522,15 @@ widget layout: RemoteViews refuses it too. Check a widget change with `adb logca
 - Widget taps use the existing `ANC_SELECT` / `GAME_TOGGLE` path (optimistic store write, service read-back
   corrects).
 
-### Widget style: Nothing (2026-09-28)
+### Widget style: Dot matrix (2026-09-28; named "Nothing" until 2026-09-29)
+
+**User-visible name is "Dot matrix"** ([USER] 2026-09-29: no trademarks; "Pixel" is one too). Code keeps the
+`nothing` identifiers, the `_n` layouts and the pref key `styleNothing`; never put "Nothing" in a user-visible string.
 
 `WidgetSettings.nothingStyle` = `ThemeRes.nothing` (pref `styleNothing`, default **off**: Classic stays the default,
-[USER]): ONE style for the app and the widgets, the segment at the top of Themes, colors & styles (see *App style* below). Nothing = the `_n` layouts (all text in Nothing OS's `NDot57All` family from
-`/system/etc/ntfonts.xml` in synthetic bold, falling back to the default font elsewhere, nothing bundled; no heavier
-Nothing dot font exists, and bold draws every dot bigger) plus runtime changes in `AncWidgetProvider`: no boxes
+[USER]): ONE style for the app and the widgets, the segment at the top of Themes, colors & styles (see *App style* below). Nothing = the `_n` layouts (all text in the bundled
+**Doto** font, `res/font/doto.ttf`: SIL OFL, a static instance of Google Fonts' variable Doto at wght 900, ROND 100,
+license in `assets/Doto-OFL.txt`; [USER] 2026-09-29 chose it over the system NDot57, which only Nothing phones have). **Launchers ignore `@font/` in widget XML**, so every `_n` text is an ImageView the renderer fills with the text drawn in Doto (`setText`), its height `sp x 1.2` (Doto's line height) from the script; set widget text only through `setText` plus runtime changes in `AncWidgetProvider`: no boxes
 (`panelColor` / `paint` use `card`), and every graphic as a dot matrix:
 - `matrix()`: a drawing sampled on a grid at 8x, one dot per covered cell; `centre` sampling keeps thin cuts
   (bud head ring, case lid, LED). Rings: ring + glyph drawn together, `RING_CELLS` = 42 on every size.
@@ -549,14 +551,14 @@ Nothing dot font exists, and bold draws every dot bigger) plus runtime changes i
 - Box radius matches Nothing OS's own widgets: `widget_bg_n` 19dp on every size (measured against the calendar
   widget; Classic's 26 / 28dp looked rounder), inner shapes `widget_panel_n` / `_stroke_n` 16dp (`bgRes` / `panelRes`).
 
-### App style: Classic / Nothing (2026-09-28)
+### App style: Classic / Dot matrix (2026-09-28)
 
 The widget's style applied to the app ([USER] 2026-09-28: one switch for both, no cards). `ThemeRes.nothing` is
 part of the activity signature, so a change recreates open screens. Nothing:
-- Fonts: everything in `NDot57All`, the widget's dot font ([USER] 2026-09-28: NType82 made everything look off).
-  `ThemeOverlay.App.Nothing` (applied in `ThemeRes.select`) sets it for theme-set text; code-set text uses
+- Fonts: everything in Doto (`ThemeRes.dotFont`, `@font/doto`), the widget's font. It is monospaced and wider than
+  NDot57 was, so long labels wrap more. `ThemeOverlay.App.Nothing` (applied in `ThemeRes.select`) sets it for theme-set text; code-set text uses
   `ThemeRes.regular / medium / bold / headline` (never `Typeface.create("sans-serif-medium")` or `DEFAULT_BOLD`
-  directly; medium and bold are synthetic bold). A Nothing OS system font, sans-serif elsewhere.
+  directly; medium and bold are synthetic bold).
 - No cards: row groups and home tiles use `ThemeRes.group()` (null in Nothing). Dialogs, sheets, icon buttons,
   chips and the segmented control keep their shapes.
 - Home: `BudsStatusView` draws the widget's `QuickBudsWidget.dotRing` (one bitmap per whole percent while
@@ -606,7 +608,10 @@ a shared one hung.
   `ic_launcher_foreground.xml` has the numbers). The themed
   layer (`ic_launcher_monochrome.xml`) is ONE bud: Nothing's launcher fits a themed icon's longest side to a fixed
   size, so the wide pair came out short; scaling the artwork changes nothing there (measured).
-  `ic_stat_buds` (notification, Dev Tools Reconnect) is that same single bud ([USER] 2026-09-28). minSdk 26
+  `ic_stat_buds` (notification) is that same single bud ([USER] 2026-09-28). **Rows and buttons use `ic_earbud`**,
+  a generic 24dp SPEC-style bud ([USER] 2026-09-29: the launcher glyphs shrunk to row size drew artifacts, worst
+  as dots); `ic_bud_left` / `ic_bud_right` stay only where large (status rings, widget, fit test). The home ANC
+  segment uses the widget's `ic_mode_anc_medium` in both styles, not the headset `ic_anc`. minSdk 26
   means only the adaptive icon is used; the legacy PNG mipmaps were deleted. Find my earbuds shows no bud icons.
 
 ## Repo hygiene
@@ -626,10 +631,10 @@ a shared one hung.
   captures (`*.log.txt`) are evidence and **are** tracked.
 - **README screenshots** are retaken after every big UI change or addition, in the same push ([USER] 2026-09-29).
   They live in `docs/screenshots/` and are retaken with
-  `scripts/readme-screenshots.sh classic|nothing [adb-serial]` (buds connected, phone in English, Pillow installed; on Termux `pkg install python-pillow`).
-  Classic (the default) goes to `docs/screenshots/`, Nothing to `docs/screenshots/nothing/`. The README shows few
+  `scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]` (buds connected, phone in English, Pillow installed; on Termux `pkg install python-pillow`).
+  Classic (the default) goes to `docs/screenshots/`, Dot matrix to `docs/screenshots/dot-matrix/`. The README shows few
   ([USER] 2026-09-29: there were too many): Classic main, Earbud settings, Equalizer, Hearing profile, the three
-  widgets, and Nothing's main screen and 3x3 widget; it links both folders for the rest. It sets the style through the Style segment's content
+  widgets, and Dot matrix's main screen and 3x3 widget; it links both folders for the rest. It sets the style through the Style segment's content
   description and leaves it set, so run the user's own style last. Otherwise it
   opens every screen by visible text (never toggles anything), so renaming a row or screen label breaks it. It stops mobile-mcp's
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.

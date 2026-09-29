@@ -394,7 +394,7 @@
     <string name="widget_section">Widget</string>
     <string name="widget_style_title">Style</string>
     <string name="widget_style_classic">Classic</string>
-    <string name="widget_style_nothing" translatable="false">Nothing</string>
+    <string name="widget_style_nothing" translatable="false">Dot matrix</string>
     <string name="widget_ll_title">Low latency button</string>
     <string name="widget_ll_sub">A button on the controls page</string>
     <string name="widget_open_title">Open app on tap</string>

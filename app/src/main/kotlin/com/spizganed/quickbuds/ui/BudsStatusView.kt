@@ -40,7 +40,7 @@ class BudsStatusView(context: Context) : View(context) {
 
     private val p = ThemeRes.palette(context)
 
-    /** Nothing style: dot-matrix rings (the widget's, [QuickBudsWidget.dotRing]), NDot57 numbers without `%`. */
+    /** Nothing style: dot-matrix rings (the widget's, [QuickBudsWidget.dotRing]), Doto numbers without `%`. */
     private val nothing = ThemeRes.nothing(context)
 
     /** False draws the disconnected state (SPEC 3.2). */

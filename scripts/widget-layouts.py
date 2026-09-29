@@ -28,9 +28,12 @@ def img(i, src="widget_panel"):
     return f'<ImageView android:id="@+id/{i}" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/{src}" {IMG} />'
 
 def text(i, sp, bold=False, extra=""):
-    # Nothing: every text in NDot57All, Nothing OS's own family (/system/etc/ntfonts.xml); elsewhere it falls back to the default font.
-    # Nothing: synthetic bold draws each dot bigger, so the thin dot font gets some weight ([USER] 2026-09-28).
-    bold_font = 'android:fontFamily="NDot57All" android:textStyle="bold"' if N else 'android:fontFamily="sans-serif" android:textStyle="bold"'
+    # Dot matrix: an ImageView the renderer fills with the text drawn in Doto (launchers ignore @font/ in widget XML);
+    # its height is Doto's line height, 1.2 x the text size, and the bitmap scales to it.
+    if N:
+        return (f'<ImageView android:id="@+id/{i}" android:layout_width="wrap_content" android:layout_height="{round(sp * 1.2, 2):g}dp" '
+                f'android:adjustViewBounds="true" android:scaleType="fitCenter" {extra}/>')
+    bold_font = 'android:fontFamily="@font/doto" android:textStyle="bold"' if N else 'android:fontFamily="sans-serif" android:textStyle="bold"'
     font = bold_font if bold or N else 'android:fontFamily="sans-serif-medium"'
     # No font padding: it left visible gaps under the percentages ([USER] 2026-09-28).
     pad_off = 'android:includeFontPadding="false" '

@@ -152,7 +152,6 @@ class AncSegmentedView(
         /** The home screen's noise icons as the widget's mode icons, the ones drawn as dots. */
         private val WIDGET_ICON = mapOf(
             com.spizganed.quickbuds.R.drawable.ic_noise_off to com.spizganed.quickbuds.R.drawable.ic_mode_off,
-            com.spizganed.quickbuds.R.drawable.ic_anc to com.spizganed.quickbuds.R.drawable.ic_mode_anc_medium,
             com.spizganed.quickbuds.R.drawable.ic_adaptive to com.spizganed.quickbuds.R.drawable.ic_mode_adaptive,
             com.spizganed.quickbuds.R.drawable.ic_transparency to com.spizganed.quickbuds.R.drawable.ic_mode_transparency
         )

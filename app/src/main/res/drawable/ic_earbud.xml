@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One earbud (head with a speaker dot, stem down the right): the rows' and buttons' bud icon. design/SPEC.md
+     section 5 style: 24x24 viewport, 2.2 stroke, round caps and joins. White, tinted at runtime. The ring and
+     fit test glyphs (ic_bud_left / ic_bud_right) stay for large sizes. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:pathData="M17,8V19a1.5,1.5 0,0 1,-3,0V12.58A5,5 0,1 1,17,8zM10.8,8a1.2,1.2 0,1 0,2.4,0a1.2,1.2 0,1 0,-2.4,0z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

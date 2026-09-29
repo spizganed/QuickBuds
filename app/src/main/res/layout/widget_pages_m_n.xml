@@ -17,24 +17,24 @@
 <ImageView android:id="@+id/w_panel_left_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:paddingTop="3dp" android:paddingBottom="3dp" android:paddingStart="3dp" android:paddingEnd="1dp">
 <ImageView android:id="@+id/w_ring_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:scaleType="center" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_pct_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="20sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="5dp" />
-<TextView android:id="@+id/w_label_left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="12sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" />
+<ImageView android:id="@+id/w_pct_left" android:layout_width="wrap_content" android:layout_height="24dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="5dp" />
+<ImageView android:id="@+id/w_label_left" android:layout_width="wrap_content" android:layout_height="14.4dp" android:adjustViewBounds="true" android:scaleType="fitCenter" />
 </LinearLayout>
 </FrameLayout>
 <FrameLayout android:id="@+id/w_panel_case" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp">
 <ImageView android:id="@+id/w_panel_case_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:paddingTop="3dp" android:paddingBottom="3dp" android:paddingStart="1dp" android:paddingEnd="1dp">
 <ImageView android:id="@+id/w_ring_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:scaleType="center" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="20sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="5dp" />
-<TextView android:id="@+id/w_label_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="12sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" />
+<ImageView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="24dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="5dp" />
+<ImageView android:id="@+id/w_label_case" android:layout_width="wrap_content" android:layout_height="14.4dp" android:adjustViewBounds="true" android:scaleType="fitCenter" />
 </LinearLayout>
 </FrameLayout>
 <FrameLayout android:id="@+id/w_panel_right" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp">
 <ImageView android:id="@+id/w_panel_right_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:paddingTop="3dp" android:paddingBottom="3dp" android:paddingStart="1dp" android:paddingEnd="3dp">
 <ImageView android:id="@+id/w_ring_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:scaleType="center" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_pct_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="20sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="5dp" />
-<TextView android:id="@+id/w_label_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="12sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" />
+<ImageView android:id="@+id/w_pct_right" android:layout_width="wrap_content" android:layout_height="24dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="5dp" />
+<ImageView android:id="@+id/w_label_right" android:layout_width="wrap_content" android:layout_height="14.4dp" android:adjustViewBounds="true" android:scaleType="fitCenter" />
 </LinearLayout>
 </FrameLayout>
 </LinearLayout>
@@ -53,7 +53,7 @@
 <ImageView android:id="@+id/w_q0_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_q0_icon" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_q0_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="15sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="4dp" />
+<ImageView android:id="@+id/w_q0_label" android:layout_width="wrap_content" android:layout_height="18dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="4dp" />
 </LinearLayout>
 </FrameLayout>
 <FrameLayout android:id="@+id/w_q1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp" android:stateListAnimator="@animator/widget_press">
@@ -61,7 +61,7 @@
 <ImageView android:id="@+id/w_q1_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_q1_icon" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_q1_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="15sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="4dp" />
+<ImageView android:id="@+id/w_q1_label" android:layout_width="wrap_content" android:layout_height="18dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="4dp" />
 </LinearLayout>
 </FrameLayout>
 <FrameLayout android:id="@+id/w_q2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp" android:stateListAnimator="@animator/widget_press">
@@ -69,7 +69,7 @@
 <ImageView android:id="@+id/w_q2_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_q2_icon" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_q2_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="15sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="4dp" />
+<ImageView android:id="@+id/w_q2_label" android:layout_width="wrap_content" android:layout_height="18dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="4dp" />
 </LinearLayout>
 </FrameLayout>
 <FrameLayout android:id="@+id/w_q3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp" android:stateListAnimator="@animator/widget_press">
@@ -77,7 +77,7 @@
 <ImageView android:id="@+id/w_q3_stroke" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/widget_panel_stroke" android:scaleType="fitXY" android:importantForAccessibility="no" />
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="8dp">
 <ImageView android:id="@+id/w_q3_icon" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside" android:importantForAccessibility="no" />
-<TextView android:id="@+id/w_q3_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="15sp" android:fontFamily="NDot57All" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_marginTop="4dp" />
+<ImageView android:id="@+id/w_q3_label" android:layout_width="wrap_content" android:layout_height="18dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_marginTop="4dp" />
 </LinearLayout>
 </FrameLayout>
 </LinearLayout>

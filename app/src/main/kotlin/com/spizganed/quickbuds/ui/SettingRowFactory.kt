@@ -231,7 +231,7 @@ object SettingRowFactory {
         card.addView(row)
     }
 
-    /** Screen title: 24sp bold (Nothing: NDot57, [ThemeRes.headline]), 4dp start inset. */
+    /** Screen title: 24sp bold (dot style: Doto, [ThemeRes.headline]), 4dp start inset. */
     fun title(context: Context, textRes: Int): TextView = TextView(context).apply {
         setText(textRes)
         setTextColor(ThemeRes.color(context, R.attr.appColorTextPrimary))

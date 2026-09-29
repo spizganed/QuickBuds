@@ -99,7 +99,7 @@ class DevToolsActivity : Activity() {
         })
         // Connection controls go through the service actions the rest of the app already uses:
         // this screen does not bind BudsService.
-        actions.addView(action(R.drawable.ic_stat_buds, "Reconnect") {
+        actions.addView(action(R.drawable.ic_earbud, "Reconnect") {
             startService(
                 Intent(this, BudsService::class.java)
                     .setAction(BudsService.ACTION_FORCE_CONNECT)
