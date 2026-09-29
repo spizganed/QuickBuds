@@ -99,6 +99,8 @@ object UpdateChecker {
      * never again for the same tag. It must never nag.
      */
     fun maybeAutoCheck(activity: Activity) {
+        // The last update's download (UpdateActivity), ~2.5 MB, has been installed or abandoned by now.
+        java.io.File(activity.cacheDir, "quickbuds-update.apk").delete()
         val prefs = activity.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
         if (!prefs.getBoolean(KEY_AUTO, true)) return
         val now = System.currentTimeMillis()

@@ -74,7 +74,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 13 / versionName 3.6.0.**
+**Current: versionCode 14 / versionName 3.7.0.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
@@ -621,8 +621,9 @@ a shared one hung.
 - **README screenshots** are retaken after every big UI change or addition, in the same push ([USER] 2026-09-29).
   They live in `docs/screenshots/` and are retaken with
   `scripts/readme-screenshots.sh classic|nothing [adb-serial]` (buds connected, phone in English, Pillow installed; on Termux `pkg install python-pillow`).
-  Classic (the default) goes to `docs/screenshots/`, Nothing to `docs/screenshots/nothing/` (the README shows only its main
-  screen and 3x3 widget and links the folder, [USER] 2026-09-29). It sets the style through the Style segment's content
+  Classic (the default) goes to `docs/screenshots/`, Nothing to `docs/screenshots/nothing/`. The README shows few
+  ([USER] 2026-09-29: there were too many): Classic main, Earbud settings, Equalizer, Hearing profile, the three
+  widgets, and Nothing's main screen and 3x3 widget; it links both folders for the rest. It sets the style through the Style segment's content
   description and leaves it set, so run the user's own style last. Otherwise it
   opens every screen by visible text (never toggles anything), so renaming a row or screen label breaks it. It stops mobile-mcp's
   device server first, because that holds UiAutomation and `uiautomator dump` then dies with exit 137.

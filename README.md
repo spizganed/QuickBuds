@@ -15,25 +15,11 @@ home-screen widget.
 
 <!-- Retaken with scripts/readme-screenshots.sh classic, then nothing; see CLAUDE.md. -->
 
-| Main screen | Model | Equalizer | Curve editor |
+| Main screen | Earbud settings | Equalizer | Hearing profile |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/models.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/eq-edit.png" width="200"> |
+| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/earbuds.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/hearing-profile.png" width="200"> |
 
-| Earbud settings | Earbud gestures | Wear detection | Find my earbuds |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/earbuds.png" width="200"> | <img src="docs/screenshots/gestures.png" width="200"> | <img src="docs/screenshots/wear.png" width="200"> | <img src="docs/screenshots/find.png" width="200"> |
-
-| Settings | Themes, colors & styles | Edit preset | Home layout |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/settings.png" width="200"> | <img src="docs/screenshots/theme.png" width="200"> | <img src="docs/screenshots/preset.png" width="200"> | <img src="docs/screenshots/home-layout.png" width="200"> |
-
-| Hearing profile | Hearing test | Earbud fit test |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/hearing-profile.png" width="200"> | <img src="docs/screenshots/hearing-test.png" width="200"> | <img src="docs/screenshots/fit-test.png" width="200"> |
-
-| Dual connection | Widget settings | App update | About |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/dual.png" width="200"> | <img src="docs/screenshots/widget-settings.png" width="200"> | <img src="docs/screenshots/update.png" width="200"> | <img src="docs/screenshots/about.png" width="200"> |
+Every other screen (gestures, themes, fit test, settings and more) is in [docs/screenshots](docs/screenshots).
 
 ### Widgets
 
@@ -70,6 +56,8 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing]
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
 - **Wear detection**, **Dual connection**, **Find my earbuds**, the earbuds' prompt volume and their
   firmware version.
+- **Whatever else your model has:** 3D audio with head tracking, game sound effects, vocal enhancement,
+  smart / adaptive volume, power saving and more, each shown only where the earbuds support it.
 - **Home-screen widgets** in three sizes (2×2, 3×3, 4×2). Each has a battery page and a noise
   control + Low latency page, in your theme's colours.
 - **Two styles:** Classic, or a Nothing-style dot-matrix look (Nothing OS's dot font) for the app and
@@ -89,17 +77,21 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing]
 
 > **Coming from v1.1.0?** Uninstall it first: v2.0.0 and later are signed with a new key.
 
-**Tested on:** OnePlus Buds 4 with a Nothing Phone (3a), Android 16. Other OnePlus / OPPO / realme
-earbuds use the same protocol and are detected, but are untested: reports on GitHub are welcome.
-Open an issue with your model, what works and what does not, and a log: Dev tools › Export
-(`Download/QuickBudsLogs/`), or a Bluetooth HCI snoop log / `adb logcat`. The app says the same once, on first launch.
-
 ## Supported earbuds
 
 QuickBuds works on **any Android 8+ phone** (Samsung, Google Pixel, Xiaomi, Nothing, Motorola, OnePlus…),
 not only on OnePlus / OPPO phones. It knows every model in HeyMelody's own list, 127 earbuds in all,
-and shows only the features each one has. Tested on the OnePlus Buds 4; for the others, reports on
-GitHub are welcome.
+and shows only the features each one has.
+
+| | Status |
+| --- | --- |
+| **OnePlus Buds 4** | **Fully working, confirmed**: every feature tested on a Nothing Phone (3a), Android 16. |
+| Every other model | Detected, and its features are built from HeyMelody's own data, but **not confirmed yet**: some may not work. |
+
+**Own other buds? Please tell us what works.** Open an [issue](https://github.com/spizganed/QuickBuds/issues)
+with your model, what works and what does not, and a log: Dev tools › Export (the file lands in
+`Download/QuickBudsLogs/`), or a Bluetooth HCI snoop log / `adb logcat`. Each report lets the next release fix
+that model. The app asks the same once, on first launch.
 
 <details><summary><b>OnePlus</b> (29 models)</summary>
 
