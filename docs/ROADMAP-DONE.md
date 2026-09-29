@@ -101,6 +101,8 @@ back.
   is Hi-Res, live only with LDAC or LHDC V5 (PROTOCOL.md §9). Unverified on buds; Buds 4 answers the reads.
 - Firmware-gated EQ presets (2026-09-29, 13 models): `equalizerModeCompat` / `equalizerModeByVersion`,
   shown once the buds' firmware reaches the entry's minimum (PROTOCOL.md §9). Unverified on buds.
+- Parity check (2026-09-29): every item on HeyMelody's device page is built or decided against
+  (ROADMAP.md, Decided against).
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

@@ -23,7 +23,6 @@ Each step is done before the next one starts.
      3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
      write on another model stays unverified until an owner reads one back.
-   - **Next: the rest of the parity check** (2026-09-29, every item on HeyMelody's device page against the app).
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
