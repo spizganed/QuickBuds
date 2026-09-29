@@ -21,12 +21,9 @@ Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 202
   buds with `0x0423`. Shown from the buds' `0x810D` list or, for a hand-picked model, HeyMelody's flag
   (the model list does have flags for `0x09`, `0x1C`, `0x27`). A hand-picked OnePlus Buds 3 showed its rows
   ([USER] 2026-09-29). Writes unverified until an owner reads one back.
-- **Open: the rest of the Buds 4 gaps**, each needing more than a switch. Left for now ([USER] 2026-09-29):
-  how HeyMelody presents them is not known yet.
-  - neck health `0x22`-`0x24` (needs OPPO's Health app for the data)
-  - meeting assistant `0x34` (voiceprint enrolment for one meeting app)
-  - spatial audio's three-mode form (`0x0422`, for models that are not `0x1B` on/off)
-  - game sound's type command `0x0423`
+- **Done 2026-09-29: spatial audio's type form `0x0422` and game sound's type `0x0423`**, UI and read-backs
+  from HeyMelody's own screens (PROTOCOL.md §9). Head tracking only on Buds Pro 2 / Pro 3 / Enco X3. Writes
+  unverified until an owner reads one back.
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
@@ -130,6 +127,8 @@ From his notes, 2026-09-28 ([USER]), in order:
 - Widgets bigger than the launcher's padding allows: the host clips to it; ours already fill the same box
   as Nothing's own widgets (measured 2026-09-27).
 - The hearing profile's before / after preview (`0x040E 01` / `02`) ([USER] 2026-09-29).
+- Neck health (`0x22`-`0x24`, needs OPPO's Health app) and meeting assistant (`0x34`, voiceprint enrolment
+  for one meeting app) ([USER] 2026-09-29).
 - Renaming a hearing profile: the date and time label each one well enough ([USER] 2026-09-29).
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.

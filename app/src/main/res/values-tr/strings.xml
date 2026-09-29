@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Şarkılarda daha net vokal</string>
     <string name="row_game_sound_title">Oyun ses efektleri</string>
     <string name="row_game_sound_sub">Oyun başlayınca gelişmiş ses</string>
+    <string name="spatial_fixed">Sabit</string>
+    <string name="spatial_head_tracking">Kafa takibi</string>
+    <string name="game_sound_type_title">Oyun sesi türü</string>
+    <string name="game_sound_type_shooter">Nişancı oyunları</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Akıllı ses seviyesi</string>
     <string name="row_smart_volume_sub">Ses seviyesini ortam gürültüsüne göre ayarlar</string>
     <string name="row_adaptive_volume_title">Uyarlanabilir ses seviyesi</string>

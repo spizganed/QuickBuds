@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Giọng hát rõ hơn trong bài hát</string>
     <string name="row_game_sound_title">Hiệu ứng âm thanh trò chơi</string>
     <string name="row_game_sound_sub">Âm thanh tốt hơn khi vào trò chơi</string>
+    <string name="spatial_fixed">Cố định</string>
+    <string name="spatial_head_tracking">Theo dõi đầu</string>
+    <string name="game_sound_type_title">Loại âm thanh game</string>
+    <string name="game_sound_type_shooter">Game bắn súng</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Âm lượng thông minh</string>
     <string name="row_smart_volume_sub">Điều chỉnh âm lượng theo tiếng ồn</string>
     <string name="row_adaptive_volume_title">Âm lượng thích ứng</string>

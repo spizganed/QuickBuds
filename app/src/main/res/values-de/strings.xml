@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Klarerer Gesang in Songs</string>
     <string name="row_game_sound_title">Spiel-Soundeffekte</string>
     <string name="row_game_sound_sub">Besserer Klang beim Spielstart</string>
+    <string name="spatial_fixed">Fest</string>
+    <string name="spatial_head_tracking">Kopfverfolgung</string>
+    <string name="game_sound_type_title">Spielsound-Typ</string>
+    <string name="game_sound_type_shooter">Shooter-Spiele</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Intelligente Lautstärke</string>
     <string name="row_smart_volume_sub">Passt die Lautstärke an Umgebungslärm an</string>
     <string name="row_adaptive_volume_title">Adaptive Lautstärke</string>

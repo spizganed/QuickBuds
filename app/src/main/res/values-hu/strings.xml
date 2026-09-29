@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Tisztább ének a dalokban</string>
     <string name="row_game_sound_title">Játék hangeffektek</string>
     <string name="row_game_sound_sub">Jobb hang játék indításakor</string>
+    <string name="spatial_fixed">Rögzített</string>
+    <string name="spatial_head_tracking">Fejkövetés</string>
+    <string name="game_sound_type_title">Játékhang típusa</string>
+    <string name="game_sound_type_shooter">Lövöldözős játékok</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Intelligens hangerő</string>
     <string name="row_smart_volume_sub">A hangerőt a környezeti zajhoz igazítja</string>
     <string name="row_adaptive_volume_title">Adaptív hangerő</string>

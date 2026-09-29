@@ -16,6 +16,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.protocol.Capabilities
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
 
 /**
@@ -31,6 +32,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var alertSlider: LevelSliderView
     private lateinit var alertSpeaker: ImageView
     private var firmwareText: TextView? = null
+    private var gameSoundText: TextView? = null
     private var fitSheet: FitTestSheet? = null
     private val featureSwitches = HashMap<Int, android.widget.Switch>()
     private var syncing = false
@@ -133,6 +135,16 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             R.string.row_vocal_title, R.string.row_vocal_sub)
         switch(OpoProtocol.FEATURE_GAME_SOUND, "gameSound", R.drawable.ic_low_latency,
             R.string.row_game_sound_title, R.string.row_game_sound_sub)
+        // Which effect it applies: `0x0423 <type> 01`, HeyMelody's radio list (PROTOCOL.md §9).
+        if (featureSwitches.containsKey(OpoProtocol.FEATURE_GAME_SOUND) &&
+            (Capabilities.supports(this, OpoProtocol.CMD_GAME_SOUND) || ModelCatalog.manual(this) != null)) {
+            card.addView(SettingRowFactory.buildDivider(this))
+            val row = SettingRowFactory.build(this, R.drawable.ic_low_latency, R.string.game_sound_type_title,
+                0, SettingRowFactory.buildChevron(this)) { gameSoundSheet() }
+            gameSoundText = SettingRowFactory.subtitle(this, row)
+            paintGameSound()
+            card.addView(row)
+        }
         switch(OpoProtocol.FEATURE_SMART_VOLUME, "controlAutoVolumeSupport", R.drawable.ic_volume,
             R.string.row_smart_volume_title, R.string.row_smart_volume_sub)
         switch(OpoProtocol.FEATURE_ADAPTIVE_VOLUME, null, R.drawable.ic_volume,
@@ -150,8 +162,36 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun quiet(block: () -> Unit) { syncing = true; block(); syncing = false }
 
-    override fun onFeatureStates(states: Map<Int, Int>) = quiet {
-        for ((id, sw) in featureSwitches) states[id]?.let { sw.isChecked = it == 1 }
+    override fun onFeatureStates(states: Map<Int, Int>) {
+        quiet { for ((id, sw) in featureSwitches) states[id]?.let { sw.isChecked = it == 1 } }
+        paintGameSound()
+    }
+
+    /** HeyMelody's names for the game sound types; a type without one is not offered. */
+    private fun gameSoundLabel(type: Int) = when (type) {
+        0 -> getString(R.string.anc_seg_off)
+        1 -> getString(R.string.game_sound_type_peace)
+        3 -> getString(R.string.game_sound_type_shooter)
+        else -> null
+    }
+
+    private fun paintGameSound() {
+        gameSoundText?.text = manager?.gameSoundType?.let { gameSoundLabel(it) } ?: "—"
+    }
+
+    /** The types the buds offer (`0x812B`), Off first; before a read, HeyMelody's usual Off + shooting. */
+    private fun gameSoundSheet() {
+        val m = manager ?: return
+        val types = (listOf(0) + m.gameSoundTypes.ifEmpty { listOf(3) }).distinct().filter { gameSoundLabel(it) != null }
+        BottomSheetDialog(this)
+            .title(getString(R.string.game_sound_type_title))
+            .items(types.map { t ->
+                BottomSheetDialog.Item(gameSoundLabel(t)!!, t == m.gameSoundType) {
+                    m.setGameSoundType(t)
+                    paintGameSound()
+                }
+            })
+            .show()
     }
 
     private fun sounds(root: LinearLayout) {

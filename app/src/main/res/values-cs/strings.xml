@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Čistší zpěv ve skladbách</string>
     <string name="row_game_sound_title">Herní zvukové efekty</string>
     <string name="row_game_sound_sub">Lepší zvuk po spuštění hry</string>
+    <string name="spatial_fixed">Pevný</string>
+    <string name="spatial_head_tracking">Sledování hlavy</string>
+    <string name="game_sound_type_title">Typ herního zvuku</string>
+    <string name="game_sound_type_shooter">Střílečky</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Chytrá hlasitost</string>
     <string name="row_smart_volume_sub">Přizpůsobí hlasitost okolnímu hluku</string>
     <string name="row_adaptive_volume_title">Adaptivní hlasitost</string>

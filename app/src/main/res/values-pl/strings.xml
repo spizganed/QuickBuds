@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Wyraźniejszy wokal w utworach</string>
     <string name="row_game_sound_title">Efekty dźwiękowe w grach</string>
     <string name="row_game_sound_sub">Lepszy dźwięk po uruchomieniu gry</string>
+    <string name="spatial_fixed">Stały</string>
+    <string name="spatial_head_tracking">Śledzenie głowy</string>
+    <string name="game_sound_type_title">Typ dźwięku w grach</string>
+    <string name="game_sound_type_shooter">Strzelanki</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Inteligentna głośność</string>
     <string name="row_smart_volume_sub">Dopasowuje głośność do hałasu otoczenia</string>
     <string name="row_adaptive_volume_title">Głośność adaptacyjna</string>

@@ -90,6 +90,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private var hiresSwitch: Switch? = null
     private var hiresSubtitle: TextView? = null
     private var spatialSwitch: Switch? = null
+    private var spatialSubtitle: TextView? = null
     private var goldenSwitch: Switch? = null
 
     /** Last state rendered, so a redundant notify does not rebuild the UI. */
@@ -857,12 +858,16 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         hires.setOnCheckedChangeListener { _, isChecked ->
             if (syncingFeatures) return@setOnCheckedChangeListener
             setSwitchQuiet(hires, !isChecked)
-            val dropSpatial = isChecked && featureOn(OpoProtocol.FEATURE_SPATIAL_SOUND)
+            val dropSpatial = isChecked && spatialOn()
             confirmReconnect(
                 if (dropSpatial) R.string.codec_msg_hires_drops_spatial else R.string.codec_msg_reconnect
             ) {
                 setSwitchQuiet(hires, isChecked)
-                if (dropSpatial) manager.setFeatures(
+                if (dropSpatial && spatialByType()) {
+                    manager.setSpatialType(0)
+                    paintSpatial()
+                    hires.postDelayed({ manager.setFeatures(OpoProtocol.FEATURE_HIRES_CODEC to true) }, 300)
+                } else if (dropSpatial) manager.setFeatures(
                     OpoProtocol.FEATURE_SPATIAL_SOUND to false, OpoProtocol.FEATURE_HIRES_CODEC to true
                 )
                 else manager.setFeatures(OpoProtocol.FEATURE_HIRES_CODEC to isChecked)
@@ -878,23 +883,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         spatialSwitch = spatial
         spatial.setOnCheckedChangeListener { _, isChecked ->
             if (syncingFeatures) return@setOnCheckedChangeListener
-            if (isChecked && featureOn(OpoProtocol.FEATURE_HIRES_CODEC)) {
-                setSwitchQuiet(spatial, false)
-                confirmReconnect(R.string.codec_msg_spatial_drops_hires) {
-                    setSwitchQuiet(spatial, true)
-                    manager.setFeatures(
-                        OpoProtocol.FEATURE_SPATIAL_SOUND to true, OpoProtocol.FEATURE_HIRES_CODEC to false
-                    )
-                }
-            } else {
-                manager.setFeatures(OpoProtocol.FEATURE_SPATIAL_SOUND to isChecked)
-            }
+            setSpatial(if (isChecked) 1 else 0)
         }
-        addRow("spatial", 
-            SettingRowFactory.build(
-                this, R.drawable.ic_spatial, R.string.row_spatial_title, R.string.row_spatial_sub, spatial
-            ) { spatial.performClick() }
-        )
+        val spatialRow = SettingRowFactory.build(
+            this, R.drawable.ic_spatial, R.string.row_spatial_title, R.string.row_spatial_sub, spatial
+        ) { if (spatialHeadTracking()) spatialSheet() else spatial.performClick() }
+        spatialSubtitle = spatialRow.findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)
+        addRow("spatial", spatialRow)
 
         // --- Golden Sound: the hearing profile on the buds, feature 0x0B [VENDOR] (PROTOCOL.md §9) ---
         // The row opens the Golden Sound screen (profiles, hearing test); the switch toggles it.
@@ -951,6 +946,63 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun featureOn(id: Int) = manager.featureStates[id] == 1
 
+    /**
+     * Spatial audio as HeyMelody picks it (PROTOCOL.md §9): buds whose bitmap has `0x012A` (or a
+     * hand-picked model with head tracking) take a type through `0x0422`, the rest feature `0x1B`.
+     */
+    private fun spatialByType() = Capabilities.supports(this, OpoProtocol.CMD_QUERY_SPATIAL_TYPE) ||
+        (ModelCatalog.manual(this) != null && spatialHeadTracking())
+
+    /** The model's `spatialTypes` has `2`: Off / Fixed / Head tracking instead of a plain switch. */
+    private fun spatialHeadTracking() =
+        ModelCatalog.current(this)?.json?.optJSONArray("spatialTypes")?.toString()?.contains('2') == true
+
+    private fun spatialOn() = if (spatialByType()) (manager.spatialType ?: 0) != 0
+        else featureOn(OpoProtocol.FEATURE_SPATIAL_SOUND)
+
+    /** Spatial and Hi-Res never coexist: turning spatial on with Hi-Res on asks first, then drops Hi-Res. */
+    private fun setSpatial(type: Int) {
+        val dropHires = type != 0 && featureOn(OpoProtocol.FEATURE_HIRES_CODEC)
+        val write = {
+            spatialSwitch?.let { setSwitchQuiet(it, type != 0) }
+            val hiresOff = OpoProtocol.FEATURE_HIRES_CODEC to false
+            if (spatialByType()) {
+                manager.setSpatialType(type)
+                paintSpatial()
+                // Spatial first, then the codec, as HeyMelody sends them.
+                if (dropHires) spatialSwitch?.postDelayed({ manager.setFeatures(hiresOff) }, 300)
+            } else if (dropHires) manager.setFeatures(OpoProtocol.FEATURE_SPATIAL_SOUND to true, hiresOff)
+            else manager.setFeatures(OpoProtocol.FEATURE_SPATIAL_SOUND to (type != 0))
+        }
+        if (!dropHires) return write()
+        spatialSwitch?.let { setSwitchQuiet(it, spatialOn()) }
+        confirmReconnect(R.string.codec_msg_spatial_drops_hires, write)
+    }
+
+    private fun spatialLabel(type: Int) = getString(when (type) {
+        1 -> R.string.spatial_fixed
+        2 -> R.string.spatial_head_tracking
+        else -> R.string.anc_seg_off
+    })
+
+    private fun spatialSheet() {
+        val current = manager.spatialType ?: 0
+        BottomSheetDialog(this)
+            .title(getString(R.string.row_spatial_title))
+            .items(listOf(0, 1, 2).map { type ->
+                BottomSheetDialog.Item(spatialLabel(type), type == current) { setSpatial(type) }
+            })
+            .show()
+    }
+
+    /** Switch and (head-tracking models) subtitle from the buds' last state. */
+    private fun paintSpatial() {
+        if (connectedUi == false) return
+        spatialSwitch?.let { setSwitchQuiet(it, spatialOn()) }
+        if (spatialHeadTracking()) spatialSubtitle?.text = spatialLabel(manager.spatialType ?: 0)
+        else spatialSubtitle?.setText(R.string.row_spatial_sub)
+    }
+
     /** HeyMelody-style warning before any write that makes the buds reconnect. Dismiss = decline. */
     private fun confirmReconnect(messageRes: Int, onAccept: () -> Unit) {
         val sheet = BottomSheetDialog(this)
@@ -968,9 +1020,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             hiresSwitch?.let { setSwitchQuiet(it, v == 1) }
             hiresSubtitle?.setText(if (v == 1) R.string.row_hires_sub else R.string.row_hires_sub_off)
         }
-        states[OpoProtocol.FEATURE_SPATIAL_SOUND]?.let { v ->
-            spatialSwitch?.let { setSwitchQuiet(it, v == 1) }
-        }
+        paintSpatial()
         states[OpoProtocol.FEATURE_GOLDEN_SOUND]?.let { v ->
             goldenSwitch?.let { setSwitchQuiet(it, v == 1) }
         }
@@ -993,7 +1043,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun rowSupported(key: String): Boolean = when (key) {
         "game" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GAME_MODE)
         "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC)
-        "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND)
+        "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND) || spatialByType()
         "golden" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GOLDEN_SOUND)
         "eq" -> Capabilities.supports(this, OpoProtocol.CMD_SET_EQ)
         "dual" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_DUAL_DEVICE)

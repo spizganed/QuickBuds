@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">曲のボーカルをよりクリアに</string>
     <string name="row_game_sound_title">ゲーム効果音</string>
     <string name="row_game_sound_sub">ゲーム起動時にサウンドを強化</string>
+    <string name="spatial_fixed">固定</string>
+    <string name="spatial_head_tracking">ヘッドトラッキング</string>
+    <string name="game_sound_type_title">ゲームサウンドの種類</string>
+    <string name="game_sound_type_shooter">シューティングゲーム</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">スマート音量</string>
     <string name="row_smart_volume_sub">周囲の騒音に合わせて音量を調整</string>
     <string name="row_adaptive_volume_title">適応型音量</string>

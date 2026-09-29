@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">歌曲人声更清晰</string>
     <string name="row_game_sound_title">游戏音效</string>
     <string name="row_game_sound_sub">进入游戏时增强音效</string>
+    <string name="spatial_fixed">固定</string>
+    <string name="spatial_head_tracking">头部追踪</string>
+    <string name="game_sound_type_title">游戏音效类型</string>
+    <string name="game_sound_type_shooter">射击游戏</string>
+    <string name="game_sound_type_peace">和平精英</string>
     <string name="row_smart_volume_title">智能音量</string>
     <string name="row_smart_volume_sub">根据环境噪声调节音量</string>
     <string name="row_adaptive_volume_title">自适应音量</string>

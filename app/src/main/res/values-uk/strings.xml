@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Чіткіший вокал у піснях</string>
     <string name="row_game_sound_title">Ігрові звукові ефекти</string>
     <string name="row_game_sound_sub">Кращий звук під час запуску гри</string>
+    <string name="spatial_fixed">Фіксований</string>
+    <string name="spatial_head_tracking">Відстеження голови</string>
+    <string name="game_sound_type_title">Тип ігрового звуку</string>
+    <string name="game_sound_type_shooter">Шутери</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Розумна гучність</string>
     <string name="row_smart_volume_sub">Підлаштовує гучність під навколишній шум</string>
     <string name="row_adaptive_volume_title">Адаптивна гучність</string>

@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">노래의 보컬을 더 선명하게</string>
     <string name="row_game_sound_title">게임 사운드 효과</string>
     <string name="row_game_sound_sub">게임 시작 시 사운드 강화</string>
+    <string name="spatial_fixed">고정</string>
+    <string name="spatial_head_tracking">헤드 트래킹</string>
+    <string name="game_sound_type_title">게임 사운드 유형</string>
+    <string name="game_sound_type_shooter">슈팅 게임</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">스마트 볼륨</string>
     <string name="row_smart_volume_sub">주변 소음에 맞춰 볼륨 조절</string>
     <string name="row_adaptive_volume_title">적응형 볼륨</string>

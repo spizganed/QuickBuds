@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Duidelijkere zang in nummers</string>
     <string name="row_game_sound_title">Game-geluidseffecten</string>
     <string name="row_game_sound_sub">Beter geluid als een game start</string>
+    <string name="spatial_fixed">Vast</string>
+    <string name="spatial_head_tracking">Hoofdtracking</string>
+    <string name="game_sound_type_title">Type gamegeluid</string>
+    <string name="game_sound_type_shooter">Shootergames</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Slim volume</string>
     <string name="row_smart_volume_sub">Past het volume aan omgevingsgeluid aan</string>
     <string name="row_adaptive_volume_title">Adaptief volume</string>

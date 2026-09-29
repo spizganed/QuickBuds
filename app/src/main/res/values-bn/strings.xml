@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">গানে আরও স্পষ্ট কণ্ঠ</string>
     <string name="row_game_sound_title">গেম সাউন্ড ইফেক্ট</string>
     <string name="row_game_sound_sub">গেম শুরু হলে উন্নত সাউন্ড</string>
+    <string name="spatial_fixed">স্থির</string>
+    <string name="spatial_head_tracking">হেড ট্র্যাকিং</string>
+    <string name="game_sound_type_title">গেম সাউন্ডের ধরন</string>
+    <string name="game_sound_type_shooter">শুটিং গেম</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">স্মার্ট ভলিউম</string>
     <string name="row_smart_volume_sub">চারপাশের শব্দ অনুযায়ী ভলিউম</string>
     <string name="row_adaptive_volume_title">অ্যাডাপ্টিভ ভলিউম</string>

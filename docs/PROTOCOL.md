@@ -1161,13 +1161,18 @@ a write back yet.
 
 - **Game mode on game-sound buds is `0x28`, not `0x06`.** When the `0x8100` bitmap enables `0x0423`
   (bit 49), HeyMelody's game mode switch writes and reads `0x28` ("main"); elsewhere `0x06`. The app
-  does the same (`BudsConnectionManager.gameModeId()`). `0x0423`'s own payload was not needed and is
-  not wired.
+  does the same (`BudsConnectionManager.gameModeId()`).
+- **Game sound type** `[VENDOR]` (2026-09-29, wired, unverified on buds): `0x0423 <type> 01` for every
+  pick, Off (`0`) included. Read with `0x012B` (empty) -> `00 <selected> <count> <types...>`. Types with a
+  name in HeyMelody: `0` Off, `1` Peacekeeper Elite (a Chinese game), `3` shooting games; the model list's
+  `gameSoundList` is `3, 0` on every OnePlus / OPPO model that has one, `1, 0` on OnePlus Buds 3. HeyMelody
+  shows the model's types that the buds also list, as a radio list under the game sound switch; the app
+  shows them as a sheet from Earbud settings › Features.
 - Buds 4's model entry has `controlAutoVolumeSupport`, yet its `0x810D` reply leaves out `0x1C`: the
   buds' list wins while they are connected.
-- **Not built:** neck health (`0x22` live posture monitor, `0x23` / `0x24` reminders), which needs
-  OPPO's Health app for the data, and meeting assistant (`0x34`), a voiceprint enhancement for one
-  meeting app that needs an enrolment flow first.
+- **Decided against** ([USER] 2026-09-29): neck health (`0x22` live posture monitor, `0x23` / `0x24`
+  reminders), which needs OPPO's Health app for the data, and meeting assistant (`0x34`), a voiceprint
+  enhancement for one meeting app that needs an enrolment flow first.
 
 ### Golden Sound (hearing enhancement, feature `0x0B`) — `[VENDOR]` + read back 2026-09-29
 
@@ -1258,9 +1263,11 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
   enables `0x012A` (bit 47), `HeadSetSpatialAudioVMV2` sends `0x0422 <type>`; otherwise
   `HeadSetSpatialAudioVM` toggles feature `0x1B`. Types come from the model's `spatialTypes`:
   `0` off, `1` fixed (on), `2` head tracking (3 models). The buds push the current type as
-  **`0x0510 <type>`** (`case 1296`, `payload[0]`). The `0x812A` reply layout
-  was not found. **Not wired**: Buds 4 is a `0x1B` model, and no
-  `0x012A` owner has reported yet.
+  **`0x0510 <type>`** (`payload[0]`). `0x012A` (empty) reads it: `00 <type>`. **Wired 2026-09-29,
+  unverified on buds**: on `0x012A` buds the 3D audio switch writes `0x0422 01` / `00`; where the model's
+  `spatialTypes` has `2` (OnePlus Buds Pro 2, Buds Pro 3, OPPO Enco X3; the only ones, kept in
+  `assets/models.json`) a tap on the row picks Off / Fixed / Head tracking, HeyMelody's three options.
+  Hi-Res is turned off after spatial goes on, as on `0x1B` buds.
 - **`0x18` is a quality switch, not a codec switch** `[CAPTURE]` (phone `dumpsys bluetooth_manager`,
   2026-09-25, same session, music playing). The codec is LHDC V5 either way; the phone picks it.
   What changes is what the buds advertise for LHDC V5:

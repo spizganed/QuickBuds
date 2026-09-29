@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Tydligare sång i låtar</string>
     <string name="row_game_sound_title">Ljudeffekter för spel</string>
     <string name="row_game_sound_sub">Bättre ljud när ett spel startar</string>
+    <string name="spatial_fixed">Fast</string>
+    <string name="spatial_head_tracking">Huvudspårning</string>
+    <string name="game_sound_type_title">Typ av spelljud</string>
+    <string name="game_sound_type_shooter">Skjutspel</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Smart volym</string>
     <string name="row_smart_volume_sub">Anpassar volymen efter omgivningsljud</string>
     <string name="row_adaptive_volume_title">Adaptiv volym</string>

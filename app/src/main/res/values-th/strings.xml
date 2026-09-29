@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">เสียงร้องในเพลงชัดขึ้น</string>
     <string name="row_game_sound_title">เอฟเฟกต์เสียงเกม</string>
     <string name="row_game_sound_sub">เสียงดีขึ้นเมื่อเริ่มเกม</string>
+    <string name="spatial_fixed">คงที่</string>
+    <string name="spatial_head_tracking">ติดตามศีรษะ</string>
+    <string name="game_sound_type_title">ประเภทเสียงเกม</string>
+    <string name="game_sound_type_shooter">เกมยิงปืน</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">ระดับเสียงอัจฉริยะ</string>
     <string name="row_smart_volume_sub">ปรับระดับเสียงตามเสียงรบกวนรอบข้าง</string>
     <string name="row_adaptive_volume_title">ระดับเสียงปรับได้</string>

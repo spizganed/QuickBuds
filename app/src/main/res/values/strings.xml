@@ -95,6 +95,11 @@
     <string name="row_vocal_sub">Clearer vocals in songs</string>
     <string name="row_game_sound_title">Game sound effects</string>
     <string name="row_game_sound_sub">Enhanced sound when a game starts</string>
+    <string name="spatial_fixed">Fixed</string>
+    <string name="spatial_head_tracking">Head tracking</string>
+    <string name="game_sound_type_title">Game sound type</string>
+    <string name="game_sound_type_shooter">Shooting games</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Smart volume</string>
     <string name="row_smart_volume_sub">Adjusts volume to ambient noise</string>
     <string name="row_adaptive_volume_title">Adaptive volume</string>

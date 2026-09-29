@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Πιο καθαρά φωνητικά στα τραγούδια</string>
     <string name="row_game_sound_title">Ηχητικά εφέ παιχνιδιών</string>
     <string name="row_game_sound_sub">Καλύτερος ήχος όταν ξεκινά ένα παιχνίδι</string>
+    <string name="spatial_fixed">Σταθερό</string>
+    <string name="spatial_head_tracking">Παρακολούθηση κεφαλιού</string>
+    <string name="game_sound_type_title">Τύπος ήχου παιχνιδιού</string>
+    <string name="game_sound_type_shooter">Παιχνίδια σκοποβολής</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Έξυπνη ένταση</string>
     <string name="row_smart_volume_sub">Προσαρμόζει την ένταση στον θόρυβο</string>
     <string name="row_adaptive_volume_title">Προσαρμοστική ένταση</string>

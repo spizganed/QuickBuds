@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Vokal lebih jernih dalam lagu</string>
     <string name="row_game_sound_title">Efek suara game</string>
     <string name="row_game_sound_sub">Suara lebih baik saat game dimulai</string>
+    <string name="spatial_fixed">Tetap</string>
+    <string name="spatial_head_tracking">Pelacakan kepala</string>
+    <string name="game_sound_type_title">Jenis suara game</string>
+    <string name="game_sound_type_shooter">Game tembak-tembakan</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Volume pintar</string>
     <string name="row_smart_volume_sub">Menyesuaikan volume dengan kebisingan</string>
     <string name="row_adaptive_volume_title">Volume adaptif</string>

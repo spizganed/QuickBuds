@@ -71,6 +71,11 @@
     <string name="row_vocal_sub">Voce mai clară în melodii</string>
     <string name="row_game_sound_title">Efecte sonore pentru jocuri</string>
     <string name="row_game_sound_sub">Sunet îmbunătățit la pornirea unui joc</string>
+    <string name="spatial_fixed">Fix</string>
+    <string name="spatial_head_tracking">Urmărirea capului</string>
+    <string name="game_sound_type_title">Tip de sunet pentru jocuri</string>
+    <string name="game_sound_type_shooter">Jocuri shooter</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="row_smart_volume_title">Volum inteligent</string>
     <string name="row_smart_volume_sub">Ajustează volumul după zgomotul ambiant</string>
     <string name="row_adaptive_volume_title">Volum adaptiv</string>

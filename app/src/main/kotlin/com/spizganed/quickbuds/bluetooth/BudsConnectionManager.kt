@@ -310,6 +310,8 @@ class BudsConnectionManager(private val context: Context) {
                     query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryNoiseSwitchModes(type), "query noise switch $type")
                 // Logged only until a Buds 4 reply confirms the [OSS] format (ROADMAP, firmware version).
                 query(OpoProtocol.CMD_QUERY_FIRMWARE, OpoProtocol.queryFirmware(), "query firmware")
+                query(OpoProtocol.CMD_QUERY_SPATIAL_TYPE, OpoProtocol.querySpatialType(), "query spatial type")
+                query(OpoProtocol.CMD_QUERY_GAME_SOUND, OpoProtocol.queryGameSound(), "query game sound")
             } catch (e: Exception) {
                 log("Init sequence error: ${e.message}")
             }
@@ -538,6 +540,39 @@ class BudsConnectionManager(private val context: Context) {
                 }
             } catch (e: Exception) {
                 log("GOLDEN WRITE failed: ${e.message}")
+            }
+        }.start()
+    }
+
+    /**
+     * Spatial type on buds with `0x0422` (0 off, 1 fixed, 2 head tracking), null until read. Changes
+     * repaint through [Listener.onFeatureStates]. `[VENDOR]`, unverified on buds (PROTOCOL.md §9).
+     */
+    @Volatile var spatialType: Int? = null
+        private set
+
+    /** Game sound type on buds with `0x0423`: the selected one (0 = off), null until read. */
+    @Volatile var gameSoundType: Int? = null
+        private set
+    /** The types these buds offer, from the same `0x812B` reply. */
+    @Volatile var gameSoundTypes: List<Int> = emptyList()
+        private set
+
+    fun setSpatialType(type: Int) = writeThenRead(OpoProtocol.setSpatialType(type), "Spatial type $type",
+        OpoProtocol.querySpatialType(), "query spatial type") { spatialType = type }
+
+    fun setGameSoundType(type: Int) = writeThenRead(OpoProtocol.setGameSoundType(type), "Game sound type $type",
+        OpoProtocol.queryGameSound(), "query game sound") { gameSoundType = type }
+
+    private fun writeThenRead(write: ByteArray, label: String, read: ByteArray, readLabel: String, optimistic: () -> Unit) {
+        optimistic()
+        Thread {
+            try {
+                sendRawBlocking(write, label)
+                Thread.sleep(400)
+                sendRawBlocking(read, readLabel)
+            } catch (e: Exception) {
+                log("$label failed: ${e.message}")
             }
         }.start()
     }
@@ -942,6 +977,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
             cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || cmd == 0x811F || // Golden Sound replies
+            cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd == OpoProtocol.CMD_REGISTER_NOTIFY
         if (explained) return
@@ -1197,6 +1233,27 @@ class BudsConnectionManager(private val context: Context) {
                     if (game != null) it.onGameModeState(game == 1)
                 }
             }
+            return
+        }
+
+        // --- Spatial type: read reply 0x812A `00 <type>`, push 0x0510 `<type>`; game sound 0x812B ---
+        val spatial = when {
+            cmd == 0x812A && payload.size >= 2 && payload[0].toInt() == 0 -> payload[1].toInt() and 0xFF
+            cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH && payload.isNotEmpty() -> payload[0].toInt() and 0xFF
+            else -> null
+        }
+        if (spatial != null) {
+            spatialType = spatial
+            log("SPATIAL TYPE: $spatial RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
+            return
+        }
+        if (cmd == 0x812B && payload.size >= 3 && payload[0].toInt() == 0) {
+            val count = payload[2].toInt() and 0xFF
+            gameSoundType = payload[1].toInt() and 0xFF
+            gameSoundTypes = (3 until minOf(payload.size, 3 + count)).map { payload[it].toInt() and 0xFF }
+            log("GAME SOUND: type=$gameSoundType offered=$gameSoundTypes RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
             return
         }
 

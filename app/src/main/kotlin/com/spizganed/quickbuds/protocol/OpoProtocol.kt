@@ -108,6 +108,12 @@ object OpoProtocol {
     const val FEATURE_GAME_MODE_MAIN = 0x28
     const val FEATURE_GAME_SOUND = 0x27
     const val CMD_GAME_SOUND = 0x0423
+    /** Game sound type: `0x0423 <type> 01`, read `0x012B` -> `00 <selected> <count> <types>`. `[VENDOR]` (PROTOCOL.md §9). */
+    const val CMD_QUERY_GAME_SOUND = 0x012B
+    /** Spatial type (`0` off, `1` fixed, `2` head tracking): `0x0422 <type>`, read `0x012A` -> `00 <type>`, pushed as `0x0510 <type>`. `[VENDOR]` */
+    const val CMD_SET_SPATIAL_TYPE = 0x0422
+    const val CMD_QUERY_SPATIAL_TYPE = 0x012A
+    const val CMD_SPATIAL_TYPE_PUSH = 0x0510
     /** Plain on/off switches from HeyMelody, `[VENDOR]`, unverified on buds (PROTOCOL.md §9). */
     const val FEATURE_VOCAL_ENHANCE = 0x09
     const val FEATURE_POWER_SAVING = 0x17
@@ -428,6 +434,12 @@ object OpoProtocol {
     fun setAlertVolume(level: Int): ByteArray =
         buildPacket(CMD_SET_ALERT_VOLUME, payload = byteArrayOf(level.coerceIn(1, 10).toByte()))
     fun queryAlertVolume(): ByteArray = buildPacket(CMD_QUERY_ALERT_VOLUME)
+
+    fun setSpatialType(type: Int): ByteArray = buildPacket(CMD_SET_SPATIAL_TYPE, payload = byteArrayOf(type.toByte()))
+    fun querySpatialType(): ByteArray = buildPacket(CMD_QUERY_SPATIAL_TYPE)
+    /** HeyMelody sends every pick, Off (`0`) included, with enable `01`. */
+    fun setGameSoundType(type: Int): ByteArray = buildPacket(CMD_GAME_SOUND, payload = byteArrayOf(type.toByte(), 0x01))
+    fun queryGameSound(): ByteArray = buildPacket(CMD_QUERY_GAME_SOUND)
 
     fun queryDevices(): ByteArray = buildPacket(CMD_QUERY_DEVICES)
     /** `08 00 01` after dual OFF, `08 00 00` after ON — copied from HeyMelody, not understood. */
