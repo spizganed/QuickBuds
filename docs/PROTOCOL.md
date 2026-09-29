@@ -1166,9 +1166,12 @@ a write back yet.
 
 - **Power saving `0x17` on Buds 4** `[CAPTURE]` 2026-09-29: the buds answer `17=0` in `0x810D`, so the row
   shows. `0x0403 17 01` restarts them: the RFCOMM link drops at once, returns about 12 s later, and `0x810D`
-  then reads `17=1`. `17 00` restarts them again. After either restart the buds do not bring the phone's
-  audio (A2DP / HFP) back by themselves; the app asks for it (CLAUDE.md, Connection robustness). While it was on, every ANC push read Off (`0x0008`); whether
-  power saving blocks noise control is not confirmed. What else it turns off is not known yet.
+  then reads `17=1`. `17 00` restarts them again. On versus off (logcat, `dumpsys bluetooth_manager` and an
+  HCI snoop, 2026-09-29): ANC in every mode, gestures and wear detection work, the A2DP codec stays LHDC V5
+  48 kHz / 24-bit, and the link is identical (remote version and features, sniff 250-500 ms set by the
+  phone). What it turns off is internal to the buds; only a battery comparison can show it. After either
+  restart the buds do not bring the phone's audio (A2DP / HFP) back by themselves; the app asks for it
+  (CLAUDE.md, Connection robustness).
   `[VENDOR]` HeyMelody asks the buds for `0x17` only when the model's server config sets `longPowerMode`
   (the bundled list has it on no model), and its detail page never adds the row: the global app does not
   show it. The ColorOS / OxygenOS system app (`com.oplus.melody` 16.10.0) is the same: the row is never added,

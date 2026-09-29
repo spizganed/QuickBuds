@@ -21,9 +21,9 @@ Each step is done before the next one starts.
    decided against.
    - **Open: what power saving does on Buds 4** (2026-09-29). Buds 4 lists `0x17` and the write works (the
      buds restart, PROTOCOL.md §9), but HeyMelody's global app never shows it and its text is Chinese only.
-     Find out what it turns off (ANC read Off throughout one test) before deciding whether the row stays.
-     Sources: the ColorOS / OxygenOS system app `com.oplus.melody` (16.10.0) and a test with ANC, wear
-     detection and the gestures while it is on.
+     Neither app, the protocol, the codec nor an HCI snoop shows any difference with it on (2026-09-29).
+     Left: a battery comparison (same playback, ANC and volume, drain per hour on and off), then decide
+     whether the row stays.
    - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless
      3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
