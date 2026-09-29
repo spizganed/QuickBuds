@@ -108,38 +108,55 @@ class ColorPickerView(
 
     private fun swatches(row: LinearLayout, colors: List<Int>, initial: Int) {
         val p = ThemeRes.palette(context)
-        val nothing = ThemeRes.nothing(context)
-        // Dot style: a whole odd number of cells, so the dotted disc is symmetric.
-        val size = if (nothing) DotArt.pitchPx(context).toInt() * SWATCH_CELLS else dp(30f)
         colors.forEachIndexed { k, c ->
-            val ring = if (c == initial) p.text else p.outline
-            row.addView((if (nothing) DotSwatch(context, c, ring) else View(context)).apply {
-                if (!nothing) background = GradientDrawable().apply {
-                    shape = GradientDrawable.OVAL
-                    setColor(c)
-                    // The outline keeps a swatch in the card's own colour visible.
-                    setStroke(dp(if (c == initial) 2f else 1f), ring)
-                }
+            val on = c == initial
+            // The outline keeps a swatch in the card's own colour visible.
+            row.addView(Swatch(context, c, if (on) p.text else p.outline, if (on) 2f else 1f).apply {
                 contentDescription = hex(c)
-                layoutParams = LayoutParams(size, size).apply { if (k > 0) marginStart = dp(8f) }
+                (layoutParams as LayoutParams).apply { if (k > 0) marginStart = dp(8f) }
                 setOnClickListener { commit(c, it) }
             })
         }
     }
 
     /**
-     * A swatch as dots: a fixed disc of [SWATCH_CELLS] cells (like [DotArt.knob]; scaled circles came out
-     * uneven), its edge cells in [ring], the rest in [color].
+     * A colour swatch (picker suggestions, recents, the rows' leading circle): a ringed circle, or in the dot
+     * style a fixed disc of [SWATCH_CELLS] cells (like [DotArt.knob]; scaled circles came out uneven) whose
+     * edge cells are the [ring]. Set [color] to repaint it.
      */
-    private class DotSwatch(context: Context, private val color: Int, private val ring: Int) : View(context) {
+    class Swatch(context: Context, color: Int, private val ring: Int, private val ringDp: Float = 1f) : View(context) {
+        private val nothing = ThemeRes.nothing(context)
         private val paint = Paint()
-        override fun onDraw(canvas: Canvas) = DotArt.draw(context, canvas, width, height) { c ->
-            val pitch = DotArt.pitchPx(context)
-            for (y in 0 until SWATCH_CELLS) for (x in 0 until SWATCH_CELLS) {
-                if (!inDisc(x, y)) continue
-                val edge = !(inDisc(x + 1, y) && inDisc(x - 1, y) && inDisc(x, y + 1) && inDisc(x, y - 1))
-                paint.color = if (edge) ring else color
-                c.drawRect(x * pitch, y * pitch, (x + 1) * pitch, (y + 1) * pitch, paint)
+
+        var color = color
+            set(v) { field = v; paint() }
+
+        init {
+            // Dot style: a whole odd number of cells, so the disc is symmetric.
+            val size = if (nothing) DotArt.pitchPx(context).toInt() * SWATCH_CELLS else ThemeRes.dp(context, 30f)
+            layoutParams = LinearLayout.LayoutParams(size, size)
+            paint()
+        }
+
+        private fun paint() {
+            if (!nothing) background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(color)
+                setStroke(ThemeRes.dp(context, ringDp), ring)
+            }
+            invalidate()
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            if (!nothing) return
+            DotArt.draw(context, canvas, width, height) { c ->
+                val pitch = DotArt.pitchPx(context)
+                for (y in 0 until SWATCH_CELLS) for (x in 0 until SWATCH_CELLS) {
+                    if (!inDisc(x, y)) continue
+                    val edge = !(inDisc(x + 1, y) && inDisc(x - 1, y) && inDisc(x, y + 1) && inDisc(x, y - 1))
+                    paint.color = if (edge) ring else color
+                    c.drawRect(x * pitch, y * pitch, (x + 1) * pitch, (y + 1) * pitch, paint)
+                }
             }
         }
 

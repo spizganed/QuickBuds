@@ -145,10 +145,7 @@ class ThemeActivity : Activity() {
             val accentCard = SettingRowFactory.card(this).apply {
                 (layoutParams as LinearLayout.LayoutParams).topMargin = dp(18f)
             }
-            val swatch = View(this).apply {
-                background = ThemeRes.shape(this@ThemeActivity, active.accent, p.outline, 15f)
-                layoutParams = LinearLayout.LayoutParams(dp(30f), dp(30f))
-            }
+            val swatch = ColorPickerView.Swatch(this, active.accent, p.outline)
             val chevron = ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))
                 setImageDrawable(ThemeRes.tint(
@@ -164,7 +161,7 @@ class ThemeActivity : Activity() {
             if (accentOpen) accentCard.addView(ColorPickerView(
                 this, active.accent, "accent:${active.id}",
                 onChange = { c ->
-                    swatch.background = ThemeRes.shape(this, c, p.outline, 15f)
+                    swatch.color = c
                     sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(c))
                     activeTile?.palette = active.copy(accent = c)
                 },

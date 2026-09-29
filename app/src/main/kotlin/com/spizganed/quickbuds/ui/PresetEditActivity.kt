@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.Gravity
@@ -33,7 +32,7 @@ class PresetEditActivity : Activity() {
     private var expanded = -1
 
     // Views of the expanded row, updated in place while the hue slider drags.
-    private var liveSwatch: View? = null
+    private var liveSwatch: ColorPickerView.Swatch? = null
     private var liveHex: TextView? = null
 
     private val p get() = ThemeRes.palette(this)
@@ -121,18 +120,9 @@ class PresetEditActivity : Activity() {
         }
     }
 
-    private fun swatchDrawable(color: Int) = GradientDrawable().apply {
-        shape = GradientDrawable.OVAL
-        setColor(color)
-        setStroke(dp(1f), p.outline)
-    }
-
     private fun colorRow(i: Int): View {
         val color = preset.tokens[i]
-        val swatch = View(this).apply {
-            background = swatchDrawable(color)
-            layoutParams = LinearLayout.LayoutParams(dp(30f), dp(30f))
-        }
+        val swatch = ColorPickerView.Swatch(this, color, p.outline)
         val hexView = TextView(this).apply {
             text = ColorPickerView.hex(color)
             setTextColor(p.textSecondary)
@@ -199,7 +189,7 @@ class PresetEditActivity : Activity() {
         this, preset.tokens[i], "${preset.id}:$i",
         onChange = { c ->
             preview.palette = preset.withToken(i, c)
-            liveSwatch?.background = swatchDrawable(c)
+            liveSwatch?.color = c
             liveHex?.text = ColorPickerView.hex(c)
         },
         onCommit = { c, v -> commit(i, c, v) }
