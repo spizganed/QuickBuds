@@ -76,6 +76,10 @@
     <string name="game_sound_type_title">游戏音效类型</string>
     <string name="game_sound_type_shooter">射击游戏</string>
     <string name="game_sound_type_peace">和平精英</string>
+    <string name="report_title">帮助完善对你的耳机的支持</string>
+    <string name="report_body">QuickBuds 目前只在 OnePlus Buds 4 上测试过。在其他型号上，部分功能可能暂时无法使用。\n\n请告诉我们你的耳机上哪些功能可用、哪些不可用，以便在下个版本中修复：在 GitHub 上提交 issue 并注明型号。\n\n请附上日志：打开 Dev tools（顶部图标，可在 设置 › 通用 中开启），试用该功能，点按 Export，然后附上 Download/QuickBudsLogs 中的文件。蓝牙 HCI snoop 日志或 adb logcat 也有帮助。</string>
+    <string name="report_open">在 GitHub 上反馈</string>
+    <string name="report_later">知道了</string>
     <string name="row_smart_volume_title">智能音量</string>
     <string name="row_smart_volume_sub">根据环境噪声调节音量</string>
     <string name="row_adaptive_volume_title">自适应音量</string>

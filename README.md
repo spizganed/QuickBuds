@@ -91,6 +91,8 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing]
 
 **Tested on:** OnePlus Buds 4 with a Nothing Phone (3a), Android 16. Other OnePlus / OPPO / realme
 earbuds use the same protocol and are detected, but are untested: reports on GitHub are welcome.
+Open an issue with your model, what works and what does not, and a log: Dev tools › Export
+(`Download/QuickBudsLogs/`), or a Bluetooth HCI snoop log / `adb logcat`. The app says the same once, on first launch.
 
 ## Supported earbuds
 

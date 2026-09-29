@@ -76,6 +76,10 @@
     <string name="game_sound_type_title">ประเภทเสียงเกม</string>
     <string name="game_sound_type_shooter">เกมยิงปืน</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
+    <string name="report_title">ช่วยให้หูฟังของคุณใช้งานได้</string>
+    <string name="report_body">QuickBuds ทดสอบกับ OnePlus Buds 4 เท่านั้น ในรุ่นอื่นบางฟีเจอร์อาจยังใช้ไม่ได้\n\nบอกเราว่าอะไรใช้ได้และอะไรใช้ไม่ได้กับหูฟังของคุณ เพื่อแก้ไขในรุ่นถัดไป: เปิด issue บน GitHub พร้อมชื่อรุ่น\n\nแนบบันทึก: เปิด Dev tools (ไอคอนด้านบน เปิดได้ใน การตั้งค่า › ทั่วไป) ลองใช้ฟีเจอร์ แตะ Export แล้วแนบไฟล์จาก Download/QuickBudsLogs บันทึก Bluetooth HCI snoop หรือ adb logcat ก็ช่วยได้</string>
+    <string name="report_open">รายงานบน GitHub</string>
+    <string name="report_later">เข้าใจแล้ว</string>
     <string name="row_smart_volume_title">ระดับเสียงอัจฉริยะ</string>
     <string name="row_smart_volume_sub">ปรับระดับเสียงตามเสียงรบกวนรอบข้าง</string>
     <string name="row_adaptive_volume_title">ระดับเสียงปรับได้</string>

@@ -76,6 +76,10 @@
     <string name="game_sound_type_title">Játékhang típusa</string>
     <string name="game_sound_type_shooter">Lövöldözős játékok</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
+    <string name="report_title">Segíts, hogy a fülhallgatód működjön</string>
+    <string name="report_body">A QuickBuds csak OnePlus Buds 4-en van tesztelve. Más modelleken egyes funkciók még nem biztos, hogy működnek.\n\nÍrd meg, mi működik és mi nem a fülhallgatódon, hogy a következő verzió javíthassa: nyiss egy issue-t a GitHubon a modell nevével.\n\nCsatolj naplót: nyisd meg a Dev tools-t (ikon fent, a Beállítások › Általános alatt kapcsolható be), próbáld ki a funkciót, koppints az Exportra, és csatold a fájlt a Download/QuickBudsLogs mappából. Bluetooth HCI snoop napló vagy adb logcat is segít.</string>
+    <string name="report_open">Jelentés a GitHubon</string>
+    <string name="report_later">Értem</string>
     <string name="row_smart_volume_title">Intelligens hangerő</string>
     <string name="row_smart_volume_sub">A hangerőt a környezeti zajhoz igazítja</string>
     <string name="row_adaptive_volume_title">Adaptív hangerő</string>

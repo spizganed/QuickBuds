@@ -76,6 +76,10 @@
     <string name="game_sound_type_title">게임 사운드 유형</string>
     <string name="game_sound_type_shooter">슈팅 게임</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
+    <string name="report_title">이어버드 지원에 도움을 주세요</string>
+    <string name="report_body">QuickBuds는 OnePlus Buds 4에서만 테스트되었습니다. 다른 모델에서는 일부 기능이 아직 작동하지 않을 수 있습니다.\n\n다음 버전에서 고칠 수 있도록 이어버드에서 무엇이 되고 무엇이 안 되는지 알려 주세요. GitHub에 모델명과 함께 issue를 열어 주세요.\n\n로그 첨부: Dev tools를 열고(상단 아이콘, 설정 › 일반에서 켤 수 있음) 기능을 사용해 본 뒤 Export를 누르고 Download/QuickBudsLogs의 파일을 첨부하세요. Bluetooth HCI 스누프 로그나 adb logcat도 도움이 됩니다.</string>
+    <string name="report_open">GitHub에 보고</string>
+    <string name="report_later">확인</string>
     <string name="row_smart_volume_title">스마트 볼륨</string>
     <string name="row_smart_volume_sub">주변 소음에 맞춰 볼륨 조절</string>
     <string name="row_adaptive_volume_title">적응형 볼륨</string>

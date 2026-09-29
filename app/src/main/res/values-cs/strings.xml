@@ -76,6 +76,10 @@
     <string name="game_sound_type_title">Typ herního zvuku</string>
     <string name="game_sound_type_shooter">Střílečky</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
+    <string name="report_title">Pomozte zprovoznit vaše sluchátka</string>
+    <string name="report_body">QuickBuds je testovaný jen na OnePlus Buds 4. Na jiných modelech nemusí některé funkce zatím fungovat.\n\nDejte nám vědět, co na vašich sluchátkách funguje a co ne, aby to další verze opravila: založte issue na GitHubu s názvem modelu.\n\nPřiložte log: otevřete Dev tools (ikona nahoře, zapnete ji v Nastavení › Obecné), vyzkoušejte funkci, klepněte na Export a přiložte soubor z Download/QuickBudsLogs. Pomůže i Bluetooth HCI snoop log nebo adb logcat.</string>
+    <string name="report_open">Nahlásit na GitHubu</string>
+    <string name="report_later">Rozumím</string>
     <string name="row_smart_volume_title">Chytrá hlasitost</string>
     <string name="row_smart_volume_sub">Přizpůsobí hlasitost okolnímu hluku</string>
     <string name="row_adaptive_volume_title">Adaptivní hlasitost</string>

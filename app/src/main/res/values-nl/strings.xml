@@ -76,6 +76,10 @@
     <string name="game_sound_type_title">Type gamegeluid</string>
     <string name="game_sound_type_shooter">Shootergames</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
+    <string name="report_title">Help je oordopjes goed te laten werken</string>
+    <string name="report_body">QuickBuds is alleen getest met de OnePlus Buds 4. Op andere modellen werken sommige functies misschien nog niet.\n\nLaat ons weten wat wel en niet werkt op jouw oordopjes, zodat de volgende versie het kan oplossen: open een issue op GitHub met je modelnaam.\n\nVoeg een log toe: open Dev tools (pictogram bovenaan, aan te zetten in Instellingen › Algemeen), probeer de functie, tik op Export en voeg het bestand uit Download/QuickBudsLogs toe. Een Bluetooth HCI-snooplog of adb logcat helpt ook.</string>
+    <string name="report_open">Melden op GitHub</string>
+    <string name="report_later">Begrepen</string>
     <string name="row_smart_volume_title">Slim volume</string>
     <string name="row_smart_volume_sub">Past het volume aan omgevingsgeluid aan</string>
     <string name="row_adaptive_volume_title">Adaptief volume</string>

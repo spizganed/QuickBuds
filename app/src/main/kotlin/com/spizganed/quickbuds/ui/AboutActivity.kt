@@ -103,7 +103,7 @@ class AboutActivity : Activity() {
         runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
     }
 
-    private companion object {
+    companion object {
         const val GITHUB_URL = "https://github.com/spizganed/QuickBuds"
         // ponytail: placeholder until the Ko-fi page exists; swap in the real handle.
         const val KOFI_URL = "https://ko-fi.com/"
