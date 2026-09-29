@@ -24,10 +24,6 @@ Each step is done before the next one starts.
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
      write on another model stays unverified until an owner reads one back.
    - **Next: the rest of the parity check** (2026-09-29, every item on HeyMelody's device page against the app).
-     **Question:** HeyMelody's "high audio" screen (`highAudio`: Enco X2, Air3 Pro, Free3) is a codec picker
-     (codec type plus the Hi-Res switch, read through HeyMelody's codec query), not only our Hi-Res row;
-     its write is not traced yet. Build it or not? Also open: the EQ presets that need a minimum firmware
-     (`equalizerModeCompat`, 8 models).
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same

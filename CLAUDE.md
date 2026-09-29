@@ -432,7 +432,8 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    opening ([USER] 2026-09-28; it replaced the Low/Medium/High pills). In ANC the segment shows the level's icon and
    "ANC L" / "ANC M" / "ANC H" / "ANC S" (`AncSegmentedView.setSegment`), as the widget's button does. Buds with one level apply it directly
    (`homeAncLevel`).
-3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio (feature
+3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res (on `highAudio`
+   models a tap picks the codec and the switch is live only with LDAC / LHDC V5, PROTOCOL.md §9), 3D audio (feature
    `0x1B`, or `0x0422` where the bitmap has `0x012A`; head-tracking models open an Off / Fixed / Head tracking
    sheet from the row), Hearing profile, EQ,
    **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_bud_left`; the SPEC's

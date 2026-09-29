@@ -330,6 +330,8 @@ class BudsConnectionManager(private val context: Context) {
                 // Logged only until a Buds 4 reply confirms the [OSS] format (ROADMAP, firmware version).
                 query(OpoProtocol.CMD_QUERY_FIRMWARE, OpoProtocol.queryFirmware(), "query firmware")
                 query(OpoProtocol.CMD_QUERY_SPATIAL_TYPE, OpoProtocol.querySpatialType(), "query spatial type")
+                query(OpoProtocol.CMD_QUERY_CODEC_LIST, OpoProtocol.queryCodecList(), "query codec list")
+                query(OpoProtocol.CMD_QUERY_CODEC, OpoProtocol.queryCodec(), "query codec")
                 query(OpoProtocol.CMD_QUERY_GAME_SOUND, OpoProtocol.queryGameSound(), "query game sound")
                 query(OpoProtocol.CMD_QUERY_HEAD_MOTION_TYPE, OpoProtocol.queryHeadMotionType(), "query head motion type")
             } catch (e: Exception) {
@@ -609,6 +611,18 @@ class BudsConnectionManager(private val context: Context) {
 
     fun setHeadMotionType(type: Int) = writeThenRead(OpoProtocol.setHeadMotionType(type), "Head motion type $type",
         OpoProtocol.queryHeadMotionType(), "query head motion type") { headMotionType = type }
+
+    /** Codec picker (`highAudio` models): the current codec and the offered ones, from `0x8114` / `0x8123`. */
+    @Volatile var codec: Int? = null
+        private set
+    @Volatile var codecs: List<Int> = emptyList()
+        private set
+
+    /** The buds restart after it and come back without phone audio, as after power saving. */
+    fun setCodec(codec: Int, hiRes: Boolean) {
+        audioAfterRestart = true
+        sendRaw(OpoProtocol.setCodec(codec, hiRes), "Codec $codec hiRes=$hiRes")
+    }
 
     fun setSpatialType(type: Int) = writeThenRead(OpoProtocol.setSpatialType(type), "Spatial type $type",
         OpoProtocol.querySpatialType(), "query spatial type") { spatialType = type }
@@ -1326,6 +1340,20 @@ class BudsConnectionManager(private val context: Context) {
         if (spatial != null) {
             spatialType = spatial
             log("SPATIAL TYPE: $spatial RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
+            return
+        }
+        if (cmd == 0x8114 && payload.size >= 2 && payload[0].toInt() == 0) {
+            codec = payload[1].toInt() and 0xFF
+            log("CODEC: $codec RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
+            return
+        }
+        if (cmd == 0x8123 && payload.size >= 3 && payload[0].toInt() == 0) {
+            val mask = (payload[1].toInt() and 0xFF) or ((payload[2].toInt() and 0xFF) shl 8)
+            // HeyMelody drops LHDC (7) when LHDC V5 (8) is offered too.
+            codecs = (1..8).filter { mask and (1 shl (it - 1)) != 0 }.let { if (8 in it) it - 7 else it }
+            log("CODECS: $codecs RAW=[${OpoProtocol.bytesToHex(payload)}]")
             handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
             return
         }

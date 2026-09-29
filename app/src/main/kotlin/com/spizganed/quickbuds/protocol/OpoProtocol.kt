@@ -121,6 +121,14 @@ object OpoProtocol {
     const val CMD_SET_SPATIAL_TYPE = 0x0422
     const val CMD_QUERY_SPATIAL_TYPE = 0x012A
     const val CMD_SPATIAL_TYPE_PUSH = 0x0510
+    /**
+     * Codec picker on `highAudio` models (PROTOCOL.md §9), `[VENDOR]`, unverified on buds: read the
+     * current codec with `0x0114` -> `00 <codec>`, the offered ones with `0x0123` -> `00 <u16 LE mask>`
+     * (bit k = codec k + 1), write `0x041A <codec> <hiRes> 00`. The buds restart after the write.
+     */
+    const val CMD_QUERY_CODEC = 0x0114
+    const val CMD_QUERY_CODEC_LIST = 0x0123
+    const val CMD_SET_CODEC = 0x041A
     /** Plain on/off switches from HeyMelody, `[VENDOR]`, unverified on buds (PROTOCOL.md §9). */
     const val FEATURE_VOCAL_ENHANCE = 0x09
     const val FEATURE_POWER_SAVING = 0x17
@@ -475,6 +483,11 @@ object OpoProtocol {
 
     fun setSpatialType(type: Int): ByteArray = buildPacket(CMD_SET_SPATIAL_TYPE, payload = byteArrayOf(type.toByte()))
     fun querySpatialType(): ByteArray = buildPacket(CMD_QUERY_SPATIAL_TYPE)
+    fun queryCodec(): ByteArray = buildPacket(CMD_QUERY_CODEC)
+    fun queryCodecList(): ByteArray = buildPacket(CMD_QUERY_CODEC_LIST)
+    /** HeyMelody sends Hi-Res only with LDAC (`3`) or LHDC V5 (`8`), else `0`; the last byte is always `0`. */
+    fun setCodec(codec: Int, hiRes: Boolean): ByteArray = buildPacket(CMD_SET_CODEC,
+        payload = byteArrayOf(codec.toByte(), if (hiRes && (codec == 3 || codec == 8)) 1 else 0, 0))
     /** HeyMelody sends every pick, Off (`0`) included, with enable `01`. */
     fun setGameSoundType(type: Int): ByteArray = buildPacket(CMD_GAME_SOUND, payload = byteArrayOf(type.toByte(), 0x01))
     fun queryGameSound(): ByteArray = buildPacket(CMD_QUERY_GAME_SOUND)

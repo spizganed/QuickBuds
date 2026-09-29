@@ -97,6 +97,10 @@ back.
 - Dual connection device manager (2026-09-29), on the 11 models that have it: every paired device, a tap
   connects or disconnects it, and the preferred device (PROTOCOL.md §9). "This device" now comes from the
   list's own flag. Unverified on buds (Buds 4 lack it).
+- Codec picker (2026-09-29) on the three `highAudio` models: the Hi-Res row picks the codec and its switch
+  is Hi-Res, live only with LDAC or LHDC V5 (PROTOCOL.md §9). Unverified on buds; Buds 4 answers the reads.
+- Firmware-gated EQ presets (2026-09-29, 13 models): `equalizerModeCompat` / `equalizerModeByVersion`,
+  shown once the buds' firmware reaches the entry's minimum (PROTOCOL.md §9). Unverified on buds.
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

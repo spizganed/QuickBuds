@@ -109,6 +109,8 @@ garbage rather than an error.
 | `0x010D` | `0x810D` | Feature switch status (batch) | `<count> <featureIds...>` | `[CAPTURE]` |
 | `0x010F` | `0x810F` | EQ | — | `[OSS]` |
 | `0x0122` | — | EQ all presets | `01 05` | `[OSS]` |
+| `0x0114` | `0x8114` | Current codec | — → `00 <codec>` | `[VENDOR]`, `[CAPTURE]` Buds 4: `00 08`, see §9 |
+| `0x0123` | `0x8123` | Codecs offered | — → `00 <u16 LE mask>` | `[VENDOR]`, see §9 |
 | `0x0130` | `0x8130` | Alert-sound volume | — → `00 <level>` | `[CAPTURE]` see §9 |
 
 Responses are **`cmd | 0x8000`**. That is a reliable rule `[OSS]`.
@@ -137,6 +139,7 @@ needed). `OpoProtocol.firmwareVersion()` builds that string; Earbud settings ›
 | `0x0403` | Feature switch | `[featureId, status]`, status `01`/`00` |
 | `0x0404` | Set ANC | `01 01 <bit>` — see §5 |
 | `0x0406` | Set EQ | `[eqMode]` `[OSS]` |
+| `0x041A` | Set codec (`highAudio` models) | `<codec> <hiRes> 00`, the buds restart (§9) |
 | `0x0422` | Set spatial audio | `00` off / `01` fixed / `02` head-tracking |
 | `0x0427` | Set alert-sound volume | `[level]` 1..10, ack `8427 00 <level>` `[CAPTURE]` see §9 |
 
@@ -1331,6 +1334,25 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
   AAC and SBC are offered in both states. No LDAC on these buds. The phone's own per-device HD-audio
   switch is a separate, system-side setting.
 
+### Codec picker (`highAudio` models) — `0x0114` / `0x0123` / `0x041A` — `[VENDOR]` 2026-09-29, wired
+
+HeyMelody's "High-quality audio" screen, only on models with `highAudio` (Enco X2, Enco Air3 Pro,
+Enco Free3) and `0x0123` in the bitmap; it replaces the plain Hi-Res switch there.
+
+- **Codecs:** `1` SBC, `2` AAC, `3` LDAC, `4` aptX, `5` aptX HD, `6` aptX Adaptive, `7` LHDC, `8` LHDC V5
+  (HeyMelody labels both 7 and 8 "LHDC"). Listed in the order 8, 7, 3, 6, 5, 4, 2, 1.
+- **Read the offered list:** `0x0123` (empty) -> `00 <u16 LE mask>`, bit k (0-7) = codec k + 1. When 7
+  and 8 are both set, HeyMelody drops 7.
+- **Read the current codec:** `0x0114` (empty) -> `00 <codec>`.
+- **Write:** `0x041A <codec> <hiRes> 00`. `hiRes` is the Hi-Res switch, sent only with codec 3 or 8 (else
+  `0`), and the switch is shown only then. The ack is `0x841A <status>`. HeyMelody asks first ("your
+  earbuds will restart and automatically reconnect"), so the app goes through its reconnect warning and
+  asks for phone audio on the reconnect, as after power saving.
+- **Buds 4** `[CAPTURE]` 2026-09-29 (not a `highAudio` model): `0x8114` = `00 08`, LHDC V5, matching
+  Android's A2DP log. `0x8123` = `00 46 01`, mask `0x0146`, which by the table reads AAC, LDAC, LHDC and
+  a bit 8 outside it, while Android sees SBC, AAC and LHDC V5 (no LDAC). So the mask's meaning is
+  unconfirmed on buds; the picker runs only on `highAudio` models, where HeyMelody reads it this way.
+
 ### Equalizer — custom presets, READ side only — `[CAPTURE]` 2026-09-23 (from the codec capture)
 
 HeyMelody's bulk settings read (`TX 0x2F00`, a list of 4-byte item requests) comes back as `0x812F`
@@ -1384,8 +1406,12 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
   Nord Buds 2r `11`->0, `13`->1 Bold, `12`->2. `0x0406`'s payload is that id, one byte.
   Types 1-4 take other names where the model's `equalizer` field is `2` (or
   on Enco R / Air2). 67 of 137 models have no list, and HeyMelody shows no built-ins for them.
-  Not used yet: `equalizerModeCompat` / `equalizerModeByVersion` (extra presets from a minimum
-  firmware).
+  **Firmware-gated presets** `[VENDOR]` (2026-09-29, wired): HeyMelody's list is `equalizerModeCompat`,
+  then `equalizerModeByVersion`, then `equalizerMode`, less entries whose `minFirmVersion` is above the
+  buds' firmware, stably sorted by `order` (0 when absent). The firmware number is the lower non-zero of
+  the left and right versions (`138` for `138.138.105`); an unreadable version counts as 0.
+  `equalizerModeByVersion` also has a `minAppVersion` (HeyMelody's own version), always met. 13 models,
+  none verified on buds: e.g. Buds Pro 2 gets Hans Zimmer (`19`, id `7`) from firmware 165.
 - **What each model has** `[VENDOR]` (2026-09-29, wired): HeyMelody shows the EQ row only where the model's
   `equalizer` is 1-4 (built-in presets) or it has custom presets; custom presets only with the model's
   `customEqualizer` flag and `0x0418` in the `0x8100` bitmap; BassWave only with `bassEngineSupport` and

@@ -873,6 +873,13 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         hires.setOnCheckedChangeListener { _, isChecked ->
             if (syncingFeatures) return@setOnCheckedChangeListener
             setSwitchQuiet(hires, !isChecked)
+            if (codecPicker()) {
+                val codec = manager.codec ?: return@setOnCheckedChangeListener
+                return@setOnCheckedChangeListener confirmReconnect(R.string.codec_msg_reconnect) {
+                    setSwitchQuiet(hires, isChecked)
+                    manager.setCodec(codec, isChecked)
+                }
+            }
             val dropSpatial = isChecked && spatialOn()
             confirmReconnect(
                 if (dropSpatial) R.string.codec_msg_hires_drops_spatial else R.string.codec_msg_reconnect
@@ -890,7 +897,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         }
         val hiresRow = SettingRowFactory.build(
             this, R.drawable.ic_hires, R.string.row_hires_title, R.string.row_hires_sub_off, hires
-        ) { hires.performClick() }
+        ) { if (codecPicker()) codecSheet() else hires.performClick() }
         hiresSubtitle = hiresRow.findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)
         addRow("hires", hiresRow)
 
@@ -994,6 +1001,32 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         confirmReconnect(R.string.codec_msg_spatial_drops_hires, write)
     }
 
+    /**
+     * `[VENDOR]` HeyMelody's "High-quality audio" screen on `highAudio` models (PROTOCOL.md §9): the row
+     * picks the codec, and the switch (Hi-Res) is live only with LDAC or LHDC V5, as there.
+     */
+    private fun codecPicker() = ModelCatalog.current(this)?.json?.optInt("highAudio") == 1 &&
+        Capabilities.supports(this, OpoProtocol.CMD_QUERY_CODEC_LIST)
+
+    private fun codecName(codec: Int) =
+        listOf("SBC", "AAC", "LDAC", "aptX", "aptX HD", "aptX Adaptive", "LHDC", "LHDC").getOrNull(codec - 1) ?: "#$codec"
+
+    private fun codecSheet() {
+        val current = manager.codec
+        // HeyMelody's order: LHDC V5, LHDC, LDAC, aptX Adaptive, aptX HD, aptX, AAC, SBC.
+        val codecs = listOf(8, 7, 3, 6, 5, 4, 2, 1).filter { it in manager.codecs }
+        BottomSheetDialog(this)
+            .title(getString(R.string.row_hires_title))
+            .items(codecs.map { codec ->
+                BottomSheetDialog.Item(codecName(codec), codec == current) {
+                    if (codec != current) confirmReconnect(R.string.codec_msg_reconnect) {
+                        manager.setCodec(codec, featureOn(OpoProtocol.FEATURE_HIRES_CODEC))
+                    }
+                }
+            })
+            .show()
+    }
+
     private fun spatialLabel(type: Int) = getString(when (type) {
         1 -> R.string.spatial_fixed
         2 -> R.string.spatial_head_tracking
@@ -1035,6 +1068,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             hiresSwitch?.let { setSwitchQuiet(it, v == 1) }
             hiresSubtitle?.setText(if (v == 1) R.string.row_hires_sub else R.string.row_hires_sub_off)
         }
+        if (codecPicker()) manager.codec?.let { c ->
+            hiresSubtitle?.text = codecName(c)
+            hiresSwitch?.isEnabled = c == 3 || c == 8
+        }
         paintSpatial()
         states[OpoProtocol.FEATURE_GOLDEN_SOUND]?.let { v ->
             goldenSwitch?.let { setSwitchQuiet(it, v == 1) }
@@ -1057,7 +1094,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      */
     private fun rowSupported(key: String): Boolean = when (key) {
         "game" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GAME_MODE)
-        "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC)
+        "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC) || codecPicker()
         "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND) || spatialByType()
         "golden" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GOLDEN_SOUND)
         "eq" -> EqActivity.hasEq(this)

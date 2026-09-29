@@ -34,6 +34,7 @@ import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * Equalizer — HeyMelody's layout: built-in presets, BassWave, custom presets with a 6-band editor.
@@ -75,6 +76,21 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 ?.let { a -> (0 until a.length()).map { a.getInt(it) } } ?: EqCodec.DEFAULT_FREQS
     }
 
+    /**
+     * `[VENDOR]` HeyMelody's list: `equalizerModeCompat`, then `equalizerModeByVersion` (its app-version
+     * gate is always met here), then `equalizerMode`, less any entry whose `minFirmVersion` is above the
+     * buds' firmware, stably sorted by `order` (0 when absent). The firmware number is the lower of the
+     * two buds' versions (the first two parts of "138.138.105"); unknown firmware counts as 0.
+     */
+    private fun modelModes(json: JSONObject, firmware: String?): List<JSONObject> {
+        val parts = firmware?.split('.')?.map { it.toIntOrNull() ?: 0 }.orEmpty()
+        val version = if (parts.size == 3) parts.take(2).filter { it != 0 }.minOrNull() ?: 0 else parts.firstOrNull() ?: 0
+        return listOf("equalizerModeCompat", "equalizerModeByVersion", "equalizerMode")
+            .flatMap { key -> json.optJSONArray(key)?.let { a -> (0 until a.length()).map { a.getJSONObject(it) } }.orEmpty() }
+            .filter { it.optInt("minFirmVersion") <= version }
+            .sortedBy { it.optInt("order") }
+    }
+
     /** The bands a new or imported preset gets: the buds' own presets' if they have any. */
     private fun freqs() = manager?.eqCustom?.firstOrNull()?.freqs ?: modelFreqs(this)
 
@@ -86,16 +102,16 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
      */
     private fun builtInPresets(): List<Pair<Int, Int>> {
         val model = ModelCatalog.current(this)
+        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
         val modes = when {
-            model != null -> model.json.optJSONArray("equalizerMode") ?: return emptyList()
-            getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(Capabilities.KEY_PRODUCT_ID, null) != null ->
-                return emptyList()
+            model != null -> modelModes(model.json, prefs.getString(BudsConnectionManager.KEY_FIRMWARE, null))
+            prefs.getString(Capabilities.KEY_PRODUCT_ID, null) != null -> return emptyList()
             else -> JSONArray("""[{"modeType":11,"protocolIndex":0},{"modeType":14,"protocolIndex":1},{"modeType":12,"protocolIndex":2}]""")
+                .let { a -> (0 until a.length()).map { a.getJSONObject(it) } }
         }
         // Types 1-4 have other names on these models (`f(name) == 2` is the `equalizer` field).
         val alt = model != null && (model.name == "OPPO Enco R" || model.name == "OPPO Enco Air2" || model.json.optInt("equalizer") == 2)
-        return (0 until modes.length()).mapNotNull { i ->
-            val mode = modes.getJSONObject(i)
+        return modes.mapNotNull { mode ->
             val name = when (mode.getInt("modeType")) {
                 1 -> if (alt) R.string.eq_nature_balance else R.string.eq_classic
                 2 -> if (alt) R.string.eq_bass_boost else R.string.eq_dynamic_bass
