@@ -153,6 +153,12 @@ class BudsConnectionManager(private val context: Context) {
     private var pendingReconnect: Runnable? = null
     /** Set by the all-zero wear push the buds send just before a lid close drops the link (PROTOCOL.md §8). */
     @Volatile private var caseClosing = false
+    /**
+     * Set by a write that restarts the buds (power saving, PROTOCOL.md §9). They come back with
+     * our link only, not the phone's audio, so the next successful connect asks for it: the
+     * restart was the user's own action, unlike a system auto-connect (see [connect]).
+     */
+    @Volatile private var audioAfterRestart = false
 
     private var lastLeft: BatteryParser.Info? = null
     private var lastRight: BatteryParser.Info? = null
@@ -260,6 +266,7 @@ class BudsConnectionManager(private val context: Context) {
                 reconnectAttempts = 0
                 connectedAt = System.currentTimeMillis()
                 caseClosing = false
+                if (audioAfterRestart) { audioAfterRestart = false; setPhoneAudio(device, on = true) }
                 handler.post { listeners.forEach { it.onConnected(true) } }
                 log("Ready for commands. Running init sequence...")
                 runInitSequence()
@@ -517,6 +524,7 @@ class BudsConnectionManager(private val context: Context) {
         Thread {
             try {
                 for ((id, on) in changes) {
+                    if (id == OpoProtocol.FEATURE_POWER_SAVING) audioAfterRestart = true
                     sendRawBlocking(OpoProtocol.setFeature(id, on), "Feature 0x%02X -> %s".format(id, on))
                 }
                 Thread.sleep(400)

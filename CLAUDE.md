@@ -404,6 +404,8 @@ From `bluetooth/BudsConnectionManager.kt`.
 - **Only a user connect (pill, Dev Tools) asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Automatic
   connects (ACL receiver, retries, reconnect after loss) leave A2DP to the system: asking for it while
   the system auto-connects left audio stuck on auto-connect. Fixed 2026-09-25, confirmed by him.
+  One exception: a power saving write restarts the buds, which come back without phone audio, so the
+  reconnect after it asks for audio once the RFCOMM link is up (`audioAfterRestart`, 2026-09-29).
 - **Reconnect after a lost link — FIXED 2026-09-23, confirmed by him.** Nothing used to retry after
   `Connection lost` unless Android fired ACL_CONNECTED (a codec switch drops our RFCOMM 2-3 times while
   the link stays up) — likely also the old "14-minute gap". `reconnectAfterLoss()` retries 5x with
