@@ -19,6 +19,11 @@ Each step is done before the next one starts.
    **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; one it has
    that the app lacks gets its UI built. So every feature in HeyMelody's model list ends up built or
    decided against.
+   - **Next: device check of the model-list features** (commit `00b1044`, 2026-09-29, test from the phone
+     session). On Buds 4, Earbud settings › Features must show none of the new rows (conversation awareness,
+     adaptive sound, hold volume, head gestures, Swift Pair). Pick Nord Buds 4 by hand: Swift Pair appears;
+     pick OnePlus Open Buds: touch and hold volume appears. Nothing else changed, and no write reaches
+     Buds 4. Return to Automatic afterwards. Real writes wait for an owner (issue #1).
    - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless
      3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
