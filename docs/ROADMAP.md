@@ -65,6 +65,8 @@ In this order, once the Android app is finished ([USER] 2026-09-29):
   ([USER] 2026-09-29).
 - Conversation mode (`smartCall`, `0x011D`) and Spotify Tap (`spyTap`): no model in HeyMelody's list sets
   either flag, so HeyMelody never shows them (2026-09-29).
+- Earbud fall detection (`deviceLostRemind`, one model: Enco Clip2) ([USER] 2026-09-29).
+- **Any feature that needs a connection to a server** (OPPO's or anyone's): not built ([USER] 2026-09-29).
 - The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).
 - Firmware updates: too risky, a failed flash can brick the buds. The firmware row says to update from
   HeyMelody ([USER] 2026-09-29).
