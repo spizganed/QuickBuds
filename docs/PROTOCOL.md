@@ -1158,6 +1158,18 @@ a write back yet.
 | `0x30` | Adaptive volume | none |
 | `0x31` | Adaptive left / right ear (channels and controls follow the ear) | none |
 | `0x3A` | Pause playback when asleep | none |
+| `0x32` | Conversation awareness (lowers media while you speak). HeyMelody turns it and voice commands (`0x19`) off against each other; the app has no voice commands | none |
+| `0x35` | Touch and hold controls (hold to change volume) | `longPressVolume` |
+| `0x37` | Windows Swift Pair | `swiftPair` |
+| `0x38` | Adaptive sound (ear canal and fit). HeyMelody asks before turning it on (battery) | none |
+| `0x3B` | Head gestures (nod / shake to answer or decline calls) | none |
+
+- **Head gestures' mapping** `[VENDOR]` (2026-09-29, wired, unverified on buds): `0x0431 <type>`, `00` =
+  nod answers / shake declines, `01` = shake answers / nod declines (HeyMelody's two menus both write this one
+  byte). Read with `0x0134` (empty); HeyMelody parses the type only from the push `0x0204 F5 <type>`, so the
+  `0x8134` reply is logged raw until a capture shows it. Both commands sit on bit 63 of the `0x8100` bitmap.
+- **Decided against** ([USER] 2026-09-29): voice wakeup (`0x14`, wakes OPPO's Breeno assistant), voice
+  commands (`0x19`, Chinese phrases, two China-market models) and incoming-call voice control (`0x39`).
 
 - **Game mode on game-sound buds is `0x28`, not `0x06`.** When the `0x8100` bitmap enables `0x0423`
   (bit 49), HeyMelody's game mode switch writes and reads `0x28` ("main"); elsewhere `0x06`. The app

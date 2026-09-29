@@ -115,6 +115,20 @@
     <string name="row_power_saving_title">Power saving</string>
     <string name="row_power_saving_sub">Turns off extras for longer battery life</string>
     <string name="power_saving_confirm">The earbuds will restart.</string>
+    <string name="row_speech_title">Conversation awareness</string>
+    <string name="row_speech_sub">Lowers the volume while you speak</string>
+    <string name="row_long_press_volume_title">Touch and hold volume</string>
+    <string name="row_long_press_volume_sub">Hold an earbud to change the volume</string>
+    <string name="row_swift_pair_title" translatable="false">Windows Swift Pair</string>
+    <string name="row_swift_pair_sub">Pairing prompt on nearby Windows PCs</string>
+    <string name="row_hearing_optimize_title">Adaptive sound</string>
+    <string name="row_hearing_optimize_sub">Tunes the sound to your ears and fit</string>
+    <string name="hearing_optimize_confirm">This may reduce battery life.</string>
+    <string name="row_head_motion_title">Head gestures</string>
+    <string name="row_head_motion_sub">Nod or shake to answer or decline calls</string>
+    <string name="head_motion_type_title">Answer calls by</string>
+    <string name="head_motion_nod">Nodding</string>
+    <string name="head_motion_shake">Shaking</string>
     <string name="row_update_title">App update</string>
 
     <!-- Find my earbuds screen. -->

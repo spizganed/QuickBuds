@@ -76,6 +76,9 @@ back.
   mode writes `0x28` on game-sound buds (PROTOCOL.md §9).
 - 3D audio's type form `0x0422` (2026-09-29): Off / Fixed / Head tracking on Buds Pro 2, Buds Pro 3 and
   Enco X3, a type switch on other `0x012A` buds; game sound's type `0x0423` as a sheet (PROTOCOL.md §9).
+- The rest of HeyMelody's model-list features (2026-09-29), same section: conversation awareness,
+  adaptive sound (asks before turning on), touch and hold volume, head gestures with the nod / shake
+  choice `0x0431`, Windows Swift Pair. The voice features were decided against (PROTOCOL.md §9).
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

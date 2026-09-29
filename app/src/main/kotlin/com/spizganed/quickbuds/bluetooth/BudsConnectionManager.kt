@@ -312,6 +312,7 @@ class BudsConnectionManager(private val context: Context) {
                 query(OpoProtocol.CMD_QUERY_FIRMWARE, OpoProtocol.queryFirmware(), "query firmware")
                 query(OpoProtocol.CMD_QUERY_SPATIAL_TYPE, OpoProtocol.querySpatialType(), "query spatial type")
                 query(OpoProtocol.CMD_QUERY_GAME_SOUND, OpoProtocol.queryGameSound(), "query game sound")
+                query(OpoProtocol.CMD_QUERY_HEAD_MOTION_TYPE, OpoProtocol.queryHeadMotionType(), "query head motion type")
             } catch (e: Exception) {
                 log("Init sequence error: ${e.message}")
             }
@@ -557,6 +558,13 @@ class BudsConnectionManager(private val context: Context) {
     /** The types these buds offer, from the same `0x812B` reply. */
     @Volatile var gameSoundTypes: List<Int> = emptyList()
         private set
+
+    /** Head gestures' mapping (0 nod answers, 1 shake answers), null until the `0x0204 F5` push. */
+    @Volatile var headMotionType: Int? = null
+        private set
+
+    fun setHeadMotionType(type: Int) = writeThenRead(OpoProtocol.setHeadMotionType(type), "Head motion type $type",
+        OpoProtocol.queryHeadMotionType(), "query head motion type") { headMotionType = type }
 
     fun setSpatialType(type: Int) = writeThenRead(OpoProtocol.setSpatialType(type), "Spatial type $type",
         OpoProtocol.querySpatialType(), "query spatial type") { spatialType = type }
@@ -1253,6 +1261,14 @@ class BudsConnectionManager(private val context: Context) {
             gameSoundType = payload[1].toInt() and 0xFF
             gameSoundTypes = (3 until minOf(payload.size, 3 + count)).map { payload[it].toInt() and 0xFF }
             log("GAME SOUND: type=$gameSoundType offered=$gameSoundTypes RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
+            return
+        }
+
+        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 2 &&
+            payload[0].toInt() and 0xFF == OpoProtocol.EVT_HEAD_MOTION_TYPE) {
+            headMotionType = payload[1].toInt() and 0xFF
+            log("HEAD MOTION TYPE: $headMotionType RAW=[${OpoProtocol.bytesToHex(payload)}]")
             handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
             return
         }

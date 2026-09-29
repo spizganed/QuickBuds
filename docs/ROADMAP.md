@@ -23,11 +23,6 @@ Each step is done before the next one starts.
      3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
      write on another model stays unverified until an owner reads one back.
-   - **Open: the model-list features not reviewed yet.** HeyMelody's status query also asks for speech
-     perception `0x32`, long-press volume `0x35`, swift pair `0x37`, hearing optimisation `0x38`,
-     incoming-call control `0x39` and head motion `0x3B`, plus voice wake and voice command. For each:
-     see how HeyMelody presents it (decompile first, screenshots if that is not enough), then build it
-     or decide against it. None is on Buds 4.
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
@@ -61,6 +56,8 @@ In this order, once the Android app is finished ([USER] 2026-09-29):
   as Nothing's own widgets (measured 2026-09-27).
 - The hearing profile's before / after preview (`0x040E 01` / `02`) ([USER] 2026-09-29).
 - Renaming a hearing profile: the date and time label each one well enough ([USER] 2026-09-29).
+- Voice wakeup (`0x14`, needs OPPO's Breeno), voice commands (`0x19`, Chinese-only) and incoming-call
+  voice control (`0x39`) ([USER] 2026-09-29).
 - Neck health (`0x22`-`0x24`, needs OPPO's Health app) and meeting assistant (`0x34`, voiceprint enrolment
   for one meeting app) ([USER] 2026-09-29).
 - The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).

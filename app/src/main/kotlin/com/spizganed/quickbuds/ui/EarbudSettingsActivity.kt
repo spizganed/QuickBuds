@@ -33,6 +33,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var alertSpeaker: ImageView
     private var firmwareText: TextView? = null
     private var gameSoundText: TextView? = null
+    private var headMotionText: TextView? = null
     private var fitSheet: FitTestSheet? = null
     private val featureSwitches = HashMap<Int, android.widget.Switch>()
     private var syncing = false
@@ -120,8 +121,10 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             featureSwitches[id] = sw
             sw.setOnCheckedChangeListener { _, on ->
                 if (syncing) return@setOnCheckedChangeListener
-                if (confirm == 0) return@setOnCheckedChangeListener manager?.setFeatures(id to on) ?: Unit
-                // Power saving restarts the buds, so it asks first, as HeyMelody does.
+                // Power saving restarts the buds (asks both ways); adaptive sound costs battery (asks only to
+                // turn on). As HeyMelody does.
+                if (confirm == 0 || (!on && id == OpoProtocol.FEATURE_HEARING_OPTIMIZE))
+                    return@setOnCheckedChangeListener manager?.setFeatures(id to on) ?: Unit
                 quiet { sw.isChecked = !on }
                 ConfirmDialog.show(this, getString(title), getString(confirm), getString(R.string.dual_add_ok)) {
                     quiet { sw.isChecked = on }
@@ -153,6 +156,26 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             R.string.row_adaptive_ear_title, R.string.row_adaptive_ear_sub)
         switch(OpoProtocol.FEATURE_SLEEP_PAUSE, null, R.drawable.ic_bud_right,
             R.string.row_sleep_title, R.string.row_sleep_sub)
+        switch(OpoProtocol.FEATURE_SPEECH_PERCEPTION, null, R.drawable.ic_transparency,
+            R.string.row_speech_title, R.string.row_speech_sub)
+        switch(OpoProtocol.FEATURE_HEARING_OPTIMIZE, null, R.drawable.ic_hearing,
+            R.string.row_hearing_optimize_title, R.string.row_hearing_optimize_sub, R.string.hearing_optimize_confirm)
+        switch(OpoProtocol.FEATURE_LONG_PRESS_VOLUME, "longPressVolume", R.drawable.ic_volume,
+            R.string.row_long_press_volume_title, R.string.row_long_press_volume_sub)
+        switch(OpoProtocol.FEATURE_HEAD_MOTION, null, R.drawable.ic_gesture,
+            R.string.row_head_motion_title, R.string.row_head_motion_sub)
+        // Which gesture answers: `0x0431 <type>`, HeyMelody's nod / shake choice (PROTOCOL.md §9).
+        if (featureSwitches.containsKey(OpoProtocol.FEATURE_HEAD_MOTION) &&
+            Capabilities.supports(this, OpoProtocol.CMD_SET_HEAD_MOTION_TYPE)) {
+            card.addView(SettingRowFactory.buildDivider(this))
+            val row = SettingRowFactory.build(this, R.drawable.ic_gesture, R.string.head_motion_type_title,
+                0, SettingRowFactory.buildChevron(this)) { headMotionSheet() }
+            headMotionText = SettingRowFactory.subtitle(this, row)
+            paintHeadMotion()
+            card.addView(row)
+        }
+        switch(OpoProtocol.FEATURE_SWIFT_PAIR, "swiftPair", R.drawable.ic_devices,
+            R.string.row_swift_pair_title, R.string.row_swift_pair_sub)
         switch(OpoProtocol.FEATURE_POWER_SAVING, null, R.drawable.ic_power,
             R.string.row_power_saving_title, R.string.row_power_saving_sub, R.string.power_saving_confirm)
         if (card.childCount == 0) return
@@ -165,6 +188,28 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     override fun onFeatureStates(states: Map<Int, Int>) {
         quiet { for ((id, sw) in featureSwitches) states[id]?.let { sw.isChecked = it == 1 } }
         paintGameSound()
+        paintHeadMotion()
+    }
+
+    private fun headMotionLabel(type: Int?) = when (type) {
+        0 -> getString(R.string.head_motion_nod)
+        1 -> getString(R.string.head_motion_shake)
+        else -> "—"
+    }
+
+    private fun paintHeadMotion() { headMotionText?.text = headMotionLabel(manager?.headMotionType) }
+
+    private fun headMotionSheet() {
+        val m = manager ?: return
+        BottomSheetDialog(this)
+            .title(getString(R.string.head_motion_type_title))
+            .items(listOf(0, 1).map { t ->
+                BottomSheetDialog.Item(headMotionLabel(t), t == m.headMotionType) {
+                    m.setHeadMotionType(t)
+                    paintHeadMotion()
+                }
+            })
+            .show()
     }
 
     /** HeyMelody's names for the game sound types; a type without one is not offered. */

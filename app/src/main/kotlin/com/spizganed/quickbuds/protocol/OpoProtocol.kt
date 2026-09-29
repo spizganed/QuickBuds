@@ -121,6 +121,16 @@ object OpoProtocol {
     const val FEATURE_ADAPTIVE_VOLUME = 0x30
     const val FEATURE_ADAPTIVE_EAR = 0x31
     const val FEATURE_SLEEP_PAUSE = 0x3A
+    const val FEATURE_SPEECH_PERCEPTION = 0x32
+    const val FEATURE_LONG_PRESS_VOLUME = 0x35
+    const val FEATURE_SWIFT_PAIR = 0x37
+    const val FEATURE_HEARING_OPTIMIZE = 0x38
+    const val FEATURE_HEAD_MOTION = 0x3B
+    /** Head gestures' mapping: `0x0431 <type>`, `0` nod answers / shake declines, `1` the reverse. `[VENDOR]` */
+    const val CMD_SET_HEAD_MOTION_TYPE = 0x0431
+    /** Read with `0x0134` (empty); the type comes back as the `0x0204` push [EVT_HEAD_MOTION_TYPE]. `[VENDOR]` */
+    const val CMD_QUERY_HEAD_MOTION_TYPE = 0x0134
+    const val EVT_HEAD_MOTION_TYPE = 0xF5
 
     private var seqCounter = 0x01
 
@@ -440,6 +450,8 @@ object OpoProtocol {
     /** HeyMelody sends every pick, Off (`0`) included, with enable `01`. */
     fun setGameSoundType(type: Int): ByteArray = buildPacket(CMD_GAME_SOUND, payload = byteArrayOf(type.toByte(), 0x01))
     fun queryGameSound(): ByteArray = buildPacket(CMD_QUERY_GAME_SOUND)
+    fun setHeadMotionType(type: Int): ByteArray = buildPacket(CMD_SET_HEAD_MOTION_TYPE, payload = byteArrayOf(type.toByte()))
+    fun queryHeadMotionType(): ByteArray = buildPacket(CMD_QUERY_HEAD_MOTION_TYPE)
 
     fun queryDevices(): ByteArray = buildPacket(CMD_QUERY_DEVICES)
     /** `08 00 01` after dual OFF, `08 00 00` after ON — copied from HeyMelody, not understood. */
@@ -507,8 +519,10 @@ object OpoProtocol {
         payload = byteArrayOf(
             // count, then feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too;
             // 0x09 onwards on the second line 2026-09-29, the Earbud settings Features switches.
-            0x11, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
-            0x09, 0x17, 0x30, 0x31, 0x3A
+            // 0x32 onwards on the third line 2026-09-29, the rest of HeyMelody's list.
+            0x16, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
+            0x09, 0x17, 0x30, 0x31, 0x3A,
+            0x32, 0x35, 0x37, 0x38, 0x3B
         )
     )
 
