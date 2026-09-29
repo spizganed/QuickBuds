@@ -1,8 +1,8 @@
 # QuickBuds
 
 > Open-source HeyMelody alternative for Android. Control OnePlus / OPPO / realme earbuds over
-> Bluetooth, no root: battery, noise cancellation (ANC), equalizer, gestures, wear detection, find my
-> earbuds, dual connection, low latency mode and home screen widgets.
+> Bluetooth, no root: battery, noise cancellation (ANC), equalizer, hearing profile, gestures, wear
+> detection, fit test, find my earbuds, dual connection, low latency mode and home screen widgets.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
@@ -26,6 +26,10 @@ home-screen widget.
 | Settings | Themes, colors & styles | Edit preset | Home layout |
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/settings.png" width="200"> | <img src="docs/screenshots/theme.png" width="200"> | <img src="docs/screenshots/preset.png" width="200"> | <img src="docs/screenshots/home-layout.png" width="200"> |
+
+| Hearing profile | Hearing test | Earbud fit test |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/hearing-profile.png" width="200"> | <img src="docs/screenshots/hearing-test.png" width="200"> | <img src="docs/screenshots/fit-test.png" width="200"> |
 
 | Dual connection | Widget settings | App update | About |
 | :---: | :---: | :---: | :---: |
@@ -59,6 +63,10 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/nothing]
 - **Equalizer:** built-in presets, up to 3 custom 6-band presets you draw on a curve, and bass boost.
   Saved on the earbuds.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
+- **Hearing profile:** a hearing test (ear scan, then 6 tones per ear) that tunes the sound to your
+  ears, run in the app. Profiles are kept on the phone, one tap applies one, and a graph per ear shows
+  what it does. Profiles made in HeyMelody show up too.
+- **Earbud fit test:** checks that the ear tips seal well.
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
 - **Wear detection**, **Dual connection**, **Find my earbuds**, the earbuds' prompt volume and their
   firmware version.

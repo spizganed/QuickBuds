@@ -26,6 +26,11 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 
 ## Controls
 
+- Hearing profile (HeyMelody's "Golden Sound", renamed, [USER] 2026-09-29): the hearing test in the app
+  (ear scan, 12 tones, save, apply), profiles kept on the phone, the buds' own profile read back, and
+  HeyMelody's radar per ear. Full run confirmed by him on Buds 4, 2026-09-29.
+- Earbud fit test from Earbud settings, confirmed on Buds 4 (2026-09-29).
+
 - ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen and widget.
   Changes made on the buds show up in the app.
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,

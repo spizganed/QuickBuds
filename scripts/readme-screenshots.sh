@@ -88,10 +88,16 @@ tap "Model";            shot models;   back
 tap "Equalizer";        shot eq
 tap "Edit preset";      shot eq-edit;  back; back
 tap "Dual connection";  shot dual;     back
+# The test sheet's first page only: nothing reaches the buds until Start.
+tap "Hearing profile";  shot hearing-profile
+tap "Take the hearing test"; shot hearing-test; back; back
 tap "Earbud settings";  shot earbuds
 tap "Earbud gestures";  shot gestures; back
 tap "Wear detection";   shot wear;     back
-tap "Find my earbuds";  shot find;     back; back
+tap "Find my earbuds";  shot find;     back
+# The sheet only: the test starts on Play.
+if tap "Earbud fit test" optional; then shot fit-test; back; fi
+back
 tap "Settings";         shot settings
 tap "Themes, colors & styles";   shot theme
 if tap "Edit preset" optional; then shot preset; back; fi
