@@ -62,7 +62,7 @@
     <string name="wear_title">Phát hiện đeo</string>
     <string name="wear_firmware_title">Tự động phát/tạm dừng</string>
     <string name="wear_firmware_sub">Tạm dừng khi tháo một bên và phát tiếp khi đeo lại</string>
-    <string name="wear_smart_title">Tự động tạm dừng thông minh</string>
+    <string name="wear_smart_title">Tự động tạm dừng thông minh (thử nghiệm)</string>
     <string name="wear_smart_sub">Chỉ tạm dừng khi tháo cả hai bên. Không bao giờ tự phát. Cần dịch vụ nền</string>
     <string name="row_find_title">Tìm tai nghe</string>
     <string name="row_find_sub">Phát chuông cả hai bên</string>

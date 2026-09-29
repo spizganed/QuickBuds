@@ -62,7 +62,7 @@
     <string name="wear_title">Draagdetectie</string>
     <string name="wear_firmware_title">Automatisch afspelen/pauzeren</string>
     <string name="wear_firmware_sub">De oordopjes pauzeren als er een wordt uitgedaan en gaan verder als hij terug is</string>
-    <string name="wear_smart_title">Slimme auto-pauze</string>
+    <string name="wear_smart_title">Slimme auto-pauze (experimenteel)</string>
     <string name="wear_smart_sub">Alleen pauzeren als beide oordopjes uit zijn. Speelt nooit automatisch af. Vereist de achtergrondservice</string>
     <string name="row_find_title">Mijn oordopjes zoeken</string>
     <string name="row_find_sub">Beide oordopjes laten piepen</string>

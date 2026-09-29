@@ -62,7 +62,7 @@
     <string name="wear_title">ตรวจจับการสวม</string>
     <string name="wear_firmware_title">เล่น/หยุดอัตโนมัติ</string>
     <string name="wear_firmware_sub">หยุดเมื่อถอดข้างใดข้างหนึ่ง และเล่นต่อเมื่อใส่กลับ</string>
-    <string name="wear_smart_title">หยุดอัตโนมัติอัจฉริยะ</string>
+    <string name="wear_smart_title">หยุดอัตโนมัติอัจฉริยะ (ทดลอง)</string>
     <string name="wear_smart_sub">หยุดเฉพาะเมื่อถอดทั้งสองข้าง ไม่เล่นอัตโนมัติ ต้องใช้บริการเบื้องหลัง</string>
     <string name="row_find_title">ค้นหาหูฟัง</string>
     <string name="row_find_sub">ส่งเสียงทั้งสองข้าง</string>

@@ -62,7 +62,7 @@
     <string name="wear_title">Wykrywanie noszenia</string>
     <string name="wear_firmware_title">Automatyczne odtwarzanie/pauza</string>
     <string name="wear_firmware_sub">Słuchawki wstrzymują odtwarzanie po wyjęciu jednej z nich i wznawiają je po jej włożeniu</string>
-    <string name="wear_smart_title">Inteligentna auto-pauza</string>
+    <string name="wear_smart_title">Inteligentna auto-pauza (eksperymentalna)</string>
     <string name="wear_smart_sub">Pauza tylko wtedy, gdy obie słuchawki są wyjęte. Nigdy nie wznawia sama. Wymaga usługi w tle</string>
     <string name="row_find_title">Znajdź słuchawki</string>
     <string name="row_find_sub">Włącz dzwonek w obu słuchawkach</string>

@@ -62,7 +62,7 @@
     <string name="wear_title">Viselésérzékelés</string>
     <string name="wear_firmware_title">Automatikus lejátszás/szünet</string>
     <string name="wear_firmware_sub">A fülhallgató szünetel, ha bármelyiket kiveszi, és folytatja, ha visszateszi</string>
-    <string name="wear_smart_title">Intelligens automatikus szünet</string>
+    <string name="wear_smart_title">Intelligens automatikus szünet (kísérleti)</string>
     <string name="wear_smart_sub">Csak akkor szünetel, ha mindkét fülhallgató kint van. Soha nem indít lejátszást magától. Háttérszolgáltatás szükséges</string>
     <string name="row_find_title">Fülhallgató keresése</string>
     <string name="row_find_sub">Mindkét fülhallgató megcsörgetése</string>

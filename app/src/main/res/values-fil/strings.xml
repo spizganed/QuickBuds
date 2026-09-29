@@ -62,7 +62,7 @@
     <string name="wear_title">Pagtukoy ng pagsuot</string>
     <string name="wear_firmware_title">Awtomatikong play/pause</string>
     <string name="wear_firmware_sub">Nagpa-pause ang earbuds kapag inalis ang alinman at nagpapatuloy kapag ibinalik</string>
-    <string name="wear_smart_title">Matalinong auto-pause</string>
+    <string name="wear_smart_title">Matalinong auto-pause (eksperimental)</string>
     <string name="wear_smart_sub">Nagpa-pause lamang kapag parehong inalis ang earbuds. Hindi kailanman awtomatikong nagpe-play. Kailangan ang background service</string>
     <string name="row_find_title">Hanapin ang aking earbuds</string>
     <string name="row_find_sub">Patunugin ang parehong earbuds</string>

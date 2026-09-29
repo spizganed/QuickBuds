@@ -62,7 +62,7 @@
     <string name="wear_title">Ανίχνευση εφαρμογής</string>
     <string name="wear_firmware_title">Αυτόματη αναπαραγωγή/παύση</string>
     <string name="wear_firmware_sub">Τα ακουστικά κάνουν παύση όταν βγει ένα από τα δύο και συνεχίζουν όταν ξαναμπεί</string>
-    <string name="wear_smart_title">Έξυπνη αυτόματη παύση</string>
+    <string name="wear_smart_title">Έξυπνη αυτόματη παύση (πειραματική)</string>
     <string name="wear_smart_sub">Παύση μόνο όταν βγουν και τα δύο ακουστικά. Δεν ξεκινά ποτέ αναπαραγωγή μόνη της. Χρειάζεται την υπηρεσία παρασκηνίου</string>
     <string name="row_find_title">Εύρεση ακουστικών</string>
     <string name="row_find_sub">Κουδούνισμα και στα δύο ακουστικά</string>

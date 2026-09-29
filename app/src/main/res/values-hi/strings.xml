@@ -62,7 +62,7 @@
     <string name="wear_title">वियर डिटेक्शन</string>
     <string name="wear_firmware_title">ऑटो प्ले/पॉज़</string>
     <string name="wear_firmware_sub">किसी भी ईयरबड को निकालने पर रुकता है और वापस लगाने पर चलता है</string>
-    <string name="wear_smart_title">स्मार्ट ऑटो-पॉज़</string>
+    <string name="wear_smart_title">स्मार्ट ऑटो-पॉज़ (प्रायोगिक)</string>
     <string name="wear_smart_sub">केवल दोनों ईयरबड्स निकालने पर रुकता है। कभी अपने आप नहीं चलाता। बैकग्राउंड सेवा ज़रूरी है</string>
     <string name="row_find_title">मेरे ईयरबड्स खोजें</string>
     <string name="row_find_sub">दोनों ईयरबड्स बजाएं</string>

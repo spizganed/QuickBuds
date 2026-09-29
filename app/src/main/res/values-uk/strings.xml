@@ -62,7 +62,7 @@
     <string name="wear_title">Визначення носіння</string>
     <string name="wear_firmware_title">Автовідтворення/пауза</string>
     <string name="wear_firmware_sub">Навушники ставлять на паузу, коли один із них вийнято, і продовжують, коли його повернуто</string>
-    <string name="wear_smart_title">Розумна автопауза</string>
+    <string name="wear_smart_title">Розумна автопауза (експериментальна)</string>
     <string name="wear_smart_sub">Пауза лише коли обидва навушники вийнято. Ніколи не вмикає відтворення сама. Потрібна фонова служба</string>
     <string name="row_find_title">Знайти навушники</string>
     <string name="row_find_sub">Дзвінок на обох навушниках</string>

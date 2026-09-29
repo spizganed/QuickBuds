@@ -62,7 +62,7 @@
     <string name="wear_title">착용 감지</string>
     <string name="wear_firmware_title">자동 재생/일시정지</string>
     <string name="wear_firmware_sub">한쪽 이어버드를 빼면 일시정지하고 다시 끼우면 재개합니다</string>
-    <string name="wear_smart_title">스마트 자동 일시정지</string>
+    <string name="wear_smart_title">스마트 자동 일시정지 (실험적)</string>
     <string name="wear_smart_sub">두 이어버드를 모두 뺐을 때만 일시정지합니다. 자동 재생은 하지 않습니다. 백그라운드 서비스가 필요합니다</string>
     <string name="row_find_title">내 이어버드 찾기</string>
     <string name="row_find_sub">두 이어버드에서 소리 울리기</string>

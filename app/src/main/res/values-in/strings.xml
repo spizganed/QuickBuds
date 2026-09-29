@@ -62,7 +62,7 @@
     <string name="wear_title">Deteksi pemakaian</string>
     <string name="wear_firmware_title">Putar/jeda otomatis</string>
     <string name="wear_firmware_sub">Jeda saat salah satu dilepas dan lanjut saat dipakai lagi</string>
-    <string name="wear_smart_title">Jeda otomatis pintar</string>
+    <string name="wear_smart_title">Jeda otomatis pintar (eksperimental)</string>
     <string name="wear_smart_sub">Jeda hanya saat kedua earbud dilepas. Tidak pernah memutar otomatis. Perlu layanan latar belakang</string>
     <string name="row_find_title">Cari earbud</string>
     <string name="row_find_sub">Bunyikan kedua earbud</string>

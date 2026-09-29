@@ -62,7 +62,7 @@
     <string name="wear_title">Detekce nošení</string>
     <string name="wear_firmware_title">Automatické přehrávání/pauza</string>
     <string name="wear_firmware_sub">Sluchátka pozastaví, když jedno vyndáte, a pokračují, když ho vrátíte</string>
-    <string name="wear_smart_title">Chytré automatické pozastavení</string>
+    <string name="wear_smart_title">Chytré automatické pozastavení (experimentální)</string>
     <string name="wear_smart_sub">Pozastaví jen tehdy, když jsou venku obě sluchátka. Nikdy nespouští přehrávání samo. Vyžaduje službu na pozadí</string>
     <string name="row_find_title">Najít sluchátka</string>
     <string name="row_find_sub">Rozezvučet obě sluchátka</string>

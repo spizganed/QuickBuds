@@ -62,7 +62,7 @@
     <string name="wear_title">Pengesanan pemakaian</string>
     <string name="wear_firmware_title">Main/jeda automatik</string>
     <string name="wear_firmware_sub">Fon telinga berjeda apabila salah satu ditanggalkan dan bersambung apabila dipakai semula</string>
-    <string name="wear_smart_title">Jeda automatik pintar</string>
+    <string name="wear_smart_title">Jeda automatik pintar (eksperimen)</string>
     <string name="wear_smart_sub">Jeda hanya apabila kedua-dua fon telinga ditanggalkan. Tidak pernah main secara automatik. Memerlukan perkhidmatan latar belakang</string>
     <string name="row_find_title">Cari fon telinga saya</string>
     <string name="row_find_sub">Bunyikan kedua-dua fon telinga</string>

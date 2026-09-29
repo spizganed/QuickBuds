@@ -62,7 +62,7 @@
     <string name="wear_title">পরিধান শনাক্তকরণ</string>
     <string name="wear_firmware_title">অটো প্লে/পজ</string>
     <string name="wear_firmware_sub">যেকোনো একটি ইয়ারবাড খুলে নিলে পজ হয় এবং ফিরিয়ে দিলে আবার চলে</string>
-    <string name="wear_smart_title">স্মার্ট অটো-পজ</string>
+    <string name="wear_smart_title">স্মার্ট অটো-পজ (পরীক্ষামূলক)</string>
     <string name="wear_smart_sub">শুধু দুটি ইয়ারবাডই খুলে নিলে পজ হয়। কখনো নিজে থেকে চালায় না। ব্যাকগ্রাউন্ড সার্ভিস প্রয়োজন</string>
     <string name="row_find_title">আমার ইয়ারবাড খুঁজুন</string>
     <string name="row_find_sub">দুটি ইয়ারবাডেই শব্দ বাজান</string>

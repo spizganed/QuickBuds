@@ -62,7 +62,7 @@
     <string name="wear_title">Takılma algılama</string>
     <string name="wear_firmware_title">Otomatik oynat/duraklat</string>
     <string name="wear_firmware_sub">Kulaklıklardan biri çıkarılınca duraklar, geri takılınca devam eder</string>
-    <string name="wear_smart_title">Akıllı otomatik duraklatma</string>
+    <string name="wear_smart_title">Akıllı otomatik duraklatma (deneysel)</string>
     <string name="wear_smart_sub">Yalnızca iki kulaklık da çıkarıldığında duraklatır. Asla kendiliğinden oynatmaz. Arka plan hizmeti gerekir</string>
     <string name="row_find_title">Kulaklıklarımı bul</string>
     <string name="row_find_sub">İki kulaklığı da çaldır</string>

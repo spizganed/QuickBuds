@@ -62,7 +62,7 @@
     <string name="wear_title">装着検出</string>
     <string name="wear_firmware_title">自動再生/一時停止</string>
     <string name="wear_firmware_sub">どちらかのイヤホンを外すと一時停止し、戻すと再開します</string>
-    <string name="wear_smart_title">スマート自動一時停止</string>
+    <string name="wear_smart_title">スマート自動一時停止（試験運用）</string>
     <string name="wear_smart_sub">両方のイヤホンを外したときだけ一時停止します。自動再生はしません。バックグラウンドサービスが必要です</string>
     <string name="row_find_title">イヤホンを探す</string>
     <string name="row_find_sub">両方のイヤホンを鳴らす</string>

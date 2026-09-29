@@ -62,7 +62,7 @@
     <string name="wear_title">Rilevamento indossamento</string>
     <string name="wear_firmware_title">Riproduzione/pausa automatica</string>
     <string name="wear_firmware_sub">Gli auricolari vanno in pausa quando ne togli uno e riprendono quando lo rimetti</string>
-    <string name="wear_smart_title">Pausa automatica intelligente</string>
+    <string name="wear_smart_title">Pausa automatica intelligente (sperimentale)</string>
     <string name="wear_smart_sub">Pausa solo quando entrambi gli auricolari sono tolti. Non riprende mai da sola. Richiede il servizio in background</string>
     <string name="row_find_title">Trova i miei auricolari</string>
     <string name="row_find_sub">Fai squillare entrambi gli auricolari</string>

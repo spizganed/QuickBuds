@@ -62,7 +62,7 @@
     <string name="wear_title">Detección de uso</string>
     <string name="wear_firmware_title">Reproducir/pausar automáticamente</string>
     <string name="wear_firmware_sub">Los auriculares se pausan al quitar uno y continúan al volver a ponerlo</string>
-    <string name="wear_smart_title">Pausa automática inteligente</string>
+    <string name="wear_smart_title">Pausa automática inteligente (experimental)</string>
     <string name="wear_smart_sub">Pausa solo cuando ambos auriculares están fuera. Nunca reproduce solo. Necesita el servicio en segundo plano</string>
     <string name="row_find_title">Buscar mis auriculares</string>
     <string name="row_find_sub">Hacer sonar ambos auriculares</string>

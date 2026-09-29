@@ -62,7 +62,7 @@
     <string name="wear_title">Détection du port</string>
     <string name="wear_firmware_title">Lecture/pause auto</string>
     <string name="wear_firmware_sub">Les écouteurs se mettent en pause quand l\'un est retiré et reprennent quand il est remis</string>
-    <string name="wear_smart_title">Pause auto intelligente</string>
+    <string name="wear_smart_title">Pause auto intelligente (expérimental)</string>
     <string name="wear_smart_sub">Pause seulement quand les deux écouteurs sont retirés. Ne relance jamais la lecture. Nécessite le service en arrière-plan</string>
     <string name="row_find_title">Localiser mes écouteurs</string>
     <string name="row_find_sub">Faire sonner les deux écouteurs</string>

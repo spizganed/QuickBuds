@@ -62,7 +62,7 @@
     <string name="wear_title">Bäraravkänning</string>
     <string name="wear_firmware_title">Automatisk uppspelning/paus</string>
     <string name="wear_firmware_sub">Hörlurarna pausar när någon av dem tas ut och fortsätter när den sätts tillbaka</string>
-    <string name="wear_smart_title">Smart automatisk paus</string>
+    <string name="wear_smart_title">Smart automatisk paus (experimentell)</string>
     <string name="wear_smart_sub">Pausar bara när båda hörlurarna är ute. Startar aldrig uppspelning själv. Kräver bakgrundstjänsten</string>
     <string name="row_find_title">Hitta mina hörlurar</string>
     <string name="row_find_sub">Spela en signal i båda hörlurarna</string>

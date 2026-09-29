@@ -62,7 +62,7 @@
     <string name="wear_title">佩戴检测</string>
     <string name="wear_firmware_title">自动播放/暂停</string>
     <string name="wear_firmware_sub">任一耳机取下时暂停，戴回时继续</string>
-    <string name="wear_smart_title">智能自动暂停</string>
+    <string name="wear_smart_title">智能自动暂停（实验性）</string>
     <string name="wear_smart_sub">仅当两只耳机都取下时暂停，从不自动播放。需要后台服务</string>
     <string name="row_find_title">查找耳机</string>
     <string name="row_find_sub">让两只耳机响铃</string>

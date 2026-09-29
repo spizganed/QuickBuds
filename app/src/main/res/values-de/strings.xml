@@ -62,7 +62,7 @@
     <string name="wear_title">Trageerkennung</string>
     <string name="wear_firmware_title">Automatisch abspielen/pausieren</string>
     <string name="wear_firmware_sub">Die Earbuds pausieren, wenn einer herausgenommen wird, und spielen weiter, wenn er wieder drin ist</string>
-    <string name="wear_smart_title">Intelligente Auto-Pause</string>
+    <string name="wear_smart_title">Intelligente Auto-Pause (experimentell)</string>
     <string name="wear_smart_sub">Nur pausieren, wenn beide Earbuds draußen sind. Spielt nie automatisch ab. Benötigt den Hintergrunddienst</string>
     <string name="row_find_title">Earbuds suchen</string>
     <string name="row_find_sub">Beide Earbuds klingeln lassen</string>

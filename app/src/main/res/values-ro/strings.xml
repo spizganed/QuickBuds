@@ -62,7 +62,7 @@
     <string name="wear_title">Detectare purtare</string>
     <string name="wear_firmware_title">Redare/pauză automată</string>
     <string name="wear_firmware_sub">Căștile pun pauză când scoți una și reiau când o pui la loc</string>
-    <string name="wear_smart_title">Pauză automată inteligentă</string>
+    <string name="wear_smart_title">Pauză automată inteligentă (experimental)</string>
     <string name="wear_smart_sub">Pauză doar când ambele căști sunt scoase. Nu reia niciodată singură. Necesită serviciul în fundal</string>
     <string name="row_find_title">Găsește căștile</string>
     <string name="row_find_sub">Sună ambele căști</string>

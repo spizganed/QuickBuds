@@ -86,7 +86,7 @@
     <string name="wear_title">Wear detection</string>
     <string name="wear_firmware_title">Auto play/pause</string>
     <string name="wear_firmware_sub">The earbuds pause when either one is taken out and resume when it is back</string>
-    <string name="wear_smart_title">Smart auto-pause</string>
+    <string name="wear_smart_title">Smart auto-pause (experimental)</string>
     <string name="wear_smart_sub">Pause only when both earbuds are out. Never auto-plays. Needs the background service</string>
     <string name="row_find_title">Find my earbuds</string>
     <string name="row_find_sub">Ring both earbuds</string>
