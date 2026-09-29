@@ -94,6 +94,9 @@ back.
   result offered first, the failure reasons (PROTOCOL.md §9). Unverified on buds (Buds 4 lacks it).
 - Tap sensitivity (2026-09-29), Earbud settings: levels 1..5 with the below-default warning (PROTOCOL.md
   §9). Unverified on buds.
+- Dual connection device manager (2026-09-29), on the 11 models that have it: every paired device, a tap
+  connects or disconnects it, and the preferred device (PROTOCOL.md §9). "This device" now comes from the
+  list's own flag. Unverified on buds (Buds 4 lack it).
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

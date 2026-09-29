@@ -406,4 +406,11 @@
     <string name="tap_level_title">Sensitivity ng tap</string>
     <string name="tap_level_hint">Para sa double at triple tap. Mas madaling ma-trigger ang mas mababang level.</string>
     <string name="tap_level_warning">Kapag mas mababa sa default, maaaring ma-trigger nang hindi sinasadya ang tap, halimbawa kapag may sumbrero o salamin, humahawak sa buhok o nag-eehersisyo.</string>
+    <string name="dual_section_all">Mga device</string>
+    <string name="dual_not_connected">Hindi nakakonekta</string>
+    <string name="dual_connect_q">Ikonekta ang %1$s?</string>
+    <string name="dual_disconnect_q">Idiskonekta ang %1$s?</string>
+    <string name="dual_preferred">Paboritong device</string>
+    <string name="dual_preferred_auto">Awtomatiko</string>
+    <string name="dual_preferred_sub">Kapag abot-kaya, dito unang kumokonekta ang earbuds.</string>
 </resources>

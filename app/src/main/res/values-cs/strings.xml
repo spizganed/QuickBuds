@@ -406,4 +406,11 @@
     <string name="tap_level_title">Citlivost klepnutí</string>
     <string name="tap_level_hint">Pro dvojité a trojité klepnutí. Nižší úroveň reaguje snáz.</string>
     <string name="tap_level_warning">Pod výchozí úrovní se klepnutí může spustit omylem, třeba s čepicí nebo brýlemi, při dotyku vlasů nebo při cvičení.</string>
+    <string name="dual_section_all">Zařízení</string>
+    <string name="dual_not_connected">Nepřipojeno</string>
+    <string name="dual_connect_q">Připojit %1$s?</string>
+    <string name="dual_disconnect_q">Odpojit %1$s?</string>
+    <string name="dual_preferred">Preferované zařízení</string>
+    <string name="dual_preferred_auto">Automaticky</string>
+    <string name="dual_preferred_sub">Když je v dosahu, sluchátka se připojí nejdřív k němu.</string>
 </resources>

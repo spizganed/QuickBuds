@@ -408,4 +408,11 @@
     <string name="tap_level_title">Sensitivitas ketukan</string>
     <string name="tap_level_hint">Untuk ketuk dua dan tiga kali. Level lebih rendah lebih mudah terpicu.</string>
     <string name="tap_level_warning">Di bawah level default, ketukan bisa terpicu tanpa sengaja, misalnya saat memakai topi atau kacamata, menyentuh rambut, atau berolahraga.</string>
+    <string name="dual_section_all">Perangkat</string>
+    <string name="dual_not_connected">Tidak terhubung</string>
+    <string name="dual_connect_q">Hubungkan %1$s?</string>
+    <string name="dual_disconnect_q">Putuskan %1$s?</string>
+    <string name="dual_preferred">Perangkat pilihan</string>
+    <string name="dual_preferred_auto">Otomatis</string>
+    <string name="dual_preferred_sub">Saat dalam jangkauan, earbud terhubung ke perangkat ini lebih dulu.</string>
 </resources>

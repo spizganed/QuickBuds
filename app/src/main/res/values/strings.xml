@@ -492,4 +492,11 @@
     <string name="tap_level_title">Tap sensitivity</string>
     <string name="tap_level_hint">For double and triple taps. A lower level triggers more easily.</string>
     <string name="tap_level_warning">Below the default level, taps can trigger by accident, for example with a hat or glasses, when touching your hair or during exercise.</string>
+    <string name="dual_section_all">Devices</string>
+    <string name="dual_not_connected">Not connected</string>
+    <string name="dual_connect_q">Connect %1$s?</string>
+    <string name="dual_disconnect_q">Disconnect %1$s?</string>
+    <string name="dual_preferred">Preferred device</string>
+    <string name="dual_preferred_auto">Automatic</string>
+    <string name="dual_preferred_sub">When it is in range, the earbuds connect to it first.</string>
 </resources>

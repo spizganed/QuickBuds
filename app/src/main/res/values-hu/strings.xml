@@ -406,4 +406,11 @@
     <string name="tap_level_title">Koppintási érzékenység</string>
     <string name="tap_level_hint">Dupla és tripla koppintáshoz. Alacsonyabb szinten könnyebben reagál.</string>
     <string name="tap_level_warning">Az alapértelmezett szint alatt a koppintás véletlenül is működésbe léphet, például sapkában vagy szemüvegben, hajigazításkor vagy edzés közben.</string>
+    <string name="dual_section_all">Eszközök</string>
+    <string name="dual_not_connected">Nincs csatlakoztatva</string>
+    <string name="dual_connect_q">Csatlakozol ehhez: %1$s?</string>
+    <string name="dual_disconnect_q">Leválasztod ezt: %1$s?</string>
+    <string name="dual_preferred">Előnyben részesített eszköz</string>
+    <string name="dual_preferred_auto">Automatikus</string>
+    <string name="dual_preferred_sub">Ha hatótávon belül van, a fülhallgató először ehhez csatlakozik.</string>
 </resources>

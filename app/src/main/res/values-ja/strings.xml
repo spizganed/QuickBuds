@@ -406,4 +406,11 @@
     <string name="tap_level_title">タップ感度</string>
     <string name="tap_level_hint">ダブルタップとトリプルタップ用。レベルが低いほど反応しやすくなります。</string>
     <string name="tap_level_warning">既定より低いと、帽子や眼鏡の着用時、髪に触れたとき、運動中などに誤って反応することがあります。</string>
+    <string name="dual_section_all">デバイス</string>
+    <string name="dual_not_connected">未接続</string>
+    <string name="dual_connect_q">%1$s に接続しますか？</string>
+    <string name="dual_disconnect_q">%1$s を切断しますか？</string>
+    <string name="dual_preferred">優先デバイス</string>
+    <string name="dual_preferred_auto">自動</string>
+    <string name="dual_preferred_sub">範囲内にあるとき、イヤホンはまずこのデバイスに接続します。</string>
 </resources>

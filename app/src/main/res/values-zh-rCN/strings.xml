@@ -408,4 +408,11 @@
     <string name="tap_level_title">轻点灵敏度</string>
     <string name="tap_level_hint">用于双击和三击。档位越低越容易触发。</string>
     <string name="tap_level_warning">低于默认档位时可能误触，例如戴帽子或眼镜、撩头发或运动时。</string>
+    <string name="dual_section_all">设备</string>
+    <string name="dual_not_connected">未连接</string>
+    <string name="dual_connect_q">连接 %1$s？</string>
+    <string name="dual_disconnect_q">断开 %1$s？</string>
+    <string name="dual_preferred">优先设备</string>
+    <string name="dual_preferred_auto">自动</string>
+    <string name="dual_preferred_sub">在范围内时，耳机会优先连接此设备。</string>
 </resources>

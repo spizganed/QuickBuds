@@ -406,4 +406,11 @@
     <string name="tap_level_title">Czułość stuknięć</string>
     <string name="tap_level_hint">Dla podwójnych i potrójnych stuknięć. Niższy poziom łatwiej reaguje.</string>
     <string name="tap_level_warning">Poniżej poziomu domyślnego stuknięcia mogą zadziałać przypadkiem, np. w czapce lub okularach, przy dotykaniu włosów lub podczas ćwiczeń.</string>
+    <string name="dual_section_all">Urządzenia</string>
+    <string name="dual_not_connected">Nie połączono</string>
+    <string name="dual_connect_q">Połączyć z %1$s?</string>
+    <string name="dual_disconnect_q">Rozłączyć %1$s?</string>
+    <string name="dual_preferred">Preferowane urządzenie</string>
+    <string name="dual_preferred_auto">Automatycznie</string>
+    <string name="dual_preferred_sub">Gdy jest w zasięgu, słuchawki łączą się z nim najpierw.</string>
 </resources>

@@ -406,4 +406,11 @@
     <string name="tap_level_title">ট্যাপ সংবেদনশীলতা</string>
     <string name="tap_level_hint">ডাবল ও ট্রিপল ট্যাপের জন্য। কম লেভেলে সহজে চালু হয়।</string>
     <string name="tap_level_warning">ডিফল্টের নিচে ট্যাপ ভুলবশত চালু হতে পারে, যেমন টুপি বা চশমা পরলে, চুলে হাত দিলে বা ব্যায়ামের সময়।</string>
+    <string name="dual_section_all">ডিভাইস</string>
+    <string name="dual_not_connected">সংযুক্ত নয়</string>
+    <string name="dual_connect_q">%1$s সংযুক্ত করবেন?</string>
+    <string name="dual_disconnect_q">%1$s বিচ্ছিন্ন করবেন?</string>
+    <string name="dual_preferred">পছন্দের ডিভাইস</string>
+    <string name="dual_preferred_auto">স্বয়ংক্রিয়</string>
+    <string name="dual_preferred_sub">কাছাকাছি থাকলে ইয়ারবাড আগে এটির সাথে সংযুক্ত হয়।</string>
 </resources>

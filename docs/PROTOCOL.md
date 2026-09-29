@@ -1435,13 +1435,21 @@ RX 0204 06 02 ...DESKTOP... 12 02 00 ...                                    desk
 ```
 
 - **Device list** — reply `[status 00][count]`, push `0x0204` subType `06` then `[count]`; each
-  entry is `[MAC, 6 bytes reversed][?][state][?][nameLen][name UTF-8]`. State `02` = connected,
-  `00` = not; a dropped device stays in the list with `00`, and HeyMelody shows only connected
-  ones. The two `?` bytes (`12`/`15`, `00`/`01`) are undecoded — the `01` sits on this phone, but
-  one sample is not proof, so the app finds "this device" by the phone's Bluetooth name.
+  entry is `[MAC, 6 bytes reversed][entry length][state][flags][nameLen][name UTF-8]`. State `02` =
+  connected, `00` = not; a dropped device stays in the list with `00`. `[VENDOR]` (2026-09-29): the
+  entry length counts state, flags, name length and name (`12` = 3 + 15 for "DESKTOP-8IN3GA6"); flags
+  bit 0 = this phone (the `01` in the capture), bit 1 = the main audio device, bit 2 = audio playing,
+  bits 3-5 = the device type. The app marks "this device" by bit 0, the phone's Bluetooth name as fallback.
+- **Device manager** `[VENDOR]` (2026-09-29, wired, unverified on buds): on the 11 models whose
+  `multiConnectFunctions` list it (`multiConnect` in our `models.json`; `0x0429` / `0x0132` are bit 59 of
+  the bitmap, which Buds 4 lacks), HeyMelody lists every paired device and a tap asks, then sends
+  `0x0429 01 <MAC>` (connect) or `02 <MAC>` (disconnect; for the phone itself it drops its own link). The
+  MAC goes in written order, the reverse of the list's bytes. `03 <MAC>` unpairs, but no HeyMelody screen
+  sends it. **Preferred device** (`setPriorityDevice`, 8 of them): `0x0429 04 00` automatic, `04 01 <MAC>`
+  one device; read `0x0132 02` → `8132 00 02 <00 automatic | 01 <MAC>>`, MAC in written order.
 - **`0x0413 08 00 xx`** follows every toggle, `01` after OFF and `00` after ON (HeyMelody also
   sends `08 00 00` when the screen opens). Meaning unknown; `setDualDevice` replays it verbatim.
-- "Add device" in HeyMelody is only pairing instructions; tapping a device row does nothing.
+- "Add device" in HeyMelody is only pairing instructions; without the device manager a row does nothing.
 
 ### Time request (`0x0500`) — `[CAPTURE]` 2026-09-25, not answered by us
 

@@ -406,4 +406,11 @@
     <string name="tap_level_title">Чувствительность касаний</string>
     <string name="tap_level_hint">Для двойных и тройных касаний. Чем ниже уровень, тем легче срабатывание.</string>
     <string name="tap_level_warning">Ниже уровня по умолчанию касания могут срабатывать случайно, например в шапке или очках, при касании волос или во время тренировки.</string>
+    <string name="dual_section_all">Устройства</string>
+    <string name="dual_not_connected">Не подключено</string>
+    <string name="dual_connect_q">Подключить %1$s?</string>
+    <string name="dual_disconnect_q">Отключить %1$s?</string>
+    <string name="dual_preferred">Предпочтительное устройство</string>
+    <string name="dual_preferred_auto">Автоматически</string>
+    <string name="dual_preferred_sub">Когда оно рядом, наушники подключаются к нему в первую очередь.</string>
 </resources>

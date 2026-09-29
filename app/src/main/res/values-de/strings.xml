@@ -406,4 +406,11 @@
     <string name="tap_level_title">Tippempfindlichkeit</string>
     <string name="tap_level_hint">Für Doppel- und Dreifachtippen. Eine niedrigere Stufe löst leichter aus.</string>
     <string name="tap_level_warning">Unter der Standardstufe kann Tippen versehentlich auslösen, etwa mit Mütze oder Brille, beim Berühren der Haare oder beim Sport.</string>
+    <string name="dual_section_all">Geräte</string>
+    <string name="dual_not_connected">Nicht verbunden</string>
+    <string name="dual_connect_q">%1$s verbinden?</string>
+    <string name="dual_disconnect_q">%1$s trennen?</string>
+    <string name="dual_preferred">Bevorzugtes Gerät</string>
+    <string name="dual_preferred_auto">Automatisch</string>
+    <string name="dual_preferred_sub">Wenn es in Reichweite ist, verbinden sich die Ohrhörer zuerst damit.</string>
 </resources>

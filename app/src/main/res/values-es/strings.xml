@@ -406,4 +406,11 @@
     <string name="tap_level_title">Sensibilidad de los toques</string>
     <string name="tap_level_hint">Para toques dobles y triples. Un nivel más bajo se activa con más facilidad.</string>
     <string name="tap_level_warning">Por debajo del nivel predeterminado, los toques pueden activarse sin querer, por ejemplo con gorro o gafas, al tocarte el pelo o haciendo ejercicio.</string>
+    <string name="dual_section_all">Dispositivos</string>
+    <string name="dual_not_connected">No conectado</string>
+    <string name="dual_connect_q">¿Conectar %1$s?</string>
+    <string name="dual_disconnect_q">¿Desconectar %1$s?</string>
+    <string name="dual_preferred">Dispositivo preferido</string>
+    <string name="dual_preferred_auto">Automático</string>
+    <string name="dual_preferred_sub">Cuando esté al alcance, los auriculares se conectarán primero a él.</string>
 </resources>

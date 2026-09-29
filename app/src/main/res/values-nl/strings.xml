@@ -406,4 +406,11 @@
     <string name="tap_level_title">Tikgevoeligheid</string>
     <string name="tap_level_hint">Voor dubbel en driedubbel tikken. Een lager niveau reageert makkelijker.</string>
     <string name="tap_level_warning">Onder het standaardniveau kunnen tikken per ongeluk reageren, bijvoorbeeld met een pet of bril, als je je haar aanraakt of tijdens het sporten.</string>
+    <string name="dual_section_all">Apparaten</string>
+    <string name="dual_not_connected">Niet verbonden</string>
+    <string name="dual_connect_q">%1$s verbinden?</string>
+    <string name="dual_disconnect_q">%1$s loskoppelen?</string>
+    <string name="dual_preferred">Voorkeursapparaat</string>
+    <string name="dual_preferred_auto">Automatisch</string>
+    <string name="dual_preferred_sub">Als het binnen bereik is, verbinden de oordopjes er eerst mee.</string>
 </resources>

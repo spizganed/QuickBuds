@@ -406,4 +406,11 @@
     <string name="tap_level_title">Sensibilité des tapotements</string>
     <string name="tap_level_hint">Pour les doubles et triples tapotements. Un niveau plus bas se déclenche plus facilement.</string>
     <string name="tap_level_warning">Sous le niveau par défaut, les tapotements peuvent se déclencher par erreur, par exemple avec un chapeau ou des lunettes, en touchant vos cheveux ou pendant le sport.</string>
+    <string name="dual_section_all">Appareils</string>
+    <string name="dual_not_connected">Non connecté</string>
+    <string name="dual_connect_q">Connecter %1$s ?</string>
+    <string name="dual_disconnect_q">Déconnecter %1$s ?</string>
+    <string name="dual_preferred">Appareil préféré</string>
+    <string name="dual_preferred_auto">Automatique</string>
+    <string name="dual_preferred_sub">Quand il est à portée, les écouteurs s\'y connectent en premier.</string>
 </resources>

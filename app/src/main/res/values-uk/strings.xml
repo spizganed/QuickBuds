@@ -406,4 +406,11 @@
     <string name="tap_level_title">Чутливість дотиків</string>
     <string name="tap_level_hint">Для подвійних і потрійних дотиків. Що нижчий рівень, то легше спрацьовування.</string>
     <string name="tap_level_warning">Нижче рівня за замовчуванням дотики можуть спрацьовувати випадково, наприклад у шапці чи окулярах, коли торкаєтеся волосся або під час тренування.</string>
+    <string name="dual_section_all">Пристрої</string>
+    <string name="dual_not_connected">Не підключено</string>
+    <string name="dual_connect_q">Підключити %1$s?</string>
+    <string name="dual_disconnect_q">Відключити %1$s?</string>
+    <string name="dual_preferred">Бажаний пристрій</string>
+    <string name="dual_preferred_auto">Автоматично</string>
+    <string name="dual_preferred_sub">Коли він поруч, навушники підключаються до нього насамперед.</string>
 </resources>

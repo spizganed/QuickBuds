@@ -406,4 +406,11 @@
     <string name="tap_level_title">Sensibilidade do toque</string>
     <string name="tap_level_hint">Para toques duplos e triplos. Um nível mais baixo é acionado com mais facilidade.</string>
     <string name="tap_level_warning">Abaixo do nível padrão, os toques podem ser acionados sem querer, por exemplo de chapéu ou óculos, ao mexer no cabelo ou durante exercícios.</string>
+    <string name="dual_section_all">Dispositivos</string>
+    <string name="dual_not_connected">Não conectado</string>
+    <string name="dual_connect_q">Conectar %1$s?</string>
+    <string name="dual_disconnect_q">Desconectar %1$s?</string>
+    <string name="dual_preferred">Dispositivo preferido</string>
+    <string name="dual_preferred_auto">Automático</string>
+    <string name="dual_preferred_sub">Quando estiver ao alcance, os fones se conectam a ele primeiro.</string>
 </resources>

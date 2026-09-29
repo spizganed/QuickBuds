@@ -406,4 +406,11 @@
     <string name="tap_level_title">Dokunma hassasiyeti</string>
     <string name="tap_level_hint">Çift ve üçlü dokunma için. Daha düşük seviye daha kolay tetiklenir.</string>
     <string name="tap_level_warning">Varsayılan seviyenin altında dokunmalar yanlışlıkla tetiklenebilir; örneğin şapka veya gözlük takarken, saçınıza dokunurken ya da spor yaparken.</string>
+    <string name="dual_section_all">Cihazlar</string>
+    <string name="dual_not_connected">Bağlı değil</string>
+    <string name="dual_connect_q">%1$s bağlansın mı?</string>
+    <string name="dual_disconnect_q">%1$s bağlantısı kesilsin mi?</string>
+    <string name="dual_preferred">Tercih edilen cihaz</string>
+    <string name="dual_preferred_auto">Otomatik</string>
+    <string name="dual_preferred_sub">Menzildeyken kulaklıklar önce bu cihaza bağlanır.</string>
 </resources>

@@ -130,6 +130,8 @@ class BudsConnectionManager(private val context: Context) {
 
         /** The paired-device list changed, see [devices]. */
         fun onDevices(list: List<PairedDevice>) {}
+        /** The preferred device from `0x8132`: null = automatic. */
+        fun onPreferred(mac: String?) {}
 
         /** The buds reported which commands they accept (`0x8100`), see [Capabilities]. */
         fun onCapabilities() {}
@@ -405,7 +407,8 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /** One entry of the buds' paired-device list (`0x8112`, `0x0204` subType `06`). */
-    data class PairedDevice(val mac: String, val name: String, val connected: Boolean)
+    data class PairedDevice(val mac: String, val name: String, val connected: Boolean,
+        val thisPhone: Boolean = false, val inUse: Boolean = false)
 
     /** Latest device list, empty until read. See [refreshDevices]. */
     @Volatile var devices: List<PairedDevice> = emptyList()
@@ -413,9 +416,28 @@ class BudsConnectionManager(private val context: Context) {
 
     fun refreshDevices() = sendRaw(OpoProtocol.queryDevices(), "query devices")
 
+    /** Connects or disconnects another device on the list; the buds push the new list. */
+    fun connectDevice(mac: String, on: Boolean) =
+        sendRaw(OpoProtocol.connectDevice(mac, on), "${if (on) "Connect" else "Disconnect"} $mac")
+
+    fun setPreferred(mac: String?) {
+        Thread {
+            try {
+                sendRawBlocking(OpoProtocol.setPreferred(mac), "Preferred ${mac ?: "auto"}")
+                Thread.sleep(250)
+                sendRawBlocking(OpoProtocol.queryPreferred(), "query preferred")
+            } catch (e: Exception) {
+                log("PREFERRED write failed: ${e.message}")
+            }
+        }.start()
+    }
+
+    fun refreshPreferred() = sendRaw(OpoProtocol.queryPreferred(), "query preferred")
+
     /**
-     * `[count]` then per device `[MAC, 6 bytes reversed][?][state][?][nameLen][name UTF-8]`.
-     * State `02` = connected, `00` = not. The two `?` bytes are undecoded (PROTOCOL.md §9).
+     * `[count]` then per device `[MAC, 6 bytes reversed][entry length][state][flags][nameLen][name UTF-8]`.
+     * State `02` = connected, `00` = not. Flags `[VENDOR]`: bit 0 this phone, bit 2 audio playing
+     * (bit 1 the main audio device, bits 3-5 the device type). PROTOCOL.md §9.
      */
     private fun parseDevices(p: ByteArray, start: Int): List<PairedDevice>? {
         if (p.size <= start) return null
@@ -426,9 +448,10 @@ class BudsConnectionManager(private val context: Context) {
             if (o + 10 > p.size) return null
             val mac = (5 downTo 0).joinToString(":") { "%02X".format(p[o + it]) }
             val connected = p[o + 7].toInt() == 0x02
+            val flags = p[o + 8].toInt()
             val len = p[o + 9].toInt() and 0xFF
             if (o + 10 + len > p.size) return null
-            out += PairedDevice(mac, String(p, o + 10, len, Charsets.UTF_8), connected)
+            out += PairedDevice(mac, String(p, o + 10, len, Charsets.UTF_8), connected, flags and 1 != 0, flags and 4 != 0)
             o += 10 + len
         }
         return out
@@ -1026,7 +1049,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
             cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || cmd == 0x811F || // Golden Sound replies
             cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
-            cmd == 0x811A || cmd == 0x8133 ||            // personalized ANC, tap sensitivity
+            cmd == 0x811A || cmd == 0x8133 || cmd == 0x8132 || // personalized ANC, tap sensitivity, preferred device
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd == OpoProtocol.CMD_REGISTER_NOTIFY
         if (explained) return
@@ -1237,6 +1260,15 @@ class BudsConnectionManager(private val context: Context) {
             log("EQ: current=$eqCurrent bassWave=$bassWaveLevel custom=" +
                 eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
             handler.post { listeners.forEach { it.onEqState() } }
+            return
+        }
+
+        // --- Preferred device: `00 02 <00 auto | 01 <MAC>>`, [VENDOR] ---
+        if (cmd == 0x8132 && payload.size >= 3 && payload[0].toInt() == 0 && payload[1].toInt() == 2) {
+            val mac = if (payload[2].toInt() == 0 || payload.size < 9) null
+                else (3..8).joinToString(":") { "%02X".format(payload[it]) }
+            log("PREFERRED: ${mac ?: "auto"}")
+            handler.post { listeners.forEach { it.onPreferred(mac) } }
             return
         }
 

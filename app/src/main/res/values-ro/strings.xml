@@ -406,4 +406,11 @@
     <string name="tap_level_title">Sensibilitatea atingerii</string>
     <string name="tap_level_hint">Pentru atingeri duble și triple. Un nivel mai mic se declanșează mai ușor.</string>
     <string name="tap_level_warning">Sub nivelul implicit, atingerile se pot declanșa din greșeală, de exemplu cu pălărie sau ochelari, când îți atingi părul sau în timpul sportului.</string>
+    <string name="dual_section_all">Dispozitive</string>
+    <string name="dual_not_connected">Neconectat</string>
+    <string name="dual_connect_q">Conectezi %1$s?</string>
+    <string name="dual_disconnect_q">Deconectezi %1$s?</string>
+    <string name="dual_preferred">Dispozitiv preferat</string>
+    <string name="dual_preferred_auto">Automat</string>
+    <string name="dual_preferred_sub">Când este în raza de acțiune, căștile se conectează mai întâi la el.</string>
 </resources>

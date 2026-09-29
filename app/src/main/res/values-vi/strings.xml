@@ -408,4 +408,11 @@
     <string name="tap_level_title">Độ nhạy chạm</string>
     <string name="tap_level_hint">Cho chạm hai và ba lần. Mức thấp hơn dễ kích hoạt hơn.</string>
     <string name="tap_level_warning">Dưới mức mặc định, thao tác chạm có thể bị kích hoạt nhầm, ví dụ khi đội mũ, đeo kính, chạm vào tóc hoặc tập thể dục.</string>
+    <string name="dual_section_all">Thiết bị</string>
+    <string name="dual_not_connected">Chưa kết nối</string>
+    <string name="dual_connect_q">Kết nối %1$s?</string>
+    <string name="dual_disconnect_q">Ngắt kết nối %1$s?</string>
+    <string name="dual_preferred">Thiết bị ưu tiên</string>
+    <string name="dual_preferred_auto">Tự động</string>
+    <string name="dual_preferred_sub">Khi ở trong phạm vi, tai nghe sẽ kết nối với thiết bị này trước.</string>
 </resources>

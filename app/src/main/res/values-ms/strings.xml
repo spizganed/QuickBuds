@@ -406,4 +406,11 @@
     <string name="tap_level_title">Kepekaan ketikan</string>
     <string name="tap_level_hint">Untuk ketik dua dan tiga kali. Tahap lebih rendah lebih mudah dicetuskan.</string>
     <string name="tap_level_warning">Di bawah tahap lalai, ketikan boleh tercetus tanpa sengaja, contohnya ketika memakai topi atau cermin mata, menyentuh rambut atau bersenam.</string>
+    <string name="dual_section_all">Peranti</string>
+    <string name="dual_not_connected">Tidak disambungkan</string>
+    <string name="dual_connect_q">Sambung %1$s?</string>
+    <string name="dual_disconnect_q">Putuskan %1$s?</string>
+    <string name="dual_preferred">Peranti pilihan</string>
+    <string name="dual_preferred_auto">Automatik</string>
+    <string name="dual_preferred_sub">Apabila dalam julat, fon telinga menyambung kepadanya dahulu.</string>
 </resources>

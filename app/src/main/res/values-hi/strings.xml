@@ -408,4 +408,11 @@
     <string name="tap_level_title">टैप संवेदनशीलता</string>
     <string name="tap_level_hint">डबल और ट्रिपल टैप के लिए। कम लेवल आसानी से चालू होता है।</string>
     <string name="tap_level_warning">डिफ़ॉल्ट से कम लेवल पर टैप गलती से चालू हो सकते हैं, जैसे टोपी या चश्मा पहनने, बाल छूने या व्यायाम के दौरान।</string>
+    <string name="dual_section_all">डिवाइस</string>
+    <string name="dual_not_connected">कनेक्ट नहीं है</string>
+    <string name="dual_connect_q">%1$s कनेक्ट करें?</string>
+    <string name="dual_disconnect_q">%1$s डिस्कनेक्ट करें?</string>
+    <string name="dual_preferred">पसंदीदा डिवाइस</string>
+    <string name="dual_preferred_auto">अपने आप</string>
+    <string name="dual_preferred_sub">रेंज में होने पर ईयरबड पहले इससे कनेक्ट होते हैं।</string>
 </resources>

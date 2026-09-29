@@ -408,4 +408,11 @@
     <string name="tap_level_title">ความไวในการแตะ</string>
     <string name="tap_level_hint">สำหรับการแตะสองครั้งและสามครั้ง ระดับต่ำจะตอบสนองง่ายขึ้น</string>
     <string name="tap_level_warning">ต่ำกว่าค่าเริ่มต้น การแตะอาจทำงานโดยไม่ตั้งใจ เช่น เมื่อสวมหมวกหรือแว่นตา จับผม หรือออกกำลังกาย</string>
+    <string name="dual_section_all">อุปกรณ์</string>
+    <string name="dual_not_connected">ไม่ได้เชื่อมต่อ</string>
+    <string name="dual_connect_q">เชื่อมต่อ %1$s ไหม</string>
+    <string name="dual_disconnect_q">ยกเลิกการเชื่อมต่อ %1$s ไหม</string>
+    <string name="dual_preferred">อุปกรณ์ที่ต้องการ</string>
+    <string name="dual_preferred_auto">อัตโนมัติ</string>
+    <string name="dual_preferred_sub">เมื่ออยู่ในระยะ หูฟังจะเชื่อมต่อกับอุปกรณ์นี้ก่อน</string>
 </resources>

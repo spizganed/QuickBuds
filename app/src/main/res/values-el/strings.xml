@@ -406,4 +406,11 @@
     <string name="tap_level_title">Ευαισθησία πατήματος</string>
     <string name="tap_level_hint">Για διπλό και τριπλό πάτημα. Χαμηλότερο επίπεδο ενεργοποιείται πιο εύκολα.</string>
     <string name="tap_level_warning">Κάτω από το προεπιλεγμένο επίπεδο, τα πατήματα μπορεί να ενεργοποιηθούν κατά λάθος, π.χ. με καπέλο ή γυαλιά, όταν αγγίζετε τα μαλλιά ή στη γυμναστική.</string>
+    <string name="dual_section_all">Συσκευές</string>
+    <string name="dual_not_connected">Μη συνδεδεμένη</string>
+    <string name="dual_connect_q">Σύνδεση με %1$s;</string>
+    <string name="dual_disconnect_q">Αποσύνδεση από %1$s;</string>
+    <string name="dual_preferred">Προτιμώμενη συσκευή</string>
+    <string name="dual_preferred_auto">Αυτόματα</string>
+    <string name="dual_preferred_sub">Όταν είναι εντός εμβέλειας, τα ακουστικά συνδέονται πρώτα σε αυτήν.</string>
 </resources>

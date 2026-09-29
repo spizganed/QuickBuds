@@ -48,6 +48,13 @@ object OpoProtocol {
     const val CMD_QUERY_ALERT_VOLUME = 0x0130
     /** Paired-device list, empty payload -> `0x8112`. `[CAPTURE]` 2026-09-25, PROTOCOL.md §9. */
     const val CMD_QUERY_DEVICES = 0x0112
+    /**
+     * Another device on the buds' list, `[VENDOR]` (PROTOCOL.md §9): `0x0429 01 <MAC>` connect, `02 <MAC>`
+     * disconnect, `04 00` preferred device automatic, `04 01 <MAC>`; the MAC in written order (the list
+     * reply carries it reversed). Read the preferred one with `0x0132 02` -> `00 02 <00 auto | 01 <MAC>>`.
+     */
+    const val CMD_MULTI_CONNECT = 0x0429
+    const val CMD_QUERY_PREFERRED = 0x0132
     /** Sent by HeyMelody after every dual-device toggle, meaning unknown. `[CAPTURE]` 2026-09-25. */
     const val CMD_DUAL_FOLLOWUP = 0x0413
 
@@ -475,6 +482,13 @@ object OpoProtocol {
     fun queryHeadMotionType(): ByteArray = buildPacket(CMD_QUERY_HEAD_MOTION_TYPE)
 
     fun queryDevices(): ByteArray = buildPacket(CMD_QUERY_DEVICES)
+    private fun macBytes(mac: String) = mac.split(":").map { it.toInt(16).toByte() }.toByteArray()
+    fun connectDevice(mac: String, on: Boolean): ByteArray =
+        buildPacket(CMD_MULTI_CONNECT, payload = byteArrayOf(if (on) 0x01 else 0x02) + macBytes(mac))
+    /** [mac] null = automatic. */
+    fun setPreferred(mac: String?): ByteArray = buildPacket(CMD_MULTI_CONNECT,
+        payload = if (mac == null) byteArrayOf(0x04, 0x00) else byteArrayOf(0x04, 0x01) + macBytes(mac))
+    fun queryPreferred(): ByteArray = buildPacket(CMD_QUERY_PREFERRED, payload = byteArrayOf(0x02))
     /** `08 00 01` after dual OFF, `08 00 00` after ON — copied from HeyMelody, not understood. */
     fun dualFollowup(dualOn: Boolean): ByteArray =
         buildPacket(CMD_DUAL_FOLLOWUP, payload = byteArrayOf(0x08, 0x00, if (dualOn) 0x00 else 0x01))
