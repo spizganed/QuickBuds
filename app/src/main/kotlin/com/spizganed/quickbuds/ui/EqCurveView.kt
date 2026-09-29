@@ -50,12 +50,8 @@ class EqCurveView(context: Context) : View(context) {
     }
 
     init {
-        // Nothing style: the knobs are hollow (their middle cleared, not painted in `background`, which showed as
-        // dark dots on the EQ sheet), and the grid a full dot wide (thinner fell under DotArt's minimum).
-        if (nothing) {
-            dotFill.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
-            gridPaint.strokeWidth = DotArt.pitchPx(context)
-        }
+        // Dot style: the grid a full dot wide (thinner fell under DotArt's minimum); knobs are DotArt.knob.
+        if (nothing) gridPaint.strokeWidth = DotArt.pitchPx(context)
     }
     private val axisPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = secondary; textSize = dp(12f); textAlign = Paint.Align.CENTER; typeface = ThemeRes.regular(context)
@@ -140,6 +136,7 @@ class EqCurveView(context: Context) : View(context) {
         canvas.drawPath(curve, curvePaint)
 
         for (i in gains.indices) {
+            if (nothing) { DotArt.knob(context, canvas, x(i), y(pos[i]), accent); continue }
             val r = if (i == active) dp(9f) else dp(7f)
             canvas.drawCircle(x(i), y(pos[i]), r, dotFill)
             canvas.drawCircle(x(i), y(pos[i]), r, dotRing)

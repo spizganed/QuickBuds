@@ -59,14 +59,6 @@ class LevelSliderView(
         if (nothing) typeface = ThemeRes.headline(context) else isFakeBoldText = true
     }
 
-    init {
-        // Nothing style: the knobs are hollow (their middle cleared, not painted in `background`, which showed as
-        // dark dots on the EQ sheet).
-        if (nothing) {
-            dotFill.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
-        }
-    }
-
     private val left get() = dp(22f)
     private val right get() = width - dp(22f)
     private val trackY get() = if (showValue) dp(40f) else dp(22f)
@@ -86,6 +78,7 @@ class LevelSliderView(
     private fun shapes(canvas: Canvas) {
         canvas.drawLine(left, trackY, right, trackY, trackPaint)
         canvas.drawLine(left, trackY, x(pos), trackY, fillPaint)
+        if (nothing) { DotArt.knob(context, canvas, x(pos), trackY, accent); return }
         val r = if (dragging) dp(10f) else dp(8f)
         canvas.drawCircle(x(pos), trackY, r, dotFill)
         canvas.drawCircle(x(pos), trackY, r, dotRing)

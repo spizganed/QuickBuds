@@ -63,6 +63,7 @@ class ColorSliderView(context: Context, private val channel: Int) : View(context
         c.drawRoundRect(box, dp(13f), dp(13f), track)
         val x = dp(16f) + usable * hsv[channel] / max
         fill.color = Color.HSVToColor(hsv)
+        if (nothing) { DotArt.knob(context, c, x, cy, ring.color, fill.color); return }
         c.drawCircle(x, cy, dp(15f), fill)
         c.drawCircle(x, cy, dp(15f), ring)
     }

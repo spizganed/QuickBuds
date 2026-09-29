@@ -64,6 +64,34 @@ object DotArt {
         }
     }
 
+    /** The one knob every dot-style slider and the EQ curve use ([USER] 2026-09-30): a fixed round ring of dots. */
+    private val KNOB = listOf("..###..", ".#...#.", "#.....#", "#.....#", "#.....#", ".#...#.", "..###..")
+    private val knobPaint = Paint()
+    private val clear = Paint().apply { xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR) }
+
+    /**
+     * Draws [KNOB] inside a [draw] block, centred on the cell under ([cx], [cy]) in view px: the same dots wherever it
+     * sits (a scaled circle landed differently on the grid at every position, some came out square). The inside is
+     * [fill], or cleared so the knob is hollow.
+     */
+    fun knob(context: Context, c: Canvas, cx: Float, cy: Float, ring: Int, fill: Int? = null) {
+        val pitch = pitchPx(context)
+        val x0 = Math.floor(cx / pitch.toDouble()).toInt() - 3
+        val y0 = Math.floor(cy / pitch.toDouble()).toInt() - 3
+        for (y in KNOB.indices) {
+            val row = KNOB[y]
+            val first = row.indexOf('#'); val last = row.lastIndexOf('#')
+            for (x in row.indices) {
+                val p = when {
+                    row[x] == '#' -> knobPaint.apply { color = ring }
+                    x in first..last && y in 1..5 -> if (fill != null) knobPaint.apply { color = fill } else clear
+                    else -> continue
+                }
+                c.drawRect((x0 + x) * pitch, (y0 + y) * pitch, (x0 + x + 1) * pitch, (y0 + y + 1) * pitch, p)
+            }
+        }
+    }
+
     /**
      * An icon as dots ([ThemeRes.tint] in the Nothing style): [inner] rendered once per size and tint at
      * [ICON_PITCH_DP] (scaled up past 24dp tall), then reused, so a list of rows costs one render per icon.

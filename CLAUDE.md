@@ -173,6 +173,8 @@ A change recreates open screens (part of the activity signature).
 - `DotArt`: live views as dots, pitch 2.2dp rounded to whole px, drawn without antialiasing so every dot of
   a shape is one shade: `LevelSliderView`, `EqCurveView`,
   `ColorSliderView`, switch track/thumb (`DotArt.Part`, thumb as tall as the track).
+  **Every knob is `DotArt.knob`** `[USER]`: one fixed 7x7 dot ring snapped to the grid (scaled circles came out a
+  different shape at every position). Never draw a dot-style knob with `drawCircle`.
 - Icons: `ThemeRes.tint` returns a `DotArt.Icon` (1.2dp, solid dots); `ic_check` becomes
   `ic_check_dots`. Row dividers are one row of dots.
 
