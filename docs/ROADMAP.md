@@ -19,8 +19,10 @@ Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 202
   vocal enhancement `0x09`, game sound effects `0x27`, smart volume `0x1C`, adaptive volume `0x30`,
   adaptive ear `0x31`, pause when asleep `0x3A`, power saving `0x17`. Game mode writes `0x28` on
   buds with `0x0423`. Shown from the buds' `0x810D` list or, for a hand-picked model, HeyMelody's flag
-  (the model list does have flags for `0x09`, `0x1C`, `0x27`). Unverified until an owner reads a write back.
-- **Open: the rest of the Buds 4 gaps**, each needing more than a switch:
+  (the model list does have flags for `0x09`, `0x1C`, `0x27`). A hand-picked OnePlus Buds 3 showed its rows
+  ([USER] 2026-09-29). Writes unverified until an owner reads one back.
+- **Open: the rest of the Buds 4 gaps**, each needing more than a switch. Left for now ([USER] 2026-09-29):
+  how HeyMelody presents them is not known yet.
   - neck health `0x22`-`0x24` (needs OPPO's Health app for the data)
   - meeting assistant `0x34` (voiceprint enrolment for one meeting app)
   - spatial audio's three-mode form (`0x0422`, for models that are not `0x1B` on/off)
