@@ -1474,25 +1474,14 @@ sessions:
 
 ## 12. Open questions
 
-- **The hold's mode list — CLOSED 2026-09-22, wired UI verified on-device.** Read, bit theory, and
-  write are all `[CAPTURE]`-confirmed (§5) — first from HeyMelody's own capture, then a second time
-  by sending `mask=0x0006` and `mask=0x0807` from our own hold picker, both acked and read back
-  exactly. Implemented: `OpoProtocol.setHoldAncModes()`, `BudsConnectionManager.sendHoldAncModes()`,
-  `GestureAction.holdMaskBit`. Still open: bit 1's meaning in isolation (every capture so far shows it
-  set; no test has cleared it alone). `AncEventParser` mislabeling the mask write's own `0x0204` echo
-  as a mode change — a real bug, not cosmetic, it corrupted the persisted ANC display — is FIXED (§5).
-- **On-call gestures — CLOSED 2026-09-22 for the bytes and the write, open for the labels.** `btn
-  0x06`'s write shape is `[CAPTURE]`-confirmed (§6, "the on-call write") and re-verified by sending it
-  from our own app: `act 0x02`/`0x06`, `fn 0x1D`/`0x1C`, `deviceType 0x04` for both buds, acked and
-  read back exactly matching HeyMelody's own bytes. Implemented: `OpoProtocol.setOnCallDoubleTap()`/
-  `setOnCallLongHold()`, the "When on call" section in `GestureActivity`. Still `[INFERRED]`: which
-  `act` is double-tap vs long-hold — needs a real call to confirm the right switch does the right
-  thing. `act 0x03` in the same group is still completely unknown.
-- What `0x0501` / `0x0500` are.
-- Broadcast codes `0x04`, `0x08`, `0x0B`.
-- The `0x8205` ack layout (§4) — only one sample, and it does not obviously echo
-  the request.
-- Whether `0x0404` supports the `type=2` level-setting form `01 02 <level>` (the
-  `[OSS]` doc mentions it for "set noise reduction info") — unverified here.
-- Case **lid**: no state of its own, but a close is announced by an all-zero wear push just
-  before the socket drops (§8). Case charging is reported only while the lid is open (§7).
+- The hold's mode list (§5): bit 1's meaning on its own. Every capture shows it set; no test has cleared
+  it alone. (The read, the bits and the write are `[CAPTURE]`-confirmed and wired.)
+- Broadcast codes `0x04`, `0x08`, `0x0B`, and the `F1` family's undecoded fields (§6, §10).
+- The `0x8205` ack layout (§4): only one sample, and it does not obviously echo the request.
+- Whether `0x0404` takes the `type=2` level form `01 02 <level>` (the `[OSS]` doc mentions it for "set
+  noise reduction info"). Unverified.
+- `0x0501`: not needed (the time request `0x0500` is skipped by decision, §9).
+
+Closed, kept for the record: the on-call gestures (write `[CAPTURE]`-confirmed, labels confirmed on a
+real call 2026-09-25, `act 0x03` named per model in §6); the case lid (no lasting state; a close is an
+all-zero wear push before the drop, §8; case charging only with the lid open, §7).

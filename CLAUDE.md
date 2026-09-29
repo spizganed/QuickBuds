@@ -169,7 +169,7 @@ phone-specific piece lives outside it.
   every 12 h, silent on failure, one `ConfirmDialog` per new tag, never again for the same tag).
 - **Home layout** (`HomeLayoutActivity`, [USER] 2026-09-26): the main screen's own layout in an edit mode.
   Battery and noise control show live but inert; each sound settings row (low latency, Hi-Res, 3D audio,
-  EQ, Dual connection, Earbud settings) is held and dragged to move (platform `startDragAndDrop`, reordered
+  Hearing profile, EQ, Dual connection, Earbud settings) is held and dragged to move (platform `startDragAndDrop`, reordered
   live) and has an eye button (hidden rows greyed). The check applies, X/Back discards. Prefs `homeRowOrder`
   / `homeRowHidden` by row key; `MainActivity.layoutFeatureRows()` applies them on create and resume. A new
   row needs a key in `buildFeatureRows()` AND in `HomeLayoutActivity.ROWS` (icon, title, subtitle).
@@ -430,7 +430,9 @@ fixed order. The rows inside `featureList` are ordered and hidden one by one (se
    opening ([USER] 2026-09-28; it replaced the Low/Medium/High pills). In ANC the segment shows the level's icon and
    "ANC L" / "ANC M" / "ANC H" / "ANC S" (`AncSegmentedView.setSegment`), as the widget's button does. Buds with one level apply it directly
    (`homeAncLevel`).
-3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio, EQ,
+3. `featureList` — rows built by `MainActivity.buildFeatureRows()`: low latency, Hi-Res, 3D audio (feature
+   `0x1B`, or `0x0422` where the bitmap has `0x012A`; head-tracking models open an Off / Fixed / Head tracking
+   sheet from the row), Hearing profile, EQ,
    **Dual connection** (home screen only, not in the hub, [USER] 2026-09-26) and **Earbud settings** (`ic_bud_left`; the SPEC's
    `ic_earbud` rendered broken and was dropped), which opens `EarbudSettingsActivity`, the hub for the buds
    themselves. New firmware settings go in the hub, not on the main card.

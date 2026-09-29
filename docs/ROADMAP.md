@@ -10,110 +10,44 @@ The live plan: what is next and what is still open. Finished work moves to
 
 Status words: **Next**, **Open**, **Question** (needs an answer before work starts), **Parked**.
 
-## Parity: firmware features still missing
-
-Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
-
-- Nothing open for Buds 4.
-- **Done 2026-09-29: the plain switches Buds 4 lacks**, in Earbud settings › Features (PROTOCOL.md §9):
-  vocal enhancement `0x09`, game sound effects `0x27`, smart volume `0x1C`, adaptive volume `0x30`,
-  adaptive ear `0x31`, pause when asleep `0x3A`, power saving `0x17`. Game mode writes `0x28` on
-  buds with `0x0423`. Shown from the buds' `0x810D` list or, for a hand-picked model, HeyMelody's flag
-  (the model list does have flags for `0x09`, `0x1C`, `0x27`). A hand-picked OnePlus Buds 3 showed its rows
-  ([USER] 2026-09-29). Writes unverified until an owner reads one back.
-- **Done 2026-09-29: spatial audio's type form `0x0422` and game sound's type `0x0423`**, UI and read-backs
-  from HeyMelody's own screens (PROTOCOL.md §9). Head tracking only on Buds Pro 2 / Pro 3 / Enco X3. Writes
-  unverified until an owner reads one back.
-
-**The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
-model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
-is eventually either built or explicitly decided against, not just the ones Buds 4 has.
-
 ## The plan, in order (`[USER]` 2026-09-27)
 
 Each step is done before the next one starts.
 
-1. **Other HeyMelody models: detect, then show what the model supports.** realme (and DIZO) models
-   are in HeyMelody's list and in ours ([USER] 2026-09-27). All from `Zhaoyi-ya/OppoPodsManager` `[OSS]`:
-   - **Done 2026-09-27: capability gating.** The buds' own `0x8100` bitmap and `0x810D` list decide
-     which home rows, Earbud settings rows and connect-time queries appear (`Capabilities.kt`,
-     PROTOCOL.md §4). The product id is read and logged.
-   - **Done 2026-09-27: per-model noise control.** HeyMelody's `noiseReductionMode` per product id
-     (`assets/models.json`, `AncModes.kt`, PROTOCOL.md §5) sets the bits both ways and decides which
-     segments, levels and widget buttons show. Buds 4 unchanged on device; other models unverified
-     until an owner reads a write back.
-   - **Done 2026-09-27: detection and the model list.** `ModelCatalog` folds the colour ranges and
-     matches id and Bluetooth name as HeyMelody does (PROTOCOL.md §4). The device name under the rings
-     shows the model; a header button before the connect pill opens `ModelActivity`: Automatic plus
-     every model by brand (OnePlus, OPPO, realme, DIZO); a pick
-     overrides detection until other buds connect. Checked on device (Buds 4 detected; a manual Buds
-     Pro swapped the noise segments). Next: per-feature packets.
-   - **Done 2026-09-28: connect to any paired buds** (GitHub issue #1). The target was a hardcoded
-     MAC (his Buds 4), so no other user could connect; `BudsDevice` now picks by saved address, SPP
-     UUID or model name. Confirmed on Buds 4.
-   - **Done 2026-09-29: built-in EQ presets per model.** HeyMelody's `equalizerMode` names and numbers
-     them per model (PROTOCOL.md §9); a picked Nord Buds 2r showed Balanced / Bass / Bold as HeyMelody
-     does. Buds 4 unchanged.
-   - **Done 2026-09-29: gestures per model.** The rows and options come from HeyMelody's own `control` /
-     `callControl` lists (PROTOCOL.md §6); Buds 4 unchanged, a picked Nord Buds 2r showed its own rows.
-     Unverified on other models until an owner reads a write back.
-   - **Done 2026-09-29: the last hidden gesture rows**, from HeyMelody's code (PROTOCOL.md §6): per-bud
-     holds, the hold with top-level ANC levels, on-call single / double tap. Unverified until an owner reads
-     a write back.
-   - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
-     Galaxy S24). Asked to update in-app, clean install if it still fails, and send a Dev Tools export
-     with what works. Their logs are the first non-Buds 4 evidence: read before changing anything.
-   - **Model list**: `Assets/Oplus/Data/DeviceModels.json`, HeyMelody's own per-model config.
-     `whiteList` has 137 models: `id` (Buds 4 = `065414`), RFCOMM `uuid` (Buds 4 `0000079A-…`, ours),
-     and a `function` map: feature flags, `noiseReductionMode` with a `protocolIndex` per ANC mode
-     (Adaptive `11` = our bit 11), `equalizerMode`, `control` / `callControl` gesture bitmasks.
-   - **What the firmware supports**: the `0x8100` reply is `00` + a bitmap; each bit maps to the
-     commands it enables (`CapabilityReader.MelodyV16`, bits 0–66). A feature is shown only if the
-     JSON lists it AND the bitmap has its commands (`CapabilityLoader.IntersectWhitelistFeatures`).
-   - **Packets per feature**: `Control/Brands/Oppo/Features/*.cs` (bass engine, spatial audio, game
-     sound, hearing enhancement, custom EQ…). OSS has been wrong before (`0x0402`, PROTOCOL.md §6), so
-     each builder goes in with a PROTOCOL.md entry tagged `[OSS]`, and a feature Buds 4 lacks stays
-     marked unverified until an owner of that model confirms a write by read-back.
-   - **Firmware version**: done 2026-09-27, shown in Earbud settings as HeyMelody shows it (PROTOCOL.md §3).
-   - The capture script and contributor docs are not needed for this.
-   - **Sources checked 2026-09-27** ([USER]: reuse what the OSS clients already do). Both carry the same
-     137-model list (56 OPPO, 49 realme, 32 OnePlus). `Leaf-lsgtky/OppoPods` (Kotlin, Android) now has
-     product-id detection with a model registry, per-model ANC options (`noiseReductionMode`, legacy
-     ANC order), game mode `0x06` or `0x28`, spatial three-mode `0x0422` vs on/off `0x1B`, EQ presets and
-     device custom EQ, auto play/pause, dual connection. `OppoPodsManager` adds bass engine, hearing
-     enhancement `0x0B`, long battery `0x17`, voice enhancement `0x09`, spine health `0x22`, game sound
-     `0x27`, find device and the capability bitmap. Neither writes gestures.
-   - **The model list is HeyMelody's own** ([USER] 2026-09-27), so which
-     features a model has is `[VENDOR]`; only the packet builders are `[OSS]`. OppoPods' `docs/` has two
-     write-ups of HeyMelody (`HeyMelody_Official_App_Protocol_Findings.md`,
-     `HeyMelody_Bluetooth_Protocol_Notes.md`). Gestures on other models: done from the model list's
-     `control` entries (the downloaded `control_<id>/config.json` turned out not to be needed).
-   - **More sources (2026-09-27):** HeyMelody itself gives `[VENDOR]` payloads for
-     every command. `GazzasaurusRex/oneplus-buds-omarchy` has read-back-verified profiles for Buds Pro
-     and Buds Pro 2 (ANC levels, EQ ids, `0x0105` firmware). `digisatapathy2025/oneplus-buds-mac` has a
-     OnePlus product-id catalogue. `maniacx/BudsLink` PR #94 and `thelok1s/orchestra` verify realme
-     models (dropped here).
+1. **Other HeyMelody models: parity per model.** Detection, capability gating, per-model noise control,
+   EQ presets and gestures, and every switch Buds 4 lacks are built (ROADMAP-DONE.md, Other models).
+   **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; one it has
+   that the app lacks gets its UI built. So every feature in HeyMelody's model list ends up built or
+   decided against.
+   - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless
+     3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
+     asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
+     write on another model stays unverified until an owner reads one back.
+   - **Open: the model-list features not reviewed yet.** HeyMelody's status query also asks for speech
+     perception `0x32`, long-press volume `0x35`, swift pair `0x37`, hearing optimisation `0x38`,
+     incoming-call control `0x39` and head motion `0x3B`, plus voice wake and voice command. For each:
+     see how HeyMelody presents it (decompile first, screenshots if that is not enough), then build it
+     or decide against it. None is on Buds 4.
 2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
    app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
    mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
    repo (`[USER]` 2026-09-27).
 
-## Our own features
+## Before the PC brainstorm
 
-From his notes, 2026-09-28 ([USER]), in order:
+In this order, once the Android app is finished ([USER] 2026-09-29):
 
-- **Later:** a write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless
-  PC), then links from Reddit / XDA.
-- **Last before the PC brainstorm:** a whole-codebase pass for improvements (`/ponytail-audit`).
+1. A whole-codebase pass for improvements (`/ponytail-audit`).
+2. A write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless PC),
+   then links from Reddit / XDA.
 
 ## Parked
 
 - Custom UI styles as a file (import / export, widget and app): the very last thing, maybe after the PC
   app, if at all ([USER] 2026-09-28). Testing it needs a third style.
-
 - A build quickstart and a capture guide for contributors, only if the device file is not enough.
 - Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family): see PROTOCOL.md §12.
-  (`0x0510` is decoded: the spatial type push, PROTOCOL.md §9.) Do not guess from a couple of samples.
+  Do not guess from a couple of samples.
 
 ## Decided against — do not re-suggest
 
@@ -123,13 +57,13 @@ From his notes, 2026-09-28 ([USER]), in order:
   fixed-level hold ([USER] 2026-09-26).
 - Slide up vs slide down: nothing to do. The firmware maps up/down itself (volume up/down, next/prev)
   when the slide is set through our app, exactly as with HeyMelody ([USER] 2026-09-26).
-
 - Widgets bigger than the launcher's padding allows: the host clips to it; ours already fill the same box
   as Nothing's own widgets (measured 2026-09-27).
 - The hearing profile's before / after preview (`0x040E 01` / `02`) ([USER] 2026-09-29).
+- Renaming a hearing profile: the date and time label each one well enough ([USER] 2026-09-29).
 - Neck health (`0x22`-`0x24`, needs OPPO's Health app) and meeting assistant (`0x34`, voiceprint enrolment
   for one meeting app) ([USER] 2026-09-29).
-- Renaming a hearing profile: the date and time label each one well enough ([USER] 2026-09-29).
+- The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.
 - A log on the main screen: Dev Tools owns logging.

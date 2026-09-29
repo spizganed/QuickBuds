@@ -26,22 +26,15 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 
 ## Controls
 
-- Hearing profile (HeyMelody's "Golden Sound", renamed, [USER] 2026-09-29): the hearing test in the app
-  (ear scan, 12 tones, save, apply), profiles kept on the phone, the buds' own profile read back, and
-  HeyMelody's radar per ear. Full run confirmed by him on Buds 4, 2026-09-29.
-- Earbud fit test from Earbud settings, confirmed on Buds 4 (2026-09-29).
-
+- Hearing profile (HeyMelody's "Golden Sound", renamed, [USER] 2026-09-29): on/off (feature `0x0B`, read
+  back), the hearing test in the app (ear scan, 12 tones, save, apply), profiles kept on the phone, the
+  buds' own profile read back, and HeyMelody's radar per ear. Full run confirmed by him on Buds 4.
+- Earbud fit test (2026-09-29): HeyMelody's sheet from Earbud settings, `0x0405` and event `0x04`,
+  confirmed on Buds 4.
 - ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen and widget.
   Changes made on the buds show up in the app.
 - Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
   not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
-- Earbud fit test (2026-09-29): HeyMelody's sheet, `0x0405` and event `0x04`, confirmed on Buds 4.
-- Golden Sound on/off (2026-09-29): a home row, feature `0x0B`, read back on Buds 4.
-- The last hidden gesture rows (2026-09-29, `[VENDOR]`, PROTOCOL.md §6): per-bud holds (`longPressType`,
-  8 models), top-level ANC levels in the hold (Buds Pro, Buds Z2, Enco X), on-call single tap / double tap
-  decline (callControl 32 / 33). Shown on device by picking the models by hand; no write on those models yet.
-- Gestures per model (2026-09-29): rows and options from HeyMelody's `control` / `callControl` lists,
-  plus volume up / down and switch devices (PROTOCOL.md §6).
 - Dual connection: switch plus connected-device list (a home screen row), HeyMelody's exact write
   sequence (PROTOCOL.md §9, capture 2026-09-25), and HeyMelody's "Add device" pairing instructions.
 - Voice assistant gesture on double / triple tap, same options as HeyMelody; `0x03` confirmed
@@ -61,6 +54,29 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   (PROTOCOL.md §3).
 - Alert-sound volume slider (HeyMelody style, muted icon at the lowest step) in Earbud settings → Sounds (PROTOCOL.md §9).
 - In-app updater from GitHub releases.
+
+## Other models
+
+Built from HeyMelody's own model list (`[VENDOR]`) and the OSS clients' packet builders (`[OSS]`). Shown on
+device by picking a model by hand; every write stays unverified until an owner of that model reads one
+back.
+
+- Capability gating (2026-09-27): the buds' `0x8100` bitmap and `0x810D` list decide which rows and
+  connect-time queries appear (PROTOCOL.md §4).
+- Per-model noise control (2026-09-27): HeyMelody's `noiseReductionMode` sets the bits both ways and the
+  segments, levels and widget buttons (PROTOCOL.md §5).
+- Detection and the model list (2026-09-27): product id + Bluetooth name as HeyMelody matches them, the
+  model under the rings, and a model picker (Automatic or any of 127 models by brand).
+- Built-in EQ presets per model (2026-09-29): HeyMelody's `equalizerMode` names and numbers.
+- Gestures per model (2026-09-29): rows and options from HeyMelody's `control` / `callControl` lists, plus
+  volume up / down and switch devices; per-bud holds, the hold with top-level ANC levels, on-call single
+  tap / double-tap decline (PROTOCOL.md §6).
+- The switches Buds 4 lacks (2026-09-29), in Earbud settings › Features: vocal enhancement, game sound
+  effects, smart volume, adaptive volume, adaptive ear, pause when asleep, power saving (asks first). Game
+  mode writes `0x28` on game-sound buds (PROTOCOL.md §9).
+- 3D audio's type form `0x0422` (2026-09-29): Off / Fixed / Head tracking on Buds Pro 2, Buds Pro 3 and
+  Enco X3, a type switch on other `0x012A` buds; game sound's type `0x0423` as a sheet (PROTOCOL.md §9).
+- A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance
 
@@ -94,7 +110,10 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - Dead code sweep (2026-09-27): lint `UnusedResources` and unreferenced Kotlin.
 - Signed release builds with a version set in one place (`app/build.gradle.kts`).
 - The 60-minute wakelock is gone (2026-09-28); `dumpsys power` shows it no longer taken.
-- README screenshots scripted (`scripts/readme-screenshots.sh`, Classic and Nothing sets).
+- README screenshots scripted (`scripts/readme-screenshots.sh`, Classic and Nothing sets); the README
+  shows only the key ones (2026-09-29).
+- The in-app updater deletes its downloaded APK on the next start (2026-09-29). The packet log caps
+  itself at 2 x 512 KB.
 
 ## Docs
 
@@ -102,3 +121,5 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - LICENSE rewritten from the official gnu.org GPL-3.0 text; GitHub detects it as `gpl-3.0`. The
   copyright notice (author, app, GPL-3.0-or-later) is in the README (2026-09-25).
 - Account mentions removed: neither HeyMelody nor QuickBuds needs one (2026-09-25).
+- Interop facts only (2026-09-29): no vendor class, method or file names in the repo; the `[VENDOR]`
+  bytes stay. README trademark notice.
