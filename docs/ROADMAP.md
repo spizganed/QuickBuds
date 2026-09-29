@@ -33,14 +33,12 @@ Each step is done before the next one starts.
 In this order, once the Android app is finished ([USER] 2026-09-29):
 
 1. A whole-codebase pass for improvements (`/ponytail-audit`).
+   Then a build quickstart and a capture guide for contributors ([USER] 2026-09-29).
 2. A write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless PC),
    then links from Reddit / XDA.
 
 ## Parked
 
-- Custom UI styles as a file (import / export, widget and app): the very last thing, maybe after the PC
-  app, if at all ([USER] 2026-09-28). Testing it needs a third style.
-- A build quickstart and a capture guide for contributors, only if the device file is not enough.
 - Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family): see PROTOCOL.md §12.
   Do not guess from a couple of samples.
 
@@ -65,6 +63,7 @@ In this order, once the Android app is finished ([USER] 2026-09-29):
 - Conversation mode (`smartCall`, `0x011D`) and Spotify Tap (`spyTap`): no model in HeyMelody's list sets
   either flag, so HeyMelody never shows them (2026-09-29).
 - Earbud fall detection (`deviceLostRemind`, one model: Enco Clip2) ([USER] 2026-09-29).
+- Custom UI styles as a file (import / export): the built-in styles stay the only ones ([USER] 2026-09-29).
 - **Any feature that needs a connection to a server** (OPPO's or anyone's): not built ([USER] 2026-09-29).
 - The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).
 - Firmware updates: too risky, a failed flash can brick the buds. The firmware row says to update from

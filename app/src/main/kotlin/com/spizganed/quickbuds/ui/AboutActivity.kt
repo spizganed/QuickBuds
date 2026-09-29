@@ -12,8 +12,8 @@ import android.widget.TextView
 import com.spizganed.quickbuds.R
 
 /**
- * About ([USER] 2026-09-26): icon, name, version and tagline, a GitHub and a Ko-fi button (both open
- * the phone's default browser), and the license with a pointer to the credits.
+ * About ([USER] 2026-09-26): icon, name, version and tagline, a GitHub button and, once [KOFI_URL] is
+ * set, a Ko-fi one (both open the phone's default browser), and the license with a pointer to the credits.
  */
 class AboutActivity : Activity() {
 
@@ -76,9 +76,11 @@ class AboutActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
             setPadding(0, dp(20f), 0, 0)
             addView(linkButton(R.drawable.ic_github, R.string.about_github, R.string.about_github_desc, GITHUB_URL))
-            addView(linkButton(R.drawable.ic_kofi, R.string.about_kofi, R.string.about_kofi_desc, KOFI_URL).apply {
-                (layoutParams as LinearLayout.LayoutParams).marginStart = dp(10f)
-            })
+            KOFI_URL?.let { url ->
+                addView(linkButton(R.drawable.ic_kofi, R.string.about_kofi, R.string.about_kofi_desc, url).apply {
+                    (layoutParams as LinearLayout.LayoutParams).marginStart = dp(10f)
+                })
+            }
         })
 
         root.addView(SettingRowFactory.sectionLabel(this, R.string.about_license_title))
@@ -105,7 +107,7 @@ class AboutActivity : Activity() {
 
     companion object {
         const val GITHUB_URL = "https://github.com/spizganed/QuickBuds"
-        // ponytail: placeholder until the Ko-fi page exists; swap in the real handle.
-        const val KOFI_URL = "https://ko-fi.com/"
+        /** Hidden until a donation page exists ([USER] 2026-09-29); set it to show the button. */
+        val KOFI_URL: String? = null
     }
 }

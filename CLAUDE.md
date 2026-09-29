@@ -74,7 +74,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 14 / versionName 3.7.0.**
+**Current: versionCode 15 / versionName 3.8.0.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
@@ -161,8 +161,8 @@ phone-specific piece lives outside it.
   section was folded in, [USER] 2026-09-27), App. The Language screen has its title again.
   Prefs: `haptics` (default on), `backgroundService` (see Connection robustness) and `devToolsButton` (default
   on, read in `MainActivity.onResume`).
-- **About** is `AboutActivity` (2026-09-26): icon, version, tagline, GitHub and Ko-fi buttons (default browser;
-  the Ko-fi URL is a placeholder until his page exists), license and a pointer to the credits.
+- **About** is `AboutActivity` (2026-09-26): icon, version, tagline, GitHub button (default browser; the Ko-fi
+  button is hidden while `AboutActivity.KOFI_URL` is null, until a donation page exists, [USER] 2026-09-29), license and a pointer to the credits.
 - **App update** (2026-09-26): `UpdateChecker` (GitHub latest release via `org.json`, `.apk` asset, streamed
   download with progress) is shared by `UpdateActivity` (installed vs latest side by side, one action pill,
   progress bar, release notes; checks on open) and the check on start (`updateAutoCheck`, default on; at most
@@ -544,7 +544,7 @@ Nothing dot font exists, and bold draws every dot bigger) plus runtime changes i
   (`clearLed` always empties the LED's dot and the lid cut's row, the 4x2's case ring too: both fell between cell
   centres at some sizes). The bar (`bar()`): dot rows at `dotDp` x 1.4, odd, corners rounded at a third of its height
   (pill ends stepped like an octagon), the level drawn in its dots as 5x7 digits (`GLYPHS`) in inverted dots: dim over
-  the lit part, lit past it ([USER] 2026-09-28, on trial; they used to be cut out, in the background colour). Tried and rejected: a lit box around the digits, a pill split around the text, a cleared box, the
+  the lit part, lit past it ([USER] 2026-09-28, kept 2026-09-29; they used to be cut out, in the background colour). Tried and rejected: a lit box around the digits, a pill split around the text, a cleared box, the
   bar as tall as the icon, the case section in two lines, a third ring for the case on the 2x2.
 - Box radius matches Nothing OS's own widgets: `widget_bg_n` 19dp on every size (measured against the calendar
   widget; Classic's 26 / 28dp looked rounder), inner shapes `widget_panel_n` / `_stroke_n` 16dp (`bgRes` / `panelRes`).
