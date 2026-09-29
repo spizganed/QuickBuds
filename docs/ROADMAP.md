@@ -61,6 +61,10 @@ In this order, once the Android app is finished ([USER] 2026-09-29):
   voice control (`0x39`) ([USER] 2026-09-29).
 - Neck health (`0x22`-`0x24`, needs OPPO's Health app) and meeting assistant (`0x34`, voiceprint enrolment
   for one meeting app) ([USER] 2026-09-29).
+- Earphones Lab (HeyMelody's experimental page) and Connection info (the status chip already is it)
+  ([USER] 2026-09-29).
+- Conversation mode (`smartCall`, `0x011D`) and Spotify Tap (`spyTap`): no model in HeyMelody's list sets
+  either flag, so HeyMelody never shows them (2026-09-29).
 - The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).
 - Firmware updates: too risky, a failed flash can brick the buds. The firmware row says to update from
   HeyMelody ([USER] 2026-09-29).
