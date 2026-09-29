@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Um auricular foi retirado. Coloque os dois e tente novamente.</string>
     <string name="golden_scan_failed">A análise dos ouvidos não terminou. Tente novamente.</string>
     <string name="golden_again">Tentar novamente</string>
+    <string name="golden_boost">Reforço</string>
 </resources>

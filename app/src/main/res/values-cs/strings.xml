@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Sluchátko bylo vyjmuto. Nasaďte obě a zkuste to znovu.</string>
     <string name="golden_scan_failed">Sken uší nebyl dokončen. Zkuste to znovu.</string>
     <string name="golden_again">Zkusit znovu</string>
+    <string name="golden_boost">Zesílení</string>
 </resources>

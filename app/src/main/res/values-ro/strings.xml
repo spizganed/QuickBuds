@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">O cască a fost scoasă. Pune-le pe amândouă și încearcă din nou.</string>
     <string name="golden_scan_failed">Scanarea urechilor nu s-a încheiat. Încearcă din nou.</string>
     <string name="golden_again">Încearcă din nou</string>
+    <string name="golden_boost">Amplificare</string>
 </resources>

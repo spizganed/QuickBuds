@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">May earbud na natanggal. Isuot ang dalawa at subukang muli.</string>
     <string name="golden_scan_failed">Hindi natapos ang ear scan. Subukang muli.</string>
     <string name="golden_again">Subukang muli</string>
+    <string name="golden_boost">Pagpapalakas</string>
 </resources>

@@ -38,12 +38,18 @@ class HearingRadarView(context: Context) : View(context) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val w = MeasureSpec.getSize(widthMeasureSpec)
-        setMeasuredDimension(w, minOf(w, ThemeRes.dp(context, 260f)))
+        setMeasuredDimension(w, minOf(w, ThemeRes.dp(context, 260f)) + ThemeRes.dp(context, LEGEND_DP))
     }
 
+    private val chartH get() = height - dp(LEGEND_DP)
     private val cx get() = width / 2f
-    private val cy get() = height / 2f
-    private val radius get() = minOf(width, height) / 2f - dp(30f)
+    private val cy get() = chartH / 2f
+    private val radius get() = minOf(width.toFloat(), chartH) / 2f - dp(30f)
+    private val legend = context.getString(R.string.golden_boost)
+    /** The legend's swatch: a short line left of the text, centred together under the chart. */
+    private val swatchW get() = dp(16f)
+    private val legendX get() = (width - swatchW - dp(6f) - labelPaint.measureText(legend)) / 2
+    private val legendY get() = height - dp(LEGEND_DP) / 2
 
     private fun point(i: Int, r: Float): Pair<Float, Float> {
         val a = -2 * Math.PI / 3 + i * 2 * Math.PI / GoldenSound.AXES.size
@@ -62,6 +68,9 @@ class HearingRadarView(context: Context) : View(context) {
             val label = if (f >= 1000) "${f / 1000.0}".removeSuffix(".0") + "k" else "$f"
             canvas.drawText(label, x, y + labelPaint.textSize / 3, labelPaint)
         }
+        labelPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText(legend, legendX + swatchW + dp(6f), legendY + labelPaint.textSize / 3, labelPaint)
+        labelPaint.textAlign = Paint.Align.CENTER
     }
 
     private fun shapes(canvas: Canvas) {
@@ -69,10 +78,12 @@ class HearingRadarView(context: Context) : View(context) {
         shapePaint.style = Paint.Style.FILL
         shapePaint.color = secondary and 0x00FFFFFF or 0x1A000000
         canvas.drawPath(boost, shapePaint)
+        canvas.drawLine(legendX, legendY, legendX + swatchW, legendY, shapePaint)
         shapePaint.style = Paint.Style.STROKE
         shapePaint.strokeWidth = dp(2f)
         shapePaint.color = secondary
         canvas.drawPath(boost, shapePaint)
+        canvas.drawLine(legendX, legendY, legendX + swatchW, legendY, shapePaint)
         for (ring in listOf(2.5f, 5f, 7.5f)) canvas.drawPath(polygon(FloatArray(GoldenSound.AXES.size) { ring }), gridPaint)
         GoldenSound.AXES.indices.forEach { i ->
             val (x, y) = point(i, 10f)
@@ -87,4 +98,6 @@ class HearingRadarView(context: Context) : View(context) {
         shapePaint.color = accent
         canvas.drawPath(path, shapePaint)
     }
+
+    private companion object { const val LEGEND_DP = 24f }
 }

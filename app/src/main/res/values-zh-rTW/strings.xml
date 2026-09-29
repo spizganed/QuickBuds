@@ -345,4 +345,5 @@
     <string name="golden_stopped_wear">有耳機被取下。請戴好兩隻耳機後重試。</string>
     <string name="golden_scan_failed">耳道掃描未完成。請重試。</string>
     <string name="golden_again">重試</string>
+    <string name="golden_boost">增強幅度</string>
 </resources>

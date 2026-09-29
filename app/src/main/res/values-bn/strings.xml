@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">একটি ইয়ারবাড খুলে গেছে। দুটিই পরে আবার চেষ্টা করুন।</string>
     <string name="golden_scan_failed">কানের স্ক্যান শেষ হয়নি। আবার চেষ্টা করুন।</string>
     <string name="golden_again">আবার চেষ্টা করুন</string>
+    <string name="golden_boost">বুস্ট</string>
 </resources>

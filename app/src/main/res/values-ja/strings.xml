@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">イヤホンが外れました。両方を装着してもう一度お試しください。</string>
     <string name="golden_scan_failed">耳のスキャンが完了しませんでした。もう一度お試しください。</string>
     <string name="golden_again">再試行</string>
+    <string name="golden_boost">ブースト</string>
 </resources>

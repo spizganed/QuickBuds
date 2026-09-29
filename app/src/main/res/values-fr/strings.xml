@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Un écouteur a été retiré. Placez les deux et réessayez.</string>
     <string name="golden_scan_failed">L\'analyse des oreilles n\'a pas abouti. Réessayez.</string>
     <string name="golden_again">Réessayer</string>
+    <string name="golden_boost">Amplification</string>
 </resources>

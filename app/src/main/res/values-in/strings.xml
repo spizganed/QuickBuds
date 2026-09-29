@@ -345,4 +345,5 @@
     <string name="golden_stopped_wear">Satu earbud terlepas. Pasang keduanya lalu coba lagi.</string>
     <string name="golden_scan_failed">Pemindaian telinga tidak selesai. Coba lagi.</string>
     <string name="golden_again">Coba lagi</string>
+    <string name="golden_boost">Penguatan</string>
 </resources>

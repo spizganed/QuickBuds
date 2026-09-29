@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">En hörlur togs ut. Sätt i båda och försök igen.</string>
     <string name="golden_scan_failed">Öronskanningen blev inte klar. Försök igen.</string>
     <string name="golden_again">Försök igen</string>
+    <string name="golden_boost">Förstärkning</string>
 </resources>

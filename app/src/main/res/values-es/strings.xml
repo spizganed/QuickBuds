@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Se quitó un auricular. Ponte ambos e inténtalo de nuevo.</string>
     <string name="golden_scan_failed">El escaneo de oídos no terminó. Inténtalo de nuevo.</string>
     <string name="golden_again">Reintentar</string>
+    <string name="golden_boost">Realce</string>
 </resources>

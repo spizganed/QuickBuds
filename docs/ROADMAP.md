@@ -15,7 +15,7 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
 
 - **Hearing profile extras** (Open): HeyMelody's before / after preview on the result (`0x040E 01` / `02`,
-  PROTOCOL.md §9) and renaming a profile.
+  PROTOCOL.md §9).
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
@@ -118,6 +118,7 @@ From his notes, 2026-09-28 ([USER]), in order:
 
 - Widgets bigger than the launcher's padding allows: the host clips to it; ours already fill the same box
   as Nothing's own widgets (measured 2026-09-27).
+- Renaming a hearing profile: the date and time label each one well enough ([USER] 2026-09-29).
 - Guessing protocol payloads before a capture.
 - Hardcoded gesture button groups: the write must be table-driven.
 - A log on the main screen: Dev Tools owns logging.

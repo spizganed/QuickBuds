@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Kivettél egy fülhallgatót. Tedd be mindkettőt, és próbáld újra.</string>
     <string name="golden_scan_failed">A fülszkennelés nem fejeződött be. Próbáld újra.</string>
     <string name="golden_again">Újra</string>
+    <string name="golden_boost">Kiemelés</string>
 </resources>

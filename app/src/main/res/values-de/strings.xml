@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Ein Earbud wurde herausgenommen. Setze beide ein und versuche es erneut.</string>
     <string name="golden_scan_failed">Der Ohrscan wurde nicht abgeschlossen. Versuche es erneut.</string>
     <string name="golden_again">Erneut versuchen</string>
+    <string name="golden_boost">Verstärkung</string>
 </resources>

@@ -74,7 +74,7 @@ v1.1.0 was signed with a different key, so moving from 1.1.0 to 2.0.0 also needs
 ### Versioning — `build.gradle.kts` defaultConfig is the single source
 
 `versionCode` / `versionName` are set **only** in `app/build.gradle.kts` `defaultConfig`.
-**Current: versionCode 11 / versionName 3.5.0.**
+**Current: versionCode 12 / versionName 3.5.1.**
 
 They used to be on `<application>` in the manifest. **Android ignores them there**, so every PC build
 up to 2026-09-23 shipped with no version at all (`aapt2 dump badging` showed `versionCode=''`),
@@ -261,10 +261,11 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
 in a user-visible string (code names and the docs keep "golden", which only describes the vendor's feature).
 The home row (keyed `golden`) keeps its switch (`FEATURE_GOLDEN_SOUND` `0x0B`); a tap on the
 row opens `GoldenSoundActivity` (switch, the profiles kept on the phone in pref `goldenRecords`, max 10, a
-tap applies one, and the buds' own profile read on open and added, so HeyMelody's show up). The hearing
+tap applies one, and the buds' own profile read on open and added, so HeyMelody's show up; no rename, the
+date labels each one, [USER] 2026-09-29). The hearing
 test is `GoldenTestSheet`: ear scan where `models.json` has `"earScan":1` (added from HeyMelody's list), 12
 tones, then save and apply (PROTOCOL.md §9). Records live in `protocol/GoldenSound.kt`. The screen shows the
-active profile as HeyMelody's radar (`HearingRadarView`), one ear at a time behind a Left / Right switch ([USER] 2026-09-29), from the filters the buds return for it
+active profile as HeyMelody's radar (`HearingRadarView`), one ear at a time behind a Left / Right switch ([USER] 2026-09-29), flat top like HeyMelody's, with its "Degree of boost" hexagon (a constant 10 at the rim outside playback, `[VENDOR]`) and a "Boost" legend, from the filters the buds return for it
 (`0x0116` / `0x011F` queries, asked on open). The fit test is
 `FitTestSheet` (from Earbud settings), `0x0405` plus event `0x04`, which `registerNotifications` adds
 only when the buds list `0x0405`. `BottomSheetDialog` can now change its title and button in place and
@@ -569,7 +570,7 @@ part of the activity signature, so a change recreates open screens. Nothing:
   `SettingRowFactory.buildSwitch` swaps in `DotArt.Part` track / thumb drawables coloured by the switch tints. Parts share the
   Switch's grid (cells from its 0,0, box shrunk to whole cells) so the thumb lines up with the track, and light a
   dot only when half covered, so the thumb reads round. The thumb is as tall as the track (no inset, [USER] 2026-09-28).
-- Icons: `ThemeRes.tint` swaps `ic_check` for `ic_check_dots` (a 3.6 stroke at `CHECK_PITCH_DP` 2dp; the thin one sampled ragged) and returns a `DotArt.Icon` (rendered once per size at 1.2dp, `solid` opaque dots: kept
+- Icons: `ThemeRes.tint` swaps `ic_check` for `ic_check_dots` (a 3.6 stroke at `CHECK_PITCH_DP` 2dp; the thin one sampled ragged) and returns a `DotArt.Icon` (rendered once per size at 1.2dp, the pitch scaled up past 24dp tall so a big icon keeps the same dot count, `solid` opaque dots: kept
   alpha read as grey), so every tinted icon (rows, chevrons, header buttons, checks) is dotted. Row dividers are one
   row of dots. Still solid: the status dot, the launcher icon on About, shapes (buttons, chips, dialogs, sheets).
 

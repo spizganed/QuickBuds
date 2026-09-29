@@ -345,4 +345,5 @@
     <string name="golden_stopped_wear">หูฟังหลุดออก ใส่ทั้งสองข้างแล้วลองอีกครั้ง</string>
     <string name="golden_scan_failed">การสแกนหูไม่เสร็จ ลองอีกครั้ง</string>
     <string name="golden_again">ลองอีกครั้ง</string>
+    <string name="golden_boost">การเพิ่มเสียง</string>
 </resources>

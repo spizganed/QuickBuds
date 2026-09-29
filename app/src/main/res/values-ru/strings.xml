@@ -343,4 +343,5 @@
     <string name="golden_stopped_wear">Наушник вынут. Вставьте оба и попробуйте снова.</string>
     <string name="golden_scan_failed">Сканирование ушей не завершилось. Попробуйте снова.</string>
     <string name="golden_again">Повторить</string>
+    <string name="golden_boost">Усиление</string>
 </resources>

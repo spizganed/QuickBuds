@@ -345,4 +345,5 @@
     <string name="golden_stopped_wear">Một tai nghe đã bị tháo. Đeo cả hai rồi thử lại.</string>
     <string name="golden_scan_failed">Quét tai chưa hoàn tất. Hãy thử lại.</string>
     <string name="golden_again">Thử lại</string>
+    <string name="golden_boost">Mức tăng cường</string>
 </resources>
