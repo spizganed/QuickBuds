@@ -299,8 +299,8 @@
     <string name="model_detected">감지됨: %1$s</string>
     <string name="model_not_detected">아직 감지되지 않음</string>
     <string name="no_buds_paired">페어링된 OPPO, OnePlus 또는 realme 이어버드가 없습니다. 먼저 블루투스 설정에서 페어링하세요.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">골든 사운드</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">청력 프로필</string>
     <string name="row_golden_sub">청력 테스트에 맞춘 사운드</string>
     <string name="fit_title">이어버드 착용감 테스트</string>
     <string name="fit_sub">노이즈 캔슬링 효과를 높이려면 귀에 잘 밀착되는 이어팁을 선택하세요.</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">소리가 큽니다. 불편하면 낮추세요.</string>
     <string name="golden_creating">프로필을 만드는 중</string>
     <string name="golden_saved">프로필이 저장되었습니다</string>
-    <string name="golden_saved_msg">이 프로필로 Golden Sound가 켜져 있습니다.</string>
+    <string name="golden_saved_msg">이 프로필이 켜졌습니다.</string>
     <string name="golden_stopped">테스트가 중단되었습니다</string>
     <string name="golden_stopped_music">오디오가 재생되기 시작했습니다. 일시 정지하고 다시 시도하세요.</string>
     <string name="golden_stopped_wear">이어버드가 빠졌습니다. 양쪽을 착용하고 다시 시도하세요.</string>

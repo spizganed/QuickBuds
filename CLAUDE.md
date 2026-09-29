@@ -257,11 +257,15 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
 
 ### Golden Sound and the fit test (2026-09-29)
 
-Golden Sound: the home row (keyed `golden`) keeps its switch (`FEATURE_GOLDEN_SOUND` `0x0B`); a tap on the
+**Named "Hearing profile" in the app** ([USER] 2026-09-29): "Golden Sound" is OPPO's name; never put it
+in a user-visible string (code names and the docs keep "golden", which only describes the vendor's feature).
+The home row (keyed `golden`) keeps its switch (`FEATURE_GOLDEN_SOUND` `0x0B`); a tap on the
 row opens `GoldenSoundActivity` (switch, the profiles kept on the phone in pref `goldenRecords`, max 10, a
 tap applies one, and the buds' own profile read on open and added, so HeyMelody's show up). The hearing
 test is `GoldenTestSheet`: ear scan where `models.json` has `"earScan":1` (added from HeyMelody's list), 12
-tones, then save and apply (PROTOCOL.md §9). Records live in `protocol/GoldenSound.kt`. The fit test is
+tones, then save and apply (PROTOCOL.md §9). Records live in `protocol/GoldenSound.kt`. The screen shows the
+active profile as HeyMelody's radar (`HearingRadarView`), from the filters the buds return for it
+(`0x0116` / `0x011F` queries, asked on open). The fit test is
 `FitTestSheet` (from Earbud settings), `0x0405` plus event `0x04`, which `registerNotifications` adds
 only when the buds list `0x0405`. `BottomSheetDialog` can now change its title and button in place and
 take a `content` view.

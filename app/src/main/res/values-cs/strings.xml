@@ -299,8 +299,8 @@
     <string name="model_detected">Rozpoznáno: %1$s</string>
     <string name="model_not_detected">Zatím nerozpoznáno</string>
     <string name="no_buds_paired">Nebyla nalezena žádná spárovaná sluchátka OPPO, OnePlus ani realme. Nejprve je spárujte v nastavení Bluetooth.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Golden Sound</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Sluchový profil</string>
     <string name="row_golden_sub">Zvuk vyladěný podle testu sluchu</string>
     <string name="fit_title">Test usazení sluchátek</string>
     <string name="fit_sub">Vyberte špunty, které dobře utěsní zvukovod, pro lepší potlačení hluku.</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">Je to hlasité. Ztlumte, pokud je to nepříjemné.</string>
     <string name="golden_creating">Vytváření profilu</string>
     <string name="golden_saved">Profil uložen</string>
-    <string name="golden_saved_msg">Golden Sound je zapnutý s tímto profilem.</string>
+    <string name="golden_saved_msg">Tento profil je teď zapnutý.</string>
     <string name="golden_stopped">Test zastaven</string>
     <string name="golden_stopped_music">Začal hrát zvuk. Pozastavte ho a zkuste to znovu.</string>
     <string name="golden_stopped_wear">Sluchátko bylo vyjmuto. Nasaďte obě a zkuste to znovu.</string>

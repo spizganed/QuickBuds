@@ -299,8 +299,8 @@
     <string name="model_detected">শনাক্ত হয়েছে: %1$s</string>
     <string name="model_not_detected">এখনও শনাক্ত হয়নি</string>
     <string name="no_buds_paired">কোনো পেয়ার করা OPPO, OnePlus বা realme বাডস পাওয়া যায়নি। আগে ব্লুটুথ সেটিংসে পেয়ার করুন।</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">গোল্ডেন সাউন্ড</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">শ্রবণ প্রোফাইল</string>
     <string name="row_golden_sub">আপনার শ্রবণ পরীক্ষা অনুযায়ী টিউন করা শব্দ</string>
     <string name="fit_title">ইয়ারবাড ফিট পরীক্ষা</string>
     <string name="fit_sub">ভালো নয়েজ ক্যান্সেলিংয়ের জন্য কানের নালিতে ভালোভাবে আটকে থাকা ইয়ার টিপ বেছে নিন।</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">এটি জোরে। অস্বস্তি হলে কমান।</string>
     <string name="golden_creating">আপনার প্রোফাইল তৈরি হচ্ছে</string>
     <string name="golden_saved">প্রোফাইল সেভ হয়েছে</string>
-    <string name="golden_saved_msg">এই প্রোফাইলে Golden Sound চালু আছে।</string>
+    <string name="golden_saved_msg">এই প্রোফাইল এখন চালু।</string>
     <string name="golden_stopped">পরীক্ষা থেমেছে</string>
     <string name="golden_stopped_music">অডিও চলতে শুরু করেছে। থামিয়ে আবার চেষ্টা করুন।</string>
     <string name="golden_stopped_wear">একটি ইয়ারবাড খুলে গেছে। দুটিই পরে আবার চেষ্টা করুন।</string>

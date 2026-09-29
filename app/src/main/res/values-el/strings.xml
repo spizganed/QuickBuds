@@ -299,8 +299,8 @@
     <string name="model_detected">Εντοπίστηκε: %1$s</string>
     <string name="model_not_detected">Δεν εντοπίστηκε ακόμη</string>
     <string name="no_buds_paired">Δεν βρέθηκαν συζευγμένα ακουστικά OPPO, OnePlus ή realme. Κάντε πρώτα σύζευξη στις ρυθμίσεις Bluetooth.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Golden Sound</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Προφίλ ακοής</string>
     <string name="row_golden_sub">Ήχος ρυθμισμένος στο τεστ ακοής σας</string>
     <string name="fit_title">Τεστ εφαρμογής ακουστικών</string>
     <string name="fit_sub">Επιλέξτε άκρα που σφραγίζουν καλά τον ακουστικό πόρο για καλύτερη ακύρωση θορύβου.</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">Είναι δυνατό. Χαμηλώστε αν ενοχλεί.</string>
     <string name="golden_creating">Δημιουργία του προφίλ σας</string>
     <string name="golden_saved">Το προφίλ αποθηκεύτηκε</string>
-    <string name="golden_saved_msg">Το Golden Sound είναι ενεργό με αυτό το προφίλ.</string>
+    <string name="golden_saved_msg">Αυτό το προφίλ είναι πλέον ενεργό.</string>
     <string name="golden_stopped">Το τεστ σταμάτησε</string>
     <string name="golden_stopped_music">Άρχισε να παίζει ήχος. Κάντε παύση και δοκιμάστε ξανά.</string>
     <string name="golden_stopped_wear">Βγήκε ένα ακουστικό. Φορέστε και τα δύο και δοκιμάστε ξανά.</string>

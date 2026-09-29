@@ -301,8 +301,8 @@
     <string name="model_detected">已識別：%1$s</string>
     <string name="model_not_detected">尚未識別</string>
     <string name="no_buds_paired">找不到已配對的 OPPO、OnePlus 或 realme 耳機。請先在藍牙設定中配對。</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">黃金聽感</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">聽力設定</string>
     <string name="row_golden_sub">依你的聽力測試調校聲音</string>
     <string name="fit_title">貼合度偵測</string>
     <string name="fit_sub">根據貼合度確定合適的耳塞尺寸，取得最佳降噪效果</string>
@@ -339,7 +339,7 @@
     <string name="golden_loud">聲音較大，如感不適請調低。</string>
     <string name="golden_creating">正在建立設定檔</string>
     <string name="golden_saved">設定檔已儲存</string>
-    <string name="golden_saved_msg">已使用此設定檔開啟 Golden Sound。</string>
+    <string name="golden_saved_msg">此設定檔現已開啟。</string>
     <string name="golden_stopped">測試已停止</string>
     <string name="golden_stopped_music">有音訊開始播放。請暫停後重試。</string>
     <string name="golden_stopped_wear">有耳機被取下。請戴好兩隻耳機後重試。</string>

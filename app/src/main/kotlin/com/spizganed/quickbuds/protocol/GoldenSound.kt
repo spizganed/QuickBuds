@@ -90,6 +90,54 @@ object GoldenSound {
         return int32(p, start + len) to p.copyOfRange(start, start + len)
     }
 
+    /**
+     * Filter replies, both ears in one packet (type `04`), floats little-endian:
+     * `0x8116` `00 <uid> 04 <count LE> <packet> <enhance type> <floats>` (`[VENDOR]` `FreqDataCache`),
+     * `0x811F` `00 <uid> 04 <sample rate LE> <count LE> <packet> <floats>` (`[CAPTURE]`: 44100, 72 floats).
+     * First half left, second right. Returns sample rate (44100 when not given, as HeyMelody), left, right.
+     */
+    fun parseCurves(p: ByteArray, scan: Boolean): Triple<Int, FloatArray, FloatArray>? {
+        if (p.size < 11 || p[5].toInt() != 4) return null
+        val le = { i: Int -> (p[i].toInt() and 0xFF) or ((p[i + 1].toInt() and 0xFF) shl 8) }
+        val fs = if (scan) le(6) else 44100
+        val count = if (scan) le(8) else le(6)
+        val start = if (scan) 11 else 10
+        if (count == 0 || count % 12 != 0 || p.size < start + count * 4) return null
+        val f = FloatArray(count) { java.lang.Float.intBitsToFloat(
+            (p[start + it * 4].toInt() and 0xFF) or ((p[start + it * 4 + 1].toInt() and 0xFF) shl 8) or
+            ((p[start + it * 4 + 2].toInt() and 0xFF) shl 16) or ((p[start + it * 4 + 3].toInt() and 0xFF) shl 24)) }
+        return Triple(fs, f.copyOfRange(0, count / 2), f.copyOfRange(count / 2, count))
+    }
+
+    /** HeyMelody's radar axes (Hz), in its order, and each one's scale in dB. `[VENDOR]` `HearingEnhancementDetectCompleteFragment`. */
+    val AXES = intArrayOf(80, 10000, 4800, 2400, 1200, 250)
+    private val AXIS_SCALE = floatArrayOf(7.5f, 15f, 15f, 12.5f, 12.5f, 7.5f)
+
+    /** The summed response of biquads (a0 a1 a2 b0 b1 b2 each) at [freq], in dB. */
+    fun responseDb(c: FloatArray, fs: Int, freq: Int): Double {
+        val w = 2 * Math.PI * freq / fs
+        var db = 0.0
+        for (k in 0 until c.size / 6 * 6 step 6) {
+            fun mag(x0: Float, x1: Float, x2: Float): Double {
+                val re = x0 + x1 * Math.cos(w) + x2 * Math.cos(2 * w)
+                val im = -x1 * Math.sin(w) - x2 * Math.sin(2 * w)
+                return Math.hypot(re, im)
+            }
+            val den = mag(c[k], c[k + 1], c[k + 2])
+            val num = mag(c[k + 3], c[k + 4], c[k + 5])
+            if (den > 0 && num > 0) db += 20 * Math.log10(num / den)
+        }
+        return db
+    }
+
+    /** One ear's radar radii (0..10, 10 = no change, at least 2), from its hearing and ear-scan filters. */
+    fun radar(hearing: FloatArray, scan: FloatArray?, scanFs: Int): FloatArray = FloatArray(AXES.size) { i ->
+        val db = responseDb(hearing, 44100, AXES[i]) + (scan?.let { responseDb(it, scanFs, AXES[i]) } ?: 0.0)
+        maxOf(2f, (-Math.abs(db) * 10 / AXIS_SCALE[i] + 10).toFloat())
+    }
+
+    fun uidAt(p: ByteArray, i: Int) = int32(p, i)
+
     private fun int32(p: ByteArray, i: Int) = ((p[i].toInt() and 0xFF) shl 24) or ((p[i + 1].toInt() and 0xFF) shl 16) or
         ((p[i + 2].toInt() and 0xFF) shl 8) or (p[i + 3].toInt() and 0xFF)
 }

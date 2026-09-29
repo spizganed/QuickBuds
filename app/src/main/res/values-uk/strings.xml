@@ -299,8 +299,8 @@
     <string name="model_detected">Визначено: %1$s</string>
     <string name="model_not_detected">Ще не визначено</string>
     <string name="no_buds_paired">Не знайдено спарених навушників OPPO, OnePlus чи realme. Спершу спаруйте їх у налаштуваннях Bluetooth.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Оптимальний звук</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Профіль слуху</string>
     <string name="row_golden_sub">Звук, налаштований за тестом слуху</string>
     <string name="fit_title">Перевірка прилягання навушника-вкладиша</string>
     <string name="fit_sub">Вибирайте насадки для навушників, які щільно вставляються у вушні канали. Це забезпечить краще зниження шумів.</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">Це гучно. Зменште, якщо неприємно.</string>
     <string name="golden_creating">Створення профілю</string>
     <string name="golden_saved">Профіль збережено</string>
-    <string name="golden_saved_msg">Golden Sound увімкнено з цим профілем.</string>
+    <string name="golden_saved_msg">Цей профіль тепер увімкнено.</string>
     <string name="golden_stopped">Тест зупинено</string>
     <string name="golden_stopped_music">Почав грати звук. Призупиніть його і спробуйте ще раз.</string>
     <string name="golden_stopped_wear">Навушник вийнято. Вставте обидва і спробуйте ще раз.</string>

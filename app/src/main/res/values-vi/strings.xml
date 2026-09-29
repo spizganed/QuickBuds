@@ -301,8 +301,8 @@
     <string name="model_detected">Đã nhận diện: %1$s</string>
     <string name="model_not_detected">Chưa nhận diện</string>
     <string name="no_buds_paired">Không tìm thấy tai nghe OPPO, OnePlus hoặc realme đã ghép nối. Hãy ghép nối trong cài đặt Bluetooth trước.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Âm thanh Vàng</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Hồ sơ thính lực</string>
     <string name="row_golden_sub">Âm thanh điều chỉnh theo bài kiểm tra thính lực của bạn</string>
     <string name="fit_title">Kiểm tra độ vừa tai nghe</string>
     <string name="fit_sub">Chọn nút tai bịt kín ống tai để khử tiếng ồn tốt hơn.</string>
@@ -339,7 +339,7 @@
     <string name="golden_loud">Âm này to. Hãy giảm nếu khó chịu.</string>
     <string name="golden_creating">Đang tạo hồ sơ</string>
     <string name="golden_saved">Đã lưu hồ sơ</string>
-    <string name="golden_saved_msg">Golden Sound đang bật với hồ sơ này.</string>
+    <string name="golden_saved_msg">Hồ sơ này đang bật.</string>
     <string name="golden_stopped">Đã dừng kiểm tra</string>
     <string name="golden_stopped_music">Âm thanh bắt đầu phát. Hãy tạm dừng rồi thử lại.</string>
     <string name="golden_stopped_wear">Một tai nghe đã bị tháo. Đeo cả hai rồi thử lại.</string>

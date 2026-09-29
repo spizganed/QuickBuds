@@ -299,8 +299,8 @@
     <string name="model_detected">Natukoy: %1$s</string>
     <string name="model_not_detected">Hindi pa natutukoy</string>
     <string name="no_buds_paired">Walang nakapares na OPPO, OnePlus o realme buds. I-pair muna sila sa Bluetooth settings.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Golden Sound</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Hearing profile</string>
     <string name="row_golden_sub">Tunog na inayon sa iyong hearing test</string>
     <string name="fit_title">Pagsusuri ng sukat ng earbuds</string>
     <string name="fit_sub">Pumili ng ear tips na mahigpit na nakasara sa ear canal para sa mas mahusay na noise canceling.</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">Malakas ito. Hinaan kung hindi komportable.</string>
     <string name="golden_creating">Ginagawa ang iyong profile</string>
     <string name="golden_saved">Na-save ang profile</string>
-    <string name="golden_saved_msg">Naka-on ang Golden Sound gamit ang profile na ito.</string>
+    <string name="golden_saved_msg">Naka-on na ang profile na ito.</string>
     <string name="golden_stopped">Huminto ang test</string>
     <string name="golden_stopped_music">May audio na nagsimulang tumugtog. I-pause ito at subukang muli.</string>
     <string name="golden_stopped_wear">May earbud na natanggal. Isuot ang dalawa at subukang muli.</string>

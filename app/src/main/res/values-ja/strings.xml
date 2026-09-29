@@ -299,8 +299,8 @@
     <string name="model_detected">検出: %1$s</string>
     <string name="model_not_detected">まだ検出されていません</string>
     <string name="no_buds_paired">ペアリング済みの OPPO、OnePlus、realme のイヤホンが見つかりません。先に Bluetooth 設定でペアリングしてください。</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">ゴールデンサウンド</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">聴覚プロファイル</string>
     <string name="row_golden_sub">聴力テストに合わせて調整したサウンド</string>
     <string name="fit_title">イヤホンのフィットテスト</string>
     <string name="fit_sub">ノイズキャンセリングの効果を高めるために耳の穴にぴったり合うイヤーチップを選んでください。</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">音が大きいです。不快なら下げてください。</string>
     <string name="golden_creating">プロファイルを作成中</string>
     <string name="golden_saved">プロファイルを保存しました</string>
-    <string name="golden_saved_msg">このプロファイルで Golden Sound がオンです。</string>
+    <string name="golden_saved_msg">このプロファイルがオンになりました。</string>
     <string name="golden_stopped">テストを中止しました</string>
     <string name="golden_stopped_music">音声の再生が始まりました。一時停止してもう一度お試しください。</string>
     <string name="golden_stopped_wear">イヤホンが外れました。両方を装着してもう一度お試しください。</string>

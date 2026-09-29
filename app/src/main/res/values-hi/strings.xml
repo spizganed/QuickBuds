@@ -301,8 +301,8 @@
     <string name="model_detected">पहचाना गया: %1$s</string>
     <string name="model_not_detected">अभी पहचाना नहीं गया</string>
     <string name="no_buds_paired">कोई पेयर किए गए OPPO, OnePlus या realme बड्स नहीं मिले। पहले ब्लूटूथ सेटिंग्स में पेयर करें।</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">स्वर्णिम ध्वनि</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">सुनने की प्रोफ़ाइल</string>
     <string name="row_golden_sub">आपके हियरिंग टेस्ट के अनुसार ट्यून की गई ध्वनि</string>
     <string name="fit_title">इयरबड की फिटिंग का परिक्षण</string>
     <string name="fit_sub">बेहतर तरीके से शोर को रोकने के लिए, ऐसी इयर टिप चुनें जो आपके कान के भीतरी हिस्से में अच्छी तरह फ़िट हो जाएँ।</string>
@@ -339,7 +339,7 @@
     <string name="golden_loud">यह तेज़ है। असहज हो तो कम करें।</string>
     <string name="golden_creating">आपकी प्रोफ़ाइल बन रही है</string>
     <string name="golden_saved">प्रोफ़ाइल सेव हो गई</string>
-    <string name="golden_saved_msg">इस प्रोफ़ाइल के साथ Golden Sound चालू है।</string>
+    <string name="golden_saved_msg">यह प्रोफ़ाइल अब चालू है।</string>
     <string name="golden_stopped">टेस्ट रुक गया</string>
     <string name="golden_stopped_music">ऑडियो चलने लगा। उसे रोकें और फिर से कोशिश करें।</string>
     <string name="golden_stopped_wear">एक ईयरबड निकल गया। दोनों लगाएं और फिर से कोशिश करें।</string>

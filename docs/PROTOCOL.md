@@ -1146,11 +1146,16 @@ phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
 | Ear scan result | pushed as event `0x0E`, not requested and not in the `0x0205` list: `0204 0E 03 a8 00 <168 bytes> <id>`, ~8 s after start |
 | Hearing test start / stop | `0x040D 02 01` / `0x040D 02 00` |
 | Play a tone | `0x040E 03 01 <info>` (`m1`); `0x040E 04` stops it, sent before each new level |
-| Filters (HeyMelody's curves) | `0x0116 0c <12 x info> <id>` (278) → 250 bytes of little-endian floats (`00 00 80 3f` = 1.0, biquad-like); `0x011F a8 00 <scan> <id>` (287, length little-endian) → 299 bytes of floats. Only read; nothing sent back from them |
+| Filters (HeyMelody's graph) | Queries. `0x0116 0c <12 x info> <id>` (278) → `00 <id> 04 <count LE> <packet> <enhance type> <floats>`; `0x011F a8 00 <scan> <id>` (287) → `00 <id> 04 <sample rate LE, 44100> <count LE> <packet> <floats>` (layout from the byte counts, `[CAPTURE]`). Floats little-endian, first half left ear, second right, biquads of 6: `a0 a1 a2 b0 b1 b2` (60 = 5 per ear, 72 = 6). Nothing sent back from them |
 | Apply a record | `0x040E 03 0c <12 x info> <id> <name>` (`w0`, the name is the record's date, "2026/09/29 01:53"), `0x0411 01 01 01 00 0b` (`F0`: count 1, `EarRestoreDataInfo` type 01, length 0001 little-endian, data `0b`), `0x0415 03 a8 00 <scan> <id>` (`v0`, 1045), then `0x0403 0B 01` |
 | Clear | `0x040E 02` + `0x0415 02`; after the test, `0x040E 01 00 00000000` + `0x0415 01 00 00 00000000` (mode 1, empty) |
 | Status | event `0x08`, `08 <kind 2 test / 4 scan> <status>`: 1 / 3 audio playing, 2 / 4 resumed, 5 a bud out, 6 back in, 7 timed out `[VENDOR]` `dealHearingDetectingStatus`; registered in `0x0205` when the buds list `0x040D` |
 | Not part of it | `0x040F 01` in the capture is `setSystemCameraStatus` (HeyMelody's camera feature) `[VENDOR]` |
+
+**The graph** `[VENDOR]` (`HearingEnhancementDetectCompleteFragment`, ): each ear's hearing and
+ear-scan biquads are summed in dB (`20 log10 |B/A|`, 44100 Hz when no rate is given) and read at 80, 10000,
+4800, 2400, 1200, 250 Hz (the radar's axes, 80 at the top, clockwise). A radius is
+`max(2, -|dB| x 10 / scale + 10)` with scales 7.5, 15, 15, 12.5, 12.5, 7.5; 10 = no change.
 
 **Values** `[VENDOR]` (`EnhanceDataUtils`, `HearingEnhancementDetectingFragmentV2`) + `[CAPTURE]`: the
 slider has 25 stops, each one a tone value:

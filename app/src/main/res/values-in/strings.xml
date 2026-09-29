@@ -301,8 +301,8 @@
     <string name="model_detected">Terdeteksi: %1$s</string>
     <string name="model_not_detected">Belum terdeteksi</string>
     <string name="no_buds_paired">Tidak ada earbud OPPO, OnePlus, atau realme yang dipasangkan. Pasangkan dulu di pengaturan Bluetooth.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Golden sound</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Profil pendengaran</string>
     <string name="row_golden_sub">Suara yang disesuaikan dengan tes pendengaran Anda</string>
     <string name="fit_title">Tes pengepasan earbud</string>
     <string name="fit_sub">Pilih karet earphone yang menutup rapat lubang telinga Anda agar peredaman bising lebih baik.</string>
@@ -339,7 +339,7 @@
     <string name="golden_loud">Ini keras. Kecilkan jika tidak nyaman.</string>
     <string name="golden_creating">Membuat profil Anda</string>
     <string name="golden_saved">Profil disimpan</string>
-    <string name="golden_saved_msg">Golden Sound aktif dengan profil ini.</string>
+    <string name="golden_saved_msg">Profil ini sekarang aktif.</string>
     <string name="golden_stopped">Tes dihentikan</string>
     <string name="golden_stopped_music">Audio mulai diputar. Jeda lalu coba lagi.</string>
     <string name="golden_stopped_wear">Satu earbud terlepas. Pasang keduanya lalu coba lagi.</string>

@@ -301,8 +301,8 @@
     <string name="model_detected">ตรวจพบ: %1$s</string>
     <string name="model_not_detected">ยังไม่พบ</string>
     <string name="no_buds_paired">ไม่พบหูฟัง OPPO, OnePlus หรือ realme ที่จับคู่ไว้ โปรดจับคู่ในการตั้งค่าบลูทูธก่อน</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">เสียงแบบโกลเด้น</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">โปรไฟล์การได้ยิน</string>
     <string name="row_golden_sub">เสียงที่ปรับตามผลทดสอบการได้ยินของคุณ</string>
     <string name="fit_title">การทดสอบความพอดีของหูฟังเอียร์บัด</string>
     <string name="fit_sub">เลือกจุกหูฟังที่พอดีกับช่องหูของคุณเพื่อลดเสียงรบกวนได้มากขึ้น</string>
@@ -339,7 +339,7 @@
     <string name="golden_loud">เสียงดัง ลดลงหากรู้สึกไม่สบาย</string>
     <string name="golden_creating">กำลังสร้างโปรไฟล์</string>
     <string name="golden_saved">บันทึกโปรไฟล์แล้ว</string>
-    <string name="golden_saved_msg">Golden Sound เปิดอยู่ด้วยโปรไฟล์นี้</string>
+    <string name="golden_saved_msg">เปิดใช้โปรไฟล์นี้แล้ว</string>
     <string name="golden_stopped">หยุดการทดสอบแล้ว</string>
     <string name="golden_stopped_music">มีเสียงเริ่มเล่น หยุดชั่วคราวแล้วลองอีกครั้ง</string>
     <string name="golden_stopped_wear">หูฟังหลุดออก ใส่ทั้งสองข้างแล้วลองอีกครั้ง</string>

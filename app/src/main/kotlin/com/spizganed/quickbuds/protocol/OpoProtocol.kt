@@ -180,6 +180,7 @@ object OpoProtocol {
     const val CMD_GOLDEN_RESTORE = 0x0411     // F0: restore data (the description id)
     const val CMD_GOLDEN_SCAN_DATA = 0x0415   // v0: ear-scan data
     const val CMD_GOLDEN_FILTER = 0x0116      // W: hearing filter, the reply carries the enhance type
+    const val CMD_GOLDEN_SCAN_FILTER = 0x011F // M: ear-scan filter (the graph only)
     const val CMD_GOLDEN_ACTIVE = 0x0115      // the record on the buds
     const val CMD_GOLDEN_ACTIVE_SCAN = 0x011E // the ear-scan data on the buds
 
@@ -208,6 +209,10 @@ object OpoProtocol {
     /** Asks for the filter of a result; the `0x8116` reply's byte 9 is the enhance type. */
     fun hearingFilter(uid: Int, values: IntArray): ByteArray =
         buildPacket(CMD_GOLDEN_FILTER, payload = byteArrayOf(0x0C) + hearingInfo(values) + int32(uid))
+
+    /** Asks for the ear-scan filter of a record: `<length little-endian> <data> <uid>`. */
+    fun earScanFilter(uid: Int, data: ByteArray): ByteArray =
+        buildPacket(CMD_GOLDEN_SCAN_FILTER, payload = le16(data.size) + data + int32(uid))
 
     /** Applies a record: `03 0c <12 x info> <uid> <name>`. */
     fun hearingRecord(uid: Int, name: String, values: IntArray): ByteArray =

@@ -34,6 +34,11 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
     private var syncing = false
     private var activeUid = 0
     private var testSheet: GoldenTestSheet? = null
+    private lateinit var radar: HearingRadarView
+    private lateinit var radarCard: LinearLayout
+    /** Filters per record uid, read from the buds for the graph: hearing (left, right), ear scan (fs, left, right). */
+    private val hearingCurves = HashMap<Int, Pair<FloatArray, FloatArray>>()
+    private val scanCurves = HashMap<Int, Triple<Int, FloatArray, FloatArray>>()
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -65,6 +70,19 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
                 R.string.row_golden_title, R.string.row_golden_sub, toggle) { toggle.performClick() })
         })
 
+        // The active profile as HeyMelody's radar, drawn from the filters the buds compute for it.
+        radar = HearingRadarView(this)
+        radarCard = SettingRowFactory.card(this).apply {
+            visibility = android.view.View.GONE
+            val pad = ThemeRes.dp(this@GoldenSoundActivity, 12f)
+            setPadding(pad, pad, pad, pad)
+            addView(radar)
+            addView(legend())
+        }
+        root.addView(radarCard.also {
+            (it.layoutParams as? LinearLayout.LayoutParams)?.topMargin = ThemeRes.dp(this, 12f)
+        })
+
         root.addView(SettingRowFactory.sectionLabel(this, R.string.golden_profiles))
         list = SettingRowFactory.card(this)
         root.addView(list)
@@ -81,6 +99,37 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         }
 
         setContentView(ScrollView(this).apply { addView(root) })
+    }
+
+    private fun legend() = LinearLayout(this).apply {
+        gravity = android.view.Gravity.CENTER
+        for ((label, attr) in listOf(R.string.gesture_bud_left to R.attr.appColorAccent, R.string.gesture_bud_right to R.attr.appColorTextSecondary)) {
+            addView(TextView(this@GoldenSoundActivity).apply {
+                text = "● " + getString(label)
+                textSize = 13f
+                setTextColor(ThemeRes.color(this@GoldenSoundActivity, attr))
+                setPadding(ThemeRes.dp(this@GoldenSoundActivity, 10f), 0, ThemeRes.dp(this@GoldenSoundActivity, 10f), 0)
+            })
+        }
+    }
+
+    /** Asks the buds for the active record's filters (queries only, as HeyMelody's result screen). */
+    private fun requestCurves() {
+        val r = GoldenSound.records(this).firstOrNull { it.uid == activeUid } ?: return
+        if (hearingCurves.containsKey(r.uid)) { paintRadar(); return }
+        manager?.golden(*listOfNotNull(
+            OpoProtocol.hearingFilter(r.uid, r.values),
+            if (r.scan.isNotEmpty()) OpoProtocol.earScanFilter(r.uid, r.scan) else null
+        ).toTypedArray())
+    }
+
+    private fun paintRadar() {
+        val h = hearingCurves[activeUid]
+        radarCard.visibility = if (h == null) android.view.View.GONE else android.view.View.VISIBLE
+        if (h == null) return
+        val s = scanCurves[activeUid]
+        radar.left = GoldenSound.radar(h.first, s?.second, s?.first ?: 44100)
+        radar.right = GoldenSound.radar(h.second, s?.third, s?.first ?: 44100)
     }
 
     private fun startTest() {
@@ -102,6 +151,8 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         ).toTypedArray())
         activeUid = r.uid
         paintList()
+        paintRadar()
+        requestCurves()
     }
 
     private fun paintList() {
@@ -159,11 +210,19 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         if (GoldenSound.records(this).none { it.uid == uid })
             GoldenSound.put(this, GoldenSound.Record(uid, name, values, ByteArray(0), 0))
         paintList()
+        paintRadar()
+        // After the ear-scan read (`0x811E`, right behind this one) has filled the record in.
+        radar.postDelayed({ requestCurves() }, 600)
     }
 
     override fun onGoldenActiveScan(uid: Int, data: ByteArray) {
         val r = GoldenSound.records(this).firstOrNull { it.uid == uid && it.scan.isEmpty() } ?: return
         GoldenSound.put(this, GoldenSound.Record(r.uid, r.name, r.values, data, r.descId))
+    }
+
+    override fun onGoldenCurves(uid: Int, scan: Boolean, fs: Int, left: FloatArray, right: FloatArray) {
+        if (scan) scanCurves[uid] = Triple(fs, left, right) else hearingCurves[uid] = left to right
+        if (uid == activeUid) paintRadar()
     }
 
     override fun onGoldenStatus(kind: Int, status: Int) { testSheet?.status(kind, status) }

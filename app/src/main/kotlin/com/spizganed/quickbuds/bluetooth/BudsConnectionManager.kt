@@ -82,6 +82,11 @@ class BudsConnectionManager(private val context: Context) {
         fun onEarScan(uid: Int, data: ByteArray) {}
         /** `0x8116`: the enhance type of a hearing result (0 low, 1 middle, 2 high). */
         fun onGoldenFilter(uid: Int, enhanceType: Int) {}
+        /**
+         * `0x8116` / `0x811F`: a record's filters per ear, biquads of 6 floats (a0 a1 a2 b0 b1 b2),
+         * [scan] = the ear-scan ones. Drawn by [com.spizganed.quickbuds.ui.HearingRadarView].
+         */
+        fun onGoldenCurves(uid: Int, scan: Boolean, fs: Int, left: FloatArray, right: FloatArray) {}
         /** `0x8115`: the record on the buds. */
         fun onGoldenActive(uid: Int, name: String, values: IntArray) {}
         /** `0x811E`: the ear-scan data on the buds. */
@@ -938,7 +943,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
-            cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || // Golden Sound replies
+            cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || cmd == 0x811F || // Golden Sound replies
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd == OpoProtocol.CMD_REGISTER_NOTIFY
         if (explained) return
@@ -1213,8 +1218,21 @@ class BudsConnectionManager(private val context: Context) {
             val uid = ((payload[1].toInt() and 0xFF) shl 24) or ((payload[2].toInt() and 0xFF) shl 16) or
                 ((payload[3].toInt() and 0xFF) shl 8) or (payload[4].toInt() and 0xFF)
             val type = payload[9].toInt() and 0xFF
-            log("GOLDEN FILTER: uid=${"%08X".format(uid)} enhanceType=$type")
-            handler.post { listeners.forEach { it.onGoldenFilter(uid, type) } }
+            val curves = GoldenSound.parseCurves(payload, scan = false)
+            log("GOLDEN FILTER: uid=${"%08X".format(uid)} enhanceType=$type floats=${curves?.second?.size?.times(2)}")
+            handler.post {
+                listeners.forEach {
+                    it.onGoldenFilter(uid, type)
+                    if (curves != null) it.onGoldenCurves(uid, false, curves.first, curves.second, curves.third)
+                }
+            }
+            return
+        }
+        if (cmd == 0x811F && payload.size >= 11 && payload[0].toInt() == 0) {
+            val curves = GoldenSound.parseCurves(payload, scan = true)
+            val uid = GoldenSound.uidAt(payload, 1)
+            log("GOLDEN SCAN FILTER: uid=${"%08X".format(uid)} fs=${curves?.first} floats=${curves?.second?.size?.times(2)}")
+            if (curves != null) handler.post { listeners.forEach { it.onGoldenCurves(uid, true, curves.first, curves.second, curves.third) } }
             return
         }
         if (cmd == 0x8115) {

@@ -299,8 +299,8 @@
     <string name="model_detected">Определено: %1$s</string>
     <string name="model_not_detected">Пока не определено</string>
     <string name="no_buds_paired">Сопряжённые наушники OPPO, OnePlus или realme не найдены. Сначала выполните сопряжение в настройках Bluetooth.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Золотой профиль звука</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Профиль слуха</string>
     <string name="row_golden_sub">Звук, настроенный по тесту слуха</string>
     <string name="fit_title">Проверка прилегания наушников</string>
     <string name="fit_sub">Выберите насадки наушников с плотным прилеганием для более качественного шумоподавления.</string>
@@ -337,7 +337,7 @@
     <string name="golden_loud">Это громко. Уменьшите, если неприятно.</string>
     <string name="golden_creating">Создание профиля</string>
     <string name="golden_saved">Профиль сохранён</string>
-    <string name="golden_saved_msg">Golden Sound включён с этим профилем.</string>
+    <string name="golden_saved_msg">Этот профиль теперь включён.</string>
     <string name="golden_stopped">Тест остановлен</string>
     <string name="golden_stopped_music">Начал играть звук. Приостановите его и попробуйте снова.</string>
     <string name="golden_stopped_wear">Наушник вынут. Вставьте оба и попробуйте снова.</string>

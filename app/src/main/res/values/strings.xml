@@ -384,8 +384,8 @@
     <string name="model_detected">Detected: %1$s</string>
     <string name="model_not_detected">Not detected yet</string>
     <string name="no_buds_paired">No paired OPPO, OnePlus or realme buds found. Pair them in Bluetooth settings first.</string>
-    <!-- Golden Sound and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
-    <string name="row_golden_title">Golden Sound</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Hearing profile</string>
     <string name="row_golden_sub">Sound tuned to your hearing test</string>
     <string name="fit_title">Earbud fit test</string>
     <string name="fit_sub">Choose ear tips that make a good seal with your ear canals for better noise canceling.</string>
@@ -422,7 +422,7 @@
     <string name="golden_loud">This is loud. Lower it if it is uncomfortable.</string>
     <string name="golden_creating">Creating your profile</string>
     <string name="golden_saved">Profile saved</string>
-    <string name="golden_saved_msg">Golden Sound is on with this profile.</string>
+    <string name="golden_saved_msg">This profile is on now.</string>
     <string name="golden_stopped">Test stopped</string>
     <string name="golden_stopped_music">Audio started playing. Pause it and try again.</string>
     <string name="golden_stopped_wear">An earbud came out. Put both in and try again.</string>
