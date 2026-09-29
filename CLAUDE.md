@@ -264,7 +264,7 @@ row opens `GoldenSoundActivity` (switch, the profiles kept on the phone in pref 
 tap applies one, and the buds' own profile read on open and added, so HeyMelody's show up). The hearing
 test is `GoldenTestSheet`: ear scan where `models.json` has `"earScan":1` (added from HeyMelody's list), 12
 tones, then save and apply (PROTOCOL.md §9). Records live in `protocol/GoldenSound.kt`. The screen shows the
-active profile as HeyMelody's radar (`HearingRadarView`), from the filters the buds return for it
+active profile as HeyMelody's radar (`HearingRadarView`), one ear at a time behind a Left / Right switch ([USER] 2026-09-29), from the filters the buds return for it
 (`0x0116` / `0x011F` queries, asked on open). The fit test is
 `FitTestSheet` (from Earbud settings), `0x0405` plus event `0x04`, which `registerNotifications` adds
 only when the buds list `0x0405`. `BottomSheetDialog` can now change its title and button in place and

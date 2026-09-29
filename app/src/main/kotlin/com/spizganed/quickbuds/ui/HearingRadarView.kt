@@ -10,15 +10,13 @@ import com.spizganed.quickbuds.protocol.GoldenSound
 
 /**
  * The hearing profile as HeyMelody draws it: a radar over the test frequencies
- * ([GoldenSound.AXES], 80 at the top, clockwise), one shape per ear, 10 = no change at the rim.
- * Left in the accent colour, right in the secondary text colour. Dots in the Nothing style.
+ * ([GoldenSound.AXES], 80 at the top, clockwise), one ear at a time, 10 = no change at the rim.
+ * Dots in the Nothing style.
  */
 class HearingRadarView(context: Context) : View(context) {
 
     /** Radii 0..10 per axis, null = not read yet. */
-    var left: FloatArray? = null
-        set(v) { field = v; invalidate() }
-    var right: FloatArray? = null
+    var values: FloatArray? = null
         set(v) { field = v; invalidate() }
 
     private fun dp(v: Float) = ThemeRes.dp(context, v).toFloat()
@@ -72,15 +70,13 @@ class HearingRadarView(context: Context) : View(context) {
             val (x, y) = point(i, 10f)
             canvas.drawLine(cx, cy, x, y, gridPaint)
         }
-        for ((values, color) in listOf(right to secondary, left to accent)) {
-            val path = polygon(values ?: continue)
-            shapePaint.style = Paint.Style.FILL
-            shapePaint.color = color and 0x00FFFFFF or 0x40000000
-            canvas.drawPath(path, shapePaint)
-            shapePaint.style = Paint.Style.STROKE
-            shapePaint.strokeWidth = dp(2f)
-            shapePaint.color = color
-            canvas.drawPath(path, shapePaint)
-        }
+        val path = polygon(values ?: return)
+        shapePaint.style = Paint.Style.FILL
+        shapePaint.color = accent and 0x00FFFFFF or 0x40000000
+        canvas.drawPath(path, shapePaint)
+        shapePaint.style = Paint.Style.STROKE
+        shapePaint.strokeWidth = dp(2f)
+        shapePaint.color = accent
+        canvas.drawPath(path, shapePaint)
     }
 }
