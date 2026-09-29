@@ -577,6 +577,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // The model list may have changed the model, and with it the noise modes.
         showModelName()
         relayoutIfSupportChanged()
+        // ...and the Hi-Res row between the plain switch and the codec picker.
+        if (::manager.isInitialized) onFeatureStates(manager.featureStates)
         // Settings › Developer › Dev tools button (default on).
         btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
                 .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
@@ -1068,10 +1070,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             hiresSwitch?.let { setSwitchQuiet(it, v == 1) }
             hiresSubtitle?.setText(if (v == 1) R.string.row_hires_sub else R.string.row_hires_sub_off)
         }
-        if (codecPicker()) manager.codec?.let { c ->
-            hiresSubtitle?.text = codecName(c)
-            hiresSwitch?.isEnabled = c == 3 || c == 8
-        }
+        val codec = manager.codec.takeIf { codecPicker() }
+        if (codec != null) hiresSubtitle?.text = codecName(codec)
+        hiresSwitch?.isEnabled = codec == null || codec == 3 || codec == 8
         paintSpatial()
         states[OpoProtocol.FEATURE_GOLDEN_SOUND]?.let { v ->
             goldenSwitch?.let { setSwitchQuiet(it, v == 1) }
