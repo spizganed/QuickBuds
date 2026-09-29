@@ -320,4 +320,27 @@
     <string name="fit_again">Verifică din nou</string>
     <string name="fit_insert">Pune căștile în urechi</string>
     <string name="fit_failed">Testul a eșuat. Încearcă din nou.</string>
+    <string name="golden_profiles">Profiluri</string>
+    <string name="golden_none">Încă nu există profiluri</string>
+    <string name="golden_test_row">Fă testul de auz</string>
+    <string name="golden_test_sub">Circa 3 minute, într-un loc liniștit</string>
+    <string name="golden_test_title">Test de auz</string>
+    <string name="golden_prepare">Găsește un loc liniștit, pune pe pauză orice sunet și pune ambele căști. Vei auzi 6 tonuri în fiecare ureche.</string>
+    <string name="golden_start">Începe</string>
+    <string name="golden_scanning">Se scanează urechile</string>
+    <string name="golden_scan_hint">Stai nemișcat câteva secunde.</string>
+    <string name="golden_left">Urechea stângă</string>
+    <string name="golden_right">Urechea dreaptă</string>
+    <string name="golden_step">Tonul %1$d din 6. Mută glisorul unde tonul abia dispare.</string>
+    <string name="golden_next">Înainte</string>
+    <string name="golden_finish">Finalizează</string>
+    <string name="golden_loud">Este tare. Coboară dacă e neplăcut.</string>
+    <string name="golden_creating">Se creează profilul</string>
+    <string name="golden_saved">Profil salvat</string>
+    <string name="golden_saved_msg">Golden Sound este pornit cu acest profil.</string>
+    <string name="golden_stopped">Test oprit</string>
+    <string name="golden_stopped_music">A început redarea audio. Pune-o pe pauză și încearcă din nou.</string>
+    <string name="golden_stopped_wear">O cască a fost scoasă. Pune-le pe amândouă și încearcă din nou.</string>
+    <string name="golden_scan_failed">Scanarea urechilor nu s-a încheiat. Încearcă din nou.</string>
+    <string name="golden_again">Încearcă din nou</string>
 </resources>

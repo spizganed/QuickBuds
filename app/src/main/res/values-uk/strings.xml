@@ -320,4 +320,27 @@
     <string name="fit_again">Перевірити ще раз</string>
     <string name="fit_insert">Вставте навушники-вкладиші</string>
     <string name="fit_failed">Перевірку не пройдено. Спробуйте ще раз.</string>
+    <string name="golden_profiles">Профілі</string>
+    <string name="golden_none">Профілів ще немає</string>
+    <string name="golden_test_row">Пройти тест слуху</string>
+    <string name="golden_test_sub">Близько 3 хвилин, у тихому місці</string>
+    <string name="golden_test_title">Тест слуху</string>
+    <string name="golden_prepare">Знайдіть тихе місце, призупиніть звук і вставте обидва навушники. Ви почуєте 6 тонів у кожному вусі.</string>
+    <string name="golden_start">Почати</string>
+    <string name="golden_scanning">Сканування вух</string>
+    <string name="golden_scan_hint">Не рухайтеся кілька секунд.</string>
+    <string name="golden_left">Ліве вухо</string>
+    <string name="golden_right">Праве вухо</string>
+    <string name="golden_step">Тон %1$d з 6. Пересуньте повзунок туди, де тон ледь зникає.</string>
+    <string name="golden_next">Далі</string>
+    <string name="golden_finish">Готово</string>
+    <string name="golden_loud">Це гучно. Зменште, якщо неприємно.</string>
+    <string name="golden_creating">Створення профілю</string>
+    <string name="golden_saved">Профіль збережено</string>
+    <string name="golden_saved_msg">Golden Sound увімкнено з цим профілем.</string>
+    <string name="golden_stopped">Тест зупинено</string>
+    <string name="golden_stopped_music">Почав грати звук. Призупиніть його і спробуйте ще раз.</string>
+    <string name="golden_stopped_wear">Навушник вийнято. Вставте обидва і спробуйте ще раз.</string>
+    <string name="golden_scan_failed">Сканування вух не завершилося. Спробуйте ще раз.</string>
+    <string name="golden_again">Спробувати ще</string>
 </resources>

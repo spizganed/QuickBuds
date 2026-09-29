@@ -320,4 +320,27 @@
     <string name="fit_again">もう一度確認する</string>
     <string name="fit_insert">イヤホンを差し込んでください</string>
     <string name="fit_failed">テストが失敗しました。再試行してください。</string>
+    <string name="golden_profiles">プロファイル</string>
+    <string name="golden_none">プロファイルはまだありません</string>
+    <string name="golden_test_row">聴力テストを受ける</string>
+    <string name="golden_test_sub">約3分、静かな場所で</string>
+    <string name="golden_test_title">聴力テスト</string>
+    <string name="golden_prepare">静かな場所で再生中の音を止め、両方のイヤホンを装着してください。各耳で6つの音が流れます。</string>
+    <string name="golden_start">開始</string>
+    <string name="golden_scanning">耳をスキャン中</string>
+    <string name="golden_scan_hint">数秒間動かないでください。</string>
+    <string name="golden_left">左耳</string>
+    <string name="golden_right">右耳</string>
+    <string name="golden_step">音 %1$d / 6。音がちょうど聞こえなくなる位置にスライダーを動かしてください。</string>
+    <string name="golden_next">次へ</string>
+    <string name="golden_finish">完了</string>
+    <string name="golden_loud">音が大きいです。不快なら下げてください。</string>
+    <string name="golden_creating">プロファイルを作成中</string>
+    <string name="golden_saved">プロファイルを保存しました</string>
+    <string name="golden_saved_msg">このプロファイルで Golden Sound がオンです。</string>
+    <string name="golden_stopped">テストを中止しました</string>
+    <string name="golden_stopped_music">音声の再生が始まりました。一時停止してもう一度お試しください。</string>
+    <string name="golden_stopped_wear">イヤホンが外れました。両方を装着してもう一度お試しください。</string>
+    <string name="golden_scan_failed">耳のスキャンが完了しませんでした。もう一度お試しください。</string>
+    <string name="golden_again">再試行</string>
 </resources>

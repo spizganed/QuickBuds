@@ -322,4 +322,27 @@
     <string name="fit_again">ตรวจสอบอีกครั้ง</string>
     <string name="fit_insert">สวมหูฟังเอียร์บัดของคุณ</string>
     <string name="fit_failed">การทดสอบล้มเหลว กรุณาลองใหม่อีกครั้ง</string>
+    <string name="golden_profiles">โปรไฟล์</string>
+    <string name="golden_none">ยังไม่มีโปรไฟล์</string>
+    <string name="golden_test_row">ทำแบบทดสอบการได้ยิน</string>
+    <string name="golden_test_sub">ประมาณ 3 นาที ในที่เงียบ</string>
+    <string name="golden_test_title">ทดสอบการได้ยิน</string>
+    <string name="golden_prepare">หาที่เงียบ หยุดเสียงทั้งหมด และใส่หูฟังทั้งสองข้าง คุณจะได้ยิน 6 เสียงในแต่ละหู</string>
+    <string name="golden_start">เริ่ม</string>
+    <string name="golden_scanning">กำลังสแกนหูของคุณ</string>
+    <string name="golden_scan_hint">อยู่นิ่งๆ สักครู่</string>
+    <string name="golden_left">หูซ้าย</string>
+    <string name="golden_right">หูขวา</string>
+    <string name="golden_step">เสียงที่ %1$d จาก 6 เลื่อนแถบไปยังจุดที่เสียงเพิ่งหายไป</string>
+    <string name="golden_next">ถัดไป</string>
+    <string name="golden_finish">เสร็จสิ้น</string>
+    <string name="golden_loud">เสียงดัง ลดลงหากรู้สึกไม่สบาย</string>
+    <string name="golden_creating">กำลังสร้างโปรไฟล์</string>
+    <string name="golden_saved">บันทึกโปรไฟล์แล้ว</string>
+    <string name="golden_saved_msg">Golden Sound เปิดอยู่ด้วยโปรไฟล์นี้</string>
+    <string name="golden_stopped">หยุดการทดสอบแล้ว</string>
+    <string name="golden_stopped_music">มีเสียงเริ่มเล่น หยุดชั่วคราวแล้วลองอีกครั้ง</string>
+    <string name="golden_stopped_wear">หูฟังหลุดออก ใส่ทั้งสองข้างแล้วลองอีกครั้ง</string>
+    <string name="golden_scan_failed">การสแกนหูไม่เสร็จ ลองอีกครั้ง</string>
+    <string name="golden_again">ลองอีกครั้ง</string>
 </resources>

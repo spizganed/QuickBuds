@@ -320,4 +320,27 @@
     <string name="fit_again">Kontrollera igen</string>
     <string name="fit_insert">Sätt i hörlurarna</string>
     <string name="fit_failed">Testet misslyckades. Försök igen.</string>
+    <string name="golden_profiles">Profiler</string>
+    <string name="golden_none">Inga profiler än</string>
+    <string name="golden_test_row">Gör hörseltestet</string>
+    <string name="golden_test_sub">Cirka 3 minuter, på en tyst plats</string>
+    <string name="golden_test_title">Hörseltest</string>
+    <string name="golden_prepare">Hitta en tyst plats, pausa allt ljud och sätt i båda hörlurarna. Du hör 6 toner i varje öra.</string>
+    <string name="golden_start">Starta</string>
+    <string name="golden_scanning">Dina öron skannas</string>
+    <string name="golden_scan_hint">Håll dig stilla några sekunder.</string>
+    <string name="golden_left">Vänster öra</string>
+    <string name="golden_right">Höger öra</string>
+    <string name="golden_step">Ton %1$d av 6. Dra reglaget dit där tonen precis försvinner.</string>
+    <string name="golden_next">Nästa</string>
+    <string name="golden_finish">Slutför</string>
+    <string name="golden_loud">Det här är högt. Sänk om det är obehagligt.</string>
+    <string name="golden_creating">Din profil skapas</string>
+    <string name="golden_saved">Profilen har sparats</string>
+    <string name="golden_saved_msg">Golden Sound är på med den här profilen.</string>
+    <string name="golden_stopped">Testet stoppades</string>
+    <string name="golden_stopped_music">Ljud började spelas. Pausa det och försök igen.</string>
+    <string name="golden_stopped_wear">En hörlur togs ut. Sätt i båda och försök igen.</string>
+    <string name="golden_scan_failed">Öronskanningen blev inte klar. Försök igen.</string>
+    <string name="golden_again">Försök igen</string>
 </resources>

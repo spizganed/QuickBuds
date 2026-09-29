@@ -897,7 +897,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         )
 
         // --- Golden Sound: the hearing profile on the buds, feature 0x0B [VENDOR] (PROTOCOL.md §9) ---
-        // The profile itself comes from HeyMelody's hearing test until ours exists.
+        // The row opens the Golden Sound screen (profiles, hearing test); the switch toggles it.
         val golden = SettingRowFactory.buildSwitch(this, false)
         goldenSwitch = golden
         golden.setOnCheckedChangeListener { _, isChecked ->
@@ -907,7 +907,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         addRow("golden",
             SettingRowFactory.build(
                 this, R.drawable.ic_hearing, R.string.row_golden_title, R.string.row_golden_sub, golden
-            ) { golden.performClick() }
+            ) { startActivity(Intent(this, GoldenSoundActivity::class.java)) }
         )
 
         // --- 4. Equalizer ---

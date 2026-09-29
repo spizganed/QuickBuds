@@ -320,4 +320,27 @@
     <string name="fit_again">Sprawdź ponownie</string>
     <string name="fit_insert">Włóż słuchawki</string>
     <string name="fit_failed">Test zakończony niepowodzeniem. Spróbuj ponownie.</string>
+    <string name="golden_profiles">Profile</string>
+    <string name="golden_none">Brak profili</string>
+    <string name="golden_test_row">Wykonaj test słuchu</string>
+    <string name="golden_test_sub">Około 3 minut, w cichym miejscu</string>
+    <string name="golden_test_title">Test słuchu</string>
+    <string name="golden_prepare">Znajdź ciche miejsce, wstrzymaj dźwięk i włóż obie słuchawki. Usłyszysz 6 tonów w każdym uchu.</string>
+    <string name="golden_start">Start</string>
+    <string name="golden_scanning">Skanowanie uszu</string>
+    <string name="golden_scan_hint">Nie ruszaj się przez kilka sekund.</string>
+    <string name="golden_left">Lewe ucho</string>
+    <string name="golden_right">Prawe ucho</string>
+    <string name="golden_step">Ton %1$d z 6. Przesuń suwak tam, gdzie ton ledwo znika.</string>
+    <string name="golden_next">Dalej</string>
+    <string name="golden_finish">Zakończ</string>
+    <string name="golden_loud">To jest głośne. Ścisz, jeśli jest nieprzyjemnie.</string>
+    <string name="golden_creating">Tworzenie profilu</string>
+    <string name="golden_saved">Profil zapisany</string>
+    <string name="golden_saved_msg">Golden Sound jest włączony z tym profilem.</string>
+    <string name="golden_stopped">Test zatrzymany</string>
+    <string name="golden_stopped_music">Zaczął grać dźwięk. Wstrzymaj go i spróbuj ponownie.</string>
+    <string name="golden_stopped_wear">Słuchawka została wyjęta. Włóż obie i spróbuj ponownie.</string>
+    <string name="golden_scan_failed">Skanowanie uszu nie zostało ukończone. Spróbuj ponownie.</string>
+    <string name="golden_again">Spróbuj ponownie</string>
 </resources>

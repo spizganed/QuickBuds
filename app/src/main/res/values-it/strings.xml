@@ -320,4 +320,27 @@
     <string name="fit_again">Ripeti il test</string>
     <string name="fit_insert">Inserisci gli auricolari</string>
     <string name="fit_failed">Test non riuscito. Riprova.</string>
+    <string name="golden_profiles">Profili</string>
+    <string name="golden_none">Ancora nessun profilo</string>
+    <string name="golden_test_row">Fai il test dell\'udito</string>
+    <string name="golden_test_sub">Circa 3 minuti, in un luogo silenzioso</string>
+    <string name="golden_test_title">Test dell\'udito</string>
+    <string name="golden_prepare">Trova un luogo silenzioso, metti in pausa l\'audio e indossa entrambi gli auricolari. Sentirai 6 toni per orecchio.</string>
+    <string name="golden_start">Inizia</string>
+    <string name="golden_scanning">Scansione delle orecchie</string>
+    <string name="golden_scan_hint">Resta fermo per qualche secondo.</string>
+    <string name="golden_left">Orecchio sinistro</string>
+    <string name="golden_right">Orecchio destro</string>
+    <string name="golden_step">Tono %1$d di 6. Sposta il cursore dove il tono smette appena di sentirsi.</string>
+    <string name="golden_next">Avanti</string>
+    <string name="golden_finish">Fine</string>
+    <string name="golden_loud">È forte. Abbassalo se dà fastidio.</string>
+    <string name="golden_creating">Creazione del profilo</string>
+    <string name="golden_saved">Profilo salvato</string>
+    <string name="golden_saved_msg">Golden Sound è attivo con questo profilo.</string>
+    <string name="golden_stopped">Test interrotto</string>
+    <string name="golden_stopped_music">È partito un audio. Mettilo in pausa e riprova.</string>
+    <string name="golden_stopped_wear">Un auricolare è stato tolto. Indossali entrambi e riprova.</string>
+    <string name="golden_scan_failed">La scansione delle orecchie non è terminata. Riprova.</string>
+    <string name="golden_again">Riprova</string>
 </resources>

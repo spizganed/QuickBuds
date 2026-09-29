@@ -108,7 +108,8 @@ object LogDecoder {
         }
     }
 
-    private fun describePacket(data: ByteArray, direction: Direction, label: String?): String {
+    private fun describePacket(raw: ByteArray, direction: Direction, label: String?): String {
+        val data = OppoPacketFramer.normalise(raw)
         if (data.isEmpty() || data[0] != 0xAA.toByte()) {
             return data.joinToString(" ") { "%02X".format(it) }
         }

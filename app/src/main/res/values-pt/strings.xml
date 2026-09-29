@@ -320,4 +320,27 @@
     <string name="fit_again">Testar novamente</string>
     <string name="fit_insert">Coloque os auriculares</string>
     <string name="fit_failed">O teste falhou. Tente novamente.</string>
+    <string name="golden_profiles">Perfis</string>
+    <string name="golden_none">Ainda sem perfis</string>
+    <string name="golden_test_row">Fazer o teste auditivo</string>
+    <string name="golden_test_sub">Cerca de 3 minutos, num lugar silencioso</string>
+    <string name="golden_test_title">Teste auditivo</string>
+    <string name="golden_prepare">Encontre um lugar silencioso, pause qualquer áudio e coloque os dois auriculares. Vai ouvir 6 tons em cada ouvido.</string>
+    <string name="golden_start">Iniciar</string>
+    <string name="golden_scanning">A analisar os seus ouvidos</string>
+    <string name="golden_scan_hint">Fique imóvel alguns segundos.</string>
+    <string name="golden_left">Ouvido esquerdo</string>
+    <string name="golden_right">Ouvido direito</string>
+    <string name="golden_step">Tom %1$d de 6. Mova o controlo até onde o tom mal deixa de se ouvir.</string>
+    <string name="golden_next">Seguinte</string>
+    <string name="golden_finish">Concluir</string>
+    <string name="golden_loud">Isto está alto. Baixe se for desconfortável.</string>
+    <string name="golden_creating">A criar o seu perfil</string>
+    <string name="golden_saved">Perfil guardado</string>
+    <string name="golden_saved_msg">O Golden Sound está ativo com este perfil.</string>
+    <string name="golden_stopped">Teste parado</string>
+    <string name="golden_stopped_music">Começou a tocar áudio. Pause-o e tente novamente.</string>
+    <string name="golden_stopped_wear">Um auricular foi retirado. Coloque os dois e tente novamente.</string>
+    <string name="golden_scan_failed">A análise dos ouvidos não terminou. Tente novamente.</string>
+    <string name="golden_again">Tentar novamente</string>
 </resources>

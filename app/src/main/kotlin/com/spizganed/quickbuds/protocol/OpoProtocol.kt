@@ -87,6 +87,8 @@ object OpoProtocol {
     const val EVT_WEARING = 0x02              // 0x0204 subType: wearing status changed
     const val EVT_GAME_MODE = 0x05            // 0x0204 subType: game mode changed
     const val EVT_FIT_TEST = 0x04             // 0x0204 subType: fit test result, [VENDOR]
+    const val EVT_GOLDEN_STATUS = 0x08        // 0x0204 subType: Golden Sound test status, [VENDOR]
+    const val EVT_EAR_SCAN = 0x0E             // 0x0204 subType: ear scan result, [CAPTURE] (pushed unregistered)
 
     const val FEATURE_GAME_MODE = 0x06
     /** Firmware auto play/pause on wear. `04 01` / `04 00`, `[CAPTURE]` 2026-09-25. */
@@ -109,23 +111,24 @@ object OpoProtocol {
         return seq
     }
 
+    /** `TotalLen` is LEB128: one byte up to 127, more after (PROTOCOL.md §2). */
     @Synchronized
     fun buildPacket(cmd: Int, seq: Int? = null, payload: ByteArray = ByteArray(0)): ByteArray {
         val s = seq ?: nextSeq()
         val payLen = payload.size
-        val totalLen = 7 + payLen
-        val pkt = ByteArray(2 + totalLen)
-        pkt[0] = 0xAA.toByte()
-        pkt[1] = totalLen.toByte()
-        pkt[2] = 0x00
-        pkt[3] = 0x00
-        pkt[4] = (cmd and 0xFF).toByte()
-        pkt[5] = ((cmd shr 8) and 0xFF).toByte()
-        pkt[6] = s.toByte()
-        pkt[7] = (payLen and 0xFF).toByte()
-        pkt[8] = ((payLen shr 8) and 0xFF).toByte()
-        System.arraycopy(payload, 0, pkt, 9, payLen)
-        return pkt
+        var totalLen = 7 + payLen
+        val len = mutableListOf<Byte>()
+        do {
+            val b = totalLen and 0x7F
+            totalLen = totalLen shr 7
+            len += (if (totalLen != 0) b or 0x80 else b).toByte()
+        } while (totalLen != 0)
+        val head = byteArrayOf(
+            0xAA.toByte(), *len.toByteArray(), 0x00, 0x00,
+            (cmd and 0xFF).toByte(), ((cmd shr 8) and 0xFF).toByte(), s.toByte(),
+            (payLen and 0xFF).toByte(), ((payLen shr 8) and 0xFF).toByte()
+        )
+        return head + payload
     }
 
     fun buildHandshake(): ByteArray = buildPacket(CMD_HANDSHAKE)
@@ -163,12 +166,63 @@ object OpoProtocol {
      *
      * 0x04 (fit test result) is added when the buds have the fit test (`0x0405`), 2026-09-29:
      * HeyMelody registers every id the buds list in 0x8200 (`registerMultiNotification`).
+     * 0x08 (Golden Sound test status) likewise, when the buds have the test (`0x040D`), 2026-09-29.
      */
-    fun registerNotifications(fitTest: Boolean = false): ByteArray = buildPacket(
-        CMD_REGISTER_NOTIFY,
-        payload = if (fitTest) byteArrayOf(0x04, 0x01, 0x02, 0x03, EVT_FIT_TEST.toByte())
-        else byteArrayOf(0x03, 0x01, 0x02, 0x03)
-    )
+    fun registerNotifications(fitTest: Boolean = false, golden: Boolean = false): ByteArray {
+        val ids = listOf(0x01, 0x02, 0x03) + (if (fitTest) listOf(EVT_FIT_TEST) else emptyList()) +
+            (if (golden) listOf(EVT_GOLDEN_STATUS) else emptyList())
+        return buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(ids.size.toByte()) + ids.map { it.toByte() })
+    }
+
+    // --- Golden Sound test (PROTOCOL.md §9), `[CAPTURE]` 2026-09-29 + `[VENDOR]` HeadsetCoreService ---
+    const val CMD_GOLDEN_DETECT = 0x040D      // q0: ear scan `04 01|00 <uid>`, hearing test `02 01|00`
+    const val CMD_GOLDEN_RECORD = 0x040E      // w0 / m1: tone, stop tone, apply record
+    const val CMD_GOLDEN_RESTORE = 0x0411     // F0: restore data (the description id)
+    const val CMD_GOLDEN_SCAN_DATA = 0x0415   // v0: ear-scan data
+    const val CMD_GOLDEN_FILTER = 0x0116      // W: hearing filter, the reply carries the enhance type
+    const val CMD_GOLDEN_ACTIVE = 0x0115      // the record on the buds
+    const val CMD_GOLDEN_ACTIVE_SCAN = 0x011E // the ear-scan data on the buds
+
+    private fun int32(v: Int) = byteArrayOf((v ushr 24).toByte(), (v ushr 16).toByte(), (v ushr 8).toByte(), v.toByte())
+    private fun le16(v: Int) = byteArrayOf(v.toByte(), (v ushr 8).toByte())
+    /** 12 x `<side> <freq> <value>`: left 1..6 then right 1..6, as HeyMelody sends them. */
+    private fun hearingInfo(values: IntArray) = ByteArray(36) { i ->
+        when (i % 3) { 0 -> (i / 18 + 1).toByte(); 1 -> (i / 3 % 6 + 1).toByte(); else -> values[i / 3].toByte() }
+    }
+
+    /** Ear scan start / stop, `04 01|00 <uid>`; the result comes as event `0x0E`. */
+    fun earScan(on: Boolean, uid: Int): ByteArray =
+        buildPacket(CMD_GOLDEN_DETECT, payload = byteArrayOf(0x04, if (on) 0x01 else 0x00) + int32(uid))
+
+    /** Hearing test start / stop, `02 01|00`. */
+    fun hearingTest(on: Boolean): ByteArray =
+        buildPacket(CMD_GOLDEN_DETECT, payload = byteArrayOf(0x02, if (on) 0x01 else 0x00))
+
+    /** Plays a tone on one bud: `03 01 <side 1 L / 2 R> <freq 1..6> <value>`. */
+    fun hearingTone(side: Int, freq: Int, value: Int): ByteArray =
+        buildPacket(CMD_GOLDEN_RECORD, payload = byteArrayOf(0x03, 0x01, side.toByte(), freq.toByte(), value.toByte()))
+
+    /** Stops the tone, `04`; HeyMelody sends it before every new level. */
+    fun hearingToneStop(): ByteArray = buildPacket(CMD_GOLDEN_RECORD, payload = byteArrayOf(0x04))
+
+    /** Asks for the filter of a result; the `0x8116` reply's byte 9 is the enhance type. */
+    fun hearingFilter(uid: Int, values: IntArray): ByteArray =
+        buildPacket(CMD_GOLDEN_FILTER, payload = byteArrayOf(0x0C) + hearingInfo(values) + int32(uid))
+
+    /** Applies a record: `03 0c <12 x info> <uid> <name>`. */
+    fun hearingRecord(uid: Int, name: String, values: IntArray): ByteArray =
+        buildPacket(CMD_GOLDEN_RECORD, payload = byteArrayOf(0x03, 0x0C) + hearingInfo(values) + int32(uid) + name.toByteArray())
+
+    /** The record's description id, `01 01 01 00 <id>` (count 1, type 1, length 1 little-endian). */
+    fun hearingRestore(descId: Int): ByteArray =
+        buildPacket(CMD_GOLDEN_RESTORE, payload = byteArrayOf(0x01, 0x01, 0x01, 0x00, descId.toByte()))
+
+    /** Applies ear-scan data: `03 <length little-endian> <data> <uid>`. */
+    fun earScanData(uid: Int, data: ByteArray): ByteArray =
+        buildPacket(CMD_GOLDEN_SCAN_DATA, payload = byteArrayOf(0x03) + le16(data.size) + data + int32(uid))
+
+    fun queryGoldenActive(): ByteArray = buildPacket(CMD_GOLDEN_ACTIVE)
+    fun queryGoldenActiveScan(): ByteArray = buildPacket(CMD_GOLDEN_ACTIVE_SCAN)
 
     /** Earbud fit test: `0x0405` `01` start / `00` stop (HeyMelody stops it when its sheet closes). */
     fun fitTest(on: Boolean): ByteArray =

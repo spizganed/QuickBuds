@@ -3,6 +3,10 @@ package com.spizganed.quickbuds.protocol
 /**
  * Reassembles 0xAA-framed OPPO protocol packets from a byte stream.
  * Handles partial frames, multiple frames in one read, and garbage before headers.
+ *
+ * `TotalLen` (byte 1) is LEB128, so a frame over 127 bytes has a longer header (Golden Sound's
+ * ear-scan data, PROTOCOL.md §9). Every frame comes out [normalise]d, so the rest of the app
+ * keeps its fixed layout: cmd at 4-5, seq at 6, payload length at 7-8, payload from 9.
  */
 class OppoPacketFramer {
     private var pending = ByteArray(0)
@@ -19,19 +23,39 @@ class OppoPacketFramer {
                 break
             }
             if (start > 0) pending = pending.copyOfRange(start, pending.size)
-            if (pending.size < 2) break
+            val (totalLen, lenBytes) = readLength(pending) ?: break
 
-            val totalLen = pending[1].toInt() and 0xFF
-            val frameLen = totalLen + 2
-            if (totalLen < 7 || frameLen > 512) {
+            val frameLen = 1 + lenBytes + totalLen
+            if (totalLen < 7 || frameLen > 2048) {
                 pending = pending.copyOfRange(1, pending.size)
                 continue
             }
             if (pending.size < frameLen) break
 
-            frames += pending.copyOfRange(0, frameLen)
+            frames += normalise(pending.copyOfRange(0, frameLen))
             pending = pending.copyOfRange(frameLen, pending.size)
         }
         return frames
+    }
+
+    companion object {
+        /** `TotalLen` and how many bytes it takes, or null while the frame is still too short. */
+        fun readLength(frame: ByteArray): Pair<Int, Int>? {
+            var value = 0
+            for (i in 1 until minOf(frame.size, 4)) {
+                val b = frame[i].toInt() and 0xFF
+                value = value or ((b and 0x7F) shl (7 * (i - 1)))
+                if (b and 0x80 == 0) return value to i
+            }
+            return null
+        }
+
+        /** The frame with a one-byte length field (its low 7 bits), so the header is always 9 bytes. */
+        fun normalise(frame: ByteArray): ByteArray {
+            if (frame.isEmpty() || frame[0] != 0xAA.toByte()) return frame
+            val lenBytes = readLength(frame)?.second ?: return frame
+            if (lenBytes == 1) return frame
+            return byteArrayOf(frame[0], (frame[1].toInt() and 0x7F).toByte()) + frame.copyOfRange(1 + lenBytes, frame.size)
+        }
     }
 }

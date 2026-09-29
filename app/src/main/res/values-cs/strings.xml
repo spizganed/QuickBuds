@@ -320,4 +320,27 @@
     <string name="fit_again">Zkontrolovat znovu</string>
     <string name="fit_insert">Vložte sluchátka do uší</string>
     <string name="fit_failed">Test se nezdařil. Zkuste to znovu.</string>
+    <string name="golden_profiles">Profily</string>
+    <string name="golden_none">Zatím žádné profily</string>
+    <string name="golden_test_row">Udělat test sluchu</string>
+    <string name="golden_test_sub">Asi 3 minuty, na tichém místě</string>
+    <string name="golden_test_title">Test sluchu</string>
+    <string name="golden_prepare">Najděte tiché místo, pozastavte zvuk a nasaďte obě sluchátka. V každém uchu uslyšíte 6 tónů.</string>
+    <string name="golden_start">Začít</string>
+    <string name="golden_scanning">Skenování uší</string>
+    <string name="golden_scan_hint">Chvíli se nehýbejte.</string>
+    <string name="golden_left">Levé ucho</string>
+    <string name="golden_right">Pravé ucho</string>
+    <string name="golden_step">Tón %1$d z 6. Posuňte jezdec tam, kde tón právě zmizí.</string>
+    <string name="golden_next">Další</string>
+    <string name="golden_finish">Dokončit</string>
+    <string name="golden_loud">Je to hlasité. Ztlumte, pokud je to nepříjemné.</string>
+    <string name="golden_creating">Vytváření profilu</string>
+    <string name="golden_saved">Profil uložen</string>
+    <string name="golden_saved_msg">Golden Sound je zapnutý s tímto profilem.</string>
+    <string name="golden_stopped">Test zastaven</string>
+    <string name="golden_stopped_music">Začal hrát zvuk. Pozastavte ho a zkuste to znovu.</string>
+    <string name="golden_stopped_wear">Sluchátko bylo vyjmuto. Nasaďte obě a zkuste to znovu.</string>
+    <string name="golden_scan_failed">Sken uší nebyl dokončen. Zkuste to znovu.</string>
+    <string name="golden_again">Zkusit znovu</string>
 </resources>

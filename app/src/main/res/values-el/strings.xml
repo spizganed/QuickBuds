@@ -320,4 +320,27 @@
     <string name="fit_again">Νέος έλεγχος</string>
     <string name="fit_insert">Τοποθετήστε τα ακουστικά</string>
     <string name="fit_failed">Το τεστ απέτυχε. Δοκιμάστε ξανά.</string>
+    <string name="golden_profiles">Προφίλ</string>
+    <string name="golden_none">Δεν υπάρχουν ακόμη προφίλ</string>
+    <string name="golden_test_row">Κάντε το τεστ ακοής</string>
+    <string name="golden_test_sub">Περίπου 3 λεπτά, σε ήσυχο μέρος</string>
+    <string name="golden_test_title">Τεστ ακοής</string>
+    <string name="golden_prepare">Βρείτε ένα ήσυχο μέρος, κάντε παύση σε κάθε ήχο και φορέστε και τα δύο ακουστικά. Θα ακούσετε 6 τόνους σε κάθε αυτί.</string>
+    <string name="golden_start">Έναρξη</string>
+    <string name="golden_scanning">Σάρωση των αυτιών σας</string>
+    <string name="golden_scan_hint">Μείνετε ακίνητοι λίγα δευτερόλεπτα.</string>
+    <string name="golden_left">Αριστερό αυτί</string>
+    <string name="golden_right">Δεξί αυτί</string>
+    <string name="golden_step">Τόνος %1$d από 6. Μετακινήστε το ρυθμιστικό εκεί που ο τόνος μόλις χάνεται.</string>
+    <string name="golden_next">Επόμενο</string>
+    <string name="golden_finish">Τέλος</string>
+    <string name="golden_loud">Είναι δυνατό. Χαμηλώστε αν ενοχλεί.</string>
+    <string name="golden_creating">Δημιουργία του προφίλ σας</string>
+    <string name="golden_saved">Το προφίλ αποθηκεύτηκε</string>
+    <string name="golden_saved_msg">Το Golden Sound είναι ενεργό με αυτό το προφίλ.</string>
+    <string name="golden_stopped">Το τεστ σταμάτησε</string>
+    <string name="golden_stopped_music">Άρχισε να παίζει ήχος. Κάντε παύση και δοκιμάστε ξανά.</string>
+    <string name="golden_stopped_wear">Βγήκε ένα ακουστικό. Φορέστε και τα δύο και δοκιμάστε ξανά.</string>
+    <string name="golden_scan_failed">Η σάρωση των αυτιών δεν ολοκληρώθηκε. Δοκιμάστε ξανά.</string>
+    <string name="golden_again">Δοκιμή ξανά</string>
 </resources>

@@ -320,4 +320,27 @@
     <string name="fit_again">Opnieuw controleren</string>
     <string name="fit_insert">Plaats uw oordopjes</string>
     <string name="fit_failed">Test mislukt. Probeer het opnieuw.</string>
+    <string name="golden_profiles">Profielen</string>
+    <string name="golden_none">Nog geen profielen</string>
+    <string name="golden_test_row">Doe de gehoortest</string>
+    <string name="golden_test_sub">Ongeveer 3 minuten, op een stille plek</string>
+    <string name="golden_test_title">Gehoortest</string>
+    <string name="golden_prepare">Zoek een stille plek, pauzeer alle audio en doe beide oordopjes in. Je hoort 6 tonen per oor.</string>
+    <string name="golden_start">Starten</string>
+    <string name="golden_scanning">Je oren worden gescand</string>
+    <string name="golden_scan_hint">Blijf een paar seconden stil.</string>
+    <string name="golden_left">Linkeroor</string>
+    <string name="golden_right">Rechteroor</string>
+    <string name="golden_step">Toon %1$d van 6. Zet de schuif waar de toon net verdwijnt.</string>
+    <string name="golden_next">Volgende</string>
+    <string name="golden_finish">Voltooien</string>
+    <string name="golden_loud">Dit is luid. Zet het lager als het onprettig is.</string>
+    <string name="golden_creating">Je profiel wordt gemaakt</string>
+    <string name="golden_saved">Profiel opgeslagen</string>
+    <string name="golden_saved_msg">Golden Sound staat aan met dit profiel.</string>
+    <string name="golden_stopped">Test gestopt</string>
+    <string name="golden_stopped_music">Er begon audio te spelen. Pauzeer het en probeer het opnieuw.</string>
+    <string name="golden_stopped_wear">Er is een oordopje uitgehaald. Doe beide in en probeer het opnieuw.</string>
+    <string name="golden_scan_failed">De oorscan is niet voltooid. Probeer het opnieuw.</string>
+    <string name="golden_again">Opnieuw proberen</string>
 </resources>

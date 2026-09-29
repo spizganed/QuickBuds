@@ -102,6 +102,11 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".ui.GoldenSoundActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".ui.EarbudSettingsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

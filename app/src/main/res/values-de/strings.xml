@@ -320,4 +320,27 @@
     <string name="fit_again">Nochmals prüfen</string>
     <string name="fit_insert">Ohrhörer einsetzen</string>
     <string name="fit_failed">Test fehlgeschlagen, Versuchen sie es erneut.</string>
+    <string name="golden_profiles">Profile</string>
+    <string name="golden_none">Noch keine Profile</string>
+    <string name="golden_test_row">Hörtest machen</string>
+    <string name="golden_test_sub">Etwa 3 Minuten, an einem ruhigen Ort</string>
+    <string name="golden_test_title">Hörtest</string>
+    <string name="golden_prepare">Suche einen ruhigen Ort, pausiere jede Wiedergabe und setze beide Earbuds ein. Du hörst 6 Töne pro Ohr.</string>
+    <string name="golden_start">Starten</string>
+    <string name="golden_scanning">Ohren werden gescannt</string>
+    <string name="golden_scan_hint">Halte kurz still.</string>
+    <string name="golden_left">Linkes Ohr</string>
+    <string name="golden_right">Rechtes Ohr</string>
+    <string name="golden_step">Ton %1$d von 6. Schiebe den Regler dorthin, wo der Ton gerade verschwindet.</string>
+    <string name="golden_next">Weiter</string>
+    <string name="golden_finish">Fertig</string>
+    <string name="golden_loud">Das ist laut. Senke es, wenn es unangenehm ist.</string>
+    <string name="golden_creating">Profil wird erstellt</string>
+    <string name="golden_saved">Profil gespeichert</string>
+    <string name="golden_saved_msg">Golden Sound ist mit diesem Profil an.</string>
+    <string name="golden_stopped">Test beendet</string>
+    <string name="golden_stopped_music">Es wurde Audio abgespielt. Pausiere es und versuche es erneut.</string>
+    <string name="golden_stopped_wear">Ein Earbud wurde herausgenommen. Setze beide ein und versuche es erneut.</string>
+    <string name="golden_scan_failed">Der Ohrscan wurde nicht abgeschlossen. Versuche es erneut.</string>
+    <string name="golden_again">Erneut versuchen</string>
 </resources>

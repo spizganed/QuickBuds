@@ -320,4 +320,27 @@
     <string name="fit_again">다시 확인</string>
     <string name="fit_insert">이어버드를 착용하세요</string>
     <string name="fit_failed">테스트에 실패했습니다. 다시 시도하세요.</string>
+    <string name="golden_profiles">프로필</string>
+    <string name="golden_none">아직 프로필이 없습니다</string>
+    <string name="golden_test_row">청력 테스트 하기</string>
+    <string name="golden_test_sub">약 3분, 조용한 곳에서</string>
+    <string name="golden_test_title">청력 테스트</string>
+    <string name="golden_prepare">조용한 곳에서 재생 중인 소리를 멈추고 이어버드를 양쪽 모두 착용하세요. 귀마다 6개의 소리가 들립니다.</string>
+    <string name="golden_start">시작</string>
+    <string name="golden_scanning">귀를 스캔하는 중</string>
+    <string name="golden_scan_hint">몇 초간 움직이지 마세요.</string>
+    <string name="golden_left">왼쪽 귀</string>
+    <string name="golden_right">오른쪽 귀</string>
+    <string name="golden_step">소리 %1$d/6. 소리가 막 들리지 않게 되는 위치로 슬라이더를 옮기세요.</string>
+    <string name="golden_next">다음</string>
+    <string name="golden_finish">완료</string>
+    <string name="golden_loud">소리가 큽니다. 불편하면 낮추세요.</string>
+    <string name="golden_creating">프로필을 만드는 중</string>
+    <string name="golden_saved">프로필이 저장되었습니다</string>
+    <string name="golden_saved_msg">이 프로필로 Golden Sound가 켜져 있습니다.</string>
+    <string name="golden_stopped">테스트가 중단되었습니다</string>
+    <string name="golden_stopped_music">오디오가 재생되기 시작했습니다. 일시 정지하고 다시 시도하세요.</string>
+    <string name="golden_stopped_wear">이어버드가 빠졌습니다. 양쪽을 착용하고 다시 시도하세요.</string>
+    <string name="golden_scan_failed">귀 스캔이 완료되지 않았습니다. 다시 시도하세요.</string>
+    <string name="golden_again">다시 시도</string>
 </resources>

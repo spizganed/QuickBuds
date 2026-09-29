@@ -320,4 +320,27 @@
     <string name="fit_again">Tekrar kontrol edin</string>
     <string name="fit_insert">Kulak içi kulaklıklarınızı takın</string>
     <string name="fit_failed">Test başarısız. Lütfen yeniden deneyin.</string>
+    <string name="golden_profiles">Profiller</string>
+    <string name="golden_none">Henüz profil yok</string>
+    <string name="golden_test_row">İşitme testini yap</string>
+    <string name="golden_test_sub">Yaklaşık 3 dakika, sessiz bir yerde</string>
+    <string name="golden_test_title">İşitme testi</string>
+    <string name="golden_prepare">Sessiz bir yer bulun, sesi duraklatın ve iki kulaklığı da takın. Her kulakta 6 ton duyacaksınız.</string>
+    <string name="golden_start">Başlat</string>
+    <string name="golden_scanning">Kulaklarınız taranıyor</string>
+    <string name="golden_scan_hint">Birkaç saniye hareketsiz kalın.</string>
+    <string name="golden_left">Sol kulak</string>
+    <string name="golden_right">Sağ kulak</string>
+    <string name="golden_step">Ton %1$d / 6. Kaydırıcıyı tonun tam kaybolduğu yere getirin.</string>
+    <string name="golden_next">İleri</string>
+    <string name="golden_finish">Bitir</string>
+    <string name="golden_loud">Bu yüksek. Rahatsız ediyorsa azaltın.</string>
+    <string name="golden_creating">Profiliniz oluşturuluyor</string>
+    <string name="golden_saved">Profil kaydedildi</string>
+    <string name="golden_saved_msg">Golden Sound bu profille açık.</string>
+    <string name="golden_stopped">Test durdu</string>
+    <string name="golden_stopped_music">Ses çalmaya başladı. Duraklatın ve tekrar deneyin.</string>
+    <string name="golden_stopped_wear">Bir kulaklık çıkarıldı. İkisini de takıp tekrar deneyin.</string>
+    <string name="golden_scan_failed">Kulak taraması tamamlanmadı. Tekrar deneyin.</string>
+    <string name="golden_again">Tekrar dene</string>
 </resources>

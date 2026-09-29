@@ -320,4 +320,27 @@
     <string name="fit_again">আবার পরীক্ষা করুন</string>
     <string name="fit_insert">ইয়ারবাড কানে পরুন</string>
     <string name="fit_failed">পরীক্ষা ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</string>
+    <string name="golden_profiles">প্রোফাইল</string>
+    <string name="golden_none">এখনও কোনো প্রোফাইল নেই</string>
+    <string name="golden_test_row">শ্রবণ পরীক্ষা দিন</string>
+    <string name="golden_test_sub">প্রায় ৩ মিনিট, শান্ত জায়গায়</string>
+    <string name="golden_test_title">শ্রবণ পরীক্ষা</string>
+    <string name="golden_prepare">শান্ত জায়গা খুঁজুন, যেকোনো অডিও থামান এবং দুটি ইয়ারবাডই পরুন। প্রতিটি কানে ৬টি টোন শুনবেন।</string>
+    <string name="golden_start">শুরু করুন</string>
+    <string name="golden_scanning">আপনার কান স্ক্যান হচ্ছে</string>
+    <string name="golden_scan_hint">কয়েক সেকেন্ড স্থির থাকুন।</string>
+    <string name="golden_left">বাম কান</string>
+    <string name="golden_right">ডান কান</string>
+    <string name="golden_step">টোন %1$d / ৬। স্লাইডারটি সেখানে নিন যেখানে টোন সবে মিলিয়ে যায়।</string>
+    <string name="golden_next">পরবর্তী</string>
+    <string name="golden_finish">শেষ করুন</string>
+    <string name="golden_loud">এটি জোরে। অস্বস্তি হলে কমান।</string>
+    <string name="golden_creating">আপনার প্রোফাইল তৈরি হচ্ছে</string>
+    <string name="golden_saved">প্রোফাইল সেভ হয়েছে</string>
+    <string name="golden_saved_msg">এই প্রোফাইলে Golden Sound চালু আছে।</string>
+    <string name="golden_stopped">পরীক্ষা থেমেছে</string>
+    <string name="golden_stopped_music">অডিও চলতে শুরু করেছে। থামিয়ে আবার চেষ্টা করুন।</string>
+    <string name="golden_stopped_wear">একটি ইয়ারবাড খুলে গেছে। দুটিই পরে আবার চেষ্টা করুন।</string>
+    <string name="golden_scan_failed">কানের স্ক্যান শেষ হয়নি। আবার চেষ্টা করুন।</string>
+    <string name="golden_again">আবার চেষ্টা করুন</string>
 </resources>

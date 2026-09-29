@@ -320,4 +320,27 @@
     <string name="fit_again">Suriin muli</string>
     <string name="fit_insert">Isuot ang earbuds</string>
     <string name="fit_failed">Nabigo ang pagsusuri. Pakisubukan muli.</string>
+    <string name="golden_profiles">Mga profile</string>
+    <string name="golden_none">Wala pang profile</string>
+    <string name="golden_test_row">Kumuha ng hearing test</string>
+    <string name="golden_test_sub">Mga 3 minuto, sa tahimik na lugar</string>
+    <string name="golden_test_title">Hearing test</string>
+    <string name="golden_prepare">Humanap ng tahimik na lugar, i-pause ang anumang audio at isuot ang dalawang earbud. Makakarinig ka ng 6 na tono sa bawat tainga.</string>
+    <string name="golden_start">Simulan</string>
+    <string name="golden_scanning">Sina-scan ang iyong mga tainga</string>
+    <string name="golden_scan_hint">Huwag gumalaw nang ilang segundo.</string>
+    <string name="golden_left">Kaliwang tainga</string>
+    <string name="golden_right">Kanang tainga</string>
+    <string name="golden_step">Tono %1$d sa 6. Ilipat ang slider kung saan halos nawawala ang tono.</string>
+    <string name="golden_next">Susunod</string>
+    <string name="golden_finish">Tapusin</string>
+    <string name="golden_loud">Malakas ito. Hinaan kung hindi komportable.</string>
+    <string name="golden_creating">Ginagawa ang iyong profile</string>
+    <string name="golden_saved">Na-save ang profile</string>
+    <string name="golden_saved_msg">Naka-on ang Golden Sound gamit ang profile na ito.</string>
+    <string name="golden_stopped">Huminto ang test</string>
+    <string name="golden_stopped_music">May audio na nagsimulang tumugtog. I-pause ito at subukang muli.</string>
+    <string name="golden_stopped_wear">May earbud na natanggal. Isuot ang dalawa at subukang muli.</string>
+    <string name="golden_scan_failed">Hindi natapos ang ear scan. Subukang muli.</string>
+    <string name="golden_again">Subukang muli</string>
 </resources>

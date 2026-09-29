@@ -320,4 +320,27 @@
     <string name="fit_again">Vérifiez à nouveau</string>
     <string name="fit_insert">Insérez vos écouteurs</string>
     <string name="fit_failed">Échec du test. Merci de réessayer.</string>
+    <string name="golden_profiles">Profils</string>
+    <string name="golden_none">Aucun profil pour l\'instant</string>
+    <string name="golden_test_row">Faire le test auditif</string>
+    <string name="golden_test_sub">Environ 3 minutes, dans un endroit calme</string>
+    <string name="golden_test_title">Test auditif</string>
+    <string name="golden_prepare">Trouvez un endroit calme, mettez l\'audio en pause et placez les deux écouteurs. Vous entendrez 6 sons par oreille.</string>
+    <string name="golden_start">Commencer</string>
+    <string name="golden_scanning">Analyse de vos oreilles</string>
+    <string name="golden_scan_hint">Restez immobile quelques secondes.</string>
+    <string name="golden_left">Oreille gauche</string>
+    <string name="golden_right">Oreille droite</string>
+    <string name="golden_step">Son %1$d sur 6. Placez le curseur là où le son disparaît tout juste.</string>
+    <string name="golden_next">Suivant</string>
+    <string name="golden_finish">Terminer</string>
+    <string name="golden_loud">C\'est fort. Baissez si c\'est inconfortable.</string>
+    <string name="golden_creating">Création de votre profil</string>
+    <string name="golden_saved">Profil enregistré</string>
+    <string name="golden_saved_msg">Golden Sound est activé avec ce profil.</string>
+    <string name="golden_stopped">Test arrêté</string>
+    <string name="golden_stopped_music">Un son a commencé à jouer. Mettez-le en pause et réessayez.</string>
+    <string name="golden_stopped_wear">Un écouteur a été retiré. Placez les deux et réessayez.</string>
+    <string name="golden_scan_failed">L\'analyse des oreilles n\'a pas abouti. Réessayez.</string>
+    <string name="golden_again">Réessayer</string>
 </resources>

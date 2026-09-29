@@ -62,18 +62,17 @@ AA  <TotalLen>  00 00  <Cmd LE>  <Seq>  <PayLen LE>  <Payload...>
 miss because every short frame looks like a plain byte:
 
 - `< 128` → a single byte, value as-is.
-- `>= 128` → **subtract 1**, then encode the result as standard LEB128
-  (7 data bits per byte, low bits first, high bit set = "another byte follows").
-- Decode: if the high bit is clear it is the value; otherwise accumulate 7-bit
-  groups until a clear high bit, then **add 1**.
+- `>= 128` → standard LEB128 (7 data bits per byte, low bits first, high bit set =
+  "another byte follows").
 
-**Why this matters to us:** our frames are all small, so a naive single-byte
-writer is correct for everything the app sends today. The gesture-config write
-(`0x0401`, see §6) sends the whole key-function table back, which is the largest
-frame we build — on Buds 4 that is ~80 bytes with the 18-20 entries the bud
-reports, still under 127, so LEB128 has **not** been needed in practice. A bud
-with a much larger table, or a write that adds entries, would cross 127 and need
-real LEB128; `OpoProtocol.buildPacket()` does not implement it yet.
+The `[OSS]` source says to subtract 1 before encoding a value of 128 or more. **The capture
+says no** `[CAPTURE]` 2026-09-29 (`local/logs/heymelody_golden_sound_20260929.log.txt`): HeyMelody's
+`0x012F` with a 124-byte payload goes out as `AA 83 01` (131 = 7 + 124), its `0x0415` with 175
+bytes as `AA B6 01` (182), and the buds' `0x8116` reply with 250 bytes arrives as `AA 81 02` (257).
+
+`OpoProtocol.buildPacket()` writes it, and `OppoPacketFramer` reads it and hands every frame on
+with a one-byte length field, so the rest of the app keeps its fixed 9-byte header (cmd at 4-5,
+payload from 9). The first frames over 127 bytes are Golden Sound's (§9).
 
 ### Worked examples
 
@@ -240,6 +239,7 @@ way to settle "is the buds' silence real, or are we just not subscribed?".
 02 01 02        count=2: battery + wearing
 03 01 02 03     count=3: battery + wearing + ANC   <- current
 04 01 02 03 04  the same + fit test result, when the buds list 0x0405 (2026-09-29)
++ 08            Golden Sound test status, when the buds list 0x040D (2026-09-29)
 ```
 
 `[VENDOR]` HeyMelody registers every id the buds list in `0x8200` (`registerMultiNotification`).
@@ -1047,9 +1047,8 @@ just this one:
   "0xNN = ANC on" as if it were a level constant.
 
 **Note the write path IS built now.** `0x0401` is defined as a constant and the app writes the full
-key-function table back (`BudsConnectionManager.writeGestureBinding`). `buildPacket()` still lacks
-real LEB128 `TotalLen` (§2), but no frame the app builds reaches 127 bytes, so it has never been
-needed in practice.
+key-function table back (`BudsConnectionManager.writeGestureBinding`). `buildPacket()` writes real
+LEB128 `TotalLen` since 2026-09-29 (§2).
 
 ---
 
@@ -1133,7 +1132,7 @@ record switch). Buds 4 lists `0x0B` in `0x810D`; toggled from the app, the ack w
 re-read `0x810D` showed `0B 00` then `0B 01`. The switch applies the profile already stored on the
 buds; HeyMelody keeps the records (a named list, one active) on the phone.
 
-The **test** that makes a profile is not wired yet. It is captured (HeyMelody 116.9.0 running it on
+The **test** that makes a profile is wired (2026-09-29, `GoldenSoundActivity` / `GoldenTestSheet`). It is captured (HeyMelody 116.9.0 running it on
 Buds 4, `local/logs/heymelody_golden_sound_20260929.log.txt`) and every frame matches the vendor
 builder named below `[CAPTURE]` + `[VENDOR]`. A record has a 4-byte id (big-endian, chosen by the
 phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
@@ -1142,7 +1141,7 @@ phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
 
 | Step | Frames |
 |---|---|
-| Read the active record | `0x0115` (empty) → `00 0c <12 x info> <id> <name ASCII>`; `0x011E` (empty) → `00 03 a8 00 <168 scan bytes> <id>` |
+| Read the active record | `0x0115` (empty) → `00 03 0c <12 x info> <id> <name ASCII>`; `0x011E` (empty) → `00 03 a8 00 <168 scan bytes> <id>` |
 | Ear scan start / stop | `0x040D 04 01 <id>` / `0x040D 04 00 <id>` (`q0`, 1037) |
 | Ear scan result | pushed as event `0x0E`, not requested and not in the `0x0205` list: `0204 0E 03 a8 00 <168 bytes> <id>`, ~8 s after start |
 | Hearing test start / stop | `0x040D 02 01` / `0x040D 02 00` |
@@ -1150,7 +1149,8 @@ phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
 | Filters (HeyMelody's curves) | `0x0116 0c <12 x info> <id>` (278) → 250 bytes of little-endian floats (`00 00 80 3f` = 1.0, biquad-like); `0x011F a8 00 <scan> <id>` (287, length little-endian) → 299 bytes of floats. Only read; nothing sent back from them |
 | Apply a record | `0x040E 03 0c <12 x info> <id> <name>` (`w0`, the name is the record's date, "2026/09/29 01:53"), `0x0411 01 01 01 00 0b` (`F0`: count 1, `EarRestoreDataInfo` type 01, length 0001 little-endian, data `0b`), `0x0415 03 a8 00 <scan> <id>` (`v0`, 1045), then `0x0403 0B 01` |
 | Clear | `0x040E 02` + `0x0415 02`; after the test, `0x040E 01 00 00000000` + `0x0415 01 00 00 00000000` (mode 1, empty) |
-| Other | `0x040F 01` (`C0`, 1039) once after apply; progress event `0x08`: `08 04 05` (scan), `08 02 05` / `08 02 06` (test) |
+| Status | event `0x08`, `08 <kind 2 test / 4 scan> <status>`: 1 / 3 audio playing, 2 / 4 resumed, 5 a bud out, 6 back in, 7 timed out `[VENDOR]` `dealHearingDetectingStatus`; registered in `0x0205` when the buds list `0x040D` |
+| Not part of it | `0x040F 01` in the capture is `setSystemCameraStatus` (HeyMelody's camera feature) `[VENDOR]` |
 
 **Values** `[VENDOR]` (`EnhanceDataUtils`, `HearingEnhancementDetectingFragmentV2`) + `[CAPTURE]`: the
 slider has 25 stops, each one a tone value:

@@ -220,13 +220,15 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
   misread — it means "count=1, battery only", which the firmware ACKs while silently never pushing
   wear. **The app sends `03 01 02 03`** — count=3, then battery `01`, wearing `02`, **ANC `03`**
   (`OpoProtocol.registerNotifications()`). Omitting `03` makes bud-side ANC gestures look silent,
-  which is exactly how that bug hid for three captures. Never shorten this list.
+  which is exactly how that bug hid for three captures. Never shorten this list. `04` (fit test) and
+  `08` (Golden Sound status) are added when the buds list `0x0405` / `0x040D`.
 - **The gesture write is `0x0401`, not `0x0402`.** `0x0402` is ignored in total silence and cost a
   session. **A wrong command number fails silently**, which is why every gesture write re-reads the
   table and diffs it.
-- **`TotalLen` is LEB128.** All frames the app builds today are under 127 bytes so a single-byte
-  writer is correct, but `OpoProtocol.buildPacket()` does not implement real LEB128 — a much larger
-  key-function table would need it.
+- **`TotalLen` is LEB128**, standard (the `[OSS]` "subtract 1" is wrong, PROTOCOL.md §2). `buildPacket()`
+  writes it; `OppoPacketFramer` reads it and normalises every frame to a one-byte length, so the fixed
+  9-byte header below still holds for everything after the framer. Golden Sound sends and receives
+  frames over 127 bytes.
 - **Payload always starts at byte index 9** (`BudsConnectionManager.payloadOf()`).
 
 ### Gesture configuration (the newest, most delicate code)
@@ -255,8 +257,11 @@ Use [PROTOCOL.md](./docs/PROTOCOL.md) as the reference; it tags every claim `[VE
 
 ### Golden Sound and the fit test (2026-09-29)
 
-Golden Sound is only its on/off switch (`FEATURE_GOLDEN_SOUND` `0x0B`, a home row keyed `golden`); the
-test that makes a profile is not wired and needs a capture first (PROTOCOL.md §9). The fit test is
+Golden Sound: the home row (keyed `golden`) keeps its switch (`FEATURE_GOLDEN_SOUND` `0x0B`); a tap on the
+row opens `GoldenSoundActivity` (switch, the profiles kept on the phone in pref `goldenRecords`, max 10, a
+tap applies one, and the buds' own profile read on open and added, so HeyMelody's show up). The hearing
+test is `GoldenTestSheet`: ear scan where `models.json` has `"earScan":1` (added from HeyMelody's list), 12
+tones, then save and apply (PROTOCOL.md §9). Records live in `protocol/GoldenSound.kt`. The fit test is
 `FitTestSheet` (from Earbud settings), `0x0405` plus event `0x04`, which `registerNotifications` adds
 only when the buds list `0x0405`. `BottomSheetDialog` can now change its title and button in place and
 take a `content` view.

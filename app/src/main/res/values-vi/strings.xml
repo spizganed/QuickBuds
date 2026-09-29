@@ -322,4 +322,27 @@
     <string name="fit_again">Kiểm tra lại</string>
     <string name="fit_insert">Hãy đeo tai nghe vào</string>
     <string name="fit_failed">Kiểm tra thất bại. Vui lòng thử lại.</string>
+    <string name="golden_profiles">Hồ sơ</string>
+    <string name="golden_none">Chưa có hồ sơ</string>
+    <string name="golden_test_row">Làm bài kiểm tra thính lực</string>
+    <string name="golden_test_sub">Khoảng 3 phút, ở nơi yên tĩnh</string>
+    <string name="golden_test_title">Kiểm tra thính lực</string>
+    <string name="golden_prepare">Tìm nơi yên tĩnh, tạm dừng mọi âm thanh và đeo cả hai tai nghe. Bạn sẽ nghe 6 âm ở mỗi tai.</string>
+    <string name="golden_start">Bắt đầu</string>
+    <string name="golden_scanning">Đang quét tai của bạn</string>
+    <string name="golden_scan_hint">Giữ yên vài giây.</string>
+    <string name="golden_left">Tai trái</string>
+    <string name="golden_right">Tai phải</string>
+    <string name="golden_step">Âm %1$d/6. Kéo thanh trượt đến chỗ âm vừa biến mất.</string>
+    <string name="golden_next">Tiếp</string>
+    <string name="golden_finish">Hoàn tất</string>
+    <string name="golden_loud">Âm này to. Hãy giảm nếu khó chịu.</string>
+    <string name="golden_creating">Đang tạo hồ sơ</string>
+    <string name="golden_saved">Đã lưu hồ sơ</string>
+    <string name="golden_saved_msg">Golden Sound đang bật với hồ sơ này.</string>
+    <string name="golden_stopped">Đã dừng kiểm tra</string>
+    <string name="golden_stopped_music">Âm thanh bắt đầu phát. Hãy tạm dừng rồi thử lại.</string>
+    <string name="golden_stopped_wear">Một tai nghe đã bị tháo. Đeo cả hai rồi thử lại.</string>
+    <string name="golden_scan_failed">Quét tai chưa hoàn tất. Hãy thử lại.</string>
+    <string name="golden_again">Thử lại</string>
 </resources>

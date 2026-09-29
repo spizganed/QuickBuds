@@ -322,4 +322,27 @@
     <string name="fit_again">Periksa lagi</string>
     <string name="fit_insert">Masukkan earbud Anda</string>
     <string name="fit_failed">Tes gagal. Cobalah lagi.</string>
+    <string name="golden_profiles">Profil</string>
+    <string name="golden_none">Belum ada profil</string>
+    <string name="golden_test_row">Ikuti tes pendengaran</string>
+    <string name="golden_test_sub">Sekitar 3 menit, di tempat yang tenang</string>
+    <string name="golden_test_title">Tes pendengaran</string>
+    <string name="golden_prepare">Cari tempat yang tenang, jeda audio apa pun, dan pasang kedua earbud. Anda akan mendengar 6 nada di setiap telinga.</string>
+    <string name="golden_start">Mulai</string>
+    <string name="golden_scanning">Memindai telinga Anda</string>
+    <string name="golden_scan_hint">Tetap diam beberapa detik.</string>
+    <string name="golden_left">Telinga kiri</string>
+    <string name="golden_right">Telinga kanan</string>
+    <string name="golden_step">Nada %1$d dari 6. Geser penggeser ke titik saat nada baru saja hilang.</string>
+    <string name="golden_next">Berikutnya</string>
+    <string name="golden_finish">Selesai</string>
+    <string name="golden_loud">Ini keras. Kecilkan jika tidak nyaman.</string>
+    <string name="golden_creating">Membuat profil Anda</string>
+    <string name="golden_saved">Profil disimpan</string>
+    <string name="golden_saved_msg">Golden Sound aktif dengan profil ini.</string>
+    <string name="golden_stopped">Tes dihentikan</string>
+    <string name="golden_stopped_music">Audio mulai diputar. Jeda lalu coba lagi.</string>
+    <string name="golden_stopped_wear">Satu earbud terlepas. Pasang keduanya lalu coba lagi.</string>
+    <string name="golden_scan_failed">Pemindaian telinga tidak selesai. Coba lagi.</string>
+    <string name="golden_again">Coba lagi</string>
 </resources>

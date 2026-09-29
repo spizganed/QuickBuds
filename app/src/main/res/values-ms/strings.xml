@@ -320,4 +320,27 @@
     <string name="fit_again">Semak semula</string>
     <string name="fit_insert">Pakai fon telinga anda</string>
     <string name="fit_failed">Ujian gagal. Sila cuba lagi.</string>
+    <string name="golden_profiles">Profil</string>
+    <string name="golden_none">Belum ada profil</string>
+    <string name="golden_test_row">Ambil ujian pendengaran</string>
+    <string name="golden_test_sub">Kira-kira 3 minit, di tempat yang senyap</string>
+    <string name="golden_test_title">Ujian pendengaran</string>
+    <string name="golden_prepare">Cari tempat yang senyap, jeda sebarang audio dan pakai kedua-dua fon telinga. Anda akan mendengar 6 nada di setiap telinga.</string>
+    <string name="golden_start">Mula</string>
+    <string name="golden_scanning">Mengimbas telinga anda</string>
+    <string name="golden_scan_hint">Kekal diam beberapa saat.</string>
+    <string name="golden_left">Telinga kiri</string>
+    <string name="golden_right">Telinga kanan</string>
+    <string name="golden_step">Nada %1$d daripada 6. Gerakkan peluncur ke tempat nada baru hilang.</string>
+    <string name="golden_next">Seterusnya</string>
+    <string name="golden_finish">Selesai</string>
+    <string name="golden_loud">Ini kuat. Perlahankan jika tidak selesa.</string>
+    <string name="golden_creating">Mencipta profil anda</string>
+    <string name="golden_saved">Profil disimpan</string>
+    <string name="golden_saved_msg">Golden Sound hidup dengan profil ini.</string>
+    <string name="golden_stopped">Ujian dihentikan</string>
+    <string name="golden_stopped_music">Audio mula dimainkan. Jedakan dan cuba lagi.</string>
+    <string name="golden_stopped_wear">Satu fon telinga tertanggal. Pakai kedua-duanya dan cuba lagi.</string>
+    <string name="golden_scan_failed">Imbasan telinga tidak selesai. Cuba lagi.</string>
+    <string name="golden_again">Cuba lagi</string>
 </resources>

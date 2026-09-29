@@ -320,4 +320,27 @@
     <string name="fit_again">Újra ellenőrzés</string>
     <string name="fit_insert">Helyezze be a fülhallgatót</string>
     <string name="fit_failed">A teszt sikertelen. Próbálja újra.</string>
+    <string name="golden_profiles">Profilok</string>
+    <string name="golden_none">Még nincs profil</string>
+    <string name="golden_test_row">Hallásteszt elvégzése</string>
+    <string name="golden_test_sub">Kb. 3 perc, csendes helyen</string>
+    <string name="golden_test_title">Hallásteszt</string>
+    <string name="golden_prepare">Keress csendes helyet, állíts le minden hangot, és tedd be mindkét fülhallgatót. Fülenként 6 hangot fogsz hallani.</string>
+    <string name="golden_start">Indítás</string>
+    <string name="golden_scanning">Fülek szkennelése</string>
+    <string name="golden_scan_hint">Maradj mozdulatlan néhány másodpercig.</string>
+    <string name="golden_left">Bal fül</string>
+    <string name="golden_right">Jobb fül</string>
+    <string name="golden_step">%1$d. hang a 6-ból. Húzd a csúszkát oda, ahol a hang épp eltűnik.</string>
+    <string name="golden_next">Tovább</string>
+    <string name="golden_finish">Befejezés</string>
+    <string name="golden_loud">Ez hangos. Vedd lejjebb, ha kellemetlen.</string>
+    <string name="golden_creating">Profil létrehozása</string>
+    <string name="golden_saved">Profil mentve</string>
+    <string name="golden_saved_msg">A Golden Sound be van kapcsolva ezzel a profillal.</string>
+    <string name="golden_stopped">Teszt leállítva</string>
+    <string name="golden_stopped_music">Hang kezdett szólni. Állítsd le, és próbáld újra.</string>
+    <string name="golden_stopped_wear">Kivettél egy fülhallgatót. Tedd be mindkettőt, és próbáld újra.</string>
+    <string name="golden_scan_failed">A fülszkennelés nem fejeződött be. Próbáld újra.</string>
+    <string name="golden_again">Újra</string>
 </resources>

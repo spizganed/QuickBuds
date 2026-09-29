@@ -322,4 +322,27 @@
     <string name="fit_again">फिर से चेक करें</string>
     <string name="fit_insert">अपने इयरबड लगाएं</string>
     <string name="fit_failed">परीक्षण विफल रहा। कृपया फिर से कोशिश करें।</string>
+    <string name="golden_profiles">प्रोफ़ाइल</string>
+    <string name="golden_none">अभी कोई प्रोफ़ाइल नहीं</string>
+    <string name="golden_test_row">सुनने का टेस्ट करें</string>
+    <string name="golden_test_sub">लगभग 3 मिनट, शांत जगह पर</string>
+    <string name="golden_test_title">सुनने का टेस्ट</string>
+    <string name="golden_prepare">शांत जगह ढूंढें, कोई भी ऑडियो रोकें और दोनों ईयरबड लगाएं। हर कान में 6 टोन सुनाई देंगी।</string>
+    <string name="golden_start">शुरू करें</string>
+    <string name="golden_scanning">आपके कान स्कैन हो रहे हैं</string>
+    <string name="golden_scan_hint">कुछ सेकंड स्थिर रहें।</string>
+    <string name="golden_left">बायां कान</string>
+    <string name="golden_right">दायां कान</string>
+    <string name="golden_step">टोन %1$d / 6. स्लाइडर को वहां ले जाएं जहां टोन बस गायब हो जाए।</string>
+    <string name="golden_next">आगे</string>
+    <string name="golden_finish">पूरा करें</string>
+    <string name="golden_loud">यह तेज़ है। असहज हो तो कम करें।</string>
+    <string name="golden_creating">आपकी प्रोफ़ाइल बन रही है</string>
+    <string name="golden_saved">प्रोफ़ाइल सेव हो गई</string>
+    <string name="golden_saved_msg">इस प्रोफ़ाइल के साथ Golden Sound चालू है।</string>
+    <string name="golden_stopped">टेस्ट रुक गया</string>
+    <string name="golden_stopped_music">ऑडियो चलने लगा। उसे रोकें और फिर से कोशिश करें।</string>
+    <string name="golden_stopped_wear">एक ईयरबड निकल गया। दोनों लगाएं और फिर से कोशिश करें।</string>
+    <string name="golden_scan_failed">कान का स्कैन पूरा नहीं हुआ। फिर से कोशिश करें।</string>
+    <string name="golden_again">फिर से कोशिश करें</string>
 </resources>

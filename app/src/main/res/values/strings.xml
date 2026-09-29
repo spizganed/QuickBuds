@@ -405,4 +405,27 @@
     <string name="fit_again">Check again</string>
     <string name="fit_insert">Insert your earbuds</string>
     <string name="fit_failed">Test failed. Please try again.</string>
+    <string name="golden_profiles">Profiles</string>
+    <string name="golden_none">No profiles yet</string>
+    <string name="golden_test_row">Take the hearing test</string>
+    <string name="golden_test_sub">About 3 minutes, in a quiet place</string>
+    <string name="golden_test_title">Hearing test</string>
+    <string name="golden_prepare">Find a quiet place, pause any audio and put both earbuds in. You will hear 6 tones in each ear.</string>
+    <string name="golden_start">Start</string>
+    <string name="golden_scanning">Scanning your ears</string>
+    <string name="golden_scan_hint">Keep still for a few seconds.</string>
+    <string name="golden_left">Left ear</string>
+    <string name="golden_right">Right ear</string>
+    <string name="golden_step">Tone %1$d of 6. Move the slider to where the tone only just disappears.</string>
+    <string name="golden_next">Next</string>
+    <string name="golden_finish">Finish</string>
+    <string name="golden_loud">This is loud. Lower it if it is uncomfortable.</string>
+    <string name="golden_creating">Creating your profile</string>
+    <string name="golden_saved">Profile saved</string>
+    <string name="golden_saved_msg">Golden Sound is on with this profile.</string>
+    <string name="golden_stopped">Test stopped</string>
+    <string name="golden_stopped_music">Audio started playing. Pause it and try again.</string>
+    <string name="golden_stopped_wear">An earbud came out. Put both in and try again.</string>
+    <string name="golden_scan_failed">The ear scan did not finish. Try again.</string>
+    <string name="golden_again">Try again</string>
 </resources>

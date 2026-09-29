@@ -18,6 +18,7 @@ import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.GameModeParser
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
 import com.spizganed.quickbuds.protocol.OpoProtocol
+import com.spizganed.quickbuds.protocol.GoldenSound
 import com.spizganed.quickbuds.protocol.OppoPacketFramer
 import com.spizganed.quickbuds.protocol.UserInteractionParser
 import com.spizganed.quickbuds.protocol.WearingStatusParser
@@ -74,6 +75,17 @@ class BudsConnectionManager(private val context: Context) {
          * else an error (`[VENDOR]` `FitDetectionDTO`); -1 = that bud not reported.
          */
         fun onFitResult(left: Int, right: Int) {}
+
+        /** Golden Sound test status (`0x0204` subType `0x08`): kind 2 hearing test / 4 ear scan. */
+        fun onGoldenStatus(kind: Int, status: Int) {}
+        /** Ear scan result (`0x0204` subType `0x0E`). */
+        fun onEarScan(uid: Int, data: ByteArray) {}
+        /** `0x8116`: the enhance type of a hearing result (0 low, 1 middle, 2 high). */
+        fun onGoldenFilter(uid: Int, enhanceType: Int) {}
+        /** `0x8115`: the record on the buds. */
+        fun onGoldenActive(uid: Int, name: String, values: IntArray) {}
+        /** `0x811E`: the ear-scan data on the buds. */
+        fun onGoldenActiveScan(uid: Int, data: ByteArray) {}
 
         /**
          * ANC mode changed on the BUDS themselves (0x0204 subType 0x03).
@@ -278,7 +290,8 @@ class BudsConnectionManager(private val context: Context) {
                     delay(200); sendRawBlocking(packet, label)
                 }
                 query(OpoProtocol.CMD_REGISTER_NOTIFY,
-                    OpoProtocol.registerNotifications(Capabilities.supports(context, OpoProtocol.CMD_FIT_TEST)), "register notify")
+                    OpoProtocol.registerNotifications(Capabilities.supports(context, OpoProtocol.CMD_FIT_TEST),
+                        Capabilities.supports(context, OpoProtocol.CMD_GOLDEN_DETECT)), "register notify")
                 query(OpoProtocol.CMD_QUERY_STATUS, OpoProtocol.queryStatus(), "query status")
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
                 query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
@@ -497,6 +510,24 @@ class BudsConnectionManager(private val context: Context) {
                 sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
             } catch (e: Exception) {
                 log("FEATURE WRITE failed: ${e.message}")
+            }
+        }.start()
+    }
+
+    /**
+     * Golden Sound test frames, sent in order on one thread (PROTOCOL.md §9): a tone is a stop then
+     * the tone, a record is applied in four writes. A `0x0403` among them is followed by a status read.
+     */
+    fun golden(vararg packets: ByteArray) {
+        Thread {
+            try {
+                for (p in packets) { sendRawBlocking(p, "golden"); Thread.sleep(60) }
+                if (packets.any { OppoPacketFramer.normalise(it).let { f -> f[4].toInt() == 0x03 && f[5].toInt() == 0x04 } }) {
+                    Thread.sleep(400)
+                    sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
+                }
+            } catch (e: Exception) {
+                log("GOLDEN WRITE failed: ${e.message}")
             }
         }.start()
     }
@@ -907,6 +938,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
+            cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || // Golden Sound replies
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd == OpoProtocol.CMD_REGISTER_NOTIFY
         if (explained) return
@@ -1160,6 +1192,41 @@ class BudsConnectionManager(private val context: Context) {
                     if (game != null) it.onGameModeState(game == 1)
                 }
             }
+            return
+        }
+
+        // --- Golden Sound (PROTOCOL.md §9) ---
+        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 3 && payload[0].toInt() == OpoProtocol.EVT_GOLDEN_STATUS) {
+            val kind = payload[1].toInt() and 0xFF
+            val status = payload[2].toInt() and 0xFF
+            log("GOLDEN STATUS: kind=$kind status=$status")
+            handler.post { listeners.forEach { it.onGoldenStatus(kind, status) } }
+            return
+        }
+        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.isNotEmpty() && payload[0].toInt() == OpoProtocol.EVT_EAR_SCAN) {
+            val scan = GoldenSound.parseScan(payload, 1)
+            log("EAR SCAN: uid=${scan?.first?.let { "%08X".format(it) }} len=${scan?.second?.size}")
+            if (scan != null) handler.post { listeners.forEach { it.onEarScan(scan.first, scan.second) } }
+            return
+        }
+        if (cmd == 0x8116 && payload.size >= 10 && payload[0].toInt() == 0) {
+            val uid = ((payload[1].toInt() and 0xFF) shl 24) or ((payload[2].toInt() and 0xFF) shl 16) or
+                ((payload[3].toInt() and 0xFF) shl 8) or (payload[4].toInt() and 0xFF)
+            val type = payload[9].toInt() and 0xFF
+            log("GOLDEN FILTER: uid=${"%08X".format(uid)} enhanceType=$type")
+            handler.post { listeners.forEach { it.onGoldenFilter(uid, type) } }
+            return
+        }
+        if (cmd == 0x8115) {
+            val active = GoldenSound.parseActive(payload)
+            log("GOLDEN ACTIVE: ${active?.let { "%08X \"%s\" %s".format(it.first, it.second, it.third.joinToString(",")) } ?: "none"} RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            if (active != null) handler.post { listeners.forEach { it.onGoldenActive(active.first, active.second, active.third) } }
+            return
+        }
+        if (cmd == 0x811E) {
+            val scan = if (payload.firstOrNull()?.toInt() == 0) GoldenSound.parseScan(payload, 1) else null
+            log("GOLDEN ACTIVE SCAN: uid=${scan?.first?.let { "%08X".format(it) }} len=${scan?.second?.size}")
+            if (scan != null) handler.post { listeners.forEach { it.onGoldenActiveScan(scan.first, scan.second) } }
             return
         }
 

@@ -322,4 +322,27 @@
     <string name="fit_again">重新檢測</string>
     <string name="fit_insert">請將耳機放入雙耳</string>
     <string name="fit_failed">偵測失敗，請重試。</string>
+    <string name="golden_profiles">設定檔</string>
+    <string name="golden_none">尚無設定檔</string>
+    <string name="golden_test_row">進行聽力測試</string>
+    <string name="golden_test_sub">約 3 分鐘，請在安靜的地方</string>
+    <string name="golden_test_title">聽力測試</string>
+    <string name="golden_prepare">請到安靜的地方，暫停所有音訊並戴好兩隻耳機。每隻耳朵會聽到 6 個音。</string>
+    <string name="golden_start">開始</string>
+    <string name="golden_scanning">正在掃描耳道</string>
+    <string name="golden_scan_hint">請保持不動幾秒鐘。</string>
+    <string name="golden_left">左耳</string>
+    <string name="golden_right">右耳</string>
+    <string name="golden_step">第 %1$d/6 個音。將滑桿移到聲音剛好消失的位置。</string>
+    <string name="golden_next">下一步</string>
+    <string name="golden_finish">完成</string>
+    <string name="golden_loud">聲音較大，如感不適請調低。</string>
+    <string name="golden_creating">正在建立設定檔</string>
+    <string name="golden_saved">設定檔已儲存</string>
+    <string name="golden_saved_msg">已使用此設定檔開啟 Golden Sound。</string>
+    <string name="golden_stopped">測試已停止</string>
+    <string name="golden_stopped_music">有音訊開始播放。請暫停後重試。</string>
+    <string name="golden_stopped_wear">有耳機被取下。請戴好兩隻耳機後重試。</string>
+    <string name="golden_scan_failed">耳道掃描未完成。請重試。</string>
+    <string name="golden_again">重試</string>
 </resources>
