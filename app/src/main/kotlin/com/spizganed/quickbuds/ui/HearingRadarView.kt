@@ -25,9 +25,14 @@ class HearingRadarView(context: Context) : View(context) {
     private val secondary = ThemeRes.color(context, R.attr.appColorTextSecondary)
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = if (nothing) DotArt.pitchPx(context) else dp(1f)
+        strokeWidth = if (nothing) 0f else dp(1f)
         color = ThemeRes.color(context, R.attr.appColorOutline)
     }
+    /**
+     * Dots draw without antialiasing, so a diagonal stroke thinner than a cell skips cells. A hairline (0)
+     * is one connected cell wide on the dot grid.
+     */
+    private val stroke = if (nothing) 0f else dp(2f)
     private val shapePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeJoin = Paint.Join.ROUND }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dp(11f)
@@ -80,7 +85,7 @@ class HearingRadarView(context: Context) : View(context) {
         canvas.drawPath(boost, shapePaint)
         canvas.drawLine(legendX, legendY, legendX + swatchW, legendY, shapePaint)
         shapePaint.style = Paint.Style.STROKE
-        shapePaint.strokeWidth = dp(2f)
+        shapePaint.strokeWidth = stroke
         shapePaint.color = secondary
         canvas.drawPath(boost, shapePaint)
         canvas.drawLine(legendX, legendY, legendX + swatchW, legendY, shapePaint)
@@ -94,7 +99,7 @@ class HearingRadarView(context: Context) : View(context) {
         shapePaint.color = accent and 0x00FFFFFF or 0x40000000
         canvas.drawPath(path, shapePaint)
         shapePaint.style = Paint.Style.STROKE
-        shapePaint.strokeWidth = dp(2f)
+        shapePaint.strokeWidth = stroke
         shapePaint.color = accent
         canvas.drawPath(path, shapePaint)
     }
