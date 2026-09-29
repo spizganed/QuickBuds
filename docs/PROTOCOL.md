@@ -931,7 +931,8 @@ So the key-function table only *describes* the hold; the cycle itself lives in t
 (`OppoProtocol.LongPressNoisePayload`), read back with `0x010C` payloads
 `02 01` / `02 03` / `02 04`. Wired since 2026-09-22 as its own write, never folded into the key-function
 save, so a failure stays attributable. `[VENDOR]` `NoiseReductionInfo.getData()` sends the mask in as
-few bytes as it needs (1-4, LE): `02 01 07` for `0x0007`, `02 01 07 08` for `0x0807`; the app does the same.
+few bytes as it needs (1-4, LE): `02 01 07` for `0x0007`, `02 01 07 08` for `0x0807`; the app does the same
+(`[CAPTURE]` 2026-09-29 on Buds 4: `02 01 03` acked and read back as `0x0003`).
 The read reply's 2-byte header is our own finding — see just below.
 
 `[USER]` 2026-09-22 asked whether the hold could be given a Low/Medium/High choice, since
