@@ -62,7 +62,7 @@ object DotArt {
 
     /**
      * An icon as dots ([ThemeRes.tint] in the Nothing style): [inner] rendered once per size and tint at
-     * [ICON_PITCH_DP], then reused, so a list of rows costs one render per icon.
+     * [ICON_PITCH_DP] (scaled up past 24dp tall), then reused, so a list of rows costs one render per icon.
      */
     class Icon(private val context: Context, private val inner: Drawable, private val pitchDp: Float = ICON_PITCH_DP) : Drawable() {
         private var cache: Bitmap? = null
@@ -72,7 +72,9 @@ object DotArt {
             if (b.width() <= 0 || b.height() <= 0) return
             val bmp = cache?.takeIf { it.width == b.width() && it.height == b.height() }
                 ?: Bitmap.createBitmap(b.width(), b.height(), Bitmap.Config.ARGB_8888).also { out ->
-                    DotArt.draw(context, Canvas(out), b.width(), b.height(), pitchDp, solid = true) { c ->
+                    // Same dot count at any size: past 24dp the dots grow (a 68dp bud at 1.2dp read as a fine grid).
+                    val scale = (b.height() / context.resources.displayMetrics.density / 24f).coerceAtLeast(1f)
+                    DotArt.draw(context, Canvas(out), b.width(), b.height(), pitchDp * scale, solid = true) { c ->
                         inner.setBounds(0, 0, b.width(), b.height()); inner.draw(c)
                     }
                     cache = out
