@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">De oorscan is niet voltooid. Probeer het opnieuw.</string>
     <string name="golden_again">Opnieuw proberen</string>
     <string name="golden_boost">Versterking</string>
+    <string name="pnc_title">Persoonlijke ruisonderdrukking</string>
+    <string name="pnc_sub">Afgestemd op je gehoorgangen en pasvorm</string>
+    <string name="pnc_wear">Doe eerst beide oordopjes in</string>
+    <string name="pnc_stored_title">Vorig resultaat gebruiken?</string>
+    <string name="pnc_stored_body">Deze oordopjes hebben het resultaat van een eerdere gehoorgangtest bewaard. Je kunt het nu gebruiken of opnieuw testen.</string>
+    <string name="pnc_use">Gebruiken</string>
+    <string name="pnc_test_again">Opnieuw testen</string>
+    <string name="pnc_test_title">Gehoorgangtest</string>
+    <string name="pnc_test_body">Pauzeer audio, ga ergens met wat achtergrondgeluid zitten en blijf stil tijdens de test.</string>
+    <string name="pnc_start">Test starten</string>
+    <string name="pnc_testing">Testen… De ruisonderdrukking kan even anders klinken.</string>
+    <string name="pnc_done">Persoonlijke ruisonderdrukking staat aan</string>
+    <string name="pnc_failed">Test mislukt</string>
+    <string name="pnc_retry">Opnieuw</string>
+    <string name="pnc_fail_quiet">Het is hier te stil. Probeer het ergens met wat achtergrondgeluid.</string>
+    <string name="pnc_fail_fit">Zet de oordopjes beter of wissel van oordopmaat en probeer het opnieuw.</string>
+    <string name="pnc_fail_wind">Vermijd harde wind tijdens de test.</string>
+    <string name="pnc_fail_still">Blijf stil: niet praten, slikken of je hoofd bewegen tijdens de test.</string>
+    <string name="pnc_fail_audio">Speel geen audio af en bel niet tijdens de test.</string>
 </resources>

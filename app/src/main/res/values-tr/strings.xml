@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Kulak taraması tamamlanmadı. Tekrar deneyin.</string>
     <string name="golden_again">Tekrar dene</string>
     <string name="golden_boost">Güçlendirme</string>
+    <string name="pnc_title">Kişiselleştirilmiş gürültü engelleme</string>
+    <string name="pnc_sub">Kulak kanallarınıza ve oturmaya göre ayarlanır</string>
+    <string name="pnc_wear">Önce iki kulaklığı da takın</string>
+    <string name="pnc_stored_title">Önceki sonuç kullanılsın mı?</string>
+    <string name="pnc_stored_body">Bu kulaklıklar önceki kulak kanalı testinin sonucunu sakladı. Şimdi kullanabilir veya yeniden test edebilirsiniz.</string>
+    <string name="pnc_use">Kullan</string>
+    <string name="pnc_test_again">Yeniden test et</string>
+    <string name="pnc_test_title">Kulak kanalı testi</string>
+    <string name="pnc_test_body">Sesi duraklatın, biraz arka plan gürültüsü olan bir yerde olun ve test sırasında kıpırdamayın.</string>
+    <string name="pnc_start">Testi başlat</string>
+    <string name="pnc_testing">Test ediliyor… Gürültü engelleme bir an farklı duyulabilir.</string>
+    <string name="pnc_done">Kişiselleştirilmiş gürültü engelleme açık</string>
+    <string name="pnc_failed">Test başarısız</string>
+    <string name="pnc_retry">Tekrar dene</string>
+    <string name="pnc_fail_quiet">Burası çok sessiz. Biraz arka plan gürültüsü olan bir yerde deneyin.</string>
+    <string name="pnc_fail_fit">Kulaklıkları düzeltin veya kulak ucu boyutunu değiştirip tekrar deneyin.</string>
+    <string name="pnc_fail_wind">Test sırasında sert rüzgârdan kaçının.</string>
+    <string name="pnc_fail_still">Kıpırdamayın: test sırasında konuşmayın, yutkunmayın, başınızı oynatmayın.</string>
+    <string name="pnc_fail_audio">Test sırasında ses çalmayın ve arama yapmayın.</string>
 </resources>

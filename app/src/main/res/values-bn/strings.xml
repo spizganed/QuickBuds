@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">কানের স্ক্যান শেষ হয়নি। আবার চেষ্টা করুন।</string>
     <string name="golden_again">আবার চেষ্টা করুন</string>
     <string name="golden_boost">বুস্ট</string>
+    <string name="pnc_title">ব্যক্তিগত নয়েজ ক্যান্সেলেশন</string>
+    <string name="pnc_sub">আপনার কানের গঠন ও ফিট অনুযায়ী</string>
+    <string name="pnc_wear">আগে দুটি ইয়ারবাডই পরুন</string>
+    <string name="pnc_stored_title">আগের ফলাফল ব্যবহার করবেন?</string>
+    <string name="pnc_stored_body">এই ইয়ারবাডে আগের কানের পরীক্ষার ফলাফল রাখা আছে। এখন সেটি ব্যবহার করতে পারেন বা আবার পরীক্ষা করতে পারেন।</string>
+    <string name="pnc_use">ব্যবহার করুন</string>
+    <string name="pnc_test_again">আবার পরীক্ষা</string>
+    <string name="pnc_test_title">কানের পরীক্ষা</string>
+    <string name="pnc_test_body">অডিও বন্ধ রাখুন, সামান্য আওয়াজ আছে এমন জায়গায় থাকুন এবং পরীক্ষার সময় স্থির থাকুন।</string>
+    <string name="pnc_start">পরীক্ষা শুরু</string>
+    <string name="pnc_testing">পরীক্ষা চলছে… নয়েজ ক্যান্সেলেশন কিছুক্ষণ অন্যরকম শোনাতে পারে।</string>
+    <string name="pnc_done">ব্যক্তিগত নয়েজ ক্যান্সেলেশন চালু</string>
+    <string name="pnc_failed">পরীক্ষা ব্যর্থ</string>
+    <string name="pnc_retry">আবার চেষ্টা করুন</string>
+    <string name="pnc_fail_quiet">এখানে খুব শান্ত। সামান্য আওয়াজ আছে এমন জায়গায় চেষ্টা করুন।</string>
+    <string name="pnc_fail_fit">ইয়ারবাড ঠিক করে বসান বা ইয়ার টিপের মাপ বদলান, তারপর আবার চেষ্টা করুন।</string>
+    <string name="pnc_fail_wind">পরীক্ষার সময় জোরালো বাতাস এড়িয়ে চলুন।</string>
+    <string name="pnc_fail_still">স্থির থাকুন: পরীক্ষার সময় কথা বলা, ঢোক গেলা বা মাথা নাড়া নয়।</string>
+    <string name="pnc_fail_audio">পরীক্ষার সময় অডিও চালাবেন না বা কল ধরবেন না।</string>
 </resources>

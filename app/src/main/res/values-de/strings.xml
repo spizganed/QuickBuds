@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Der Ohrscan wurde nicht abgeschlossen. Versuche es erneut.</string>
     <string name="golden_again">Erneut versuchen</string>
     <string name="golden_boost">Verstärkung</string>
+    <string name="pnc_title">Personalisierte Geräuschunterdrückung</string>
+    <string name="pnc_sub">Auf deine Gehörgänge und den Sitz abgestimmt</string>
+    <string name="pnc_wear">Setze zuerst beide Ohrhörer ein</string>
+    <string name="pnc_stored_title">Vorheriges Ergebnis verwenden?</string>
+    <string name="pnc_stored_body">Diese Ohrhörer haben das Ergebnis eines früheren Gehörgangtests gespeichert. Du kannst es jetzt verwenden oder neu testen.</string>
+    <string name="pnc_use">Verwenden</string>
+    <string name="pnc_test_again">Neu testen</string>
+    <string name="pnc_test_title">Gehörgangtest</string>
+    <string name="pnc_test_body">Pausiere Audio, bleib an einem Ort mit etwas Hintergrundgeräusch und halte während des Tests still.</string>
+    <string name="pnc_start">Test starten</string>
+    <string name="pnc_testing">Test läuft… Die Geräuschunterdrückung kann kurz anders klingen.</string>
+    <string name="pnc_done">Personalisierte Geräuschunterdrückung ist an</string>
+    <string name="pnc_failed">Test fehlgeschlagen</string>
+    <string name="pnc_retry">Erneut versuchen</string>
+    <string name="pnc_fail_quiet">Hier ist es zu leise. Versuche es an einem Ort mit etwas Hintergrundgeräusch.</string>
+    <string name="pnc_fail_fit">Setze die Ohrhörer neu ein oder wechsle die Ohrstöpselgröße und versuche es erneut.</string>
+    <string name="pnc_fail_wind">Vermeide starken Wind während des Tests.</string>
+    <string name="pnc_fail_still">Halte still: kein Sprechen, Schlucken oder Kopfbewegen während des Tests.</string>
+    <string name="pnc_fail_audio">Spiele während des Tests kein Audio ab und telefoniere nicht.</string>
 </resources>

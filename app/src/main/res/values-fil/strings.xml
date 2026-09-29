@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Hindi natapos ang ear scan. Subukang muli.</string>
     <string name="golden_again">Subukang muli</string>
     <string name="golden_boost">Pagpapalakas</string>
+    <string name="pnc_title">Personalized noise cancellation</string>
+    <string name="pnc_sub">Iniangkop sa iyong tainga at sa pagkakasuot</string>
+    <string name="pnc_wear">Isuot muna ang parehong earbud</string>
+    <string name="pnc_stored_title">Gamitin ang dating resulta?</string>
+    <string name="pnc_stored_body">May naka-save na resulta ng naunang ear canal test ang mga earbud na ito. Magagamit mo ito ngayon o mag-test ulit.</string>
+    <string name="pnc_use">Gamitin</string>
+    <string name="pnc_test_again">Mag-test ulit</string>
+    <string name="pnc_test_title">Ear canal test</string>
+    <string name="pnc_test_body">I-pause ang audio, pumunta sa lugar na may kaunting ingay at huwag gumalaw habang nagte-test.</string>
+    <string name="pnc_start">Simulan ang test</string>
+    <string name="pnc_testing">Nagte-test… Maaaring iba ang tunog ng noise cancellation sandali.</string>
+    <string name="pnc_done">Naka-on ang personalized noise cancellation</string>
+    <string name="pnc_failed">Pumalya ang test</string>
+    <string name="pnc_retry">Subukan ulit</string>
+    <string name="pnc_fail_quiet">Masyadong tahimik dito. Subukan sa lugar na may kaunting ingay.</string>
+    <string name="pnc_fail_fit">Ayusin ang earbud o palitan ang laki ng ear tip, saka subukan ulit.</string>
+    <string name="pnc_fail_wind">Iwasan ang malakas na hangin habang nagte-test.</string>
+    <string name="pnc_fail_still">Huwag gumalaw: bawal magsalita, lumunok o igalaw ang ulo habang nagte-test.</string>
+    <string name="pnc_fail_audio">Huwag mag-play ng audio o tumawag habang nagte-test.</string>
 </resources>

@@ -90,6 +90,8 @@ back.
   shows them; new presets get the model's bands (10 on 8 models) and its preset cap (PROTOCOL.md §9).
   Checked on device with models picked by hand; Buds 4 unchanged. The firmware row explains that updates
   belong in HeyMelody.
+- Personalized noise cancellation (2026-09-29), Earbud settings › Features: the ear canal test, the stored
+  result offered first, the failure reasons (PROTOCOL.md §9). Unverified on buds (Buds 4 lacks it).
 - A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
 
 ## Appearance

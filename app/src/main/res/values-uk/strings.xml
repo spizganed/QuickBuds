@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Сканування вух не завершилося. Спробуйте ще раз.</string>
     <string name="golden_again">Спробувати ще</string>
     <string name="golden_boost">Підсилення</string>
+    <string name="pnc_title">Персональне шумозаглушення</string>
+    <string name="pnc_sub">Налаштоване під ваші слухові канали й посадку</string>
+    <string name="pnc_wear">Спершу вдягніть обидва навушники</string>
+    <string name="pnc_stored_title">Використати попередній результат?</string>
+    <string name="pnc_stored_body">Навушники зберегли результат попереднього тесту слухового каналу. Можна використати його або пройти тест знову.</string>
+    <string name="pnc_use">Використати</string>
+    <string name="pnc_test_again">Пройти знову</string>
+    <string name="pnc_test_title">Тест слухового каналу</string>
+    <string name="pnc_test_body">Зупиніть звук, будьте там, де є трохи фонового шуму, і не рухайтеся під час тесту.</string>
+    <string name="pnc_start">Почати тест</string>
+    <string name="pnc_testing">Триває тест… Шумозаглушення може на мить звучати інакше.</string>
+    <string name="pnc_done">Персональне шумозаглушення увімкнено</string>
+    <string name="pnc_failed">Тест не вдався</string>
+    <string name="pnc_retry">Повторити</string>
+    <string name="pnc_fail_quiet">Тут надто тихо. Спробуйте там, де є трохи фонового шуму.</string>
+    <string name="pnc_fail_fit">Поправте навушники або змініть розмір амбушур і повторіть.</string>
+    <string name="pnc_fail_wind">Уникайте сильного вітру під час тесту.</string>
+    <string name="pnc_fail_still">Не рухайтеся: не говоріть, не ковтайте й не повертайте голову під час тесту.</string>
+    <string name="pnc_fail_audio">Не відтворюйте звук і не розмовляйте телефоном під час тесту.</string>
 </resources>

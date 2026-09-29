@@ -386,4 +386,23 @@
     <string name="golden_scan_failed">Quét tai chưa hoàn tất. Hãy thử lại.</string>
     <string name="golden_again">Thử lại</string>
     <string name="golden_boost">Mức tăng cường</string>
+    <string name="pnc_title">Chống ồn cá nhân hóa</string>
+    <string name="pnc_sub">Điều chỉnh theo ống tai và độ vừa của bạn</string>
+    <string name="pnc_wear">Hãy đeo cả hai tai nghe trước</string>
+    <string name="pnc_stored_title">Dùng kết quả trước đó?</string>
+    <string name="pnc_stored_body">Tai nghe này đã lưu kết quả kiểm tra ống tai trước đó. Bạn có thể dùng ngay hoặc kiểm tra lại.</string>
+    <string name="pnc_use">Dùng</string>
+    <string name="pnc_test_again">Kiểm tra lại</string>
+    <string name="pnc_test_title">Kiểm tra ống tai</string>
+    <string name="pnc_test_body">Tạm dừng âm thanh, ở nơi có chút tiếng ồn nền và giữ yên trong khi kiểm tra.</string>
+    <string name="pnc_start">Bắt đầu kiểm tra</string>
+    <string name="pnc_testing">Đang kiểm tra… Chống ồn có thể nghe khác đi trong giây lát.</string>
+    <string name="pnc_done">Đã bật chống ồn cá nhân hóa</string>
+    <string name="pnc_failed">Kiểm tra thất bại</string>
+    <string name="pnc_retry">Thử lại</string>
+    <string name="pnc_fail_quiet">Nơi này quá yên tĩnh. Hãy thử ở nơi có chút tiếng ồn nền.</string>
+    <string name="pnc_fail_fit">Chỉnh lại tai nghe hoặc đổi cỡ nút tai rồi thử lại.</string>
+    <string name="pnc_fail_wind">Tránh gió mạnh trong khi kiểm tra.</string>
+    <string name="pnc_fail_still">Giữ yên: không nói, nuốt hay cử động đầu trong khi kiểm tra.</string>
+    <string name="pnc_fail_audio">Không phát âm thanh hay gọi điện trong khi kiểm tra.</string>
 </resources>

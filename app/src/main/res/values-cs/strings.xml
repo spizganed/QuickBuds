@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Sken uší nebyl dokončen. Zkuste to znovu.</string>
     <string name="golden_again">Zkusit znovu</string>
     <string name="golden_boost">Zesílení</string>
+    <string name="pnc_title">Personalizované potlačení hluku</string>
+    <string name="pnc_sub">Přizpůsobené vašim zvukovodům a nasazení</string>
+    <string name="pnc_wear">Nejdřív si nasaďte obě sluchátka</string>
+    <string name="pnc_stored_title">Použít předchozí výsledek?</string>
+    <string name="pnc_stored_body">Sluchátka mají uložený výsledek dřívějšího testu zvukovodu. Můžete ho použít, nebo test zopakovat.</string>
+    <string name="pnc_use">Použít</string>
+    <string name="pnc_test_again">Znovu otestovat</string>
+    <string name="pnc_test_title">Test zvukovodu</string>
+    <string name="pnc_test_body">Pozastavte zvuk, buďte v mírně hlučném prostředí a během testu se nehýbejte.</string>
+    <string name="pnc_start">Spustit test</string>
+    <string name="pnc_testing">Probíhá test… Potlačení hluku může chvíli znít jinak.</string>
+    <string name="pnc_done">Personalizované potlačení hluku je zapnuté</string>
+    <string name="pnc_failed">Test se nezdařil</string>
+    <string name="pnc_retry">Zkusit znovu</string>
+    <string name="pnc_fail_quiet">Je tu příliš ticho. Zkuste to v prostředí s trochou hluku.</string>
+    <string name="pnc_fail_fit">Upravte nasazení sluchátek nebo změňte velikost špuntů a zkuste to znovu.</string>
+    <string name="pnc_fail_wind">Během testu se vyhněte silnému větru.</string>
+    <string name="pnc_fail_still">Nehýbejte se: během testu nemluvte, nepolykejte a nehýbejte hlavou.</string>
+    <string name="pnc_fail_audio">Během testu nepřehrávejte zvuk ani netelefonujte.</string>
 </resources>

@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Imbasan telinga tidak selesai. Cuba lagi.</string>
     <string name="golden_again">Cuba lagi</string>
     <string name="golden_boost">Peningkatan</string>
+    <string name="pnc_title">Pembatalan bunyi bising diperibadikan</string>
+    <string name="pnc_sub">Disesuaikan dengan saluran telinga dan kesesuaian</string>
+    <string name="pnc_wear">Pakai kedua-dua fon telinga dahulu</string>
+    <string name="pnc_stored_title">Guna keputusan sebelumnya?</string>
+    <string name="pnc_stored_body">Fon telinga ini menyimpan keputusan ujian saluran telinga yang lalu. Anda boleh menggunakannya sekarang atau uji semula.</string>
+    <string name="pnc_use">Guna</string>
+    <string name="pnc_test_again">Uji semula</string>
+    <string name="pnc_test_title">Ujian saluran telinga</string>
+    <string name="pnc_test_body">Jeda audio, berada di tempat yang sedikit bising dan jangan bergerak semasa ujian.</string>
+    <string name="pnc_start">Mula ujian</string>
+    <string name="pnc_testing">Menguji… Pembatalan bunyi bising mungkin kedengaran berbeza seketika.</string>
+    <string name="pnc_done">Pembatalan bunyi bising diperibadikan dihidupkan</string>
+    <string name="pnc_failed">Ujian gagal</string>
+    <string name="pnc_retry">Cuba lagi</string>
+    <string name="pnc_fail_quiet">Terlalu senyap di sini. Cuba di tempat yang sedikit bising.</string>
+    <string name="pnc_fail_fit">Laraskan fon telinga atau tukar saiz hujung telinga, kemudian cuba lagi.</string>
+    <string name="pnc_fail_wind">Elakkan angin kuat semasa ujian.</string>
+    <string name="pnc_fail_still">Jangan bergerak: jangan bercakap, menelan atau menggerakkan kepala semasa ujian.</string>
+    <string name="pnc_fail_audio">Jangan mainkan audio atau membuat panggilan semasa ujian.</string>
 </resources>

@@ -386,4 +386,23 @@
     <string name="golden_scan_failed">การสแกนหูไม่เสร็จ ลองอีกครั้ง</string>
     <string name="golden_again">ลองอีกครั้ง</string>
     <string name="golden_boost">การเพิ่มเสียง</string>
+    <string name="pnc_title">การตัดเสียงรบกวนเฉพาะบุคคล</string>
+    <string name="pnc_sub">ปรับตามช่องหูและการสวมใส่ของคุณ</string>
+    <string name="pnc_wear">สวมหูฟังทั้งสองข้างก่อน</string>
+    <string name="pnc_stored_title">ใช้ผลลัพธ์ก่อนหน้าไหม</string>
+    <string name="pnc_stored_body">หูฟังนี้เก็บผลการทดสอบช่องหูครั้งก่อนไว้ คุณใช้ได้เลยหรือทดสอบใหม่</string>
+    <string name="pnc_use">ใช้</string>
+    <string name="pnc_test_again">ทดสอบใหม่</string>
+    <string name="pnc_test_title">ทดสอบช่องหู</string>
+    <string name="pnc_test_body">หยุดเสียง อยู่ในที่ที่มีเสียงรบกวนเล็กน้อย และอยู่นิ่งๆ ระหว่างทดสอบ</string>
+    <string name="pnc_start">เริ่มทดสอบ</string>
+    <string name="pnc_testing">กำลังทดสอบ… การตัดเสียงรบกวนอาจฟังดูต่างไปชั่วครู่</string>
+    <string name="pnc_done">เปิดการตัดเสียงรบกวนเฉพาะบุคคลแล้ว</string>
+    <string name="pnc_failed">การทดสอบล้มเหลว</string>
+    <string name="pnc_retry">ลองอีกครั้ง</string>
+    <string name="pnc_fail_quiet">ที่นี่เงียบเกินไป ลองในที่ที่มีเสียงรบกวนเล็กน้อย</string>
+    <string name="pnc_fail_fit">ปรับหูฟังหรือเปลี่ยนขนาดจุกหูฟัง แล้วลองอีกครั้ง</string>
+    <string name="pnc_fail_wind">หลีกเลี่ยงลมแรงระหว่างทดสอบ</string>
+    <string name="pnc_fail_still">อยู่นิ่งๆ: ไม่พูด ไม่กลืน และไม่ขยับศีรษะระหว่างทดสอบ</string>
+    <string name="pnc_fail_audio">ไม่เล่นเสียงหรือโทรระหว่างทดสอบ</string>
 </resources>

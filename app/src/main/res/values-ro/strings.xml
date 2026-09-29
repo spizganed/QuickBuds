@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Scanarea urechilor nu s-a încheiat. Încearcă din nou.</string>
     <string name="golden_again">Încearcă din nou</string>
     <string name="golden_boost">Amplificare</string>
+    <string name="pnc_title">Anularea personalizată a zgomotului</string>
+    <string name="pnc_sub">Adaptată canalelor auditive și potrivirii</string>
+    <string name="pnc_wear">Pune mai întâi ambele căști</string>
+    <string name="pnc_stored_title">Folosești rezultatul anterior?</string>
+    <string name="pnc_stored_body">Căștile au păstrat rezultatul unui test anterior al canalului auditiv. Îl poți folosi acum sau poți testa din nou.</string>
+    <string name="pnc_use">Folosește</string>
+    <string name="pnc_test_again">Testează din nou</string>
+    <string name="pnc_test_title">Testul canalului auditiv</string>
+    <string name="pnc_test_body">Oprește sunetul, stai într-un loc cu puțin zgomot de fond și nu te mișca în timpul testului.</string>
+    <string name="pnc_start">Pornește testul</string>
+    <string name="pnc_testing">Se testează… Anularea zgomotului poate suna altfel pentru o clipă.</string>
+    <string name="pnc_done">Anularea personalizată a zgomotului este activă</string>
+    <string name="pnc_failed">Testul a eșuat</string>
+    <string name="pnc_retry">Reîncearcă</string>
+    <string name="pnc_fail_quiet">E prea liniște aici. Încearcă într-un loc cu puțin zgomot de fond.</string>
+    <string name="pnc_fail_fit">Ajustează căștile sau schimbă mărimea vârfurilor, apoi încearcă din nou.</string>
+    <string name="pnc_fail_wind">Evită vântul puternic în timpul testului.</string>
+    <string name="pnc_fail_still">Nu te mișca: nu vorbi, nu înghiți și nu mișca capul în timpul testului.</string>
+    <string name="pnc_fail_audio">Nu reda sunet și nu vorbi la telefon în timpul testului.</string>
 </resources>

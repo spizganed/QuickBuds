@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">El escaneo de oídos no terminó. Inténtalo de nuevo.</string>
     <string name="golden_again">Reintentar</string>
     <string name="golden_boost">Realce</string>
+    <string name="pnc_title">Cancelación de ruido personalizada</string>
+    <string name="pnc_sub">Ajustada a tus conductos auditivos y al ajuste</string>
+    <string name="pnc_wear">Ponte primero los dos auriculares</string>
+    <string name="pnc_stored_title">¿Usar el resultado anterior?</string>
+    <string name="pnc_stored_body">Estos auriculares guardan el resultado de una prueba anterior del conducto auditivo. Puedes usarlo ahora o repetir la prueba.</string>
+    <string name="pnc_use">Usar</string>
+    <string name="pnc_test_again">Repetir prueba</string>
+    <string name="pnc_test_title">Prueba del conducto auditivo</string>
+    <string name="pnc_test_body">Pausa el audio, quédate en un lugar con algo de ruido de fondo y no te muevas durante la prueba.</string>
+    <string name="pnc_start">Iniciar prueba</string>
+    <string name="pnc_testing">Probando… La cancelación de ruido puede sonar distinta un momento.</string>
+    <string name="pnc_done">Cancelación de ruido personalizada activada</string>
+    <string name="pnc_failed">La prueba ha fallado</string>
+    <string name="pnc_retry">Reintentar</string>
+    <string name="pnc_fail_quiet">Hay demasiado silencio. Prueba en un lugar con algo de ruido de fondo.</string>
+    <string name="pnc_fail_fit">Ajusta los auriculares o cambia el tamaño de las almohadillas y vuelve a intentarlo.</string>
+    <string name="pnc_fail_wind">Evita el viento fuerte durante la prueba.</string>
+    <string name="pnc_fail_still">No te muevas: no hables, tragues ni muevas la cabeza durante la prueba.</string>
+    <string name="pnc_fail_audio">No reproduzcas audio ni hagas llamadas durante la prueba.</string>
 </resources>

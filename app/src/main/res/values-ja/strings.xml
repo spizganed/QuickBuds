@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">耳のスキャンが完了しませんでした。もう一度お試しください。</string>
     <string name="golden_again">再試行</string>
     <string name="golden_boost">ブースト</string>
+    <string name="pnc_title">パーソナライズドノイズキャンセリング</string>
+    <string name="pnc_sub">耳の形とフィットに合わせて調整</string>
+    <string name="pnc_wear">両方のイヤホンを装着してください</string>
+    <string name="pnc_stored_title">前回の結果を使いますか？</string>
+    <string name="pnc_stored_body">このイヤホンには以前の耳道テストの結果が保存されています。今すぐ使うか、もう一度テストできます。</string>
+    <string name="pnc_use">使う</string>
+    <string name="pnc_test_again">再テスト</string>
+    <string name="pnc_test_title">耳道テスト</string>
+    <string name="pnc_test_body">音声を止め、少し雑音のある場所で、テスト中は動かないでください。</string>
+    <string name="pnc_start">テスト開始</string>
+    <string name="pnc_testing">テスト中… ノイズキャンセリングの聞こえ方が一時的に変わることがあります。</string>
+    <string name="pnc_done">パーソナライズドノイズキャンセリングがオンになりました</string>
+    <string name="pnc_failed">テストに失敗しました</string>
+    <string name="pnc_retry">再試行</string>
+    <string name="pnc_fail_quiet">静かすぎます。少し雑音のある場所で試してください。</string>
+    <string name="pnc_fail_fit">イヤホンを付け直すか、イヤーチップのサイズを変えてもう一度試してください。</string>
+    <string name="pnc_fail_wind">テスト中は強い風を避けてください。</string>
+    <string name="pnc_fail_still">動かないでください：テスト中は話す、飲み込む、頭を動かすのを避けてください。</string>
+    <string name="pnc_fail_audio">テスト中は音声の再生や通話をしないでください。</string>
 </resources>

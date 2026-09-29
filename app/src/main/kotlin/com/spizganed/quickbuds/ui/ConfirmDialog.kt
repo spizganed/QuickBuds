@@ -20,7 +20,7 @@ object ConfirmDialog {
 
     fun show(
         activity: Activity, title: String, body: String?, action: String,
-        cancelRes: Int? = R.string.dialog_cancel, onConfirm: () -> Unit = {}
+        cancelRes: Int? = R.string.dialog_cancel, onCancel: () -> Unit = {}, onConfirm: () -> Unit = {}
     ) {
         val p = ThemeRes.palette(activity)
         val dp = { v: Float -> ThemeRes.dp(activity, v) }
@@ -63,7 +63,7 @@ object ConfirmDialog {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.END
                 setPadding(0, dp(24f), 0, 0)
-                cancelRes?.let { addView(pill(activity.getString(it), false) { d.dismiss() }) }
+                cancelRes?.let { addView(pill(activity.getString(it), false) { d.dismiss(); onCancel() }) }
                 addView(pill(action, true) { d.dismiss(); onConfirm() })
             })
         }

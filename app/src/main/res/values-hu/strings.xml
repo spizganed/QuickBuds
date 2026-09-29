@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">A fülszkennelés nem fejeződött be. Próbáld újra.</string>
     <string name="golden_again">Újra</string>
     <string name="golden_boost">Kiemelés</string>
+    <string name="pnc_title">Személyre szabott zajszűrés</string>
+    <string name="pnc_sub">A hallójáratodhoz és az illeszkedéshez igazítva</string>
+    <string name="pnc_wear">Előbb tedd be mindkét fülhallgatót</string>
+    <string name="pnc_stored_title">Használod az előző eredményt?</string>
+    <string name="pnc_stored_body">A fülhallgató megőrizte egy korábbi hallójárat-teszt eredményét. Most használhatod, vagy újra tesztelhetsz.</string>
+    <string name="pnc_use">Használat</string>
+    <string name="pnc_test_again">Újratesztelés</string>
+    <string name="pnc_test_title">Hallójárat-teszt</string>
+    <string name="pnc_test_body">Állítsd le a hangot, legyél enyhe háttérzajban, és a teszt alatt maradj mozdulatlan.</string>
+    <string name="pnc_start">Teszt indítása</string>
+    <string name="pnc_testing">Tesztelés… A zajszűrés egy pillanatig másképp szólhat.</string>
+    <string name="pnc_done">A személyre szabott zajszűrés be van kapcsolva</string>
+    <string name="pnc_failed">A teszt sikertelen</string>
+    <string name="pnc_retry">Újra</string>
+    <string name="pnc_fail_quiet">Túl csendes a környezet. Próbáld enyhe háttérzajban.</string>
+    <string name="pnc_fail_fit">Igazítsd meg a fülhallgatót vagy cserélj fülilleszték-méretet, majd próbáld újra.</string>
+    <string name="pnc_fail_wind">A teszt alatt kerüld az erős szelet.</string>
+    <string name="pnc_fail_still">Maradj mozdulatlan: ne beszélj, ne nyelj és ne mozgasd a fejed a teszt alatt.</string>
+    <string name="pnc_fail_audio">A teszt alatt ne játssz le hangot és ne telefonálj.</string>
 </resources>

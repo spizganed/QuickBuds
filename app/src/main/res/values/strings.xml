@@ -470,4 +470,23 @@
     <string name="golden_scan_failed">The ear scan did not finish. Try again.</string>
     <string name="golden_again">Try again</string>
     <string name="golden_boost">Boost</string>
+    <string name="pnc_title">Personalized noise cancellation</string>
+    <string name="pnc_sub">Tuned to your ear canals and fit</string>
+    <string name="pnc_wear">Wear both earbuds first</string>
+    <string name="pnc_stored_title">Use your previous result?</string>
+    <string name="pnc_stored_body">These earbuds kept the result of an earlier ear canal test. You can use it now or test again.</string>
+    <string name="pnc_use">Use</string>
+    <string name="pnc_test_again">Test again</string>
+    <string name="pnc_test_title">Ear canal test</string>
+    <string name="pnc_test_body">Pause any audio, stay somewhere with a little background noise and keep still during the test.</string>
+    <string name="pnc_start">Start test</string>
+    <string name="pnc_testing">Testing… The noise cancellation may sound different for a moment.</string>
+    <string name="pnc_done">Personalized noise cancellation is on</string>
+    <string name="pnc_failed">Test failed</string>
+    <string name="pnc_retry">Try again</string>
+    <string name="pnc_fail_quiet">It is too quiet here. Try somewhere with a little background noise.</string>
+    <string name="pnc_fail_fit">Adjust the earbuds or change the ear tip size, then try again.</string>
+    <string name="pnc_fail_wind">Avoid strong wind during the test.</string>
+    <string name="pnc_fail_still">Keep still: no talking, swallowing or head movements during the test.</string>
+    <string name="pnc_fail_audio">Do not play audio or take calls during the test.</string>
 </resources>

@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Η σάρωση των αυτιών δεν ολοκληρώθηκε. Δοκιμάστε ξανά.</string>
     <string name="golden_again">Δοκιμή ξανά</string>
     <string name="golden_boost">Ενίσχυση</string>
+    <string name="pnc_title">Εξατομικευμένη ακύρωση θορύβου</string>
+    <string name="pnc_sub">Προσαρμοσμένη στο κανάλι του αυτιού και την εφαρμογή</string>
+    <string name="pnc_wear">Φορέστε πρώτα και τα δύο ακουστικά</string>
+    <string name="pnc_stored_title">Χρήση του προηγούμενου αποτελέσματος;</string>
+    <string name="pnc_stored_body">Τα ακουστικά έχουν αποθηκεύσει το αποτέλεσμα προηγούμενου τεστ. Μπορείτε να το χρησιμοποιήσετε ή να κάνετε νέο τεστ.</string>
+    <string name="pnc_use">Χρήση</string>
+    <string name="pnc_test_again">Νέο τεστ</string>
+    <string name="pnc_test_title">Τεστ ακουστικού πόρου</string>
+    <string name="pnc_test_body">Σταματήστε τον ήχο, μείνετε σε χώρο με λίγο θόρυβο και μην κινείστε κατά το τεστ.</string>
+    <string name="pnc_start">Έναρξη τεστ</string>
+    <string name="pnc_testing">Τεστ σε εξέλιξη… Η ακύρωση θορύβου ίσως ακουστεί διαφορετικά για λίγο.</string>
+    <string name="pnc_done">Η εξατομικευμένη ακύρωση θορύβου είναι ενεργή</string>
+    <string name="pnc_failed">Το τεστ απέτυχε</string>
+    <string name="pnc_retry">Δοκιμάστε ξανά</string>
+    <string name="pnc_fail_quiet">Είναι πολύ ήσυχα εδώ. Δοκιμάστε σε χώρο με λίγο θόρυβο.</string>
+    <string name="pnc_fail_fit">Προσαρμόστε τα ακουστικά ή αλλάξτε μέγεθος σιλικόνης και δοκιμάστε ξανά.</string>
+    <string name="pnc_fail_wind">Αποφύγετε τον δυνατό αέρα κατά το τεστ.</string>
+    <string name="pnc_fail_still">Μείνετε ακίνητοι: χωρίς ομιλία, κατάποση ή κινήσεις κεφαλιού κατά το τεστ.</string>
+    <string name="pnc_fail_audio">Μην αναπαράγετε ήχο και μην μιλάτε στο τηλέφωνο κατά το τεστ.</string>
 </resources>

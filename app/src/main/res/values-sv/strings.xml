@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Öronskanningen blev inte klar. Försök igen.</string>
     <string name="golden_again">Försök igen</string>
     <string name="golden_boost">Förstärkning</string>
+    <string name="pnc_title">Personlig brusreducering</string>
+    <string name="pnc_sub">Anpassad efter dina hörselgångar och passform</string>
+    <string name="pnc_wear">Sätt först i båda hörlurarna</string>
+    <string name="pnc_stored_title">Använda tidigare resultat?</string>
+    <string name="pnc_stored_body">Hörlurarna har sparat resultatet från ett tidigare hörselgångstest. Du kan använda det nu eller testa igen.</string>
+    <string name="pnc_use">Använd</string>
+    <string name="pnc_test_again">Testa igen</string>
+    <string name="pnc_test_title">Hörselgångstest</string>
+    <string name="pnc_test_body">Pausa ljud, var någonstans med lite bakgrundsljud och håll dig stilla under testet.</string>
+    <string name="pnc_start">Starta test</string>
+    <string name="pnc_testing">Testar… Brusreduceringen kan låta annorlunda en stund.</string>
+    <string name="pnc_done">Personlig brusreducering är på</string>
+    <string name="pnc_failed">Testet misslyckades</string>
+    <string name="pnc_retry">Försök igen</string>
+    <string name="pnc_fail_quiet">Det är för tyst här. Försök någonstans med lite bakgrundsljud.</string>
+    <string name="pnc_fail_fit">Justera hörlurarna eller byt storlek på öronsnäckorna och försök igen.</string>
+    <string name="pnc_fail_wind">Undvik stark vind under testet.</string>
+    <string name="pnc_fail_still">Håll dig stilla: prata, svälj eller rör inte huvudet under testet.</string>
+    <string name="pnc_fail_audio">Spela inte upp ljud och ring inte under testet.</string>
 </resources>

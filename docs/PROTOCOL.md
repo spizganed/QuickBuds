@@ -203,7 +203,7 @@ Used by `protocol/Capabilities.kt` to hide what a model does not have (2026-09-2
   name match, then the first id match. `ModelCatalog.find` does the same; a model picked by hand
   in the model list overrides it until other buds connect.
 - **`0x810D` lists only the feature switches the firmware has.** We asked for 12 ids; Buds 4 answers
-  8 (`05 04 0B 11 18 06 1B 1D`, not `13 1C 27 28`). Since 2026-09-29 we ask 17 (adding `09 17 30 31 3A`, §9). An id missing from the reply is a switch those
+  8 (`05 04 0B 11 18 06 1B 1D`, not `13 1C 27 28`). Since 2026-09-29 we ask 23 (adding `09 17 30 31 3A 32 35 37 38 3B 0C`, §9); Buds 4 answers 10 of them (the 8 plus `17 0C`). An id missing from the reply is a switch those
   buds do not have. `[OSS]` oneplus-buds-omarchy saw the same on Buds Pro 2 ("presence establishes
   capability").
 
@@ -1199,6 +1199,23 @@ a write back yet.
 - **Decided against** ([USER] 2026-09-29): neck health (`0x22` live posture monitor, `0x23` / `0x24`
   reminders), which needs OPPO's Health app for the data, and meeting assistant (`0x34`), a voiceprint
   enhancement for one meeting app that needs an enrolment flow first.
+
+### Personalized noise cancellation — `0x0412` — `[VENDOR]` 2026-09-29, wired, unverified on buds
+
+HeyMelody's ear canal test that tunes ANC (model flag `personalNoise`, 11 models counting the ones that need a
+minimum firmware; shown with `0x0412` in the `0x8100` bitmap, bit 26 with `0x011A`).
+
+| Direction | Frame |
+|---|---|
+| Stored result? | `0x011A` (empty) → `811A 00 <exist>`, non-zero = the buds hold a result from an earlier test |
+| Test / use stored / cancel | `0x0412 01` / `02` / `03`; ack `8412 <status>`, HeyMelody names status `15` (another device busy) |
+| Result | `0x0204` event `0B <result>`: `0` applied; `1` too quiet, `2` poor fit, `3` wind, `4` movement, `5` audio or a call |
+| Off | `0x0403 0C 00`; the buds turn `0x0C` on themselves once a result applies, HeyMelody then re-reads `0x010D` |
+
+Event `0x0B` is registered in `0x0205` where the bitmap has `0x0412`, and `0x0C` is asked in `0x010D`.
+HeyMelody wants both buds in an ear, waits 5 s for the `0x811A` answer and 15 s for a result, and cancels
+when its dialog closes. `[CAPTURE]` Buds 4 answer `0C 00` in `0x810D` but lack bit 26, and their model entry
+has no `personalNoise`: the row stays hidden there, as in HeyMelody.
 
 ### Golden Sound (hearing enhancement, feature `0x0B`) — `[VENDOR]` + read back 2026-09-29
 

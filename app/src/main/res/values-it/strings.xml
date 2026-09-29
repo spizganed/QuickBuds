@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">La scansione delle orecchie non è terminata. Riprova.</string>
     <string name="golden_again">Riprova</string>
     <string name="golden_boost">Amplificazione</string>
+    <string name="pnc_title">Cancellazione del rumore personalizzata</string>
+    <string name="pnc_sub">Adattata ai tuoi condotti uditivi e alla vestibilità</string>
+    <string name="pnc_wear">Indossa prima entrambi gli auricolari</string>
+    <string name="pnc_stored_title">Usare il risultato precedente?</string>
+    <string name="pnc_stored_body">Questi auricolari hanno salvato il risultato di un test del condotto uditivo precedente. Puoi usarlo ora o ripetere il test.</string>
+    <string name="pnc_use">Usa</string>
+    <string name="pnc_test_again">Ripeti test</string>
+    <string name="pnc_test_title">Test del condotto uditivo</string>
+    <string name="pnc_test_body">Metti in pausa l\'audio, resta in un luogo con un po\' di rumore di fondo e stai fermo durante il test.</string>
+    <string name="pnc_start">Avvia test</string>
+    <string name="pnc_testing">Test in corso… La cancellazione del rumore può suonare diversa per un attimo.</string>
+    <string name="pnc_done">Cancellazione del rumore personalizzata attiva</string>
+    <string name="pnc_failed">Test non riuscito</string>
+    <string name="pnc_retry">Riprova</string>
+    <string name="pnc_fail_quiet">C\'è troppo silenzio. Prova in un luogo con un po\' di rumore di fondo.</string>
+    <string name="pnc_fail_fit">Sistema gli auricolari o cambia la misura dei gommini, poi riprova.</string>
+    <string name="pnc_fail_wind">Evita il vento forte durante il test.</string>
+    <string name="pnc_fail_still">Stai fermo: non parlare, deglutire o muovere la testa durante il test.</string>
+    <string name="pnc_fail_audio">Non riprodurre audio e non telefonare durante il test.</string>
 </resources>

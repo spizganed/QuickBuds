@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">Skanowanie uszu nie zostało ukończone. Spróbuj ponownie.</string>
     <string name="golden_again">Spróbuj ponownie</string>
     <string name="golden_boost">Wzmocnienie</string>
+    <string name="pnc_title">Spersonalizowana redukcja szumów</string>
+    <string name="pnc_sub">Dopasowana do kanałów słuchowych i ułożenia</string>
+    <string name="pnc_wear">Najpierw załóż obie słuchawki</string>
+    <string name="pnc_stored_title">Użyć poprzedniego wyniku?</string>
+    <string name="pnc_stored_body">Słuchawki zachowały wynik wcześniejszego testu kanału słuchowego. Możesz go użyć teraz albo przeprowadzić test ponownie.</string>
+    <string name="pnc_use">Użyj</string>
+    <string name="pnc_test_again">Testuj ponownie</string>
+    <string name="pnc_test_title">Test kanału słuchowego</string>
+    <string name="pnc_test_body">Wstrzymaj dźwięk, zostań w miejscu z lekkim hałasem w tle i nie ruszaj się podczas testu.</string>
+    <string name="pnc_start">Rozpocznij test</string>
+    <string name="pnc_testing">Trwa test… Redukcja szumów może przez chwilę brzmieć inaczej.</string>
+    <string name="pnc_done">Spersonalizowana redukcja szumów jest włączona</string>
+    <string name="pnc_failed">Test nie powiódł się</string>
+    <string name="pnc_retry">Spróbuj ponownie</string>
+    <string name="pnc_fail_quiet">Jest tu zbyt cicho. Spróbuj w miejscu z lekkim hałasem w tle.</string>
+    <string name="pnc_fail_fit">Popraw słuchawki lub zmień rozmiar nakładek i spróbuj ponownie.</string>
+    <string name="pnc_fail_wind">Unikaj silnego wiatru podczas testu.</string>
+    <string name="pnc_fail_still">Nie ruszaj się: nie mów, nie przełykaj i nie ruszaj głową podczas testu.</string>
+    <string name="pnc_fail_audio">Nie odtwarzaj dźwięku i nie rozmawiaj przez telefon podczas testu.</string>
 </resources>

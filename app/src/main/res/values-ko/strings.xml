@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">귀 스캔이 완료되지 않았습니다. 다시 시도하세요.</string>
     <string name="golden_again">다시 시도</string>
     <string name="golden_boost">부스트</string>
+    <string name="pnc_title">맞춤형 노이즈 캔슬링</string>
+    <string name="pnc_sub">외이도와 착용 상태에 맞춤</string>
+    <string name="pnc_wear">먼저 이어버드 두 개를 모두 착용하세요</string>
+    <string name="pnc_stored_title">이전 결과를 사용할까요?</string>
+    <string name="pnc_stored_body">이 이어버드에 이전 외이도 테스트 결과가 저장되어 있습니다. 지금 사용하거나 다시 테스트할 수 있습니다.</string>
+    <string name="pnc_use">사용</string>
+    <string name="pnc_test_again">다시 테스트</string>
+    <string name="pnc_test_title">외이도 테스트</string>
+    <string name="pnc_test_body">오디오를 멈추고, 약간의 소음이 있는 곳에서 테스트 중에는 움직이지 마세요.</string>
+    <string name="pnc_start">테스트 시작</string>
+    <string name="pnc_testing">테스트 중… 노이즈 캔슬링이 잠시 다르게 들릴 수 있습니다.</string>
+    <string name="pnc_done">맞춤형 노이즈 캔슬링이 켜졌습니다</string>
+    <string name="pnc_failed">테스트 실패</string>
+    <string name="pnc_retry">다시 시도</string>
+    <string name="pnc_fail_quiet">너무 조용합니다. 약간의 소음이 있는 곳에서 시도하세요.</string>
+    <string name="pnc_fail_fit">이어버드를 다시 착용하거나 이어팁 크기를 바꾼 뒤 다시 시도하세요.</string>
+    <string name="pnc_fail_wind">테스트 중에는 강한 바람을 피하세요.</string>
+    <string name="pnc_fail_still">움직이지 마세요: 테스트 중에는 말하기, 삼키기, 고개 움직이기를 피하세요.</string>
+    <string name="pnc_fail_audio">테스트 중에는 오디오를 재생하거나 통화하지 마세요.</string>
 </resources>

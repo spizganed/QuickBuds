@@ -386,4 +386,23 @@
     <string name="golden_scan_failed">耳道扫描未完成。请重试。</string>
     <string name="golden_again">重试</string>
     <string name="golden_boost">增强幅度</string>
+    <string name="pnc_title">个性化降噪</string>
+    <string name="pnc_sub">根据你的耳道和佩戴情况调整</string>
+    <string name="pnc_wear">请先佩戴好两只耳机</string>
+    <string name="pnc_stored_title">使用之前的结果？</string>
+    <string name="pnc_stored_body">这副耳机保存了之前耳道检测的结果。你可以现在使用，或重新检测。</string>
+    <string name="pnc_use">使用</string>
+    <string name="pnc_test_again">重新检测</string>
+    <string name="pnc_test_title">耳道检测</string>
+    <string name="pnc_test_body">请暂停播放，待在有少许环境噪声的地方，检测时保持不动。</string>
+    <string name="pnc_start">开始检测</string>
+    <string name="pnc_testing">检测中… 降噪效果可能会短暂变化。</string>
+    <string name="pnc_done">个性化降噪已开启</string>
+    <string name="pnc_failed">检测失败</string>
+    <string name="pnc_retry">重试</string>
+    <string name="pnc_fail_quiet">环境太安静了。请在有少许环境噪声的地方重试。</string>
+    <string name="pnc_fail_fit">请调整耳机佩戴或更换耳塞尺寸后重试。</string>
+    <string name="pnc_fail_wind">检测时请避开大风。</string>
+    <string name="pnc_fail_still">请保持不动：检测时不要说话、吞咽或转头。</string>
+    <string name="pnc_fail_audio">检测时请不要播放音频或通话。</string>
 </resources>

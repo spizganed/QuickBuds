@@ -386,4 +386,23 @@
     <string name="golden_scan_failed">कान का स्कैन पूरा नहीं हुआ। फिर से कोशिश करें।</string>
     <string name="golden_again">फिर से कोशिश करें</string>
     <string name="golden_boost">बूस्ट</string>
+    <string name="pnc_title">पर्सनलाइज़्ड नॉइज़ कैंसलेशन</string>
+    <string name="pnc_sub">आपके कान और फ़िट के अनुसार</string>
+    <string name="pnc_wear">पहले दोनों ईयरबड पहनें</string>
+    <string name="pnc_stored_title">पिछला नतीजा इस्तेमाल करें?</string>
+    <string name="pnc_stored_body">इन ईयरबड में पिछले कान की जाँच का नतीजा सहेजा है। आप इसे अभी इस्तेमाल कर सकते हैं या फिर से जाँच कर सकते हैं।</string>
+    <string name="pnc_use">इस्तेमाल करें</string>
+    <string name="pnc_test_again">फिर से जाँचें</string>
+    <string name="pnc_test_title">कान की जाँच</string>
+    <string name="pnc_test_body">ऑडियो रोकें, थोड़े शोर वाली जगह रहें और जाँच के दौरान स्थिर रहें।</string>
+    <string name="pnc_start">जाँच शुरू करें</string>
+    <string name="pnc_testing">जाँच हो रही है… नॉइज़ कैंसलेशन कुछ पल अलग सुनाई दे सकता है।</string>
+    <string name="pnc_done">पर्सनलाइज़्ड नॉइज़ कैंसलेशन चालू है</string>
+    <string name="pnc_failed">जाँच विफल</string>
+    <string name="pnc_retry">फिर कोशिश करें</string>
+    <string name="pnc_fail_quiet">यहाँ बहुत शांति है। थोड़े शोर वाली जगह पर कोशिश करें।</string>
+    <string name="pnc_fail_fit">ईयरबड ठीक से लगाएँ या ईयर टिप का आकार बदलें, फिर कोशिश करें।</string>
+    <string name="pnc_fail_wind">जाँच के दौरान तेज़ हवा से बचें।</string>
+    <string name="pnc_fail_still">स्थिर रहें: जाँच के दौरान न बोलें, न निगलें, न सिर हिलाएँ।</string>
+    <string name="pnc_fail_audio">जाँच के दौरान ऑडियो न चलाएँ और कॉल न करें।</string>
 </resources>

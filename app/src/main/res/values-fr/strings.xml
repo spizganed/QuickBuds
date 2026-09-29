@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">L\'analyse des oreilles n\'a pas abouti. Réessayez.</string>
     <string name="golden_again">Réessayer</string>
     <string name="golden_boost">Amplification</string>
+    <string name="pnc_title">Réduction de bruit personnalisée</string>
+    <string name="pnc_sub">Adaptée à vos conduits auditifs et au maintien</string>
+    <string name="pnc_wear">Portez d\'abord les deux écouteurs</string>
+    <string name="pnc_stored_title">Utiliser le résultat précédent ?</string>
+    <string name="pnc_stored_body">Ces écouteurs ont gardé le résultat d\'un test du conduit auditif. Vous pouvez l\'utiliser maintenant ou refaire le test.</string>
+    <string name="pnc_use">Utiliser</string>
+    <string name="pnc_test_again">Refaire le test</string>
+    <string name="pnc_test_title">Test du conduit auditif</string>
+    <string name="pnc_test_body">Mettez l\'audio en pause, placez-vous dans un lieu avec un léger bruit de fond et restez immobile pendant le test.</string>
+    <string name="pnc_start">Lancer le test</string>
+    <string name="pnc_testing">Test en cours… La réduction de bruit peut sonner différemment un instant.</string>
+    <string name="pnc_done">Réduction de bruit personnalisée activée</string>
+    <string name="pnc_failed">Échec du test</string>
+    <string name="pnc_retry">Réessayer</string>
+    <string name="pnc_fail_quiet">C\'est trop calme ici. Essayez dans un lieu avec un léger bruit de fond.</string>
+    <string name="pnc_fail_fit">Ajustez les écouteurs ou changez la taille des embouts, puis réessayez.</string>
+    <string name="pnc_fail_wind">Évitez le vent fort pendant le test.</string>
+    <string name="pnc_fail_still">Restez immobile : ne parlez pas, n\'avalez pas et ne bougez pas la tête pendant le test.</string>
+    <string name="pnc_fail_audio">Ne lisez pas d\'audio et ne téléphonez pas pendant le test.</string>
 </resources>

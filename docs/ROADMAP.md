@@ -24,8 +24,7 @@ Each step is done before the next one starts.
      asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
      write on another model stays unverified until an owner reads one back.
    - **Next: the rest of the parity check** (2026-09-29, every item on HeyMelody's device page against the app).
-     In this order, each only if quick ([USER]): personalized noise cancellation (ear canal test, 9 models),
-     tap sensitivity (double / triple tap, 2 models), the dual connection manager (connect / disconnect /
+     In this order, each only if quick ([USER]): tap sensitivity (double / triple tap, 2 models), the dual connection manager (connect / disconnect /
      unpair / priority per device, 11 models), and a check of HeyMelody's separate "high audio" screen
      (Enco X2, Air3 Pro, Free3) against our Hi-Res row. Also open: the EQ presets that need a minimum
      firmware (`equalizerModeCompat`, 8 models).

@@ -384,4 +384,23 @@
     <string name="golden_scan_failed">A análise dos ouvidos não terminou. Tente novamente.</string>
     <string name="golden_again">Tentar novamente</string>
     <string name="golden_boost">Reforço</string>
+    <string name="pnc_title">Cancelamento de ruído personalizado</string>
+    <string name="pnc_sub">Ajustado aos seus canais auditivos e ao encaixe</string>
+    <string name="pnc_wear">Coloque primeiro os dois fones</string>
+    <string name="pnc_stored_title">Usar o resultado anterior?</string>
+    <string name="pnc_stored_body">Estes fones guardaram o resultado de um teste do canal auditivo anterior. Você pode usá-lo agora ou testar de novo.</string>
+    <string name="pnc_use">Usar</string>
+    <string name="pnc_test_again">Testar de novo</string>
+    <string name="pnc_test_title">Teste do canal auditivo</string>
+    <string name="pnc_test_body">Pause o áudio, fique num lugar com um pouco de ruído de fundo e não se mexa durante o teste.</string>
+    <string name="pnc_start">Iniciar teste</string>
+    <string name="pnc_testing">Testando… O cancelamento de ruído pode soar diferente por um momento.</string>
+    <string name="pnc_done">Cancelamento de ruído personalizado ativado</string>
+    <string name="pnc_failed">O teste falhou</string>
+    <string name="pnc_retry">Tentar de novo</string>
+    <string name="pnc_fail_quiet">Está silencioso demais. Tente num lugar com um pouco de ruído de fundo.</string>
+    <string name="pnc_fail_fit">Ajuste os fones ou troque o tamanho das ponteiras e tente de novo.</string>
+    <string name="pnc_fail_wind">Evite vento forte durante o teste.</string>
+    <string name="pnc_fail_still">Não se mexa: não fale, não engula nem mova a cabeça durante o teste.</string>
+    <string name="pnc_fail_audio">Não reproduza áudio nem faça chamadas durante o teste.</string>
 </resources>

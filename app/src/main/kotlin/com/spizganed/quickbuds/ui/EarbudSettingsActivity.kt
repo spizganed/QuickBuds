@@ -35,6 +35,9 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private var gameSoundText: TextView? = null
     private var headMotionText: TextView? = null
     private var fitSheet: FitTestSheet? = null
+    private val personalNoise by lazy {
+        PersonalNoiseFlow(this, { manager?.personalNoise(it) }, { manager?.queryPersonalNoise() }, { manager?.requestFullStatus() })
+    }
     private val featureSwitches = HashMap<Int, android.widget.Switch>()
     private var syncing = false
 
@@ -138,6 +141,22 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             }
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
             card.addView(SettingRowFactory.build(this, icon, title, sub, sw) { sw.performClick() })
+        }
+        // Personalized ANC: off is a plain switch write, on runs HeyMelody's test flow (PROTOCOL.md §9).
+        if (Capabilities.offered(this, OpoProtocol.FEATURE_PERSONAL_NOISE, "personalNoise") &&
+            (Capabilities.supports(this, OpoProtocol.CMD_PERSONAL_NOISE) || ModelCatalog.manual(this) != null)) {
+            val id = OpoProtocol.FEATURE_PERSONAL_NOISE
+            val sw = SettingRowFactory.buildSwitch(this, manager?.featureStates?.get(id) == 1)
+            featureSwitches[id] = sw
+            sw.setOnCheckedChangeListener { _, on ->
+                if (syncing) return@setOnCheckedChangeListener
+                if (!on) return@setOnCheckedChangeListener manager?.setFeatures(id to false) ?: Unit
+                quiet { sw.isChecked = false }   // the buds turn it on once a result applies
+                personalNoise.start()
+            }
+            card.addView(SettingRowFactory.build(this, R.drawable.ic_anc, R.string.pnc_title, R.string.pnc_sub, sw) {
+                sw.performClick()
+            })
         }
         switch(OpoProtocol.FEATURE_VOCAL_ENHANCE, "vocalEnhance", R.drawable.ic_equalizer,
             R.string.row_vocal_title, R.string.row_vocal_sub)
@@ -307,6 +326,9 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     override fun onFitResult(left: Int, right: Int) { fitSheet?.result(left, right) }
+    override fun onPersonalNoiseStored(stored: Boolean) = personalNoise.stored(stored)
+    override fun onPersonalNoiseResult(result: Int) = personalNoise.result(result)
+    override fun onPersonalNoiseAck(status: Int) = personalNoise.ack(status)
 
     override fun onStatus(msg: String) {}
     override fun onConnected(connected: Boolean) {}

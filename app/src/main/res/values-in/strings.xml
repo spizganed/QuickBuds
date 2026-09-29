@@ -386,4 +386,23 @@
     <string name="golden_scan_failed">Pemindaian telinga tidak selesai. Coba lagi.</string>
     <string name="golden_again">Coba lagi</string>
     <string name="golden_boost">Penguatan</string>
+    <string name="pnc_title">Peredam bising personal</string>
+    <string name="pnc_sub">Disesuaikan dengan liang telinga dan kecocokan</string>
+    <string name="pnc_wear">Pakai kedua earbud dulu</string>
+    <string name="pnc_stored_title">Gunakan hasil sebelumnya?</string>
+    <string name="pnc_stored_body">Earbud ini menyimpan hasil tes liang telinga sebelumnya. Anda bisa memakainya sekarang atau tes ulang.</string>
+    <string name="pnc_use">Gunakan</string>
+    <string name="pnc_test_again">Tes ulang</string>
+    <string name="pnc_test_title">Tes liang telinga</string>
+    <string name="pnc_test_body">Jeda audio, berada di tempat dengan sedikit bising dan diam selama tes.</string>
+    <string name="pnc_start">Mulai tes</string>
+    <string name="pnc_testing">Menguji… Peredam bising mungkin terdengar berbeda sesaat.</string>
+    <string name="pnc_done">Peredam bising personal aktif</string>
+    <string name="pnc_failed">Tes gagal</string>
+    <string name="pnc_retry">Coba lagi</string>
+    <string name="pnc_fail_quiet">Terlalu sunyi di sini. Coba di tempat dengan sedikit bising.</string>
+    <string name="pnc_fail_fit">Sesuaikan earbud atau ganti ukuran ear tip, lalu coba lagi.</string>
+    <string name="pnc_fail_wind">Hindari angin kencang selama tes.</string>
+    <string name="pnc_fail_still">Tetap diam: jangan bicara, menelan, atau menggerakkan kepala selama tes.</string>
+    <string name="pnc_fail_audio">Jangan putar audio atau menelepon selama tes.</string>
 </resources>

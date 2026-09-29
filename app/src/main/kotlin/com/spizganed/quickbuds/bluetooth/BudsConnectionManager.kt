@@ -77,6 +77,13 @@ class BudsConnectionManager(private val context: Context) {
          */
         fun onFitResult(left: Int, right: Int) {}
 
+        /** Personalized ANC: `0x811A`, whether the buds hold a result from an earlier test. */
+        fun onPersonalNoiseStored(stored: Boolean) {}
+        /** Personalized ANC: the test's result (`0x0204` subType `0x0B`), 0 done, 1-5 why it failed. */
+        fun onPersonalNoiseResult(result: Int) {}
+        /** Personalized ANC: the `0x8412` ack status (0 = accepted). */
+        fun onPersonalNoiseAck(status: Int) {}
+
         /** Golden Sound test status (`0x0204` subType `0x08`): kind 2 hearing test / 4 ear scan. */
         fun onGoldenStatus(kind: Int, status: Int) {}
         /** Ear scan result (`0x0204` subType `0x0E`). */
@@ -304,7 +311,8 @@ class BudsConnectionManager(private val context: Context) {
                 }
                 query(OpoProtocol.CMD_REGISTER_NOTIFY,
                     OpoProtocol.registerNotifications(Capabilities.supports(context, OpoProtocol.CMD_FIT_TEST),
-                        Capabilities.supports(context, OpoProtocol.CMD_GOLDEN_DETECT)), "register notify")
+                        Capabilities.supports(context, OpoProtocol.CMD_GOLDEN_DETECT),
+                        Capabilities.supports(context, OpoProtocol.CMD_PERSONAL_NOISE)), "register notify")
                 query(OpoProtocol.CMD_QUERY_STATUS, OpoProtocol.queryStatus(), "query status")
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
                 query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
@@ -595,6 +603,10 @@ class BudsConnectionManager(private val context: Context) {
             }
         }.start()
     }
+
+    /** Personalized ANC action ([OpoProtocol.PERSONAL_NOISE_TEST] ...); see [Listener.onPersonalNoiseResult]. */
+    fun personalNoise(action: Int) = sendRaw(OpoProtocol.personalNoise(action), "Personalized ANC $action")
+    fun queryPersonalNoise() = sendRaw(OpoProtocol.queryPersonalNoise(), "query personalized ANC")
 
     /** Starts (`true`) or stops the earbud fit test; the result comes as [Listener.onFitResult]. */
     fun fitTest(on: Boolean) = sendRaw(OpoProtocol.fitTest(on), "Fit test ${if (on) "start" else "stop"}")
@@ -1329,6 +1341,23 @@ class BudsConnectionManager(private val context: Context) {
             val scan = if (payload.firstOrNull()?.toInt() == 0) GoldenSound.parseScan(payload, 1) else null
             log("GOLDEN ACTIVE SCAN: uid=${scan?.first?.let { "%08X".format(it) }} len=${scan?.second?.size}")
             if (scan != null) handler.post { listeners.forEach { it.onGoldenActiveScan(scan.first, scan.second) } }
+            return
+        }
+
+        // --- Personalized ANC, [VENDOR] (PROTOCOL.md §9) ---
+        if (cmd == 0x811A && payload.size >= 2 && payload[0].toInt() == 0) {
+            log("PERSONAL ANC stored=${payload[1]}")
+            handler.post { listeners.forEach { it.onPersonalNoiseStored(payload[1].toInt() != 0) } }
+            return
+        }
+        if (cmd == 0x8412 && payload.isNotEmpty()) {
+            handler.post { listeners.forEach { it.onPersonalNoiseAck(payload[0].toInt() and 0xFF) } }
+            return
+        }
+        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 2 &&
+            payload[0].toInt() == OpoProtocol.EVT_PERSONAL_NOISE) {
+            log("PERSONAL ANC result=${payload[1]} RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            handler.post { listeners.forEach { it.onPersonalNoiseResult(payload[1].toInt() and 0xFF) } }
             return
         }
 

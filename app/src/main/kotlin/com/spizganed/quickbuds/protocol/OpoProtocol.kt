@@ -131,6 +131,18 @@ object OpoProtocol {
     /** Read with `0x0134` (empty); the type comes back as the `0x0204` push [EVT_HEAD_MOTION_TYPE]. `[VENDOR]` */
     const val CMD_QUERY_HEAD_MOTION_TYPE = 0x0134
     const val EVT_HEAD_MOTION_TYPE = 0xF5
+    /**
+     * Personalized noise cancellation (PROTOCOL.md §9), `[VENDOR]`: switch [FEATURE_PERSONAL_NOISE] (off only;
+     * the buds turn it on themselves), `0x0412 <action>`, a stored result read with `0x011A` -> `00 <exist>`,
+     * the test's result pushed as [EVT_PERSONAL_NOISE] `0B <result>` (0 done, 1-5 a reason it failed).
+     */
+    const val FEATURE_PERSONAL_NOISE = 0x0C
+    const val CMD_PERSONAL_NOISE = 0x0412
+    const val CMD_QUERY_PERSONAL_NOISE = 0x011A
+    const val EVT_PERSONAL_NOISE = 0x0B
+    const val PERSONAL_NOISE_TEST = 1
+    const val PERSONAL_NOISE_USE_STORED = 2
+    const val PERSONAL_NOISE_CANCEL = 3
 
     private var seqCounter = 0x01
 
@@ -198,9 +210,10 @@ object OpoProtocol {
      * HeyMelody registers every id the buds list in 0x8200 (`registerMultiNotification`).
      * 0x08 (Golden Sound test status) likewise, when the buds have the test (`0x040D`), 2026-09-29.
      */
-    fun registerNotifications(fitTest: Boolean = false, golden: Boolean = false): ByteArray {
+    fun registerNotifications(fitTest: Boolean = false, golden: Boolean = false, personalNoise: Boolean = false): ByteArray {
         val ids = listOf(0x01, 0x02, 0x03) + (if (fitTest) listOf(EVT_FIT_TEST) else emptyList()) +
-            (if (golden) listOf(EVT_GOLDEN_STATUS) else emptyList())
+            (if (golden) listOf(EVT_GOLDEN_STATUS) else emptyList()) +
+            (if (personalNoise) listOf(EVT_PERSONAL_NOISE) else emptyList())
         return buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(ids.size.toByte()) + ids.map { it.toByte() })
     }
 
@@ -258,6 +271,9 @@ object OpoProtocol {
 
     fun queryGoldenActive(): ByteArray = buildPacket(CMD_GOLDEN_ACTIVE)
     fun queryGoldenActiveScan(): ByteArray = buildPacket(CMD_GOLDEN_ACTIVE_SCAN)
+
+    fun personalNoise(action: Int): ByteArray = buildPacket(CMD_PERSONAL_NOISE, payload = byteArrayOf(action.toByte()))
+    fun queryPersonalNoise(): ByteArray = buildPacket(CMD_QUERY_PERSONAL_NOISE)
 
     /** Earbud fit test: `0x0405` `01` start / `00` stop (HeyMelody stops it when its sheet closes). */
     fun fitTest(on: Boolean): ByteArray =
@@ -519,10 +535,10 @@ object OpoProtocol {
         payload = byteArrayOf(
             // count, then feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too;
             // 0x09 onwards on the second line 2026-09-29, the Earbud settings Features switches.
-            // 0x32 onwards on the third line 2026-09-29, the rest of HeyMelody's list.
-            0x16, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
+            // 0x32 onwards on the third line 2026-09-29, the rest of HeyMelody's list; 0x0C personalized ANC.
+            0x17, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
             0x09, 0x17, 0x30, 0x31, 0x3A,
-            0x32, 0x35, 0x37, 0x38, 0x3B
+            0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C
         )
     )
 
