@@ -127,13 +127,25 @@ class ColorPickerView(
         }
     }
 
-    /** A swatch as dots: a one-cell [ring] around the [color] disc. */
+    /**
+     * A swatch as dots: a fixed disc of [SWATCH_CELLS] cells (like [DotArt.knob]; scaled circles came out
+     * uneven), its edge cells in [ring], the rest in [color].
+     */
     private class DotSwatch(context: Context, private val color: Int, private val ring: Int) : View(context) {
         private val paint = Paint()
         override fun onDraw(canvas: Canvas) = DotArt.draw(context, canvas, width, height) { c ->
-            val r = width / 2f
-            paint.color = ring; c.drawCircle(r, r, r, paint)
-            paint.color = color; c.drawCircle(r, r, r - DotArt.pitchPx(context), paint)
+            val pitch = DotArt.pitchPx(context)
+            for (y in 0 until SWATCH_CELLS) for (x in 0 until SWATCH_CELLS) {
+                if (!inDisc(x, y)) continue
+                val edge = !(inDisc(x + 1, y) && inDisc(x - 1, y) && inDisc(x, y + 1) && inDisc(x, y - 1))
+                paint.color = if (edge) ring else color
+                c.drawRect(x * pitch, y * pitch, (x + 1) * pitch, (y + 1) * pitch, paint)
+            }
+        }
+
+        private fun inDisc(x: Int, y: Int): Boolean {
+            val m = SWATCH_CELLS / 2
+            return x in 0 until SWATCH_CELLS && y in 0 until SWATCH_CELLS && (x - m) * (x - m) + (y - m) * (y - m) <= 42
         }
     }
 
