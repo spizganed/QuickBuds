@@ -59,8 +59,13 @@ class ColorSliderView(context: Context, private val channel: Int) : View(context
     private fun shapes(c: Canvas) {
         val cy = height / 2f
         track.shader = LinearGradient(dp(14f), 0f, width - dp(14f), 0f, stops(), null, Shader.TileMode.CLAMP)
-        box.set(0f, cy - dp(13f), width.toFloat(), cy + dp(13f))
-        c.drawRoundRect(box, dp(13f), dp(13f), track)
+        if (nothing) {
+            // Five dot rows centred on the knob's middle row, so the 7-row knob stands out of the bar.
+            val pitch = DotArt.pitchPx(context)
+            val row = Math.floor(cy / pitch.toDouble()).toFloat()
+            box.set(0f, (row - 2) * pitch, width.toFloat(), (row + 3) * pitch)
+        } else box.set(0f, cy - dp(13f), width.toFloat(), cy + dp(13f))
+        c.drawRoundRect(box, box.height() / 2, box.height() / 2, track)
         val x = dp(16f) + usable * hsv[channel] / max
         fill.color = Color.HSVToColor(hsv)
         if (nothing) { DotArt.knob(context, c, x, cy, ring.color, fill.color); return }

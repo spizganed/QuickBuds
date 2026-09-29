@@ -1,7 +1,9 @@
 package com.spizganed.quickbuds.ui
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
 import android.text.InputFilter
 import android.view.Gravity
@@ -106,18 +108,32 @@ class ColorPickerView(
 
     private fun swatches(row: LinearLayout, colors: List<Int>, initial: Int) {
         val p = ThemeRes.palette(context)
+        val nothing = ThemeRes.nothing(context)
+        // Dot style: a whole odd number of cells, so the dotted disc is symmetric.
+        val size = if (nothing) DotArt.pitchPx(context).toInt() * SWATCH_CELLS else dp(30f)
         colors.forEachIndexed { k, c ->
-            row.addView(View(context).apply {
-                background = GradientDrawable().apply {
+            val ring = if (c == initial) p.text else p.outline
+            row.addView((if (nothing) DotSwatch(context, c, ring) else View(context)).apply {
+                if (!nothing) background = GradientDrawable().apply {
                     shape = GradientDrawable.OVAL
                     setColor(c)
                     // The outline keeps a swatch in the card's own colour visible.
-                    setStroke(dp(if (c == initial) 2f else 1f), if (c == initial) p.text else p.outline)
+                    setStroke(dp(if (c == initial) 2f else 1f), ring)
                 }
                 contentDescription = hex(c)
-                layoutParams = LayoutParams(dp(30f), dp(30f)).apply { if (k > 0) marginStart = dp(8f) }
+                layoutParams = LayoutParams(size, size).apply { if (k > 0) marginStart = dp(8f) }
                 setOnClickListener { commit(c, it) }
             })
+        }
+    }
+
+    /** A swatch as dots: a one-cell [ring] around the [color] disc. */
+    private class DotSwatch(context: Context, private val color: Int, private val ring: Int) : View(context) {
+        private val paint = Paint()
+        override fun onDraw(canvas: Canvas) = DotArt.draw(context, canvas, width, height) { c ->
+            val r = width / 2f
+            paint.color = ring; c.drawCircle(r, r, r, paint)
+            paint.color = color; c.drawCircle(r, r, r - DotArt.pitchPx(context), paint)
         }
     }
 
@@ -135,6 +151,7 @@ class ColorPickerView(
         private const val KEY_RECENT = "recentColors"
         private const val KEY_RECENT_TARGET = "recentColorsTarget"
         const val MAX_RECENT = 5
+        private const val SWATCH_CELLS = 13
 
         private fun prefs(context: Context) =
             context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
