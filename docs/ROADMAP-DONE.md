@@ -78,6 +78,9 @@ back.
   Features shows none of the new rows (only power saving, which Buds 4 lists itself); Nord Buds 4 picked by hand
   shows Swift Pair and the game sound rows, Open Buds shows touch and hold volume and smart volume. No feature
   write reached the buds.
+- Power saving `0x17` on Buds 4 (2026-09-29): listed by the buds, the write works (a restart, audio brought
+  back by the app), and nothing visible changes (PROTOCOL.md §9). The row stays ([USER]): it is harmless and
+  was researched as far as the phone side can see; its effect is internal to the buds.
 - 3D audio's type form `0x0422` (2026-09-29): Off / Fixed / Head tracking on Buds Pro 2, Buds Pro 3 and
   Enco X3, a type switch on other `0x012A` buds; game sound's type `0x0423` as a sheet (PROTOCOL.md §9).
 - The rest of HeyMelody's model-list features (2026-09-29), same section: conversation awareness,
