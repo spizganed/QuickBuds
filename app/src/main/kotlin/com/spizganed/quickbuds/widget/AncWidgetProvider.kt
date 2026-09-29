@@ -737,8 +737,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                     val dx = r - minOf(x, cols - 1 - x) - 0.5f
                     val dy = r - minOf(y, rows - 1 - y) - 0.5f
                     if (dx > 0 && dy > 0 && dx * dx + dy * dy > (r - 0.3f) * (r - 0.3f)) continue
-                    // The digits' dots are inverted ([USER] 2026-09-28): unlit over the level, lit past it.
-                    paint.color = if ((x < lit) != text(x, y)) p.accent else dim(p)
+                    // The digits in `text`, like the buds' percentages ([USER] 2026-09-30; they were inverted dots).
+                    paint.color = if (text(x, y)) p.text else if (x < lit) p.accent else dim(p)
                     c.drawCircle((x + 0.5f) * pitch, (y + 0.5f) * pitch, pitch * 0.42f, paint)
                 }
                 return bmp
@@ -761,7 +761,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
                 textSize = h * 0.6f
                 textAlign = Paint.Align.CENTER
-                xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR)
+                color = p.text
             }
             val fm = text.fontMetrics
             c.drawText(pctLabel(context, level), w / 2f, h / 2f - (fm.ascent + fm.descent) / 2, text)

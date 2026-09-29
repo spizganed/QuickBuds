@@ -11,8 +11,8 @@ import android.graphics.drawable.Drawable
  * The Nothing style's dot matrix for live views (sliders, the EQ curve, switches): a drawing is rendered
  * at one pixel per cell, then every cell it covers becomes one round dot in that pixel's colour. The
  * widget's `matrix()` does the same with 8x supersampling for still bitmaps; one sample per cell is
- * cheap enough to redraw every frame of a drag. Coverage below [MIN_ALPHA] leaves the cell empty, the
- * rest keep their alpha, so a thin grid line or a fading fill reads as fainter dots (icons: `solid`).
+ * cheap enough to redraw every frame of a drag. Views draw without antialiasing, so a cell is covered or not and
+ * keeps its paint's alpha: a faint track or a fading fill reads as fainter dots, below [MIN_ALPHA] none (icons: `solid`).
  */
 object DotArt {
 
@@ -31,6 +31,7 @@ object DotArt {
     private var small: Bitmap? = null
     private var px = IntArray(0)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val noAa = android.graphics.PaintFlagsDrawFilter(Paint.ANTI_ALIAS_FLAG, 0)
 
     /** The pitch in whole px: a fractional pitch put every dot at a different sub-pixel offset, so no two looked alike. */
     fun pitchPx(context: Context, pitchDp: Float = PITCH_DP): Float = Math.round(
@@ -50,6 +51,9 @@ object DotArt {
         bmp.eraseColor(Color.TRANSPARENT)
         val c = Canvas(bmp)
         c.scale(1f / pitch, 1f / pitch)
+        // Views (sliders, curves): no antialiasing, so a cell is either covered or empty and every dot keeps the
+        // paint's own colour. Antialiased edges gave the knob's ring dots several shades ([USER] 2026-09-30).
+        if (!solid && color == null) c.drawFilter = noAa
         draw(c)
         bmp.getPixels(px, 0, cols, 0, 0, cols, rows)
         for (y in 0 until rows) for (x in 0 until cols) {

@@ -170,7 +170,8 @@ A change recreates open screens (part of the activity signature).
 - Home: `BudsStatusView` draws the widget's `dotRing`, numbers without `%`, no wear label (the glyph's
   shade says it). `AncSegmentedView` draws `QuickBudsWidget.modeIcon` at a whole-pixel pitch
   (~1.15dp), 72dp tall.
-- `DotArt`: live views as dots, pitch 2.2dp rounded to whole px: `LevelSliderView`, `EqCurveView`,
+- `DotArt`: live views as dots, pitch 2.2dp rounded to whole px, drawn without antialiasing so every dot of
+  a shape is one shade: `LevelSliderView`, `EqCurveView`,
   `ColorSliderView`, switch track/thumb (`DotArt.Part`, thumb as tall as the track).
 - Icons: `ThemeRes.tint` returns a `DotArt.Icon` (1.2dp, solid dots); `ic_check` becomes
   `ic_check_dots`. Row dividers are one row of dots.
@@ -298,7 +299,7 @@ fixed size, one renderer `QuickBudsWidget.build`. No more sizes for now, no mode
 - Wear shade (`nothingTint`): in ear `text`, out `textSecondary` 65%, in case 17%. Glyph fill 1.18
   (buds) / 1.22 (case).
 - Case icon dotted at the ring pitch; `clearLed` always clears the LED dot and lid-cut row. The bar's
-  digits are Doto's own 5x7 digits (`GLYPHS`) in inverted dots.
+  digits are Doto's own 5x7 digits (`GLYPHS`) in `text`, like the buds' percentages `[USER]`.
 - Numbers without `%` (Classic keeps `%`). Box radius 19dp (`widget_bg_n`), inner 16dp.
 - Tried and rejected `[USER]`: hollow or hidden glyphs, a lit box around bar digits, a split pill, the
   bar as tall as the icon, a third ring on the 2x2.
