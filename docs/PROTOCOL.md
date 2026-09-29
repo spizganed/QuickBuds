@@ -186,19 +186,18 @@ Used by `protocol/Capabilities.kt` to hide what a model does not have (2026-09-2
 
 - **`0x8100`, the handshake reply, is a command bitmap.** `00` then bytes read LSB first; bit n
   enables a fixed list of commands (bit 3 = `0x0108` `0x0401` `0x0416`, bit 8 = `0x010C` `0x0404`,
-  bit 57 = `0x0427` `0x0130`, 67 bits in all). `[VENDOR]` HeyMelody  ( in the
-  JADX output, see CLAUDE.md), which also lists the commands sent without a bit (`0x0100`-`0x0104`,
+  bit 57 = `0x0427` `0x0130`, 67 bits in all). `[VENDOR]` HeyMelody, which also lists the commands sent without a bit (`0x0100`-`0x0104`,
   `0x0106`, `0x010B`, `0x010D`, `0x0F00`, `0x0F03`, `0x0F04`). HeyMelody refuses to send anything
-  else (, "UNSUPPORTED cmd"), and so does our connect sequence now. `[CAPTURE]` Buds 4:
+  else ("UNSUPPORTED cmd"), and so does our connect sequence now. `[CAPTURE]` Buds 4:
   `00 FF 77 5A EA 67 0E 20 07`, which lists every command the app uses and not `0x0422`/`0x012A`
   (Buds 4 does spatial through feature `0x1B`).
 - **`0x8103` is the product id:** `00` + 3 bytes little-endian. `[CAPTURE]` Buds 4: `00 14 54 06` =
   `065414`, its id in HeyMelody's model list. `[OSS]` OppoPods reads it the same way. `[VENDOR]`
-  HeyMelody folds four colour ranges into one id, the low byte being the colour (, on the
+  HeyMelody folds four colour ranges into one id, the low byte being the colour (on the
   BLE scan id): `100100`-`100102` -> `060414`, `100200`-`100202` -> `060814`, `108100`-`108102` ->
   `068414`, `108200`-`108202` -> `068814`. `[OSS]` OppoPodsManager applies the same map to `0x8103`,
   and so do we (`ModelCatalog.normalise`).
-- **Model lookup** `[VENDOR]` (`WhitelistUtils.findWhitelistConfig`, ): the entries whose
+- **Model lookup** `[VENDOR]`: the entries whose
   `name` equals the Bluetooth name (exact; `startsWith` only with `fuzzyMatchName`, which no entry in
   our list carries) and those whose `id` equals the product id. An entry in both wins, then the first
   name match, then the first id match. `ModelCatalog.find` does the same; a model picked by hand
@@ -275,16 +274,16 @@ fewer, the firmware rejected part of the list.
 The bits below are Buds 4's. Other models number their modes differently, so the app takes them
 from HeyMelody's per-model `noiseReductionMode` (`app/src/main/assets/models.json`, cut from the
 137-model `DeviceModels.json` to `id`, `name`, that field and the EQ fields of §9; `protocol/AncModes.kt`). Each entry is
-`{modeType, protocolIndex, childrenMode}`. modeType, from HeyMelody's own labels
-(`NoiseReductionItem`, ): `1` Off, `2` Transparency, `3` weak (our Light), `8` middle
+`{modeType, protocolIndex, childrenMode}`. modeType, from HeyMelody's own labels:
+`1` Off, `2` Transparency, `3` weak (our Light), `8` middle
 (Medium), `4` strong (Deep), `5` noise reduction (a parent of the levels, or a mode alone), `7`
 intelligent (Smart), `10` auto (Adaptive), `6` transparency with voice (**not** Adaptive, as
 OppoPods maps it).
 
-- **SET** sends a mode's own `protocolIndex` as the bit (`k0(protocolIndex)`); a level sends its
+- **SET** sends a mode's own `protocolIndex` as the bit; a level sends its
   child's index.
 - **A report** (`0x810C`, `0x0204` subType 3) is looked up in the same tree, parents first, then
-  children (). Buds 4's Off (`protocolIndex 0`) has a child Off at `3`, Transparency (`2`)
+  children. Buds 4's Off (`protocolIndex 0`) has a child Off at `3`, Transparency (`2`)
   one at `8`: that is the "different NOTIFY table" below. It is the same tree, reported one level down.
 - Shapes in the list: Buds 4 style (above, with or without Adaptive `11`, with or without Medium);
   legacy `NC 0, Off 1, Transparency 2` (Nord Buds 2, Buds Ace, Enco Air4, 9 models; **Buds 4's Off
@@ -415,7 +414,7 @@ RX  AA 0C 00 00 0C 81 05 05 00 00 01 01 08 00
 | Request | Question |
 |---------|----------|
 | `01 01` | current mode (above) |
-| `02 01` / `02 03` / `02 04` | **which modes the hold cycles through** (`getNoiseReductionSwitchMode`): `01` shared, `03` left / `04` right on per-bud holds (`[VENDOR]` `PollCommandManager.s()`, §6) |
+| `02 01` / `02 03` / `02 04` | **which modes the hold cycles through** (`getNoiseReductionSwitchMode`): `01` shared, `03` left / `04` right on per-bud holds (`[VENDOR]`, §6) |
 | `04 01` | intelligent noise reduction mode |
 
 #### `[CAPTURE]` 2026-09-20 — the switch-list reply, ANSWERED
@@ -794,7 +793,7 @@ Unseen on the wire: `0x02`, `0x04`, `0x09`, `0x0D`–`0x10`, `0x12`+.
 
 #### Other models: HeyMelody's `control` list `[VENDOR]` (2026-09-29)
 
-HeyMelody's own label -> byte map (`DeviceControlPreferenceUtils.getFunctionCommand`, )
+HeyMelody's own label -> byte map
 agrees with every measured value above and adds: `0x02` listening music, `0x09` favourite music,
 `0x0B` / `0x0C` volume up / down (the inferred names were right), `0x0D` switch devices, `0x11` game
 mode, `0x12` zen mode, `0x16` collect music, `0x19` AI summary, `0x1A` / `0x1B` AI translation,
@@ -803,7 +802,7 @@ mode, `0x12` zen mode, `0x16` collect music, `0x19` AI summary, `0x1A` / `0x1B` 
 
 Each model's `function.control` (and `callControl`) in the model list, copied into
 `assets/models.json`, is one entry per gesture row: `{action, support, minSelectCount}`. `support` is
-a mask of options, one bit per function (, shown in that order):
+a mask of options, one bit per function (in HeyMelody's order):
 
 | bit | option | `fn` | | bit | option | `fn` |
 |---|---|---|---|---|---|---|
@@ -818,22 +817,22 @@ a mask of options, one bit per function (, shown in that order):
 Bit 2 (listening music) is never shown. Buds 4 gives exactly the menus he read off HeyMelody's
 screen (`1:516 2:8807 3:3154531 5:3584`, hold `27`).
 
-The `action` numbers map to the key-function `act` (`BaseEarControlFragment`): 1-6 are themselves
+The `action` numbers map to the key-function `act`: 1-6 are themselves
 (4 = hold with a plain choice, 6 = HeyMelody's "super long press"), 16/17/18 are acts 1/2/3 (stem
 press models), 11, 20 and 27 are the hold's ANC cycle on act 4 (no `support`; the options are the
 model's top-level noise modes), callControl 29 / 31 are on-call acts 2 / 6 (answer / decline, as
 captured), 30 is act 3 (AI summary). Entries 7, 8, 12-15 are fixed rows that show a text only.
 
-**The hold's cycle mask uses each top-level noise mode's `protocolIndex`**
-(`getNoiseReductionInfoDTO`), so its bits differ per model: Buds 4 ANC 1 / Adaptive 11 /
+**The hold's cycle mask uses each top-level noise mode's `protocolIndex`**,
+so its bits differ per model: Buds 4 ANC 1 / Adaptive 11 /
 Transparency 2 / Off 0 (as captured), but several OPPO models have ANC 0 / Off 1. Models with
 `longPressType` set (8833, eight models) send the mask per bud with noise type 3 (left) / 4 (right)
 instead of 1. The app builds its gesture screen from this (`GestureModel`); unverified on any model
 but Buds 4 until an owner reads a write back.
 
-`[VENDOR]` 2026-09-29, `BaseEarControlFragment` / `CustomLongPressPreferenceFragment`:
+`[VENDOR]` 2026-09-29:
 
-- **Per-bud hold** (`longPressType`): a bitmask of choices in  order, 512 none, 128 noise
+- **Per-bud hold** (`longPressType`): a bitmask of choices in HeyMelody's order, 512 none, 128 noise
   cycle, 1 voice assistant, 8192 game mode (8388608 spy tap, skipped). Each bud is written on its own:
   `0x0401` `dev` 1 / 2, `act 0x04`, `fn` 0x00 / 0x08 / 0x03 / 0x11; the noise cycle adds its mask with
   noise type 3 / 4. Read with `0x010C` `02 03` and `02 04` instead of `02 01`.
@@ -1137,7 +1136,7 @@ feature IDs to vendor method names:
 
 `[VENDOR]` (2026-09-29) **Game mode is `0x06` on every model.** The OSS claim that newer
 devices use `0x28` does not hold for HeyMelody: its `0x010D` query builder
-(`PollCommandManager.k()`, ) asks `0x06` for game mode and
+asks `0x06` for game mode and
 `0x27` + `0x28` as a pair for **game sound** (`gameSoundList`). The same builder confirms, in
 decimal, `0x04` wear detection, `0x09` vocal enhance, `0x0B` hearing enhancement, `0x11` dual
 device, `0x18` Hi-Res, `0x1B` spatial, `0x1C` auto volume, `0x1D` bass engine, `0x22`-`0x24`
@@ -1170,12 +1169,12 @@ phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
 | Status | event `0x08`, `08 <kind 2 test / 4 scan> <status>`: 1 / 3 audio playing, 2 / 4 resumed, 5 a bud out, 6 back in, 7 timed out `[VENDOR]` `dealHearingDetectingStatus`; registered in `0x0205` when the buds list `0x040D` |
 | Not part of it | `0x040F 01` in the capture is `setSystemCameraStatus` (HeyMelody's camera feature) `[VENDOR]` |
 
-**The graph** `[VENDOR]` (`HearingEnhancementDetectCompleteFragment`, ): each ear's hearing and
+**The graph** `[VENDOR]`: each ear's hearing and
 ear-scan biquads are summed in dB (`20 log10 |B/A|`, 44100 Hz when no rate is given) and read at 80, 10000,
 4800, 2400, 1200, 250 Hz (the radar's axes, 80 at the top, clockwise). A radius is
 `max(2, -|dB| x 10 / scale + 10)` with scales 7.5, 15, 15, 12.5, 12.5, 7.5; 10 = no change.
 
-**Values** `[VENDOR]` (`EnhanceDataUtils`, `HearingEnhancementDetectingFragmentV2`) + `[CAPTURE]`: the
+**Values** `[VENDOR]` + `[CAPTURE]`: the
 slider has 25 stops, each one a tone value:
 `-120 -88 -55 -52 -49 -45 -41 -38 -35 -30 -25 -22 -19 -15 -11 -8 -5 -1 3 5 7 10 13 15 17`.
 Each move plays a tone at the stop's value (at most one every 300 ms); each frequency starts near
@@ -1192,7 +1191,7 @@ active one.
 | Start / stop | `0405 01` / `0405 00` (`switchCompactnessDetectionStatus`); ack `8405 00` |
 | Result | `0x0204` event `04 [dev status] [dev status]`, dev `01` left / `02` right |
 
-Status `1` good, `0` average, `6` poor, anything else an error (`FitDetectionDTO.isDetectError`).
+Status `1` good, `0` average, `6` poor, anything else an error.
 HeyMelody needs both buds in an ear, fails after 15 s without a result, and sends the stop when its
 sheet closes. Buds 4 from the app: `TX 0405 01`, ack `00`, then ~8.6 s later
 `RX AA 0C 00 00 04 02 08 05 00 04 01 01 02 01` (both good). Event `0x04` only arrives when
@@ -1232,8 +1231,8 @@ TX 0403 1B 00, TX 0403 18 01            Hi-Res ON while spatial on: spatial off 
   enables `0x012A` (bit 47), `HeadSetSpatialAudioVMV2` sends `0x0422 <type>`; otherwise
   `HeadSetSpatialAudioVM` toggles feature `0x1B`. Types come from the model's `spatialTypes`:
   `0` off, `1` fixed (on), `2` head tracking (3 models). The buds push the current type as
-  **`0x0510 <type>`** (`HeadsetCoreService`, `case 1296`, `payload[0]`). The `0x812A` reply layout
-  was not found (that decompile path failed). **Not wired**: Buds 4 is a `0x1B` model, and no
+  **`0x0510 <type>`** (`case 1296`, `payload[0]`). The `0x812A` reply layout
+  was not found. **Not wired**: Buds 4 is a `0x1B` model, and no
   `0x012A` owner has reported yet.
 - **`0x18` is a quality switch, not a codec switch** `[CAPTURE]` (phone `dumpsys bluetooth_manager`,
   2026-09-25, same session, music playing). The codec is LHDC V5 either way; the phone picks it.
@@ -1296,10 +1295,10 @@ TX 0124  ->  8124 00 FB 05 <level>   BassWave level read (was 02 before)
 - **Built-in presets are not in the `0x0122` list**; they are ids on `0x0406` / `0x010F`.
 - **Built-in presets differ per model** `[VENDOR]` (2026-09-29). HeyMelody's per-model `equalizerMode`
   (in `assets/models.json`) lists `{modeType, protocolIndex}`: `protocolIndex` is the `0x0406` / `0x010F`
-  id, `modeType` names the preset (`DisplayContentUtils.d()`), in list order on screen. The same id is a
+  id, `modeType` names the preset, in list order on screen. The same id is a
   different preset on another model: Buds 4 `11`->0 Balanced, `14`->1 Clear Vocals, `12`->2 Bass;
-  Nord Buds 2r `11`->0, `13`->1 Bold, `12`->2. `0x0406`'s payload is that id, one byte
-  (`HeadsetCoreService.H0`). Types 1-4 take other names where the model's `equalizer` field is `2` (or
+  Nord Buds 2r `11`->0, `13`->1 Bold, `12`->2. `0x0406`'s payload is that id, one byte.
+  Types 1-4 take other names where the model's `equalizer` field is `2` (or
   on Enco R / Air2). 67 of 137 models have no list, and HeyMelody shows no built-ins for them.
   Not used yet: `equalizerModeCompat` / `equalizerModeByVersion` (extra presets from a minimum
   firmware) and `customEqFrequency` (10 bands on 8 models; ours are 6).
@@ -1360,6 +1359,12 @@ answered `0x0500` with `8500 00 e0 72 b6 6a`: status, then **Unix seconds, u32 L
 reply. **QuickBuds does not answer it, by decision** (2026-09-25): no feature is known to depend on it,
 and no OSS client answers it either — OppoPodsManager files `0x0500`–`0x05FF` as "RequestCommandManager"
 status events and only logs them.
+
+`[CAPTURE]` 2026-09-29: the time is **not** what paces the battery pushes. With `0x0500` never
+answered all night, Buds 4 still pushed `0x0204 01` every 1-6 min (06:58-07:22: gaps of 60, 117, 119,
+161, 203, 208, 219, 337 s), and the pushes fall on no whole minute of phone time, so the buds' timer
+runs on its own clock. More likely the time stamps data the buds keep themselves (usage, spine health,
+sleep); still nothing to answer.
 
 ---
 

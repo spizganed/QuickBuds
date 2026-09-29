@@ -81,7 +81,7 @@ enum class Gesture(
     val keyFnAction: Int = 0,
     /**
      * `[VENDOR]` The `action` values of HeyMelody's per-model `control` list that are this row
-     * (`BaseEarControlFragment`: 16/17/18 are the stem-press models' 1/2/3, and 11, 20 and 27 are
+     * (`[VENDOR]`: 16/17/18 are the stem-press models' 1/2/3, and 11, 20 and 27 are
      * all the hold's ANC cycle on `act 0x04`). See [GestureModel].
      */
     val controlActions: IntArray = intArrayOf()
@@ -161,13 +161,13 @@ enum class GestureAction(
      * `0x8108` diff: he rebound slots in the vendor app and reported what he set each
      * one to, and every value matched the reply with no contradictions (two of them
      * twice, on two different slots). See PROTOCOL.md §6. HeyMelody's own label -> byte map
-     * (`DeviceControlPreferenceUtils.getFunctionCommand`) agrees on every one, and is the
+     * agrees on every one, and is the
      * `[VENDOR]` source for volume up / down and switch devices.
      */
     val functionByte: Int = 0x00,
     /**
-     * `[VENDOR]` This action's bit in a `control` entry's `support` mask
-     * (`DeviceControlPreferenceUtils`, ). 0 = not offered through `support` (the ANC modes).
+     * `[VENDOR]` This action's bit in a `control` entry's `support` mask.
+     * 0 = not offered through `support` (the ANC modes).
      */
     val supportBit: Int = 0,
     /**
@@ -231,12 +231,12 @@ enum class GestureAction(
  * Which gesture rows the current model has and what each may be bound to — `[VENDOR]`, from
  * HeyMelody's per-model `control` / `callControl` lists (copied into `assets/models.json`,
  * PROTOCOL.md §6). A row is a `control` entry; its options are the [GestureAction.supportBit]s in
- * its `support` mask, in HeyMelody's own order (`DeviceControlPreferenceUtils.f2769a`). For Buds 4
+ * its `support` mask, in HeyMelody's own order. For Buds 4
  * this gives exactly the rows and options the screen had when they were hand-written from
  * HeyMelody's UI (`[USER]` 2026-09-21).
  *
  * The hold ([Gesture.TAP_HOLD]) offers the model's top-level noise modes, and its cycle mask
- * uses each mode's `protocolIndex` (`BaseEarControlFragment.getNoiseReductionInfoDTO`), so the
+ * uses each mode's `protocolIndex`, so the
  * bits differ per model (Buds 4: ANC 1, Adaptive 11, Transparency 2, Off 0, as captured).
  * Models with `longPressType` set give each bud its own hold ([perBudHold]): a choice of
  * [holdChoices], one of them the noise cycle with its own mask per bud (noise type 3 / 4).
@@ -253,8 +253,8 @@ class GestureModel private constructor(
     /** `[VENDOR]` `longPressType` set: each bud has its own hold, written and read per side. */
     val perBudHold: Boolean = false,
     /**
-     * `[VENDOR]` The per-bud hold's choices, `longPressType` bits in HeyMelody's order
-     * (): 512 none, 128 the noise cycle, 1 voice assistant, 8192 game mode.
+     * `[VENDOR]` The per-bud hold's choices, `longPressType` bits in HeyMelody's order:
+     * 512 none, 128 the noise cycle, 1 voice assistant, 8192 game mode.
      */
     val holdChoices: List<Int> = emptyList(),
     /** `[VENDOR]` The fewest noise modes the hold may cycle (`CustomMultiSelectPreference`). */
@@ -374,7 +374,7 @@ class GestureModel private constructor(
             fun hasCall(action: Int) = (0 until call.length()).map { call.getJSONObject(it) }
                 .any { it.getInt("action") == action && it.optInt("support") and 512 != 0 }
             val onCall = OnCallGesture.values().filter { hasCall(it.callAction) }
-            // , without spy tap (8388608), which needs a phone-side feature.
+            // `[VENDOR]` order, without spy tap (8388608), which needs a phone-side feature.
             val holdChoices = if (longPressType == 0) emptyList()
                 else intArrayOf(512, HOLD_NOISE, 1, 8192).filter { longPressType and it != 0 }
             return GestureModel(rows, holdBits, onCall, name == "OnePlus Buds" || name == "OnePlus Buds Z",
@@ -385,7 +385,7 @@ class GestureModel private constructor(
          * The hold's options and their mask bits: the model's top-level noise modes, in its own
          * order. Null (no hold row) when a mode has no action here. With [levelBits] (Buds Pro),
          * the ANC levels 3 / 4 / 7 become one [GestureAction.ANC_ON] and their bits go there
-         * ( gives them one label on that model).
+         * (HeyMelody gives them one label on that model).
          */
         private fun holdBits(json: JSONObject, levelBits: MutableList<Int>?): Map<GestureAction, Int>? {
             val modes = json.optJSONArray("noiseReductionMode") ?: return null
@@ -595,7 +595,7 @@ enum class OnCallGesture(
     val serviceRow: String,
     val act: Int,
     val enabledFn: Int,
-    /** `[VENDOR]` The model list's `callControl` action for this row (`BaseEarControlFragment.u()`). */
+    /** `[VENDOR]` The model list's `callControl` action for this row. */
     val callAction: Int
 ) {
     /** `[VENDOR]` callControl 32: single tap answers / ends (Buds Pro 3, Enco X3). */

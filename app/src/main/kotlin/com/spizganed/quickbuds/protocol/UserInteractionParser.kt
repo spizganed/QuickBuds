@@ -21,7 +21,7 @@ package com.spizganed.quickbuds.protocol
  *
  * SOURCE (not guessed): Zhaoyi-ya/OppoPodsManager, `Models/UserInteractionEventInfo.cs`.
  * That class is explicitly documented as the data body of "0x0204 subType=0xF1", derived
- * from the Melody APK ( packed-switch offset -0xf). Its field order matches this
+ * from HeyMelody `[VENDOR]`. Its field order matches this
  * frame byte for byte, including the trailing int16 options array.
  *
  *     byte0 = side        0x01 = left, 0x02 = right (confirmed by that project)

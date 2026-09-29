@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 /**
  * Which model the connected buds are, from HeyMelody's own list (`assets/models.json`,
- * PROTOCOL.md §4). `[VENDOR]` `WhitelistUtils.findWhitelistConfig` (): the entries whose
+ * PROTOCOL.md §4). `[VENDOR]`: the entries whose
  * name equals the Bluetooth name and those whose id equals the product id; one in both wins, then
  * the first name match, then the first id match. A model picked by hand overrides all of it.
  */
@@ -29,7 +29,7 @@ object ModelCatalog {
     }.getOrDefault(emptyList()).also { models = it }
 
     /**
-     * `[VENDOR]` HeyMelody folds four colour ranges into one id (, on the BLE scan id;
+     * `[VENDOR]` HeyMelody folds four colour ranges into one id (on the BLE scan id;
      * `[OSS]` OppoPodsManager `NormalizeProductId` applies it to `0x8103` too). The low byte is the colour.
      */
     fun normalise(id: Int): Int = when (id) {

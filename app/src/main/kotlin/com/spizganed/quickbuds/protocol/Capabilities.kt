@@ -7,7 +7,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * What the connected buds can do, from their own replies (PROTOCOL.md §4):
  *
  *  - the `0x8100` handshake reply is a bitmap of the commands the firmware accepts. HeyMelody
- *    refuses to send a command outside it (, apart from [ALWAYS]), so a row whose command
+ *    refuses to send a command outside it (apart from [ALWAYS]), so a row whose command
  *    is missing is hidden here the same way;
  *  - the `0x810D` status reply lists only the `0x0403` feature switches the firmware has, so a
  *    feature id missing from it is a switch these buds do not have.
@@ -17,7 +17,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  */
 object Capabilities {
 
-    /** Bit n of the `0x8100` bitmap (LSB first) enables these commands. `[VENDOR]` HeyMelody . */
+    /** Bit n of the `0x8100` bitmap (LSB first) enables these commands. `[VENDOR]` HeyMelody. */
     private val BIT_COMMANDS: Array<IntArray> = arrayOf(
         intArrayOf(0x0105), intArrayOf(0x0106), intArrayOf(0x0107), intArrayOf(0x0108, 0x0401, 0x0416),
         intArrayOf(0x0109), intArrayOf(0x0400), intArrayOf(0x0402), intArrayOf(0x0403),

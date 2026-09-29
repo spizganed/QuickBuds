@@ -73,7 +73,7 @@ class BudsConnectionManager(private val context: Context) {
 
         /**
          * Fit test result (`0x0204` subType `0x04`), per bud: 1 good, 0 average, 6 poor, anything
-         * else an error (`[VENDOR]` `FitDetectionDTO`); -1 = that bud not reported.
+         * else an error (`[VENDOR]`); -1 = that bud not reported.
          */
         fun onFitResult(left: Int, right: Int) {}
 

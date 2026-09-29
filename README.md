@@ -157,3 +157,8 @@ Copyright (C) 2026 spizganed
 QuickBuds is free software under the GNU General Public License v3.0 or later, distributed without
 any warranty; see [LICENSE](./LICENSE). The protocol sources above were used as documentation; check
 each one's license before copying text from it.
+
+QuickBuds is an independent project, not affiliated with, endorsed by or sponsored by OnePlus, OPPO,
+realme, HeyTap or any of their affiliates. OnePlus, OPPO, realme, HeyMelody and the earbud model names
+are trademarks of their respective owners and are used here only to say which devices the app works
+with. The protocol was studied only to make these earbuds work with this app.

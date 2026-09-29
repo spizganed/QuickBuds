@@ -332,7 +332,10 @@ object ThemeRes {
     fun switchTints(context: Context): Pair<ColorStateList, ColorStateList> {
         val p = palette(context)
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf())
-        return ColorStateList(states, intArrayOf(p.accent, p.thumbOff)) to
+        // Nothing style on a light palette: a card-coloured dot thumb has no shadow and vanished
+        // into the page ([USER] 2026-09-29), so it takes textSecondary there.
+        val off = if (nothing(context) && p.isLight) p.textSecondary else p.thumbOff
+        return ColorStateList(states, intArrayOf(p.accent, off)) to
             ColorStateList(states, intArrayOf(p.track, p.track))
     }
 

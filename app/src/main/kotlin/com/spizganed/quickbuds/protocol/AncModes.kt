@@ -8,9 +8,9 @@ import org.json.JSONArray
  * The noise-control modes one model has and the `0x0404` bit of each (PROTOCOL.md §5).
  *
  * `[VENDOR]` HeyMelody's per-model list, `noiseReductionMode` in `assets/models.json`: a tree of
- * `{modeType, protocolIndex, childrenMode}`. A SET sends a mode's own `protocolIndex` as a bit
- * (`NoiseReductionItem` -> `k0(protocolIndex)`); a report's bit is looked up in the same tree,
- * parents first, then children (). That is why Off is SET as bit 0 but reported as bit 3
+ * `{modeType, protocolIndex, childrenMode}`. A SET sends a mode's own `protocolIndex` as a bit;
+ * a report's bit is looked up in the same tree,
+ * parents first, then children. That is why Off is SET as bit 0 but reported as bit 3
  * on Buds 4: bit 3 is Off's child, not a second table.
  *
  * Names are the ones the rest of the app stores: [OFF], [TRANSPARENCY], [ADAPTIVE] and the levels.
@@ -47,7 +47,7 @@ class AncModes private constructor(
         val LEVELS = listOf("ANC-Light", "ANC-Medium", "ANC-Deep", SMART)
         private const val NC = "ANC"
 
-        /** HeyMelody's `modeType` -> our name (strings in `NoiseReductionItem`, ). */
+        /** HeyMelody's `modeType` -> our name. */
         private fun nameOf(modeType: Int): String? = when (modeType) {
             1 -> OFF
             2 -> TRANSPARENCY

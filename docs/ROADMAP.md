@@ -15,6 +15,22 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 Parity with HeyMelody is the main priority ([USER] 2026-09-29, reversing the 2026-09-27 skip):
 
 - Nothing open for Buds 4.
+- **Next: the features Buds 4 lacks, built in code and UI** ([USER] 2026-09-29). Each gets its
+  `[VENDOR]` bytes in PROTOCOL.md, a row gated on the buds' own `0x810D` list / `0x8100` bitmap, and
+  is checked in the app with a model picked by hand (the row shows, the screen opens); a write stays
+  unverified until an owner reads it back. The `0x0403` feature ids (PROTOCOL.md §9):
+  - vocal enhance `0x09`
+  - game sound `0x27` + `0x28`
+  - auto volume `0x1C`
+  - bass engine `0x1D` (constant and level commands exist, no UI)
+  - spine health `0x22`-`0x24` (neck posture reminders from the head-tracking sensor)
+  - adaptive volume `0x30`, adaptive ear `0x31`
+  - meeting assistant `0x34`
+  - sleep detection `0x3A`
+  - spatial audio's three-mode form (`0x0422`, for models that are not `0x1B` on/off)
+  - long battery `0x17` (OSS only so far)
+  `models.json` carries no flags for these, so only the buds' own lists decide. A Buds 4 hides them
+  all, so the in-app check needs a way to show a row the connected buds lack (to settle with the first one).
 
 **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; a feature a
 model has that the app does not have yet gets its UI built. So every HeyMelody feature in the model list
@@ -74,12 +90,12 @@ Each step is done before the next one starts.
      device custom EQ, auto play/pause, dual connection. `OppoPodsManager` adds bass engine, hearing
      enhancement `0x0B`, long battery `0x17`, voice enhancement `0x09`, spine health `0x22`, game sound
      `0x27`, find device and the capability bitmap. Neither writes gestures.
-   - **The model list is HeyMelody's own** (pulled from the HeyMelody APK, [USER] 2026-09-27), so which
+   - **The model list is HeyMelody's own** ([USER] 2026-09-27), so which
      features a model has is `[VENDOR]`; only the packet builders are `[OSS]`. OppoPods' `docs/` has two
-     JADX write-ups of HeyMelody (`HeyMelody_Official_App_Protocol_Findings.md`,
+     write-ups of HeyMelody (`HeyMelody_Official_App_Protocol_Findings.md`,
      `HeyMelody_Bluetooth_Protocol_Notes.md`). Gestures on other models: done from the model list's
      `control` entries (the downloaded `control_<id>/config.json` turned out not to be needed).
-   - **More sources (2026-09-27):** HeyMelody decompiled (see CLAUDE.md) gives `[VENDOR]` payloads for
+   - **More sources (2026-09-27):** HeyMelody itself gives `[VENDOR]` payloads for
      every command. `GazzasaurusRex/oneplus-buds-omarchy` has read-back-verified profiles for Buds Pro
      and Buds Pro 2 (ANC levels, EQ ids, `0x0105` firmware). `digisatapathy2025/oneplus-buds-mac` has a
      OnePlus product-id catalogue. `maniacx/BudsLink` PR #94 and `thelok1s/orchestra` verify realme

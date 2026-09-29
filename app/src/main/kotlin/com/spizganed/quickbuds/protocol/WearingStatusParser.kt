@@ -4,7 +4,7 @@ package com.spizganed.quickbuds.protocol
  * Wearing / in-case status parser for OnePlus Buds 4.
  *
  * Source: Zhaoyi-ya/OppoPodsManager (Services/PodManager.Parsing.cs, ParseWearingData),
- * cross-validated against HeyMelody decompile  and live captures.
+ * cross-validated against HeyMelody `[VENDOR]` and live captures.
  *
  * Two packet sources carry the same payload:
  *   - 0x8109  response to query 0x0109 (getEarBudsStatus)

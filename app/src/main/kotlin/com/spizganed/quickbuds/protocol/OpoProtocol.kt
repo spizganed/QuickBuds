@@ -174,7 +174,7 @@ object OpoProtocol {
         return buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(ids.size.toByte()) + ids.map { it.toByte() })
     }
 
-    // --- Golden Sound test (PROTOCOL.md §9), `[CAPTURE]` 2026-09-29 + `[VENDOR]` HeadsetCoreService ---
+    // --- Golden Sound test (PROTOCOL.md §9), `[CAPTURE]` 2026-09-29 + `[VENDOR]` ---
     const val CMD_GOLDEN_DETECT = 0x040D      // q0: ear scan `04 01|00 <uid>`, hearing test `02 01|00`
     const val CMD_GOLDEN_RECORD = 0x040E      // w0 / m1: tone, stop tone, apply record
     const val CMD_GOLDEN_RESTORE = 0x0411     // F0: restore data (the description id)
@@ -299,7 +299,7 @@ object OpoProtocol {
      * through was decided entirely on the vendor side. The mode list lives HERE instead, and
      * this read is the cheap, read-only way to see it before anyone writes `0x0404`.
      *
-     * READ-ONLY, so it cannot change a binding. `[VENDOR]` `PollCommandManager.s()`: `02 01` on
+     * READ-ONLY, so it cannot change a binding. `[VENDOR]`: `02 01` on
      * most models, `02 03` (left) and `02 04` (right) on models with a per-bud hold
      * (`longPressType`), see [HOLD_TYPE_SHARED].
      */
@@ -308,7 +308,7 @@ object OpoProtocol {
 
     /**
      * The hold cycle's noise type, the second byte of [setHoldAncModes] and [queryNoiseSwitchModes].
-     * `[VENDOR]` `BaseEarControlFragment.s()`: 1 for one cycle shared by both buds, 3 (left) / 4
+     * `[VENDOR]`: 1 for one cycle shared by both buds, 3 (left) / 4
      * (right) on models whose `longPressType` gives each bud its own hold.
      */
     const val HOLD_TYPE_SHARED = 1
@@ -391,7 +391,7 @@ object OpoProtocol {
     )
 
     /**
-     * `[VENDOR]` `BaseEarControlFragment.u()`: callControl 28 / 32 are `act 0x01` (single tap),
+     * `[VENDOR]`: callControl 28 / 32 are `act 0x01` (single tap),
      * 29 / 33 / 36 `act 0x02`, 30 / 34 `act 0x03`, 31 / 35 `act 0x06`; all `btn 0x06`, `dev 0x04`.
      */
     const val ON_CALL_ACT_SINGLE_TAP = 0x01

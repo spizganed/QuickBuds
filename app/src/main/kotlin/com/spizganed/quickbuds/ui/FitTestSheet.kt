@@ -11,7 +11,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
 /**
- * Earbud fit test, a bottom sheet as in HeyMelody (`FitDetectionFragment`, `[VENDOR]`,
+ * Earbud fit test, a bottom sheet as in HeyMelody (`[VENDOR]`,
  * PROTOCOL.md §9): Play starts `0x0405 01`, the buds play a tone and push one `0x0204`
  * subType `04` result per bud ([result]). Both buds must be in an ear; no result within 15 s
  * is a failure; closing the sheet sends the stop, as HeyMelody does.

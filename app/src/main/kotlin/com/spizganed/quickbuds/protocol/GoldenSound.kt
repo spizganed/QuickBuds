@@ -11,7 +11,7 @@ import org.json.JSONObject
  */
 object GoldenSound {
 
-    /** The hearing test slider's 25 stops. `[VENDOR]` `EnhanceDataUtils`. */
+    /** The hearing test slider's 25 stops. `[VENDOR]`. */
     val STOPS = intArrayOf(-120, -88, -55, -52, -49, -45, -41, -38, -35, -30, -25, -22, -19, -15, -11, -8, -5, -1, 3, 5, 7, 10, 13, 15, 17)
     /** The values a result can hold; a stop is saved as the nearest one. */
     val RESULTS = intArrayOf(-55, -49, -41, -35, -25, -19, -11, -5, 3, 7, 13, 17)
@@ -109,7 +109,7 @@ object GoldenSound {
         return Triple(fs, f.copyOfRange(0, count / 2), f.copyOfRange(count / 2, count))
     }
 
-    /** HeyMelody's radar axes (Hz), in its order, and each one's scale in dB. `[VENDOR]` `HearingEnhancementDetectCompleteFragment`. */
+    /** HeyMelody's radar axes (Hz), in its order, and each one's scale in dB. `[VENDOR]`. */
     val AXES = intArrayOf(80, 10000, 4800, 2400, 1200, 250)
     private val AXIS_SCALE = floatArrayOf(7.5f, 15f, 15f, 12.5f, 12.5f, 7.5f)
 
