@@ -1133,12 +1133,29 @@ record switch). Buds 4 lists `0x0B` in `0x810D`; toggled from the app, the ack w
 re-read `0x810D` showed `0B 00` then `0B 01`. The switch applies the profile already stored on the
 buds; HeyMelody keeps the records (a named list, one active) on the phone.
 
-The **test** that makes a profile is a long exchange, not wired: ear canal scan (about 7 s), then a
-hearing test of 6 steps per ear (a tone per frequency, the user drags a slider to where it just
-disappears), progress in event `0x08`, frequency curves pushed back by the buds, the result written
-with the restore-data and detection-data commands (`0x040D`, `0x040E`, `0x0411`, `0x0415`,
-`0x0425`, `0x0428`, `0x0429`, `0x0131`; names in `HearingEnhancementRepositoryServerImpl` and
-`HeadsetCoreService`). Needs an HCI capture of HeyMelody running it before any of it is sent.
+The **test** that makes a profile is not wired yet. It is captured (HeyMelody 116.9.0 running it on
+Buds 4, `local/logs/heymelody_golden_sound_20260929.log.txt`) and every frame matches the vendor
+builder named below `[CAPTURE]` + `[VENDOR]`. A record has a 4-byte id (big-endian, chosen by the
+phone; `64 83 36 d7` here), 12 hearing values and 168 bytes of ear-scan data.
+
+`HearingDetectingInfo` is 3 bytes: `<side 01 L / 02 R> <freq 01..06> <value, signed byte>`.
+
+| Step | Frames |
+|---|---|
+| Read the active record | `0x0115` (empty) → `00 0c <12 x info> <id> <name ASCII>`; `0x011E` (empty) → `00 03 a8 00 <168 scan bytes> <id>` |
+| Ear scan start / stop | `0x040D 04 01 <id>` / `0x040D 04 00 <id>` (`q0`, 1037) |
+| Ear scan result | pushed as event `0x0E`, not requested and not in the `0x0205` list: `0204 0E 03 a8 00 <168 bytes> <id>`, ~8 s after start |
+| Hearing test start / stop | `0x040D 02 01` / `0x040D 02 00` |
+| Play a tone | `0x040E 03 01 <info>` (`m1`); `0x040E 04` stops it, sent before each new level |
+| Filters (HeyMelody's curves) | `0x0116 0c <12 x info> <id>` (278) → 250 bytes of little-endian floats (`00 00 80 3f` = 1.0, biquad-like); `0x011F a8 00 <scan> <id>` (287, length little-endian) → 299 bytes of floats. Only read; nothing sent back from them |
+| Apply a record | `0x040E 03 0c <12 x info> <id> <name>` (`w0`, the name is the record's date, "2026/09/29 01:53"), `0x0411 01 01 01 00 0b` (`F0`: count 1, `EarRestoreDataInfo` type 01, length 0001 little-endian, data `0b`), `0x0415 03 a8 00 <scan> <id>` (`v0`, 1045), then `0x0403 0B 01` |
+| Clear | `0x040E 02` + `0x0415 02`; after the test, `0x040E 01 00 00000000` + `0x0415 01 00 00 00000000` (mode 1, empty) |
+| Other | `0x040F 01` (`C0`, 1039) once after apply; progress event `0x08`: `08 04 05` (scan), `08 02 05` / `08 02 06` (test) |
+
+Each ear: 6 frequencies, each started at value `e2` (-30), then one tone per slider stop; `88` (-120)
+appears between levels. The value saved for a frequency is not always the last one played, so how
+the slider maps to the value is **not settled** `[GUESS]`. Switching records in HeyMelody re-sends the
+whole apply sequence with the other record, so the buds hold only the active one.
 
 ### Earbud fit test — `0x0405` — `[VENDOR]` + `[CAPTURE]` 2026-09-29, wired
 
