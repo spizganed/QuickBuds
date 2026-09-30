@@ -7,11 +7,11 @@ same way.
 
 ## Why it is built this way
 
-The developer has no laptop, only a desktop at home. QuickBuds is worked on in free time at the day
-job, on an office desktop where installing or downloading development tools is not an option (the
-employer has no objection to the work itself). So the phone is the whole machine: Termux builds, adb
-installs and tests, and the office PC only opens an SSH session using the ssh client that Windows 11's
-default terminal already has. Nothing is installed on the PC.
+The developer has a desktop at home but no laptop. QuickBuds is also worked on in free time at the
+day job, and the work PC is kept clean on purpose: nothing is installed or downloaded on it, and no
+project files are put on it. So the phone is the whole machine: Termux builds, adb installs and tests,
+and the work PC only opens an SSH session using the ssh client that Windows 11's default terminal
+already has. Everything stays on the phone.
 
 ## AI assistant
 
