@@ -344,18 +344,10 @@ layout was removed; do not bring resizing back) and **4x2**
 
 ## TEMPORARY handoff (2026-09-30, delete this section once done)
 
-State: v3.9.2 released and pushed, roadmap Open is empty. He continues on the home PC.
+State: v3.9.2 released and pushed, roadmap Open is empty. Launch posts are up (2026-09-30): r/droidappshowcase,
+r/termux, XDA Apps and Games, r/oneplus, r/realme, r/NothingTech.
 
-- **Posts to publish** (he does the posting; the agent drafts): app post to r/droidappshowcase (never r/AndroidApps:
-  it bans self-promotion), XDA Apps and Games, r/oneplus, r/realme, r/NothingTech; toolchain post to r/termux
-  (links `docs/TOOLCHAIN.md`). Rules of r/oneplus, r/realme, r/NothingTech and the XDA subforum were not verified:
-  check each sidebar. Post at most one or two a day. Say the app is tested on one setup only (Buds 4, Phone 3a,
-  Android 16), ask other-model owners for a Dev Tools log export on GitHub, mention the Play Protect
-  "Install anyway" note, "not affiliated with OnePlus, OPPO or realme", and that Claude Code helped write it.
-  Screenshots: Classic main, Dot matrix main, Equalizer, a widget (`docs/screenshots/`).
-- **Next roadmap step:** PC version, brainstorm first (language, UI toolkit, code sharing all open).
+- **Next roadmap step:** PC version, brainstorm first (language, UI toolkit, code sharing all open). He has notes
+  for it; start from those.
 - **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.
-- **Home PC setup:** the release key is not in git. Copy `local/keys/` from the phone
-  (`~/projects/QuickBuds/local/keys/`) over ssh, never print the password, keep a backup. Never copy the phone's
-  `aapt2` override or `~/.gradle/init.d` script to the PC.
 - The phone has `~/tapt.sh <text>` (prints tap coordinates of a visible label from uiautomator); outside the repo.
