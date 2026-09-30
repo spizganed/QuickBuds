@@ -174,7 +174,21 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private var shownNames: Set<String> = emptySet()
     private val customRows = HashMap<Int, View>()
     private lateinit var selection: SelectionSlider
+    /** Rows folding away after a delete, as "id:name": names alone repeat (two presets called Custom1) and hid them all. */
     private val deleting = HashSet<String>()
+    private fun key(p: EqCodec.Preset) = "${p.id}:${p.name}"
+
+    /** Names sent to create a moment ago and not read back yet, so a second tap does not reuse one. */
+    private val justCreated = HashMap<String, Long>()
+    private fun createdNames(): Set<String> {
+        val now = android.os.SystemClock.elapsedRealtime()
+        justCreated.values.removeAll { now - it > 4000 }
+        return justCreated.keys
+    }
+    private fun createCustom(name: String, freqs: List<Int>) {
+        justCreated[name] = android.os.SystemClock.elapsedRealtime()
+        manager?.createCustomEq(name, freqs)
+    }
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -285,8 +299,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         // A row folded shut by a delete stays hidden until the re-read drops it; without this,
         // a read landing first (the selection one) flashed it back for a frame.
         val all = m?.eqCustom.orEmpty()
-        deleting.retainAll(all.map { it.name }.toSet())
-        val custom = all.filter { it.name !in deleting }
+        deleting.retainAll(all.map { key(it) }.toSet())
+        val custom = all.filter { key(it) !in deleting }
         pendingImport?.let { (name, gains) ->
             custom.firstOrNull { it.name == name }?.let { p ->
                 pendingImport = null
@@ -338,9 +352,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         customActions.removeAllViews()
         if (connected && hasCustom(this) && custom.size < maxCustom(this)) {
             customActions.addView(actionButton(R.drawable.ic_plus, R.string.eq_add) {
-                val used = custom.map { it.name }.toSet()
+                val used = custom.map { it.name }.toSet() + createdNames()
                 val name = (1..9).map { "Custom$it" }.first { it !in used }
-                manager?.createCustomEq(name, freqs())
+                createCustom(name, freqs())
             })
         }
         customActions.visibility = if (customActions.childCount == 0) View.GONE else View.VISIBLE
@@ -442,10 +456,10 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             addView(iconButton(R.drawable.ic_copy, R.string.eq_duplicate) {
                 if (shownNames.size >= maxCustom(this@EqActivity)) return@iconButton
                 d.dismiss()
-                val used = shownNames
+                val used = shownNames + createdNames()
                 val name = (2..9).map { "${p.name.take(18)} $it" }.firstOrNull { it !in used } ?: return@iconButton
                 pendingImport = name to p.gains
-                manager?.createCustomEq(name, p.freqs)
+                createCustom(name, p.freqs)
             }.apply {
                 fortyEight(this)
                 isEnabled = shownNames.size < maxCustom(this@EqActivity)
@@ -458,7 +472,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 ) {
                     d.dismiss()
                     // The row folds shut first; the delete goes out once it has.
-                    deleting += p.name
+                    deleting += key(p)
                     val row = customRows[p.id]
                     if (row == null) manager?.deleteCustomEq(p)
                     else slide(row, open = false) { manager?.deleteCustomEq(p) }
