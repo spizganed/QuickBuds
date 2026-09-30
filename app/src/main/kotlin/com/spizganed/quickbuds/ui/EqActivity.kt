@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
@@ -351,14 +352,14 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             customRows[p.id] = row
             SettingRowFactory.addSplit(customCard, row)
             if (current == p.id) selectedRow = row
-            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames && p.name !in prevWaiting) slide(row, open = true) { selection.snap() }
+            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames && p.name !in prevWaiting) slide(row.parent as View, open = true) { selection.snap() }
         }
         // A preset just sent to create shows at once, dimmed, until the buds' re-read brings the real one (about a second).
         waiting.forEach { name ->
             val row = choiceRow(name, false, false) {}
             row.alpha = 0.5f
             SettingRowFactory.addSplit(customCard, row)
-            if (prevNames != null && name !in prevWaiting) slide(row, open = true) { row.alpha = 0.5f }
+            if (prevNames != null && name !in prevWaiting) slide(row.parent as View, open = true)
         }
         customCard.visibility = if ((custom.isEmpty() && waiting.isEmpty()) || !hasCustom(this)) View.GONE else View.VISIBLE
 
@@ -383,6 +384,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
      */
     private fun slide(v: View, open: Boolean, ms: Long = if (open) 280 else 220, onEnd: (() -> Unit)? = null) {
         val lp = v.layoutParams
+        // A split row's card has a gap above it: it grows and shrinks with the card, or it snaps at the end.
+        val mlp = lp as? ViewGroup.MarginLayoutParams
+        val gap = mlp?.topMargin ?: 0
         val natural = lp.height
         val full = if (natural > 0) natural else {
             val w = (v.parent as? View)?.width ?: 0
@@ -395,12 +399,15 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             interpolator = DecelerateInterpolator()
             addUpdateListener {
                 lp.height = it.animatedValue as Int
-                v.alpha = if (open) it.animatedFraction else 1f - it.animatedFraction
+                val shown = if (open) it.animatedFraction else 1f - it.animatedFraction
+                v.alpha = shown
+                mlp?.topMargin = (gap * shown).toInt()
                 v.requestLayout()
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(a: Animator) {
                     lp.height = natural
+                    mlp?.topMargin = gap
                     v.alpha = 1f
                     if (!open) v.visibility = View.GONE
                     v.requestLayout()
@@ -494,7 +501,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                         manager?.selectBuiltInEq(other)
                         customCard.postDelayed({ manager?.deleteCustomEq(p) }, 300)
                     } else manager?.deleteCustomEq(p)
-                    if (row != null) slide(row, open = false)
+                    (row?.parent as? View)?.let { slide(it, open = false) }
                 }
             }.apply {
                 fortyEight(this)
