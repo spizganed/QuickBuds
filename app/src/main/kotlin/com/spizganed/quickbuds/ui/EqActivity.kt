@@ -172,6 +172,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private var shownSignature: String? = null
     private var shownSelection: Int? = null
     private var shownNames: Set<String> = emptySet()
+    private var shownWaiting: Set<String> = emptySet()
     private val customRows = HashMap<Int, View>()
     private lateinit var selection: SelectionSlider
     /** Rows folding away after a delete, as "id:name": names alone repeat (two presets called Custom1) and hid them all. */
@@ -322,6 +323,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         shownSignature = signature
         shownSelection = current
         shownNames = custom.map { it.name }.toSet()
+        val prevWaiting = shownWaiting
+        shownWaiting = waiting.toSet()
 
         builtInCard.removeAllViews()
         val builtIns = builtInPresets()
@@ -348,14 +351,14 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             customRows[p.id] = row
             SettingRowFactory.addSplit(customCard, row)
             if (current == p.id) selectedRow = row
-            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames) slide(row, open = true) { selection.snap() }
+            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames && p.name !in prevWaiting) slide(row, open = true) { selection.snap() }
         }
         // A preset just sent to create shows at once, dimmed, until the buds' re-read brings the real one (about a second).
         waiting.forEach { name ->
             val row = choiceRow(name, false, false) {}
             row.alpha = 0.5f
             SettingRowFactory.addSplit(customCard, row)
-            if (prevNames != null) slide(row, open = true) { row.alpha = 0.5f }
+            if (prevNames != null && name !in prevWaiting) slide(row, open = true) { row.alpha = 0.5f }
         }
         customCard.visibility = if ((custom.isEmpty() && waiting.isEmpty()) || !hasCustom(this)) View.GONE else View.VISIBLE
 
@@ -485,7 +488,12 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                                         deleting += key(p)
                     val row = customRows[p.id]
                     // Both at once: the fold takes 220 ms, the buds' re-read longer.
-                    manager?.deleteCustomEq(p)
+                    // The buds refuse to delete the preset in use: switch to a recommended one first.
+                    val other = builtInPresets().firstOrNull()?.first
+                    if (manager?.eqCurrent == p.id && other != null) {
+                        manager?.selectBuiltInEq(other)
+                        customCard.postDelayed({ manager?.deleteCustomEq(p) }, 300)
+                    } else manager?.deleteCustomEq(p)
                     if (row != null) slide(row, open = false)
                 }
             }.apply {
