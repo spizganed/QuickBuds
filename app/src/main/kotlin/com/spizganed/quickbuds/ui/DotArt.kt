@@ -221,7 +221,8 @@ object DotArt {
                 }
                 cache = out
             }
-            canvas.drawBitmap(bmp, b.left + (b.width() - w) / 2f, b.top + (b.height() - h) / 2f, null)
+            // Whole pixels: a half-pixel offset resampled the dots into faint lines.
+            canvas.drawBitmap(bmp, (b.left + (b.width() - w) / 2).toFloat(), (b.top + (b.height() - h) / 2).toFloat(), null)
         }
 
         override fun setAlpha(alpha: Int) {}
