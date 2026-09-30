@@ -327,6 +327,32 @@ object ThemeRes {
     /** Icon button / framed control: `card` fill, `outline` stroke, 14dp radius (SPEC section 2). */
     fun iconButton(context: Context, radiusDp: Float = 14f): Drawable = card(context, radiusDp)
 
+    private var snapshot: android.graphics.Bitmap? = null
+
+    /** recreate() with a cross-fade: the old screen is kept as a picture, drawn over the new one and faded out ([fadeInFromSnapshot]). */
+    fun recreateFaded(a: Activity) {
+        val v = a.window.decorView
+        snapshot = if (v.width > 0 && v.height > 0)
+            android.graphics.Bitmap.createBitmap(v.width, v.height, android.graphics.Bitmap.Config.ARGB_8888)
+                .also { v.draw(android.graphics.Canvas(it)) }
+        else null
+        a.recreate()
+    }
+
+    /** Call at the end of onCreate: fades out the picture [recreateFaded] left, if any. */
+    fun fadeInFromSnapshot(a: Activity) {
+        val bmp = snapshot ?: return
+        snapshot = null
+        val decor = a.window.decorView as android.view.ViewGroup
+        val cover = android.widget.ImageView(a).apply {
+            setImageBitmap(bmp)
+            scaleType = android.widget.ImageView.ScaleType.FIT_XY
+            isClickable = true // swallows taps while it fades
+        }
+        decor.addView(cover, android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+        cover.animate().alpha(0f).setDuration(240).withEndAction { decor.removeView(cover); bmp.recycle() }.start()
+    }
+
     /** No ripple: the view sinks a little under the finger and springs back, like a real button. Listener returns false, so clicks still work. */
     fun sinkOnPress(v: View) {
         v.setOnTouchListener { view, e ->

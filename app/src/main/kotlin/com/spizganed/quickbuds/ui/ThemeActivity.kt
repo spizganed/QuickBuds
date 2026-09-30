@@ -44,6 +44,7 @@ class ThemeActivity : Activity() {
             setBackgroundColor(ThemeRes.color(this@ThemeActivity, R.attr.appColorBg))
             addView(root)
         })
+        ThemeRes.fadeInFromSnapshot(this)
     }
 
     override fun onSaveInstanceState(out: Bundle) {
@@ -61,7 +62,7 @@ class ThemeActivity : Activity() {
         if (id == PaletteStore.activeId(this)) return
         Haptics.commit(v)
         PaletteStore.setActive(this, id)
-        recreate()
+        ThemeRes.recreateFaded(this)
     }
 
     private fun build() {
@@ -85,7 +86,7 @@ class ThemeActivity : Activity() {
                     // The pill slides first, then the screen is rebuilt in the new style.
                     selected = i
                     ThemeRes.setNothing(this@ThemeActivity, i == 1)
-                    postDelayed({ recreate() }, 260)
+                    postDelayed({ ThemeRes.recreateFaded(this@ThemeActivity) }, 260)
                 }
             }
         })
@@ -105,6 +106,7 @@ class ThemeActivity : Activity() {
                 clipChildren = false
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                     .apply { if (i > 0) marginStart = dp(10f) }
+                ThemeRes.sinkOnPress(this)
                 setOnClickListener { apply(id, it) }
                 contentDescription = preset.name
             }
@@ -129,7 +131,7 @@ class ThemeActivity : Activity() {
 
         // --- Match system: White in light mode, a dark built-in in dark mode ---
         val autoSwitch = SettingRowFactory.buildSwitch(this, PaletteStore.auto(this))
-        autoSwitch.setOnCheckedChangeListener { v, on -> PaletteStore.setAuto(this, on); v.postDelayed({ recreate() }, 260) }
+        autoSwitch.setOnCheckedChangeListener { v, on -> PaletteStore.setAuto(this, on); v.postDelayed({ ThemeRes.recreateFaded(this@ThemeActivity) }, 260) }
         val autoRow = SettingRowFactory.build(this, 0, R.string.theme_auto, 0, autoSwitch) { autoSwitch.performClick() }
         SettingRowFactory.subtitle(this, autoRow).text =
             getString(R.string.theme_auto_sub, ThemeRes.builtInName(this, PaletteStore.WHITE),
@@ -169,7 +171,7 @@ class ThemeActivity : Activity() {
                     Haptics.commit(v)
                     PaletteStore.setAccentOverride(this, active.id, c)
                     // The whole app takes the new accent; this screen rebuilds with the picker open.
-                    v.post { recreate() }
+                    v.post { ThemeRes.recreateFaded(this) }
                 }
             ).apply {
                 setPadding(dp(16f), dp(4f), dp(16f), dp(16f))
