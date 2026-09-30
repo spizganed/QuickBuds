@@ -11,6 +11,12 @@
 QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app with a real
 home-screen widget.
 
+> **Desktop version in the works.** QuickBuds for **Windows and Linux** is being built in
+> [`desktop/`](./desktop): a small native app with a tray icon (battery on hover, quick controls on
+> right-click), no drivers and no background services. It already runs on Windows with battery, noise
+> control, low latency and the equalizer. There is no release yet; it will ship as an installer and a
+> portable zip. Progress is in [ROADMAP.md](./docs/ROADMAP.md).
+
 ## Screenshots
 
 <!-- Retaken with scripts/readme-screenshots.sh classic, then dot-matrix; see CLAUDE.md. -->
@@ -126,7 +132,7 @@ DIZO Wireless, DIZO GoPods D, DIZO GoPods.
 
 ## For developers
 
-- [CONTRIBUTING.md](./docs/CONTRIBUTING.md): build quickstart, where things are, the rules that matter.
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md): build quickstart (Android and desktop), where things are, the rules that matter.
 - [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md): capturing the earbuds' traffic, HeyMelody's included.
 - [TOOLCHAIN.md](./docs/TOOLCHAIN.md): building and testing on the phone itself, over SSH from a PC.
 - [PROTOCOL.md](./docs/PROTOCOL.md): the wire format, every claim tagged with its source.
@@ -152,6 +158,9 @@ first; PROTOCOL.md marks every fact taken from them `[OSS]`.
 
 Everything else was captured on real hardware and tested on the device: the gesture values, the
 equalizer writes, the hold's noise control cycle and more (see PROTOCOL.md).
+
+The desktop app is built with [Slint](https://slint.dev) (used under the GPLv3) and
+[tray-icon](https://github.com/tauri-apps/tray-icon).
 
 The Dot matrix style's font is [Doto](https://github.com/oliverlalan/Doto) (SIL Open Font License 1.1,
 bundled with its license in `app/src/main/assets/Doto-OFL.txt`).
