@@ -355,7 +355,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             fun initials(res: Int) = context.getString(res).split(' ').filter { it.isNotEmpty() }.joinToString("") { it.take(1) }.uppercase()
             class Q(val shown: Boolean, val lit: Boolean, val icon: Int, val label: String, val desc: String, val pi: PendingIntent)
             val qs = listOf(
-                Q(levels.isNotEmpty(), inAnc, if (inAnc) current.icon else R.drawable.ic_mode_anc_medium, "ANC",
+                Q(levels.isNotEmpty(), inAnc, if (inAnc) current.icon else R.drawable.ic_mode_anc_medium,
+                    if (inAnc) "ANC " + context.getString(current.short).take(1).uppercase() else "ANC",
                     context.getString(if (inAnc) current.name else R.string.anc_section),
                     receiverPI(context, WidgetActions.ACTION_QUICK, id, "anc", swap)),
                 Q(anc.supports(mode("trans").store), current.key == "trans", mode("trans").icon, initials(R.string.anc_seg_trans),

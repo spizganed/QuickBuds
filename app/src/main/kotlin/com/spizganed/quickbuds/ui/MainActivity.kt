@@ -631,7 +631,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      */
     private fun applyThemeTints() {
         ThemeRes.screenPadding(mainLayout)
-        connPill.background = ThemeRes.ripple(this, ThemeRes.iconButton(this, 22f))
+        connPill.background = ThemeRes.ripple(this, ThemeRes.iconButton(this, 16f))
         btnDevTools.background = ThemeRes.ripple(this, ThemeRes.iconButton(this))
         btnSettings.background = ThemeRes.ripple(this, ThemeRes.iconButton(this))
         batteryCard.background = ThemeRes.group(this)

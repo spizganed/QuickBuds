@@ -268,6 +268,9 @@ object ThemeRes {
             R.drawable.ic_check -> return DotArt.check(context).also { it.setTint(color) }
             R.drawable.ic_pencil -> return DotArt.pencil(context).also { it.setTint(color) }
             R.drawable.ic_delete -> return DotArt.bin(context).also { it.setTint(color) }
+            R.drawable.ic_model_list -> return DotArt.menu(context).also { it.setTint(color) }
+            R.drawable.ic_status_dot_filled -> return DotArt.statusDot(context, true).also { it.setTint(color) }
+            R.drawable.ic_status_dot_empty -> return DotArt.statusDot(context, false).also { it.setTint(color) }
             R.drawable.ic_settings_cog -> return DotArt.cog(context).also { it.setTint(color) }
         }
         val d = context.getDrawable(drawableRes)!!.mutate()
@@ -286,9 +289,12 @@ object ThemeRes {
         if (stroke != null) setStroke(dp(context, strokeDp).coerceAtLeast(1), stroke)
     }
 
-    /** A filled, unoutlined rounded button: [shape], dots in the dot style. */
+    /** Label colour on a [chip] (active) or [pill]: the dot style outlines them in the accent, so the label is accent. */
+    fun onFill(context: Context): Int = if (nothing(context)) palette(context).accent else palette(context).onAccent
+
+    /** A filled, unoutlined rounded button (dot style: outlined in the fill colour, since a dotted fill hid the label): [shape], dots in the dot style. */
     fun pill(context: Context, fill: Int, radiusDp: Float): Drawable =
-        if (nothing(context)) DotArt.Box(context, fill, null, radiusDp) else shape(context, fill, null, radiusDp)
+        if (nothing(context)) DotArt.Box(context, palette(context).card, fill, radiusDp) else shape(context, fill, null, radiusDp)
 
     /**
      * A group of rows or a home tile: [card], or nothing in the Nothing style ([USER] 2026-09-28: no cards,
@@ -347,12 +353,12 @@ object ThemeRes {
     /** Small chip button; the active one is an `accent` fill. */
     fun chip(context: Context, active: Boolean): Drawable {
         val p = palette(context)
-        if (nothing(context)) return DotArt.Box(context, if (active) p.accent else p.card, if (active) null else p.outline, 10f)
+        if (nothing(context)) return DotArt.Box(context, p.card, if (active) p.accent else p.outline, 10f)
         return if (active) shape(context, p.accent, null, 10f) else shape(context, p.card, p.outline, 10f)
     }
 
     /** Bottom sheet window: rounded top corners only. */
-    fun sheet(context: Context): Drawable = card(context, 20f, solid = true, topOnly = true)
+    fun sheet(context: Context): Drawable = card(context, 20f, topOnly = true)
 
 
     /** Thumb / track tint lists for a platform Switch (SPEC section 1, derived colours). */

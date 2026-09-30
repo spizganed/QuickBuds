@@ -107,7 +107,7 @@ class UpdateActivity : Activity() {
             textSize = 15f
             typeface = ThemeRes.bold(context)
             gravity = Gravity.CENTER
-            setTextColor(p.onAccent)
+            setTextColor(ThemeRes.onFill(this@UpdateActivity))
             background = ThemeRes.ripple(this@UpdateActivity, ThemeRes.pill(this@UpdateActivity, p.accent, 22f))
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44f))
                 .apply { topMargin = dp(14f) }

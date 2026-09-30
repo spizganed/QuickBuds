@@ -308,12 +308,21 @@ object DotArt {
         }
     }
 
-    /** A cog: a ring with eight square teeth. */
-    fun cog(context: Context) = Pattern(context, 15, 15) { x, y ->
-        val dx = x - 7.0; val dy = y - 7.0
+    /** A cog: a ring with a big hole and six square teeth, one at the top. */
+    fun cog(context: Context) = Pattern(context, 17, 17) { x, y ->
+        val dx = x - 8.0; val dy = y - 8.0
         val d = Math.hypot(dx, dy)
-        val a = Math.atan2(dy, dx)
-        val off = Math.abs(a - Math.round(a / (Math.PI / 4)) * (Math.PI / 4))
-        (d in 2.7..5.4) || (d in 5.0..7.6 && off <= 0.3)
+        val a = Math.atan2(dy, dx) + Math.PI / 2
+        val off = Math.abs(a - Math.round(a / (Math.PI / 3)) * (Math.PI / 3))
+        (d in 3.6..5.9) || (d in 5.5..8.4 && off <= 0.27)
+    }
+
+    /** Three lines, one under the other. */
+    fun menu(context: Context) = Pattern(context, 16, 16) { x, y -> x in 2..13 && y % 5 in 2..3 && y in 2..13 }
+
+    /** The connection dot: a round 7x7 disc, or its ring. */
+    fun statusDot(context: Context, filled: Boolean) = Pattern(context, 7, 7) { x, y ->
+        val d = Math.hypot(x - 3.0, y - 3.0)
+        d <= 3.4 && (filled || d >= 2.3)
     }
 }

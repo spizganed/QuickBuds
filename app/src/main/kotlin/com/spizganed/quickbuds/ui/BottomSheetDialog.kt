@@ -110,6 +110,12 @@ class BottomSheetDialog(private val activity: Activity) {
         confirmView?.text = label
     }
 
+    private var cancelText: String? = null
+    private var onCancel: (() -> Unit)? = null
+
+    /** A second, outlined button under the confirm button. */
+    fun cancel(label: String, onClick: () -> Unit) = apply { cancelText = label; onCancel = onClick }
+
     private var inputInitial: String? = null
     private var inputMaxLength = 0
     private var inputField: EditText? = null
@@ -223,7 +229,7 @@ class BottomSheetDialog(private val activity: Activity) {
                 textSize = 15f
                 typeface = ThemeRes.bold(context)
                 gravity = Gravity.CENTER
-                setTextColor(ThemeRes.palette(activity).onAccent)
+                setTextColor(ThemeRes.onFill(activity))
                 background = ThemeRes.chip(activity, true)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, dp(46f)
@@ -233,6 +239,19 @@ class BottomSheetDialog(private val activity: Activity) {
                     marginEnd = dp(10f)
                 }
                 setOnClickListener { onConfirm?.invoke() }
+            })
+        }
+        cancelText?.let { label ->
+            root.addView(TextView(activity).apply {
+                setText(label)
+                textSize = 15f
+                typeface = ThemeRes.bold(context)
+                gravity = Gravity.CENTER
+                setTextColor(primary)
+                background = ThemeRes.chip(activity, false)
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(46f))
+                    .apply { topMargin = dp(8f); marginStart = dp(10f); marginEnd = dp(10f) }
+                setOnClickListener { onCancel?.invoke() }
             })
         }
 
