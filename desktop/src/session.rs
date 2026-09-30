@@ -163,6 +163,10 @@ impl<'a> Conn<'a> {
             Event::ProductId(id) => {
                 s.model = find_model(Some(&id), Some(&s.name));
                 s.modes = AncModes::of(s.model);
+                // The bridge (or an unknown device name) shows the model's name instead.
+                if let Some(n) = s.model.and_then(|m| m["name"].as_str()) {
+                    if !is_known_name(&s.name) { s.name = n.to_string(); }
+                }
             }
             Event::Firmware(f) => s.firmware = Some(f),
             Event::EqCurrent(id) => s.eq_current = Some(id),
