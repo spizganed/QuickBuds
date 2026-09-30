@@ -29,7 +29,8 @@ finished (ROADMAP-DONE.md).
    **Next, in order** (`[USER]` 2026-09-30):
    1. **Noise control like the phone and the widget** `[USER]`: no separate level bar under Off / ANC /
       Adaptive / Transparency. Clicking ANC slides the segments over to Low / Medium / High / Smart, animated
-      (the phone's `AncSegmentedView` level picker); same in the tray panel.
+      (the phone's `AncSegmentedView` level picker); same in the tray panel. **Built 2026-09-30, waiting
+      for his check on the buds.**
    2. **Dev tools** `[USER]` asap: the phone's Dev Tools equivalent (packet log Human / Detailed / Raw,
       Clear, Export, Reconnect, Disconnect).
    3. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit

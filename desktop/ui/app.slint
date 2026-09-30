@@ -32,7 +32,6 @@ export global Tr {
     in property <string> anc: "ANC";
     in property <string> adaptive: "Adaptive";
     in property <string> transparency: "Transparency";
-    in property <[string]> level-names: ["Low", "Medium", "High", "Smart"];
     in property <string> low-latency: "Low latency";
     in property <string> eq-title;
     in property <string> eq-not-connected;
@@ -221,47 +220,54 @@ component Segment inherits Rectangle {
     }
 }
 
-component AncSegments inherits HorizontalLayout {
+// Off / ANC / Adaptive / Transparency. ANC slides the modes out and the buds' levels in (the phone's
+// and the widget's picker): a pick sends it, the lit level sends Off, 2 s without a pick slides back.
+component AncSegments inherits Rectangle {
     in property <bool> compact;
-    spacing: 4px;
-    if Buds.has-off: Segment {
-        compact: root.compact; icon: Buds.icon-off; label: Tr.off;
-        selected: Buds.anc == "Off"; clicked => { Buds.set-anc("Off"); }
-    }
-    if Buds.levels.length > 0: Segment {
-        compact: root.compact; icon: Buds.icon-anc; label: Tr.anc;
-        selected: Buds.anc-is-level; clicked => { Buds.set-anc("ANC"); }
-    }
-    if Buds.has-adaptive: Segment {
-        compact: root.compact; icon: Buds.icon-adaptive; label: Tr.adaptive;
-        selected: Buds.anc == "Adaptive"; clicked => { Buds.set-anc("Adaptive"); }
-    }
-    if Buds.has-transparency: Segment {
-        compact: root.compact; icon: Buds.icon-transparency; label: Tr.transparency;
-        selected: Buds.anc == "Transparency"; clicked => { Buds.set-anc("Transparency"); }
-    }
-}
-
-component LevelChips inherits HorizontalLayout {
-    spacing: 6px;
-    for l in Buds.levels: Rectangle {
-        height: 34px;
-        horizontal-stretch: 1;
-        border-radius: 17px;
-        border-width: 1px;
-        border-color: Buds.anc == l.id ? Palette.accent : Palette.outline;
-        background: Buds.anc == l.id ? Palette.accent.transparentize(0.8) : ta.has-hover ? Palette.outline : transparent;
-        HorizontalLayout {
-            alignment: center;
-            spacing: 6px;
-            Image { source: l.icon; width: 16px; colorize: Palette.text; }
-            Text { text: l.name; color: Palette.text; font-size: 12px; vertical-alignment: center; }
+    property <bool> picking;
+    property <bool> on: Buds.on;
+    changed on => { if !on { picking = false; } }
+    clip: true;
+    HorizontalLayout {
+        x: picking ? root.width : 0;
+        width: root.width;
+        height: root.height;
+        animate x { duration: 280ms; easing: ease-in-out; }
+        spacing: 4px;
+        if Buds.has-off: Segment {
+            compact: root.compact; icon: Buds.icon-off; label: Tr.off;
+            selected: Buds.anc == "Off"; clicked => { Buds.set-anc("Off"); }
         }
-        ta := TouchArea {
-            enabled: Buds.on;
-            mouse-cursor: pointer;
-            clicked => { Buds.set-anc(l.id); }
+        if Buds.levels.length > 0: Segment {
+            compact: root.compact; icon: Buds.icon-anc; label: Tr.anc;
+            selected: Buds.anc-is-level;
+            clicked => { if Buds.levels.length > 1 { picking = true; } else { Buds.set-anc("ANC"); } }
         }
+        if Buds.has-adaptive: Segment {
+            compact: root.compact; icon: Buds.icon-adaptive; label: Tr.adaptive;
+            selected: Buds.anc == "Adaptive"; clicked => { Buds.set-anc("Adaptive"); }
+        }
+        if Buds.has-transparency: Segment {
+            compact: root.compact; icon: Buds.icon-transparency; label: Tr.transparency;
+            selected: Buds.anc == "Transparency"; clicked => { Buds.set-anc("Transparency"); }
+        }
+    }
+    HorizontalLayout {
+        x: picking ? 0 : -root.width;
+        width: root.width;
+        height: root.height;
+        animate x { duration: 280ms; easing: ease-in-out; }
+        spacing: 4px;
+        for l in Buds.levels: Segment {
+            compact: root.compact; icon: l.icon; label: l.name;
+            selected: Buds.anc == l.id;
+            clicked => { picking = false; Buds.set-anc(Buds.anc == l.id ? "Off" : l.id); }
+        }
+    }
+    Timer {
+        interval: 2280ms;
+        running: picking;
+        triggered => { picking = false; }
     }
 }
 
@@ -820,7 +826,6 @@ export component MainWindow inherits Window {
                         alignment: start;
                         SectionTitle { text: Tr.noise-control; }
                         AncSegments { height: 84px; }
-                        if Buds.levels.length > 0: LevelChips { opacity: Buds.anc-is-level ? 1 : 0.5; }
                     }
                 }
                 Card {
