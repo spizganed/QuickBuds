@@ -236,7 +236,6 @@
     <string name="disconnect_title">断开 %1$s？</string>
     <string name="disconnect_body">此手机上的音频将停止播放。</string>
     <string name="eq_done">完成</string>
-    <string name="eq_duplicate">复制预设</string>
     <string name="theme_title">主题、颜色与风格</string>
     <string name="settings_appearance">外观</string>
     <string name="settings_general">通用</string>

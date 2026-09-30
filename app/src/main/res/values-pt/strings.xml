@@ -236,7 +236,6 @@
     <string name="disconnect_title">Desligar %1$s?</string>
     <string name="disconnect_body">O áudio deixará de tocar neste telemóvel.</string>
     <string name="eq_done">Concluído</string>
-    <string name="eq_duplicate">Duplicar</string>
     <string name="theme_title">Temas, cores e estilos</string>
     <string name="settings_appearance">Aspeto</string>
     <string name="settings_general">Geral</string>

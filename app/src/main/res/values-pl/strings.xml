@@ -236,7 +236,6 @@
     <string name="disconnect_title">Rozłączyć %1$s?</string>
     <string name="disconnect_body">Dźwięk na tym telefonie przestanie grać.</string>
     <string name="eq_done">Gotowe</string>
-    <string name="eq_duplicate">Duplikuj</string>
     <string name="theme_title">Motywy, kolory i style</string>
     <string name="settings_appearance">Wygląd</string>
     <string name="settings_general">Ogólne</string>

@@ -236,7 +236,6 @@
     <string name="disconnect_title">Αποσύνδεση του %1$s;</string>
     <string name="disconnect_body">Ο ήχος θα σταματήσει να παίζει σε αυτό το τηλέφωνο.</string>
     <string name="eq_done">Τέλος</string>
-    <string name="eq_duplicate">Αντίγραφο</string>
     <string name="theme_title">Θέματα, χρώματα και στυλ</string>
     <string name="settings_appearance">Εμφάνιση</string>
     <string name="settings_general">Γενικά</string>

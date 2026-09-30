@@ -236,7 +236,6 @@
     <string name="disconnect_title">%1$s を切断しますか？</string>
     <string name="disconnect_body">このスマートフォンでの音声再生が停止します。</string>
     <string name="eq_done">完了</string>
-    <string name="eq_duplicate">複製</string>
     <string name="theme_title">テーマ、カラー、スタイル</string>
     <string name="settings_appearance">外観</string>
     <string name="settings_general">全般</string>

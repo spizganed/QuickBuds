@@ -236,7 +236,6 @@
     <string name="disconnect_title">%1$s डिस्कनेक्ट करें?</string>
     <string name="disconnect_body">इस फ़ोन पर ऑडियो बंद हो जाएगा।</string>
     <string name="eq_done">हो गया</string>
-    <string name="eq_duplicate">डुप्लिकेट</string>
     <string name="theme_title">थीम, रंग और स्टाइल</string>
     <string name="settings_appearance">रूप</string>
     <string name="settings_general">सामान्य</string>

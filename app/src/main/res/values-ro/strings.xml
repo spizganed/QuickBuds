@@ -236,7 +236,6 @@
     <string name="disconnect_title">Deconectezi %1$s?</string>
     <string name="disconnect_body">Sunetul nu se va mai reda pe acest telefon.</string>
     <string name="eq_done">Gata</string>
-    <string name="eq_duplicate">Duplică</string>
     <string name="theme_title">Teme, culori și stiluri</string>
     <string name="settings_appearance">Aspect</string>
     <string name="settings_general">General</string>

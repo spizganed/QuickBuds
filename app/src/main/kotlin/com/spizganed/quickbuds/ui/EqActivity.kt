@@ -163,15 +163,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     private var syncing = false
 
-    /**
-     * A duplicate waiting for its preset to exist. It is created with zero gains (the only create
-     * frame captured) and the gains go in as a normal save once the re-read shows the buds' id.
-     */
-    private var pendingImport: Pair<String, List<Int>>? = null
-
     /** What the preset lists last showed; see [render]. */
     private var shownSignature: String? = null
-    private var shownNames: Set<String> = emptySet()
 
     /** The rows, kept between renders and updated in place: recommended by buds id, custom by buds id, and the just-created ones by name. */
     private val builtInChoices = LinkedHashMap<Int, Choice>()
@@ -317,12 +310,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         val all = m?.eqCustom.orEmpty()
         deleting.retainAll(all.map { key(it) }.toSet())
         val custom = all.filter { key(it) !in deleting }
-        pendingImport?.let { (name, gains) ->
-            custom.firstOrNull { it.name == name }?.let { p ->
-                pendingImport = null
-                m?.saveCustomEq(EqCodec.Preset(p.id, p.name, p.freqs, gains, p.selected, p.tag))
-            }
-        }
 
         // Each EQ write triggers several re-reads; the lists only update when something changed.
         val waiting = createdNames().filter { n -> custom.none { it.name == n } }
@@ -331,7 +318,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         // Animate only a real change on screen, never the first fill.
         val animate = shownSignature != null
         shownSignature = signature
-        shownNames = custom.map { it.name }.toSet()
 
         val builtIns = builtInPresets()
         builtInLabel.visibility = if (builtIns.isEmpty()) View.GONE else View.VISIBLE
@@ -372,7 +358,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         // A preset just sent to create shows at once, dimmed, until the buds' re-read brings the real one (about a second).
         waitingChoices.keys.filter { it !in waiting }.forEach { n -> waitingChoices.remove(n)?.let { fold(it) } }
         for (name in waiting) waitingChoices.getOrPut(name) {
-            Choice(name, null) {}.also { n ->
+            Choice(name, { c -> c.preset?.let { showEditor(it) } }) {}.also { n ->
                 n.row.alpha = 0.5f
                 SettingRowFactory.addSplit(customCard, n.row); n.card = n.row.parent as View
                 if (animate) slide(n.card, open = true)
@@ -495,18 +481,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.END
             setPadding(0, dp(10f), dp(6f), 0)
-            addView(iconButton(R.drawable.ic_copy, R.string.eq_duplicate) {
-                if (shownNames.size >= maxCustom(this@EqActivity)) return@iconButton
-                d.dismiss()
-                val used = shownNames + createdNames()
-                val name = (2..9).map { "${p.name.take(18)} $it" }.firstOrNull { it !in used } ?: return@iconButton
-                pendingImport = name to p.gains
-                createCustom(name, p.freqs)
-            }.apply {
-                fortyEight(this)
-                isEnabled = shownNames.size < maxCustom(this@EqActivity)
-                alpha = if (isEnabled) 1f else 0.35f
-            })
             addView(iconButton(R.drawable.ic_delete, R.string.eq_delete) {
                 ConfirmDialog.show(
                     this@EqActivity, getString(R.string.eq_delete_confirm, p.name), null,
@@ -609,7 +583,10 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
      * text and accent colours, [setName] retitles it. Its [card] is set once the row is in a list ([SettingRowFactory.addSplit]).
      */
     private inner class Choice(name: String, onEdit: ((Choice) -> Unit)?, var onClick: () -> Unit) {
+        /** The buds' preset behind a custom row; the pencil shows once it is set (a placeholder has none yet). */
         var preset: EqCodec.Preset? = null
+            set(v) { field = v; pencil?.visibility = if (v != null) View.VISIBLE else View.INVISIBLE }
+        private var pencil: View? = null
         var folding = false
         lateinit var card: View
         private var selected = false
@@ -632,6 +609,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             if (onEdit != null) addView(iconButton(R.drawable.ic_pencil, R.string.eq_edit) { onEdit(this@Choice) }.apply {
                 layoutParams = LinearLayout.LayoutParams(dp(34f), dp(34f)).apply { marginStart = dp(12f) }
                 setPadding(dp(8f), dp(8f), dp(8f), dp(8f))
+                pencil = this
+                if (preset == null) visibility = View.INVISIBLE
             })
         }
 

@@ -236,7 +236,6 @@
     <string name="disconnect_title">%1$s 연결을 해제할까요?</string>
     <string name="disconnect_body">이 휴대전화에서 오디오 재생이 중지됩니다.</string>
     <string name="eq_done">완료</string>
-    <string name="eq_duplicate">복제</string>
     <string name="theme_title">테마, 색상 및 스타일</string>
     <string name="settings_appearance">모양</string>
     <string name="settings_general">일반</string>

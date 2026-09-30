@@ -236,7 +236,6 @@
     <string name="disconnect_title">Koppla från %1$s?</string>
     <string name="disconnect_body">Ljudet slutar spelas på den här telefonen.</string>
     <string name="eq_done">Klar</string>
-    <string name="eq_duplicate">Duplicera</string>
     <string name="theme_title">Teman, färger och stilar</string>
     <string name="settings_appearance">Utseende</string>
     <string name="settings_general">Allmänt</string>

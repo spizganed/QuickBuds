@@ -236,7 +236,6 @@
     <string name="disconnect_title">Déconnecter %1$s ?</string>
     <string name="disconnect_body">Le son s\'arrêtera sur ce téléphone.</string>
     <string name="eq_done">Terminé</string>
-    <string name="eq_duplicate">Dupliquer</string>
     <string name="theme_title">Thèmes, couleurs et styles</string>
     <string name="settings_appearance">Apparence</string>
     <string name="settings_general">Général</string>

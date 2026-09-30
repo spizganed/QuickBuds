@@ -236,7 +236,6 @@
     <string name="disconnect_title">Verbinding met %1$s verbreken?</string>
     <string name="disconnect_body">Het geluid stopt op deze telefoon.</string>
     <string name="eq_done">Klaar</string>
-    <string name="eq_duplicate">Dupliceren</string>
     <string name="theme_title">Thema\'s, kleuren en stijlen</string>
     <string name="settings_appearance">Weergave</string>
     <string name="settings_general">Algemeen</string>
