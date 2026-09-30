@@ -159,11 +159,6 @@
     <string name="eq_delete">Verwijderen</string>
     <string name="eq_delete_confirm">\"%1$s\" verwijderen?</string>
     <string name="eq_add">Nieuw</string>
-    <string name="eq_import">Importeren</string>
-    <string name="eq_import_title">Plak een preset die uit QuickBuds is gekopieerd</string>
-    <string name="eq_import_confirm">Importeren</string>
-    <string name="eq_import_bad">Geen QuickBuds-preset</string>
-    <string name="eq_copied">Preset gekopieerd</string>
     <string name="update_title">App-update</string>
     <string name="update_installed">Geïnstalleerd</string>
     <string name="update_latest">Nieuwste</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Helderheid</string>
     <string name="preset_recent">Recent</string>
     <string name="preset_hex">Hex-kleur</string>
-    <string name="widget_settings_title">Widgetinstellingen</string>
-    <string name="widget_settings_sub">Stijl, pagina\'s, lage latentie</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Stijl</string>
     <string name="widget_style_classic">Klassiek</string>
-    <string name="widget_ll_title">Knop voor lage latentie</string>
-    <string name="widget_ll_sub">Een knop op de bedieningspagina</string>
-    <string name="widget_open_title">App openen bij tikken</string>
-    <string name="widget_open_sub">Tikken op de batterij opent QuickBuds</string>
     <string name="widget_mode_anc_low">ANC laag</string>
     <string name="widget_mode_anc_medium">ANC gemiddeld</string>
     <string name="widget_mode_anc_high">ANC hoog</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds groot</string>
     <string name="settings_language_title">Taal</string>
     <string name="settings_language_sub">Taal van de app</string>
-    <string name="widget_pages_title">Pagina\'s wisselen</string>
-    <string name="widget_pages_button">Wisselknop</string>
-    <string name="widget_pages_double">Dubbeltikken</string>
-    <string name="widget_pages_hint">Elke widget heeft twee pagina\'s: batterij en ruisbediening. Met dubbeltikken wacht elke enkele tik ongeveer 0,2 s of er een tweede volgt.</string>
-    <string name="widget_swap_desc">Pagina wisselen</string>
     <string name="language_system">Systeemstandaard</string>
 
     <!-- Model list (ModelActivity) -->

@@ -38,9 +38,6 @@
 <ImageView android:id="@+id/w_case_bar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:adjustViewBounds="true" android:scaleType="fitCenter" android:importantForAccessibility="no" />
 <TextView android:id="@+id/w_pct_case" android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:textSize="16sp" android:fontFamily="sans-serif" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:gravity="center" android:layout_gravity="center" />
 </FrameLayout>
-<FrameLayout android:id="@+id/w_swap_b" android:layout_width="28dp" android:layout_height="match_parent" android:stateListAnimator="@animator/widget_press" android:layout_marginEnd="-8dp">
-<ImageView android:id="@+id/w_swap_b_icon" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:src="@drawable/ic_swap_page" android:importantForAccessibility="no" />
-</FrameLayout>
 </LinearLayout>
 </FrameLayout>
 </LinearLayout>
@@ -86,9 +83,6 @@
 </FrameLayout>
 </LinearLayout>
 </LinearLayout>
-<FrameLayout android:id="@+id/w_swap" android:layout_width="36dp" android:layout_height="36dp" android:stateListAnimator="@animator/widget_press" android:layout_gravity="top|end">
-<ImageView android:id="@+id/w_swap_icon" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:src="@drawable/ic_swap_page" android:importantForAccessibility="no" />
-</FrameLayout>
 </FrameLayout>
 </ViewFlipper>
 </FrameLayout>

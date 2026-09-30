@@ -159,11 +159,6 @@
     <string name="eq_delete">Видалити</string>
     <string name="eq_delete_confirm">Видалити «%1$s»?</string>
     <string name="eq_add">Новий</string>
-    <string name="eq_import">Імпорт</string>
-    <string name="eq_import_title">Вставте пресет, скопійований із QuickBuds</string>
-    <string name="eq_import_confirm">Імпорт</string>
-    <string name="eq_import_bad">Це не пресет QuickBuds</string>
-    <string name="eq_copied">Пресет скопійовано</string>
     <string name="update_title">Оновлення застосунку</string>
     <string name="update_installed">Встановлена</string>
     <string name="update_latest">Остання</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Яскравість</string>
     <string name="preset_recent">Нещодавні</string>
     <string name="preset_hex">Колір у HEX</string>
-    <string name="widget_settings_title">Налаштування віджета</string>
-    <string name="widget_settings_sub">Стиль, сторінки, низька затримка</string>
-    <string name="widget_section">Віджет</string>
     <string name="widget_style_title">Стиль</string>
     <string name="widget_style_classic">Класичний</string>
-    <string name="widget_ll_title">Кнопка низької затримки</string>
-    <string name="widget_ll_sub">Кнопка на сторінці керування</string>
-    <string name="widget_open_title">Відкривати застосунок натисканням</string>
-    <string name="widget_open_sub">Натискання на батарею відкриває QuickBuds</string>
     <string name="widget_mode_anc_low">ANC низький</string>
     <string name="widget_mode_anc_medium">ANC середній</string>
     <string name="widget_mode_anc_high">ANC високий</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds великий</string>
     <string name="settings_language_title">Мова</string>
     <string name="settings_language_sub">Мова застосунку</string>
-    <string name="widget_pages_title">Перемикання сторінок</string>
-    <string name="widget_pages_button">Кнопка зміни</string>
-    <string name="widget_pages_double">Подвійний дотик</string>
-    <string name="widget_pages_hint">Кожен віджет має дві сторінки: батарея і шумозаглушення. З подвійним дотиком кожен одиночний дотик чекає близько 0,2 с, чи не буде другого.</string>
-    <string name="widget_swap_desc">Змінити сторінку</string>
     <string name="language_system">Як у системі</string>
 
     <!-- Model list (ModelActivity) -->

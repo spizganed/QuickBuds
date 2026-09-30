@@ -159,11 +159,6 @@
     <string name="eq_delete">Hapus</string>
     <string name="eq_delete_confirm">Hapus \"%1$s\"?</string>
     <string name="eq_add">Baru</string>
-    <string name="eq_import">Impor</string>
-    <string name="eq_import_title">Tempel preset yang disalin dari QuickBuds</string>
-    <string name="eq_import_confirm">Impor</string>
-    <string name="eq_import_bad">Bukan preset QuickBuds</string>
-    <string name="eq_copied">Preset disalin</string>
     <string name="update_title">Pembaruan aplikasi</string>
     <string name="update_installed">Terpasang</string>
     <string name="update_latest">Terbaru</string>
@@ -310,15 +305,8 @@
     <string name="preset_hex">Warna heksa</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
-    <string name="widget_settings_title">Pengaturan widget</string>
-    <string name="widget_settings_sub">Gaya, halaman, latensi rendah</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Gaya</string>
     <string name="widget_style_classic">Klasik</string>
-    <string name="widget_ll_title">Tombol latensi rendah</string>
-    <string name="widget_ll_sub">Tombol di halaman kontrol</string>
-    <string name="widget_open_title">Buka aplikasi saat diketuk</string>
-    <string name="widget_open_sub">Mengetuk baterai membuka QuickBuds</string>
     <string name="widget_mode_anc_low">ANC Rendah</string>
     <string name="widget_mode_anc_medium">ANC Sedang</string>
     <string name="widget_mode_anc_high">ANC Tinggi</string>
@@ -328,11 +316,6 @@
     <string name="widget_large_name">QuickBuds besar</string>
     <string name="settings_language_title">Bahasa</string>
     <string name="settings_language_sub">Bahasa aplikasi</string>
-    <string name="widget_pages_title">Beralih halaman</string>
-    <string name="widget_pages_button">Tombol tukar</string>
-    <string name="widget_pages_double">Ketuk dua kali</string>
-    <string name="widget_pages_hint">Setiap widget memiliki dua halaman: baterai dan kontrol bising. Dengan ketuk dua kali, setiap ketukan tunggal menunggu sekitar 0,2 dtk untuk ketukan kedua.</string>
-    <string name="widget_swap_desc">Ganti halaman</string>
     <string name="language_system">Default sistem</string>
 
     <!-- Model list (ModelActivity) -->

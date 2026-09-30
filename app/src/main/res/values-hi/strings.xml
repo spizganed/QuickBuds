@@ -159,11 +159,6 @@
     <string name="eq_delete">हटाएं</string>
     <string name="eq_delete_confirm">\"%1$s\" हटाएं?</string>
     <string name="eq_add">नया</string>
-    <string name="eq_import">इम्पोर्ट</string>
-    <string name="eq_import_title">QuickBuds से कॉपी किया प्रीसेट पेस्ट करें</string>
-    <string name="eq_import_confirm">इम्पोर्ट</string>
-    <string name="eq_import_bad">यह QuickBuds प्रीसेट नहीं है</string>
-    <string name="eq_copied">प्रीसेट कॉपी हुआ</string>
     <string name="update_title">ऐप अपडेट</string>
     <string name="update_installed">इंस्टॉल</string>
     <string name="update_latest">नवीनतम</string>
@@ -310,15 +305,8 @@
     <string name="preset_hex">हेक्स रंग</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
-    <string name="widget_settings_title">विजेट सेटिंग्स</string>
-    <string name="widget_settings_sub">स्टाइल, पेज, लो लेटेंसी</string>
-    <string name="widget_section">विजेट</string>
     <string name="widget_style_title">स्टाइल</string>
     <string name="widget_style_classic">क्लासिक</string>
-    <string name="widget_ll_title">लो लेटेंसी बटन</string>
-    <string name="widget_ll_sub">कंट्रोल पेज पर एक बटन</string>
-    <string name="widget_open_title">टैप करने पर ऐप खोलें</string>
-    <string name="widget_open_sub">बैटरी पर टैप करने से QuickBuds खुलता है</string>
     <string name="widget_mode_anc_low">ANC कम</string>
     <string name="widget_mode_anc_medium">ANC मध्यम</string>
     <string name="widget_mode_anc_high">ANC अधिक</string>
@@ -328,11 +316,6 @@
     <string name="widget_large_name">QuickBuds बड़ा</string>
     <string name="settings_language_title">भाषा</string>
     <string name="settings_language_sub">ऐप की भाषा</string>
-    <string name="widget_pages_title">पेज बदलना</string>
-    <string name="widget_pages_button">स्वैप बटन</string>
-    <string name="widget_pages_double">डबल टैप</string>
-    <string name="widget_pages_hint">हर विजेट में दो पेज हैं: बैटरी और नॉइज़ कंट्रोल। डबल टैप चुनने पर हर एक टैप लगभग 0.2 सेकंड दूसरे टैप का इंतज़ार करता है।</string>
-    <string name="widget_swap_desc">पेज बदलें</string>
     <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
 
     <!-- Model list (ModelActivity) -->

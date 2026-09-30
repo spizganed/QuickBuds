@@ -44,10 +44,10 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
 - On-call gestures: write verified, and confirmed on a real call by him (2026-09-25).
 - Equalizer: built-in presets, Bass boost with level, up to 3 custom presets on a draggable curve
   with rename and delete (PROTOCOL.md §9).
-- EQ preset copy / import as text (`QB-EQ:<gains>:<name>`), via the clipboard.
+- EQ preset copy / import as text (`QB-EQ:<gains>:<name>`), via the clipboard. Removed later [USER]: not needed.
 - Hi-Res codec and 3D audio switches (mutually exclusive, with a reconnect warning), and low latency.
 - Find my earbuds: the buds' own tone on both buds, with an in-ear warning.
-- Wear detection screen: the firmware's auto play/pause, and our own smart auto-pause (pause only
+- Wear detection (now a sheet): the firmware's auto play/pause, and our own smart auto-pause (pause only
   when both buds are out, never auto-play). The two are mutually exclusive.
 - Smart as a fourth ANC level (app and widget, confirmed on Buds 4, 2026-09-27).
 - Firmware version (`0x0105`) in Earbud settings › About earbuds, formatted as HeyMelody shows it
@@ -124,7 +124,7 @@ back.
 ## Widgets
 
 - 2x2, 3x3 (the 2x2 scaled) and 4x2, fixed size, each with a battery page and a controls page (ANC with a
-  level picker, Transparency, Adaptive, Low latency), swapped by a button or a double tap (200 ms).
+  level picker, Transparency, Adaptive, Low latency), swapped by a double tap (200 ms).
 - Slides only, like a carousel; the widget stays on the controls page after a change. Haptic tick on taps.
 - Both styles share one design (`scripts/widget-layouts.py`); the cycle mode and mode button are gone.
   Details in CLAUDE.md, Widgets.

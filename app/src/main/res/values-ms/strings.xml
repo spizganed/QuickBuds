@@ -159,11 +159,6 @@
     <string name="eq_delete">Padam</string>
     <string name="eq_delete_confirm">Padam \"%1$s\"?</string>
     <string name="eq_add">Baharu</string>
-    <string name="eq_import">Import</string>
-    <string name="eq_import_title">Tampal praset yang disalin daripada QuickBuds</string>
-    <string name="eq_import_confirm">Import</string>
-    <string name="eq_import_bad">Bukan praset QuickBuds</string>
-    <string name="eq_copied">Praset disalin</string>
     <string name="update_title">Kemas kini aplikasi</string>
     <string name="update_installed">Dipasang</string>
     <string name="update_latest">Terkini</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Kecerahan</string>
     <string name="preset_recent">Terkini</string>
     <string name="preset_hex">Warna hex</string>
-    <string name="widget_settings_title">Tetapan widget</string>
-    <string name="widget_settings_sub">Gaya, halaman, kependaman rendah</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Gaya</string>
     <string name="widget_style_classic">Klasik</string>
-    <string name="widget_ll_title">Butang kependaman rendah</string>
-    <string name="widget_ll_sub">Butang pada halaman kawalan</string>
-    <string name="widget_open_title">Buka aplikasi apabila diketik</string>
-    <string name="widget_open_sub">Mengetik bateri membuka QuickBuds</string>
     <string name="widget_mode_anc_low">ANC Rendah</string>
     <string name="widget_mode_anc_medium">ANC Sederhana</string>
     <string name="widget_mode_anc_high">ANC Tinggi</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds besar</string>
     <string name="settings_language_title">Bahasa</string>
     <string name="settings_language_sub">Bahasa aplikasi</string>
-    <string name="widget_pages_title">Menukar halaman</string>
-    <string name="widget_pages_button">Butang tukar</string>
-    <string name="widget_pages_double">Ketik dua kali</string>
-    <string name="widget_pages_hint">Setiap widget mempunyai dua halaman, bateri dan kawalan hingar. Dengan ketik dua kali, setiap ketikan tunggal menunggu kira-kira 0.2 s untuk melihat sama ada ketikan kedua menyusul.</string>
-    <string name="widget_swap_desc">Tukar halaman</string>
     <string name="language_system">Lalai sistem</string>
 
     <!-- Model list (ModelActivity) -->

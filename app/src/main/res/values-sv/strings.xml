@@ -159,11 +159,6 @@
     <string name="eq_delete">Ta bort</string>
     <string name="eq_delete_confirm">Ta bort ”%1$s”?</string>
     <string name="eq_add">Ny</string>
-    <string name="eq_import">Importera</string>
-    <string name="eq_import_title">Klistra in en förinställning som kopierats från QuickBuds</string>
-    <string name="eq_import_confirm">Importera</string>
-    <string name="eq_import_bad">Inte en förinställning från QuickBuds</string>
-    <string name="eq_copied">Förinställningen har kopierats</string>
     <string name="update_title">Appuppdatering</string>
     <string name="update_installed">Installerad</string>
     <string name="update_latest">Senaste</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Ljusstyrka</string>
     <string name="preset_recent">Senaste</string>
     <string name="preset_hex">Hexfärg</string>
-    <string name="widget_settings_title">Widgetinställningar</string>
-    <string name="widget_settings_sub">Stil, sidor, låg latens</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Stil</string>
     <string name="widget_style_classic">Klassisk</string>
-    <string name="widget_ll_title">Knapp för låg latens</string>
-    <string name="widget_ll_sub">En knapp på kontrollsidan</string>
-    <string name="widget_open_title">Öppna appen vid tryck</string>
-    <string name="widget_open_sub">Tryck på batteriet öppnar QuickBuds</string>
     <string name="widget_mode_anc_low">ANC låg</string>
     <string name="widget_mode_anc_medium">ANC medel</string>
     <string name="widget_mode_anc_high">ANC hög</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds stor</string>
     <string name="settings_language_title">Språk</string>
     <string name="settings_language_sub">Appens språk</string>
-    <string name="widget_pages_title">Byta sidor</string>
-    <string name="widget_pages_button">Bytesknapp</string>
-    <string name="widget_pages_double">Dubbeltryck</string>
-    <string name="widget_pages_hint">Varje widget har två sidor, batteri och brusreglering. Med dubbeltryck väntar varje enkeltryck cirka 0,2 s för att se om ett andra följer.</string>
-    <string name="widget_swap_desc">Byt sida</string>
     <string name="language_system">Systemstandard</string>
 
     <!-- Model list (ModelActivity) -->

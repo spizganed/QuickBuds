@@ -40,11 +40,6 @@ def text(i, sp, bold=False, extra=""):
     return (f'<TextView android:id="@+id/{i}" android:layout_width="wrap_content" android:layout_height="wrap_content" {pad_off}'
             f'android:textSize="{sp}sp" {font} android:maxLines="1" android:ellipsize="end" android:gravity="center" {extra}/>')
 
-def swap(i, w, h, extra=""):
-    return (f'<FrameLayout android:id="@+id/{i}" android:layout_width="{w}" android:layout_height="{h}" {PRESS} {extra}>\n'
-            f'<ImageView android:id="@+id/{i}_icon" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:src="@drawable/ic_swap_page" android:importantForAccessibility="no" />\n'
-            '</FrameLayout>')
-
 def panel(side, first, pct, label, fit=True, last=False):
     m = '' if first else f'android:layout_marginStart="{gap()}"'
     # 2x2: the ring takes the panel's free height. 3x2 / 3x3: the renderer sizes the ring from the
@@ -73,7 +68,6 @@ def panel(side, first, pct, label, fit=True, last=False):
 </FrameLayout>'''
 
 def case_bar(sp):
-    sw = swap("w_swap_b", "28dp", "match_parent", 'android:layout_marginEnd="-8dp"') + "\n"
     side, mg = g("row"), 6
     # The row takes all the height the rings leave, so only the paddings separate them ([USER] 2026-09-28: no
     # gaps); the case icon fills its height and the renderer sizes the bar from it (QuickBudsWidget.caseRowDp).
@@ -88,12 +82,12 @@ def case_bar(sp):
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="{side}dp" android:paddingEnd="{side}dp">
 <ImageView android:id="@+id/w_case_icon" {icon_box} android:src="@drawable/ic_case" android:scaleType="fitCenter" android:importantForAccessibility="no" />
 {bar}
-{sw}</LinearLayout>
+</LinearLayout>
 </FrameLayout>'''
 
 def battery(size):
-    # 2x2 and 3x3: two bud panels over the case bar, which ends in the swap button. 4x2 (wide): three
-    # panels in a row, the swap button in the top-end corner as on the controls page.
+    # 2x2 and 3x3: two bud panels over the case bar, 4x2 (wide): three
+    # panels in a row.
     if size == "m":
         # Nothing: no wear text, so the percentages grow into the room ([USER] 2026-09-28).
         pct = 20 if N else 18
@@ -102,7 +96,6 @@ def battery(size):
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" {page_pad()}>
 {panels}
 </LinearLayout>
-{swap("w_swap_b", "44dp", "44dp", 'android:layout_gravity="top|end"')}
 </FrameLayout>'''
     # 2x2 (the 3x3 is it scaled): the rings at the top, the case row takes the rest (case_bar). QuickBudsWidget.caseRowDp
     # counts every padding and text here (pct 17 / 16sp, Classic's wear label 11.5sp).
@@ -136,12 +129,10 @@ def quick(size):
 {chr(10).join(btn(k, i == 0, top) for i, k in enumerate(ks))}
 </LinearLayout>'''
     rows = row((0, 1, 2, 3), True) if size == "m" else row((0, 1), True) + "\n" + row((2, 3), False)
-    corner = "36dp" if size == "s" else "44dp"
     return f'''<FrameLayout android:id="@+id/w_page1" android:layout_width="match_parent" android:layout_height="match_parent">
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" {page_pad()}>
 {rows}
 </LinearLayout>
-{swap("w_swap", corner, corner, 'android:layout_gravity="top|end"')}
 </FrameLayout>'''
 
 def grid(icon, sp):

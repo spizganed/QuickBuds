@@ -43,7 +43,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * [WidgetActionReceiver] (stamp in [WidgetSettings]); it never opens an Activity.
  *
  * Every size is one widget with two pages (battery, controls; [USER] 2026-09-27), stored per
- * widget id and swapped by a swap button or a double tap ([WidgetSettings.doubleTapSwaps]). The
+ * widget id and swapped by a double tap. The
  * pages slide (`w_slide0` battery on the left, `w_slide1` controls on the right); the level picker slides over them (`w_pages`).
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
@@ -171,15 +171,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val child = if (list) 2 else if (page == Kind.BATTERY) 0 else 1
             v.setImageViewResource(R.id.w_bg, bgRes(context, provider.large))
             v.setInt(R.id.w_bg, "setColorFilter", p.card)
-            // Double-tap mode: every tap on a page carries the other page, so a second tap swaps.
+            // Every tap on a page carries the other page, so a second tap swaps.
             val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
-            val swap = if (!list && WidgetSettings.doubleTapSwaps(context)) other else null
-            v.setOnClickPendingIntent(R.id.w_root, when {
-                swap != null -> receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = swap)
-                WidgetSettings.openAppOnTap(context) -> openAppPI(context)
-                else -> null
-            })
-            swapButtons(context, v, p, page, id, other, shown = !list && swap == null)
+            val swap = if (!list) other else null
+            v.setOnClickPendingIntent(R.id.w_root, swap?.let { receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = it) })
 
             // Both pages and the list are filled every time, so the one sliding or fading out still
             // shows current values (a pick's highlight while the list closes).
@@ -187,22 +182,6 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             battery(context, v, p, state, provider, id)
             if (!list) controls(context, v, p, state, provider, id, swap)
             return v to child
-        }
-
-        /**
-         * The swap button: on the battery page at the end of the case bar (2x2, 3x3) or top-right
-         * (4x2), top-right on the controls page.
-         */
-        private fun swapButtons(context: Context, v: RemoteViews, p: Palette, kind: Kind, id: Int, other: Kind, shown: Boolean) {
-            for ((root, icon, page) in listOf(Triple(R.id.w_swap_b, R.id.w_swap_b_icon, Kind.BATTERY), Triple(R.id.w_swap, R.id.w_swap_icon, Kind.CONTROLS))) {
-                val on = shown && kind == page
-                v.setViewVisibility(root, if (on) View.VISIBLE else View.GONE)
-                if (!on) continue
-                icon(context, v, icon, R.drawable.ic_swap_page, 16f, 16f / 9)
-                v.setInt(icon, "setColorFilter", p.textSecondary)
-                v.setContentDescription(root, context.getString(R.string.widget_swap_desc))
-                v.setOnClickPendingIntent(root, receiverPI(context, WidgetActions.ACTION_PAGE_SWAP, id, swap = other))
-            }
         }
 
         /** The widget box: Nothing's own widgets' radius in the Nothing style ([USER] 2026-09-28), else per size. */
@@ -383,7 +362,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                     context.getString(R.string.anc_seg_trans), receiverPI(context, WidgetActions.ACTION_QUICK, id, "trans", swap)),
                 Q(anc.supports(mode("adapt").store), current.key == "adapt", mode("adapt").icon, initials(R.string.anc_seg_adapt),
                     context.getString(R.string.anc_seg_adapt), receiverPI(context, WidgetActions.ACTION_QUICK, id, "adapt", swap)),
-                Q(WidgetSettings.lowLatencyShown(context), state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
+                Q(true, state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
                     context.getString(R.string.row_game_title), receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap))
             )
             qs.forEachIndexed { i, q ->
@@ -792,7 +771,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
         /**
          * The case bar's slot width in dp: the widget's width less everything else in the row (page and row
-         * paddings, the case icon and its margin, the swap button when shown). The level sits inside the bar.
+         * paddings, the case icon and its margin). The level sits inside the bar.
          * Falls back to 60dp (scaled) when the host gives no size.
          */
         private fun barDp(context: Context, kind: Kind, id: Int, caseDp: Float): Float {
@@ -800,8 +779,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val k = scale(kind)
             if (w <= 0) return 60f * k
             val g = geo(context)
-            val swap = if (WidgetSettings.doubleTapSwaps(context)) 0f else 20f
-            return k * (w / k - 2 * g.side - 2 * g.row - caseDp / k * 496f / 400f - 6f - swap - 2f).coerceAtLeast(20f)
+            return k * (w / k - 2 * g.side - 2 * g.row - caseDp / k * 496f / 400f - 6f - 2f).coerceAtLeast(20f)
         }
 
         /**

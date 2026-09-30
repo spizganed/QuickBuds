@@ -11,14 +11,12 @@ object WidgetActions {
      */
     const val ACTION_QUICK      = "com.spizganed.quickbuds.action.QUICK"
 
-    /** 2x2 widget: show the page in [EXTRA_PAGE] (the swap button). */
-    const val ACTION_PAGE_SWAP  = "com.spizganed.quickbuds.action.PAGE_SWAP"
-    /** 2x2 widget background tap in double-tap mode: opens the app if "Open app on tap" is on. */
+    /** Widget background tap: carries the page a double tap switches to; a single tap does nothing. */
     const val ACTION_OPEN_APP   = "com.spizganed.quickbuds.action.OPEN_APP"
 
     const val EXTRA_ANC_TARGET = "anc_target"
     /**
-     * The 2x2 page to switch to. On any action but [ACTION_PAGE_SWAP] it marks a double-tap
+     * The 2x2 page to switch to. It marks a double-tap
      * wrapped tap: the receiver waits for a second tap before running the action.
      */
     const val EXTRA_PAGE = "page"

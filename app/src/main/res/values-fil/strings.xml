@@ -159,11 +159,6 @@
     <string name="eq_delete">I-delete</string>
     <string name="eq_delete_confirm">I-delete ang \"%1$s\"?</string>
     <string name="eq_add">Bago</string>
-    <string name="eq_import">I-import</string>
-    <string name="eq_import_title">I-paste ang preset na kinopya mula sa QuickBuds</string>
-    <string name="eq_import_confirm">I-import</string>
-    <string name="eq_import_bad">Hindi ito preset ng QuickBuds</string>
-    <string name="eq_copied">Nakopya ang preset</string>
     <string name="update_title">Update ng app</string>
     <string name="update_installed">Naka-install</string>
     <string name="update_latest">Pinakabago</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Liwanag</string>
     <string name="preset_recent">Kamakailan</string>
     <string name="preset_hex">Hex na kulay</string>
-    <string name="widget_settings_title">Mga setting ng widget</string>
-    <string name="widget_settings_sub">Istilo, mga pahina, low latency</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Istilo</string>
     <string name="widget_style_classic">Classic</string>
-    <string name="widget_ll_title">Low latency button</string>
-    <string name="widget_ll_sub">Isang button sa pahina ng mga kontrol</string>
-    <string name="widget_open_title">Buksan ang app sa pag-tap</string>
-    <string name="widget_open_sub">Binubuksan ng pag-tap sa baterya ang QuickBuds</string>
     <string name="widget_mode_anc_low">ANC Mahina</string>
     <string name="widget_mode_anc_medium">ANC Katamtaman</string>
     <string name="widget_mode_anc_high">ANC Malakas</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds malaki</string>
     <string name="settings_language_title">Wika</string>
     <string name="settings_language_sub">Wika ng app</string>
-    <string name="widget_pages_title">Paglipat ng mga pahina</string>
-    <string name="widget_pages_button">Button na pampalit</string>
-    <string name="widget_pages_double">Dobleng tap</string>
-    <string name="widget_pages_hint">May dalawang pahina ang bawat widget, baterya at kontrol ng ingay. Sa dobleng tap, bawat isang tap ay naghihintay nang mga 0.2 s para makita kung may kasunod na pangalawa.</string>
-    <string name="widget_swap_desc">Lumipat ng pahina</string>
     <string name="language_system">Default ng system</string>
 
     <!-- Model list (ModelActivity) -->

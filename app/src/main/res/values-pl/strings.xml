@@ -159,11 +159,6 @@
     <string name="eq_delete">Usuń</string>
     <string name="eq_delete_confirm">Usunąć „%1$s”?</string>
     <string name="eq_add">Nowy</string>
-    <string name="eq_import">Importuj</string>
-    <string name="eq_import_title">Wklej preset skopiowany z QuickBuds</string>
-    <string name="eq_import_confirm">Importuj</string>
-    <string name="eq_import_bad">To nie jest preset QuickBuds</string>
-    <string name="eq_copied">Skopiowano preset</string>
     <string name="update_title">Aktualizacja aplikacji</string>
     <string name="update_installed">Zainstalowana</string>
     <string name="update_latest">Najnowsza</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Jasność</string>
     <string name="preset_recent">Ostatnie</string>
     <string name="preset_hex">Kolor hex</string>
-    <string name="widget_settings_title">Ustawienia widżetu</string>
-    <string name="widget_settings_sub">Styl, strony, niskie opóźnienie</string>
-    <string name="widget_section">Widżet</string>
     <string name="widget_style_title">Styl</string>
     <string name="widget_style_classic">Klasyczny</string>
-    <string name="widget_ll_title">Przycisk niskiego opóźnienia</string>
-    <string name="widget_ll_sub">Przycisk na stronie sterowania</string>
-    <string name="widget_open_title">Otwieraj aplikację po dotknięciu</string>
-    <string name="widget_open_sub">Dotknięcie baterii otwiera QuickBuds</string>
     <string name="widget_mode_anc_low">ANC niski</string>
     <string name="widget_mode_anc_medium">ANC średni</string>
     <string name="widget_mode_anc_high">ANC wysoki</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds duży</string>
     <string name="settings_language_title">Język</string>
     <string name="settings_language_sub">Język aplikacji</string>
-    <string name="widget_pages_title">Przełączanie stron</string>
-    <string name="widget_pages_button">Przycisk zamiany</string>
-    <string name="widget_pages_double">Dwukrotne dotknięcie</string>
-    <string name="widget_pages_hint">Każdy widżet ma dwie strony: bateria i kontrola hałasu. Przy dwukrotnym dotknięciu każde pojedyncze dotknięcie czeka ok. 0,2 s na drugie.</string>
-    <string name="widget_swap_desc">Zmień stronę</string>
     <string name="language_system">Domyślny systemu</string>
 
     <!-- Model list (ModelActivity) -->

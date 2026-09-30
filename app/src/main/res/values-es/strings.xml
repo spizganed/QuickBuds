@@ -159,11 +159,6 @@
     <string name="eq_delete">Eliminar</string>
     <string name="eq_delete_confirm">¿Eliminar «%1$s»?</string>
     <string name="eq_add">Nuevo</string>
-    <string name="eq_import">Importar</string>
-    <string name="eq_import_title">Pega un preajuste copiado de QuickBuds</string>
-    <string name="eq_import_confirm">Importar</string>
-    <string name="eq_import_bad">No es un preajuste de QuickBuds</string>
-    <string name="eq_copied">Preajuste copiado</string>
     <string name="update_title">Actualización de la app</string>
     <string name="update_installed">Instalada</string>
     <string name="update_latest">Más reciente</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Brillo</string>
     <string name="preset_recent">Recientes</string>
     <string name="preset_hex">Color hex</string>
-    <string name="widget_settings_title">Ajustes del widget</string>
-    <string name="widget_settings_sub">Estilo, páginas, baja latencia</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Estilo</string>
     <string name="widget_style_classic">Clásico</string>
-    <string name="widget_ll_title">Botón de baja latencia</string>
-    <string name="widget_ll_sub">Un botón en la página de controles</string>
-    <string name="widget_open_title">Abrir la app al tocar</string>
-    <string name="widget_open_sub">Tocar la batería abre QuickBuds</string>
     <string name="widget_mode_anc_low">ANC bajo</string>
     <string name="widget_mode_anc_medium">ANC medio</string>
     <string name="widget_mode_anc_high">ANC alto</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds grande</string>
     <string name="settings_language_title">Idioma</string>
     <string name="settings_language_sub">Idioma de la app</string>
-    <string name="widget_pages_title">Cambiar páginas</string>
-    <string name="widget_pages_button">Botón de cambio</string>
-    <string name="widget_pages_double">Doble toque</string>
-    <string name="widget_pages_hint">Cada widget tiene dos páginas: batería y control de ruido. Con doble toque, cada toque simple espera unos 0,2 s por si llega un segundo.</string>
-    <string name="widget_swap_desc">Cambiar página</string>
     <string name="language_system">Predeterminado del sistema</string>
 
     <!-- Model list (ModelActivity) -->

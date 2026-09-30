@@ -188,11 +188,6 @@
     <string name="eq_delete">Delete</string>
     <string name="eq_delete_confirm">Delete \"%1$s\"?</string>
     <string name="eq_add">New</string>
-    <string name="eq_import">Import</string>
-    <string name="eq_import_title">Paste a preset copied from QuickBuds</string>
-    <string name="eq_import_confirm">Import</string>
-    <string name="eq_import_bad">Not a QuickBuds preset</string>
-    <string name="eq_copied">Preset copied</string>
 
     <!-- App update. -->
     <string name="update_title">App update</string>
@@ -389,16 +384,9 @@
     <string name="preset_hex">Hex colour</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
-    <string name="widget_settings_title">Widget settings</string>
-    <string name="widget_settings_sub">Style, pages, low latency</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Style</string>
     <string name="widget_style_classic">Classic</string>
     <string name="widget_style_nothing" translatable="false">Dot matrix</string>
-    <string name="widget_ll_title">Low latency button</string>
-    <string name="widget_ll_sub">A button on the controls page</string>
-    <string name="widget_open_title">Open app on tap</string>
-    <string name="widget_open_sub">Tapping the battery opens QuickBuds</string>
     <string name="widget_mode_anc_low">ANC Low</string>
     <string name="widget_mode_anc_medium">ANC Medium</string>
     <string name="widget_mode_anc_high">ANC High</string>
@@ -408,11 +396,6 @@
     <string name="widget_large_name">QuickBuds large</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_sub">App language</string>
-    <string name="widget_pages_title">Switching pages</string>
-    <string name="widget_pages_button">Swap button</string>
-    <string name="widget_pages_double">Double tap</string>
-    <string name="widget_pages_hint">Every widget has two pages, battery and noise control. With double tap, every single tap on it waits about 0.2 s to see if a second one follows.</string>
-    <string name="widget_swap_desc">Switch page</string>
     <string name="language_system">System default</string>
 
     <!-- Model list (ModelActivity) -->

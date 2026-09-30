@@ -70,22 +70,6 @@ object EqCodec {
 
     fun newPreset(name: String, freqs: List<Int>) = Preset(0, name, freqs, List(freqs.size) { 0 }, false, DEFAULT_TAG)
 
-    /** Share text for a preset: `QB-EQ:<gain,...>:<name>`. Gains only; the bands are the model's. */
-    private const val TEXT_PREFIX = "QB-EQ:"
-
-    fun toText(p: Preset) = TEXT_PREFIX + p.gains.joinToString(",") + ":" + p.name
-
-    /** Name and gains from [toText]'s format with [bands] gains, or null if it is not one. The name may contain ':'. */
-    fun fromText(text: String, bands: Int): Pair<String, List<Int>>? {
-        val parts = text.trim().takeIf { it.startsWith(TEXT_PREFIX) }
-            ?.removePrefix(TEXT_PREFIX)?.split(":", limit = 2) ?: return null
-        val gains = parts[0].split(",").map { it.trim().toIntOrNull() ?: return null }
-        val name = parts.getOrNull(1)?.trim().orEmpty()
-        if (gains.size != bands || gains.any { it !in GAIN_MIN..GAIN_MAX }) return null
-        if (name.isEmpty() || name.length > 20) return null
-        return name to gains
-    }
-
     /** `0x0418` payload: `<action> <tag> <id> <nameLen> <name> <bandCount> <bands...>`. */
     fun encode(action: Int, p: Preset): ByteArray {
         val name = p.name.toByteArray(Charsets.UTF_8)

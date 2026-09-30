@@ -28,11 +28,6 @@ class WidgetActionReceiver : BroadcastReceiver() {
 
         val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
         val page = intent.getStringExtra(WidgetActions.EXTRA_PAGE)
-        if (action == WidgetActions.ACTION_PAGE_SWAP) {
-            WidgetSettings.setPage(context, widgetId, page?.let { QuickBudsWidget.Kind.valueOf(it) })
-            AncWidgetProvider.refreshAll(context)
-            return
-        }
         if (page != null) return doubleTap(context, intent, widgetId, page)
 
         val state = WidgetStateStore.read(context)
@@ -43,14 +38,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) WidgetSettings.setListOpenedAt(context, widgetId, 0L)
 
         when (action) {
-            WidgetActions.ACTION_OPEN_APP -> {
-                if (!WidgetSettings.openAppOnTap(context)) return
-                // Still inside the widget tap's background-start window (DOUBLE_TAP_MS after it).
-                runCatching {
-                    context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                }.onFailure { Log.e("BudsWidget", "[RX] open app failed", it) }
-                return
-            }
+            WidgetActions.ACTION_OPEN_APP -> return
             WidgetActions.ACTION_QUICK -> {
                 val target = intent.getStringExtra(WidgetActions.EXTRA_ANC_TARGET) ?: return
                 if (target == "anc") return openList(context, widgetId)
@@ -121,7 +109,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Double-tap mode (every size): a second tap within [WidgetSettings.DOUBLE_TAP_MS] switches
+     * A second tap within [WidgetSettings.DOUBLE_TAP_MS] switches
      * to [page]; otherwise the tap runs as a plain one when the wait ends. Main thread only, like
      * [openList]; a process death during the wait drops the tap.
      */

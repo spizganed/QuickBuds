@@ -5,8 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.Dialog
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -24,7 +22,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Switch
 import android.widget.TextView
-import android.widget.Toast
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
@@ -90,7 +87,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             .sortedBy { it.optInt("order") }
     }
 
-    /** The bands a new or imported preset gets: the buds' own presets' if they have any. */
+    /** The bands a new preset gets: the buds' own presets' if they have any. */
     private fun freqs() = manager?.eqCustom?.firstOrNull()?.freqs ?: modelFreqs(this)
 
     /**
@@ -166,7 +163,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private var syncing = false
 
     /**
-     * An import waiting for its preset to exist. It is created with zero gains (the only create
+     * A duplicate waiting for its preset to exist. It is created with zero gains (the only create
      * frame captured) and the gains go in as a normal save once the re-read shows the buds' id.
      */
     private var pendingImport: Pair<String, List<Int>>? = null
@@ -333,7 +330,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         }
         customCard.visibility = if (custom.isEmpty() || !hasCustom(this)) View.GONE else View.VISIBLE
 
-        // New / Import live under the card, apart from the presets themselves.
+        // New lives under the card, apart from the presets themselves.
         customActions.removeAllViews()
         if (connected && hasCustom(this) && custom.size < maxCustom(this)) {
             customActions.addView(actionButton(R.drawable.ic_plus, R.string.eq_add) {
@@ -341,8 +338,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 val name = (1..9).map { "Custom$it" }.first { it !in used }
                 manager?.createCustomEq(name, freqs())
             })
-            customActions.addView(actionButton(R.drawable.ic_paste, R.string.eq_import) { showImport(custom) }
-                .apply { (layoutParams as LinearLayout.LayoutParams).marginStart = ThemeRes.dp(this@EqActivity, 10f) })
         }
         customActions.visibility = if (customActions.childCount == 0) View.GONE else View.VISIBLE
         customHeader.visibility =
@@ -433,8 +428,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             ).apply { topMargin = dp(8f) }
         })
 
-        // Duplicate and Delete, 48dp, bottom right (SPEC 3.5). A long press on Duplicate still
-        // copies the preset as text, for the Import sheet on another phone.
+        // Duplicate and Delete, 48dp, bottom right (SPEC 3.5).
         val fortyEight = { v: android.view.View -> v.layoutParams = LinearLayout.LayoutParams(dp(48f), dp(48f)); v.setPadding(dp(13f), dp(13f), dp(13f), dp(13f)) }
         root.addView(LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -451,12 +445,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 fortyEight(this)
                 isEnabled = shownNames.size < maxCustom(this@EqActivity)
                 alpha = if (isEnabled) 1f else 0.35f
-                setOnLongClickListener {
-                    (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-                        .setPrimaryClip(ClipData.newPlainText("QuickBuds EQ", EqCodec.toText(p)))
-                    Toast.makeText(this@EqActivity, R.string.eq_copied, Toast.LENGTH_SHORT).show()
-                    true
-                }
             })
             addView(iconButton(R.drawable.ic_delete, R.string.eq_delete) {
                 ConfirmDialog.show(
@@ -488,30 +476,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             w.setWindowAnimations(R.style.SheetAnimation)
         }
         d.show()
-    }
-
-    /** Paste sheet, pre-filled when the clipboard already holds a preset. */
-    private fun showImport(custom: List<EqCodec.Preset>) {
-        val clip = (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-            .primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString().orEmpty()
-        val sheet = BottomSheetDialog(this)
-        sheet.title(getString(R.string.eq_import_title))
-            .input(if (EqCodec.fromText(clip, freqs().size) != null) clip.trim() else "", 120)
-            .confirm(getString(R.string.eq_import_confirm)) {
-                val parsed = EqCodec.fromText(sheet.inputValue(), freqs().size)
-                if (parsed == null) {
-                    Toast.makeText(this, R.string.eq_import_bad, Toast.LENGTH_SHORT).show()
-                    return@confirm
-                }
-                sheet.close()
-                // A unique name, so the pending import finds its own preset and never an older one.
-                val used = custom.map { it.name }.toSet()
-                val name = (listOf(parsed.first) + (2..9).map { "${parsed.first.take(18)} $it" })
-                    .first { it !in used }
-                pendingImport = name to parsed.second
-                manager?.createCustomEq(name, freqs())
-            }
-            .show()
     }
 
     private fun rename(p: EqCodec.Preset, onDone: (EqCodec.Preset) -> Unit) {

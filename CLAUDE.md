@@ -276,7 +276,9 @@ fixed size, one renderer `QuickBudsWidget.build`. No more sizes for now, no mode
 - **The 3x3 is the 2x2 scaled** by `K` = `LARGE_SCALE` = 1.5645 (keep equal). No 3x3-only values.
   Script `GEO` = renderer `Geo` (keep equal).
 - **Two pages per size, battery and controls** `[USER]`, stored per widget (`widgetPage_<id>`), swapped
-  by `w_swap` or, with `widgetDoubleTap`, a double tap (200 ms wait). No automatic page change.
+  by a double tap (200 ms wait). No swap button, no widget settings screen `[USER]`: the Low latency
+  button is always there and a tap never opens the app (a swap button, a hidden LL button and an
+  open-app tap each broke the grid or the double tap). No automatic page change.
 - **Controls page:** ANC (opens the level picker `w_page2`, stays open until a pick; `widgetListAt_<id>`),
   T, A (select, or Off when lit), LL (toggle). A missing feature leaves an empty cell. No cycle mode
   `[USER]`: do not bring it back.
@@ -291,8 +293,7 @@ fixed size, one renderer `QuickBudsWidget.build`. No more sizes for now, no mode
   press animator on every clickable. Battery enters/leaves on the left, controls on the right, picker
   from the left.
 - Colours follow the active palette (tinted white shapes, bitmaps drawn per update); a palette change
-  calls `refreshAll`. Settings: `WidgetSettings` / `WidgetSettingsActivity` (page switching, Low
-  latency button, Open app on tap default off); every setter calls `refreshAll`.
+  calls `refreshAll`. `WidgetSettings` holds the per-widget page state and the mode list.
 - Tap flow: PendingIntent → `WidgetActionReceiver` (optimistic `WidgetStateStore.write`) → broadcast
   `ACTION_WIDGET_COMMAND` with the **short** action name → `BudsService.executeWidgetCommand` →
   `manager.sendAncXxx()` (fresh thread per send).

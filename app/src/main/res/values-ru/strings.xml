@@ -159,11 +159,6 @@
     <string name="eq_delete">Удалить</string>
     <string name="eq_delete_confirm">Удалить «%1$s»?</string>
     <string name="eq_add">Новый</string>
-    <string name="eq_import">Импорт</string>
-    <string name="eq_import_title">Вставьте пресет, скопированный из QuickBuds</string>
-    <string name="eq_import_confirm">Импорт</string>
-    <string name="eq_import_bad">Это не пресет QuickBuds</string>
-    <string name="eq_copied">Пресет скопирован</string>
     <string name="update_title">Обновление приложения</string>
     <string name="update_installed">Установлена</string>
     <string name="update_latest">Последняя</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Яркость</string>
     <string name="preset_recent">Недавние</string>
     <string name="preset_hex">Цвет в HEX</string>
-    <string name="widget_settings_title">Настройки виджета</string>
-    <string name="widget_settings_sub">Стиль, страницы, низкая задержка</string>
-    <string name="widget_section">Виджет</string>
     <string name="widget_style_title">Стиль</string>
     <string name="widget_style_classic">Классический</string>
-    <string name="widget_ll_title">Кнопка низкой задержки</string>
-    <string name="widget_ll_sub">Кнопка на странице управления</string>
-    <string name="widget_open_title">Открывать приложение по нажатию</string>
-    <string name="widget_open_sub">Нажатие на батарею открывает QuickBuds</string>
     <string name="widget_mode_anc_low">ANC низкий</string>
     <string name="widget_mode_anc_medium">ANC средний</string>
     <string name="widget_mode_anc_high">ANC высокий</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds большой</string>
     <string name="settings_language_title">Язык</string>
     <string name="settings_language_sub">Язык приложения</string>
-    <string name="widget_pages_title">Переключение страниц</string>
-    <string name="widget_pages_button">Кнопка смены</string>
-    <string name="widget_pages_double">Двойное касание</string>
-    <string name="widget_pages_hint">У каждого виджета две страницы: батарея и шумоподавление. При двойном касании каждое одиночное касание ждёт около 0,2 с, не последует ли второе.</string>
-    <string name="widget_swap_desc">Сменить страницу</string>
     <string name="language_system">Как в системе</string>
 
     <!-- Model list (ModelActivity) -->

@@ -38,6 +38,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private var gameSoundText: TextView? = null
     private var headMotionText: TextView? = null
     private var fitSheet: FitTestSheet? = null
+    private var wearSheet: WearSheet? = null
     private val personalNoise by lazy {
         PersonalNoiseFlow(this, { manager?.personalNoise(it) }, { manager?.queryPersonalNoise() }, { manager?.requestFullStatus() })
     }
@@ -84,17 +85,26 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         }
         link(R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub, GestureActivity::class.java,
             Capabilities.supports(this, OpoProtocol.CMD_SET_KEY_FUNCTION) && !GestureModel.of(this).isEmpty)
-        link(R.drawable.ic_earbud, R.string.row_wear_title, R.string.row_wear_sub, WearActivity::class.java,
-            Capabilities.hasFeature(this, OpoProtocol.FEATURE_AUTO_PLAY_PAUSE))
-        link(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, FindBudsActivity::class.java,
-            Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS))
-        // Earbud fit test: a sheet, as in HeyMelody's More settings (PROTOCOL.md §9).
-        if (Capabilities.supports(this, OpoProtocol.CMD_FIT_TEST)) {
+        // Wear detection, Find my earbuds and the fit test are sheets, as in HeyMelody's More settings.
+        fun sheetRow(icon: Int, title: Int, sub: Int, supported: Boolean, open: () -> Unit) {
+            if (!supported) return
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
-            card.addView(SettingRowFactory.build(this, R.drawable.ic_earbud, R.string.fit_title, R.string.fit_sub,
-                SettingRowFactory.buildChevron(this)) {
-                fitSheet = FitTestSheet(this) { on -> manager?.fitTest(on) }.also { it.show() }
-            })
+            card.addView(SettingRowFactory.build(this, icon, title, sub, SettingRowFactory.buildChevron(this)) { open() })
+        }
+        sheetRow(R.drawable.ic_earbud, R.string.row_wear_title, R.string.row_wear_sub,
+            Capabilities.hasFeature(this, OpoProtocol.FEATURE_AUTO_PLAY_PAUSE)) {
+            wearSheet = WearSheet(this, { manager?.setFeatures(OpoProtocol.FEATURE_AUTO_PLAY_PAUSE to it) },
+                manager?.featureStates?.get(OpoProtocol.FEATURE_AUTO_PLAY_PAUSE)).also { it.show() }
+        }
+        sheetRow(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub,
+            Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS)) {
+            FindBudsSheet(this) { on ->
+                startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FIND_BUDS)
+                    .putExtra(BudsService.EXTRA_FIND_ON, on))
+            }.show()
+        }
+        sheetRow(R.drawable.ic_earbud, R.string.fit_title, R.string.fit_sub, Capabilities.supports(this, OpoProtocol.CMD_FIT_TEST)) {
+            fitSheet = FitTestSheet(this) { on -> manager?.fitTest(on) }.also { it.show() }
         }
         if (card.childCount > 0) root.addView(card)
         tapSensitivity(root)
@@ -218,6 +228,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private fun quiet(block: () -> Unit) { syncing = true; block(); syncing = false }
 
     override fun onFeatureStates(states: Map<Int, Int>) {
+        wearSheet?.onFeatureStates(states)
         quiet { for ((id, sw) in featureSwitches) states[id]?.let { sw.isChecked = it == 1 } }
         paintGameSound()
         paintHeadMotion()

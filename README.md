@@ -23,7 +23,7 @@ Every other screen (gestures, themes, fit test, settings and more) is in [docs/s
 
 ### Widgets
 
-Every size has a battery page and a controls page; switch with the swap button or a double tap.
+Every size has a battery page and a controls page; switch with a double tap.
 
 | 2x2 | 3x3 | 4x2 |
 | :---: | :---: | :---: |

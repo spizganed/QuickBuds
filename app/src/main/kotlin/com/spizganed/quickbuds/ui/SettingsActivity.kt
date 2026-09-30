@@ -46,10 +46,7 @@ class SettingsActivity : Activity() {
         val layoutRow = link(R.drawable.ic_layout, R.string.settings_layout_title, R.string.settings_layout_sub) {
             startActivity(Intent(this, HomeLayoutActivity::class.java))
         }
-        val widgetRow = link(R.drawable.ic_grid, R.string.widget_settings_title, R.string.widget_settings_sub) {
-            startActivity(Intent(this, WidgetSettingsActivity::class.java))
-        }
-        section(R.string.settings_appearance, themeRow, layoutRow, widgetRow)
+        section(R.string.settings_appearance, themeRow, layoutRow)
 
         val general = mutableListOf<android.view.View>(
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),

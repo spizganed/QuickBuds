@@ -159,11 +159,6 @@
     <string name="eq_delete">Șterge</string>
     <string name="eq_delete_confirm">Ștergi „%1$s”?</string>
     <string name="eq_add">Nou</string>
-    <string name="eq_import">Importă</string>
-    <string name="eq_import_title">Lipește o presetare copiată din QuickBuds</string>
-    <string name="eq_import_confirm">Importă</string>
-    <string name="eq_import_bad">Nu este o presetare QuickBuds</string>
-    <string name="eq_copied">Presetare copiată</string>
     <string name="update_title">Actualizare aplicație</string>
     <string name="update_installed">Instalată</string>
     <string name="update_latest">Cea mai nouă</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Luminozitate</string>
     <string name="preset_recent">Recente</string>
     <string name="preset_hex">Culoare hex</string>
-    <string name="widget_settings_title">Setările widgetului</string>
-    <string name="widget_settings_sub">Stil, pagini, latență redusă</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Stil</string>
     <string name="widget_style_classic">Clasic</string>
-    <string name="widget_ll_title">Buton latență redusă</string>
-    <string name="widget_ll_sub">Un buton pe pagina de comenzi</string>
-    <string name="widget_open_title">Deschide aplicația la atingere</string>
-    <string name="widget_open_sub">Atingerea bateriei deschide QuickBuds</string>
     <string name="widget_mode_anc_low">ANC scăzut</string>
     <string name="widget_mode_anc_medium">ANC mediu</string>
     <string name="widget_mode_anc_high">ANC ridicat</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds mare</string>
     <string name="settings_language_title">Limbă</string>
     <string name="settings_language_sub">Limba aplicației</string>
-    <string name="widget_pages_title">Schimbarea paginilor</string>
-    <string name="widget_pages_button">Buton de schimbare</string>
-    <string name="widget_pages_double">Atingere dublă</string>
-    <string name="widget_pages_hint">Fiecare widget are două pagini: baterie și controlul zgomotului. Cu atingere dublă, fiecare atingere simplă așteaptă circa 0,2 s pentru o a doua.</string>
-    <string name="widget_swap_desc">Schimbă pagina</string>
     <string name="language_system">Implicit sistem</string>
 
     <!-- Model list (ModelActivity) -->

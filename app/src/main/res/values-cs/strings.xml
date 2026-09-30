@@ -159,11 +159,6 @@
     <string name="eq_delete">Smazat</string>
     <string name="eq_delete_confirm">Smazat „%1$s“?</string>
     <string name="eq_add">Nová</string>
-    <string name="eq_import">Importovat</string>
-    <string name="eq_import_title">Vložte předvolbu zkopírovanou z QuickBuds</string>
-    <string name="eq_import_confirm">Importovat</string>
-    <string name="eq_import_bad">Nejde o předvolbu QuickBuds</string>
-    <string name="eq_copied">Předvolba zkopírována</string>
     <string name="update_title">Aktualizace aplikace</string>
     <string name="update_installed">Nainstalováno</string>
     <string name="update_latest">Nejnovější</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Jas</string>
     <string name="preset_recent">Nedávné</string>
     <string name="preset_hex">Barva hex</string>
-    <string name="widget_settings_title">Nastavení widgetu</string>
-    <string name="widget_settings_sub">Styl, stránky, nízká latence</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Styl</string>
     <string name="widget_style_classic">Klasický</string>
-    <string name="widget_ll_title">Tlačítko nízké latence</string>
-    <string name="widget_ll_sub">Tlačítko na stránce ovládání</string>
-    <string name="widget_open_title">Otevřít aplikaci klepnutím</string>
-    <string name="widget_open_sub">Klepnutím na baterii se otevře QuickBuds</string>
     <string name="widget_mode_anc_low">ANC nízké</string>
     <string name="widget_mode_anc_medium">ANC střední</string>
     <string name="widget_mode_anc_high">ANC vysoké</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds velký</string>
     <string name="settings_language_title">Jazyk</string>
     <string name="settings_language_sub">Jazyk aplikace</string>
-    <string name="widget_pages_title">Přepínání stránek</string>
-    <string name="widget_pages_button">Tlačítko přepnutí</string>
-    <string name="widget_pages_double">Dvojité klepnutí</string>
-    <string name="widget_pages_hint">Každý widget má dvě stránky, baterii a ovládání hluku. Při dvojitém klepnutí čeká každé jednotlivé klepnutí asi 0,2 s, zda nepřijde druhé.</string>
-    <string name="widget_swap_desc">Přepnout stránku</string>
     <string name="language_system">Výchozí systémový</string>
 
     <!-- Model list (ModelActivity) -->

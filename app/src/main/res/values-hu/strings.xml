@@ -159,11 +159,6 @@
     <string name="eq_delete">Törlés</string>
     <string name="eq_delete_confirm">Törli: „%1$s”?</string>
     <string name="eq_add">Új</string>
-    <string name="eq_import">Importálás</string>
-    <string name="eq_import_title">Illesszen be egy QuickBudsból másolt előbeállítást</string>
-    <string name="eq_import_confirm">Importálás</string>
-    <string name="eq_import_bad">Nem QuickBuds-előbeállítás</string>
-    <string name="eq_copied">Előbeállítás másolva</string>
     <string name="update_title">Alkalmazásfrissítés</string>
     <string name="update_installed">Telepítve</string>
     <string name="update_latest">Legújabb</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Fényerő</string>
     <string name="preset_recent">Legutóbbiak</string>
     <string name="preset_hex">Hex szín</string>
-    <string name="widget_settings_title">Widget-beállítások</string>
-    <string name="widget_settings_sub">Stílus, oldalak, alacsony késleltetés</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Stílus</string>
     <string name="widget_style_classic">Klasszikus</string>
-    <string name="widget_ll_title">Alacsony késleltetés gomb</string>
-    <string name="widget_ll_sub">Egy gomb a vezérlőoldalon</string>
-    <string name="widget_open_title">Alkalmazás megnyitása koppintásra</string>
-    <string name="widget_open_sub">Az akkumulátorra koppintva megnyílik a QuickBuds</string>
     <string name="widget_mode_anc_low">ANC alacsony</string>
     <string name="widget_mode_anc_medium">ANC közepes</string>
     <string name="widget_mode_anc_high">ANC magas</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds nagy</string>
     <string name="settings_language_title">Nyelv</string>
     <string name="settings_language_sub">Alkalmazás nyelve</string>
-    <string name="widget_pages_title">Oldalak váltása</string>
-    <string name="widget_pages_button">Váltógomb</string>
-    <string name="widget_pages_double">Dupla koppintás</string>
-    <string name="widget_pages_hint">Minden widgetnek két oldala van: akkumulátor és zajszabályozás. Dupla koppintásnál minden egyes koppintás kb. 0,2 mp-et vár, hogy jön-e második.</string>
-    <string name="widget_swap_desc">Oldal váltása</string>
     <string name="language_system">Rendszer alapértelmezése</string>
 
     <!-- Model list (ModelActivity) -->

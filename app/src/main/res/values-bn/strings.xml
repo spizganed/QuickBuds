@@ -159,11 +159,6 @@
     <string name="eq_delete">মুছুন</string>
     <string name="eq_delete_confirm">\"%1$s\" মুছবেন?</string>
     <string name="eq_add">নতুন</string>
-    <string name="eq_import">ইমপোর্ট</string>
-    <string name="eq_import_title">QuickBuds থেকে কপি করা একটি প্রিসেট পেস্ট করুন</string>
-    <string name="eq_import_confirm">ইমপোর্ট</string>
-    <string name="eq_import_bad">এটি QuickBuds প্রিসেট নয়</string>
-    <string name="eq_copied">প্রিসেট কপি হয়েছে</string>
     <string name="update_title">অ্যাপ আপডেট</string>
     <string name="update_installed">ইনস্টল করা</string>
     <string name="update_latest">সর্বশেষ</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">উজ্জ্বলতা</string>
     <string name="preset_recent">সাম্প্রতিক</string>
     <string name="preset_hex">হেক্স রং</string>
-    <string name="widget_settings_title">উইজেট সেটিংস</string>
-    <string name="widget_settings_sub">স্টাইল, পেজ, লো লেটেন্সি</string>
-    <string name="widget_section">উইজেট</string>
     <string name="widget_style_title">স্টাইল</string>
     <string name="widget_style_classic">ক্লাসিক</string>
-    <string name="widget_ll_title">লো লেটেন্সি বোতাম</string>
-    <string name="widget_ll_sub">কন্ট্রোল পেজে একটি বোতাম</string>
-    <string name="widget_open_title">ট্যাপে অ্যাপ খুলুন</string>
-    <string name="widget_open_sub">ব্যাটারিতে ট্যাপ করলে QuickBuds খোলে</string>
     <string name="widget_mode_anc_low">ANC কম</string>
     <string name="widget_mode_anc_medium">ANC মাঝারি</string>
     <string name="widget_mode_anc_high">ANC বেশি</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds বড়</string>
     <string name="settings_language_title">ভাষা</string>
     <string name="settings_language_sub">অ্যাপের ভাষা</string>
-    <string name="widget_pages_title">পৃষ্ঠা বদল</string>
-    <string name="widget_pages_button">বদলের বোতাম</string>
-    <string name="widget_pages_double">দুবার ট্যাপ</string>
-    <string name="widget_pages_hint">প্রতিটি উইজেটে দুটি পৃষ্ঠা আছে, ব্যাটারি ও নয়েজ নিয়ন্ত্রণ। দুবার ট্যাপে প্রতিটি একক ট্যাপ দ্বিতীয়টি আসে কিনা দেখতে প্রায় 0.2 সেকেন্ড অপেক্ষা করে।</string>
-    <string name="widget_swap_desc">পৃষ্ঠা বদলান</string>
     <string name="language_system">সিস্টেম ডিফল্ট</string>
 
     <!-- Model list (ModelActivity) -->

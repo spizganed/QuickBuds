@@ -159,11 +159,6 @@
     <string name="eq_delete">刪除</string>
     <string name="eq_delete_confirm">刪除「%1$s」？</string>
     <string name="eq_add">新增</string>
-    <string name="eq_import">匯入</string>
-    <string name="eq_import_title">貼上從 QuickBuds 複製的預設</string>
-    <string name="eq_import_confirm">匯入</string>
-    <string name="eq_import_bad">不是 QuickBuds 預設</string>
-    <string name="eq_copied">已複製預設</string>
     <string name="update_title">應用程式更新</string>
     <string name="update_installed">已安裝</string>
     <string name="update_latest">最新</string>
@@ -310,15 +305,8 @@
     <string name="preset_hex">十六進位色彩</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
-    <string name="widget_settings_title">小工具設定</string>
-    <string name="widget_settings_sub">樣式、頁面、低延遲</string>
-    <string name="widget_section">小工具</string>
     <string name="widget_style_title">樣式</string>
     <string name="widget_style_classic">經典</string>
-    <string name="widget_ll_title">低延遲按鈕</string>
-    <string name="widget_ll_sub">控制頁上的按鈕</string>
-    <string name="widget_open_title">點按開啟應用程式</string>
-    <string name="widget_open_sub">點按電量區域開啟 QuickBuds</string>
     <string name="widget_mode_anc_low">降噪 低</string>
     <string name="widget_mode_anc_medium">降噪 中</string>
     <string name="widget_mode_anc_high">降噪 高</string>
@@ -328,11 +316,6 @@
     <string name="widget_large_name">QuickBuds 大型</string>
     <string name="settings_language_title">語言</string>
     <string name="settings_language_sub">應用程式語言</string>
-    <string name="widget_pages_title">切換頁面</string>
-    <string name="widget_pages_button">切換按鈕</string>
-    <string name="widget_pages_double">點兩下</string>
-    <string name="widget_pages_hint">每個小工具都有兩個頁面：電量和降噪控制。選擇點兩下後，每次單擊都會等待約 0.2 秒，看是否有第二次點按。</string>
-    <string name="widget_swap_desc">切換頁面</string>
     <string name="language_system">跟隨系統</string>
 
     <!-- Model list (ModelActivity) -->

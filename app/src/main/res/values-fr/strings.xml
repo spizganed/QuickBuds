@@ -159,11 +159,6 @@
     <string name="eq_delete">Supprimer</string>
     <string name="eq_delete_confirm">Supprimer « %1$s » ?</string>
     <string name="eq_add">Nouveau</string>
-    <string name="eq_import">Importer</string>
-    <string name="eq_import_title">Collez un préréglage copié depuis QuickBuds</string>
-    <string name="eq_import_confirm">Importer</string>
-    <string name="eq_import_bad">Ce n\'est pas un préréglage QuickBuds</string>
-    <string name="eq_copied">Préréglage copié</string>
     <string name="update_title">Mise à jour de l\'app</string>
     <string name="update_installed">Installée</string>
     <string name="update_latest">Dernière</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Luminosité</string>
     <string name="preset_recent">Récentes</string>
     <string name="preset_hex">Couleur hex</string>
-    <string name="widget_settings_title">Réglages du widget</string>
-    <string name="widget_settings_sub">Style, pages, faible latence</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Style</string>
     <string name="widget_style_classic">Classique</string>
-    <string name="widget_ll_title">Bouton faible latence</string>
-    <string name="widget_ll_sub">Un bouton sur la page des commandes</string>
-    <string name="widget_open_title">Ouvrir l\'app au toucher</string>
-    <string name="widget_open_sub">Toucher la batterie ouvre QuickBuds</string>
     <string name="widget_mode_anc_low">ANC faible</string>
     <string name="widget_mode_anc_medium">ANC moyen</string>
     <string name="widget_mode_anc_high">ANC élevé</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds grand</string>
     <string name="settings_language_title">Langue</string>
     <string name="settings_language_sub">Langue de l\'app</string>
-    <string name="widget_pages_title">Changer de page</string>
-    <string name="widget_pages_button">Bouton d\'échange</string>
-    <string name="widget_pages_double">Double appui</string>
-    <string name="widget_pages_hint">Chaque widget a deux pages : batterie et contrôle du bruit. Avec le double appui, chaque appui simple attend environ 0,2 s au cas où un second suivrait.</string>
-    <string name="widget_swap_desc">Changer de page</string>
     <string name="language_system">Langue du système</string>
 
     <!-- Model list (ModelActivity) -->

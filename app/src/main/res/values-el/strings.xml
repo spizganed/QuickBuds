@@ -159,11 +159,6 @@
     <string name="eq_delete">Διαγραφή</string>
     <string name="eq_delete_confirm">Διαγραφή του «%1$s»;</string>
     <string name="eq_add">Νέα</string>
-    <string name="eq_import">Εισαγωγή</string>
-    <string name="eq_import_title">Επικολλήστε μια προεπιλογή που αντιγράψατε από το QuickBuds</string>
-    <string name="eq_import_confirm">Εισαγωγή</string>
-    <string name="eq_import_bad">Δεν είναι προεπιλογή QuickBuds</string>
-    <string name="eq_copied">Η προεπιλογή αντιγράφηκε</string>
     <string name="update_title">Ενημέρωση εφαρμογής</string>
     <string name="update_installed">Εγκατεστημένη</string>
     <string name="update_latest">Νεότερη</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Φωτεινότητα</string>
     <string name="preset_recent">Πρόσφατα</string>
     <string name="preset_hex">Χρώμα hex</string>
-    <string name="widget_settings_title">Ρυθμίσεις widget</string>
-    <string name="widget_settings_sub">Στυλ, σελίδες, χαμηλή καθυστέρηση</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Στυλ</string>
     <string name="widget_style_classic">Κλασικό</string>
-    <string name="widget_ll_title">Κουμπί χαμηλής καθυστέρησης</string>
-    <string name="widget_ll_sub">Ένα κουμπί στη σελίδα ελέγχων</string>
-    <string name="widget_open_title">Άνοιγμα εφαρμογής με πάτημα</string>
-    <string name="widget_open_sub">Πατώντας την μπαταρία ανοίγει το QuickBuds</string>
     <string name="widget_mode_anc_low">ANC Χαμηλό</string>
     <string name="widget_mode_anc_medium">ANC Μεσαίο</string>
     <string name="widget_mode_anc_high">ANC Υψηλό</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds μεγάλο</string>
     <string name="settings_language_title">Γλώσσα</string>
     <string name="settings_language_sub">Γλώσσα εφαρμογής</string>
-    <string name="widget_pages_title">Εναλλαγή σελίδων</string>
-    <string name="widget_pages_button">Κουμπί εναλλαγής</string>
-    <string name="widget_pages_double">Διπλό πάτημα</string>
-    <string name="widget_pages_hint">Κάθε widget έχει δύο σελίδες, μπαταρία και έλεγχο θορύβου. Με το διπλό πάτημα, κάθε μονό πάτημα περιμένει περίπου 0,2 δ. μήπως ακολουθήσει δεύτερο.</string>
-    <string name="widget_swap_desc">Αλλαγή σελίδας</string>
     <string name="language_system">Προεπιλογή συστήματος</string>
 
     <!-- Model list (ModelActivity) -->

@@ -159,11 +159,6 @@
     <string name="eq_delete">삭제</string>
     <string name="eq_delete_confirm">\"%1$s\"을(를) 삭제할까요?</string>
     <string name="eq_add">새로 만들기</string>
-    <string name="eq_import">가져오기</string>
-    <string name="eq_import_title">QuickBuds에서 복사한 프리셋을 붙여넣으세요</string>
-    <string name="eq_import_confirm">가져오기</string>
-    <string name="eq_import_bad">QuickBuds 프리셋이 아닙니다</string>
-    <string name="eq_copied">프리셋을 복사했습니다</string>
     <string name="update_title">앱 업데이트</string>
     <string name="update_installed">설치됨</string>
     <string name="update_latest">최신</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">밝기</string>
     <string name="preset_recent">최근</string>
     <string name="preset_hex">16진수 색상</string>
-    <string name="widget_settings_title">위젯 설정</string>
-    <string name="widget_settings_sub">스타일, 페이지, 저지연</string>
-    <string name="widget_section">위젯</string>
     <string name="widget_style_title">스타일</string>
     <string name="widget_style_classic">클래식</string>
-    <string name="widget_ll_title">저지연 버튼</string>
-    <string name="widget_ll_sub">컨트롤 페이지의 버튼</string>
-    <string name="widget_open_title">탭하면 앱 열기</string>
-    <string name="widget_open_sub">배터리를 탭하면 QuickBuds가 열립니다</string>
     <string name="widget_mode_anc_low">ANC 낮음</string>
     <string name="widget_mode_anc_medium">ANC 보통</string>
     <string name="widget_mode_anc_high">ANC 높음</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds 대형</string>
     <string name="settings_language_title">언어</string>
     <string name="settings_language_sub">앱 언어</string>
-    <string name="widget_pages_title">페이지 전환</string>
-    <string name="widget_pages_button">전환 버튼</string>
-    <string name="widget_pages_double">두 번 탭</string>
-    <string name="widget_pages_hint">모든 위젯에는 배터리와 소음 제어, 두 페이지가 있습니다. 두 번 탭을 쓰면 한 번 탭할 때마다 두 번째 탭이 오는지 약 0.2초 기다립니다.</string>
-    <string name="widget_swap_desc">페이지 전환</string>
     <string name="language_system">시스템 기본값</string>
 
     <!-- Model list (ModelActivity) -->

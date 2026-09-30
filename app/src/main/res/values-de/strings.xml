@@ -159,11 +159,6 @@
     <string name="eq_delete">Löschen</string>
     <string name="eq_delete_confirm">„%1$s“ löschen?</string>
     <string name="eq_add">Neu</string>
-    <string name="eq_import">Importieren</string>
-    <string name="eq_import_title">Ein aus QuickBuds kopiertes Preset einfügen</string>
-    <string name="eq_import_confirm">Importieren</string>
-    <string name="eq_import_bad">Kein QuickBuds-Preset</string>
-    <string name="eq_copied">Preset kopiert</string>
     <string name="update_title">App-Update</string>
     <string name="update_installed">Installiert</string>
     <string name="update_latest">Neueste</string>
@@ -308,15 +303,8 @@
     <string name="preset_brightness">Helligkeit</string>
     <string name="preset_recent">Zuletzt</string>
     <string name="preset_hex">Hex-Farbe</string>
-    <string name="widget_settings_title">Widget-Einstellungen</string>
-    <string name="widget_settings_sub">Stil, Seiten, geringe Latenz</string>
-    <string name="widget_section">Widget</string>
     <string name="widget_style_title">Stil</string>
     <string name="widget_style_classic">Klassisch</string>
-    <string name="widget_ll_title">Button für niedrige Latenz</string>
-    <string name="widget_ll_sub">Eine Taste auf der Steuerungsseite</string>
-    <string name="widget_open_title">App beim Tippen öffnen</string>
-    <string name="widget_open_sub">Tippen auf den Akku öffnet QuickBuds</string>
     <string name="widget_mode_anc_low">ANC niedrig</string>
     <string name="widget_mode_anc_medium">ANC mittel</string>
     <string name="widget_mode_anc_high">ANC hoch</string>
@@ -326,11 +314,6 @@
     <string name="widget_large_name">QuickBuds groß</string>
     <string name="settings_language_title">Sprache</string>
     <string name="settings_language_sub">App-Sprache</string>
-    <string name="widget_pages_title">Seiten wechseln</string>
-    <string name="widget_pages_button">Wechseltaste</string>
-    <string name="widget_pages_double">Doppeltippen</string>
-    <string name="widget_pages_hint">Jedes Widget hat zwei Seiten: Akku und Geräuschsteuerung. Mit Doppeltippen wartet jedes einfache Tippen etwa 0,2 s, ob ein zweites folgt.</string>
-    <string name="widget_swap_desc">Seite wechseln</string>
     <string name="language_system">Systemstandard</string>
 
     <!-- Model list (ModelActivity) -->

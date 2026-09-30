@@ -26,22 +26,14 @@ object WidgetSettings {
         Mode("adapt", "Adaptive", R.string.anc_seg_adapt, R.string.anc_seg_adapt, R.drawable.ic_mode_adaptive),
         Mode("off", "Off", R.string.anc_seg_off, R.string.anc_seg_off, R.drawable.ic_mode_off)
     )
-    /** How long a tap waits for a second one in double-tap mode ([USER] 2026-09-28: 400 ms felt slow). */
+    /** How long a tap waits for a second one ([USER] 2026-09-28: 400 ms felt slow). */
     const val DOUBLE_TAP_MS = 200L
 
-    private const val KEY_LOW_LATENCY = "widgetLowLatency"
-    private const val KEY_OPEN_APP = "widgetOpenApp"
     private const val KEY_LIST_AT = "widgetListAt_"
-    private const val KEY_DOUBLE_TAP = "widgetDoubleTap"
     private const val KEY_PAGE = "widgetPage_"
     private const val KEY_CHILD = "widgetChild_"
 
     private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
-
-    private fun set(c: Context, edit: (android.content.SharedPreferences.Editor) -> Unit) {
-        prefs(c).edit().also(edit).apply()
-        QuickBudsWidget.refreshAll(c)
-    }
 
     /** The mode a stored ANC name shows as; an ANC name without a known level counts as Medium. */
     fun modeOf(ancMode: String): Mode =
@@ -56,16 +48,6 @@ object WidgetSettings {
         return MODES.filter { it.key in PICKER && anc.supports(it.store) }
     }
     private val PICKER = setOf("low", "med", "high", "smart")
-
-    fun lowLatencyShown(c: Context) = prefs(c).getBoolean(KEY_LOW_LATENCY, true)
-    fun setLowLatencyShown(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_LOW_LATENCY, v) }
-
-    fun openAppOnTap(c: Context) = prefs(c).getBoolean(KEY_OPEN_APP, false)
-    fun setOpenAppOnTap(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_OPEN_APP, v) }
-
-    /** True: a double tap switches a widget's pages (every size). False (default): the swap button does. */
-    fun doubleTapSwaps(c: Context) = prefs(c).getBoolean(KEY_DOUBLE_TAP, false)
-    fun setDoubleTapSwaps(c: Context, v: Boolean) = set(c) { it.putBoolean(KEY_DOUBLE_TAP, v) }
 
     /**
      * True: the Nothing style (no boxes, tighter inset, Nothing OS's Ndot digits; layouts `widget_*_n`).

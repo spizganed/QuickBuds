@@ -159,11 +159,6 @@
     <string name="eq_delete">ลบ</string>
     <string name="eq_delete_confirm">ลบ \"%1$s\" ไหม</string>
     <string name="eq_add">ใหม่</string>
-    <string name="eq_import">นำเข้า</string>
-    <string name="eq_import_title">วางพรีเซ็ตที่คัดลอกจาก QuickBuds</string>
-    <string name="eq_import_confirm">นำเข้า</string>
-    <string name="eq_import_bad">ไม่ใช่พรีเซ็ต QuickBuds</string>
-    <string name="eq_copied">คัดลอกพรีเซ็ตแล้ว</string>
     <string name="update_title">อัปเดตแอป</string>
     <string name="update_installed">ที่ติดตั้ง</string>
     <string name="update_latest">ล่าสุด</string>
@@ -310,15 +305,8 @@
     <string name="preset_hex">สีแบบเลขฐานสิบหก</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
-    <string name="widget_settings_title">การตั้งค่าวิดเจ็ต</string>
-    <string name="widget_settings_sub">สไตล์, หน้า, ความหน่วงต่ำ</string>
-    <string name="widget_section">วิดเจ็ต</string>
     <string name="widget_style_title">สไตล์</string>
     <string name="widget_style_classic">คลาสสิก</string>
-    <string name="widget_ll_title">ปุ่มเวลาแฝงต่ำ</string>
-    <string name="widget_ll_sub">ปุ่มในหน้าควบคุม</string>
-    <string name="widget_open_title">เปิดแอปเมื่อแตะ</string>
-    <string name="widget_open_sub">แตะที่แบตเตอรี่เพื่อเปิด QuickBuds</string>
     <string name="widget_mode_anc_low">ANC ต่ำ</string>
     <string name="widget_mode_anc_medium">ANC กลาง</string>
     <string name="widget_mode_anc_high">ANC สูง</string>
@@ -328,11 +316,6 @@
     <string name="widget_large_name">QuickBuds ใหญ่</string>
     <string name="settings_language_title">ภาษา</string>
     <string name="settings_language_sub">ภาษาของแอป</string>
-    <string name="widget_pages_title">สลับหน้า</string>
-    <string name="widget_pages_button">ปุ่มสลับ</string>
-    <string name="widget_pages_double">แตะสองครั้ง</string>
-    <string name="widget_pages_hint">วิดเจ็ตทุกขนาดมีสองหน้า: แบตเตอรี่และการควบคุมเสียงรบกวน เมื่อใช้แตะสองครั้ง การแตะครั้งเดียวทุกครั้งจะรอประมาณ 0.2 วินาทีเผื่อมีการแตะครั้งที่สอง</string>
-    <string name="widget_swap_desc">สลับหน้า</string>
     <string name="language_system">ค่าเริ่มต้นของระบบ</string>
 
     <!-- Model list (ModelActivity) -->

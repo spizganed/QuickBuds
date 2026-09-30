@@ -159,11 +159,6 @@
     <string name="eq_delete">Xóa</string>
     <string name="eq_delete_confirm">Xóa \"%1$s\"?</string>
     <string name="eq_add">Mới</string>
-    <string name="eq_import">Nhập</string>
-    <string name="eq_import_title">Dán cấu hình đã sao chép từ QuickBuds</string>
-    <string name="eq_import_confirm">Nhập</string>
-    <string name="eq_import_bad">Không phải cấu hình QuickBuds</string>
-    <string name="eq_copied">Đã sao chép cấu hình</string>
     <string name="update_title">Cập nhật ứng dụng</string>
     <string name="update_installed">Đã cài</string>
     <string name="update_latest">Mới nhất</string>
@@ -310,15 +305,8 @@
     <string name="preset_hex">Mã màu hex</string>
 
     <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
-    <string name="widget_settings_title">Cài đặt tiện ích</string>
-    <string name="widget_settings_sub">Kiểu, trang, độ trễ thấp</string>
-    <string name="widget_section">Tiện ích</string>
     <string name="widget_style_title">Kiểu</string>
     <string name="widget_style_classic">Cổ điển</string>
-    <string name="widget_ll_title">Nút độ trễ thấp</string>
-    <string name="widget_ll_sub">Một nút trên trang điều khiển</string>
-    <string name="widget_open_title">Mở ứng dụng khi chạm</string>
-    <string name="widget_open_sub">Chạm vào pin để mở QuickBuds</string>
     <string name="widget_mode_anc_low">ANC Thấp</string>
     <string name="widget_mode_anc_medium">ANC Vừa</string>
     <string name="widget_mode_anc_high">ANC Cao</string>
@@ -328,11 +316,6 @@
     <string name="widget_large_name">QuickBuds lớn</string>
     <string name="settings_language_title">Ngôn ngữ</string>
     <string name="settings_language_sub">Ngôn ngữ ứng dụng</string>
-    <string name="widget_pages_title">Chuyển trang</string>
-    <string name="widget_pages_button">Nút chuyển</string>
-    <string name="widget_pages_double">Chạm hai lần</string>
-    <string name="widget_pages_hint">Mỗi tiện ích có hai trang: pin và kiểm soát tiếng ồn. Với chạm hai lần, mỗi lần chạm đơn sẽ chờ khoảng 0,2 giây xem có lần chạm thứ hai không.</string>
-    <string name="widget_swap_desc">Chuyển trang</string>
     <string name="language_system">Mặc định hệ thống</string>
 
     <!-- Model list (ModelActivity) -->
