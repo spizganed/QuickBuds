@@ -322,9 +322,9 @@ object DotArt {
     /** Three lines, one under the other. */
     fun menu(context: Context) = Pattern(context, 16, 16) { x, y -> x in 2..13 && y % 5 in 2..3 && y in 2..13 }
 
-    /** The connection dot: a round 7x7 disc, or its ring. */
-    fun statusDot(context: Context, filled: Boolean) = Pattern(context, 7, 7, 1.7f) { x, y ->
-        val d = Math.hypot(x - 3.0, y - 3.0)
-        d <= 3.4 && (filled || d >= 2.3)
+    /** The connection dot: a round 9x9 disc, or its ring. */
+    fun statusDot(context: Context, filled: Boolean) = Pattern(context, 9, 9, 1.9f) { x, y ->
+        val d = Math.hypot(x - 4.0, y - 4.0)
+        d <= 4.4 && (filled || d >= 3.2)
     }
 }
