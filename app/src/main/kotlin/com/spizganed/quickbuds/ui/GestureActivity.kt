@@ -270,14 +270,11 @@ class GestureActivity : Activity() {
     }
 
     private fun paintSideButton(button: Button, active: Boolean) {
-        button.background = ThemeRes.chip(this, active)
-        // Active chips are drawn on the accent fill, so the label has to be the
-        // on-accent colour, not the theme's primary text colour — reading
-        // appColorTextPrimary here would put dark text on a dark fill in OLED.
-        button.setTextColor(
-            if (active) ThemeRes.palette(this).onAccent
-            else ThemeRes.color(this, R.attr.appColorTextPrimary)
-        )
+        // The chosen side is an outline, like every other selection ([USER] 2026-09-30).
+        val accent = ThemeRes.color(this, R.attr.appColorAccent)
+        button.background = ThemeRes.chip(this, false)
+        button.foreground = if (active) ThemeRes.selectedBorder(this, accent, 10f) else null
+        button.setTextColor(if (active) accent else ThemeRes.color(this, R.attr.appColorTextPrimary))
     }
 
     /**
@@ -325,7 +322,11 @@ class GestureActivity : Activity() {
 
         return SettingRowFactory.build(
             this,
-            R.drawable.ic_bolt,
+            when (gesture) {
+                OnCallGesture.SINGLE_TAP -> R.drawable.ic_tap_single
+                OnCallGesture.DOUBLE_TAP, OnCallGesture.DOUBLE_TAP_DECLINE -> R.drawable.ic_tap_double
+                OnCallGesture.LONG_HOLD -> R.drawable.ic_hold
+            },
             gesture.rowLabelRes,
             0,
             SettingRowFactory.buildChevron(this),
@@ -381,7 +382,7 @@ class GestureActivity : Activity() {
         Gesture.DOUBLE_TAP -> R.drawable.ic_tap_double
         Gesture.TRIPLE_TAP -> R.drawable.ic_tap_triple
         Gesture.SLIDE -> R.drawable.ic_chevron_right
-        Gesture.LONG_PRESS, Gesture.EXTRA_LONG_PRESS, Gesture.TAP_HOLD -> R.drawable.ic_bolt
+        Gesture.LONG_PRESS, Gesture.EXTRA_LONG_PRESS, Gesture.TAP_HOLD -> R.drawable.ic_hold
     }
 
     /**

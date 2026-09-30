@@ -164,7 +164,7 @@ class ThemeActivity : Activity() {
                 }
             ).apply {
                 setPadding(dp(16f), dp(4f), dp(16f), dp(16f))
-                accentCard.background = ThemeRes.card(this@ThemeActivity).apply { setColor(p.expanded) }
+                accentCard.background = ThemeRes.card(this@ThemeActivity, fill = p.expanded)
             })
             root.addView(accentCard)
         }

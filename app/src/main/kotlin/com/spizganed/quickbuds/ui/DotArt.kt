@@ -20,8 +20,6 @@ object DotArt {
     const val PITCH_DP = 2.2f
     /** Icons (row icons, chevrons, header buttons): finer, about 20 dots across a 24dp icon. */
     const val ICON_PITCH_DP = 1.2f
-    /** The check ([USER] 2026-09-28): fewer, bigger dots; at the icon pitch its diagonal looked ragged. */
-    const val CHECK_PITCH_DP = 2f
     private const val MIN_ALPHA = 50
     /** [draw] with `solid` (icons): a cell at least this covered gets a fully opaque dot; kept alpha read as grey. */
     private const val SOLID_MIN = 90
@@ -181,5 +179,141 @@ object DotArt {
         override fun setColorFilter(cf: android.graphics.ColorFilter?) {}
         @Deprecated("Deprecated in Java")
         override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
+    }
+
+    /**
+     * A box (card, button, chip, sheet, dialog) as dots ([ThemeRes.card] in the dot style, [USER] 2026-09-30):
+     * the outline one cell of dots, the fill dots a cell inside, both drawn once per size. [solid]: the fill is one
+     * smooth shape under the dot outline, for a sheet or dialog over other content. [topOnly]: square bottom corners.
+     */
+    class Box(
+        private val context: Context, private val fill: Int, private val stroke: Int?, private val radiusDp: Float,
+        private val topOnly: Boolean = false, private val solid: Boolean = false
+    ) : Drawable() {
+        private var cache: Bitmap? = null
+        private val p = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        private fun path(w: Float, h: Float, inset: Float): android.graphics.Path {
+            val r = (ThemeRes.dp(context, radiusDp) - inset).coerceAtLeast(0f)
+            val radii = if (topOnly) floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f) else FloatArray(8) { r }
+            return android.graphics.Path().apply {
+                addRoundRect(android.graphics.RectF(inset, inset, w - inset, h - inset), radii, android.graphics.Path.Direction.CW)
+            }
+        }
+
+        override fun draw(canvas: Canvas) {
+            val b = bounds
+            val pitch = pitchPx(context)
+            val w = Math.floor(b.width() / pitch.toDouble()).toInt() * pitch.toInt()
+            val h = Math.floor(b.height() / pitch.toDouble()).toInt() * pitch.toInt()
+            if (w <= 0 || h <= 0) return
+            val bmp = cache?.takeIf { it.width == w && it.height == h } ?: Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also { out ->
+                val c = Canvas(out)
+                if (solid) {
+                    c.drawPath(path(w.toFloat(), h.toFloat(), pitch / 2), p.apply { color = fill; style = Paint.Style.FILL })
+                }
+                // The solid fill sits under the dots; the outline is dots in both cases (its inside is cleared).
+                val edge = stroke ?: fill
+                DotArt.draw(context, c, w, h) { d ->
+                    d.drawPath(path(w.toFloat(), h.toFloat(), 0f), p.apply { color = edge; style = Paint.Style.FILL })
+                    d.drawPath(path(w.toFloat(), h.toFloat(), pitch), if (solid) clear else p.apply { color = fill })
+                }
+                cache = out
+            }
+            canvas.drawBitmap(bmp, b.left + (b.width() - w) / 2f, b.top + (b.height() - h) / 2f, null)
+        }
+
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(cf: android.graphics.ColorFilter?) {}
+        @Deprecated("Deprecated in Java")
+        override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
+    }
+
+    /**
+     * An icon drawn from a rule instead of sampled from a vector, so every dot is the same and every shape is
+     * symmetric ([USER] 2026-09-30: the tap dots were uneven and not round). [lit] says whether cell (x, y) of the
+     * [cols] x [rows] grid is a dot; the grid is centred in the bounds at the icon pitch.
+     */
+    class Pattern(
+        private val context: Context, private val cols: Int, private val rows: Int,
+        private val lit: (Int, Int) -> Boolean
+    ) : Drawable() {
+        private val p = Paint(Paint.ANTI_ALIAS_FLAG)
+        private var color = Color.WHITE
+
+        override fun draw(canvas: Canvas) {
+            val b = bounds
+            val pitch = pitchPx(context, ICON_PITCH_DP)
+            val x0 = b.left + Math.round((b.width() - cols * pitch) / 2 / pitch) * pitch
+            val y0 = b.top + Math.round((b.height() - rows * pitch) / 2 / pitch) * pitch
+            p.color = color
+            for (y in 0 until rows) for (x in 0 until cols) {
+                if (lit(x, y)) canvas.drawCircle(x0 + (x + 0.5f) * pitch, y0 + (y + 0.5f) * pitch, pitch * 0.42f, p)
+            }
+        }
+
+        override fun setTintList(tint: android.content.res.ColorStateList?) { color = tint?.defaultColor ?: Color.WHITE; invalidateSelf() }
+        override fun setTint(tintColor: Int) { color = tintColor; invalidateSelf() }
+        override fun getIntrinsicWidth() = ThemeRes.dp(context, 24f)
+        override fun getIntrinsicHeight() = ThemeRes.dp(context, 24f)
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(cf: android.graphics.ColorFilter?) {}
+        @Deprecated("Deprecated in Java")
+        override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
+    }
+
+    /** [n] tap dots side by side: each a round 5x5 disc, one cell apart. */
+    fun taps(context: Context, n: Int) = Pattern(context, n * 6 - 1, 5) { x, y ->
+        val dx = x % 6 - 2; val dy = y - 2
+        x % 6 < 5 && dx * dx + dy * dy <= 6
+    }
+
+    /** Press and hold: a dot inside a ring, 15 cells across. */
+    fun hold(context: Context) = Pattern(context, 15, 15) { x, y ->
+        val d = Math.hypot((x - 7).toDouble(), (y - 7).toDouble())
+        d <= 2.3 || (d >= 5.6 && d <= 7.2)
+    }
+
+    /** Distance from ([px], [py]) to the segment (ax, ay)-(bx, by); also gives the position along it in [t]. */
+    private fun segDist(px: Double, py: Double, ax: Double, ay: Double, bx: Double, by: Double, t: DoubleArray? = null): Double {
+        val dx = bx - ax; val dy = by - ay
+        val u = (((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)).coerceIn(0.0, 1.0)
+        t?.set(0, u)
+        return Math.hypot(px - (ax + u * dx), py - (ay + u * dy))
+    }
+
+    /** A 15x15 icon of round strokes: a cell is lit when its centre is within [r] cells of a segment (x1, y1, x2, y2). */
+    private fun strokes(context: Context, r: Double, vararg segs: DoubleArray) = Pattern(context, 15, 15) { x, y ->
+        segs.any { segDist(x + 0.5, y + 0.5, it[0], it[1], it[2], it[3]) <= r }
+    }
+
+    fun close(context: Context) = strokes(context, 1.0, doubleArrayOf(2.5, 2.5, 12.5, 12.5), doubleArrayOf(12.5, 2.5, 2.5, 12.5))
+    fun check(context: Context) = strokes(context, 1.15, doubleArrayOf(2.5, 8.0, 6.0, 11.5), doubleArrayOf(6.0, 11.5, 12.5, 4.0))
+
+    /** A pencil: one diagonal that narrows to the tip at the bottom left. */
+    fun pencil(context: Context) = Pattern(context, 15, 15) { x, y ->
+        val t = DoubleArray(1)
+        val d = segDist(x + 0.5, y + 0.5, 2.5, 12.5, 12.0, 3.0, t)
+        d <= 0.5 + 1.4 * t[0]
+    }
+
+    /** A bin: handle, lid and a plain body. */
+    fun bin(context: Context) = Pattern(context, 15, 15) { x, y ->
+        when (y) {
+            1 -> x in 5..9
+            2 -> x == 5 || x == 9
+            3, 4 -> x in 1..13
+            in 6..13 -> x in 2..12
+            else -> false
+        }
+    }
+
+    /** A cog: a ring with eight square teeth. */
+    fun cog(context: Context) = Pattern(context, 15, 15) { x, y ->
+        val dx = x - 7.0; val dy = y - 7.0
+        val d = Math.hypot(dx, dy)
+        val a = Math.atan2(dy, dx)
+        val off = Math.abs(a - Math.round(a / (Math.PI / 4)) * (Math.PI / 4))
+        (d in 2.7..5.4) || (d in 5.0..7.6 && off <= 0.3)
     }
 }

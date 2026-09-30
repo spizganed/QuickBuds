@@ -68,7 +68,7 @@ class ColorPickerView(
             filters = arrayOf(InputFilter.LengthFilter(7))
             imeOptions = EditorInfo.IME_ACTION_DONE
             contentDescription = context.getString(R.string.preset_hex)
-            background = ThemeRes.card(context, 14f).apply { setColor(p.background) }
+            background = ThemeRes.card(context, 14f, p.background)
             setPadding(dp(14f), 0, dp(14f), 0)
             layoutParams = LayoutParams(dp(112f), dp(44f))
             fun apply(v: TextView) {

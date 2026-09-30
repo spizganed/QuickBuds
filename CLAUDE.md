@@ -167,8 +167,10 @@ A change recreates open screens (part of the activity signature).
 - **Font: bundled Doto** (`res/font/doto.ttf`, SIL OFL, static instance wght 900 / ROND 100, license in
   `assets/Doto-OFL.txt`), on every phone `[USER]`. `ThemeRes.dotFont`, `ThemeOverlay.App.Nothing` for
   theme-set text. Monospaced and wide: long labels wrap.
-- No cards: `ThemeRes.group()` is null. Dialogs, sheets, buttons, chips and the segmented control keep
-  shapes.
+- No cards: `ThemeRes.group()` is null. Dialogs, sheets, buttons, chips, header buttons and text fields are
+  `DotArt.Box` (outline one cell of dots, fill dots inside; `solid` = smooth fill under a dot outline, used by
+  sheets and dialogs). `ThemeRes.card / iconButton / chip / sheet / pill` pick it, so never build a
+  `GradientDrawable` for a button by hand.
 - Home: `BudsStatusView` draws the widget's `dotRing`, numbers without `%`, no wear label (the glyph's
   shade says it). `AncSegmentedView` draws `QuickBudsWidget.modeIcon` at a whole-pixel pitch
   (~1.15dp), 72dp tall.
@@ -179,8 +181,10 @@ A change recreates open screens (part of the activity signature).
   shape filled in the outline colour with the fill a cell inside, never a thin stroke (it skips cells).
   **Every knob is `DotArt.knob`** `[USER]`: one fixed 7x7 dot ring snapped to the grid (scaled circles came out a
   different shape at every position). Never draw a dot-style knob with `drawCircle`.
-- Icons: `ThemeRes.tint` returns a `DotArt.Icon` (1.2dp, solid dots); `ic_check` becomes
-  `ic_check_dots`. Row dividers are one row of dots.
+- Icons: `ThemeRes.tint` returns a `DotArt.Icon` (1.2dp, solid dots). The small action icons (tap x1/x2/x3,
+  hold, close, check, pencil, bin, cog) are `DotArt.Pattern`s drawn from a rule, not sampled from the vector,
+  so every dot is the same and shapes are symmetric `[USER]`; their vectors (simple, filled or bold
+  strokes) are the Classic look. Row dividers are one row of dots.
 
 ### Shared components and screens
 
@@ -197,9 +201,10 @@ A change recreates open screens (part of the activity signature).
   programmatic changes. Widget taps: `Haptics.tick(context)` (usage HARDWARE_FEEDBACK; TOUCH is dropped
   in the background).
 - **Settings** (`SettingsActivity`): Appearance, General (language, haptics, background service, Dev
-  tools button, default on), App.
-- **Update check** (`UpdateChecker`, `UpdateActivity`): GitHub latest release, `.apk` asset; on start at
-  most every 12 h, silent on failure, one dialog per new tag.
+  tools button, default on), App. Find my earbuds and Wear detection are sheets
+  (`FindBudsSheet`, `WearSheet`) opened from the Earbud settings hub, like the fit test.
+- **Update check** (`UpdateChecker`, `UpdateActivity`): GitHub latest release, `.apk` asset; on start (switch on the
+  update screen) at most every 12 h, silent on failure, one dialog per new tag.
 - **About:** Ko-fi button hidden while `AboutActivity.KOFI_URL` is null.
 - **Home layout** (`HomeLayoutActivity`): drag to reorder, eye to hide; prefs `homeRowOrder` /
   `homeRowHidden`. **A new home row needs its key in `buildFeatureRows()` AND

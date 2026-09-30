@@ -131,13 +131,17 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         lastConnShown = connected
 
         fun apply() {
-            connDot.setImageResource(
-                if (connected) R.drawable.ic_status_dot_filled
-                else R.drawable.ic_status_dot_empty
-            )
             // SPEC 3.1 / 3.2: accent dot + text label when connected, grey ring + grey label when not.
             val p = ThemeRes.palette(this)
-            connDot.setColorFilter(if (connected) p.accent else p.textSecondary)
+            val dotRes = if (connected) R.drawable.ic_status_dot_filled else R.drawable.ic_status_dot_empty
+            val dotColor = if (connected) p.accent else p.textSecondary
+            if (ThemeRes.nothing(this)) {
+                connDot.colorFilter = null
+                connDot.setImageDrawable(ThemeRes.tint(this, dotRes, dotColor))
+            } else {
+                connDot.setImageResource(dotRes)
+                connDot.setColorFilter(dotColor)
+            }
             // The word is the ACTION (the pill is a button); the dot and colour carry the state.
             connText.setText(if (connected) R.string.conn_action_disconnect else R.string.conn_action_connect)
             connText.setTextColor(if (connected) p.text else p.textSecondary)

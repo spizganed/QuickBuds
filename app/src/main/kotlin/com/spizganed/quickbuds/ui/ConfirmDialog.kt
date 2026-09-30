@@ -35,8 +35,8 @@ object ConfirmDialog {
             setPadding(dp(22f), 0, dp(22f), 0)
             background = ThemeRes.ripple(
                 activity,
-                if (filled) ThemeRes.shape(activity, p.accent, null, 22f)
-                else ThemeRes.shape(activity, p.card, p.outline, 22f)
+                if (filled) ThemeRes.pill(activity, p.accent, 22f)
+                else ThemeRes.card(activity, 22f)
             )
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(44f))
                 .apply { marginStart = dp(10f) }
@@ -45,7 +45,7 @@ object ConfirmDialog {
 
         val root = LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
-            background = ThemeRes.card(activity)
+            background = ThemeRes.card(activity, solid = true)
             setPadding(dp(24f), dp(24f), dp(24f), dp(20f))
             addView(TextView(activity).apply {
                 text = title

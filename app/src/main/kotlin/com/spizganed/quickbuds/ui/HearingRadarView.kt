@@ -70,7 +70,7 @@ class HearingRadarView(context: Context) : View(context) {
         if (nothing) DotArt.draw(context, canvas, width, height) { shapes(it) } else shapes(canvas)
         GoldenSound.AXES.forEachIndexed { i, f ->
             val (x, y) = point(i, 12.2f)
-            val label = if (f >= 1000) "${f / 1000.0}".removeSuffix(".0") + "k" else "$f"
+            val label = if (f >= 1000) "${f / 1000.0}".removeSuffix(".0") + " kHz" else "$f Hz"
             canvas.drawText(label, x, y + labelPaint.textSize / 3, labelPaint)
         }
         labelPaint.textAlign = Paint.Align.LEFT

@@ -10,6 +10,7 @@ import android.os.LocaleList
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
@@ -258,12 +259,21 @@ object ThemeRes {
      */
     fun tint(context: Context, drawableRes: Int, color: Int): android.graphics.drawable.Drawable {
         val nothing = nothing(context)
-        // Nothing style: the check's thin diagonal sampled as a ragged line, so it has a bolder copy at a coarser pitch.
-        val check = nothing && drawableRes == R.drawable.ic_check
-        val d = context.getDrawable(if (check) R.drawable.ic_check_dots else drawableRes)!!.mutate()
+        if (nothing) when (drawableRes) {
+            R.drawable.ic_tap_single -> return DotArt.taps(context, 1).also { it.setTint(color) }
+            R.drawable.ic_tap_double -> return DotArt.taps(context, 2).also { it.setTint(color) }
+            R.drawable.ic_tap_triple -> return DotArt.taps(context, 3).also { it.setTint(color) }
+            R.drawable.ic_hold -> return DotArt.hold(context).also { it.setTint(color) }
+            R.drawable.ic_close -> return DotArt.close(context).also { it.setTint(color) }
+            R.drawable.ic_check -> return DotArt.check(context).also { it.setTint(color) }
+            R.drawable.ic_pencil -> return DotArt.pencil(context).also { it.setTint(color) }
+            R.drawable.ic_delete -> return DotArt.bin(context).also { it.setTint(color) }
+            R.drawable.ic_settings_cog -> return DotArt.cog(context).also { it.setTint(color) }
+        }
+        val d = context.getDrawable(drawableRes)!!.mutate()
         d.setTint(color)
         // Nothing style: every tinted icon as dots (row icons, chevrons, header buttons, checks).
-        return if (nothing) DotArt.Icon(context, d, if (check) DotArt.CHECK_PITCH_DP else DotArt.ICON_PITCH_DP) else d
+        return if (nothing) DotArt.Icon(context, d, DotArt.ICON_PITCH_DP) else d
     }
 
     /** A rounded rectangle in token colours: cards, pills, chips, sheet backgrounds. */
@@ -276,18 +286,23 @@ object ThemeRes {
         if (stroke != null) setStroke(dp(context, strokeDp).coerceAtLeast(1), stroke)
     }
 
+    /** A filled, unoutlined rounded button: [shape], dots in the dot style. */
+    fun pill(context: Context, fill: Int, radiusDp: Float): Drawable =
+        if (nothing(context)) DotArt.Box(context, fill, null, radiusDp) else shape(context, fill, null, radiusDp)
+
     /**
      * A group of rows or a home tile: [card], or nothing in the Nothing style ([USER] 2026-09-28: no cards,
      * sections split by their labels, as on the Nothing widget).
      */
-    fun group(context: Context): GradientDrawable? = if (nothing(context)) null else card(context)
+    fun group(context: Context): Drawable? = if (nothing(context)) null else card(context)
 
     /** The standard card: `card` fill, 1dp `outline` stroke. */
     /**
      * The selection mark ([USER] 2026-09-30: an outline, never a check), set as a row's or tile's foreground:
-     * a 2dp [color] outline, in the dot style one cell of dots.
+     * a 2dp [color] outline, in the dot style one cell of dots. Classic's 24dp radius is the card's, so the corner rows,
+     * clipped to the card, keep a whole outline.
      */
-    fun selectedBorder(context: Context, color: Int, radiusDp: Float = 14f): android.graphics.drawable.Drawable {
+    fun selectedBorder(context: Context, color: Int, radiusDp: Float = if (nothing(context)) 14f else 24f): android.graphics.drawable.Drawable {
         val r = dp(context, radiusDp).toFloat()
         if (!nothing(context)) return GradientDrawable().apply { cornerRadius = r; setStroke(dp(context, 2f), color) }
         return DotArt.Part(context, 0f, 0f, android.content.res.ColorStateList.valueOf(color)) { c, box, paint ->
@@ -298,13 +313,16 @@ object ThemeRes {
         }
     }
 
-    fun card(context: Context, radiusDp: Float = 24f): GradientDrawable {
+    fun card(context: Context, radiusDp: Float = 24f, fill: Int? = null, solid: Boolean = false, topOnly: Boolean = false): Drawable {
         val p = palette(context)
-        return shape(context, p.card, p.outline, radiusDp)
+        if (nothing(context)) return DotArt.Box(context, fill ?: p.card, p.outline, radiusDp, topOnly, solid)
+        return shape(context, fill ?: p.card, p.outline, radiusDp).apply {
+            if (topOnly) { val r = dp(context, radiusDp).toFloat(); cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f) }
+        }
     }
 
     /** Icon button / framed control: `card` fill, `outline` stroke, 14dp radius (SPEC section 2). */
-    fun iconButton(context: Context, radiusDp: Float = 14f): GradientDrawable = card(context, radiusDp)
+    fun iconButton(context: Context, radiusDp: Float = 14f): Drawable = card(context, radiusDp)
 
     /** Press ripple in `text` at low alpha, over [content] (or bounded by the view when null). */
     fun ripple(context: Context, content: android.graphics.drawable.Drawable? = null): RippleDrawable {
@@ -327,16 +345,14 @@ object ThemeRes {
     }
 
     /** Small chip button; the active one is an `accent` fill. */
-    fun chip(context: Context, active: Boolean): GradientDrawable {
+    fun chip(context: Context, active: Boolean): Drawable {
         val p = palette(context)
+        if (nothing(context)) return DotArt.Box(context, if (active) p.accent else p.card, if (active) null else p.outline, 10f)
         return if (active) shape(context, p.accent, null, 10f) else shape(context, p.card, p.outline, 10f)
     }
 
     /** Bottom sheet window: rounded top corners only. */
-    fun sheet(context: Context): GradientDrawable = card(context, 0f).apply {
-        val r = dp(context, 20f).toFloat()
-        cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
-    }
+    fun sheet(context: Context): Drawable = card(context, 20f, solid = true, topOnly = true)
 
 
     /** Thumb / track tint lists for a platform Switch (SPEC section 1, derived colours). */

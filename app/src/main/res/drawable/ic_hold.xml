@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Press and hold: a dot inside a ring. Same language as the tap icons (dots), and not the bolt of Low latency.
+  The dot style draws it from a rule (DotArt.hold), not from this vector.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M 12 3 A 9 9 0 1 1 11.99 3 Z M 12 5 A 7 7 0 1 0 12.01 5 Z M 12 9 A 3 3 0 1 1 11.99 9 Z" />
+</vector>

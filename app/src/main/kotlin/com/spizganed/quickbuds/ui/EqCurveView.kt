@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PathMeasure
 import android.graphics.Shader
 import android.view.MotionEvent
 import android.view.View
@@ -133,13 +134,35 @@ class EqCurveView(context: Context) : View(context) {
         fill.lineTo(x(0), bottom)
         fill.close()
         canvas.drawPath(fill, fillPaint)
-        canvas.drawPath(curve, curvePaint)
+        if (nothing) dotLine(canvas, pitch) else canvas.drawPath(curve, curvePaint)
 
         for (i in gains.indices) {
             if (nothing) { DotArt.knob(context, canvas, x(i), y(pos[i]), accent); continue }
             val r = if (i == active) dp(9f) else dp(7f)
             canvas.drawCircle(x(i), y(pos[i]), r, dotFill)
             canvas.drawCircle(x(i), y(pos[i]), r, dotRing)
+        }
+    }
+
+    /**
+     * The curve as dots ([USER] 2026-09-30: it was jagged). A stroke sampled at one point per cell came out one
+     * cell thick in one place and two in the next; here each cell the path passes through is lit once, so the line
+     * is one even, connected row of dots. Called inside [DotArt.draw], where one cell is one pixel.
+     */
+    private fun dotLine(canvas: Canvas, pitch: Float) {
+        val pm = PathMeasure(curve, false)
+        val at = FloatArray(2)
+        val cell = Paint().apply { color = accent }
+        var lastX = Int.MIN_VALUE
+        var lastY = Int.MIN_VALUE
+        var d = 0f
+        while (d <= pm.length) {
+            pm.getPosTan(d, at, null)
+            val cx = Math.floor(at[0] / pitch.toDouble()).toInt()
+            val cy = Math.floor(at[1] / pitch.toDouble()).toInt()
+            if (cx != lastX || cy != lastY) canvas.drawRect(cx * pitch, cy * pitch, (cx + 1) * pitch, (cy + 1) * pitch, cell)
+            lastX = cx; lastY = cy
+            d += pitch / 4
         }
     }
 

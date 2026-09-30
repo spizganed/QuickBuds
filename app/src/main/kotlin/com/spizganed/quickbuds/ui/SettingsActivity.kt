@@ -66,7 +66,6 @@ class SettingsActivity : Activity() {
         section(
             R.string.settings_app,
             updateRow,
-            toggle(R.drawable.ic_update, R.string.update_auto_title, R.string.update_auto_sub, UpdateChecker.KEY_AUTO, true),
             link(R.drawable.ic_info, R.string.settings_about_title, R.string.settings_about_sub) {
                 startActivity(Intent(this, AboutActivity::class.java))
             }

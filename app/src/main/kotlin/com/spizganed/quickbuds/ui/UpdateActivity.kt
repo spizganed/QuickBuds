@@ -108,12 +108,20 @@ class UpdateActivity : Activity() {
             typeface = ThemeRes.bold(context)
             gravity = Gravity.CENTER
             setTextColor(p.onAccent)
-            background = ThemeRes.ripple(this@UpdateActivity, ThemeRes.shape(this@UpdateActivity, p.accent, null, 22f))
+            background = ThemeRes.ripple(this@UpdateActivity, ThemeRes.pill(this@UpdateActivity, p.accent, 22f))
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44f))
                 .apply { topMargin = dp(14f) }
             setOnClickListener { onAction() }
         }
         root.addView(action)
+
+        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
+        val autoSwitch = SettingRowFactory.buildSwitch(this, prefs.getBoolean(UpdateChecker.KEY_AUTO, true))
+        autoSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(UpdateChecker.KEY_AUTO, on).apply() }
+        root.addView(SettingRowFactory.card(this).apply {
+            (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14f)
+            addView(SettingRowFactory.build(this@UpdateActivity, R.drawable.ic_update, R.string.update_auto_title, R.string.update_auto_sub, autoSwitch) { autoSwitch.performClick() })
+        })
 
         notesLabel = SettingRowFactory.sectionLabel(this, R.string.update_notes).apply { visibility = View.GONE }
         root.addView(notesLabel)
