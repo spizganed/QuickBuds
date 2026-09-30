@@ -243,6 +243,8 @@ class DevToolsActivity : Activity() {
         val sb = android.text.SpannableStringBuilder()
         val p = ThemeRes.palette(this)
         val amber = 0xFFE8A93A.toInt()
+        // The time in its own colour (a mix of the accent and the grey), so lines separate at a glance.
+        val time = Palette.blend(p.textSecondary, p.accent, 0.55f)
         fun add(text: String, color: Int, bold: Boolean = false) {
             val start = sb.length
             sb.append(text)
@@ -252,7 +254,7 @@ class DevToolsActivity : Activity() {
         for (line in lines) {
             if (mode == 2) { sb.append(line).append("\n"); continue }
             val d = LogDecoder.decode(line)
-            add(LogDecoder.displayTime(d.rawTimestamp) + "  ", p.textSecondary)
+            add(LogDecoder.displayTime(d.rawTimestamp) + "  ", time)
             when (d.direction) {
                 LogDecoder.Direction.TX -> add("\u2192 TX ", p.accent, true)
                 LogDecoder.Direction.RX -> add("\u2190 RX ", p.text, true)

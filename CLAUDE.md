@@ -220,7 +220,7 @@ A change recreates open screens (part of the activity signature).
 - **Dev Tools:** packet log (Human / Detailed / Raw; Human puts every packet the decoder does not name on
   an amber line with its payload, Detailed adds the payload line to all; the framer's discarded bytes are logged
   as `DISCARDED RX`; long press copies), Clear, Export (`Download/QuickBudsLogs/`),
-  Reconnect, Disconnect, Crash test. Labels stay English-only. The crash handler is installed in
+  Reconnect, Disconnect, Crash test. Labels stay English-only. The crash report shows as a sheet (Copy, Share; tap outside to dismiss). The crash handler is installed in
   `QuickBudsApp.attachBaseContext` (`Download/QuickBudsCrash/`).
 
 ### Main screen

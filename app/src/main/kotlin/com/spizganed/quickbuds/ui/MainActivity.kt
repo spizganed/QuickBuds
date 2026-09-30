@@ -3,7 +3,6 @@ package com.spizganed.quickbuds.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.bluetooth.BluetoothManager
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -486,52 +485,39 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
 
-        // The path line matters more than it looks: the point of this dialog is
-        // that the report is reachable WITHOUT the app working, so it has to say
-        // where the file is, not just what it contains.
-        val header = TextView(this).apply {
-            text = getString(R.string.crash_saved_to)
-            setTextColor(ThemeRes.color(this@MainActivity, R.attr.appColorTextSecondary))
-            textSize = 11f
-            setPadding(dp(24f), dp(12f), dp(24f), dp(6f))
-        }
-
-        // Scrollable + copyable: stack traces are long and the point is that the
-        // user can get the text out. A plain AlertDialog message is not
-        // selectable, so the TextView is built explicitly to be.
+        // Selectable, in a scroll box: stack traces are long and the point is that the user can get the text out.
         val body = TextView(this).apply {
             text = report
             setTextIsSelectable(true)
             setTextColor(ThemeRes.color(this@MainActivity, R.attr.appColorTextPrimary))
             textSize = 11f
-            setPadding(dp(24f), dp(0f), dp(24f), dp(16f))
+            typeface = android.graphics.Typeface.MONOSPACE
+            setPadding(dp(14f), dp(8f), dp(14f), dp(8f))
         }
-
-        val column = android.widget.LinearLayout(this).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            addView(header)
+        val scroll = android.widget.ScrollView(this).apply {
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT, dp(240f)
+            ).apply { marginStart = dp(10f); marginEnd = dp(10f) }
             addView(body)
         }
-        val scroll = android.widget.ScrollView(this).apply { addView(column) }
 
-        // Marked as shown BEFORE showing: if the dialog is dismissed by a config
-        // change or a swipe, it must not come back on the next onCreate.
+        // Marked as shown BEFORE showing: if the sheet is dismissed by a config change or a swipe, it must not
+        // come back on the next onCreate.
         prefs.edit().putString(ThemeRes.KEY_LAST_SHOWN_CRASH, stamp).apply()
 
-        AlertDialog.Builder(this)
-            .setTitle(R.string.crash_title)
-            .setView(scroll)
-            .setPositiveButton(R.string.crash_copy) { _, _ ->
-                val clip = getSystemService(ClipboardManager::class.java)
-                clip?.setPrimaryClip(ClipData.newPlainText("QuickBuds crash", report))
+        // The saved-to line matters: the report has to be reachable WITHOUT the app working. Tapping outside dismisses.
+        val sheet = BottomSheetDialog(this)
+        sheet.title(getString(R.string.crash_title))
+            .message(getString(R.string.crash_saved_to))
+            .content(scroll)
+            .confirm(getString(R.string.crash_copy)) {
+                getSystemService(ClipboardManager::class.java)
+                    ?.setPrimaryClip(ClipData.newPlainText("QuickBuds crash", report))
                 Toast.makeText(this, R.string.crash_copied, Toast.LENGTH_SHORT).show()
             }
-            .setNeutralButton(R.string.crash_share) { _, _ ->
-                startActivity(
-                    Intent.createChooser(CrashLogger.shareIntent(this, report), getString(R.string.crash_share_title))
-                )
+            .cancel(getString(R.string.crash_share)) {
+                startActivity(Intent.createChooser(CrashLogger.shareIntent(this, report), getString(R.string.crash_share_title)))
             }
-            .setNegativeButton(R.string.crash_dismiss, null)
             .show()
     }
 
