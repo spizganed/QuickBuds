@@ -30,6 +30,11 @@ class ThemeActivity : Activity() {
     /** The active built-in tile, repainted live while the accent picker drags. */
     private var activeTile: PalettePreviewView? = null
 
+    /** The selected tile or preset row, outlined by [selection] (slides, also across the recreate() a pick triggers). */
+    private lateinit var selection: SelectionSlider
+    private var selTarget: View? = null
+    private var selRadius = SettingRowFactory.SPLIT_RADIUS
+
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeRes.select(this)
         super.onCreate(savedInstanceState)
@@ -65,6 +70,8 @@ class ThemeActivity : Activity() {
         val activeId = PaletteStore.activeId(this)
         root.removeAllViews()
         activeTile = null
+        selTarget = null
+        if (!::selection.isInitialized) selection = SelectionSlider(root, "theme")
         root.addView(SettingRowFactory.title(this, R.string.theme_title))
 
         // --- Style: Classic or Nothing, for the app and the widgets ([USER] 2026-09-28) ---
@@ -75,8 +82,10 @@ class ThemeActivity : Activity() {
             contentDescription = getString(R.string.widget_style_title)
             onSegmentTapped = { i ->
                 if (i != selected) {
+                    // The pill slides first, then the screen is rebuilt in the new style.
+                    selected = i
                     ThemeRes.setNothing(this@ThemeActivity, i == 1)
-                    recreate()
+                    postDelayed({ recreate() }, 260)
                 }
             }
         })
@@ -102,7 +111,7 @@ class ThemeActivity : Activity() {
             val frame = FrameLayout(this).apply { clipChildren = false }
             frame.addView(PalettePreviewView(this, detailed = false).apply {
                 palette = preset
-                active = isActive
+                if (isActive) { selTarget = frame; selRadius = 18f }
                 if (isActive) activeTile = this
             })
             column.addView(frame)
@@ -120,7 +129,7 @@ class ThemeActivity : Activity() {
 
         // --- Match system: White in light mode, a dark built-in in dark mode ---
         val autoSwitch = SettingRowFactory.buildSwitch(this, PaletteStore.auto(this))
-        autoSwitch.setOnCheckedChangeListener { _, on -> PaletteStore.setAuto(this, on); recreate() }
+        autoSwitch.setOnCheckedChangeListener { v, on -> PaletteStore.setAuto(this, on); v.postDelayed({ recreate() }, 260) }
         val autoRow = SettingRowFactory.build(this, 0, R.string.theme_auto, 0, autoSwitch) { autoSwitch.performClick() }
         SettingRowFactory.subtitle(this, autoRow).text =
             getString(R.string.theme_auto_sub, ThemeRes.builtInName(this, PaletteStore.WHITE),
@@ -192,7 +201,7 @@ class ThemeActivity : Activity() {
             ) { apply(preset.id, card) }
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).text = preset.name
             // Active: the selection border, like the built-in tiles.
-            if (preset.id == activeId) row.foreground = ThemeRes.selectedBorder(this, p.accent, SettingRowFactory.SPLIT_RADIUS)
+            if (preset.id == activeId) { selTarget = row; selRadius = SettingRowFactory.SPLIT_RADIUS }
             SettingRowFactory.addSplit(card, row)
         }
         val left = PaletteStore.MAX_CUSTOM - custom.size
@@ -212,6 +221,7 @@ class ThemeActivity : Activity() {
             textSize = 13f
             setPadding(dp(4f), dp(14f), dp(4f), 0)
         })
+        selection.moveTo(selTarget, p.accent, selRadius)
     }
 
     /** "Starts from the current theme": a copy of the active preset's colours, then its editor. */

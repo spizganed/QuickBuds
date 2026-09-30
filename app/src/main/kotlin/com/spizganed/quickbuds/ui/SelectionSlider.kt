@@ -12,11 +12,15 @@ import android.view.animation.DecelerateInterpolator
  * The [ThemeRes.selectedBorder] of a list of rows as one outline in [host]'s overlay, slid from row to row
  * ([USER] 2026-09-30) instead of appearing on the new one. [host] is the rows' common parent (it scrolls with
  * them), so the rows may sit in several cards. The slider outlives row rebuilds: call [moveTo] after each one.
+ * With a [key] the last position is kept across the screen's own recreate(), so a pick that recreates the
+ * activity (a theme) still slides from where the outline was.
  */
-class SelectionSlider(private val host: ViewGroup) {
+class SelectionSlider(private val host: ViewGroup, private val key: String? = null) {
     private var outline: Drawable? = null
     private var color = 0
+    private var radius = SettingRowFactory.SPLIT_RADIUS
     private var drawnColor = 0
+    private var drawnRadius = 0f
     private var row: View? = null
     private val at = Rect()
     private var anim: ValueAnimator? = null
@@ -27,9 +31,10 @@ class SelectionSlider(private val host: ViewGroup) {
     }
 
     /** Shows the outline on [row] (null hides it), sliding when it was already on screen. */
-    fun moveTo(row: View?, color: Int) {
+    fun moveTo(row: View?, color: Int, radiusDp: Float = SettingRowFactory.SPLIT_RADIUS) {
         this.row = row
         this.color = color
+        this.radius = radiusDp
         if (row == null) { hide(); return }
         // Rows are laid out on the next pass; measure them then.
         host.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
@@ -57,15 +62,19 @@ class SelectionSlider(private val host: ViewGroup) {
         host.offsetDescendantRectToMyCoords(r, to)
         anim?.cancel()
         var d = outline
-        if (d == null || drawnColor != color) {
+        if (d == null || drawnColor != color || drawnRadius != radius) {
+            val was = d != null
             d?.let { host.overlay.remove(it) }
-            d = ThemeRes.selectedBorder(host.context, color, SettingRowFactory.SPLIT_RADIUS).also { it.bounds = if (outline == null) to else at; host.overlay.add(it) }
-            val first = outline == null
+            // Where a fresh outline starts: the old one, or the position kept across a recreate.
+            val start = if (was) Rect(at) else key?.let { carried[it] }?.let { Rect(it) } ?: Rect(to)
+            d = ThemeRes.selectedBorder(host.context, color, radius).also { it.bounds = start; host.overlay.add(it) }
             outline = d
             drawnColor = color
-            if (first) { at.set(to); return }
+            drawnRadius = radius
+            at.set(start)
         }
-        if (!animate || at == to) { d.bounds = to; at.set(to); return }
+        key?.let { carried[it] = Rect(to) }
+        if (!animate || at == to) { d.bounds = to; at.set(to); host.invalidate(); return }
         val from = Rect(at)
         val shown = d
         anim = ValueAnimator.ofFloat(0f, 1f).apply {
@@ -76,8 +85,15 @@ class SelectionSlider(private val host: ViewGroup) {
                 fun mix(a: Int, b: Int) = a + ((b - a) * t).toInt()
                 at.set(mix(from.left, to.left), mix(from.top, to.top), mix(from.right, to.right), mix(from.bottom, to.bottom))
                 shown.bounds = at
+                // A drawable's bounds change does not redraw it: the overlay needs telling.
+                host.invalidate()
             }
             start()
         }
+    }
+
+    private companion object {
+        /** Last outline rect per [key], for a screen that recreates itself on a pick. */
+        val carried = HashMap<String, Rect>()
     }
 }
