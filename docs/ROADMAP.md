@@ -12,35 +12,23 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## The plan, in order (`[USER]` 2026-09-27)
 
-Each step is done before the next one starts.
+Each step is done before the next one starts. Parity for other models and the codebase audit are
+finished (ROADMAP-DONE.md).
 
-1. **Other HeyMelody models: parity per model.** Detection, capability gating, per-model noise control,
-   EQ presets and gestures, and every switch Buds 4 lacks are built (ROADMAP-DONE.md, Other models).
-   **The UI adapts to the model** ([USER] 2026-09-29): a feature the model lacks is not shown; one it has
-   that the app lacks gets its UI built. So every feature in HeyMelody's model list ends up built or
-   decided against.
-   - **Open: first other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless
-     3, Galaxy S24; no reply yet, 2026-09-29). The app asks every user once since 3.7.0, and the README
-     asks too. Their logs are the first non-Buds 4 evidence: read them before changing anything. Every
-     write on another model stays unverified until an owner reads one back.
-2. **PC version: brainstorm session first**, once the Android app is finished. A standalone Windows
-   app (Linux too, maybe) that shares the UI style, not the phone layout, plus a tray button for quick
-   mode changes and no widget. Language, UI toolkit and code sharing with the app are all open. Same
-   repo (`[USER]` 2026-09-27).
+1. **Contributor docs and the toolchain write-up** ([USER] 2026-09-30):
+   [CONTRIBUTING.md](./CONTRIBUTING.md) (build quickstart), [PACKET-CAPTURE.md](./PACKET-CAPTURE.md)
+   (capture guide) and [TOOLCHAIN.md](./TOOLCHAIN.md) (Termux build and test device, SSH from a
+   headless PC). **Next:** links from Reddit / XDA.
+2. **PC version: brainstorm session first.** A standalone Windows app (Linux too, maybe) that shares
+   the UI style, not the phone layout, plus a tray button for quick mode changes and no widget.
+   Language, UI toolkit and code sharing with the app are all open. Same repo (`[USER]` 2026-09-27).
 
-## Before the PC brainstorm
+## Waiting on others
 
-In this order, once the Android app is finished ([USER] 2026-09-29):
-
-1. A whole-codebase pass for improvements (`/ponytail-audit`).
-   Then a build quickstart and a capture guide for contributors ([USER] 2026-09-29).
-2. A write-up of the toolchain and the phone setup (Termux build/test device, SSH from a headless PC),
-   then links from Reddit / XDA.
-
-## Parked
-
-- Undecoded families (broadcast codes `0x04`/`0x08`/`0x0B`, the `F1` family): see PROTOCOL.md §12.
-  Do not guess from a couple of samples.
+- **First other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
+  Galaxy S24; still no reply, 2026-09-30). Their logs are the first non-Buds 4 evidence: read them
+  before changing anything. Every write on another model stays unverified until an owner reads one
+  back.
 
 ## Decided against — do not re-suggest
 

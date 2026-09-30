@@ -135,6 +135,8 @@ back.
   Settings (2026-09-27). The layout, screenshot and widget reports were deleted; adb covers them.
 - Crash handler installed in `QuickBudsApp.attachBaseContext`, before any app code; verified on device.
 - Dead code sweep (2026-09-27): lint `UnusedResources` and unreferenced Kotlin.
+- Whole-codebase audit (2026-09-30, `/ponytail-audit`): unused listener callbacks and constants,
+  `BudStateParser` and duplicate u16 / hex helpers cut; the app checked on device afterwards.
 - Signed release builds with a version set in one place (`app/build.gradle.kts`).
 - The 60-minute wakelock is gone (2026-09-28); `dumpsys power` shows it no longer taken.
 - README screenshots scripted (`scripts/readme-screenshots.sh`, Classic and Nothing sets); the README
@@ -148,5 +150,7 @@ back.
 - LICENSE rewritten from the official gnu.org GPL-3.0 text; GitHub detects it as `gpl-3.0`. The
   copyright notice (author, app, GPL-3.0-or-later) is in the README (2026-09-25).
 - Account mentions removed: neither HeyMelody nor QuickBuds needs one (2026-09-25).
+- Contributor docs (2026-09-30): CONTRIBUTING.md (build quickstart), PACKET-CAPTURE.md rewritten as a
+  capture guide, TOOLCHAIN.md (the phone as build and test device).
 - Interop facts only (2026-09-29): no vendor class, method or file names in the repo; the `[VENDOR]`
   bytes stay. README trademark notice.

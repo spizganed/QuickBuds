@@ -17,7 +17,9 @@ extras (widgets, wear display), then other models.
 |---|---|
 | [docs/ROADMAP.md](./docs/ROADMAP.md) | Live plan. Finished items move to [ROADMAP-DONE.md](./docs/ROADMAP-DONE.md). No release versions on items. |
 | [docs/PROTOCOL.md](./docs/PROTOCOL.md) | **The wire format.** Read before any protocol work. |
-| [docs/PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | Backup capture procedure. |
+| [docs/PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | Capture guide (app log, HCI snoop, HeyMelody). |
+| [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) | Contributor build quickstart and rules. |
+| [docs/TOOLCHAIN.md](./docs/TOOLCHAIN.md) | Public write-up of the phone build setup. Keep in step with Build › Phone. |
 | [README.md](./README.md) | User-facing: features, install, credits. New `[OSS]` sources get a Credits line. |
 
 Root holds only `README.md`, `LICENSE` (verbatim GPL-3.0) and this file; other docs live in `docs/`.

@@ -118,9 +118,11 @@ DIZO Wireless, DIZO GoPods D, DIZO GoPods.
 
 ## For developers
 
-Start with [CLAUDE.md](./CLAUDE.md) (toolchain and conventions) and
-[PROTOCOL.md](./docs/PROTOCOL.md) (the wire format, every claim tagged with its source). The plan is
-in [ROADMAP.md](./docs/ROADMAP.md). `./gradlew assembleDebug` builds a debug APK.
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md): build quickstart, where things are, the rules that matter.
+- [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md): capturing the earbuds' traffic, HeyMelody's included.
+- [TOOLCHAIN.md](./docs/TOOLCHAIN.md): building and testing on the phone itself, over SSH from a PC.
+- [PROTOCOL.md](./docs/PROTOCOL.md): the wire format, every claim tagged with its source.
+- [CLAUDE.md](./CLAUDE.md): conventions and decisions. The plan is in [ROADMAP.md](./docs/ROADMAP.md).
 
 ## Credits
 
