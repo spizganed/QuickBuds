@@ -294,7 +294,8 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
   `strings.xml` keys (all locales) into tables; `models.json` is `include_str!`'d. A new desktop icon or
   string = add its name to `build.rs`. Desktop-only strings are English for now (`Tr` in `ui/app.slint`).
 - Files: `bt.rs` (sockets), `protocol.rs` (framing, parsers, ANC modes, capabilities, tests from captures),
-  `session.rs` (link thread, init sequence, commands), `main.rs` (UI + tray glue), `ui/app.slint`.
+  `session.rs` (link thread, init sequence, commands, packet log `LOG`), `eq.rs`, `devtools.rs` (Dev tools page),
+  `main.rs` (UI + tray glue), `ui/app.slint`.
 - **Software renderer** (set in `main`): ~25 MB RAM against ~130 MB with the GPU one. `SLINT_BACKEND`
   overrides it.
 - The quick panel (tray right-click) hides when it loses focus; closing the main window hides it, Quit exits.

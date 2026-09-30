@@ -32,7 +32,8 @@ finished (ROADMAP-DONE.md).
       (the phone's `AncSegmentedView` level picker); same in the tray panel. **Built 2026-09-30, waiting
       for his check on the buds.**
    2. **Dev tools** `[USER]` asap: the phone's Dev Tools equivalent (packet log Human / Detailed / Raw,
-      Clear, Export, Reconnect, Disconnect).
+      Clear, Export, Reconnect, Disconnect). **Built 2026-09-30** (sidebar entry; export to
+      `Downloads\QuickBuds\`; newest line on top; no copy on long press yet), waiting for his check.
    3. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit
       the desktop layout.
    4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud

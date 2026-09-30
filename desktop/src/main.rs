@@ -2,6 +2,7 @@
 #![windows_subsystem = "windows"]
 
 mod bt;
+mod devtools;
 mod eq;
 mod protocol;
 mod session;
@@ -37,6 +38,8 @@ struct App {
     edit_key: Option<(u8, String)>,
     /// The band editor's plot size in pixels.
     plot: (f32, f32),
+    /// Packet log lines already in the Dev tools list.
+    log_shown: usize,
 }
 
 thread_local! { static APP: RefCell<Option<App>> = const { RefCell::new(None) }; }
@@ -231,6 +234,7 @@ fn tray_icon() -> tray_icon::Icon {
 }
 
 fn main() {
+    session::app_start();
     // Software rendering: ~25 MB instead of ~130 MB with the GPU renderer, and fast enough for this UI.
     if std::env::var_os("SLINT_BACKEND").is_none() {
         slint::BackendSelector::new().backend_name("winit".into()).renderer_name("software".into())
@@ -250,10 +254,12 @@ fn main() {
         (icons::DEVICES, "Dual connection", false),
         (icons::EARBUD, "Earbud settings", false),
         (icons::SETTINGS_COG, "App settings", false),
+        (icons::DEV_TOOLS, "Dev tools", true),
     ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg(icon), name: name.into(), ready }).collect();
     main.set_nav(ModelRc::new(VecModel::from(nav)));
     window_chrome(&main);
     eq::setup(&main);
+    devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
 
@@ -273,7 +279,7 @@ fn main() {
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
     APP.with(|a| *a.borrow_mut() = Some(App {
         main: main.clone_strong(), panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
-        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0),
+        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0,
     }));
     with_app(|a| a.apply(Snapshot::default()));
 

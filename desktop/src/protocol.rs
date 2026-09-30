@@ -426,6 +426,50 @@ pub fn decode(p: &[u8]) -> Option<Event> {
     })
 }
 
+/// The packet log's Human line for a decoded packet (the phone's `LogDecoder`, shortened).
+pub fn describe(e: &Event) -> String {
+    let side = |i: u8| ["?", "L", "R", "Case"][(i as usize).min(3)];
+    match e {
+        Event::Firmware(f) => format!("Firmware {f}"),
+        Event::EqCurrent(id) => format!("EQ preset {id}"),
+        Event::EqCustom(v) => format!("Custom EQ: {}", v.iter().map(|p| format!("{} \"{}\"", p.id, p.name)).collect::<Vec<_>>().join(", ")),
+        Event::BassLevel(l) => format!("Bass boost level {l}"),
+        Event::Caps(_) => "Supported commands".into(),
+        Event::ProductId(id) => format!("Product id {id}"),
+        Event::Battery(v) => format!("Battery {}", v.iter().map(|(i, l, c)| format!("{}={l}%{}", side(*i), if *c { "+" } else { "" })).collect::<Vec<_>>().join(" ")),
+        Event::Wear(v) => format!("Wear {}", v.iter().map(|(i, st)| format!("{}={}", side(*i), match st { 3 | 7 => "EAR", 4 => "CASE", 1 | 5 => "OUT", _ => "?" })).collect::<Vec<_>>().join(" ")),
+        Event::AncRaw(raw) => format!("ANC report 0x{raw:X}"),
+        Event::GameMode(on) => format!("Low latency {}", if *on { "on" } else { "off" }),
+        Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
+    }
+}
+
+/// The packet log's name for a command we send.
+pub fn cmd_name(cmd: u16) -> Option<&'static str> {
+    Some(match cmd {
+        CMD_HANDSHAKE => "Handshake",
+        CMD_QUERY_PRODUCT_ID => "Query product id",
+        CMD_QUERY_BATTERY => "Query battery",
+        CMD_QUERY_WEARING => "Query wearing",
+        CMD_QUERY_ANC => "Query ANC",
+        CMD_QUERY_STATUS => "Query status",
+        CMD_QUERY_BROADCAST => "Query supported commands",
+        CMD_REGISTER_NOTIFY => "Register notifications",
+        CMD_SET_FEATURE => "Set feature",
+        CMD_SET_ANC => "Set ANC",
+        CMD_QUERY_FIRMWARE => "Query firmware",
+        CMD_QUERY_EQ => "Query EQ",
+        CMD_QUERY_EQ_ALL => "Query custom EQ",
+        CMD_QUERY_BASSWAVE => "Query bass boost",
+        CMD_SET_EQ => "Set EQ",
+        CMD_SAVE_CUSTOM_EQ => "Save custom EQ",
+        CMD_SET_BASSWAVE => "Set bass boost",
+        _ => return None,
+    })
+}
+
+pub fn hex(b: &[u8]) -> String { b.iter().map(|x| format!("{x:02X}")).collect::<Vec<_>>().join(" ") }
+
 pub fn build_packet(cmd: u16, seq: u8, payload: &[u8]) -> Vec<u8> {
     let mut p = vec![0xAA];
     let mut total = 7 + payload.len();
@@ -460,9 +504,9 @@ pub fn cmd_of(p: &[u8]) -> u16 {
 
 pub fn payload_of(p: &[u8]) -> &[u8] { &p[header_len(p)..] }
 
-/// Splits the RFCOMM byte stream into packets. Bytes before an `AA` are dropped (and counted).
+/// Splits the RFCOMM byte stream into packets. Bytes before an `AA` are dropped into `discarded` (for the log).
 #[derive(Default)]
-pub struct Framer { buf: Vec<u8>, pub discarded: usize }
+pub struct Framer { buf: Vec<u8>, pub discarded: Vec<u8> }
 
 impl Framer {
     pub fn push(&mut self, data: &[u8]) -> Vec<Vec<u8>> {
@@ -470,12 +514,12 @@ impl Framer {
         let mut out = Vec::new();
         loop {
             match self.buf.iter().position(|&b| b == 0xAA) {
-                Some(i) => { self.discarded += i; self.buf.drain(..i); }
-                None => { self.discarded += self.buf.len(); self.buf.clear(); break; }
+                Some(i) => { self.discarded.extend(self.buf.drain(..i)); }
+                None => { self.discarded.append(&mut self.buf); break; }
             }
             let Some((total, n)) = leb128(&self.buf[1..]) else { break };
             // ponytail: 4 KiB sanity cap; a bogus length resyncs on the next AA.
-            if total < 7 || total > 4096 { self.buf.remove(0); self.discarded += 1; continue; }
+            if total < 7 || total > 4096 { self.discarded.push(self.buf.remove(0)); continue; }
             let size = 1 + n + total;
             if self.buf.len() < size { break; }
             out.push(self.buf.drain(..size).collect());
@@ -548,7 +592,7 @@ mod tests {
         assert!(f.push(x).is_empty());
         let got = f.push(y);
         assert_eq!(got, vec![a.clone(), a]);
-        assert_eq!(f.discarded, 2);
+        assert_eq!(f.discarded.len(), 2);
         assert_eq!(battery(payload_of(&got[0])), [(1, 100, false), (2, 100, false), (3, 80, true)]);
     }
 }

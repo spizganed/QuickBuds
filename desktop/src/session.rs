@@ -4,6 +4,7 @@
 use crate::bt;
 use crate::protocol::*;
 use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
+use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
 pub enum Cmd {
@@ -49,6 +50,27 @@ pub struct Snapshot {
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
+
+/// One packet log line (Dev tools).
+pub struct Line {
+    /// Since the app started.
+    pub at: Duration,
+    /// "TX", "RX" or "DISCARDED RX".
+    pub dir: &'static str,
+    pub bytes: Vec<u8>,
+    /// The decoded description; None = a packet nothing here names (amber in Human).
+    pub human: Option<String>,
+}
+
+// ponytail: unbounded; a cap if a days-long session ever shows in memory.
+pub static LOG: Mutex<Vec<Line>> = Mutex::new(Vec::new());
+
+pub fn app_start() -> Instant { *START.get_or_init(Instant::now) }
+static START: OnceLock<Instant> = OnceLock::new();
+
+fn log(dir: &'static str, bytes: Vec<u8>, human: Option<String>) {
+    LOG.lock().unwrap().push(Line { at: app_start().elapsed(), dir, bytes, human });
+}
 
 pub fn spawn(emit: impl Fn(Snapshot) + Send + 'static) -> Sender<Cmd> {
     let (tx, rx) = channel();
@@ -111,7 +133,9 @@ impl<'a> Conn<'a> {
 
     fn send(&mut self, cmd: u16, seq: Option<u8>, payload: &[u8]) -> Result<(), String> {
         let seq = seq.unwrap_or_else(|| { self.seq = self.seq % 0xFE + 1; self.seq });
-        self.link.write(&build_packet(cmd, seq, payload))
+        let p = build_packet(cmd, seq, payload);
+        log("TX", p.clone(), cmd_name(cmd).map(String::from));
+        self.link.write(&p)
     }
 
     /// Reads and applies packets for `ms`.
@@ -122,8 +146,11 @@ impl<'a> Conn<'a> {
             let n = self.link.read(&mut buf)?;
             let mut changed = false;
             for p in self.framer.push(&buf[..n]) {
-                if let Some(e) = decode(&p) { changed |= self.apply(e); }
+                let e = decode(&p);
+                log("RX", p, e.as_ref().map(describe));
+                if let Some(e) = e { changed |= self.apply(e); }
             }
+            if !self.framer.discarded.is_empty() { log("DISCARDED RX", std::mem::take(&mut self.framer.discarded), None); }
             if changed { (self.emit)(self.s.clone()); }
             if Instant::now() >= end { return Ok(()); }
         }

@@ -1,5 +1,7 @@
 // QuickBuds desktop UI: the main window and the tray's quick panel. Classic style, Graphite palette.
 
+import { ListView } from "std-widgets.slint";
+
 export global Palette {
     in-out property <color> bg: #121214;
     in-out property <color> card: #232327;
@@ -721,6 +723,56 @@ component EqPage inherits VerticalLayout {
     }
 }
 
+export struct LogRow {
+    text: string,
+    amber: bool,
+}
+
+// Dev tools' packet log, filled from Rust (`devtools.rs`). Labels stay English-only, like the phone's.
+export global DevLog {
+    in property <[LogRow]> rows;
+    in-out property <int> mode;
+    in property <string> note;
+    callback refresh();
+    callback set-mode(int);
+    callback clear();
+    callback export();
+    callback reconnect();
+}
+
+component DevPage inherits VerticalLayout {
+    padding: 24px;
+    spacing: 12px;
+    SectionTitle { text: "Dev tools"; }
+    HorizontalLayout {
+        spacing: 8px;
+        for m[i] in ["Human", "Detailed", "Raw hex"]: Chip { text: m; primary: DevLog.mode == i; clicked => { DevLog.set-mode(i); } }
+        Rectangle { horizontal-stretch: 1; }
+        Chip { text: "Clear"; clicked => { DevLog.clear(); } }
+        Chip { text: "Export"; clicked => { DevLog.export(); } }
+        Chip { text: "Reconnect"; clicked => { DevLog.reconnect(); } }
+        Chip { text: "Disconnect"; clicked => { Buds.disconnect(); } }
+    }
+    if DevLog.note != "": Text { text: DevLog.note; color: Palette.text2; font-size: 12px; }
+    // Not a Card: the log stays readable while disconnected.
+    Rectangle {
+        vertical-stretch: 1;
+        background: Palette.card;
+        border-radius: 16px;
+        VerticalLayout { padding: 8px; ListView {
+            for r in DevLog.rows: Text {
+                text: r.text;
+                color: r.amber ? #E8A33D : Palette.text;
+                font-family: "Consolas";
+                font-size: 12px;
+                wrap: word-wrap;
+            }
+        } }
+    }
+    // The session thread appends to the log; the page picks the new lines up while it is open.
+    Timer { interval: 500ms; running: true; triggered => { DevLog.refresh(); } }
+}
+
 export component MainWindow inherits Window {
     in property <[NavEntry]> nav;
     in-out property <int> page: 0;
@@ -798,6 +850,7 @@ export component MainWindow inherits Window {
 
         // --- Content ---
         if root.page == 1: EqPage { horizontal-stretch: 1; }
+        if root.page == 7: DevPage { horizontal-stretch: 1; }
         if root.page == 0: VerticalLayout {
             horizontal-stretch: 1;
             padding: 28px;
