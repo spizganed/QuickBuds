@@ -1,6 +1,7 @@
 package com.spizganed.quickbuds.ui
 
 import android.app.Activity
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
@@ -14,54 +15,47 @@ import com.spizganed.quickbuds.widget.AncWidgetProvider
  * The model list, opened from the header button before the connect pill: Automatic (what
  * [ModelCatalog] detects) and every model HeyMelody's list has, by brand (realme and its DIZO
  * included, [USER] 2026-09-27). A pick overrides detection until Automatic is picked again or
- * other buds connect.
+ * other buds connect. The rows are built once and only recoloured, so the selection outline slides
+ * ([SelectionSlider]).
  */
 class ModelActivity : Activity() {
 
-    private var scroll: ScrollView? = null
-    private var root: LinearLayout? = null
+    /** [id] is null for the Automatic row. */
+    private class Item(val id: String?, val row: View, val title: TextView, val plain: ColorStateList)
+
+    private val items = ArrayList<Item>()
     private lateinit var selection: SelectionSlider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeRes.select(this)
         super.onCreate(savedInstanceState)
-        build()
-    }
-
-    private fun build() {
-        val p = ThemeRes.palette(this)
-        val manual = ModelCatalog.manual(this)
         val models = ModelCatalog.all(this)
         // Two ids share a name (colour ranges, regional variants): those rows show their id.
         val nameCount = models.groupingBy { it.name }.eachCount()
 
-        // One root for the activity's life, so the selection outline can slide between rows.
-        val root = this.root ?: SettingRowFactory.screen(this).also { this.root = it; selection = SelectionSlider(it) }
-        root.removeAllViews()
-        var selectedRow: View? = null
+        val root = SettingRowFactory.screen(this)
+        selection = SelectionSlider(root)
         root.addView(SettingRowFactory.title(this, R.string.model_title))
 
-        fun row(title: String, subtitle: String?, selected: Boolean, onPick: () -> Unit) =
-            SettingRowFactory.build(this, 0, 0, 0, null) {
-                if (selected) return@build
+        fun row(id: String?, title: String, subtitle: String?, onPick: () -> Unit): View {
+            val r = SettingRowFactory.build(this, 0, 0, 0, null) {
+                if (id == ModelCatalog.manual(this)) return@build
                 Haptics.commit(root)
                 onPick()
                 AncWidgetProvider.refreshAll(this)
-                build()
-            }.also { r ->
-                r.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).apply {
-                    text = title
-                    if (selected) setTextColor(p.accent)
-                }
-                if (subtitle != null) SettingRowFactory.subtitle(this, r).text = subtitle
-                if (selected) selectedRow = r
+                show()
             }
+            val t = r.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).apply { text = title }
+            if (subtitle != null) SettingRowFactory.subtitle(this, r).text = subtitle
+            items.add(Item(id, r, t, t.textColors))
+            return r
+        }
 
         val auto = SettingRowFactory.splitList(this)
         val detected = ModelCatalog.detected(this)?.name
-        SettingRowFactory.addSplit(auto, row(getString(R.string.model_auto),
-            if (detected != null) getString(R.string.model_detected, detected) else getString(R.string.model_not_detected),
-            manual == null) { ModelCatalog.setManual(this, null) })
+        SettingRowFactory.addSplit(auto, row(null, getString(R.string.model_auto),
+            if (detected != null) getString(R.string.model_detected, detected) else getString(R.string.model_not_detected)
+        ) { ModelCatalog.setManual(this, null) })
         root.addView(auto)
 
         for ((brand, label) in listOf("OnePlus" to R.string.model_brand_oneplus, "OPPO" to R.string.model_brand_oppo,
@@ -69,18 +63,25 @@ class ModelActivity : Activity() {
             root.addView(SettingRowFactory.sectionLabel(this, label))
             val card = SettingRowFactory.splitList(this)
             for (m in models.filter { it.name.startsWith("$brand ") }.sortedBy { it.name.lowercase() }) {
-                SettingRowFactory.addSplit(card, row(m.name, m.id.takeIf { nameCount[m.name]!! > 1 },
-                    m.id == manual) { ModelCatalog.setManual(this, m.id) })
+                SettingRowFactory.addSplit(card, row(m.id, m.name, m.id.takeIf { nameCount[m.name]!! > 1 }) {
+                    ModelCatalog.setManual(this, m.id)
+                })
             }
             root.addView(card)
         }
 
-        selection.moveTo(selectedRow, p.accent)
+        setContentView(ScrollView(this).apply {
+            setBackgroundColor(ThemeRes.palette(this@ModelActivity).background)
+            addView(root)
+        })
+        show()
+    }
 
-        // Same ScrollView, new content: it keeps its scroll position (see LanguageActivity).
-        val scroll = this.scroll ?: ScrollView(this).also { setContentView(it); this.scroll = it }
-        scroll.setBackgroundColor(p.background)
-        if (root.parent == null) scroll.addView(root)
-        scroll.requestApplyInsets()
+    /** Accent label and the sliding outline on the manual model's row (Automatic when none). */
+    private fun show() {
+        val accent = ThemeRes.palette(this).accent
+        val manual = ModelCatalog.manual(this)
+        for (i in items) i.title.setTextColor(if (i.id == manual) ColorStateList.valueOf(accent) else i.plain)
+        selection.moveTo(items.firstOrNull { it.id == manual }?.row, accent)
     }
 }

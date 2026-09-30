@@ -207,7 +207,10 @@ object DotArt {
             val w = Math.floor(b.width() / pitch.toDouble()).toInt() * pitch.toInt()
             val h = Math.floor(b.height() / pitch.toDouble()).toInt() * pitch.toInt()
             if (w <= 0 || h <= 0) return
-            val bmp = cache?.takeIf { it.width == w && it.height == h } ?: Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also { out ->
+            // Boxes of one size and colour (a list's rows) share one bitmap: a 138-row list drew 138 of them, 1.5 s.
+            val key = "$w $h $fill $stroke $radiusDp $topOnly $solid $base $pitch"
+            val bmp = cache?.takeIf { it.width == w && it.height == h } ?: shared.get(key)?.also { cache = it }
+                ?: Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also { out ->
                 val c = Canvas(out)
                 // [base]: a smooth shape in this colour behind the dots, so nothing below shows through the gaps.
                 if (solid || base != null) {
@@ -220,6 +223,7 @@ object DotArt {
                     d.drawPath(path(w.toFloat(), h.toFloat(), pitch), if (solid) clear else p.apply { color = fill })
                 }
                 cache = out
+                shared.put(key, out)
             }
             // Whole pixels: a half-pixel offset resampled the dots into faint lines.
             canvas.drawBitmap(bmp, (b.left + (b.width() - w) / 2).toFloat(), (b.top + (b.height() - h) / 2).toFloat(), null)
@@ -229,6 +233,12 @@ object DotArt {
         override fun setColorFilter(cf: android.graphics.ColorFilter?) {}
         @Deprecated("Deprecated in Java")
         override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
+
+        private companion object {
+            val shared = object : android.util.LruCache<String, Bitmap>(8 * 1024 * 1024) {
+                override fun sizeOf(key: String, value: Bitmap) = value.byteCount
+            }
+        }
     }
 
     /**

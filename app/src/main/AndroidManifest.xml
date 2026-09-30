@@ -149,7 +149,7 @@
         <activity
             android:name=".ui.LanguageActivity"
             android:exported="false"
-            android:configChanges="locale|layoutDirection"
+            android:configChanges="locale|layoutDirection|keyboard|keyboardHidden|navigation|touchscreen|smallestScreenSize|screenLayout"
             android:screenOrientation="portrait" />
 
         <!--
