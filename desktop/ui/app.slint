@@ -186,7 +186,8 @@ component Segment inherits Rectangle {
     VerticalLayout {
         alignment: center;
         spacing: 4px;
-        padding: 6px;
+        padding-top: 6px;
+        padding-bottom: 6px;
         HorizontalLayout {
             alignment: center;
             Image {
@@ -234,6 +235,7 @@ component LevelChips inherits HorizontalLayout {
     spacing: 6px;
     for l in Buds.levels: Rectangle {
         height: 34px;
+        horizontal-stretch: 1;
         border-radius: 17px;
         border-width: 1px;
         border-color: Buds.anc == l.id ? Palette.accent : Palette.outline;
@@ -258,11 +260,11 @@ component Toggle inherits Rectangle {
     width: 44px;
     height: 24px;
     border-radius: 12px;
-    background: checked ? Palette.accent : Palette.outline;
-    animate background { duration: 120ms; }
+    background: Palette.outline.brighter(0.1);
     Rectangle {
         width: 18px; height: 18px; border-radius: 9px;
-        background: #FFFFFF;
+        background: root.checked ? Palette.accent : Palette.text.transparentize(0.1);
+        animate background { duration: 120ms; }
         y: 3px;
         x: root.checked ? root.width - 21px : 3px;
         animate x { duration: 120ms; }
@@ -301,7 +303,9 @@ component Chip inherits Rectangle {
     height: 34px;
     min-width: label.preferred-width + 28px;
     border-radius: 17px;
-    background: primary ? Palette.accent : ta.has-hover ? Palette.outline : Palette.card;
+    background: primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
+    border-width: primary ? 0 : 1px;
+    border-color: Palette.outline.brighter(0.3);
     label := Text {
         text: root.text;
         color: root.primary ? #FFFFFF : Palette.text;
@@ -314,63 +318,180 @@ component Chip inherits Rectangle {
     }
 }
 
+export struct NavEntry {
+    icon: image,
+    name: string,
+    ready: bool,
+}
+
+component NavItem inherits Rectangle {
+    in property <NavEntry> entry;
+    in property <bool> active;
+    callback clicked;
+    height: 40px;
+    border-radius: 10px;
+    background: active ? Palette.accent.transparentize(0.85) : ta.has-hover && entry.ready ? Palette.outline : transparent;
+    opacity: entry.ready ? 1 : 0.4;
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        spacing: 12px;
+        Image {
+            source: entry.icon; width: 20px; height: 20px; y: (parent.height - self.height) / 2;
+            colorize: active ? Palette.accent : Palette.text;
+        }
+        Text {
+            text: entry.name; vertical-alignment: center; horizontal-stretch: 1;
+            color: Palette.text; font-size: 14px; font-weight: active ? 600 : 400;
+        }
+        if !entry.ready: Text { text: "Soon"; vertical-alignment: center; color: Palette.text2; font-size: 11px; }
+    }
+    ta := TouchArea {
+        enabled: entry.ready;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+component SectionTitle inherits Text {
+    color: Palette.text2;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+component FeatureRow inherits HorizontalLayout {
+    in property <image> icon;
+    in property <string> title;
+    in property <string> subtitle;
+    in property <bool> checked;
+    callback toggled(bool);
+    spacing: 14px;
+    height: 56px;
+    Image { source: icon; width: 24px; height: 24px; y: (parent.height - self.height) / 2; colorize: Palette.accent; }
+    VerticalLayout {
+        alignment: center;
+        horizontal-stretch: 1;
+        Text { text: title; color: Palette.text; font-size: 14px; }
+        if subtitle != "": Text { text: subtitle; color: Palette.text2; font-size: 12px; overflow: elide; }
+    }
+    VerticalLayout {
+        alignment: center;
+        Toggle { checked: root.checked; toggled(on) => { root.toggled(on); } }
+    }
+}
+
 export component MainWindow inherits Window {
+    in property <[NavEntry]> nav;
+    in-out property <int> page: 0;
     title: "QuickBuds";
     icon: Buds.icon-app;
-    width: 420px;
-    height: 560px;
+    min-width: 900px;
+    min-height: 580px;
+    preferred-width: 960px;
+    preferred-height: 620px;
     background: Palette.bg;
     default-font-family: "Segoe UI";
 
-    VerticalLayout {
-        padding: 16px;
-        spacing: 12px;
-
-        HorizontalLayout {
-            spacing: 8px;
-            VerticalLayout {
-                horizontal-stretch: 1;
-                Text {
-                    text: Buds.name == "" ? "QuickBuds" : Buds.name;
-                    color: Palette.text; font-size: 20px; font-weight: 700; overflow: elide;
-                }
-                Text { text: Buds.status-text; color: Palette.text2; font-size: 12px; }
-            }
-            VerticalLayout {
-                alignment: center;
-                Chip {
-                    text: Buds.status == 0 ? Tr.connect : Tr.disconnect;
-                    primary: Buds.status == 0;
-                    clicked => { if Buds.status == 0 { Buds.connect(); } else { Buds.disconnect(); } }
-                }
-            }
-        }
-
-        Card {
+    HorizontalLayout {
+        // --- Sidebar: the device and the sections ---
+        Rectangle {
+            width: 250px;
+            background: Palette.card.mix(Palette.bg, 0.5);
             VerticalLayout {
                 padding: 16px;
-                Batteries { }
+                spacing: 4px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    padding-bottom: 16px;
+                    Image { source: Buds.icon-app; width: 22px; height: 22px; }
+                    Text { text: "QuickBuds"; color: Palette.text; font-size: 18px; font-weight: 700; vertical-alignment: center; }
+                }
+                // Device card
+                Rectangle {
+                    background: Palette.card;
+                    border-radius: 14px;
+                    VerticalLayout {
+                        padding: 14px;
+                        spacing: 10px;
+                        Text {
+                            text: Buds.name == "" ? "No earbuds" : Buds.name;
+                            color: Palette.text; font-size: 15px; font-weight: 600; overflow: elide;
+                        }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Rectangle {
+                                width: 8px; height: 8px; border-radius: 4px; y: (parent.height - self.height) / 2;
+                                background: Buds.on ? #3DDC84 : Buds.status == 1 ? #E8A33D : Palette.text2;
+                            }
+                            Text { text: Buds.status-text; color: Palette.text2; font-size: 12px; }
+                        }
+                        Chip {
+                            text: Buds.status == 0 ? Tr.connect : Tr.disconnect;
+                            primary: Buds.status == 0;
+                            clicked => { if Buds.status == 0 { Buds.connect(); } else { Buds.disconnect(); } }
+                        }
+                    }
+                }
+                Rectangle { height: 16px; }
+                for e[i] in root.nav: NavItem {
+                    entry: e;
+                    active: root.page == i;
+                    clicked => { root.page = i; }
+                }
+                Rectangle { vertical-stretch: 1; }
             }
         }
 
-        if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
-            VerticalLayout {
-                padding: 12px;
-                spacing: 10px;
-                Text { text: Tr.noise-control; color: Palette.text2; font-size: 12px; }
-                AncSegments { height: 64px; }
-                if Buds.anc-is-level: LevelChips { }
+        // --- Content ---
+        VerticalLayout {
+            horizontal-stretch: 1;
+            padding: 28px;
+            spacing: 16px;
+
+            Text { text: "Overview"; color: Palette.text; font-size: 26px; font-weight: 700; }
+
+            Card {
+                height: 230px;
+                VerticalLayout {
+                    padding: 20px;
+                    spacing: 12px;
+                    SectionTitle { text: "Battery"; }
+                    Batteries { size: 130px; }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 16px;
+                vertical-stretch: 1;
+                if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
+                    horizontal-stretch: 3;
+                    VerticalLayout {
+                        padding: 20px;
+                        spacing: 14px;
+                        alignment: start;
+                        SectionTitle { text: Tr.noise-control; }
+                        AncSegments { height: 84px; }
+                        if Buds.levels.length > 0: LevelChips { opacity: Buds.anc-is-level ? 1 : 0.5; }
+                    }
+                }
+                Card {
+                    horizontal-stretch: 2;
+                    VerticalLayout {
+                        padding: 20px;
+                        spacing: 6px;
+                        alignment: start;
+                        SectionTitle { text: "Features"; }
+                        FeatureRow {
+                            icon: Buds.icon-low-latency;
+                            title: Tr.low-latency;
+                            subtitle: "Less audio delay for games";
+                            checked: Buds.low-latency;
+                            toggled(on) => { Buds.set-low-latency(on); }
+                        }
+                    }
+                }
             }
         }
-
-        Card {
-            VerticalLayout {
-                padding: 16px;
-                LowLatencyRow { }
-            }
-        }
-
-        Rectangle { vertical-stretch: 1; }
     }
 }
 

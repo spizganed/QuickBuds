@@ -10,6 +10,7 @@ const ICONS: &[&str] = &[
     "ic_bud_left", "ic_bud_right", "ic_case", "ic_earbud", "ic_low_latency",
     "ic_mode_off", "ic_mode_anc_medium", "ic_mode_adaptive", "ic_mode_transparency",
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
+    "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog",
 ];
 
 const STRINGS: &[&str] = &[
@@ -25,13 +26,26 @@ fn attr<'a>(tag: &'a str, name: &str) -> Option<&'a str> {
     Some(&tag[start..start + tag[start..].find('"')?])
 }
 
-/// Only what these icons use: paths with fill / stroke. A `<group>` would be dropped, so it fails the build.
+/// Only what these icons use: paths with fill / stroke, groups with rotation / translation.
+/// Anything else fails the build rather than drawing a wrong icon.
 fn vector_to_svg(xml: &str) -> String {
-    assert!(!xml.contains("<group") && !xml.contains("<clip-path"), "group/clip-path not supported");
+    assert!(!xml.contains("<clip-path"), "clip-path not supported");
     let vw = attr(xml, "viewportWidth").unwrap();
     let vh = attr(xml, "viewportHeight").unwrap();
     let mut svg = format!(r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {vw} {vh}" width="{vw}" height="{vh}">"#);
-    for tag in xml.split("<path").skip(1) {
+    let body = &xml[xml.find("<vector").unwrap()..];
+    for (i, tag) in body.split('<').enumerate().skip(1) {
+        if tag.starts_with("/group") { svg += "</g>"; continue; }
+        if tag.starts_with("group") {
+            let tag = &tag[..tag.find('>').unwrap()];
+            assert!(attr(tag, "scaleX").is_none() && attr(tag, "scaleY").is_none(), "group scale not supported");
+            let (px, py) = (attr(tag, "pivotX").unwrap_or("0"), attr(tag, "pivotY").unwrap_or("0"));
+            let (tx, ty) = (attr(tag, "translateX").unwrap_or("0"), attr(tag, "translateY").unwrap_or("0"));
+            let r = attr(tag, "rotation").unwrap_or("0");
+            write!(svg, r#"<g transform="translate({tx} {ty}) rotate({r} {px} {py})">"#).unwrap();
+            continue;
+        }
+        if !tag.starts_with("path") { assert!(i == 0 || !tag.starts_with(char::is_alphabetic) || tag.starts_with("vector"), "unsupported <{tag}"); continue; }
         let tag = &tag[..tag.find("/>").unwrap()];
         let fill = attr(tag, "fillColor").unwrap_or("none");
         write!(svg, r#"<path d="{}" fill="{fill}""#, attr(tag, "pathData").unwrap()).unwrap();

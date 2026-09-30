@@ -37,25 +37,11 @@ fn with_app(f: impl FnOnce(&mut App)) { APP.with(|a| a.borrow_mut().as_mut().map
 
 fn svg(s: &str) -> Image { Image::load_from_svg_data(s.as_bytes()).expect("icon") }
 
-/// The system language's strings, English where a locale lacks one (`values*/strings.xml`).
+/// English strings from `values/strings.xml`.
+// ponytail: English only for now [USER]; the other locales are already in `strings::LOCALES`.
 fn translations() -> Vec<String> {
-    let lang = system_locale().replace("id", "in"); // Android's code for Indonesian
     let base = strings::LOCALES.iter().find(|l| l.0.is_empty()).unwrap().1;
-    let pick = strings::LOCALES.iter().find(|l| !l.0.is_empty() && l.0.eq_ignore_ascii_case(&lang))
-        .or_else(|| strings::LOCALES.iter().find(|l| !l.0.is_empty() && lang.split('-').next() == Some(l.0)));
-    (0..strings::KEYS.len()).map(|i| pick.and_then(|l| l.1[i]).or(base[i]).unwrap_or("").to_string()).collect()
-}
-
-#[cfg(windows)]
-fn system_locale() -> String {
-    let mut buf = [0u16; 85];
-    let n = unsafe { windows_sys::Win32::Globalization::GetUserDefaultLocaleName(buf.as_mut_ptr(), buf.len() as i32) };
-    String::from_utf16_lossy(&buf[..(n.max(1) - 1) as usize])
-}
-
-#[cfg(not(windows))]
-fn system_locale() -> String {
-    std::env::var("LANG").unwrap_or_default().split('.').next().unwrap_or("").replace('_', "-")
+    base.iter().map(|s| s.unwrap_or("").to_string()).collect()
 }
 
 fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
@@ -212,6 +198,17 @@ fn main() {
     let tr = translations();
     setup_ui(&main.global::<Buds>(), &main.global::<Tr>(), &tr);
     setup_ui(&panel.global::<Buds>(), &panel.global::<Tr>(), &tr);
+    // Sections of the phone app; each turns on when its page exists.
+    let nav: Vec<NavEntry> = [
+        (icons::LAYOUT, "Overview", true),
+        (icons::EQUALIZER, "Equalizer", false),
+        (icons::GESTURE, "Controls", false),
+        (icons::HEARING, "Hearing profile", false),
+        (icons::DEVICES, "Dual connection", false),
+        (icons::EARBUD, "Earbud settings", false),
+        (icons::SETTINGS_COG, "App settings", false),
+    ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg(icon), name: name.into(), ready }).collect();
+    main.set_nav(ModelRc::new(VecModel::from(nav)));
 
     // The quick panel closes when it loses focus, like the system's own tray flyouts.
     panel.window().on_winit_window_event(|w, e| {
