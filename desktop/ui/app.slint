@@ -7,6 +7,7 @@ export global Palette {
     in-out property <color> text: #FFFFFF;
     in-out property <color> text2: #A0A0A5;
     in-out property <color> outline: #34343A;
+    out property <color> sidebar: card.mix(bg, 0.5);
 
     // Wear shade: in ear full, out of ear secondary, in case faint (like the phone's rings).
     public pure function wear-tint(wear: int) -> color {
@@ -33,6 +34,15 @@ export global Tr {
     in property <string> transparency: "Transparency";
     in property <[string]> level-names: ["Low", "Medium", "High", "Smart"];
     in property <string> low-latency: "Low latency";
+    in property <string> eq-title;
+    in property <string> eq-not-connected;
+    in property <string> eq-recommended;
+    in property <string> eq-basswave;
+    in property <string> eq-basswave-sub;
+    in property <string> eq-custom;
+    in property <string> eq-delete;
+    in property <string> eq-add;
+    in property <string> eq-save;
     // ponytail: desktop-only strings, English until the translation pass.
     in property <string> open: "Open QuickBuds";
     in property <string> quit: "Quit";
@@ -75,6 +85,7 @@ export global Buds {
     in property <image> icon-transparency;
     in property <image> icon-low-latency;
     in property <image> icon-app;
+    in property <image> icon-bass;
 
     callback set-anc(string);
     callback set-low-latency(bool);
@@ -380,6 +391,330 @@ component FeatureRow inherits HorizontalLayout {
     }
 }
 
+component CaptionButton inherits Rectangle {
+    in property <bool> danger;
+    callback clicked;
+    width: 46px;
+    background: ta.has-hover ? (danger ? #C42B1C : Palette.outline) : transparent;
+    ta := TouchArea { clicked => { root.clicked(); } }
+    @children
+}
+
+component TitleBar inherits Rectangle {
+    in property <bool> maximized;
+    callback drag();
+    callback minimize();
+    callback toggle-maximize();
+    callback close();
+    height: 40px;
+    background: Palette.sidebar;
+    TouchArea {
+        pointer-event(ev) => {
+            if ev.kind == PointerEventKind.down && ev.button == PointerEventButton.left { root.drag(); }
+        }
+        double-clicked => { root.toggle-maximize(); }
+    }
+    HorizontalLayout {
+        padding-left: 16px;
+        spacing: 10px;
+        Image { source: Buds.icon-app; width: 20px; height: 20px; y: (parent.height - self.height) / 2; }
+        Text { text: "QuickBuds"; color: Palette.text; font-size: 13px; font-weight: 600; vertical-alignment: center; horizontal-stretch: 1; }
+        CaptionButton {
+            clicked => { root.minimize(); }
+            Rectangle { width: 10px; height: 1px; background: Palette.text; }
+        }
+        CaptionButton {
+            clicked => { root.toggle-maximize(); }
+            Rectangle { width: 10px; height: 10px; border-width: 1px; border-color: Palette.text; }
+        }
+        CaptionButton {
+            danger: true;
+            clicked => { root.close(); }
+            Path {
+                width: 10px; height: 10px;
+                viewbox-width: 10; viewbox-height: 10;
+                stroke: Palette.text; stroke-width: 1px;
+                commands: "M0 0 L10 10 M10 0 L0 10";
+            }
+        }
+    }
+}
+
+export struct EqRow {
+    id: int,
+    name: string,
+}
+
+// The Equalizer page's state, filled from Rust (`App::apply`).
+export global Eq {
+    in property <[EqRow]> builtins;
+    in property <[EqRow]> customs;
+    in property <int> current: -1;
+    in property <bool> has-custom;
+    in property <bool> can-add;
+    in property <bool> has-bass;
+    in property <bool> bass-on;
+    in-out property <int> bass-level;
+    // The selected custom preset, in the editor.
+    in property <bool> editing;
+    in-out property <string> edit-name;
+    in property <[int]> gains;
+    in property <[string]> freq-labels;
+    // Path commands in the plot's own pixels (a Path keeps its viewbox's aspect ratio).
+    in property <string> curve;
+    callback plot-resized(float, float);
+    // A knob or slider is held: Rust leaves the values alone.
+    in-out property <bool> dragging;
+
+    callback select-builtin(int);
+    callback select-custom(int);
+    callback add();
+    callback delete();
+    callback rename(string);
+    callback band-moved(int, int);
+    callback band-released(int, int);
+    callback bass-toggled(bool);
+    callback bass-released(int);
+}
+
+component PresetRow inherits Rectangle {
+    in property <string> name;
+    in property <bool> selected;
+    callback clicked;
+    height: 42px;
+    border-radius: 10px;
+    // Selection is an outline, never a checkmark.
+    border-width: selected ? 1.5px : 0;
+    border-color: Palette.accent;
+    background: ta.has-hover ? Palette.outline : Palette.bg.transparentize(0.6);
+    Text {
+        x: 14px; width: parent.width - 28px;
+        text: name; overflow: elide; vertical-alignment: center;
+        color: selected ? Palette.accent : Palette.text; font-size: 14px;
+    }
+    ta := TouchArea { enabled: Buds.on; mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+
+component HSlider inherits Rectangle {
+    in property <int> minimum;
+    in property <int> maximum;
+    in-out property <int> value;
+    callback released(int);
+    height: 28px;
+    property <length> knob: 18px;
+    property <float> frac: (value - minimum) / (maximum - minimum);
+    Rectangle { y: (parent.height - 4px) / 2; height: 4px; border-radius: 2px; background: Palette.outline; }
+    Rectangle {
+        x: 0; y: (parent.height - 4px) / 2; height: 4px; border-radius: 2px;
+        width: frac * (parent.width - knob) + knob / 2;
+        background: Palette.accent;
+    }
+    Rectangle {
+        x: frac * (parent.width - knob); y: (parent.height - knob) / 2;
+        width: knob; height: knob; border-radius: knob / 2;
+        background: Palette.accent;
+    }
+    function set-from(x: length) {
+        root.value = clamp(round(minimum + (x - knob / 2) / (root.width - knob) * (maximum - minimum)), minimum, maximum);
+    }
+    TouchArea {
+        enabled: Buds.on;
+        mouse-cursor: pointer;
+        pointer-event(ev) => {
+            if ev.kind == PointerEventKind.down { Eq.dragging = true; set-from(self.mouse-x); }
+            if ev.kind == PointerEventKind.up { Eq.dragging = false; root.released(root.value); }
+        }
+        moved => { if self.pressed { set-from(self.mouse-x); } }
+    }
+}
+
+component EqEditor inherits Rectangle {
+    property <length> knob: 18px;
+    property <length> labels: 36px;
+    property <length> plot-h: self.height - labels;
+    property <length> band-w: self.width / max(1, Eq.gains.length);
+    // The +6 / 0 / -6 guides
+    for f in [0, 0.5, 1]: Rectangle {
+        y: knob / 2 + f * (plot-h - knob); height: 1px;
+        background: f == 0.5 ? Palette.outline.brighter(0.2) : Palette.outline;
+    }
+    changed width => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
+    changed height => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
+    init => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
+    Path {
+        x: 0; y: knob / 2; width: root.width; height: plot-h - knob;
+        viewbox-width: root.width / 1px; viewbox-height: (plot-h - knob) / 1px;
+        stroke: Palette.accent; stroke-width: 2.5px;
+        commands: Eq.curve;
+    }
+    for g[i] in Eq.gains: Rectangle {
+        x: i * band-w; y: 0; width: band-w; height: root.height;
+        Rectangle { x: (parent.width - 2px) / 2; y: knob / 2; width: 2px; height: plot-h - knob; background: Palette.outline.transparentize(0.4); }
+        Rectangle {
+            x: (parent.width - knob) / 2; y: (6 - g) / 12 * (plot-h - knob);
+            width: knob; height: knob; border-radius: knob / 2;
+            background: ta.pressed || ta.has-hover ? Palette.accent.brighter(0.2) : Palette.accent;
+            border-width: 2px; border-color: Palette.card;
+        }
+        Text {
+            y: plot-h + 2px; width: parent.width; horizontal-alignment: center;
+            text: Eq.freq-labels[i]; color: Palette.text2; font-size: 11px;
+        }
+        Text {
+            y: plot-h + 17px; width: parent.width; horizontal-alignment: center;
+            text: (g > 0 ? "+" : "") + g + " dB"; color: Palette.text; font-size: 11px;
+        }
+        function set-from(y: length) {
+            Eq.band-moved(i, clamp(round(6 - (y - knob / 2) / (plot-h - knob) * 12), -6, 6));
+        }
+        ta := TouchArea {
+            y: 0; height: plot-h;
+            enabled: Buds.on;
+            mouse-cursor: ns-resize;
+            pointer-event(ev) => {
+                if ev.kind == PointerEventKind.down { Eq.dragging = true; set-from(self.mouse-y); }
+                if ev.kind == PointerEventKind.up { Eq.dragging = false; Eq.band-released(i, Eq.gains[i]); }
+            }
+            moved => { if self.pressed { set-from(self.mouse-y); } }
+        }
+    }
+}
+
+component EqPage inherits VerticalLayout {
+    padding: 28px;
+    spacing: 16px;
+    Text { text: Tr.eq-title; color: Palette.text; font-size: 26px; font-weight: 700; }
+    if !Buds.on: Text { text: Tr.eq-not-connected; color: Palette.text2; font-size: 13px; }
+
+    HorizontalLayout {
+        spacing: 16px;
+        vertical-stretch: 1;
+        // Presets
+        VerticalLayout {
+            width: 270px;
+            spacing: 16px;
+            alignment: start;
+            if Eq.builtins.length > 0: Card {
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 6px;
+                    SectionTitle { text: Tr.eq-recommended; }
+                    for p in Eq.builtins: PresetRow {
+                        name: p.name; selected: Eq.current == p.id;
+                        clicked => { Eq.select-builtin(p.id); }
+                    }
+                }
+            }
+            if Eq.has-custom: Card {
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 6px;
+                    SectionTitle { text: Tr.eq-custom; }
+                    for p in Eq.customs: PresetRow {
+                        name: p.name; selected: Eq.current == p.id;
+                        clicked => { Eq.select-custom(p.id); }
+                    }
+                    if Eq.can-add: HorizontalLayout {
+                        padding-top: 4px;
+                        alignment: start;
+                        Chip { text: "+ " + Tr.eq-add; clicked => { Eq.add(); } }
+                    }
+                }
+            }
+        }
+        // Editor and bass
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 16px;
+            Card {
+                vertical-stretch: 1;
+                VerticalLayout {
+                    padding: 20px;
+                    spacing: 14px;
+                    if Eq.editing: HorizontalLayout {
+                        spacing: 10px;
+                        Rectangle {
+                            horizontal-stretch: 1;
+                            height: 36px;
+                            border-radius: 8px;
+                            border-width: 1px;
+                            border-color: name-input.has-focus ? Palette.accent : Palette.outline;
+                            name-input := TextInput {
+                                x: 12px; width: parent.width - 24px;
+                                text <=> Eq.edit-name;
+                                color: Palette.text; font-size: 15px; font-weight: 600;
+                                vertical-alignment: center;
+                                single-line: true;
+                                accepted => { Eq.rename(self.text); self.clear-focus(); }
+                            }
+                        }
+                        Chip { text: Tr.eq-save; clicked => { Eq.rename(name-input.text); name-input.clear-focus(); } }
+                        Chip { text: Tr.eq-delete; clicked => { confirm.show(); } }
+                    }
+                    if Eq.editing: EqEditor { vertical-stretch: 1; min-height: 200px; }
+                    if !Eq.editing: Rectangle {
+                        vertical-stretch: 1;
+                        Text {
+                            text: Eq.has-custom ? "Pick a custom preset to edit its bands." : "These earbuds have no custom presets.";
+                            color: Palette.text2; font-size: 13px;
+                        }
+                    }
+                }
+            }
+            if Eq.has-bass: Card {
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    padding-top: 8px;
+                    padding-bottom: 12px;
+                    FeatureRow {
+                        icon: Buds.icon-bass;
+                        title: Tr.eq-basswave;
+                        subtitle: Tr.eq-basswave-sub;
+                        checked: Eq.bass-on;
+                        toggled(on) => { Eq.bass-toggled(on); }
+                    }
+                    if Eq.bass-on: HorizontalLayout {
+                        spacing: 12px;
+                        Text { text: "-5"; color: Palette.text2; font-size: 12px; vertical-alignment: center; }
+                        HSlider {
+                            horizontal-stretch: 1;
+                            minimum: -5; maximum: 5;
+                            value <=> Eq.bass-level;
+                            released(v) => { Eq.bass-released(v); }
+                        }
+                        Text { text: "+5"; color: Palette.text2; font-size: 12px; vertical-alignment: center; }
+                    }
+                }
+            }
+        }
+    }
+
+    confirm := PopupWindow {
+        x: (root.width - 320px) / 2;
+        y: (root.height - 140px) / 2;
+        width: 320px;
+        height: 140px;
+        Rectangle {
+            background: Palette.card;
+            border-radius: 14px;
+            border-width: 1px;
+            border-color: Palette.outline;
+            VerticalLayout {
+                padding: 20px;
+                spacing: 16px;
+                Text { text: Tr.eq-delete + " \"" + Eq.edit-name + "\"?"; color: Palette.text; font-size: 15px; font-weight: 600; wrap: word-wrap; }
+                HorizontalLayout {
+                    alignment: end;
+                    spacing: 8px;
+                    Chip { text: "Cancel"; }
+                    Chip { text: Tr.eq-delete; primary: true; clicked => { Eq.delete(); } }
+                }
+            }
+        }
+    }
+}
+
 export component MainWindow inherits Window {
     in property <[NavEntry]> nav;
     in-out property <int> page: 0;
@@ -391,21 +726,34 @@ export component MainWindow inherits Window {
     preferred-height: 620px;
     background: Palette.bg;
     default-font-family: "Segoe UI";
+    no-frame: true;
+    // Window chrome, handled in Rust (winit): drag, minimize, maximize, hide, edge resize.
+    in property <bool> max-state;
+    callback drag();
+    callback minimize();
+    callback toggle-maximize();
+    callback close-window();
+    // 0 N, 1 S, 2 W, 3 E, 4 NW, 5 NE, 6 SW, 7 SE
+    callback resize(int);
 
+    VerticalLayout {
+    TitleBar {
+        maximized: root.max-state;
+        drag => { root.drag(); }
+        minimize => { root.minimize(); }
+        toggle-maximize => { root.toggle-maximize(); }
+        close => { root.close-window(); }
+    }
     HorizontalLayout {
+        vertical-stretch: 1;
         // --- Sidebar: the device and the sections ---
         Rectangle {
             width: 250px;
-            background: Palette.card.mix(Palette.bg, 0.5);
+            background: Palette.sidebar;
             VerticalLayout {
                 padding: 16px;
+                padding-top: 8px;
                 spacing: 4px;
-                HorizontalLayout {
-                    spacing: 10px;
-                    padding-bottom: 16px;
-                    Image { source: Buds.icon-app; width: 22px; height: 22px; }
-                    Text { text: "QuickBuds"; color: Palette.text; font-size: 18px; font-weight: 700; vertical-alignment: center; }
-                }
                 // Device card
                 Rectangle {
                     background: Palette.card;
@@ -443,7 +791,8 @@ export component MainWindow inherits Window {
         }
 
         // --- Content ---
-        VerticalLayout {
+        if root.page == 1: EqPage { horizontal-stretch: 1; }
+        if root.page == 0: VerticalLayout {
             horizontal-stretch: 1;
             padding: 28px;
             spacing: 16px;
@@ -493,7 +842,22 @@ export component MainWindow inherits Window {
             }
         }
     }
+    }
+
+    // Resize edges (a frameless window has none of its own).
+    if !root.max-state: Rectangle {
+        property <length> e: 5px;
+        TouchArea { x: e; y: 0; width: root.width - 2 * e; height: e; mouse-cursor: ns-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(0); } } }
+        TouchArea { x: e; y: root.height - e; width: root.width - 2 * e; height: e; mouse-cursor: ns-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(1); } } }
+        TouchArea { x: 0; y: e; width: e; height: root.height - 2 * e; mouse-cursor: ew-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(2); } } }
+        TouchArea { x: root.width - e; y: e; width: e; height: root.height - 2 * e; mouse-cursor: ew-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(3); } } }
+        TouchArea { x: 0; y: 0; width: e; height: e; mouse-cursor: nwse-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(4); } } }
+        TouchArea { x: root.width - e; y: 0; width: e; height: e; mouse-cursor: nesw-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(5); } } }
+        TouchArea { x: 0; y: root.height - e; width: e; height: e; mouse-cursor: nesw-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(6); } } }
+        TouchArea { x: root.width - e; y: root.height - e; width: e; height: e; mouse-cursor: nwse-resize; pointer-event(ev) => { if ev.kind == PointerEventKind.down { root.resize(7); } } }
+    }
 }
+
 
 export component QuickPanel inherits Window {
     no-frame: true;

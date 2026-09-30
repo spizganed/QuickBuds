@@ -9,6 +9,13 @@ use std::time::{Duration, Instant};
 pub enum Cmd {
     Anc(String),
     LowLatency(bool),
+    EqBuiltIn(u8),
+    /// Select and save a custom preset (a band edit or rename is the same frame).
+    EqSave(Preset),
+    EqCreate(Preset),
+    EqDelete(Preset),
+    BassWave(bool),
+    BassLevel(i8),
     Connect,
     Disconnect,
 }
@@ -32,6 +39,13 @@ pub struct Snapshot {
     pub anc: Option<String>,
     pub modes: AncModes,
     pub low_latency: Option<bool>,
+    pub model: Option<&'static serde_json::Value>,
+    pub caps: Caps,
+    pub firmware: Option<String>,
+    pub eq_current: Option<u8>,
+    pub eq_custom: Vec<Preset>,
+    pub bass_on: Option<bool>,
+    pub bass_level: Option<i8>,
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -82,7 +96,6 @@ struct Conn<'a> {
     link: bt::Link,
     framer: Framer,
     seq: u8,
-    caps: Caps,
     /// The last ANC level sent, to name a report that says only "noise cancelling".
     level: Option<String>,
     s: Snapshot,
@@ -91,9 +104,9 @@ struct Conn<'a> {
 
 impl<'a> Conn<'a> {
     fn new(link: bt::Link, name: String, emit: &'a Emit) -> Self {
-        let modes = AncModes::of(find_model(None, Some(&name)));
-        let s = Snapshot { status: Status::On, name, modes, ..Default::default() };
-        Conn { link, framer: Framer::default(), seq: 0, caps: Caps::default(), level: None, s, emit }
+        let model = find_model(None, Some(&name));
+        let s = Snapshot { status: Status::On, name, modes: AncModes::of(model), model, ..Default::default() };
+        Conn { link, framer: Framer::default(), seq: 0, level: None, s, emit }
     }
 
     fn send(&mut self, cmd: u16, seq: Option<u8>, payload: &[u8]) -> Result<(), String> {
@@ -119,8 +132,15 @@ impl<'a> Conn<'a> {
     fn apply(&mut self, e: Event) -> bool {
         let s = &mut self.s;
         match e {
-            Event::Caps(c) => { self.caps = c; return false; }
-            Event::ProductId(id) => s.modes = AncModes::of(find_model(Some(&id), Some(&s.name))),
+            Event::Caps(c) => s.caps = c,
+            Event::ProductId(id) => {
+                s.model = find_model(Some(&id), Some(&s.name));
+                s.modes = AncModes::of(s.model);
+            }
+            Event::Firmware(f) => s.firmware = Some(f),
+            Event::EqCurrent(id) => s.eq_current = Some(id),
+            Event::EqCustom(list) => s.eq_custom = list,
+            Event::BassLevel(l) => s.bass_level = Some(l),
             Event::Battery(v) => for (i, level, charging) in v {
                 if (1..=3).contains(&i) { s.battery[i as usize - 1] = Some((level, charging)); }
             },
@@ -133,11 +153,9 @@ impl<'a> Conn<'a> {
             },
             Event::GameMode(on) => s.low_latency = Some(on),
             Event::Features(f) => {
-                let id = self.caps.game_mode_id();
-                match f.iter().find(|x| x.0 == id) {
-                    Some(x) => s.low_latency = Some(x.1 == 1),
-                    None => return false,
-                }
+                let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
+                s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
+                s.bass_on = get(FEATURE_BASSWAVE).or(s.bass_on);
             }
         }
         true
@@ -158,19 +176,39 @@ impl<'a> Conn<'a> {
             self.send(cmd, None, &[])?;
             self.pump(200)?;
         }
-        let queries: [(u16, Option<u8>, Vec<u8>); 5] = [
-            (CMD_REGISTER_NOTIFY, None, register_payload(&self.caps)),
+        let queries: [(u16, Option<u8>, Vec<u8>); 6] = [
+            (CMD_REGISTER_NOTIFY, None, register_payload(&self.s.caps)),
             (CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY.to_vec()),
             (CMD_QUERY_ANC, None, vec![1, 1]),
             (CMD_QUERY_BATTERY, Some(0xF0), vec![]),
             (CMD_QUERY_WEARING, Some(0xF2), vec![]),
+            (CMD_QUERY_FIRMWARE, None, vec![]),
         ];
         for (cmd, seq, payload) in queries {
-            if !self.caps.supports(cmd) { continue; }
+            if !self.s.caps.supports(cmd) { continue; }
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;
         }
+        self.eq_reads()
+    }
+
+    /// The EQ reads these buds list, in order (`sendThenRead`); after a write too, since only the buds know
+    /// the ids after a create or delete.
+    fn eq_reads(&mut self) -> Result<(), String> {
+        for cmd in [CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE] {
+            if !self.s.caps.supports(cmd) { continue; }
+            self.send(cmd, None, &[])?;
+            self.pump(120)?;
+        }
         Ok(())
+    }
+
+    /// A write, then the EQ re-read.
+    fn eq_write(&mut self, cmd: u16, payload: &[u8]) -> Result<(), String> {
+        (self.emit)(self.s.clone());
+        self.send(cmd, None, payload)?;
+        self.pump(250)?;
+        self.eq_reads()
     }
 
     fn run(&mut self, rx: &Receiver<Cmd>) -> Result<End, String> {
@@ -191,8 +229,30 @@ impl<'a> Conn<'a> {
                         self.s.anc = Some(mode);
                     }
                     Cmd::LowLatency(on) => {
-                        self.send(CMD_SET_FEATURE, None, &[self.caps.game_mode_id(), on as u8])?;
+                        self.send(CMD_SET_FEATURE, None, &[self.s.caps.game_mode_id(), on as u8])?;
                         self.s.low_latency = Some(on);
+                    }
+                    // Each EQ write updates the state first, so the replies before the new values
+                    // do not snap the UI back.
+                    Cmd::EqBuiltIn(id) => {
+                        self.s.eq_current = Some(id);
+                        self.eq_write(CMD_SET_EQ, &[id])?;
+                    }
+                    Cmd::EqSave(p) => {
+                        self.s.eq_current = Some(p.id);
+                        if let Some(x) = self.s.eq_custom.iter_mut().find(|x| x.id == p.id) { *x = p.clone(); }
+                        self.eq_write(CMD_SAVE_CUSTOM_EQ, &p.encode(EQ_SAVE))?;
+                    }
+                    // No local update: the buds assign and renumber ids.
+                    Cmd::EqCreate(p) => self.eq_write(CMD_SAVE_CUSTOM_EQ, &p.encode(EQ_CREATE))?,
+                    Cmd::EqDelete(p) => self.eq_write(CMD_SAVE_CUSTOM_EQ, &p.encode(EQ_DELETE))?,
+                    Cmd::BassWave(on) => {
+                        self.s.bass_on = Some(on);
+                        self.send(CMD_SET_FEATURE, None, &[FEATURE_BASSWAVE, on as u8])?;
+                    }
+                    Cmd::BassLevel(l) => {
+                        self.s.bass_level = Some(l);
+                        self.eq_write(CMD_SET_BASSWAVE, &[0xFB, 0x05, l as u8])?;
                     }
                     Cmd::Disconnect => return Ok(End::UserDisconnect),
                     Cmd::Connect => continue,

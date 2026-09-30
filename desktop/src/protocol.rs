@@ -17,6 +17,15 @@ pub const CMD_FIT_TEST: u16 = 0x0405;
 pub const CMD_GOLDEN_DETECT: u16 = 0x040D;
 pub const CMD_PERSONAL_NOISE: u16 = 0x0412;
 pub const CMD_GAME_SOUND: u16 = 0x0423;
+pub const CMD_QUERY_FIRMWARE: u16 = 0x0105;
+pub const CMD_QUERY_EQ: u16 = 0x010F;
+pub const CMD_QUERY_EQ_ALL: u16 = 0x0122;
+pub const CMD_QUERY_BASSWAVE: u16 = 0x0124;
+pub const CMD_SET_EQ: u16 = 0x0406;
+pub const CMD_SAVE_CUSTOM_EQ: u16 = 0x0418;
+pub const CMD_SET_BASSWAVE: u16 = 0x041B;
+pub const EVT_EQ_CHANGED: u16 = 0x0504;
+pub const FEATURE_BASSWAVE: u8 = 0x1D;
 pub const EVT_PUSH: u16 = 0x0204;
 
 /// Game mode's `0x0403` switch: `0x28` on buds with game sound (`0x0423`), `0x06` elsewhere (§9).
@@ -202,9 +211,168 @@ impl AncModes {
     }
 }
 
+// --- Equalizer (PROTOCOL.md §9 Equalizer, `EqCodec.kt`) ---
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct Preset {
+    pub id: u8,
+    pub name: String,
+    pub freqs: Vec<u16>,
+    pub gains: Vec<i8>,
+    pub selected: bool,
+    /// Gain range as (min, max), `FA 06` = -6..+6; echoed back verbatim.
+    pub tag: [u8; 2],
+}
+
+pub const EQ_CREATE: u8 = 0x01;
+/// Select AND save in one frame (a band edit or a rename is the same).
+pub const EQ_SAVE: u8 = 0x02;
+pub const EQ_DELETE: u8 = 0x03;
+pub const EQ_GAIN: i32 = 6;
+/// HeyMelody's bands where the model gives none (`customEqFrequency`).
+pub const EQ_DEFAULT_FREQS: [u16; 6] = [62, 250, 1000, 4000, 8000, 16000];
+
+impl Preset {
+    pub fn new(name: &str, freqs: Vec<u16>) -> Preset {
+        let gains = vec![0; freqs.len()];
+        Preset { id: 0, name: name.into(), freqs, gains, selected: false, tag: [(-EQ_GAIN) as i8 as u8, EQ_GAIN as u8] }
+    }
+
+    /// `0x0418` payload: `<action> <tag> <id> <nameLen> <name> <bandCount> [freq u16 LE, gain s8]...`
+    pub fn encode(&self, action: u8) -> Vec<u8> {
+        let mut out = vec![action, self.tag[0], self.tag[1], self.id, self.name.len() as u8];
+        out.extend_from_slice(self.name.as_bytes());
+        out.push(self.freqs.len() as u8);
+        for (f, g) in self.freqs.iter().zip(&self.gains) {
+            out.extend_from_slice(&f.to_le_bytes());
+            out.push(*g as u8);
+        }
+        out
+    }
+}
+
+/// `0x8122` payload: `<status> <count>` then `<flag> <tag 2B> <id> <nameLen> <name> <bands> [freq, gain]...`.
+pub fn parse_presets(p: &[u8]) -> Option<Vec<Preset>> {
+    if p.len() < 2 || p[0] != 0 { return None; }
+    let mut o = 2;
+    let mut out = Vec::new();
+    for _ in 0..p[1] {
+        let head = p.get(o..o + 5)?;
+        let name_len = head[4] as usize;
+        let name = String::from_utf8_lossy(p.get(o + 5..o + 5 + name_len)?).into_owned();
+        o += 5 + name_len;
+        let bands = *p.get(o)? as usize;
+        o += 1;
+        let data = p.get(o..o + bands * 3)?;
+        o += bands * 3;
+        out.push(Preset {
+            id: head[3],
+            name,
+            freqs: data.chunks_exact(3).map(|c| u16::from_le_bytes([c[0], c[1]])).collect(),
+            gains: data.chunks_exact(3).map(|c| c[2] as i8).collect(),
+            selected: head[0] == 1,
+            tag: [head[1], head[2]],
+        });
+    }
+    Some(out)
+}
+
+/// A model flag from `models.json`; nothing detected counts as Buds 4, which has them all (as on the phone).
+fn flag(model: Option<&Value>, key: &str) -> bool { model.map_or(true, |m| m[key].as_i64() == Some(1)) }
+
+pub fn eq_has_custom(model: Option<&Value>, caps: &Caps) -> bool {
+    flag(model, "customEqualizer") && caps.supports(CMD_SAVE_CUSTOM_EQ)
+}
+
+pub fn eq_has_bass(model: Option<&Value>, caps: &Caps) -> bool {
+    flag(model, "bassEngineSupport") && caps.supports(CMD_SET_BASSWAVE)
+}
+
+/// `customEqMax`, else 3.
+pub fn eq_max_custom(model: Option<&Value>) -> usize {
+    model.and_then(|m| m["customEqMax"].as_u64()).filter(|&n| n > 0).unwrap_or(3) as usize
+}
+
+pub fn eq_model_freqs(model: Option<&Value>) -> Vec<u16> {
+    model.and_then(|m| m["customEqFrequency"].as_array())
+        .map(|a| a.iter().filter_map(|f| f.as_u64().map(|f| f as u16)).collect())
+        .unwrap_or_else(|| EQ_DEFAULT_FREQS.to_vec())
+}
+
+/// `0x8105` text `1,2,138,2,2,138,3,1,01,3,2,105` -> "138.138.105" (the `versionType` 2 entries).
+pub fn firmware_version(text: &str) -> Option<String> {
+    let parts: Vec<&str> = text.split(',').collect();
+    let v: Vec<&str> = parts.chunks(3).filter(|c| c.len() == 3 && c[1].trim() == "2").map(|c| c[2].trim()).collect();
+    (!v.is_empty()).then(|| v.join("."))
+}
+
+/// The model's built-in presets as (`0x0406` id, `strings.xml` key), in HeyMelody's order (`EqActivity.builtInPresets`).
+pub fn eq_builtins(model: Option<&Value>, firmware: Option<&str>) -> Vec<(u8, &'static str)> {
+    let buds4 = serde_json::json!([{"modeType":11,"protocolIndex":0},{"modeType":14,"protocolIndex":1},{"modeType":12,"protocolIndex":2}]);
+    let modes: Vec<Value> = match model {
+        Some(m) => {
+            // The lower non-zero of the two buds' versions; unknown = 0.
+            let nums: Vec<i64> = firmware.unwrap_or("").split('.').map(|p| p.parse().unwrap_or(0)).collect();
+            let version = if nums.len() == 3 { nums[..2].iter().copied().filter(|&n| n != 0).min().unwrap_or(0) } else { nums.first().copied().unwrap_or(0) };
+            let mut v: Vec<Value> = ["equalizerModeCompat", "equalizerModeByVersion", "equalizerMode"].iter()
+                .flat_map(|k| m[*k].as_array().cloned().unwrap_or_default())
+                .filter(|e| e["minFirmVersion"].as_i64().unwrap_or(0) <= version)
+                .collect();
+            v.sort_by_key(|e| e["order"].as_i64().unwrap_or(0));
+            v
+        }
+        None => buds4.as_array().unwrap().clone(),
+    };
+    let name = model.and_then(|m| m["name"].as_str()).unwrap_or("");
+    let alt = name == "OPPO Enco R" || name == "OPPO Enco Air2" || model.is_some_and(|m| m["equalizer"].as_i64() == Some(2));
+    modes.iter().filter_map(|m| {
+        let key = match m["modeType"].as_i64()? {
+            1 => if alt { "eq_nature_balance" } else { "eq_classic" },
+            2 => if alt { "eq_bass_boost" } else { "eq_dynamic_bass" },
+            3 | 14 | 32 => "eq_clear_vocals",
+            4 => if name == "OPPO Enco R" { "eq_gentle" } else { "eq_clear" },
+            5 | 35 => "eq_default",
+            6 | 36 => "eq_dyn_simple",
+            7 | 37 => "eq_dyn_warm",
+            8 | 38 => "eq_dyn_punchy",
+            9 | 39 => "eq_dyn_real",
+            10 => "eq_hisaishi",
+            11 | 17 => "eq_balanced",
+            12 => "eq_bass",
+            13 => "eq_bold",
+            15 => "eq_gentle",
+            16 => "eq_enco_x_classic",
+            18 => "eq_reno_dawn",
+            19 => "eq_hans_zimmer",
+            20 => "eq_natural_inspiration",
+            21 => "eq_reno_sunrise",
+            22 => "eq_nature_balance",
+            23 => "eq_punchy",
+            24 => "eq_spacious",
+            25 => "eq_reno_galaxy",
+            26 => "eq_ultimate",
+            27 => "eq_hd_clarity",
+            28 => "eq_pure_vocals",
+            29 => "eq_thundering_bass",
+            30 => "eq_dyn_featured",
+            31 => "eq_bass_boost",
+            33 => "eq_galactic",
+            34 => "eq_vibrant",
+            40 => "eq_dyn_vocal",
+            41 => "eq_clear_crisp",
+            _ => return None, // unnamed in HeyMelody too
+        };
+        Some((m["protocolIndex"].as_u64()? as u8, key))
+    }).collect()
+}
+
 // --- Incoming packets ---
 
 pub enum Event {
+    Firmware(String),
+    EqCurrent(u8),
+    EqCustom(Vec<Preset>),
+    BassLevel(i8),
     Caps(Caps),
     ProductId(String),
     /// (index 1 left / 2 right / 3 case, level, charging)
@@ -240,6 +408,13 @@ pub fn decode(p: &[u8]) -> Option<Event> {
             Event::AncRaw(pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
         }
         0x810D if sub == Some(0) => Event::Features(pairs(&pl[1..])?),
+        // `00 <count>` + UTF-8 `deviceType,versionType,version` triples
+        0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
+        0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
+        EVT_EQ_CHANGED if !pl.is_empty() => Event::EqCurrent(pl[0]),
+        0x8122 => Event::EqCustom(parse_presets(pl)?),
+        // `00 FB 05 <level>`
+        0x8124 if sub == Some(0) && pl.len() >= 4 => Event::BassLevel(pl[3] as i8),
         EVT_PUSH => match sub? {
             0x01 => Event::Battery(battery(&pl[1..])),
             0x02 => Event::Wear(pairs(&pl[1..])?),
@@ -318,6 +493,21 @@ pub fn battery(payload: &[u8]) -> Vec<(u8, u8, bool)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn eq_presets() {
+        let p = Preset { id: 4, name: "Custom1".into(), freqs: EQ_DEFAULT_FREQS.to_vec(), gains: vec![-6, 0, 2, 0, 0, 6], selected: true, tag: [0xFA, 0x06] };
+        // The list entry is the save frame with the selected flag in place of the action.
+        let mut list = vec![0, 1];
+        let mut entry = p.encode(1);
+        entry[0] = 1;
+        list.extend(entry);
+        assert_eq!(parse_presets(&list), Some(vec![p.clone()]));
+        assert_eq!(&p.encode(EQ_SAVE)[..5], [2, 0xFA, 0x06, 4, 7]);
+        assert_eq!(firmware_version("1,2,138,2,2,138,3,1,01,3,2,105").as_deref(), Some("138.138.105"));
+        let b = eq_builtins(find_model(Some("065414"), Some("OnePlus Buds 4")), Some("138.138.105"));
+        assert_eq!(b, [(0, "eq_balanced"), (1, "eq_clear_vocals"), (2, "eq_bass")]);
+    }
 
     #[test]
     fn buds4_from_capture() {

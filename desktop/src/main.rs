@@ -2,6 +2,7 @@
 #![windows_subsystem = "windows"]
 
 mod bt;
+mod eq;
 mod protocol;
 mod session;
 
@@ -15,10 +16,9 @@ use session::{Cmd, Snapshot, Status};
 use slint::winit_030::{winit, EventResult, WinitWindowAccessor};
 use slint::{ComponentHandle, Image, ModelRc, PhysicalPosition, VecModel};
 use std::cell::RefCell;
+use std::rc::Rc;
 use std::sync::mpsc::Sender;
 use tray_icon::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
-
-const ACCENT: &str = "#D71920";
 
 struct App {
     main: MainWindow,
@@ -29,6 +29,14 @@ struct App {
     modes: AncModes,
     last_level: Option<String>,
     tr: Vec<String>,
+    /// The last state from the session.
+    snap: Snapshot,
+    /// The band editor's gains, updated in place while dragging.
+    gains: Rc<VecModel<i32>>,
+    /// The preset (id, name) the name field was last filled from.
+    edit_key: Option<(u8, String)>,
+    /// The band editor's plot size in pixels.
+    plot: (f32, f32),
 }
 
 thread_local! { static APP: RefCell<Option<App>> = const { RefCell::new(None) }; }
@@ -57,7 +65,8 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     b.set_icon_adaptive(svg(icons::MODE_ADAPTIVE));
     b.set_icon_transparency(svg(icons::MODE_TRANSPARENCY));
     b.set_icon_low_latency(svg(icons::LOW_LATENCY));
-    b.set_icon_app(svg(&icons::EARBUD.replace("#FFFFFF", ACCENT)));
+    b.set_icon_app(svg(icons::LAUNCHER));
+    b.set_icon_bass(svg(icons::EQUALIZER));
 
     tr.set_connected(t(s, "conn_on").into());
     tr.set_connect(t(s, "conn_action_connect").into());
@@ -73,6 +82,15 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_adaptive(t(s, "anc_seg_adapt").into());
     tr.set_transparency(t(s, "anc_seg_trans").into());
     tr.set_low_latency(t(s, "widget_low_latency").into());
+    tr.set_eq_title(t(s, "eq_title").into());
+    tr.set_eq_not_connected(t(s, "eq_not_connected").into());
+    tr.set_eq_recommended(t(s, "eq_recommended").into());
+    tr.set_eq_basswave(t(s, "eq_basswave").into());
+    tr.set_eq_basswave_sub(t(s, "eq_basswave_sub").into());
+    tr.set_eq_custom(t(s, "eq_custom").into());
+    tr.set_eq_delete(t(s, "eq_delete").into());
+    tr.set_eq_add(t(s, "eq_add").into());
+    tr.set_eq_save(t(s, "eq_save").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
@@ -106,6 +124,8 @@ fn level_info(id: &str) -> (&'static str, usize) {
 
 impl App {
     fn apply(&mut self, s: Snapshot) {
+        self.snap = s.clone();
+        eq::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -153,6 +173,30 @@ impl App {
     }
 }
 
+/// The frameless main window's own title bar and edges, through winit.
+fn window_chrome(main: &MainWindow) {
+    use winit::window::ResizeDirection as R;
+    let w = main.as_weak();
+    main.on_drag(move || { w.upgrade().map(|m| m.window().with_winit_window(|w| w.drag_window())); });
+    let w = main.as_weak();
+    main.on_minimize(move || { w.upgrade().map(|m| m.window().set_minimized(true)); });
+    let w = main.as_weak();
+    main.on_toggle_maximize(move || {
+        if let Some(m) = w.upgrade() {
+            let max = !m.window().is_maximized();
+            m.window().set_maximized(max);
+            m.set_max_state(max);
+        }
+    });
+    let w = main.as_weak();
+    main.on_close_window(move || { w.upgrade().map(|m| m.hide()); });
+    let w = main.as_weak();
+    main.on_resize(move |dir| {
+        let dir = [R::North, R::South, R::West, R::East, R::NorthWest, R::NorthEast, R::SouthWest, R::SouthEast][dir as usize];
+        w.upgrade().map(|m| m.window().with_winit_window(|w| w.drag_resize_window(dir)));
+    });
+}
+
 fn show_main(w: &MainWindow) {
     w.show().ok();
     w.window().with_winit_window(|w| w.focus_window());
@@ -178,8 +222,7 @@ fn on_tray(e: TrayIconEvent) {
 }
 
 fn tray_icon() -> tray_icon::Icon {
-    let svg = icons::EARBUD.replace("#FFFFFF", ACCENT);
-    let tree = resvg::usvg::Tree::from_str(&svg, &Default::default()).expect("tray svg");
+    let tree = resvg::usvg::Tree::from_str(icons::LAUNCHER, &Default::default()).expect("tray svg");
     let size = 32;
     let mut pm = resvg::tiny_skia::Pixmap::new(size, size).unwrap();
     let s = size as f32 / tree.size().width().max(tree.size().height());
@@ -201,7 +244,7 @@ fn main() {
     // Sections of the phone app; each turns on when its page exists.
     let nav: Vec<NavEntry> = [
         (icons::LAYOUT, "Overview", true),
-        (icons::EQUALIZER, "Equalizer", false),
+        (icons::EQUALIZER, "Equalizer", true),
         (icons::GESTURE, "Controls", false),
         (icons::HEARING, "Hearing profile", false),
         (icons::DEVICES, "Dual connection", false),
@@ -209,6 +252,10 @@ fn main() {
         (icons::SETTINGS_COG, "App settings", false),
     ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg(icon), name: name.into(), ready }).collect();
     main.set_nav(ModelRc::new(VecModel::from(nav)));
+    window_chrome(&main);
+    eq::setup(&main);
+    let gains = Rc::new(VecModel::default());
+    main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
 
     // The quick panel closes when it loses focus, like the system's own tray flyouts.
     panel.window().on_winit_window_event(|w, e| {
@@ -226,6 +273,7 @@ fn main() {
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
     APP.with(|a| *a.borrow_mut() = Some(App {
         main: main.clone_strong(), panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
+        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0),
     }));
     with_app(|a| a.apply(Snapshot::default()));
 

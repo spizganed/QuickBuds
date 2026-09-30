@@ -18,6 +18,15 @@ const STRINGS: &[&str] = &[
     "status_left", "status_right", "status_case", "anc_section", "anc_seg_off", "anc_seg_anc",
     "anc_seg_adapt", "anc_seg_trans", "anc_mode_low", "anc_mode_medium", "anc_mode_high",
     "anc_mode_smart", "widget_low_latency",
+    "eq_title", "eq_not_connected", "eq_recommended", "eq_basswave", "eq_basswave_sub", "eq_custom",
+    "eq_rename", "eq_delete", "eq_add", "eq_save",
+    // Built-in preset names (`protocol::eq_builtins`)
+    "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
+    "eq_bass_boost", "eq_clear", "eq_gentle", "eq_default", "eq_dyn_simple", "eq_dyn_warm", "eq_dyn_punchy",
+    "eq_dyn_real", "eq_hisaishi", "eq_bold", "eq_enco_x_classic", "eq_reno_dawn", "eq_hans_zimmer",
+    "eq_natural_inspiration", "eq_reno_sunrise", "eq_punchy", "eq_spacious", "eq_reno_galaxy", "eq_ultimate",
+    "eq_hd_clarity", "eq_pure_vocals", "eq_thundering_bass", "eq_dyn_featured", "eq_galactic", "eq_vibrant",
+    "eq_dyn_vocal", "eq_clear_crisp",
 ];
 
 fn attr<'a>(tag: &'a str, name: &str) -> Option<&'a str> {
@@ -38,11 +47,12 @@ fn vector_to_svg(xml: &str) -> String {
         if tag.starts_with("/group") { svg += "</g>"; continue; }
         if tag.starts_with("group") {
             let tag = &tag[..tag.find('>').unwrap()];
-            assert!(attr(tag, "scaleX").is_none() && attr(tag, "scaleY").is_none(), "group scale not supported");
-            let (px, py) = (attr(tag, "pivotX").unwrap_or("0"), attr(tag, "pivotY").unwrap_or("0"));
-            let (tx, ty) = (attr(tag, "translateX").unwrap_or("0"), attr(tag, "translateY").unwrap_or("0"));
-            let r = attr(tag, "rotation").unwrap_or("0");
-            write!(svg, r#"<g transform="translate({tx} {ty}) rotate({r} {px} {py})">"#).unwrap();
+            let a = |n| attr(tag, n).unwrap_or("0");
+            let s = |n| attr(tag, n).unwrap_or("1");
+            // Android's order: translate, then rotate and scale around the pivot.
+            let (px, py) = (a("pivotX"), a("pivotY"));
+            write!(svg, r#"<g transform="translate({} {}) translate({px} {py}) rotate({}) scale({} {}) translate(-{px} -{py})">"#,
+                a("translateX"), a("translateY"), a("rotation"), s("scaleX"), s("scaleY")).unwrap();
             continue;
         }
         if !tag.starts_with("path") { assert!(i == 0 || !tag.starts_with(char::is_alphabetic) || tag.starts_with("vector"), "unsupported <{tag}"); continue; }
@@ -80,6 +90,14 @@ fn main() {
         let svg = vector_to_svg(&fs::read_to_string(&path).unwrap());
         writeln!(icons, "pub const {}: &str = {svg:?};", name.trim_start_matches("ic_").to_uppercase()).unwrap();
     }
+    // The launcher icon: the adaptive foreground on its black background, cut to the 72-unit safe
+    // zone with the rounded-square mask.
+    let fg_path = format!("{RES}/drawable/ic_launcher_foreground.xml");
+    println!("cargo:rerun-if-changed={fg_path}");
+    let fg = vector_to_svg(&fs::read_to_string(&fg_path).unwrap());
+    let body = &fg[fg.find('>').unwrap() + 1..];
+    let launcher = format!(r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="72" height="72"><rect x="18" y="18" width="72" height="72" rx="16" fill="#000000"/>{body}"##);
+    writeln!(icons, "pub const LAUNCHER: &str = {launcher:?};").unwrap();
     fs::write(Path::new(&out).join("icons.rs"), icons).unwrap();
 
     // (locale tag, values) per `values-*` folder; "" is the English default.
