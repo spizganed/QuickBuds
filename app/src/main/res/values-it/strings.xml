@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC intelligente</string>
     <string name="widget_low_latency">Bassa latenza</string>
     <string name="widget_battery_name">QuickBuds batteria</string>
-    <string name="widget_large_name">QuickBuds grande</string>
     <string name="settings_language_title">Lingua</string>
     <string name="settings_language_sub">Lingua dell\'app</string>
     <string name="language_system">Predefinita di sistema</string>

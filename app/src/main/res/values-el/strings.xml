@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC Έξυπνο</string>
     <string name="widget_low_latency">Χαμηλή καθυστέρηση</string>
     <string name="widget_battery_name">QuickBuds μπαταρία</string>
-    <string name="widget_large_name">QuickBuds μεγάλο</string>
     <string name="settings_language_title">Γλώσσα</string>
     <string name="settings_language_sub">Γλώσσα εφαρμογής</string>
     <string name="language_system">Προεπιλογή συστήματος</string>

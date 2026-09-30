@@ -5,7 +5,7 @@
 # colors > Style) and leaves it that way; otherwise it only OPENS screens, nothing is toggled.
 # Classic (the default style) goes to docs/screenshots/, Dot matrix to docs/screenshots/dot-matrix/.
 # Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file,
-# widget-<size>-<page> (2x2, 3x3, 4x2; battery or controls, whichever page it shows); sizes that
+# widget-<size>-<page> (2x2, 2x2 resized = 3x3, 4x2; battery or controls, whichever page it shows); sizes that
 # are not placed are skipped.
 # Usage: scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]
 set -euo pipefail
@@ -20,7 +20,8 @@ adb() { if [ -n "$SERIAL" ]; then "$ADB_BIN" -s "$SERIAL" "$@" </dev/null; else 
 OUT=docs/screenshots$([ "$STYLE" = dot-matrix ] && echo /dot-matrix || true)
 mkdir -p "$OUT"
 
-dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null; adb exec-out cat /sdcard/ui.xml; }
+# One adb call: the dump goes straight to stdout (no file on the phone, no second call to read it).
+dump() { adb exec-out uiautomator dump /dev/tty | sed 's/UI hierarchy dumped to.*//'; }
 
 # Centre of the first node whose text or content-desc is exactly $1; scrolls down once if needed.
 # A second argument "optional" skips (returns 1) instead of stopping the script.
@@ -39,25 +40,34 @@ tap() {
     fi
     set -- $b
     adb shell input tap $(( ($1 + $3) / 2 )) $(( ($2 + $4) / 2 ))
-    sleep 1.5
+    sleep 0.7
 }
-back() { adb shell input keyevent BACK; sleep 1; }
+back() { adb shell input keyevent BACK; sleep 0.6; }
 
 # Screenshot cropped to the box "l t r b". Without a box: the status bar is painted over in the
 # page's own background (cutting it would leave titles flush with the edge) and the nav bar is cut.
+# Only the capture happens here; every crop runs in ONE python at the end (JOBS), which is most of the speed-up.
+JOBS=$(mktemp)
 shot() {
-    local box=${2:-"0 0 $W $BOTTOM"}
+    local box=${2:-"0 0 $W $BOTTOM"} top=0
+    [ -z "${2:-}" ] && top=$TOP
     adb exec-out screencap -p > "$OUT/$1.png"
+    echo "$OUT/$1.png $top $box" >> "$JOBS"
+    echo "$OUT/$1.png"
+}
+crop_all() {
     python -c "
 import sys
 from PIL import Image
-f, top, box = sys.argv[1], int(sys.argv[2]), tuple(map(int, sys.argv[3:]))
-im = Image.open(f).convert('RGB')
 # ponytail: icons sit in the top 3/4 of the inset and the main header pills reach into the rest;
 # measure the icons' bottom edge if another device clips something.
-if top: im.paste(im.getpixel((0, top)), (0, 0, im.width, top * 3 // 4))
-im.crop(box).save(f, optimize=True)" "$OUT/$1.png" "$([ -z "${2:-}" ] && echo "$TOP" || echo 0)" $box
-    echo "$OUT/$1.png"
+for line in open(sys.argv[1]):
+    f, top, *box = line.split()
+    top = int(top)
+    im = Image.open(f).convert('RGB')
+    if top: im.paste(im.getpixel((0, top)), (0, 0, im.width, top * 3 // 4))
+    im.crop(tuple(map(int, box))).save(f, optimize=True)" "$JOBS"
+    rm -f "$JOBS"
 }
 
 # Bar heights from the window insets, so the crop follows the device.
@@ -82,7 +92,7 @@ b=$(dump | tr '>' '\n' | grep -E 'content-desc="Style"' | head -1 | grep -oE 'bo
 set -- $b
 q=$([ "$STYLE" = dot-matrix ] && echo 3 || echo 1)
 adb shell input tap $(( $1 + ($3 - $1) * q / 4 )) $(( ($2 + $4) / 2 ))
-sleep 2; back; back
+sleep 1.2; back; back
 shot main
 tap "Model";            shot models;   back
 tap "Equalizer";        shot eq
@@ -103,7 +113,6 @@ tap "Themes, colors & styles";   shot theme
 if tap "Edit preset" optional; then shot preset; back; fi
 back
 tap "Home layout";      shot home-layout;     back
-tap "Widget settings";  shot widget-settings; back
 tap "App update";       shot update;          back
 tap "About";            shot about;           back; back
 
@@ -121,8 +130,8 @@ ids = lambda n: {e.get("resource-id", "").split("/")[-1] for e in n.iter()}
 for n in ET.parse(sys.argv[1]).iter("node"):
     if not n.get("resource-id", "").endswith(":id/w_root"):
         continue
-    # Only the shown page is in the dump. The 4x2 is the wide one; the 3x3 is the 2x2 scaled up,
-    # so a square wider than half the screen is the 3x3.
+    # Only the shown page is in the dump. The 4x2 is the wide one; a 2x2 resized wide is drawn
+    # scaled up, so a square wider than half the screen is named 3x3.
     have = ids(n)
     l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
     page = "battery" if "w_panel_left" in have else "controls" if "w_q0" in have else None
@@ -132,3 +141,4 @@ for n in ET.parse(sys.argv[1]).iter("node"):
     print(f"widget-{size}-{page}", l - 16, t - 16, r + 16, b + 16)
 PY
 rm -f "$OUT/.ui.xml"
+crop_all

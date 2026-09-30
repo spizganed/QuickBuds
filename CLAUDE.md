@@ -217,7 +217,9 @@ A change recreates open screens (part of the activity signature).
   `goldenRecords`, max 10, dated, no rename; the buds' own profile added on open; `HearingRadarView`
   one ear at a time). Test: `GoldenTestSheet` (ear scan where `models.json` has `"earScan":1`).
   Records in `protocol/GoldenSound.kt`. Fit test: `FitTestSheet`.
-- **Dev Tools:** packet log (Human / Raw, long press copies), Clear, Export (`Download/QuickBudsLogs/`),
+- **Dev Tools:** packet log (Human / Detailed / Raw; Human puts every packet the decoder does not name on
+  an amber line with its payload, Detailed adds the payload line to all; the framer's discarded bytes are logged
+  as `DISCARDED RX`; long press copies), Clear, Export (`Download/QuickBudsLogs/`),
   Reconnect, Disconnect, Crash test. Labels stay English-only. The crash handler is installed in
   `QuickBudsApp.attachBaseContext` (`Download/QuickBudsCrash/`).
 
@@ -269,16 +271,16 @@ user-visible string needs all 26** (lint does not catch a missing one). Constant
 
 ## Widgets
 
-`widget/AncWidgetProvider.kt`: providers **2x2** `BatteryWidgetProvider`, **3x3**
-`LargeWidgetProvider`, **4x2** `AncWidgetProvider` (old class names kept so placed widgets survive),
-fixed size, one renderer `QuickBudsWidget.build`. No more sizes for now, no model name on any widget
+`widget/AncWidgetProvider.kt`: providers **2x2** `BatteryWidgetProvider` (resizable `[USER]`, no separate 3x3: from
+`LARGE_MIN_DP` wide it renders the scaled layout, `Kind.LARGE`, `widgetLarge_<id>`) and **4x2**
+`AncWidgetProvider` (fixed; old class names kept so placed widgets survive), one renderer `QuickBudsWidget.build`. No more sizes for now, no model name on any widget
 `[USER]`.
 
 - **Layouts are generated** by `scripts/widget-layouts.py` (`widget_pages`, `_m`, `_l`, `widget_grid`,
   `_l`, `widget_disconnected`, each with a `_n` dot copy). Edit the script and rerun, never the XML.
   **A new id needs its line in the renderer**, or RemoteViews fails ("Can't load widget"). Never a
   plain `<View>`. Check changes with `adb logcat` while the widget updates.
-- **The 3x3 is the 2x2 scaled** by `K` = `LARGE_SCALE` = 1.5645 (keep equal). No 3x3-only values.
+- **The large layout is the 2x2 scaled** by `K` = `LARGE_SCALE` = 1.5645 (keep equal). No large-only values.
   Script `GEO` = renderer `Geo` (keep equal).
 - **Two pages per size, battery and controls** `[USER]`, stored per widget (`widgetPage_<id>`), swapped
   by a double tap (200 ms wait). No swap button, no widget settings screen `[USER]`: the Low latency

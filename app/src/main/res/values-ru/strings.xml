@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC умный</string>
     <string name="widget_low_latency">Низкая задержка</string>
     <string name="widget_battery_name">QuickBuds батарея</string>
-    <string name="widget_large_name">QuickBuds большой</string>
     <string name="settings_language_title">Язык</string>
     <string name="settings_language_sub">Язык приложения</string>
     <string name="language_system">Как в системе</string>

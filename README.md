@@ -25,7 +25,7 @@ Every other screen (gestures, themes, fit test, settings and more) is in [docs/s
 
 Every size has a battery page and a controls page; switch with a double tap.
 
-| 2x2 | 3x3 | 4x2 |
+| 2x2 | 2x2, resized | 4x2 |
 | :---: | :---: | :---: |
 | <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-3x3-battery.png" width="220"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
 
@@ -34,7 +34,7 @@ Every size has a battery page and a controls page; switch with a double tap.
 An optional style for the app and the widgets (Themes, colors & styles > Style): a dot font, no cards,
 dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matrix](docs/screenshots/dot-matrix).
 
-| Main screen | 3x3 widget |
+| Main screen | Resized 2x2 widget |
 | :---: | :---: |
 | <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-3x3-battery.png" width="220"> |
 

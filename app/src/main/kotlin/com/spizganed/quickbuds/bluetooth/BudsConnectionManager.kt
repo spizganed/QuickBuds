@@ -952,7 +952,9 @@ class BudsConnectionManager(private val context: Context) {
         private val inputStream: InputStream = socket.inputStream
         private val outputStream: OutputStream = socket.outputStream
         private val buffer = ByteArray(1024)
-        private val framer = OppoPacketFramer()
+        private val framer = OppoPacketFramer().also { f ->
+            f.onDiscard = { log("DISCARDED RX bytes (not a frame): ${OpoProtocol.bytesToHex(it)}") }
+        }
 
         override fun run() {
             while (true) {

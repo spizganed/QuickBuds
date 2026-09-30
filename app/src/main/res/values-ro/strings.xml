@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC inteligent</string>
     <string name="widget_low_latency">Latență redusă</string>
     <string name="widget_battery_name">QuickBuds baterie</string>
-    <string name="widget_large_name">QuickBuds mare</string>
     <string name="settings_language_title">Limbă</string>
     <string name="settings_language_sub">Limba aplicației</string>
     <string name="language_system">Implicit sistem</string>

@@ -18,7 +18,11 @@ object LogDecoder {
         val direction: Direction,
         val label: String?,
         val description: String,
-        val hexPayload: String?
+        val hexPayload: String?,
+        /** "0x8106 · 12 B · 00 5A ...": command, payload size and the whole payload, for packets. */
+        val detail: String? = null,
+        /** The description names no field: an unknown command, sub-type or frame. Shown apart in Dev Tools. */
+        val unknown: Boolean = false
     )
 
     /**
@@ -74,7 +78,8 @@ object LogDecoder {
                 direction = Direction.STATUS,
                 label = null,
                 description = msg,
-                hexPayload = null
+                hexPayload = null,
+                unknown = msg.startsWith("UNATTR") || msg.startsWith("DISCARDED")
             )
         }
 
@@ -91,8 +96,27 @@ object LogDecoder {
             direction = direction,
             label = label,
             description = description,
-            hexPayload = hexPart?.trim()
+            hexPayload = hexPart?.trim(),
+            detail = payload?.let { detailOf(it) },
+            unknown = UNKNOWN_MARKS.any { description.startsWith(it) } || description.contains("(unparsed)")
         )
+    }
+
+    /** Description prefixes that mean nothing was decoded. */
+    private val UNKNOWN_MARKS = listOf("Unknown", "Unframed", "Malformed")
+
+    /** Longest payload printed in a detail line, in bytes; the raw tab has the rest. */
+    private const val DETAIL_BYTES = 48
+
+    private fun detailOf(raw: ByteArray): String? {
+        val data = OppoPacketFramer.normalise(raw)
+        if (data.size < 9 || data[0] != 0xAA.toByte()) return "${data.size} B  ${OpoProtocol.bytesToHex(data)}"
+        val payLen = OpoProtocol.u16(data, 7)
+        val payload = data.copyOfRange(9, minOf(data.size, 9 + payLen))
+        val shown = OpoProtocol.bytesToHex(payload.copyOfRange(0, minOf(payload.size, DETAIL_BYTES)))
+        val more = if (payload.size > DETAIL_BYTES) " …+${payload.size - DETAIL_BYTES}" else ""
+        return "0x%04X  seq %d  %d B%s".format(OpoProtocol.u16(data, 4), data[6].toInt() and 0xFF, payload.size,
+            if (payload.isEmpty()) "" else "  $shown$more")
     }
 
     private fun parseHex(hexStr: String?): ByteArray? {
@@ -111,7 +135,7 @@ object LogDecoder {
     private fun describePacket(raw: ByteArray, direction: Direction, label: String?): String {
         val data = OppoPacketFramer.normalise(raw)
         if (data.isEmpty() || data[0] != 0xAA.toByte()) {
-            return OpoProtocol.bytesToHex(data)
+            return "Unframed data: ${OpoProtocol.bytesToHex(data)}"
         }
 
         if (data.size < 9) {
@@ -189,7 +213,7 @@ object LogDecoder {
                             // so an unattributed gesture frame (e.g. subType 0xFF /
                             // "02 FF 06 00 F1 ...") stays visible on this screen.
                             val head = OpoProtocol.bytesToHex(payload.take(6).toByteArray())
-                            sb.append("Unattributed active report: subType=0x${"%02X".format(subType)} [$head]")
+                            sb.append("Unknown active report: subType=0x${"%02X".format(subType)} [$head]")
                         }
                     }
                 } else {
@@ -256,7 +280,7 @@ object LogDecoder {
                 else "status=0x%02X".format(payload[0].toInt() and 0xFF)
                 "Ack for set 0x%04X (%s%s)".format(setCmd, status, if (ok) " = ok" else "")
             }
-            else -> "$cmdHex - ${OpoProtocol.bytesToHex(data)}"
+            else -> "Unknown packet $cmdHex"
         }
     }
 

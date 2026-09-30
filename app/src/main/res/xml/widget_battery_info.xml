@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 2x2 widget (BatteryWidgetProvider). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
-     Fixed size, not resizable ([USER] 2026-09-27). updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
+     Resizable ([USER] 2026-09-30): from about 3 cells it draws the scaled layout. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="110dp"
     android:minHeight="110dp"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
-    android:resizeMode="none"
+    android:resizeMode="horizontal|vertical"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="110dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_pages"
     android:widgetCategory="home_screen" />

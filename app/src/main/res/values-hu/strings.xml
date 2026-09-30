@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC intelligens</string>
     <string name="widget_low_latency">Alacsony késleltetés</string>
     <string name="widget_battery_name">QuickBuds akkumulátor</string>
-    <string name="widget_large_name">QuickBuds nagy</string>
     <string name="settings_language_title">Nyelv</string>
     <string name="settings_language_sub">Alkalmazás nyelve</string>
     <string name="language_system">Rendszer alapértelmezése</string>

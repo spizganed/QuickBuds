@@ -954,7 +954,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // Keeps this card to what changes the sound. App update moved to the cog.
         addRow("earbuds", 
             SettingRowFactory.build(
-                this, R.drawable.ic_earbud, R.string.row_earbuds_title, R.string.row_earbuds_sub,
+                this, R.drawable.ic_settings_cog, R.string.row_earbuds_title, R.string.row_earbuds_sub,
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, EarbudSettingsActivity::class.java)) }
         )

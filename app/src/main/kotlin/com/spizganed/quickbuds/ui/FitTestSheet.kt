@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.spizganed.quickbuds.R
@@ -48,17 +47,13 @@ class FitTestSheet(private val activity: Activity, private val send: (Boolean) -
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(dp(120f), LinearLayout.LayoutParams.WRAP_CONTENT)
-            // The glyphs' own ratio, 176 x 272 (see CLAUDE.md, icons keep their SVG ratio).
-            addView(ImageView(activity).apply {
-                setImageDrawable(ThemeRes.tint(activity, icon, ThemeRes.color(activity, R.attr.appColorTextPrimary)))
-                layoutParams = LinearLayout.LayoutParams(dp(44f), dp(68f))
-            })
             addView(TextView(activity).apply {
                 setText(side)
                 textSize = 14f
                 gravity = Gravity.CENTER
                 setTextColor(ThemeRes.color(activity, R.attr.appColorTextSecondary))
-                setPadding(0, dp(10f), 0, 0)
+                setPadding(0, 0, 0, 0)
+                textSize = 15f
                 if (icon == R.drawable.ic_bud_left) leftLabel = this else rightLabel = this
             })
         }

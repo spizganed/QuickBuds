@@ -313,7 +313,6 @@
     <string name="widget_mode_anc_smart">ANC स्मार्ट</string>
     <string name="widget_low_latency">लो लेटेंसी</string>
     <string name="widget_battery_name">QuickBuds बैटरी</string>
-    <string name="widget_large_name">QuickBuds बड़ा</string>
     <string name="settings_language_title">भाषा</string>
     <string name="settings_language_sub">ऐप की भाषा</string>
     <string name="language_system">सिस्टम डिफ़ॉल्ट</string>

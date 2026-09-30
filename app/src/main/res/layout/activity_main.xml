@@ -68,8 +68,8 @@
 
             <ImageView
                 android:id="@+id/connDot"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_status_dot_empty"
                 android:contentDescription="@string/conn_status_desc" />

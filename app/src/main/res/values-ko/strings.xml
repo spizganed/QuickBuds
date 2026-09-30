@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC 스마트</string>
     <string name="widget_low_latency">저지연</string>
     <string name="widget_battery_name">QuickBuds 배터리</string>
-    <string name="widget_large_name">QuickBuds 대형</string>
     <string name="settings_language_title">언어</string>
     <string name="settings_language_sub">앱 언어</string>
     <string name="language_system">시스템 기본값</string>

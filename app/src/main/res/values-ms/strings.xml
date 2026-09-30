@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC Pintar</string>
     <string name="widget_low_latency">Kependaman rendah</string>
     <string name="widget_battery_name">Bateri QuickBuds</string>
-    <string name="widget_large_name">QuickBuds besar</string>
     <string name="settings_language_title">Bahasa</string>
     <string name="settings_language_sub">Bahasa aplikasi</string>
     <string name="language_system">Lalai sistem</string>

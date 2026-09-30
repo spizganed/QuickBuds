@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC slim</string>
     <string name="widget_low_latency">Lage latentie</string>
     <string name="widget_battery_name">QuickBuds batterij</string>
-    <string name="widget_large_name">QuickBuds groot</string>
     <string name="settings_language_title">Taal</string>
     <string name="settings_language_sub">Taal van de app</string>
     <string name="language_system">Systeemstandaard</string>

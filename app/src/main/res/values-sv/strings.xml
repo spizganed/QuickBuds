@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC smart</string>
     <string name="widget_low_latency">Låg latens</string>
     <string name="widget_battery_name">QuickBuds batteri</string>
-    <string name="widget_large_name">QuickBuds stor</string>
     <string name="settings_language_title">Språk</string>
     <string name="settings_language_sub">Appens språk</string>
     <string name="language_system">Systemstandard</string>

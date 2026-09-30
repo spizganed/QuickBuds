@@ -184,11 +184,11 @@ object DotArt {
     /**
      * A box (card, button, chip, sheet, dialog) as dots ([ThemeRes.card] in the dot style, [USER] 2026-09-30):
      * the outline one cell of dots, the fill dots a cell inside, both drawn once per size. [solid]: the fill is one
-     * smooth shape under the dot outline, for a sheet or dialog over other content. [topOnly]: square bottom corners.
+     * smooth shape under the dot outline; [base]: a smooth shape behind the dotted fill, for a sheet or dialog over other content. [topOnly]: square bottom corners.
      */
     class Box(
         private val context: Context, private val fill: Int, private val stroke: Int?, private val radiusDp: Float,
-        private val topOnly: Boolean = false, private val solid: Boolean = false
+        private val topOnly: Boolean = false, private val solid: Boolean = false, private val base: Int? = null
     ) : Drawable() {
         private var cache: Bitmap? = null
         private val p = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -209,8 +209,9 @@ object DotArt {
             if (w <= 0 || h <= 0) return
             val bmp = cache?.takeIf { it.width == w && it.height == h } ?: Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also { out ->
                 val c = Canvas(out)
-                if (solid) {
-                    c.drawPath(path(w.toFloat(), h.toFloat(), pitch / 2), p.apply { color = fill; style = Paint.Style.FILL })
+                // [base]: a smooth shape in this colour behind the dots, so nothing below shows through the gaps.
+                if (solid || base != null) {
+                    c.drawPath(path(w.toFloat(), h.toFloat(), pitch / 2), p.apply { color = base ?: fill; style = Paint.Style.FILL })
                 }
                 // The solid fill sits under the dots; the outline is dots in both cases (its inside is cleared).
                 val edge = stroke ?: fill
@@ -236,6 +237,7 @@ object DotArt {
      */
     class Pattern(
         private val context: Context, private val cols: Int, private val rows: Int,
+        private val pitchDp: Float = ICON_PITCH_DP,
         private val lit: (Int, Int) -> Boolean
     ) : Drawable() {
         private val p = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -243,7 +245,7 @@ object DotArt {
 
         override fun draw(canvas: Canvas) {
             val b = bounds
-            val pitch = pitchPx(context, ICON_PITCH_DP)
+            val pitch = pitchPx(context, pitchDp)
             val x0 = b.left + Math.round((b.width() - cols * pitch) / 2 / pitch) * pitch
             val y0 = b.top + Math.round((b.height() - rows * pitch) / 2 / pitch) * pitch
             p.color = color
@@ -321,7 +323,7 @@ object DotArt {
     fun menu(context: Context) = Pattern(context, 16, 16) { x, y -> x in 2..13 && y % 5 in 2..3 && y in 2..13 }
 
     /** The connection dot: a round 7x7 disc, or its ring. */
-    fun statusDot(context: Context, filled: Boolean) = Pattern(context, 7, 7) { x, y ->
+    fun statusDot(context: Context, filled: Boolean) = Pattern(context, 7, 7, 1.7f) { x, y ->
         val d = Math.hypot(x - 3.0, y - 3.0)
         d <= 3.4 && (filled || d >= 2.3)
     }

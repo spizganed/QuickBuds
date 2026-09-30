@@ -313,7 +313,6 @@
     <string name="widget_mode_anc_smart">降噪 智能</string>
     <string name="widget_low_latency">低延迟</string>
     <string name="widget_battery_name">QuickBuds 电量</string>
-    <string name="widget_large_name">QuickBuds 大号</string>
     <string name="settings_language_title">语言</string>
     <string name="settings_language_sub">应用语言</string>
     <string name="language_system">跟随系统</string>

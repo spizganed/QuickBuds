@@ -311,7 +311,6 @@
     <string name="widget_mode_anc_smart">ANC Smart</string>
     <string name="widget_low_latency">Low latency</string>
     <string name="widget_battery_name">QuickBuds baterya</string>
-    <string name="widget_large_name">QuickBuds malaki</string>
     <string name="settings_language_title">Wika</string>
     <string name="settings_language_sub">Wika ng app</string>
     <string name="language_system">Default ng system</string>

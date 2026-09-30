@@ -123,7 +123,7 @@ back.
 
 ## Widgets
 
-- 2x2, 3x3 (the 2x2 scaled) and 4x2, fixed size, each with a battery page and a controls page (ANC with a
+- 2x2 (resizable, scaled up when wide) and 4x2, each with a battery page and a controls page (ANC with a
   level picker, Transparency, Adaptive, Low latency), swapped by a double tap (200 ms).
 - Slides only, like a carousel; the widget stays on the controls page after a change. Haptic tick on taps.
 - Both styles share one design (`scripts/widget-layouts.py`); the cycle mode and mode button are gone.

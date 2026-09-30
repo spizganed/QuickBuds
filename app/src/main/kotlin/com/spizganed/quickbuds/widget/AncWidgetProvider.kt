@@ -32,10 +32,10 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * has its own picker entry and cell size, and the old class names keep placed widgets alive:
  *
  *  - [BatteryWidgetProvider] 2x2
- *  - [LargeWidgetProvider]   3x3, the 2x2 layout scaled up
+ *    (resizable: from about 3 cells wide it draws the 2x2 layout scaled up, [Kind.LARGE], [LARGE_MIN_DP])
  *  - [AncWidgetProvider]     4x2 (was 3x2), three battery panels in a row
  *
- * Fixed sizes, not resizable ([USER] 2026-09-27). The 2x2 controls widget (SmallWidgetProvider) is gone.
+ * The 2x2 resizes and just gets bigger ([USER] 2026-09-30, no separate 3x3); the 4x2 is fixed. The 2x2 controls widget (SmallWidgetProvider) is gone.
  *
  * Drawn in the ACTIVE palette at update time: white shapes tinted with ImageView.setColorFilter
  * (every API level) and ring bitmaps drawn here. Disconnected, every size shows only the main
@@ -85,8 +85,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
         private val providers = listOf(
             BatteryWidgetProvider::class.java to Kind.BATTERY,
-            AncWidgetProvider::class.java to Kind.COMBINED,
-            LargeWidgetProvider::class.java to Kind.LARGE
+            AncWidgetProvider::class.java to Kind.COMBINED
         )
 
         private val CONN = Btn(R.id.w_conn, R.id.w_conn_bg, R.id.w_conn_stroke, R.id.w_conn_dot, R.id.w_conn_text)
@@ -130,7 +129,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * only in the update that changes that flipper's child: `w_slide0` / `w_slide1` slide the pages,
          * `w_pages` fades the mode list in and out. Shown child: 0 battery, 1 controls, 2 list.
          */
-        private fun update(context: Context, mgr: AppWidgetManager, id: Int, kind: Kind) {
+        private fun update(context: Context, mgr: AppWidgetManager, id: Int, declared: Kind) {
+            // The resizable 2x2 draws the scaled layout once it is wide enough; a layout change resets its flippers.
+            val width = mgr.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+            val kind = if (declared == Kind.BATTERY && width >= LARGE_MIN_DP) Kind.LARGE else declared
+            if (WidgetSettings.setLarge(context, id, kind == Kind.LARGE)) WidgetSettings.setShownChild(context, id, null)
             // A throw here would leave the host showing "Can't load widget" with no trace.
             try {
                 val (v, child) = build(context, WidgetStateStore.read(context), kind, id)
@@ -428,7 +431,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          */
         fun dotRing(context: Context, p: Palette, level: Int, slot: Int, tint: Int, px: Int): Bitmap {
             val n = RING_CELLS
-            return matrix(n, n, px / n.toFloat()) { c, size ->
+            return matrix(n, n, px / n.toFloat(), despeckle = slot != 1) { c, size ->
                 val g = drawRing(context, c, size, p, level, slot, tint, size * 2.6f / n, dim(p), if (slot == 1) 1.22f else 1.18f)
                 if (slot == 1) clearLed(c, g, size / n)
             }
@@ -593,6 +596,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          */
         private const val LARGE_SCALE = 1.5645f
 
+        /** A 2x2 at least this wide (dp) draws the scaled layout: between the launcher's 2x2 (165) and 3x3 (257). */
+        private const val LARGE_MIN_DP = 210
+
         /** 1 on the 2x2 (and 4x2), [LARGE_SCALE] on the 3x3. */
         private fun scale(kind: Kind) = if (kind.large) LARGE_SCALE else 1f
 
@@ -656,7 +662,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * averaged away. Without, the whole cell: a thin stroke (the bolt's tips) keeps its dots. The dot takes [color], or when null the colour of the most
          * opaque pixel there (an antialiased edge pixel would give a dark dot).
          */
-        private fun matrix(cols: Int, rows: Int, pitch: Float, min: Int = 128, color: Int? = null, centre: Boolean = true, draw: (Canvas, Float) -> Unit): Bitmap {
+        private fun matrix(cols: Int, rows: Int, pitch: Float, min: Int = 128, color: Int? = null, centre: Boolean = true, despeckle: Boolean = false, draw: (Canvas, Float) -> Unit): Bitmap {
             val ss = 8
             val bw = cols * ss
             val big = Bitmap.createBitmap(bw, rows * ss, Bitmap.Config.ARGB_8888)
@@ -665,6 +671,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val out = Bitmap.createBitmap(Math.round(cols * pitch).coerceAtLeast(1), Math.round(rows * pitch).coerceAtLeast(1), Bitmap.Config.ARGB_8888)
             val c = Canvas(out)
             val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+            val lit = BooleanArray(cols * rows)
+            val colors = IntArray(cols * rows)
             for (y in 0 until rows) for (x in 0 until cols) {
                 var sum = 0
                 var solid = 0
@@ -676,7 +684,15 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                     if (v ushr 24 > solid ushr 24) solid = v
                 }
                 if (sum / ((b - a) * (b - a)) < min) continue
-                paint.color = color ?: (solid or 0xFF000000.toInt())
+                lit[y * cols + x] = true
+                colors[y * cols + x] = color ?: (solid or 0xFF000000.toInt())
+            }
+            // [despeckle]: a lone dot (the bud's tip over the head, [USER] 2026-09-30) is left out.
+            fun on(x: Int, y: Int) = x in 0 until cols && y in 0 until rows && lit[y * cols + x]
+            for (y in 0 until rows) for (x in 0 until cols) {
+                if (!lit[y * cols + x]) continue
+                if (despeckle && !on(x - 1, y) && !on(x + 1, y) && !on(x, y - 1) && !on(x, y + 1)) continue
+                paint.color = colors[y * cols + x]
                 c.drawCircle((x + 0.5f) * pitch, (y + 0.5f) * pitch, pitch * 0.42f, paint)
             }
             return out
@@ -882,8 +898,5 @@ class AncWidgetProvider : QuickBudsWidget(Kind.COMBINED) {
     }
 }
 
-/** 2x2 battery. */
+/** 2x2 battery, resizable. */
 class BatteryWidgetProvider : QuickBudsWidget(Kind.BATTERY)
-
-/** 3x3: the 2x2 layout, scaled up. */
-class LargeWidgetProvider : QuickBudsWidget(Kind.LARGE)

@@ -11,6 +11,9 @@ package com.spizganed.quickbuds.protocol
 class OppoPacketFramer {
     private var pending = ByteArray(0)
 
+    /** Bytes thrown away because they are not part of a frame (noise before a header, a bad length). */
+    var onDiscard: ((ByteArray) -> Unit)? = null
+
     fun append(buffer: ByteArray, length: Int): List<ByteArray> {
         if (length <= 0) return emptyList()
         pending += buffer.copyOfRange(0, length)
@@ -19,14 +22,19 @@ class OppoPacketFramer {
         while (pending.isNotEmpty()) {
             val start = pending.indexOf(0xAA.toByte())
             if (start < 0) {
+                onDiscard?.invoke(pending)
                 pending = ByteArray(0)
                 break
             }
-            if (start > 0) pending = pending.copyOfRange(start, pending.size)
+            if (start > 0) {
+                onDiscard?.invoke(pending.copyOfRange(0, start))
+                pending = pending.copyOfRange(start, pending.size)
+            }
             val (totalLen, lenBytes) = readLength(pending) ?: break
 
             val frameLen = 1 + lenBytes + totalLen
             if (totalLen < 7 || frameLen > 2048) {
+                onDiscard?.invoke(pending.copyOfRange(0, 1))
                 pending = pending.copyOfRange(1, pending.size)
                 continue
             }

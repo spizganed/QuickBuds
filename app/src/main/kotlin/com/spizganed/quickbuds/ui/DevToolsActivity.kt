@@ -50,7 +50,6 @@ class DevToolsActivity : Activity() {
         /** Folder created under Download for exported logs. */
         const val EXPORT_DIR_NAME = "QuickBudsLogs"
 
-        val DIRECTION = Regex("\\b(TX|RX)\\b")
     }
 
     private lateinit var logText: TextView
@@ -59,7 +58,9 @@ class DevToolsActivity : Activity() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private var isHumanTab = true
+    /** 0 human (unknown packets get a payload line), 1 detailed (a payload line for every packet), 2 raw. */
+    private var mode = 0
+    private val isHumanTab get() = mode != 2
 
     /** Line count at the last paint — lets refreshLog() skip no-op rebuilds. */
     private var lastLineCount = -1
@@ -81,9 +82,9 @@ class DevToolsActivity : Activity() {
         val root = SettingRowFactory.screen(this)
         root.addView(SettingRowFactory.title(this, R.string.action_dev_tools))
 
-        tabs = AncSegmentedView(this, listOf("Human-readable", "Raw hex")).apply {
+        tabs = AncSegmentedView(this, listOf("Human", "Detailed", "Raw hex")).apply {
             selected = 0
-            onSegmentTapped = { i -> if (i == 0) switchToHumanTab() else switchToRawTab() }
+            onSegmentTapped = { i -> switchTo(i) }
         }
         root.addView(tabs, spaced(dp(12f)))
 
@@ -151,9 +152,9 @@ class DevToolsActivity : Activity() {
                 return@setOnLongClickListener true
             }
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val label = if (isHumanTab) "QuickBuds Log (human)" else "QuickBuds Log (raw)"
+            val tabName = listOf("human-readable", "detailed", "raw hex")[mode]
+            val label = "QuickBuds Log ($tabName)"
             cm.setPrimaryClip(ClipData.newPlainText(label, body))
-            val tabName = if (isHumanTab) "human-readable" else "raw hex"
             Toast.makeText(
                 this,
                 "Copied ${body.count { it == '\n' }} lines ($tabName)",
@@ -204,17 +205,10 @@ class DevToolsActivity : Activity() {
         handler.removeCallbacks(refreshTask)
     }
 
-    private fun switchToHumanTab() {
-        isHumanTab = true
+    private fun switchTo(m: Int) {
+        mode = m
         lastLineCount = -1
-        tabs.selected = 0
-        refreshLog()
-    }
-
-    private fun switchToRawTab() {
-        isHumanTab = false
-        lastLineCount = -1
-        tabs.selected = 1
+        tabs.selected = m
         refreshLog()
     }
 
@@ -231,7 +225,7 @@ class DevToolsActivity : Activity() {
      * first rather than silently writing into a hex view.
      */
     private fun showInLog(message: String) {
-        if (!isHumanTab) switchToHumanTab()
+        if (!isHumanTab) switchTo(0)
         logText.append("\n[dev] $message\n")
         lastLineCount = PacketLogger.getLines().size
         scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
@@ -246,25 +240,31 @@ class DevToolsActivity : Activity() {
         // Follow only if the user is already at the bottom.
         val wasAtBottom = !scroll.canScrollVertically(1)
 
-        val sb = StringBuilder()
-        for (line in lines) {
-            val decoded = LogDecoder.decode(line)
-            val display: String
-            if (isHumanTab) {
-                // Human-readable: timestamp + direction + description
-                val dirMarker = when (decoded.direction) {
-                    LogDecoder.Direction.TX -> "\u2192 TX${if (decoded.label != null) "[${decoded.label}]" else ""} "
-                    LogDecoder.Direction.RX -> "\u2190 RX${if (decoded.label != null) "[${decoded.label}]" else ""} "
-                    LogDecoder.Direction.STATUS -> ""
-                }
-                display = "${LogDecoder.displayTime(decoded.rawTimestamp)}  $dirMarker${decoded.description}"
-            } else {
-                // Raw: show the original line as-is
-                display = line
-            }
-            sb.append(display).append("\n")
+        val sb = android.text.SpannableStringBuilder()
+        val p = ThemeRes.palette(this)
+        val amber = 0xFFE8A93A.toInt()
+        fun add(text: String, color: Int, bold: Boolean = false) {
+            val start = sb.length
+            sb.append(text)
+            sb.setSpan(ForegroundColorSpan(color), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            if (bold) sb.setSpan(android.text.style.StyleSpan(Typeface.BOLD), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-        logText.text = accentDirections(sb)
+        for (line in lines) {
+            if (mode == 2) { sb.append(line).append("\n"); continue }
+            val d = LogDecoder.decode(line)
+            add(LogDecoder.displayTime(d.rawTimestamp) + "  ", p.textSecondary)
+            when (d.direction) {
+                LogDecoder.Direction.TX -> add("\u2192 TX ", p.accent, true)
+                LogDecoder.Direction.RX -> add("\u2190 RX ", p.text, true)
+                LogDecoder.Direction.STATUS -> {}
+            }
+            val text = if (d.label != null) "[${d.label}] ${d.description}" else d.description
+            add(text, if (d.unknown) amber else if (d.direction == LogDecoder.Direction.STATUS) p.textSecondary else p.text)
+            sb.append("\n")
+            // Unknown packets always show their payload; the detailed tab shows it for every packet.
+            if (d.detail != null && (d.unknown || mode == 1)) add("           ${d.detail}\n", if (d.unknown) amber else p.textSecondary)
+        }
+        logText.text = sb
         if (wasAtBottom) {
             scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
         }
@@ -338,15 +338,5 @@ class DevToolsActivity : Activity() {
         }
         File(dir, name).writeText(content)
         return "${dir.absolutePath}/$name"
-    }
-
-    /** TX / RX markers in the accent colour, so the two directions read apart at a glance. */
-    private fun accentDirections(text: CharSequence): SpannableString {
-        val out = SpannableString(text)
-        val accent = ThemeRes.color(this, R.attr.appColorAccent)
-        for (m in DIRECTION.findAll(text)) {
-            out.setSpan(ForegroundColorSpan(accent), m.range.first, m.range.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-        return out
     }
 }

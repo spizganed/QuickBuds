@@ -313,7 +313,6 @@
     <string name="widget_mode_anc_smart">ANC อัจฉริยะ</string>
     <string name="widget_low_latency">เวลาแฝงต่ำ</string>
     <string name="widget_battery_name">QuickBuds แบตเตอรี่</string>
-    <string name="widget_large_name">QuickBuds ใหญ่</string>
     <string name="settings_language_title">ภาษา</string>
     <string name="settings_language_sub">ภาษาของแอป</string>
     <string name="language_system">ค่าเริ่มต้นของระบบ</string>

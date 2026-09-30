@@ -319,9 +319,9 @@ object ThemeRes {
         }
     }
 
-    fun card(context: Context, radiusDp: Float = 24f, fill: Int? = null, solid: Boolean = false, topOnly: Boolean = false): Drawable {
+    fun card(context: Context, radiusDp: Float = 24f, fill: Int? = null, solid: Boolean = false, topOnly: Boolean = false, base: Int? = null): Drawable {
         val p = palette(context)
-        if (nothing(context)) return DotArt.Box(context, fill ?: p.card, p.outline, radiusDp, topOnly, solid)
+        if (nothing(context)) return DotArt.Box(context, fill ?: p.card, p.outline, radiusDp, topOnly, solid, base)
         return shape(context, fill ?: p.card, p.outline, radiusDp).apply {
             if (topOnly) { val r = dp(context, radiusDp).toFloat(); cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f) }
         }
@@ -358,7 +358,7 @@ object ThemeRes {
     }
 
     /** Bottom sheet window: rounded top corners only. */
-    fun sheet(context: Context): Drawable = card(context, 20f, topOnly = true)
+    fun sheet(context: Context): Drawable = card(context, 20f, topOnly = true, base = palette(context).background)
 
 
     /** Thumb / track tint lists for a platform Switch (SPEC section 1, derived colours). */
