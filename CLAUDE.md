@@ -66,8 +66,8 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
   `lintVital*`. **Phone APK: `~/qb-build/_app/outputs/apk/release/app-release.apk`.** The daemon's
   "Unable to set daemon's environment variables" warning is harmless.
 - `core.filemode` is false; git keeps `gradlew` at 755. SDK shell scripts need `java -jar`.
-- **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, mirrored to the PC with scrcpy (RDP
-  as fallback); started by `~/.shortcuts/desktop-ssh`, which also runs `~/.local/bin/scrcpy-ready`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
+- **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, mirrored to the PC with scrcpy
+  (RDP was dropped: ~15 fps); started by `~/.shortcuts/desktop-ssh`, which also runs `~/.local/bin/scrcpy-ready`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
   --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`) and runs with `DISPLAY=:0
   QB_BRIDGE=127.0.0.1:7979`. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
   proot ones: proot is too slow for a browser.

@@ -177,16 +177,12 @@ Start a build over SSH and it keeps going on the phone. The PC only shows the ou
 ## 8. A Linux desktop on the phone, and the desktop app
 
 Termux's x11 repository has a whole desktop, native: `pkg install plasma-desktop kwin-x11 konsole
-dolphin xrdp pulseaudio termux-x11-nightly` plus the Termux:X11 app. Plasma runs on the Termux:X11
-display (`termux-x11 :0 -xstartup <script that runs dbus-launch startplasma-x11>`), and the same desktop
-is shared to Windows Remote Desktop with `x0vncserver -display :0 -localhost=1 -rfbport 5901` behind
-`xrdp` (listening on `tcp://127.0.0.1:3389`, its `[Xvnc]` session pointed at port 5901). From the PC:
-`ssh -p 8022 -L 3390:localhost:3389 <phone>`, then `mstsc` to `localhost:3390`. xrdp's own password
-login does not work in Termux, so the VNC password is the login. Every Termux tool (Gradle, adb, git)
-works in its Konsole.
+dolphin pulseaudio termux-x11-nightly` plus the Termux:X11 app. Plasma runs on the Termux:X11 display
+(`termux-x11 :0 -xstartup <script that runs dbus-launch startplasma-x11>`). Every Termux tool (Gradle,
+adb, git) works in its terminal.
 
-RDP tops out around 15 fps: the screen is captured in software and passed through VNC. For a smooth
-picture, mirror the phone screen itself with [scrcpy](https://github.com/Genymobile/scrcpy) (portable
+To use it from a PC, don't use RDP or VNC: they capture the screen in software and top out around
+15 fps. Mirror the phone screen itself with [scrcpy](https://github.com/Genymobile/scrcpy) (portable
 on Windows), which uses the phone's hardware video encoder. Run the Termux:X11 desktop fullscreen at
 1920x1080 (`termux-x11-preference fullscreen:true showAdditionalKbd:false
 displayResolutionMode:custom displayResolutionCustom:1920x1080`), switch adb to a fixed port once per
