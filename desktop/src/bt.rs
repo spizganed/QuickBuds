@@ -1,4 +1,10 @@
 //! RFCOMM link to the buds. Windows: Winsock Bluetooth, built into Windows (no driver, no service).
+//! Dev: `QB_BRIDGE=127.0.0.1:7979` uses the Android app's RFCOMM bridge (Dev tools › Bridge) instead,
+//! for running this app on the phone itself. It connects on a user Connect only.
+
+use std::io::{ErrorKind, Read, Write};
+use std::net::TcpStream;
+use std::time::Duration;
 
 /// 079A first: the one Buds 4 answers. 1107 for other models.
 const SPP_UUIDS: [u128; 2] = [
@@ -11,6 +17,51 @@ pub struct Device {
     pub name: String,
     /// Windows has an ACL link to it (audio connected).
     pub connected: bool,
+}
+
+pub enum Link {
+    Bt(imp::Link),
+    Bridge(TcpStream),
+}
+
+impl Link {
+    /// Ok(0) on timeout (50 ms), Err when the link is gone.
+    pub fn read(&mut self, buf: &mut [u8]) -> Result<usize, String> {
+        match self {
+            Link::Bt(l) => l.read(buf),
+            Link::Bridge(s) => match s.read(buf) {
+                Ok(0) => Err("bridge closed".into()),
+                Ok(n) => Ok(n),
+                Err(e) if matches!(e.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => Ok(0),
+                Err(e) => Err(format!("bridge: {e}")),
+            },
+        }
+    }
+
+    pub fn write(&mut self, data: &[u8]) -> Result<(), String> {
+        match self {
+            Link::Bt(l) => l.write(data),
+            Link::Bridge(s) => s.write_all(data).map_err(|e| format!("bridge: {e}")),
+        }
+    }
+}
+
+fn bridge() -> Option<String> { std::env::var("QB_BRIDGE").ok() }
+
+/// Devices paired with the system; with `QB_BRIDGE`, only the bridge.
+pub fn paired() -> Vec<Device> {
+    match bridge() {
+        Some(a) => vec![Device { addr: 0, name: format!("Bridge {a}"), connected: true }],
+        None => imp::paired(),
+    }
+}
+
+pub fn connect(addr: u64) -> Result<Link, String> {
+    let Some(a) = bridge() else { return imp::connect(addr).map(Link::Bt) };
+    let s = TcpStream::connect(&a).map_err(|e| format!("bridge {a}: {e}"))?;
+    s.set_read_timeout(Some(Duration::from_millis(50))).map_err(|e| e.to_string())?;
+    s.set_nodelay(true).map_err(|e| e.to_string())?;
+    Ok(Link::Bridge(s))
 }
 
 #[cfg(windows)]
@@ -117,7 +168,5 @@ mod imp {
         pub fn write(&mut self, _: &[u8]) -> Result<(), String> { Err("unsupported".into()) }
     }
     pub fn paired() -> Vec<Device> { Vec::new() }
-    pub fn connect(_: u64) -> Result<Link, String> { Err("Linux is not supported yet".into()) }
+    pub fn connect(_: u64) -> Result<Link, String> { Err("Linux is not supported yet (QB_BRIDGE works)".into()) }
 }
-
-pub use imp::*;

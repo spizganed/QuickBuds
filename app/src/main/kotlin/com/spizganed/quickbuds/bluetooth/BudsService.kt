@@ -103,6 +103,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 // disconnect() also runs after a failed connect attempt.
                 BudsDevice.find(this)?.let { manager?.setPhoneAudio(it, on = false) }
             }
+            ACTION_TOGGLE_BRIDGE -> manager?.setBridge(!RfcommBridge.running)
             ACTION_WIDGET_COMMAND -> {
                 val widgetAction = intent.getStringExtra(EXTRA_WIDGET_ACTION)
                 val ancMode = intent.getStringExtra(EXTRA_WIDGET_ANC_MODE)
@@ -258,6 +259,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         // Close the RFCOMM link with the service: with the background service switched off,
         // leaving the app stops the service, and a live socket must not outlive it.
         try { manager?.disconnect() } catch (_: Exception) {}
+        try { manager?.setBridge(false) } catch (_: Exception) {}
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}
         super.onDestroy()
@@ -384,6 +386,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         /** On FORCE_CONNECT: true when the user asked (pill), so phone audio is brought up too. */
         const val EXTRA_WITH_AUDIO = "with_audio"
         const val ACTION_FORCE_DISCONNECT = "com.spizganed.quickbuds.FORCE_DISCONNECT"
+        /** Dev tools › Bridge on/off ([RfcommBridge]). */
+        const val ACTION_TOGGLE_BRIDGE = "com.spizganed.quickbuds.TOGGLE_BRIDGE"
         const val ACTION_WIDGET_COMMAND = "com.spizganed.quickbuds.WIDGET_COMMAND"
         const val EXTRA_WIDGET_ACTION = "widget_action"
         const val EXTRA_WIDGET_ANC_MODE = "widget_anc_mode"

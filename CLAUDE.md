@@ -230,7 +230,7 @@ A change recreates open screens (part of the activity signature).
 - **Dev Tools:** packet log (Human / Detailed / Raw; Human puts every packet the decoder does not name on
   an amber line with its payload, Detailed adds the payload line to all; the framer's discarded bytes are logged
   as `DISCARDED RX`; long press copies), Clear, Export (`Download/QuickBuds/`),
-  Reconnect, Disconnect, Crash test. Labels stay English-only. The crash report shows as a sheet (Copy, Share; tap outside to dismiss). The crash handler is installed in
+  Reconnect, Disconnect, Bridge (see Desktop), Crash test. Labels stay English-only. The crash report shows as a sheet (Copy, Share; tap outside to dismiss). The crash handler is installed in
   `QuickBudsApp.attachBaseContext` (`Download/QuickBuds/`).
 
 ### Main screen
@@ -299,6 +299,10 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
 - **Software renderer** (set in `main`): ~25 MB RAM against ~130 MB with the GPU one. `SLINT_BACKEND`
   overrides it.
 - The quick panel (tray right-click) hides when it loses focus; closing the main window hides it, Quit exits.
+- **RFCOMM bridge (dev):** Dev tools › Bridge makes the Android app (`RfcommBridge`) pass raw RFCOMM bytes to
+  one TCP client on `127.0.0.1:7979` (loopback only, off by default, not persisted). `QB_BRIDGE=127.0.0.1:7979`
+  makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.
+  It is for the Linux build in the phone's Ubuntu proot, which has no Bluetooth; it does not test BlueZ.
 - **Distribution `[USER]`:** `.exe` installer and portable `.zip`, just the app: no drivers, no
   services, no helper or background processes. Release tags `desktop-v<version>`, built by CI.
 

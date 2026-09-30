@@ -366,8 +366,26 @@ class BudsConnectionManager(private val context: Context) {
         connectedThread?.cancel()
         connectedThread = null
         bluetoothSocket = null
+        bridge?.dropClient()
         handler.post { listeners.forEach { it.onConnected(false) } }
         log("Disconnected")
+    }
+
+    private var bridge: RfcommBridge? = null
+
+    /** Dev tools › Bridge ([RfcommBridge]). False when the port is taken. */
+    fun setBridge(on: Boolean): Boolean {
+        bridge?.stop()
+        bridge = null
+        if (!on) { log("Bridge off"); return true }
+        return try {
+            bridge = RfcommBridge { sendRawBlocking(it, "bridge") }
+            log("Bridge on 127.0.0.1:${RfcommBridge.PORT}")
+            true
+        } catch (e: IOException) {
+            log("Bridge failed: ${e.message}")
+            false
+        }
     }
 
     /**
@@ -963,6 +981,7 @@ class BudsConnectionManager(private val context: Context) {
                     // Target 37+: a dropped RFCOMM link returns -1 instead of throwing.
                     if (bytes < 0) throw IOException("stream closed")
                     if (bytes > 0) {
+                        bridge?.forward(buffer, bytes)
                         val frames = framer.append(buffer, bytes)
                         for (frame in frames) {
                             handlePacket(frame)

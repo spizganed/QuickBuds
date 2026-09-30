@@ -28,6 +28,7 @@ import android.widget.Toast
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
+import com.spizganed.quickbuds.bluetooth.RfcommBridge
 import com.spizganed.quickbuds.protocol.LogDecoder
 import java.io.File
 import java.text.SimpleDateFormat
@@ -41,7 +42,7 @@ import java.util.Locale
  *   - Human-readable: decoded packet descriptions (e.g. "L=EAR R=OUT Case=CASE", "ANC -> Deep")
  *   - Raw hex: the original timestamped log lines as written to packets.log
  *
- * Also provides Clear / Export of the log, Reconnect / Disconnect and the crash logger test.
+ * Also provides Clear / Export of the log, Reconnect / Disconnect, the RFCOMM bridge and the crash logger test.
  * The layout, screenshot and widget reports were removed 2026-09-27: adb covers them.
  */
 class DevToolsActivity : Activity() {
@@ -111,6 +112,12 @@ class DevToolsActivity : Activity() {
         actions.addView(action(R.drawable.ic_power, "Disconnect") {
             startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FORCE_DISCONNECT))
             showInLog("disconnect requested (FORCE_DISCONNECT)")
+        })
+        // Raw RFCOMM on 127.0.0.1 for the desktop app running on this phone (RfcommBridge).
+        actions.addView(action(R.drawable.ic_devices, "Bridge") {
+            startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_TOGGLE_BRIDGE))
+            showInLog(if (RfcommBridge.running) "bridge off requested"
+                else "bridge on requested: QB_BRIDGE=127.0.0.1:${RfcommBridge.PORT}")
         })
         // Proves the crash logger catches a crash before any app logic: arms a throw at the
         // very start of the next launch (QuickBudsApp.attachBaseContext), then closes the app.
