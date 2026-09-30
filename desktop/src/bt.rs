@@ -7,6 +7,7 @@ use std::net::TcpStream;
 use std::time::Duration;
 
 /// 079A first: the one Buds 4 answers. 1107 for other models.
+#[cfg(windows)]
 const SPP_UUIDS: [u128; 2] = [
     0x0000079A_D102_11E1_9B23_00025B00A5A5,
     0x00001107_D102_11E1_9B23_00025B00A5A5,

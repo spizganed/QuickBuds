@@ -174,6 +174,26 @@ Start a build over SSH and it keeps going on the phone. The PC only shows the ou
 `pkg install x11-repo && pkg install wireshark-qt`. The Bluetooth HCI log is pulled with
 `adb bugreport` as in [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) and read in Termux, no PC needed.
 
+## 8. A Linux desktop on the phone, and the desktop app
+
+Termux's x11 repository has a whole desktop, native: `pkg install plasma-desktop kwin-x11 konsole
+dolphin xrdp pulseaudio termux-x11-nightly` plus the Termux:X11 app. Plasma runs on the Termux:X11
+display (`termux-x11 :0 -xstartup <script that runs dbus-launch startplasma-x11>`), and the same desktop
+is shared to Windows Remote Desktop with `x0vncserver -display :0 -localhost=1 -rfbport 5901` behind
+`xrdp` (listening on `tcp://127.0.0.1:3389`, its `[Xvnc]` session pointed at port 5901). From the PC:
+`ssh -p 8022 -L 3390:localhost:3389 <phone>`, then `mstsc` to `localhost:3390`. xrdp's own password
+login does not work in Termux, so the VNC password is the login. Every Termux tool (Gradle, adb, git)
+works in its Konsole. Plasma's power manager calls `termux-brightness`, which needs a permission and
+would dim the real screen: hide its autostart entry.
+
+The desktop app needs a normal (glibc) Linux, so it builds in an Ubuntu proot:
+`proot-distro install ubuntu`, then in it `build-essential pkg-config libfontconfig1-dev
+libfreetype-dev libxkbcommon-dev libxkbcommon-x11-0 libx11-dev libgtk-3-dev libxdo-dev
+libayatana-appindicator3-dev` and rustup. `cargo build` in `desktop/` takes about 8 minutes the first
+time. Run it with `proot-distro login ubuntu --shared-tmp -- env DISPLAY=:0 QB_BRIDGE=127.0.0.1:7979
+<binary>`: proot has no Bluetooth, so it talks to the buds through the Android app's Dev tools ›
+Bridge.
+
 ## Gotchas
 
 - Never commit the aapt2 override or the init script to the repo: a PC build breaks on it.

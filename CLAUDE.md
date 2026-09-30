@@ -66,6 +66,11 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
   `lintVital*`. **Phone APK: `~/qb-build/_app/outputs/apk/release/app-release.apk`.** The daemon's
   "Unable to set daemon's environment variables" warning is harmless.
 - `core.filemode` is false; git keeps `gradlew` at 755. SDK shell scripts need `java -jar`.
+- **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, shared to RDP; started by
+  `~/.shortcuts/desktop-ssh`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
+  --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`) and runs with `DISPLAY=:0
+  QB_BRIDGE=127.0.0.1:7979`. Chromium browsers there run only as a normal user with `--no-sandbox
+  --no-zygote --disable-gpu` (`~/.local/bin/brave`).
 - **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0`
   after every test); launch with `am start -n`, never `monkey`. Bring Termux to the front when done,
   except over SSH. The user-level Stop hook does this unless `$SSH_CONNECTION` is set.
