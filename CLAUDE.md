@@ -35,7 +35,7 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
 - **Device testing always uses `./gradlew assembleRelease`** `[USER]`, never the debug APK (signature
   clash; switching needs an uninstall). Install with `adb install -r`. Use `adb logcat` for what in-app
   logs miss.
-- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 19 / 3.9.0).
+- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 20 / 3.9.1).
   Android ignores them on `<application>`. Verify with `aapt2 dump badging <apk>`.
 - `local.properties` (`sdk.dir=...`) is git-ignored.
 - PC: `export JAVA_HOME=$(ls -d ~/.jdks/jbr-21* | head -1)` first. Output in `app/build/outputs/`.
@@ -195,6 +195,14 @@ A change recreates open screens (part of the activity signature).
 - Confirm dialogs go through `ConfirmDialog.show()`.
 - **Selection is an outline, never a checkmark** `[USER]`: `ThemeRes.selectedBorder()` as the row's or
   tile's foreground (dots in the dot style). `ic_check` stays only on Done buttons.
+- **Motion helpers** `[USER]` (reuse, do not write new animators): `Motion.slide(view, open)` grows or folds a view
+  (height, alpha and the card gap; a shut view ends GONE); `SelectionSlider(host, key?)` is the selected-row outline as
+  one overlay that slides between rows (and across a recreate with a `key`; call `moveTo` after each render);
+  `ThemeRes.recreateFaded(activity)` is `recreate()` with a cross-fade (`QuickBudsApp` fades the new screen in);
+  `ThemeRes.sinkOnPress(view)` is the press-down effect for buttons (pair it with `Haptics.commit`).
+- **Lists you pick from** are split: `SettingRowFactory.splitList` + `addSplit` (one 16dp card per row, 8dp gap).
+  Screens with such lists keep their row views and update them in place (see `EqActivity.Choice`); a preset just
+  sent to create shows as a dimmed placeholder row that the real one adopts.
 - **Compact sizing** `[USER]`: ~10-15% under SPEC so home fits without scrolling (rows 62dp, rings 90dp,
   segments 56dp, padding 16dp, gaps 12dp); touch targets stay ≥ 44dp.
 - No Material Components `[USER]`.
