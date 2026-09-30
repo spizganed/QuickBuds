@@ -23,10 +23,20 @@ finished (ROADMAP-DONE.md).
    Window like accessory software plus a tray (battery on hover, right-click quick panel with ANC,
    low latency and more). Every mobile feature that makes sense on a PC. Shipped as an `.exe`
    installer and a portable `.zip`: no drivers, no services, no helper processes `[USER]`.
-   Done: the updater skips desktop releases; Windows MVP: window + tray quick panel with battery, wear,
-   ANC (modes and levels from `models.json`) and low latency, strings in all locales.
-   **Next:** Linux (BlueZ, VM being set up), installer + portable zip in CI, then feature screens in
-   home-row order (Hi-Res, 3D audio, hearing profile, EQ, dual connection, earbud settings).
+   Done: the updater skips desktop releases; Windows: frameless window with our own title bar, sidebar +
+   Overview (battery, noise control, low latency), Equalizer page (presets, band editor, Bass boost), tray
+   quick panel, APK launcher icon. English only for now `[USER]`.
+   **Next, in order** (`[USER]` 2026-09-30):
+   1. **Noise control like the phone and the widget** `[USER]`: no separate level bar under Off / ANC /
+      Adaptive / Transparency. Clicking ANC slides the segments over to Low / Medium / High / Smart, animated
+      (the phone's `AncSegmentedView` level picker); same in the tray panel.
+   2. **Dev tools** `[USER]` asap: the phone's Dev Tools equivalent (packet log Human / Detailed / Raw,
+      Clear, Export, Reconnect, Disconnect).
+   3. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit
+      the desktop layout.
+   4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
+      settings, App settings).
+   5. Linux (BlueZ) in the VM; installer + portable zip in CI.
 
 ## Open
 
