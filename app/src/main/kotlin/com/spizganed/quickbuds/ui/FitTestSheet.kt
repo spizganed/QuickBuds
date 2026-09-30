@@ -26,13 +26,15 @@ class FitTestSheet(private val activity: Activity, private val send: (Boolean) -
     private var started = false
     private lateinit var leftLabel: TextView
     private lateinit var rightLabel: TextView
+    /** The left / right results; hidden until a test gives some. */
+    private lateinit var results: LinearLayout
 
     private fun s(res: Int) = activity.getString(res)
 
     fun show() {
         sheet.title(s(R.string.fit_title))
             .message(s(R.string.fit_hint))
-            .content(buds())
+            .content(buds().also { results = it; it.visibility = android.view.View.GONE })
             .confirm(s(R.string.fit_play)) { play() }
             .onDismiss {
                 handler.removeCallbacks(timeout)
@@ -75,8 +77,7 @@ class FitTestSheet(private val activity: Activity, private val send: (Boolean) -
         }
         running = true
         started = true
-        paint(leftLabel, R.string.gesture_bud_left, -1)
-        paint(rightLabel, R.string.gesture_bud_right, -1)
+        results.visibility = android.view.View.GONE
         sheet.title(s(R.string.fit_keep)).message(null).confirm(s(R.string.fit_playing)) {}
         send(true)
         handler.postDelayed(timeout, 15_000)
@@ -89,6 +90,7 @@ class FitTestSheet(private val activity: Activity, private val send: (Boolean) -
         handler.removeCallbacks(timeout)
         val ok = setOf(0, 1, 6)
         if (left !in ok || right !in ok) { fail(); return }
+        results.visibility = android.view.View.VISIBLE
         paint(leftLabel, R.string.gesture_bud_left, left)
         paint(rightLabel, R.string.gesture_bud_right, right)
         if (left == 1 && right == 1) {
