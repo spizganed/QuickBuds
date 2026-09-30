@@ -32,7 +32,6 @@ object WidgetSettings {
     private const val KEY_LIST_AT = "widgetListAt_"
     private const val KEY_PAGE = "widgetPage_"
     private const val KEY_CHILD = "widgetChild_"
-    private const val KEY_LARGE = "widgetLarge_"
 
     private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -71,17 +70,10 @@ object WidgetSettings {
         prefs(c).edit().apply { if (child == null) remove(KEY_CHILD + id) else putInt(KEY_CHILD + id, child) }.apply()
     }
 
-    /** Records whether widget [id] draws the scaled layout; true when that changed (its flippers start over). */
-    fun setLarge(c: Context, id: Int, large: Boolean): Boolean {
-        val changed = prefs(c).getBoolean(KEY_LARGE + id, false) != large
-        if (changed) prefs(c).edit().putBoolean(KEY_LARGE + id, large).apply()
-        return changed
-    }
-
     /** Drops everything stored for widget [id] (removed from the home screen). */
     fun forget(c: Context, id: Int) {
         prefs(c).edit().apply {
-            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_LARGE)) remove(k + id)
+            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD)) remove(k + id)
         }.apply()
     }
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# Generates the three widget page layouts (2x2 widget_pages, 4x2 widget_pages_m, 3x3 widget_pages_l) as one
-# family. The 3x3 is the 2x2 layout, scaled up ([USER] 2026-09-27). Edit here, run `python3 scripts/widget-layouts.py` from the repo root, commit the XML with it.
-# Also the level picker grids (widget_grid for 2x2 / 4x2, widget_grid_l for 3x3) and widget_disconnected.
+# Generates the two widget page layouts (2x2 widget_pages, 4x2 widget_pages_m) as one
+# family. Edit here, run `python3 scripts/widget-layouts.py` from the repo root, commit the XML with it.
+# Also the level picker grids (widget_grid) and widget_disconnected.
 # Classic and Nothing share one structure ([USER] 2026-09-28); they differ in fonts, spacing (GEO) and, at runtime, boxes.
-import os, re
+import os
 RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "src", "main", "res", "layout") + os.sep
 IMG = 'android:scaleType="fitXY" android:importantForAccessibility="no"'
 # Every clickable view gets it: pushed down while held (res/animator/widget_press.xml).
@@ -60,6 +60,7 @@ def panel(side, first, pct, label, fit=True, last=False):
                  if N else 'android:padding="4dp"')
     return f'''<FrameLayout android:id="@+id/w_panel_{side}" android:layout_width="0dp" android:layout_height="{h}" android:layout_weight="1" {m}>
 {img(f"w_panel_{side}_bg")}
+{img(f"w_panel_{side}_stroke", "widget_panel_stroke")}
 <LinearLayout android:layout_width="match_parent" android:layout_height="{h}" android:orientation="vertical" android:gravity="center" {inner_pad}>
 <ImageView android:id="@+id/w_ring_{side}" {ring} android:importantForAccessibility="no" />
 {text(f"w_pct_{side}", pct, True, f'android:layout_marginTop="{g("pm") if fit else 5 if N else 2}dp" ')}
@@ -79,6 +80,7 @@ def case_bar(sp):
     icon_box = 'android:layout_width="wrap_content" android:layout_height="match_parent" android:adjustViewBounds="true"'
     return f'''<FrameLayout android:id="@+id/w_bar" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="{gap()}" android:paddingTop="{side}dp" android:paddingBottom="{side}dp">
 {img("w_bar_bg")}
+{img("w_bar_stroke", "widget_panel_stroke")}
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="{side}dp" android:paddingEnd="{side}dp">
 <ImageView android:id="@+id/w_case_icon" {icon_box} android:src="@drawable/ic_case" android:scaleType="fitCenter" android:importantForAccessibility="no" />
 {bar}
@@ -97,7 +99,7 @@ def battery(size):
 {panels}
 </LinearLayout>
 </FrameLayout>'''
-    # 2x2 (the 3x3 is it scaled): the rings at the top, the case row takes the rest (case_bar). QuickBudsWidget.caseRowDp
+    # 2x2: the rings at the top, the case row takes the rest (case_bar). QuickBudsWidget.caseRowDp
     # counts every padding and text here (pct 17 / 16sp, Classic's wear label 11.5sp).
     panels = "\n".join([panel("left", True, 17 if N else 16, 11.5), panel("right", False, 17 if N else 16, 11.5)])
     bottom = case_bar(17 if N else 16)
@@ -183,19 +185,12 @@ def disconnected():
 </FrameLayout>
 '''
 
-# The 3x3 is the 2x2 scaled by K, every dp and sp ([USER] 2026-09-28: literally the same, scaled up). 257.5 / 164.6dp,
-# the two widgets' sizes on the Nothing launcher; QuickBudsWidget.LARGE_SCALE is the same number, keep them equal.
-K = 1.5645
-def scaled(xml):
-    return re.sub(r'(-?\d+(?:\.\d+)?)(dp|sp)"', lambda m: f'{round(float(m.group(1)) * K, 2):g}{m.group(2)}"', xml)
-
-TITLE = {"s": "2x2", "m": "4x2", "l": "3x3"}
+TITLE = {"s": "2x2", "m": "4x2"}
 for N in (False, True):
     sfx = "_n" if N else ""
     open(RES + f"widget_grid{sfx}.xml", "w").write(grid(26, 12.5))
-    open(RES + f"widget_grid_l{sfx}.xml", "w").write(scaled(grid(26, 12.5)))
     open(RES + f"widget_disconnected{sfx}.xml", "w").write(disconnected())
-    for size, name in (("s", "widget_pages"), ("m", "widget_pages_m"), ("l", "widget_pages_l")):
+    for size, name in (("s", "widget_pages"), ("m", "widget_pages_m")):
         out = f'''<?xml version="1.0" encoding="utf-8"?>
 <!-- {TITLE[size]} widget (design/widgets/WIDGETS.md 3). Generated as one family with the other sizes. Outer ViewFlipper
      w_pages: w_content, then the mode list w_page2. Inside w_content, one ViewFlipper per page, each an empty
@@ -217,14 +212,11 @@ for N in (False, True):
 </ViewFlipper>
 </FrameLayout>
 <FrameLayout android:id="@+id/w_page2" android:layout_width="match_parent" android:layout_height="match_parent" {page_pad()}>
-<include layout="@layout/{"widget_grid_l" if size == "l" else "widget_grid"}{sfx}" />
+<include layout="@layout/widget_grid{sfx}" />
 </FrameLayout>
 </ViewFlipper>
 </FrameLayout>
 '''
         out = "\n".join(l.replace("  />", " />").replace(" >", ">") if l.startswith("<") else l for l in out.split("\n"))
-        if size == "s": small = out
-        if size == "l":
-            out = scaled(small).replace("<!-- 2x2 widget", f"<!-- 3x3 widget: the 2x2 scaled by {K}").replace(f"@layout/widget_grid{sfx}\"", f"@layout/widget_grid_l{sfx}\"")
         open(RES + name + sfx + ".xml", "w").write(out)
 print("ok")

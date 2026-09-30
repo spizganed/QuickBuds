@@ -32,7 +32,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * has its own picker entry and cell size, and the old class names keep placed widgets alive:
  *
  *  - [BatteryWidgetProvider] 2x2
- *    (resizable: from about 3 cells wide it draws the 2x2 layout scaled up, [Kind.LARGE], [LARGE_MIN_DP])
+ *    (fixed size)
  *  - [AncWidgetProvider]     4x2 (was 3x2), three battery panels in a row
  *
  * The 2x2 resizes and just gets bigger ([USER] 2026-09-30, no separate 3x3); the 4x2 is fixed. The 2x2 controls widget (SmallWidgetProvider) is gone.
@@ -52,16 +52,15 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
      * The provider (size). BATTERY and CONTROLS double as the page names ([WidgetSettings.page]);
      * CONTROLS is a page name only since its 2x2 widget was removed.
      */
-    enum class Kind(private val classic: Int, private val nothing: Int, val large: Boolean = false) {
+    enum class Kind(private val classic: Int, private val nothing: Int) {
         BATTERY(R.layout.widget_pages, R.layout.widget_pages_n),
         CONTROLS(R.layout.widget_pages, R.layout.widget_pages_n),
-        COMBINED(R.layout.widget_pages_m, R.layout.widget_pages_m_n),
-        LARGE(R.layout.widget_pages_l, R.layout.widget_pages_l_n, large = true);
+        COMBINED(R.layout.widget_pages_m, R.layout.widget_pages_m_n);
 
         /** The layout for the chosen style ([WidgetSettings.nothingStyle]). */
         fun layout(c: Context) = if (WidgetSettings.nothingStyle(c)) nothing else classic
         val small get() = this == BATTERY || this == CONTROLS
-        /** 2x2 and 3x3: the same layout at two scales. */
+        /** The 2x2 (as opposed to the 4x2). */
         val square get() = this != COMBINED
     }
 
@@ -106,11 +105,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             Btn(R.id.w_q3, R.id.w_q3_bg, R.id.w_q3_stroke, R.id.w_q3_icon, R.id.w_q3_label)
         )
 
-        /** Battery panel ids per slot (0 left, 1 case, 2 right): panel fill, ring, percentage, label. */
+        /** Battery panel ids per slot (0 left, 1 case, 2 right): panel fill, ring, percentage, label, outline. */
         private val PANELS = listOf(
-            intArrayOf(R.id.w_panel_left_bg, R.id.w_ring_left, R.id.w_pct_left, R.id.w_label_left),
-            intArrayOf(R.id.w_panel_case_bg, R.id.w_ring_case, R.id.w_pct_case, R.id.w_label_case),
-            intArrayOf(R.id.w_panel_right_bg, R.id.w_ring_right, R.id.w_pct_right, R.id.w_label_right)
+            intArrayOf(R.id.w_panel_left_bg, R.id.w_ring_left, R.id.w_pct_left, R.id.w_label_left, R.id.w_panel_left_stroke),
+            intArrayOf(R.id.w_panel_case_bg, R.id.w_ring_case, R.id.w_pct_case, R.id.w_label_case, R.id.w_panel_case_stroke),
+            intArrayOf(R.id.w_panel_right_bg, R.id.w_ring_right, R.id.w_pct_right, R.id.w_label_right, R.id.w_panel_right_stroke)
         )
 
         /** Repaints every placed widget of every size: state, palette or settings changed. */
@@ -130,10 +129,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * `w_pages` fades the mode list in and out. Shown child: 0 battery, 1 controls, 2 list.
          */
         private fun update(context: Context, mgr: AppWidgetManager, id: Int, declared: Kind) {
-            // The resizable 2x2 draws the scaled layout once it is wide enough; a layout change resets its flippers.
-            val width = mgr.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-            val kind = if (declared == Kind.BATTERY && width >= LARGE_MIN_DP) Kind.LARGE else declared
-            if (WidgetSettings.setLarge(context, id, kind == Kind.LARGE)) WidgetSettings.setShownChild(context, id, null)
+            val kind = declared
             // A throw here would leave the host showing "Can't load widget" with no trace.
             try {
                 val (v, child) = build(context, WidgetStateStore.read(context), kind, id)
@@ -172,8 +168,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             // a flipper's child animates. The flip side: every state set here must be set both ways
             // (visibility, click), or the previous update's sticks.
             val child = if (list) 2 else if (page == Kind.BATTERY) 0 else 1
-            v.setImageViewResource(R.id.w_bg, bgRes(context, provider.large))
-            v.setInt(R.id.w_bg, "setColorFilter", p.card)
+            v.setImageViewResource(R.id.w_bg, bgRes(context))
+            v.setInt(R.id.w_bg, "setColorFilter", boxColor(p))
             // Every tap on a page carries the other page, so a second tap swaps.
             val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
             val swap = if (!list) other else null
@@ -188,31 +184,44 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /** The widget box: Nothing's own widgets' radius in the Nothing style ([USER] 2026-09-28), else per size. */
-        private fun bgRes(c: Context, large: Boolean) =
-            if (WidgetSettings.nothingStyle(c)) R.drawable.widget_bg_n else if (large) R.drawable.widget_bg_l else R.drawable.widget_bg
+        private fun bgRes(c: Context) =
+            if (WidgetSettings.nothingStyle(c)) R.drawable.widget_bg_n else R.drawable.widget_bg
 
         /** A panel or button inside the box, its corners parallel to the box's in the Nothing style. */
-        private fun panelRes(c: Context, large: Boolean) =
-            if (WidgetSettings.nothingStyle(c)) R.drawable.widget_panel_n else if (large) R.drawable.widget_panel_l else R.drawable.widget_panel
+        private fun panelRes(c: Context) =
+            if (WidgetSettings.nothingStyle(c)) R.drawable.widget_panel_n else R.drawable.widget_panel
+
+        /** The widget box: the card colour, lifted toward the text when the card is near black (OLED Black), or it vanishes on a dark wallpaper. */
+        private fun boxColor(p: Palette) =
+            if (Palette.luminance(p.card) < 0.005) Palette.blend(p.card, p.text, 0.11f) else p.card
 
         /**
          * Battery panel colour: `card` lightened ~4% toward `text` (WIDGETS.md 2). The Nothing style has
          * no boxes: `card` itself, so panels melt into the widget background.
          */
         private fun panelColor(c: Context, p: Palette) =
-            if (WidgetSettings.nothingStyle(c)) p.card else Palette.blend(p.card, p.text, 0.04f)
+            if (WidgetSettings.nothingStyle(c)) Palette.blend(boxColor(p), p.text, 0.07f) else Palette.blend(boxColor(p), p.text, 0.04f)
+
+        /** Dot style: the panel's dashed grey outline, as the buttons have it. Classic draws none, so it is hidden (set both ways). */
+        private fun panelOutline(c: Context, v: RemoteViews, id: Int, p: Palette) {
+            val n = WidgetSettings.nothingStyle(c)
+            v.setViewVisibility(id, if (n) View.VISIBLE else View.GONE)
+            if (!n) return
+            v.setImageViewResource(id, R.drawable.widget_panel_dots_n)
+            v.setInt(id, "setColorFilter", Palette.blend(boxColor(p), p.text, 0.2f))
+        }
 
         /**
          * Classic: selected is an accent fill and stroke, otherwise the panel colour with an `outline` stroke.
-         * Nothing: no box; selected is a dashed accent outline ([USER] 2026-09-30: an outline, not a fill).
+         * Nothing: every button and battery panel has a slightly lighter fill and a dashed grey outline, the selected one an accent one ([USER] 2026-09-30).
          */
-        private fun paint(c: Context, v: RemoteViews, b: Btn, p: Palette, selected: Boolean, large: Boolean) {
+        private fun paint(c: Context, v: RemoteViews, b: Btn, p: Palette, selected: Boolean) {
             val n = WidgetSettings.nothingStyle(c)
-            v.setImageViewResource(b.bg, panelRes(c, large))
+            v.setImageViewResource(b.bg, panelRes(c))
             v.setInt(b.bg, "setColorFilter", if (selected && !n) p.accent else panelColor(c, p))
-            v.setImageViewResource(b.stroke, if (n) (if (selected) R.drawable.widget_panel_select_n else R.drawable.widget_panel_stroke_n)
-                else if (large) R.drawable.widget_panel_stroke_l else R.drawable.widget_panel_stroke)
-            v.setInt(b.stroke, "setColorFilter", if (selected) p.accent else if (n) p.card else p.outline)
+            v.setImageViewResource(b.stroke, if (n) (if (selected) R.drawable.widget_panel_select_n else R.drawable.widget_panel_dots_n)
+                else R.drawable.widget_panel_stroke)
+            v.setInt(b.stroke, "setColorFilter", if (selected) p.accent else if (n) Palette.blend(boxColor(p), p.text, 0.2f) else p.outline)
         }
 
         /** Paints [b] with [icon] and [text]: selected on-accent (Classic fill) or accent (Nothing outline), else secondary. */
@@ -229,9 +238,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
         private fun disconnected(context: Context, p: Palette, kind: Kind): RemoteViews {
             val v = RemoteViews(context.packageName, if (WidgetSettings.nothingStyle(context)) R.layout.widget_disconnected_n else R.layout.widget_disconnected)
-            v.setImageViewResource(R.id.w_bg, bgRes(context, kind.large))
-            v.setInt(R.id.w_bg, "setColorFilter", p.card)
-            paint(context, v, CONN, p, false, kind.large)
+            v.setImageViewResource(R.id.w_bg, bgRes(context))
+            v.setInt(R.id.w_bg, "setColorFilter", boxColor(p))
+            paint(context, v, CONN, p, false)
             content(context, v, CONN, p, false, R.drawable.ic_status_dot_empty, context.getString(R.string.conn_action_connect), 10f, 10f / 5)
             v.setContentDescription(CONN.root, context.getString(R.string.conn_off) + ". " + context.getString(R.string.conn_action_connect))
             v.setOnClickPendingIntent(CONN.root, connectPI(context))
@@ -247,9 +256,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val caseBar = kind.square
             val slots = if (caseBar) listOf(0, 2) else listOf(0, 1, 2)
             for (slot in slots) {
-                val (bgId, ringId, pct, label) = PANELS[slot].toList()
-                v.setImageViewResource(bgId, panelRes(context, kind.large))
+                val (bgId, ringId, pct, label, strokeId) = PANELS[slot].toList()
+                v.setImageViewResource(bgId, panelRes(context))
                 v.setInt(bgId, "setColorFilter", panelColor(context, p))
+                panelOutline(context, v, strokeId, p)
                 v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp))
                 pctText(context, v, pct, p, levels[slot])
                 val inEar = statuses[slot] == 3 || statuses[slot] == 7
@@ -261,8 +271,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 setText(context, v, label, if (inEar && !noLabel) semibold(text) else text, if (inEar) p.text else p.textSecondary)
             }
             if (caseBar) {
-                v.setImageViewResource(R.id.w_bar_bg, panelRes(context, kind.large))
+                v.setImageViewResource(R.id.w_bar_bg, panelRes(context))
                 v.setInt(R.id.w_bar_bg, "setColorFilter", panelColor(context, p))
+                panelOutline(context, v, R.id.w_bar_stroke, p)
                 // The case icon takes all the height the rings leave ([caseRowDp]). Nothing: at the rings' dot pitch,
                 // so the big icon keeps the app's case details (lid cut, LED).
                 val caseDp = caseRowDp(context, kind, id)
@@ -276,14 +287,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /**
-         * The ring size. 2x2 / 3x3: drawn large enough and shrunk to the panel by the layout. 4x2:
+         * The ring size. 2x2: drawn large enough and shrunk to the panel by the layout. 4x2:
          * the largest ring the panel holds at the widget's real size (portrait: min width, max
          * height), so ring and texts fill the panel as one centred group instead of a small ring
          * over a gap.
          */
         private fun ringDp(context: Context, kind: Kind, id: Int): Float {
             // Drawn large enough; the layout shrinks it to the panel's width.
-            if (kind.square) return 96f * scale(kind)
+            if (kind.square) return 96f
             val o = AppWidgetManager.getInstance(context).getAppWidgetOptions(id)
             val w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
             val h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
@@ -373,7 +384,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 val b = QUICK[i]
                 v.setViewVisibility(b.root, if (q.shown) View.VISIBLE else View.INVISIBLE)
                 if (!q.shown) return@forEachIndexed
-                paint(context, v, b, p, q.lit, kind.large)
+                paint(context, v, b, p, q.lit)
                 // Nothing: the bolt on 25 rows keeps its 2-dot lines close to the mode icons' weight; mode icons have their own grid.
                 content(context, v, b, p, q.lit, q.icon, q.label, 25f, 1f)
                 v.setContentDescription(b.root, q.desc)
@@ -401,7 +412,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 v.setViewVisibility(b.root, if (mode == null) View.INVISIBLE else View.VISIBLE)
                 if (mode == null) return@forEachIndexed
                 val selected = mode.key == current.key
-                paint(context, v, b, p, selected, kind.large)
+                paint(context, v, b, p, selected)
                 content(context, v, b, p, selected, mode.icon, when {
                     letters -> context.getString(mode.short).take(1).uppercase()
                     else -> context.getString(mode.short)
@@ -588,22 +599,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          */
         private const val MODE_GRID = 31
 
-        /**
-         * The 3x3 is the 2x2 scaled by this ([USER] 2026-09-28: literally the same, scaled up), in its layout
-         * (scripts/widget-layouts.py K, keep them equal) and in every size computed here. 257.5 / 164.6dp, the 3x3 /
-         * 2x2 widget sizes measured on the Nothing launcher.
-         * ponytail: one launcher's ratio; another launcher's leftover goes to the case row, which fills the height.
-         */
-        private const val LARGE_SCALE = 1.5645f
-
-        /** A 2x2 at least this wide (dp) draws the scaled layout: between the launcher's 2x2 (165) and 3x3 (257). */
-        private const val LARGE_MIN_DP = 210
-
-        /** 1 on the 2x2 (and 4x2), [LARGE_SCALE] on the 3x3. */
-        private fun scale(kind: Kind) = if (kind.large) LARGE_SCALE else 1f
-
-        /** The case bar's dot pitch: [DOT_DP] scaled like the 2x2's percentage text (20 vs 22sp), times [scale]. */
-        private fun dotDp(kind: Kind) = DOT_DP * 20f / 22f * scale(kind)
+        /** The case bar's dot pitch: [DOT_DP] scaled like the 2x2's percentage text (20 vs 22sp). */
+        private fun dotDp(kind: Kind) = DOT_DP * 20f / 22f
 
         /**
          * The Nothing style's glyph shade, which replaces the wear text ([USER] 2026-09-28): in ear `text`, out of
@@ -613,13 +610,13 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         fun nothingTint(p: Palette, isCase: Boolean, status: Int): Int = when {
             isCase || status == 3 || status == 7 -> p.text
             // Almost invisible: 0.3 sat too close to out of ear, 0.12 a touch too dark ([USER] 2026-09-28).
-            status == 4 || status == 0 -> Palette.blend(p.card, p.textSecondary, 0.17f)
+            status == 4 || status == 0 -> Palette.blend(boxColor(p), p.textSecondary, 0.17f)
             // Plain `textSecondary` read too close to white ([USER] 2026-09-28).
-            else -> Palette.blend(p.card, p.textSecondary, 0.65f)
+            else -> Palette.blend(boxColor(p), p.textSecondary, 0.65f)
         }
 
         /** Unlit dots (a ring's or the case bar's empty part): halfway to the secondary text, the outline was too faint. */
-        private fun dim(p: Palette) = Palette.blend(p.card, p.textSecondary, 0.5f)
+        private fun dim(p: Palette) = Palette.blend(boxColor(p), p.textSecondary, 0.5f)
 
         /**
          * An icon: the drawable itself (Classic), or its dot-matrix version (Nothing), [dp] tall on the
@@ -779,63 +776,59 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         /** The height of a battery text as the layout draws it ([pctPaint]), in dp. */
         private fun textDp(context: Context, paint: Paint) = paint.fontMetrics.let { it.descent - it.ascent } / context.resources.displayMetrics.density
 
-        /** 2x2 / 3x3: a battery ring's size in dp, as wide as its panel (in 2x2 dp, then scaled: [LARGE_SCALE]). */
+        /** 2x2: a battery ring's size in dp, as wide as its panel. */
         private fun ringWidthDp(context: Context, kind: Kind, w: Int): Float {
             val g = geo(context)
-            val k = scale(kind)
-            return k * ((w / k - 2 * g.side - g.gap) / 2 - g.outer - g.inner)
+            return (w - 2 * g.side - g.gap) / 2 - g.outer - g.inner
         }
 
         /**
          * The case bar's slot width in dp: the widget's width less everything else in the row (page and row
          * paddings, the case icon and its margin). The level sits inside the bar.
-         * Falls back to 60dp (scaled) when the host gives no size.
+         * Falls back to 60dp when the host gives no size.
          */
         private fun barDp(context: Context, kind: Kind, id: Int, caseDp: Float): Float {
             val w = AppWidgetManager.getInstance(context).getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-            val k = scale(kind)
-            if (w <= 0) return 60f * k
+            if (w <= 0) return 60f
             val g = geo(context)
-            return k * (w / k - 2 * g.side - 2 * g.row - caseDp / k * 496f / 400f - 6f - 2f).coerceAtLeast(20f)
+            return (w - 2 * g.side - 2 * g.row - caseDp * 496f / 400f - 6f - 2f).coerceAtLeast(20f)
         }
 
         /**
-         * 2x2 / 3x3: the case row's content height in dp, all the height the rings leave ([USER] 2026-09-28: only
+         * 2x2: the case row's content height in dp, all the height the rings leave ([USER] 2026-09-28: only
          * paddings between them): page padding, ring panel (paddings, ring, percentage with its margin, Classic's
-         * wear label), gap, case row padding ([Geo]). Falls back to 30dp (scaled) when the host gives no size.
+         * wear label), gap, case row padding ([Geo]). Falls back to 30dp when the host gives no size.
          */
         private fun caseRowDp(context: Context, kind: Kind, id: Int): Float {
             val o = AppWidgetManager.getInstance(context).getAppWidgetOptions(id)
             val w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
             val h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
-            val k = scale(kind)
-            if (w <= 0 || h <= 0) return 30f * k
+            if (w <= 0 || h <= 0) return 30f
             val g = geo(context)
-            // In 2x2 dp (the 3x3 divided by [LARGE_SCALE]), then scaled back.
-            val ring = ringWidthDp(context, kind, w) / k
+            val ring = ringWidthDp(context, kind, w)
             val pct = textDp(context, pctPaint(context, Kind.BATTERY))
             val label = if (WidgetSettings.nothingStyle(context)) 0f else textDp(context, Paint().apply {
                 typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
                 textSize = 11.5f * context.resources.displayMetrics.scaledDensity
             })
-            return k * (h / k - 2 * g.vert - (g.top + ring + g.pm + pct + label + g.bottom) - g.gap - 2 * g.row).coerceIn(20f, 120f)
+            return (h - 2 * g.vert - (g.top + ring + g.pm + pct + label + g.bottom) - g.gap - 2 * g.row).coerceIn(20f, 120f)
         }
 
-        /** Nothing, 2x2 / 3x3: the battery rings' dot pitch in dp ([RING_CELLS] across the ring). */
+        /** Nothing, 2x2: the battery rings' dot pitch in dp ([RING_CELLS] across the ring). */
         private fun ringCellDp(context: Context, kind: Kind, id: Int): Float {
             val w = AppWidgetManager.getInstance(context).getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-            if (w <= 0) return DOT_DP * scale(kind)
+            if (w <= 0) return DOT_DP
             return ringWidthDp(context, kind, w) / RING_CELLS
         }
 
         /**
-         * A percentage as the layout draws it: dot style Doto bold 17sp on the 2x2 (scaled on the 3x3), 20sp on
-         * the 4x2; Classic sans-serif bold 16sp on the 2x2 (scaled on the 3x3).
+         * A percentage as the layout draws it: dot style Doto bold 17sp on the 2x2 20sp on
+         * the 4x2; Classic sans-serif bold 16sp on the 2x2.
          */
         private fun pctPaint(context: Context, kind: Kind) = Paint().apply {
             val nothing = WidgetSettings.nothingStyle(context)
             typeface = android.graphics.Typeface.create(if (nothing) com.spizganed.quickbuds.ui.ThemeRes.dotFont(context) else android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            textSize = (if (kind.square) (if (nothing) 17f else 16f) * scale(kind) else 20f) * context.resources.displayMetrics.scaledDensity
+            textSize = (if (kind.square) (if (nothing) 17f else 16f) else 20f) * context.resources.displayMetrics.scaledDensity
         }
 
         /** 5x7 dot digits for the case bar's percentage ([bar]), rows top to bottom: Doto's own digits, sampled from its 5x7 grid. */

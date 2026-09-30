@@ -5,7 +5,7 @@
 # colors > Style) and leaves it that way; otherwise it only OPENS screens, nothing is toggled.
 # Classic (the default style) goes to docs/screenshots/, Dot matrix to docs/screenshots/dot-matrix/.
 # Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file,
-# widget-<size>-<page> (2x2, 2x2 resized = 3x3, 4x2; battery or controls, whichever page it shows); sizes that
+# widget-<size>-<page> (2x2, 4x2; battery or controls, whichever page it shows); sizes that
 # are not placed are skipped.
 # Usage: scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]
 set -euo pipefail
@@ -130,14 +130,13 @@ ids = lambda n: {e.get("resource-id", "").split("/")[-1] for e in n.iter()}
 for n in ET.parse(sys.argv[1]).iter("node"):
     if not n.get("resource-id", "").endswith(":id/w_root"):
         continue
-    # Only the shown page is in the dump. The 4x2 is the wide one; a 2x2 resized wide is drawn
-    # scaled up, so a square wider than half the screen is named 3x3.
+    # Only the shown page is in the dump. The 4x2 is the wide one.
     have = ids(n)
     l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
     page = "battery" if "w_panel_left" in have else "controls" if "w_q0" in have else None
     if not page:
         continue
-    size = "4x2" if (r - l) > 1.3 * (b - t) else "3x3" if (r - l) > 0.5 * WIDTH else "2x2"
+    size = "4x2" if (r - l) > 1.3 * (b - t) else "2x2"
     print(f"widget-{size}-{page}", l - 16, t - 16, r + 16, b + 16)
 PY
 rm -f "$OUT/.ui.xml"
