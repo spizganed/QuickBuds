@@ -73,7 +73,7 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
   proot ones: proot is too slow for a browser.
 - **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0`
   after every test); launch with `am start -n`, never `monkey`. Bring Termux to the front when done,
-  except over SSH. The user-level Stop hook does this unless `$SSH_CONNECTION` is set.
+  except over SSH.
 
 ## Working with the developer
 
