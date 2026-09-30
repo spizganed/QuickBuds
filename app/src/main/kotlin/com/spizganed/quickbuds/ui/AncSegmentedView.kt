@@ -103,6 +103,16 @@ class AncSegmentedView(
             canvas.drawRoundRect(box, rad, rad, strokePaint.apply { style = Paint.Style.FILL })
             box.inset(pitch, pitch)
             canvas.drawRoundRect(box, rad - pitch, rad - pitch, trackPaint)
+            // The selected segment: an accent outline a cell wide, the track inside ([USER] 2026-09-30: not a fill).
+            if (pos >= 0f) {
+                val inset = dp(4f)
+                val segW = (width - inset * 2) / labels.size
+                box.set(inset + segW * pos, inset, inset + segW * (pos + 1), h - inset)
+                val pr = minOf(dp(18f), box.height() / 2 * 0.85f)
+                canvas.drawRoundRect(box, pr, pr, pillPaint)
+                box.inset(pitch, pitch)
+                canvas.drawRoundRect(box, pr - pitch, pr - pitch, trackPaint)
+            }
             return
         }
         val e = if (nothing) DotArt.pitchPx(context) / 2 else dp(0.5f)
@@ -112,10 +122,10 @@ class AncSegmentedView(
         canvas.drawRoundRect(box, dp(22f), dp(22f), strokePaint)
     }
 
-    /** The sliding fill: solid in both styles, so the icon and label on it stay readable. */
+    /** Classic: the sliding accent fill (the dot style draws an outline in [track]). */
     private fun pill(canvas: Canvas) {
         val h = height.toFloat()
-        if (pos >= 0f) {
+        if (pos >= 0f && !nothing) {
             val inset = dp(4f)
             val left = inset + (width - inset * 2) / labels.size * pos
             box.set(left, inset, left + (width - inset * 2) / labels.size, h - inset)
@@ -143,7 +153,7 @@ class AncSegmentedView(
         labels.forEachIndexed { i, label ->
             // The segment under the moving fill brightens as the fill arrives.
             val closeness = if (pos < 0f) 0f else (1f - kotlin.math.abs(pos - i)).coerceIn(0f, 1f)
-            val c = Palette.blend(p.textSecondary, p.onAccent, closeness)
+            val c = Palette.blend(p.textSecondary, if (nothing) p.accent else p.onAccent, closeness)
             val cx = inset + segW * i + segW / 2
             val dot = dots.getOrNull(i)
             if (dot != null) {

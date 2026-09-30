@@ -221,19 +221,21 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             if (WidgetSettings.nothingStyle(c)) p.card else Palette.blend(p.card, p.text, 0.04f)
 
         /**
-         * Selected: accent fill and stroke. Otherwise the panel colour with an `outline` stroke (Classic)
-         * or no box at all (Nothing).
+         * Classic: selected is an accent fill and stroke, otherwise the panel colour with an `outline` stroke.
+         * Nothing: no box; selected is a dashed accent outline ([USER] 2026-09-30: an outline, not a fill).
          */
         private fun paint(c: Context, v: RemoteViews, b: Btn, p: Palette, selected: Boolean, large: Boolean) {
+            val n = WidgetSettings.nothingStyle(c)
             v.setImageViewResource(b.bg, panelRes(c, large))
-            v.setInt(b.bg, "setColorFilter", if (selected) p.accent else panelColor(c, p))
-            v.setImageViewResource(b.stroke, if (WidgetSettings.nothingStyle(c)) R.drawable.widget_panel_stroke_n else if (large) R.drawable.widget_panel_stroke_l else R.drawable.widget_panel_stroke)
-            v.setInt(b.stroke, "setColorFilter", if (selected) p.accent else if (WidgetSettings.nothingStyle(c)) p.card else p.outline)
+            v.setInt(b.bg, "setColorFilter", if (selected && !n) p.accent else panelColor(c, p))
+            v.setImageViewResource(b.stroke, if (n) (if (selected) R.drawable.widget_panel_select_n else R.drawable.widget_panel_stroke_n)
+                else if (large) R.drawable.widget_panel_stroke_l else R.drawable.widget_panel_stroke)
+            v.setInt(b.stroke, "setColorFilter", if (selected) p.accent else if (n) p.card else p.outline)
         }
 
-        /** Paints [b] with [icon] and [text] in the on-accent or secondary colour. */
+        /** Paints [b] with [icon] and [text]: selected on-accent (Classic fill) or accent (Nothing outline), else secondary. */
         private fun content(context: Context, v: RemoteViews, b: Btn, p: Palette, selected: Boolean, icon: Int, text: CharSequence?, iconDp: Float, pitch: Float = DOT_DP) {
-            val fg = if (selected) p.onAccent else p.textSecondary
+            val fg = if (!selected) p.textSecondary else if (WidgetSettings.nothingStyle(context)) p.accent else p.onAccent
             icon(context, v, b.icon, icon, iconDp, pitch)
             v.setInt(b.icon, "setColorFilter", fg)
             if (text == null) v.setViewVisibility(b.label, View.GONE)
