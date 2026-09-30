@@ -14,7 +14,7 @@ Open an [issue](https://github.com/spizganed/QuickBuds/issues) with:
 3. A log: in the app, Dev tools › **Clear**, try the features, then Dev tools › **Export**. The file
    lands in `Download/QuickBudsLogs/`. Attach it as is.
 
-For anything the app's log does not explain, [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) shows how to
+For anything the app's log does not explain, [PACKET-CAPTURE.md](/docs/PACKET-CAPTURE.md) shows how to
 capture the Bluetooth traffic itself, including what HeyMelody sends.
 
 ## Build quickstart
@@ -35,7 +35,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 - **A debug build cannot install over the release app** (different signing key). Uninstall the
   release first, and uninstall the debug build before going back.
 - `./gradlew assembleRelease` without the release key builds an unsigned APK. That is expected.
-- No PC? The whole project builds and installs on the phone itself: [TOOLCHAIN.md](./TOOLCHAIN.md).
+- No PC? The whole project builds and installs on the phone itself: [TOOLCHAIN.md](/docs/TOOLCHAIN.md).
 
 Versions: Gradle 9.6.0, AGP 9.4.0, Kotlin 2.4.0, `compileSdk` / `targetSdk` 37, `minSdk` 26. AGP 9
 compiles Kotlin itself, so do not add the `org.jetbrains.kotlin.android` plugin.
@@ -56,15 +56,15 @@ Per-model data (features, noise control modes, EQ presets, gestures) is in
 
 Read before changing anything:
 
-- [PROTOCOL.md](./PROTOCOL.md): the wire format. Every claim is tagged with its source.
-- [CLAUDE.md](../CLAUDE.md): the conventions and the decisions already made, with the reasons.
-- [ROADMAP.md](./ROADMAP.md): the plan, and the list of features decided against. Please check that
+- [PROTOCOL.md](/docs/PROTOCOL.md): the wire format. Every claim is tagged with its source.
+- [CLAUDE.md](/CLAUDE.md): the conventions and the decisions already made, with the reasons.
+- [ROADMAP.md](/docs/ROADMAP.md): the plan, and the list of features decided against. Please check that
   list before proposing a feature.
 
 ## Rules that matter
 
 - **Never guess a payload or a command number.** A wrong write to the buds fails silently. Capture
-  what HeyMelody sends first ([PACKET-CAPTURE.md](./PACKET-CAPTURE.md)), then read the result back.
+  what HeyMelody sends first ([PACKET-CAPTURE.md](/docs/PACKET-CAPTURE.md)), then read the result back.
 - **Docs change with the code.** A protocol change comes with its PROTOCOL.md entry in the same commit.
 - **A new user-visible string needs all 26 translations** (`app/src/main/res/values-*`). Machine
   drafts are fine; lint does not catch a missing one.
