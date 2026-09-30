@@ -165,3 +165,13 @@ back.
   capture guide, TOOLCHAIN.md (the phone as build and test device).
 - Interop facts only (2026-09-29): no vendor class, method or file names in the repo; the `[VENDOR]`
   bytes stay. README trademark notice.
+- TOOLCHAIN.md says why the phone is the whole machine and how the AI assistant is set up (2026-09-30).
+- README: Play Protect "Install anyway" note, widget sizes corrected (2026-09-30).
+
+## Bug fixes (2026-09-30)
+
+- The selection outline slides on the language and model lists; both keep their rows instead of rebuilding.
+- The language screen no longer relaunches on the first pick (the locale change also changes the keyboard
+  configuration).
+- Dot-matrix boxes of one size share a bitmap: the model list (138 rows) shows in 0.12 s instead of 1.08 s.
+- Smaller widget (4x1 / 2x1): scrapped until a good idea comes (see ROADMAP.md, Decided against).
