@@ -35,7 +35,9 @@ finished (ROADMAP-DONE.md).
       Clear, Export, Reconnect, Disconnect). **Built 2026-09-30** (sidebar entry; export to
       `Downloads\QuickBuds\`; newest line on top; no copy on long press yet), waiting for his check.
    3. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit
-      the desktop layout.
+      the desktop layout. **Started 2026-09-30:** Overview is the phone's home (status card L / Case / R with
+      wear labels and the device name, noise pill with "ANC M", feature list with the phone's switch and an
+      Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
    4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
       settings, App settings).
    5. Linux (BlueZ) in the VM; installer + portable zip in CI.

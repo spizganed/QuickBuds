@@ -11,6 +11,7 @@ const ICONS: &[&str] = &[
     "ic_mode_off", "ic_mode_anc_medium", "ic_mode_adaptive", "ic_mode_transparency",
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
+    "ic_chevron_right", "ic_plus",
 ];
 
 const STRINGS: &[&str] = &[
@@ -18,6 +19,7 @@ const STRINGS: &[&str] = &[
     "status_left", "status_right", "status_case", "anc_section", "anc_seg_off", "anc_seg_anc",
     "anc_seg_adapt", "anc_seg_trans", "anc_mode_low", "anc_mode_medium", "anc_mode_high",
     "anc_mode_smart", "widget_low_latency",
+    "status_in_ear", "status_in_case", "status_out", "row_game_title", "row_game_sub", "row_eq_title", "row_eq_sub",
     "eq_title", "eq_not_connected", "eq_recommended", "eq_basswave", "eq_basswave_sub", "eq_custom",
     "eq_rename", "eq_delete", "eq_add", "eq_save",
     // Built-in preset names (`protocol::eq_builtins`)

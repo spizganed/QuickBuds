@@ -35,6 +35,13 @@ export global Tr {
     in property <string> adaptive: "Adaptive";
     in property <string> transparency: "Transparency";
     in property <string> low-latency: "Low latency";
+    in property <string> in-ear: "In ear";
+    in property <string> in-case: "In case";
+    in property <string> out-of-ear: "Out of ear";
+    in property <string> game-title: "Low latency mode";
+    in property <string> game-sub;
+    in property <string> eq-row-title;
+    in property <string> eq-row-sub;
     in property <string> eq-title;
     in property <string> eq-not-connected;
     in property <string> eq-recommended;
@@ -87,6 +94,10 @@ export global Buds {
     in property <image> icon-low-latency;
     in property <image> icon-app;
     in property <image> icon-bass;
+    in property <image> icon-chevron;
+    in property <image> icon-plus;
+    // The ANC segment's label: "ANC", or "ANC M" while a level is on (the phone's and the widget's button).
+    in property <string> anc-label: Tr.anc;
 
     callback set-anc(string);
     callback set-low-latency(bool);
@@ -113,11 +124,12 @@ component Ring {
     in property <length> glyph-h;
     in property <color> tint: Palette.text;
     in property <string> label;
+    in property <bool> label-bright;
     in property <length> size: 90px;
     property <float> frac: max(0, min(level, 99.9)) / 100;
     property <float> r: 45;
     width: size;
-    height: size + (label == "" ? 20px : 38px);
+    height: size + (label == "" ? 20px : size > 60px ? 52px : 38px);
 
     Path {
         x: 0; y: 0; width: size; height: size;
@@ -151,35 +163,44 @@ component Ring {
         horizontal-alignment: center;
         text: level < 0 ? "–" : level + "%" + (charging ? " ⚡" : "");
         color: Palette.text;
-        font-size: size > 60px ? 15px : 12px;
+        font-size: size > 60px ? 22px : 12px;
         font-weight: 600;
     }
     if label != "": Text {
-        y: size + 22px; width: size;
+        y: size + (size > 60px ? 34px : 22px); width: size;
         horizontal-alignment: center;
         text: label;
-        color: Palette.text2;
-        font-size: 12px;
+        color: label-bright ? Palette.text : Palette.text2;
+        font-size: size > 60px ? 14px : 12px;
     }
 }
 
+// Left, case, right, like the phone's status card; a bud's label is where it is (in ear, out, in case).
 component Batteries inherits HorizontalLayout {
     in property <length> size: 90px;
     in property <bool> labels: true;
     alignment: space-around;
+    pure function wear-label(wear: int, side: string) -> string {
+        if wear == 2 { return Tr.in-ear; }
+        if wear == 3 { return Tr.in-case; }
+        if wear == 1 { return Tr.out-of-ear; }
+        return side;
+    }
     Ring {
-        size: root.size; level: Buds.left; charging: Buds.left-charging; label: labels ? Tr.left : "";
+        size: root.size; level: Buds.left; charging: Buds.left-charging;
+        label: labels ? wear-label(Buds.left-wear, Tr.left) : ""; label-bright: Buds.left-wear == 2;
         glyph: Buds.icon-left; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
         tint: Palette.wear-tint(Buds.left-wear);
     }
     Ring {
-        size: root.size; level: Buds.right; charging: Buds.right-charging; label: labels ? Tr.right : "";
-        glyph: Buds.icon-right; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
-        tint: Palette.wear-tint(Buds.right-wear);
-    }
-    Ring {
         size: root.size; level: Buds.case; charging: Buds.case-charging; label: labels ? Tr.case : "";
         glyph: Buds.icon-case; glyph-w: root.size * 0.5; glyph-h: root.size * 0.4;
+    }
+    Ring {
+        size: root.size; level: Buds.right; charging: Buds.right-charging;
+        label: labels ? wear-label(Buds.right-wear, Tr.right) : ""; label-bright: Buds.right-wear == 2;
+        glyph: Buds.icon-right; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
+        tint: Palette.wear-tint(Buds.right-wear);
     }
 }
 
@@ -192,7 +213,7 @@ component Segment inherits Rectangle {
     // Equal widths, whatever the label length.
     preferred-width: 0;
     horizontal-stretch: 1;
-    border-radius: 12px;
+    border-radius: min(self.height, self.width) / 2;
     background: selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
     animate background { duration: 120ms; }
     VerticalLayout {
@@ -204,14 +225,14 @@ component Segment inherits Rectangle {
             alignment: center;
             Image {
                 source: icon; width: 24px; height: 24px;
-                colorize: selected ? #FFFFFF : Palette.text;
+                colorize: selected ? #FFFFFF : Palette.text2;
             }
         }
         if !compact: Text {
             text: label;
             horizontal-alignment: center;
             font-size: 12px;
-            color: selected ? #FFFFFF : Palette.text;
+            color: selected ? #FFFFFF : Palette.text2;
             overflow: elide;
         }
     }
@@ -241,7 +262,7 @@ component AncSegments inherits Rectangle {
             selected: Buds.anc == "Off"; clicked => { Buds.set-anc("Off"); }
         }
         if Buds.levels.length > 0: Segment {
-            compact: root.compact; icon: Buds.icon-anc; label: Tr.anc;
+            compact: root.compact; icon: Buds.icon-anc; label: Buds.anc-label;
             selected: Buds.anc-is-level;
             clicked => { if Buds.levels.length > 1 { picking = true; } else { Buds.set-anc("ANC"); } }
         }
@@ -276,16 +297,19 @@ component AncSegments inherits Rectangle {
 component Toggle inherits Rectangle {
     in property <bool> checked;
     callback toggled(bool);
+    // The phone's switch: a thin track under a thumb as tall as the switch, light grey when off.
     width: 44px;
     height: 24px;
-    border-radius: 12px;
-    background: Palette.outline.brighter(0.1);
     Rectangle {
-        width: 18px; height: 18px; border-radius: 9px;
-        background: root.checked ? Palette.accent : Palette.text.transparentize(0.1);
+        x: 6px; y: 6px; width: parent.width - 12px; height: 12px; border-radius: 6px;
+        background: Palette.outline;
+    }
+    Rectangle {
+        width: 22px; height: 22px; border-radius: 11px;
+        background: root.checked ? Palette.accent : #E4E4E6;
         animate background { duration: 120ms; }
-        y: 3px;
-        x: root.checked ? root.width - 21px : 3px;
+        y: 1px;
+        x: root.checked ? root.width - 23px : 1px;
         animate x { duration: 120ms; }
     }
     TouchArea {
@@ -383,21 +407,42 @@ component FeatureRow inherits HorizontalLayout {
     in property <string> title;
     in property <string> subtitle;
     in property <bool> checked;
+    // A row that opens a page (`NavRow`): a chevron instead of the switch.
+    in property <bool> chevron;
     callback toggled(bool);
-    spacing: 14px;
-    height: 56px;
+    spacing: 16px;
+    height: 64px;
     Image { source: icon; width: 24px; height: 24px; y: (parent.height - self.height) / 2; colorize: Palette.accent; }
     VerticalLayout {
         alignment: center;
         horizontal-stretch: 1;
-        Text { text: title; color: Palette.text; font-size: 14px; }
+        spacing: 2px;
+        Text { text: title; color: Palette.text; font-size: 15px; }
         if subtitle != "": Text { text: subtitle; color: Palette.text2; font-size: 12px; overflow: elide; }
     }
-    VerticalLayout {
+    if !chevron: VerticalLayout {
         alignment: center;
         Toggle { checked: root.checked; toggled(on) => { root.toggled(on); } }
     }
+    if chevron: Image {
+        source: Buds.icon-chevron; width: 20px; height: 20px; y: (parent.height - self.height) / 2;
+        colorize: Palette.accent;
+    }
 }
+
+// A feature row that opens a page: the whole row is the button.
+component NavRow inherits Rectangle {
+    in property <image> icon;
+    in property <string> title;
+    in property <string> subtitle;
+    callback clicked;
+    height: 64px;
+    FeatureRow { width: 100%; icon: root.icon; title: root.title; subtitle: root.subtitle; chevron: true; }
+    TouchArea { mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+
+// A row divider inside a card.
+component Divider inherits Rectangle { height: 1px; background: Palette.outline; }
 
 component CaptionButton inherits Rectangle {
     in property <bool> danger;
@@ -489,16 +534,35 @@ component PresetRow inherits Rectangle {
     in property <string> name;
     in property <bool> selected;
     callback clicked;
-    height: 42px;
-    border-radius: 10px;
+    height: 48px;
+    border-radius: 16px;
     // Selection is an outline, never a checkmark.
-    border-width: selected ? 1.5px : 0;
-    border-color: Palette.accent;
-    background: ta.has-hover ? Palette.outline : Palette.bg.transparentize(0.6);
+    border-width: selected ? 2px : 1px;
+    border-color: selected ? Palette.accent : Palette.outline;
+    background: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    opacity: Buds.on ? 1 : 0.35;
     Text {
-        x: 14px; width: parent.width - 28px;
+        x: 18px; width: parent.width - 36px;
         text: name; overflow: elide; vertical-alignment: center;
         color: selected ? Palette.accent : Palette.text; font-size: 14px;
+    }
+    ta := TouchArea { enabled: Buds.on; mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+
+component AddRow inherits Rectangle {
+    in property <string> text;
+    callback clicked;
+    height: 48px;
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: Palette.outline;
+    background: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    opacity: Buds.on ? 1 : 0.35;
+    HorizontalLayout {
+        alignment: center;
+        spacing: 10px;
+        Image { source: Buds.icon-plus; width: 18px; height: 18px; y: (parent.height - self.height) / 2; colorize: Palette.accent; }
+        Text { text: root.text; color: Palette.text; font-size: 14px; vertical-alignment: center; }
     }
     ta := TouchArea { enabled: Buds.on; mouse-cursor: pointer; clicked => { root.clicked(); } }
 }
@@ -508,19 +572,27 @@ component HSlider inherits Rectangle {
     in property <int> maximum;
     in-out property <int> value;
     callback released(int);
-    height: 28px;
-    property <length> knob: 18px;
+    height: 48px;
+    property <length> knob: 20px;
+    property <length> track-y: 30px;
     property <float> frac: (value - minimum) / (maximum - minimum);
-    Rectangle { y: (parent.height - 4px) / 2; height: 4px; border-radius: 2px; background: Palette.outline; }
+    Rectangle { y: track-y - 3px; height: 6px; border-radius: 3px; background: Palette.outline; }
     Rectangle {
-        x: 0; y: (parent.height - 4px) / 2; height: 4px; border-radius: 2px;
+        x: 0; y: track-y - 3px; height: 6px; border-radius: 3px;
         width: frac * (parent.width - knob) + knob / 2;
         background: Palette.accent;
     }
     Rectangle {
-        x: frac * (parent.width - knob); y: (parent.height - knob) / 2;
+        x: frac * (parent.width - knob); y: track-y - knob / 2;
         width: knob; height: knob; border-radius: knob / 2;
-        background: Palette.accent;
+        background: Palette.card;
+        border-width: 3px; border-color: Palette.accent;
+    }
+    Text {
+        x: frac * (parent.width - knob) + knob / 2 - 20px; y: 0; width: 40px;
+        horizontal-alignment: center;
+        text: (value > 0 ? "+" : "") + value;
+        color: Palette.accent; font-size: 13px; font-weight: 600;
     }
     function set-from(x: length) {
         root.value = clamp(round(minimum + (x - knob / 2) / (root.width - knob) * (maximum - minimum)), minimum, maximum);
@@ -602,32 +674,23 @@ component EqPage inherits VerticalLayout {
             width: 270px;
             spacing: 16px;
             alignment: start;
-            if Eq.builtins.length > 0: Card {
-                VerticalLayout {
-                    padding: 16px;
-                    spacing: 6px;
-                    SectionTitle { text: Tr.eq-recommended; }
-                    for p in Eq.builtins: PresetRow {
-                        name: p.name; selected: Eq.current == p.id;
-                        clicked => { Eq.select-builtin(p.id); }
-                    }
+            // Split lists, like the phone's: one card per row.
+            if Eq.builtins.length > 0: VerticalLayout {
+                spacing: 8px;
+                SectionTitle { text: Tr.eq-recommended; font-size: 13px; font-weight: 400; }
+                for p in Eq.builtins: PresetRow {
+                    name: p.name; selected: Eq.current == p.id;
+                    clicked => { Eq.select-builtin(p.id); }
                 }
             }
-            if Eq.has-custom: Card {
-                VerticalLayout {
-                    padding: 16px;
-                    spacing: 6px;
-                    SectionTitle { text: Tr.eq-custom; }
-                    for p in Eq.customs: PresetRow {
-                        name: p.name; selected: Eq.current == p.id;
-                        clicked => { Eq.select-custom(p.id); }
-                    }
-                    if Eq.can-add: HorizontalLayout {
-                        padding-top: 4px;
-                        alignment: start;
-                        Chip { text: "+ " + Tr.eq-add; clicked => { Eq.add(); } }
-                    }
+            if Eq.has-custom: VerticalLayout {
+                spacing: 8px;
+                SectionTitle { text: Tr.eq-custom; font-size: 13px; font-weight: 400; }
+                for p in Eq.customs: PresetRow {
+                    name: p.name; selected: Eq.current == p.id;
+                    clicked => { Eq.select-custom(p.id); }
                 }
+                if Eq.can-add: AddRow { text: Tr.eq-add; clicked => { Eq.add(); } }
             }
         }
         // Editor and bass
@@ -682,16 +745,10 @@ component EqPage inherits VerticalLayout {
                         checked: Eq.bass-on;
                         toggled(on) => { Eq.bass-toggled(on); }
                     }
-                    if Eq.bass-on: HorizontalLayout {
-                        spacing: 12px;
-                        Text { text: "-5"; color: Palette.text2; font-size: 12px; vertical-alignment: center; }
-                        HSlider {
-                            horizontal-stretch: 1;
-                            minimum: -5; maximum: 5;
-                            value <=> Eq.bass-level;
-                            released(v) => { Eq.bass-released(v); }
-                        }
-                        Text { text: "+5"; color: Palette.text2; font-size: 12px; vertical-alignment: center; }
+                    if Eq.bass-on: HSlider {
+                        minimum: -5; maximum: 5;
+                        value <=> Eq.bass-level;
+                        released(v) => { Eq.bass-released(v); }
                     }
                 }
             }
@@ -856,48 +913,48 @@ export component MainWindow inherits Window {
             padding: 28px;
             spacing: 16px;
 
-            Text { text: "Overview"; color: Palette.text; font-size: 26px; font-weight: 700; }
 
+            // The phone's home: status card, noise pill, feature list.
             Card {
-                height: 230px;
+                border-radius: 24px;
+                vertical-stretch: 0;
                 VerticalLayout {
                     padding: 20px;
-                    spacing: 12px;
-                    SectionTitle { text: "Battery"; }
-                    Batteries { size: 130px; }
-                }
-            }
-
-            HorizontalLayout {
-                spacing: 16px;
-                vertical-stretch: 1;
-                if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
-                    horizontal-stretch: 3;
-                    VerticalLayout {
-                        padding: 20px;
-                        spacing: 14px;
-                        alignment: start;
-                        SectionTitle { text: Tr.noise-control; }
-                        AncSegments { height: 84px; }
-                    }
-                }
-                Card {
-                    horizontal-stretch: 2;
-                    VerticalLayout {
-                        padding: 20px;
-                        spacing: 6px;
-                        alignment: start;
-                        SectionTitle { text: "Features"; }
-                        FeatureRow {
-                            icon: Buds.icon-low-latency;
-                            title: Tr.low-latency;
-                            subtitle: "Less audio delay for games";
-                            checked: Buds.low-latency;
-                            toggled(on) => { Buds.set-low-latency(on); }
-                        }
+                    spacing: 10px;
+                    Batteries { size: 110px; }
+                    Text {
+                        text: Buds.name; horizontal-alignment: center;
+                        color: Palette.text2; font-size: 14px;
                     }
                 }
             }
+            if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
+                height: 72px;
+                border-radius: self.height / 2;
+                AncSegments { x: 4px; y: 4px; width: parent.width - 8px; height: parent.height - 8px; }
+            }
+            Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    FeatureRow {
+                        icon: Buds.icon-low-latency;
+                        title: Tr.game-title;
+                        subtitle: Tr.game-sub;
+                        checked: Buds.low-latency;
+                        toggled(on) => { Buds.set-low-latency(on); }
+                    }
+                    Divider {}
+                    NavRow {
+                        icon: Buds.icon-bass;
+                        title: Tr.eq-row-title;
+                        subtitle: Tr.eq-row-sub;
+                        clicked => { root.page = 1; }
+                    }
+                }
+            }
+            Rectangle { vertical-stretch: 1; }
         }
     }
     }

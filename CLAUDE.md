@@ -373,17 +373,16 @@ the tray; the Android updater fix (skips `desktop-v*`) is committed but not in a
 before the first desktop release.
 
 - **Next:** ROADMAP.md step 2, "Next, in order": ANC level slide and Dev tools are built (waiting for his
-  check), then reuse more of the phone UI. EQ writes and ANC / low latency from the desktop
+  check); phone-UI reuse started (Overview, Equalizer restyled; check on the buds), continue with it. EQ writes and ANC / low latency from the desktop
   are untested on the buds: ask him for the result.
 - **Linux VM** (VirtualBox 7.2.20 at `C:\Program Files\Oracle\VirtualBox`, not on PATH): VM
-  `QuickBuds-Linux` created (4 GB, 4 CPUs, 40 GB disk, USB 3 filter for the ASUS USB-BT400 dongle, SSH
-  forward 127.0.0.1:2222). Ubuntu not installed yet. ISO `C:\Users\bartek\VirtualBox VMs\iso\
-  ubuntu-26.04.1-desktop-amd64.iso`, SHA256 verified. `VBoxManage unattended install` started 2026-09-30
-  (user `qb`, password in private memory, hostname `qb-linux`, post-install adds openssh-server, bluez,
-  build-essential, libdbus-1-dev). **It hangs at "Loading essential drivers"**: Windows' Memory integrity
-  (HVCI, Hyper-V) is on, so VirtualBox runs on the slow NEM fallback ("AMD-V is not available" in VBox.log).
-  Fix is his call: turn off Core isolation › Memory integrity and reboot, then rerun the unattended install.
-  Next after that: pair the buds in the VM (then re-pair in Windows), BlueZ spike via the `bluer` profile API.
+  `QuickBuds-Linux` (4 GB, 4 CPUs, 40 GB disk, USB 3 filter for the ASUS USB-BT400 dongle, SSH forward
+  127.0.0.1:2222). He turned Memory integrity off 2026-09-30; VirtualBox now runs on AMD-V (VBox.log
+  "HMR3Init: AMD-V w/ nested paging"). The unattended install (user `qb`, password in private memory,
+  hostname `qb-linux`, post-install adds openssh-server, bluez, build-essential, libdbus-1-dev) was rerun
+  and was still running at the end of the session: check `VBoxManage showvminfo QuickBuds-Linux` and
+  `ssh -p 2222 qb@127.0.0.1`; if it failed, rerun `VBoxManage unattended install` with the same values.
+  Next: pair the buds in the VM (then re-pair in Windows), BlueZ spike via the `bluer` profile API.
 - Screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
   window message (WM_LBUTTONDOWN/UP); the scripts are not in the repo.
 - **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.

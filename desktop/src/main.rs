@@ -70,6 +70,8 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     b.set_icon_low_latency(svg(icons::LOW_LATENCY));
     b.set_icon_app(svg(icons::LAUNCHER));
     b.set_icon_bass(svg(icons::EQUALIZER));
+    b.set_icon_chevron(svg(icons::CHEVRON_RIGHT));
+    b.set_icon_plus(svg(icons::PLUS));
 
     tr.set_connected(t(s, "conn_on").into());
     tr.set_connect(t(s, "conn_action_connect").into());
@@ -85,6 +87,13 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_adaptive(t(s, "anc_seg_adapt").into());
     tr.set_transparency(t(s, "anc_seg_trans").into());
     tr.set_low_latency(t(s, "widget_low_latency").into());
+    tr.set_in_ear(t(s, "status_in_ear").into());
+    tr.set_in_case(t(s, "status_in_case").into());
+    tr.set_out_of_ear(t(s, "status_out").into());
+    tr.set_game_title(t(s, "row_game_title").into());
+    tr.set_game_sub(t(s, "row_game_sub").into());
+    tr.set_eq_row_title(t(s, "row_eq_title").into());
+    tr.set_eq_row_sub(t(s, "row_eq_sub").into());
     tr.set_eq_title(t(s, "eq_title").into());
     tr.set_eq_not_connected(t(s, "eq_not_connected").into());
     tr.set_eq_recommended(t(s, "eq_recommended").into());
@@ -138,7 +147,12 @@ impl App {
         }).collect();
         let anc = s.anc.clone().unwrap_or_default();
         let is_level = LEVELS.contains(&anc.as_str());
-        let anc_icon = level_info(if is_level { &anc } else { "" }).0;
+        let (anc_icon, li) = level_info(if is_level { &anc } else { "" });
+        // "ANC M": the level's first letter, as on the phone's segment and the widget's button.
+        let mut anc_label = t(&self.tr, "anc_seg_anc").to_string();
+        if is_level {
+            if let Some(c) = t(&self.tr, level_names[li]).chars().next() { anc_label = format!("{anc_label} {}", c.to_uppercase()); }
+        }
 
         for b in [self.main.global::<Buds>(), self.panel.global::<Buds>()] {
             b.set_status(match s.status { Status::Off => 0, Status::Connecting => 1, Status::On => 2 });
@@ -158,6 +172,7 @@ impl App {
             b.set_anc(anc.as_str().into());
             b.set_anc_is_level(is_level);
             b.set_icon_anc(svg(anc_icon));
+            b.set_anc_label(anc_label.as_str().into());
             b.set_has_off(self.modes.supports(protocol::OFF));
             b.set_has_adaptive(self.modes.supports(protocol::ADAPTIVE));
             b.set_has_transparency(self.modes.supports(protocol::TRANSPARENCY));
