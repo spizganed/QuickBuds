@@ -79,6 +79,11 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matr
 
 > **Coming from v1.1.0?** Uninstall it first: v2.0.0 and later are signed with a new key.
 
+> **Got the APK somewhere else?** The only official downloads are the GitHub releases. A copy from
+> another site is genuine only if it is signed with this certificate (SHA-256), which
+> `apksigner verify --print-certs <apk>` shows:
+> `9ae0ea888079cbd86af5a24391cd351af4a81fc04ebe9bd8429074c736249f61`
+
 ## Supported earbuds
 
 QuickBuds works on **any Android 8+ phone** (Samsung, Google Pixel, Xiaomi, Nothing, Motorola, OnePlus…),
