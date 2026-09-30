@@ -47,7 +47,7 @@ class LanguageActivity : Activity() {
                 if (selected) return@build
                 Haptics.commit(card)
                 ThemeRes.setLanguage(this, tag)
-                if (android.os.Build.VERSION.SDK_INT < 33) recreate()
+                if (android.os.Build.VERSION.SDK_INT < 33) ThemeRes.recreateFaded(this)
             }
             // Accent label on the chosen row, as the EQ preset list does.
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).apply {

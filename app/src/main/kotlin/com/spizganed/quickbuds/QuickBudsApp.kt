@@ -99,7 +99,10 @@ class QuickBudsApp : Application() {
         // A preset change rebuilds every open activity when it comes back to the front,
         // because colours are applied at inflation (ThemeRes.select), not afterwards.
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityResumed(a: Activity) { if (ThemeRes.isStale(a)) a.recreate() }
+            override fun onActivityResumed(a: Activity) {
+                ThemeRes.fadeInFromSnapshot(a)
+                if (ThemeRes.isStale(a)) ThemeRes.recreateFaded(a)
+            }
             override fun onActivityCreated(a: Activity, b: Bundle?) {}
             override fun onActivityStarted(a: Activity) { started++ }
             override fun onActivityPaused(a: Activity) {}

@@ -33,6 +33,7 @@ class ThemeActivity : Activity() {
     /** The selected tile or preset row, outlined by [selection] (slides, also across the recreate() a pick triggers). */
     private lateinit var selection: SelectionSlider
     private var selTarget: View? = null
+    private var shownCustom: List<Palette>? = null
     private var selRadius = SettingRowFactory.SPLIT_RADIUS
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +45,6 @@ class ThemeActivity : Activity() {
             setBackgroundColor(ThemeRes.color(this@ThemeActivity, R.attr.appColorBg))
             addView(root)
         })
-        ThemeRes.fadeInFromSnapshot(this)
     }
 
     override fun onSaveInstanceState(out: Bundle) {
@@ -154,13 +154,9 @@ class ThemeActivity : Activity() {
                     this@ThemeActivity, if (accentOpen) R.drawable.ic_chevron_down else R.drawable.ic_chevron_right, p.accent
                 ))
             }
-            val row = SettingRowFactory.build(
-                this, 0, R.string.theme_accent, 0, chevron, leading = swatch, minHeightDp = 54f
-            ) { accentOpen = !accentOpen; build() }
-            val sub = SettingRowFactory.subtitle(this, row)
-            sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(active.accent))
-            accentCard.addView(row)
-            if (accentOpen) accentCard.addView(ColorPickerView(
+            lateinit var sub: TextView
+            var picker: ColorPickerView? = null
+            fun newPicker() = ColorPickerView(
                 this, active.accent, "accent:${active.id}",
                 onChange = { c ->
                     swatch.color = c
@@ -173,10 +169,36 @@ class ThemeActivity : Activity() {
                     // The whole app takes the new accent; this screen rebuilds with the picker open.
                     v.post { ThemeRes.recreateFaded(this) }
                 }
-            ).apply {
-                setPadding(dp(16f), dp(4f), dp(16f), dp(16f))
-                accentCard.background = ThemeRes.card(this@ThemeActivity, fill = p.expanded)
-            })
+            ).apply { setPadding(dp(16f), dp(4f), dp(16f), dp(16f)) }
+            val row = SettingRowFactory.build(
+                this, 0, R.string.theme_accent, 0, chevron, leading = swatch, minHeightDp = 54f
+            ) {
+                // Unfolds or folds in place; the rest of the screen is not rebuilt.
+                accentOpen = !accentOpen
+                chevron.setImageDrawable(ThemeRes.tint(
+                    this@ThemeActivity, if (accentOpen) R.drawable.ic_chevron_down else R.drawable.ic_chevron_right, p.accent
+                ))
+                if (accentOpen) {
+                    val pk = newPicker().also { picker = it }
+                    accentCard.background = ThemeRes.card(this@ThemeActivity, fill = p.expanded)
+                    accentCard.addView(pk)
+                    Motion.slide(pk, open = true)
+                } else picker?.let { pk ->
+                    picker = null
+                    Motion.slide(pk, open = false) {
+                        accentCard.removeView(pk)
+                        accentCard.background = ThemeRes.card(this@ThemeActivity)
+                    }
+                }
+            }
+            sub = SettingRowFactory.subtitle(this, row)
+            sub.text = getString(R.string.theme_accent_sub, active.name, ColorPickerView.hex(active.accent))
+            accentCard.addView(row)
+            if (accentOpen) {
+                picker = newPicker()
+                accentCard.background = ThemeRes.card(this, fill = p.expanded)
+                accentCard.addView(picker)
+            }
             root.addView(accentCard)
         }
 
@@ -189,7 +211,10 @@ class ThemeActivity : Activity() {
             setPadding(dp(4f), dp(18f), 0, dp(9f))
         })
         val card = SettingRowFactory.splitList(this)
-        custom.forEach { preset ->
+        // Rows that came or went while the editor was open grow in or fold away (never on the first build).
+        val before = shownCustom
+        shownCustom = custom
+        fun presetRow(preset: Palette): View {
             val pencil = ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(44f), dp(44f))
                 setPadding(dp(11f), dp(11f), 0, dp(11f))
@@ -202,9 +227,24 @@ class ThemeActivity : Activity() {
                 this, 0, 0, 0, pencil, leading = SwatchGrid(this, preset), minHeightDp = 62f
             ) { apply(preset.id, card) }
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).text = preset.name
+            return row
+        }
+        custom.forEach { preset ->
+            val row = presetRow(preset)
             // Active: the selection border, like the built-in tiles.
             if (preset.id == activeId) { selTarget = row; selRadius = SettingRowFactory.SPLIT_RADIUS }
             SettingRowFactory.addSplit(card, row)
+            if (before != null && before.none { it.id == preset.id }) Motion.slide(row.parent as View, open = true)
+        }
+        before?.forEachIndexed { i, old ->
+            if (custom.none { it.id == old.id }) {
+                val ghost = presetRow(old).apply { isEnabled = false; isClickable = false }
+                SettingRowFactory.addSplit(card, ghost)
+                val gc = ghost.parent as View
+                card.removeView(gc)
+                card.addView(gc, minOf(i, card.childCount))
+                Motion.slide(gc, open = false) { card.removeView(gc) }
+            }
         }
         val left = PaletteStore.MAX_CUSTOM - custom.size
         val newRow = SettingRowFactory.build(this, R.drawable.ic_plus, R.string.theme_new, 0, null) { createPreset() }
