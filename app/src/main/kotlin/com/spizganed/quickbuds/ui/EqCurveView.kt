@@ -194,7 +194,9 @@ class EqCurveView(context: Context) : View(context) {
             .coerceIn(EqCodec.GAIN_MIN.toFloat(), EqCodec.GAIN_MAX.toFloat())
         if (pos.size != gains.size) pos = FloatArray(gains.size) { gains[it].toFloat() }
         pos[active] = g
-        gains[active] = g.roundToInt()
+        val snapped = g.roundToInt()
+        if (snapped != gains[active]) Haptics.step(this)
+        gains[active] = snapped
         postInvalidateOnAnimation()
     }
 

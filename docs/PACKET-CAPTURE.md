@@ -21,7 +21,8 @@ never shows up in the app's log.
 3. Do each action (a setting in the app, or a gesture on the buds) and **wait at least 3 seconds**
    before the next one. Write down what you did and the time.
 4. Repeat the round once, so a one-off frame gets a chance to show again.
-5. Dev tools › **Export**. The file lands in `Download/QuickBudsLogs/`.
+5. Dev tools › **Export**. (The Dev tools log has Human, Detailed and Raw hex tabs; packets the app cannot
+   decode show in amber with their whole payload, and bytes it could not frame as `DISCARDED RX`.) The file lands in `Download/QuickBudsLogs/`.
 
 With adb, skip the export. The app writes the same lines to a file (a 2 x 512 KB ring) and to logcat:
 

@@ -21,7 +21,7 @@ OUT=docs/screenshots$([ "$STYLE" = dot-matrix ] && echo /dot-matrix || true)
 mkdir -p "$OUT"
 
 # One adb call: the dump goes straight to stdout (no file on the phone, no second call to read it).
-dump() { adb exec-out uiautomator dump /dev/tty | sed 's/UI hierarchy dumped to.*//'; }
+dump() { adb exec-out uiautomator dump /dev/tty | sed 's|</hierarchy>.*|</hierarchy>|'; }
 
 # Centre of the first node whose text or content-desc is exactly $1; scrolls down once if needed.
 # A second argument "optional" skips (returns 1) instead of stopping the script.

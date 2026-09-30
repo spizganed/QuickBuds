@@ -107,7 +107,7 @@ class LevelSliderView(
     private fun follow(px: Float) {
         pos = (min + (px - left) * (max - min) / (right - left)).coerceIn(min.toFloat(), max.toFloat())
         val step = pos.roundToInt()
-        if (step != value) { value = step; onChange?.invoke(step) }
+        if (step != value) { value = step; onChange?.invoke(step); Haptics.step(this) }
         postInvalidateOnAnimation()
     }
 

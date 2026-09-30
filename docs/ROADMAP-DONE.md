@@ -144,6 +144,17 @@ back.
 - The in-app updater deletes its downloaded APK on the next start (2026-09-29). The packet log caps
   itself at 2 x 512 KB.
 
+## UI pass (2026-09-30)
+
+- Dot style: dotted boxes for buttons, chips, sheets and dialogs (`DotArt.Box`); accent buttons are outlines;
+  the small action icons (taps, hold, close, check, pencil, bin, cog, menu, connection dot) are drawn from
+  rules, not sampled; smoother EQ curve; no lone dot on the bud icons.
+- Widget settings, the swap button, the 3x3 widget and EQ import / export removed; the 2x2 resizes. The
+  ANC button shows the level ("ANC L").
+- Find my earbuds, Wear detection and every confirm / notice / crash report are bottom sheets.
+- Dev Tools log: Human / Detailed / Raw, unknown packets in amber with their payload, discarded bytes
+  logged. Slider steps give a light haptic tick. The screenshot script runs in about 1.5 minutes.
+
 ## Docs
 
 - Docs moved to `docs/`; only README, LICENSE and CLAUDE.md stay in root (2026-09-25).

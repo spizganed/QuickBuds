@@ -23,7 +23,8 @@ Every other screen (gestures, themes, fit test, settings and more) is in [docs/s
 
 ### Widgets
 
-Every size has a battery page and a controls page; switch with a double tap.
+Every size has a battery page and a controls page; switch with a double tap. The 2x2 can be resized and
+gets bigger.
 
 | 2x2 | 2x2, resized | 4x2 |
 | :---: | :---: | :---: |

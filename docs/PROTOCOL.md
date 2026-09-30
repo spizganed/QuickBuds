@@ -633,7 +633,7 @@ no OSS client answers it. `0x0501` is unknown.
 - The gesture table prints in three places, all ending `RAW=[...]`: the `RX:` line, `KEYFN:`, and
   `LogDecoder`.
 - **`UNATTR RX` never shows `0x0204`** (`noteUnattributed()` excludes it). An undecoded push prints
-  nothing there. Dev Tools' decoder does show it (`Unattributed active report`). Change the exclusion
+  nothing there. Dev Tools' decoder does show it (`Unknown active report`, in amber). Change the exclusion
   first if a capture needs these.
 
 ---

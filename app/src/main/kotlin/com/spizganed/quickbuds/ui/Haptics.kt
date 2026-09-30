@@ -25,6 +25,14 @@ object Haptics {
         )
     }
 
+    /** A slider crossing a step while dragged: the lightest tick, so a run of them does not buzz. */
+    fun step(view: View) {
+        if (!on(view.context)) return
+        view.performHapticFeedback(
+            if (Build.VERSION.SDK_INT >= 34) HapticFeedbackConstants.SEGMENT_FREQUENT_TICK else HapticFeedbackConstants.CLOCK_TICK
+        )
+    }
+
     /**
      * A widget tap: no view of ours is on screen, so the vibrator directly (needs VIBRATE, a normal
      * permission). EFFECT_CLICK is the platform's key tick; a plain 20 ms pulse below API 29.
