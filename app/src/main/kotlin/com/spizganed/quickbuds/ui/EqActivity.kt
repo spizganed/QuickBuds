@@ -171,10 +171,14 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     /** What the preset lists last showed; see [render]. */
     private var shownSignature: String? = null
-    private var shownSelection: Int? = null
     private var shownNames: Set<String> = emptySet()
-    private var shownWaiting: Set<String> = emptySet()
-    private val customRows = HashMap<Int, View>()
+
+    /** The rows, kept between renders and updated in place: recommended by buds id, custom by buds id, and the just-created ones by name. */
+    private val builtInChoices = LinkedHashMap<Int, Choice>()
+    private val customChoices = LinkedHashMap<Int, Choice>()
+    private val waitingChoices = LinkedHashMap<String, Choice>()
+    private var shownNew: Boolean? = null
+    private lateinit var newButton: View
     private lateinit var selection: SelectionSlider
     /** Rows folding away after a delete, as "id:name": names alone repeat (two presets called Custom1) and hid them all. */
     private val deleting = HashSet<String>()
@@ -265,6 +269,13 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(12f) }
         }
+        customActions.visibility = View.GONE
+        newButton = actionButton(R.drawable.ic_plus, R.string.eq_add) {
+            val used = customChoices.values.mapNotNull { it.preset?.name }.toSet() + createdNames()
+            val name = (1..9).map { "Custom$it" }.first { it !in used }
+            createCustom(name, freqs())
+        }
+        customActions.addView(newButton)
         root.addView(customActions)
 
         selection = SelectionSlider(root)
@@ -313,71 +324,79 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             }
         }
 
-        // Each EQ write triggers several re-reads; rebuilding on every one would cut the
-        // selection and expand animations short, so the lists only rebuild when they change.
+        // Each EQ write triggers several re-reads; the lists only update when something changed.
         val waiting = createdNames().filter { n -> custom.none { it.name == n } }
         val signature = "$connected|$current|$waiting|" + custom.joinToString { "${it.id}:${it.name}:${it.gains}" }
         if (signature == shownSignature) return
         // Animate only a real change on screen, never the first fill.
-        val prevSelection = if (shownSignature == null) current else shownSelection
-        val prevNames = if (shownSignature == null) null else shownNames
+        val animate = shownSignature != null
         shownSignature = signature
-        shownSelection = current
         shownNames = custom.map { it.name }.toSet()
-        val prevWaiting = shownWaiting
-        shownWaiting = waiting.toSet()
 
-        builtInCard.removeAllViews()
         val builtIns = builtInPresets()
         builtInLabel.visibility = if (builtIns.isEmpty()) View.GONE else View.VISIBLE
         builtInCard.visibility = builtInLabel.visibility
+        builtInChoices.keys.filter { id -> builtIns.none { it.first == id } }
+            .forEach { id -> builtInChoices.remove(id)?.let { builtInCard.removeView(it.card) } }
         var selectedRow: View? = null
-        builtIns.forEachIndexed { i, (id, label) ->
-            val row = choiceRow(getString(label), current == id, prevSelection == id) {
-                manager?.selectBuiltInEq(id)
-                render()
+        for ((id, label) in builtIns) {
+            val c = builtInChoices.getOrPut(id) {
+                Choice(getString(label), null) { manager?.selectBuiltInEq(id); render() }.also {
+                    SettingRowFactory.addSplit(builtInCard, it.row); it.card = it.row.parent as View
+                }
             }
-            if (current == id) selectedRow = row
-            SettingRowFactory.addSplit(builtInCard, row)
+            c.setSelected(current == id, animate)
+            if (current == id) selectedRow = c.card
         }
 
-        customCard.removeAllViews()
-        customRows.clear()
-        custom.forEachIndexed { i, p ->
-            // Selecting a custom preset IS a save of it as it stands — same frame HeyMelody sends —
-            // so opening its editor selects it too, exactly as in HeyMelody.
-            // A tap only selects; the pencil at the row's end opens the editor.
-            val row = choiceRow(p.name, current == p.id, prevSelection == p.id, onEdit = { showEditor(p) }) {
-                manager?.saveCustomEq(p)
-                render()
+        // Custom: rows no longer listed fold away, listed ones update in place, new ones grow in before any
+        // placeholders (a placeholder for the same name is adopted, so its row does not blink).
+        val wanted = custom.map { it.id }.toSet()
+        customChoices.keys.filter { it !in wanted }.forEach { id -> customChoices.remove(id)?.let { fold(it) } }
+        for (p in custom) {
+            val c = customChoices.getOrPut(p.id) {
+                waitingChoices.remove(p.name)?.also { it.row.alpha = 1f }
+                    ?: Choice(p.name, { c -> c.preset?.let { showEditor(it) } }) {}.also { n ->
+                        SettingRowFactory.addSplit(customCard, n.row); n.card = n.row.parent as View
+                        customCard.removeView(n.card)
+                        customCard.addView(n.card, customCard.childCount - waitingChoices.size)
+                        if (animate) slide(n.card, open = true) { selection.snap() }
+                    }
             }
-            customRows[p.id] = row
-            SettingRowFactory.addSplit(customCard, row)
-            if (current == p.id) selectedRow = row
-            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames && p.name !in prevWaiting) slide(row.parent as View, open = true) { selection.snap() }
+            c.preset = p
+            c.onClick = { manager?.saveCustomEq(p); render() }
+            c.setName(p.name)
+            c.setSelected(current == p.id, animate)
+            if (current == p.id) selectedRow = c.card
         }
         // A preset just sent to create shows at once, dimmed, until the buds' re-read brings the real one (about a second).
-        waiting.forEach { name ->
-            val row = choiceRow(name, false, false) {}
-            row.alpha = 0.5f
-            SettingRowFactory.addSplit(customCard, row)
-            if (prevNames != null && name !in prevWaiting) slide(row.parent as View, open = true)
+        waitingChoices.keys.filter { it !in waiting }.forEach { n -> waitingChoices.remove(n)?.let { fold(it) } }
+        for (name in waiting) waitingChoices.getOrPut(name) {
+            Choice(name, null) {}.also { n ->
+                n.row.alpha = 0.5f
+                SettingRowFactory.addSplit(customCard, n.row); n.card = n.row.parent as View
+                if (animate) slide(n.card, open = true)
+            }
         }
-        customCard.visibility = if ((custom.isEmpty() && waiting.isEmpty()) || !hasCustom(this)) View.GONE else View.VISIBLE
+        val listed = customChoices.size + waitingChoices.size
+        customCard.visibility = if (listed == 0 || !hasCustom(this)) View.GONE else View.VISIBLE
 
-        // New lives under the card, apart from the presets themselves.
-        customActions.removeAllViews()
-        if (connected && hasCustom(this) && custom.size < maxCustom(this)) {
-            customActions.addView(actionButton(R.drawable.ic_plus, R.string.eq_add) {
-                val used = custom.map { it.name }.toSet() + createdNames()
-                val name = (1..9).map { "Custom$it" }.first { it !in used }
-                createCustom(name, freqs())
-            })
+        // New lives under the card, apart from the presets themselves; it folds away when the last slot is taken.
+        val showNew = connected && hasCustom(this) && listed < maxCustom(this)
+        when {
+            shownNew == null || !animate -> customActions.visibility = if (showNew) View.VISIBLE else View.GONE
+            showNew != shownNew -> slide(customActions, showNew)
         }
-        customActions.visibility = if (customActions.childCount == 0) View.GONE else View.VISIBLE
-        customHeader.visibility =
-            if (customCard.visibility == View.GONE && customActions.visibility == View.GONE) View.GONE else View.VISIBLE
+        shownNew = showNew
+        customHeader.visibility = if (listed == 0 && !showNew) View.GONE else View.VISIBLE
         selection.moveTo(selectedRow, ThemeRes.color(this, R.attr.appColorAccent))
+    }
+
+    /** Folds [c]'s card shut and removes it. */
+    private fun fold(c: Choice) {
+        if (c.folding) return
+        c.folding = true
+        slide(c.card, open = false) { (c.card.parent as? ViewGroup)?.removeView(c.card); selection.snap() }
     }
 
     /**
@@ -494,8 +513,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                     getString(R.string.eq_delete)
                 ) {
                     d.dismiss()
-                                        deleting += key(p)
-                    val row = customRows[p.id]
+                    deleting += key(p)
                     // Both at once: the fold takes 220 ms, the buds' re-read longer.
                     // The buds refuse to delete the preset in use: switch to a recommended one first.
                     val other = builtInPresets().firstOrNull()?.first
@@ -503,7 +521,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                         manager?.selectBuiltInEq(other)
                         customCard.postDelayed({ manager?.deleteCustomEq(p) }, 300)
                     } else manager?.deleteCustomEq(p)
-                    (row?.parent as? View)?.let { slide(it, open = false) }
+                    customChoices.remove(p.id)?.let { fold(it) }
                 }
             }.apply {
                 fortyEight(this)
@@ -586,42 +604,49 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun sectionLabel(res: Int) = SettingRowFactory.sectionLabel(this, res)
 
-    /** A selectable row: accent label and a check when selected — the BottomSheetDialog look. */
     /**
-     * A preset row. When the selection moves, the old row's red label fades back to white and its
-     * tick shrinks away while the new row's label warms to red and its tick pops in.
+     * A preset row that lives across renders and is updated in place: [setSelected] fades the label between the
+     * text and accent colours, [setName] retitles it. Its [card] is set once the row is in a list ([SettingRowFactory.addSplit]).
      */
-    private fun choiceRow(
-        label: String, selected: Boolean, wasSelected: Boolean,
-        onEdit: (() -> Unit)? = null, onClick: () -> Unit
-    ): View {
-        val dp = { v: Float -> ThemeRes.dp(this, v) }
-        val accent = ThemeRes.color(this, R.attr.appColorAccent)
-        val primary = ThemeRes.color(this, R.attr.appColorTextPrimary)
-        val changed = selected != wasSelected
-        return LinearLayout(this).apply {
+    private inner class Choice(name: String, onEdit: ((Choice) -> Unit)?, var onClick: () -> Unit) {
+        var preset: EqCodec.Preset? = null
+        var folding = false
+        lateinit var card: View
+        private var selected = false
+        private val dp = { v: Float -> ThemeRes.dp(this@EqActivity, v) }
+        private val accent = ThemeRes.color(this@EqActivity, R.attr.appColorAccent)
+        private val primary = ThemeRes.color(this@EqActivity, R.attr.appColorTextPrimary)
+        private val label = TextView(this@EqActivity).apply {
+            text = name
+            textSize = 15f
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            setTextColor(primary)
+        }
+        val row = LinearLayout(this@EqActivity).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(52f))
             setPadding(dp(14f), 0, dp(14f), 0)
             setOnClickListener { Haptics.commit(it); onClick() }
-            addView(TextView(this@EqActivity).apply {
-                text = label
-                textSize = 15f
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                val to = if (selected) accent else primary
-                if (changed) {
-                    ValueAnimator.ofArgb(if (selected) primary else accent, to).apply {
-                        duration = 260
-                        addUpdateListener { setTextColor(it.animatedValue as Int) }
-                        start()
-                    }
-                } else setTextColor(to)
-            })
-            if (onEdit != null) addView(iconButton(R.drawable.ic_pencil, R.string.eq_edit, onEdit).apply {
+            addView(label)
+            if (onEdit != null) addView(iconButton(R.drawable.ic_pencil, R.string.eq_edit) { onEdit(this@Choice) }.apply {
                 layoutParams = LinearLayout.LayoutParams(dp(34f), dp(34f)).apply { marginStart = dp(12f) }
                 setPadding(dp(8f), dp(8f), dp(8f), dp(8f))
             })
+        }
+
+        fun setName(n: String) { if (label.text.toString() != n) label.text = n }
+
+        fun setSelected(sel: Boolean, animate: Boolean) {
+            if (sel == selected) return
+            selected = sel
+            val to = if (sel) accent else primary
+            if (!animate) { label.setTextColor(to); return }
+            ValueAnimator.ofArgb(if (sel) primary else accent, to).apply {
+                duration = 260
+                addUpdateListener { label.setTextColor(it.animatedValue as Int) }
+                start()
+            }
         }
     }
 }
