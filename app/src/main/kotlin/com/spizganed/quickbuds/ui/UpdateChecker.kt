@@ -15,7 +15,7 @@ import java.io.File
  */
 object UpdateChecker {
 
-    private const val API = "https://api.github.com/repos/spizganed/QuickBuds/releases/latest"
+    private const val API = "https://api.github.com/repos/spizganed/QuickBuds/releases?per_page=30"
 
     /** Settings › App › Check on start (default on). */
     const val KEY_AUTO = "updateAutoCheck"
@@ -44,12 +44,20 @@ object UpdateChecker {
         } finally {
             conn.disconnect()
         }
-        val json = JSONObject(body)
-        val assets = json.optJSONArray("assets")
-        val apk = (0 until (assets?.length() ?: 0))
-            .map { assets!!.getJSONObject(it).optString("browser_download_url") }
-            .firstOrNull { it.endsWith(".apk", ignoreCase = true) }
-        return Release(json.getString("tag_name"), apk, json.optString("body").takeIf { it != "null" }.orEmpty())
+        // Newest first. Desktop releases (`desktop-v*`) and pre-releases share the repo; skip them.
+        val list = org.json.JSONArray(body)
+        for (i in 0 until list.length()) {
+            val json = list.getJSONObject(i)
+            val tag = json.getString("tag_name")
+            if (!tag.startsWith("v") || json.optBoolean("prerelease")) continue
+            val assets = json.optJSONArray("assets")
+            val apk = (0 until (assets?.length() ?: 0))
+                .map { assets!!.getJSONObject(it).optString("browser_download_url") }
+                .firstOrNull { it.endsWith(".apk", ignoreCase = true) }
+                ?: continue
+            return Release(tag, apk, json.optString("body").takeIf { it != "null" }.orEmpty())
+        }
+        throw IllegalStateException("No Android release")
     }
 
     /** Numeric compare of "v2.1.0" against "2.1.0-debug"; suffixes are ignored. */
