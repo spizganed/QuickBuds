@@ -69,8 +69,8 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
 - **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, shared to RDP; started by
   `~/.shortcuts/desktop-ssh`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
   --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`) and runs with `DISPLAY=:0
-  QB_BRIDGE=127.0.0.1:7979`. Chromium browsers there run only as a normal user with `--no-sandbox
-  --no-zygote --disable-gpu` (`~/.local/bin/brave`).
+  QB_BRIDGE=127.0.0.1:7979`. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
+  proot ones: proot is too slow for a browser.
 - **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0`
   after every test); launch with `am start -n`, never `monkey`. Bring Termux to the front when done,
   except over SSH. The user-level Stop hook does this unless `$SSH_CONNECTION` is set.
