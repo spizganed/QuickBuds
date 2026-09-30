@@ -4,7 +4,7 @@
 # Python with Pillow (`pip install pillow`) for cropping. It sets the app style it shoots (Theme &
 # colors > Style) and leaves it that way; otherwise it only OPENS screens, nothing is toggled.
 # Classic (the default style) goes to docs/screenshots/, Dot matrix to docs/screenshots/dot-matrix/.
-# Widgets: each placed QuickBuds widget on the LAST home screen page is cropped to its own file,
+# Widgets: each placed QuickBuds widget on the first and the last home screen page is cropped to its own file,
 # widget-<size>-<page> (2x2, 4x2; battery or controls, whichever page it shows); sizes that
 # are not placed are skipped.
 # Usage: scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]
@@ -40,9 +40,9 @@ tap() {
     fi
     set -- $b
     adb shell input tap $(( ($1 + $3) / 2 )) $(( ($2 + $4) / 2 ))
-    sleep 0.7
+    sleep 0.45
 }
-back() { adb shell input keyevent BACK; sleep 0.6; }
+back() { adb shell input keyevent BACK; sleep 0.35; }
 
 # Screenshot cropped to the box "l t r b". Without a box: the status bar is painted over in the
 # page's own background (cutting it would leave titles flush with the edge) and the nav bar is cut.
@@ -116,13 +116,12 @@ tap "Home layout";      shot home-layout;     back
 tap "App update";       shot update;          back
 tap "About";            shot about;           back; back
 
-# Widgets: HOME, then swipe to the last page; one file per placed size, found by the ids only
-# that size has (see widget/AncWidgetProvider.kt).
-adb shell input keyevent HOME; sleep 1
-for _ in 1 2 3 4 5 6 7 8; do adb shell input swipe $((W * 9 / 10)) $((BOTTOM / 2)) $((W / 10)) $((BOTTOM / 2)) 150; done
-sleep 2
-dump > "$OUT/.ui.xml"
-python - "$OUT/.ui.xml" "$W" <<'PY' | while read -r name l t r b; do shot "$name" "$l $t $r $b"; done
+# Widgets: each placed size, found by the ids only that size has (see widget/AncWidgetProvider.kt). Looked for on
+# the first home page and on the last one, where the launcher may hold the 4x2.
+widgets() {
+    dump > "$OUT/.ui.xml"
+    local found
+    found=$(python - "$OUT/.ui.xml" "$W" <<'PY'
 import re, sys
 import xml.etree.ElementTree as ET
 WIDTH = int(sys.argv[2])
@@ -133,11 +132,22 @@ for n in ET.parse(sys.argv[1]).iter("node"):
     # Only the shown page is in the dump. The 4x2 is the wide one.
     have = ids(n)
     l, t, r, b = map(int, re.findall(r"\d+", n.get("bounds")))
-    page = "battery" if "w_panel_left" in have else "controls" if "w_q0" in have else None
+    page = "battery" if "w_ring_left" in have else "controls" if "w_q0" in have else None
     if not page:
         continue
     size = "4x2" if (r - l) > 1.3 * (b - t) else "2x2"
     print(f"widget-{size}-{page}", l - 16, t - 16, r + 16, b + 16)
 PY
-rm -f "$OUT/.ui.xml"
+)
+    while read -r name l t r b; do
+        # The first page wins: a widget half scrolled off the last page would overwrite a whole one.
+        [ -n "$name" ] && { grep -q "/$name.png" "$JOBS" || shot "$name" "$l $t $r $b"; }
+    done <<<"$found"
+    rm -f "$OUT/.ui.xml"
+}
+adb shell input keyevent HOME; sleep 1.5
+widgets
+for _ in 1 2 3 4 5 6 7 8; do adb shell input swipe $((W * 9 / 10)) $((BOTTOM / 2)) $((W / 10)) $((BOTTOM / 2)) 150; done
+sleep 2
+widgets
 crop_all
