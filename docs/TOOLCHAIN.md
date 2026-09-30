@@ -183,7 +183,21 @@ is shared to Windows Remote Desktop with `x0vncserver -display :0 -localhost=1 -
 `xrdp` (listening on `tcp://127.0.0.1:3389`, its `[Xvnc]` session pointed at port 5901). From the PC:
 `ssh -p 8022 -L 3390:localhost:3389 <phone>`, then `mstsc` to `localhost:3390`. xrdp's own password
 login does not work in Termux, so the VNC password is the login. Every Termux tool (Gradle, adb, git)
-works in its Konsole. Plasma's power manager calls `termux-brightness`, which needs a permission and
+works in its Konsole.
+
+RDP tops out around 15 fps: the screen is captured in software and passed through VNC. For a smooth
+picture, mirror the phone screen itself with [scrcpy](https://github.com/Genymobile/scrcpy) (portable
+on Windows), which uses the phone's hardware video encoder. Run the Termux:X11 desktop fullscreen at
+1920x1080 (`termux-x11-preference fullscreen:true showAdditionalKbd:false
+displayResolutionMode:custom displayResolutionCustom:1920x1080`), switch adb to a fixed port once per
+boot (`adb connect <phone>:<wireless debugging port>`, then `adb tcpip 5555`), and on the PC:
+`adb connect <phone>:5555`, then `scrcpy -s <phone>:5555 --no-audio --keyboard=uhid -b 8M
+--video-codec=h265 --crop=1072:1920:8:236 --mouse-bind=++++:bhsn`. The crop cuts the letterbox bars and
+the top pixel rows, so the mouse cannot open Android's status bar; `--mouse-bind` sends right clicks to
+the desktop instead of Android's Back. Sound stays on the phone. Use the office or home Wi-Fi, not the
+phone's hotspot: while the phone is on Wi-Fi and hosts a hotspot at once, frames arrive in bursts.
+
+Plasma's power manager calls `termux-brightness`, which needs a permission and
 would dim the real screen: hide its autostart entry.
 
 The desktop app needs a normal (glibc) Linux, so it builds in an Ubuntu proot:
