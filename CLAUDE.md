@@ -288,7 +288,16 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
 - **Windows Bluetooth is Winsock** (`AF_BTH` + `BTHPROTO_RFCOMM`, `windows-sys`): connect by
   service UUID with port 0 and Windows resolves the channel over SDP. Verified 2026-09-30 on the Buds 4:
   079A connects, the init sequence and `0x8106` answer as on the phone. Never WinRT.
-- Buds found among Windows' paired devices, connected ones first; never hardcode an address.
+- Buds found among Windows' paired devices: only ones with an audio link, a `models.json` name first
+  (a user Connect tries any connected one); rescan every 5 s. Never hardcode an address.
+- **Shared, never copied:** `build.rs` turns `app/src/main/res/drawable/*.xml` into SVG and the listed
+  `strings.xml` keys (all locales) into tables; `models.json` is `include_str!`'d. A new desktop icon or
+  string = add its name to `build.rs`. Desktop-only strings are English for now (`Tr` in `ui/app.slint`).
+- Files: `bt.rs` (sockets), `protocol.rs` (framing, parsers, ANC modes, capabilities, tests from captures),
+  `session.rs` (link thread, init sequence, commands), `main.rs` (UI + tray glue), `ui/app.slint`.
+- **Software renderer** (set in `main`): ~25 MB RAM against ~130 MB with the GPU one. `SLINT_BACKEND`
+  overrides it.
+- The quick panel (tray right-click) hides when it loses focus; closing the main window hides it, Quit exits.
 - **Distribution `[USER]`:** `.exe` installer and portable `.zip`, just the app: no drivers, no
   services, no helper or background processes. Release tags `desktop-v<version>`, built by CI.
 

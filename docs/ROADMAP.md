@@ -23,8 +23,10 @@ finished (ROADMAP-DONE.md).
    Window like accessory software plus a tray (battery on hover, right-click quick panel with ANC,
    low latency and more). Every mobile feature that makes sense on a PC. Shipped as an `.exe`
    installer and a portable `.zip`: no drivers, no services, no helper processes `[USER]`.
-   Done: the updater skips desktop releases; the Windows RFCOMM spike (079A, init, battery) works.
-   **Next:** Linux (BlueZ) spike, then the tray MVP, then feature screens in home-row order.
+   Done: the updater skips desktop releases; Windows MVP: window + tray quick panel with battery, wear,
+   ANC (modes and levels from `models.json`) and low latency, strings in all locales.
+   **Next:** Linux (BlueZ, VM being set up), installer + portable zip in CI, then feature screens in
+   home-row order (Hi-Res, 3D audio, hearing profile, EQ, dual connection, earbud settings).
 
 ## Open
 

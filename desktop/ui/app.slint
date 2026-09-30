@@ -1,0 +1,412 @@
+// QuickBuds desktop UI: the main window and the tray's quick panel. Classic style, Graphite palette.
+
+export global Palette {
+    in-out property <color> bg: #121214;
+    in-out property <color> card: #232327;
+    in-out property <color> accent: #D71920;
+    in-out property <color> text: #FFFFFF;
+    in-out property <color> text2: #A0A0A5;
+    in-out property <color> outline: #34343A;
+
+    // Wear shade: in ear full, out of ear secondary, in case faint (like the phone's rings).
+    public pure function wear-tint(wear: int) -> color {
+        if wear == 2 { return text; }
+        if wear == 3 { return text.transparentize(0.83); }
+        return text2;
+    }
+}
+
+// Strings from the phone app's strings.xml (set from Rust for the system language).
+export global Tr {
+    in property <string> connected: "Connected";
+    in property <string> connect: "Connect";
+    in property <string> disconnect: "Disconnect";
+    in property <string> connecting: "Connecting…";
+    in property <string> not-connected: "Not connected";
+    in property <string> left: "Left";
+    in property <string> right: "Right";
+    in property <string> case: "Case";
+    in property <string> noise-control: "Noise control";
+    in property <string> off: "Off";
+    in property <string> anc: "ANC";
+    in property <string> adaptive: "Adaptive";
+    in property <string> transparency: "Transparency";
+    in property <[string]> level-names: ["Low", "Medium", "High", "Smart"];
+    in property <string> low-latency: "Low latency";
+    // ponytail: desktop-only strings, English until the translation pass.
+    in property <string> open: "Open QuickBuds";
+    in property <string> quit: "Quit";
+}
+
+export struct Level {
+    id: string,
+    name: string,
+    icon: image,
+}
+
+export global Buds {
+    // 0 not connected, 1 connecting, 2 connected
+    in property <int> status;
+    in property <string> name;
+    // -1 = unknown
+    in property <int> left: -1;
+    in property <int> right: -1;
+    in property <int> case: -1;
+    in property <bool> left-charging;
+    in property <bool> right-charging;
+    in property <bool> case-charging;
+    // 0 unknown, 1 out of ear, 2 in ear, 3 in case
+    in property <int> left-wear;
+    in property <int> right-wear;
+    in property <string> anc;
+    in property <bool> anc-is-level;
+    in property <bool> has-off;
+    in property <bool> has-adaptive;
+    in property <bool> has-transparency;
+    in property <[Level]> levels;
+    in property <bool> low-latency;
+
+    in property <image> icon-left;
+    in property <image> icon-right;
+    in property <image> icon-case;
+    in property <image> icon-off;
+    in property <image> icon-anc;
+    in property <image> icon-adaptive;
+    in property <image> icon-transparency;
+    in property <image> icon-low-latency;
+    in property <image> icon-app;
+
+    callback set-anc(string);
+    callback set-low-latency(bool);
+    callback connect();
+    callback disconnect();
+    callback open-main();
+    callback quit();
+
+    out property <bool> on: status == 2;
+    out property <string> status-text: status == 2 ? Tr.connected : status == 1 ? Tr.connecting : Tr.not-connected;
+}
+
+component Card inherits Rectangle {
+    background: Palette.card;
+    border-radius: 16px;
+    opacity: Buds.on ? 1 : 0.35;
+}
+
+component Ring {
+    in property <int> level;
+    in property <bool> charging;
+    in property <image> glyph;
+    in property <length> glyph-w;
+    in property <length> glyph-h;
+    in property <color> tint: Palette.text;
+    in property <string> label;
+    in property <length> size: 90px;
+    property <float> frac: max(0, min(level, 99.9)) / 100;
+    property <float> r: 45;
+    width: size;
+    height: size + (label == "" ? 20px : 38px);
+
+    Path {
+        x: 0; y: 0; width: size; height: size;
+        viewbox-width: 100; viewbox-height: 100;
+        stroke: Palette.outline;
+        stroke-width: size * 0.06;
+        MoveTo { x: 50; y: 5; }
+        ArcTo { x: 49.99; y: 5; radius-x: r; radius-y: r; large-arc: true; sweep: true; }
+    }
+    if level > 0: Path {
+        x: 0; y: 0; width: size; height: size;
+        viewbox-width: 100; viewbox-height: 100;
+        stroke: Palette.accent;
+        stroke-width: size * 0.06;
+        MoveTo { x: 50; y: 5; }
+        ArcTo {
+            x: 50 + r * sin(frac * 360deg);
+            y: 50 - r * cos(frac * 360deg);
+            radius-x: r; radius-y: r;
+            large-arc: frac > 0.5; sweep: true;
+        }
+    }
+    Image {
+        source: glyph;
+        width: glyph-w; height: glyph-h;
+        x: (size - self.width) / 2; y: (size - self.height) / 2;
+        colorize: tint;
+    }
+    Text {
+        y: size + 4px; width: size;
+        horizontal-alignment: center;
+        text: level < 0 ? "–" : level + "%" + (charging ? " ⚡" : "");
+        color: Palette.text;
+        font-size: size > 60px ? 15px : 12px;
+        font-weight: 600;
+    }
+    if label != "": Text {
+        y: size + 22px; width: size;
+        horizontal-alignment: center;
+        text: label;
+        color: Palette.text2;
+        font-size: 12px;
+    }
+}
+
+component Batteries inherits HorizontalLayout {
+    in property <length> size: 90px;
+    in property <bool> labels: true;
+    alignment: space-around;
+    Ring {
+        size: root.size; level: Buds.left; charging: Buds.left-charging; label: labels ? Tr.left : "";
+        glyph: Buds.icon-left; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
+        tint: Palette.wear-tint(Buds.left-wear);
+    }
+    Ring {
+        size: root.size; level: Buds.right; charging: Buds.right-charging; label: labels ? Tr.right : "";
+        glyph: Buds.icon-right; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
+        tint: Palette.wear-tint(Buds.right-wear);
+    }
+    Ring {
+        size: root.size; level: Buds.case; charging: Buds.case-charging; label: labels ? Tr.case : "";
+        glyph: Buds.icon-case; glyph-w: root.size * 0.5; glyph-h: root.size * 0.4;
+    }
+}
+
+component Segment inherits Rectangle {
+    in property <image> icon;
+    in property <string> label;
+    in property <bool> selected;
+    in property <bool> compact;
+    callback clicked;
+    // Equal widths, whatever the label length.
+    preferred-width: 0;
+    horizontal-stretch: 1;
+    border-radius: 12px;
+    background: selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
+    animate background { duration: 120ms; }
+    VerticalLayout {
+        alignment: center;
+        spacing: 4px;
+        padding: 6px;
+        HorizontalLayout {
+            alignment: center;
+            Image {
+                source: icon; width: 24px; height: 24px;
+                colorize: selected ? #FFFFFF : Palette.text;
+            }
+        }
+        if !compact: Text {
+            text: label;
+            horizontal-alignment: center;
+            font-size: 12px;
+            color: selected ? #FFFFFF : Palette.text;
+            overflow: elide;
+        }
+    }
+    ta := TouchArea {
+        enabled: Buds.on;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+component AncSegments inherits HorizontalLayout {
+    in property <bool> compact;
+    spacing: 4px;
+    if Buds.has-off: Segment {
+        compact: root.compact; icon: Buds.icon-off; label: Tr.off;
+        selected: Buds.anc == "Off"; clicked => { Buds.set-anc("Off"); }
+    }
+    if Buds.levels.length > 0: Segment {
+        compact: root.compact; icon: Buds.icon-anc; label: Tr.anc;
+        selected: Buds.anc-is-level; clicked => { Buds.set-anc("ANC"); }
+    }
+    if Buds.has-adaptive: Segment {
+        compact: root.compact; icon: Buds.icon-adaptive; label: Tr.adaptive;
+        selected: Buds.anc == "Adaptive"; clicked => { Buds.set-anc("Adaptive"); }
+    }
+    if Buds.has-transparency: Segment {
+        compact: root.compact; icon: Buds.icon-transparency; label: Tr.transparency;
+        selected: Buds.anc == "Transparency"; clicked => { Buds.set-anc("Transparency"); }
+    }
+}
+
+component LevelChips inherits HorizontalLayout {
+    spacing: 6px;
+    for l in Buds.levels: Rectangle {
+        height: 34px;
+        border-radius: 17px;
+        border-width: 1px;
+        border-color: Buds.anc == l.id ? Palette.accent : Palette.outline;
+        background: Buds.anc == l.id ? Palette.accent.transparentize(0.8) : ta.has-hover ? Palette.outline : transparent;
+        HorizontalLayout {
+            alignment: center;
+            spacing: 6px;
+            Image { source: l.icon; width: 16px; colorize: Palette.text; }
+            Text { text: l.name; color: Palette.text; font-size: 12px; vertical-alignment: center; }
+        }
+        ta := TouchArea {
+            enabled: Buds.on;
+            mouse-cursor: pointer;
+            clicked => { Buds.set-anc(l.id); }
+        }
+    }
+}
+
+component Toggle inherits Rectangle {
+    in property <bool> checked;
+    callback toggled(bool);
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: checked ? Palette.accent : Palette.outline;
+    animate background { duration: 120ms; }
+    Rectangle {
+        width: 18px; height: 18px; border-radius: 9px;
+        background: #FFFFFF;
+        y: 3px;
+        x: root.checked ? root.width - 21px : 3px;
+        animate x { duration: 120ms; }
+    }
+    TouchArea {
+        enabled: Buds.on;
+        mouse-cursor: pointer;
+        clicked => { root.toggled(!root.checked); }
+    }
+}
+
+component LowLatencyRow inherits HorizontalLayout {
+    spacing: 12px;
+    Image {
+        source: Buds.icon-low-latency; width: 24px; height: 24px;
+        colorize: Palette.accent;
+        y: (parent.height - self.height) / 2;
+    }
+    Text {
+        text: Tr.low-latency; color: Palette.text; font-size: 14px;
+        vertical-alignment: center; horizontal-stretch: 1;
+    }
+    VerticalLayout {
+        alignment: center;
+        Toggle {
+            checked: Buds.low-latency;
+            toggled(on) => { Buds.set-low-latency(on); }
+        }
+    }
+}
+
+component Chip inherits Rectangle {
+    in property <string> text;
+    in property <bool> primary;
+    callback clicked;
+    height: 34px;
+    min-width: label.preferred-width + 28px;
+    border-radius: 17px;
+    background: primary ? Palette.accent : ta.has-hover ? Palette.outline : Palette.card;
+    label := Text {
+        text: root.text;
+        color: root.primary ? #FFFFFF : Palette.text;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "QuickBuds";
+    icon: Buds.icon-app;
+    width: 420px;
+    height: 560px;
+    background: Palette.bg;
+    default-font-family: "Segoe UI";
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        HorizontalLayout {
+            spacing: 8px;
+            VerticalLayout {
+                horizontal-stretch: 1;
+                Text {
+                    text: Buds.name == "" ? "QuickBuds" : Buds.name;
+                    color: Palette.text; font-size: 20px; font-weight: 700; overflow: elide;
+                }
+                Text { text: Buds.status-text; color: Palette.text2; font-size: 12px; }
+            }
+            VerticalLayout {
+                alignment: center;
+                Chip {
+                    text: Buds.status == 0 ? Tr.connect : Tr.disconnect;
+                    primary: Buds.status == 0;
+                    clicked => { if Buds.status == 0 { Buds.connect(); } else { Buds.disconnect(); } }
+                }
+            }
+        }
+
+        Card {
+            VerticalLayout {
+                padding: 16px;
+                Batteries { }
+            }
+        }
+
+        if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
+            VerticalLayout {
+                padding: 12px;
+                spacing: 10px;
+                Text { text: Tr.noise-control; color: Palette.text2; font-size: 12px; }
+                AncSegments { height: 64px; }
+                if Buds.anc-is-level: LevelChips { }
+            }
+        }
+
+        Card {
+            VerticalLayout {
+                padding: 16px;
+                LowLatencyRow { }
+            }
+        }
+
+        Rectangle { vertical-stretch: 1; }
+    }
+}
+
+export component QuickPanel inherits Window {
+    no-frame: true;
+    always-on-top: true;
+    title: "QuickBuds";
+    width: 300px;
+    height: 250px;
+    background: Palette.outline;
+    default-font-family: "Segoe UI";
+
+    Rectangle {
+        x: 1px; y: 1px;
+        width: parent.width - 2px; height: parent.height - 2px;
+        background: Palette.bg;
+        VerticalLayout {
+            padding: 12px;
+            spacing: 8px;
+            HorizontalLayout {
+                Text {
+                    text: Buds.name == "" ? "QuickBuds" : Buds.name;
+                    color: Palette.text; font-size: 13px; font-weight: 700;
+                    overflow: elide; horizontal-stretch: 1;
+                }
+                Text { text: Buds.status-text; color: Palette.text2; font-size: 11px; }
+            }
+            Batteries { size: 54px; labels: false; }
+            AncSegments { compact: true; height: 40px; opacity: Buds.on ? 1 : 0.35; }
+            LowLatencyRow { opacity: Buds.on ? 1 : 0.35; }
+            HorizontalLayout {
+                spacing: 8px;
+                alignment: end;
+                Chip { text: Tr.quit; clicked => { Buds.quit(); } }
+                Chip { text: Tr.open; primary: true; clicked => { Buds.open-main(); } }
+            }
+        }
+    }
+}
