@@ -5,7 +5,26 @@ build machine and the test device at once. A PC is optional: it only opens an SS
 phone for a bigger keyboard and screen. This page is the setup, for anyone who wants to work the
 same way.
 
-The setup: a Nothing Phone (3a) on Android 16, [Termux](https://termux.dev) from F-Droid, the
+## Why it is built this way
+
+The developer has no laptop, only a desktop at home. QuickBuds is worked on in free time at the day
+job, on an office desktop where installing or downloading development tools is not an option (the
+employer has no objection to the work itself). So the phone is the whole machine: Termux builds, adb
+installs and tests, and the office PC only opens an SSH session using the ssh client that Windows 11's
+default terminal already has. Nothing is installed on the PC.
+
+## AI assistant
+
+The code is written with [Claude Code](https://claude.com/claude-code) running inside Termux on the
+phone, so the assistant builds, installs and reads logcat itself over the same adb link. The usual
+setup is Claude Opus 5.5 at medium effort, with two plugins that keep it lean: **ponytail** (full:
+the shortest solution that works, no speculative code) and **caveman** (lite: terse replies). The
+rules the assistant follows live in [CLAUDE.md](../CLAUDE.md). Device testing and design decisions stay
+with the developer; the assistant does protocol, parsers and code.
+
+## The setup
+
+A Nothing Phone (3a) on Android 16, [Termux](https://termux.dev) from F-Droid, the
 earbuds paired to the phone. A full release build takes a few minutes.
 
 ## How it fits together

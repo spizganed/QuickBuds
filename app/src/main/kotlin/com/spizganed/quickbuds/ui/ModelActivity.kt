@@ -2,6 +2,8 @@ package com.spizganed.quickbuds.ui
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.spizganed.quickbuds.R
@@ -17,6 +19,8 @@ import com.spizganed.quickbuds.widget.AncWidgetProvider
 class ModelActivity : Activity() {
 
     private var scroll: ScrollView? = null
+    private var root: LinearLayout? = null
+    private lateinit var selection: SelectionSlider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeRes.select(this)
@@ -31,7 +35,10 @@ class ModelActivity : Activity() {
         // Two ids share a name (colour ranges, regional variants): those rows show their id.
         val nameCount = models.groupingBy { it.name }.eachCount()
 
-        val root = SettingRowFactory.screen(this)
+        // One root for the activity's life, so the selection outline can slide between rows.
+        val root = this.root ?: SettingRowFactory.screen(this).also { this.root = it; selection = SelectionSlider(it) }
+        root.removeAllViews()
+        var selectedRow: View? = null
         root.addView(SettingRowFactory.title(this, R.string.model_title))
 
         fun row(title: String, subtitle: String?, selected: Boolean, onPick: () -> Unit) =
@@ -47,7 +54,7 @@ class ModelActivity : Activity() {
                     if (selected) setTextColor(p.accent)
                 }
                 if (subtitle != null) SettingRowFactory.subtitle(this, r).text = subtitle
-                if (selected) r.foreground = ThemeRes.selectedBorder(this, p.accent, SettingRowFactory.SPLIT_RADIUS)
+                if (selected) selectedRow = r
             }
 
         val auto = SettingRowFactory.splitList(this)
@@ -68,11 +75,12 @@ class ModelActivity : Activity() {
             root.addView(card)
         }
 
+        selection.moveTo(selectedRow, p.accent)
+
         // Same ScrollView, new content: it keeps its scroll position (see LanguageActivity).
         val scroll = this.scroll ?: ScrollView(this).also { setContentView(it); this.scroll = it }
         scroll.setBackgroundColor(p.background)
-        scroll.removeAllViews()
-        scroll.addView(root)
+        if (root.parent == null) scroll.addView(root)
         scroll.requestApplyInsets()
     }
 }

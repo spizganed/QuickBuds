@@ -25,11 +25,7 @@ finished (ROADMAP-DONE.md).
 
 ## Open
 
-- **Smaller widget** ([USER] 2026-09-30: "the 4x2 but smaller"). **Question:** 4x1 (the 4x2 cut to one row: three rings,
-  double tap for the controls) or 2x1 (two rings, no controls page)? The agent recommends 4x1; no answer yet.
-- **README install note for Play Protect** ("App blocked" on a sideload: tap "Install anyway"); offered, not decided.
-- **Sliding selection outside the EQ** (`SelectionSlider`): theme presets, language and model recreate or close on a
-  pick, so they do not slide; decide only if it can be done without a rebuild.
+Nothing.
 
 ## Waiting on others
 
@@ -41,6 +37,7 @@ finished (ROADMAP-DONE.md).
 ## Decided against — do not re-suggest
 
 - A resizable 2x2 widget and a 3x3 size: 3x2 / 2x3 shapes broke the layout; the 2x2 is fixed ([USER] 2026-09-30).
+- More widget sizes (4x1, 2x1): scrapped until he has a good idea for one ([USER] 2026-09-30).
 
 - Right-to-left languages (Arabic, Urdu, Persian, Hebrew): they need a mirrored layout and a check of
   every custom-drawn view ([USER] 2026-09-27).

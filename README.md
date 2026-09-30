@@ -58,7 +58,7 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matr
   firmware version.
 - **Whatever else your model has:** 3D audio with head tracking, game sound effects, vocal enhancement,
   smart / adaptive volume, power saving and more, each shown only where the earbuds support it.
-- **Home-screen widgets** in three sizes (2×2, 3×3, 4×2). Each has a battery page and a noise
+- **Home-screen widgets** in two sizes (2×2, 4×2). Each has a battery page and a noise
   control + Low latency page, in your theme's colours.
 - **Two styles:** Classic, or a dot-matrix look for the app and the widgets.
 - **Themes:** OLED Black, Classic Dark and White, or match the system's light / dark setting. Your own
@@ -73,6 +73,9 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matr
 2. Download `QuickBuds<version>.apk` from the
    [latest release](https://github.com/spizganed/QuickBuds/releases/latest) and install it.
 3. Allow the Bluetooth permission when asked.
+
+> **"App blocked" or "Unknown developer" from Play Protect?** Tap **Install anyway**. QuickBuds is a new,
+> small app that Google has not seen much yet, so the warning is normal for it. It goes away in time.
 
 > **Coming from v1.1.0?** Uninstall it first: v2.0.0 and later are signed with a new key.
 
