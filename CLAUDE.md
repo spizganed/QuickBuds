@@ -329,6 +329,7 @@ layout was removed; do not bring resizing back) and **4x2**
   `scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]` (buds connected, phone in English,
   Pillow). Classic to `docs/screenshots/`, Dot matrix to `docs/screenshots/dot-matrix/`. It leaves the
   style set, so **run his style (dot-matrix) last**. It opens screens by visible text, so renaming a
-  label breaks it. Widgets on the last home page are cropped to `widget-<size>.png`. The README shows
+  label breaks it. Widgets on the first and last home page are cropped to `widget-<size>.png`; a third
+  argument `widgets` (`... dot-matrix <serial> widgets`) sets the style and shoots only the widgets. The README shows
   only: Classic main, Earbud settings, Equalizer, Hearing profile, two widgets, Dot matrix main and
   2x2 widget.

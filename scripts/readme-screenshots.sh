@@ -7,7 +7,7 @@
 # Widgets: each placed QuickBuds widget on the first and the last home screen page is cropped to its own file,
 # widget-<size>-<page> (2x2, 4x2; battery or controls, whichever page it shows); sizes that
 # are not placed are skipped.
-# Usage: scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]
+# Usage: scripts/readme-screenshots.sh classic|dot-matrix [adb-serial [widgets]]  ("widgets": only set the style and shoot the widgets)
 set -euo pipefail
 export MSYS_NO_PATHCONV=1  # Git Bash would rewrite /sdcard/... into a Windows path
 cd "$(dirname "$0")/.."
@@ -93,6 +93,7 @@ set -- $b
 q=$([ "$STYLE" = dot-matrix ] && echo 3 || echo 1)
 adb shell input tap $(( $1 + ($3 - $1) * q / 4 )) $(( ($2 + $4) / 2 ))
 sleep 1.2; back; back
+if [ "${3:-}" != widgets ]; then
 shot main
 tap "Model";            shot models;   back
 tap "Equalizer";        shot eq
@@ -115,6 +116,7 @@ back
 tap "Home layout";      shot home-layout;     back
 tap "App update";       shot update;          back
 tap "About";            shot about;           back; back
+fi
 
 # Widgets: each placed size, found by the ids only that size has (see widget/AncWidgetProvider.kt). Looked for on
 # the first home page and on the last one, where the launcher may hold the 4x2.
