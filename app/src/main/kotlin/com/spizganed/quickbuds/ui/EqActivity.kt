@@ -188,6 +188,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private fun createCustom(name: String, freqs: List<Int>) {
         justCreated[name] = android.os.SystemClock.elapsedRealtime()
         manager?.createCustomEq(name, freqs)
+        render()
+        // If the create never comes back, the placeholder goes with its 4 s.
+        customCard.postDelayed({ render() }, 4100)
     }
 
     private val connection = object : ServiceConnection {
@@ -310,7 +313,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
         // Each EQ write triggers several re-reads; rebuilding on every one would cut the
         // selection and expand animations short, so the lists only rebuild when they change.
-        val signature = "$connected|$current|" + custom.joinToString { "${it.id}:${it.name}:${it.gains}" }
+        val waiting = createdNames().filter { n -> custom.none { it.name == n } }
+        val signature = "$connected|$current|$waiting|" + custom.joinToString { "${it.id}:${it.name}:${it.gains}" }
         if (signature == shownSignature) return
         // Animate only a real change on screen, never the first fill.
         val prevSelection = if (shownSignature == null) current else shownSelection
@@ -346,7 +350,14 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             if (current == p.id) selectedRow = row
             if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames) slide(row, open = true) { selection.snap() }
         }
-        customCard.visibility = if (custom.isEmpty() || !hasCustom(this)) View.GONE else View.VISIBLE
+        // A preset just sent to create shows at once, dimmed, until the buds' re-read brings the real one (about a second).
+        waiting.forEach { name ->
+            val row = choiceRow(name, false, false) {}
+            row.alpha = 0.5f
+            SettingRowFactory.addSplit(customCard, row)
+            if (prevNames != null) slide(row, open = true) { row.alpha = 0.5f }
+        }
+        customCard.visibility = if ((custom.isEmpty() && waiting.isEmpty()) || !hasCustom(this)) View.GONE else View.VISIBLE
 
         // New lives under the card, apart from the presets themselves.
         customActions.removeAllViews()
@@ -471,11 +482,11 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                     getString(R.string.eq_delete)
                 ) {
                     d.dismiss()
-                    // The row folds shut first; the delete goes out once it has.
-                    deleting += key(p)
+                                        deleting += key(p)
                     val row = customRows[p.id]
-                    if (row == null) manager?.deleteCustomEq(p)
-                    else slide(row, open = false) { manager?.deleteCustomEq(p) }
+                    // Both at once: the fold takes 220 ms, the buds' re-read longer.
+                    manager?.deleteCustomEq(p)
+                    if (row != null) slide(row, open = false)
                 }
             }.apply {
                 fortyEight(this)
@@ -531,7 +542,8 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             textSize = 14f
             setPadding(dp(8f), 0, 0, 0)
         })
-        setOnClickListener { onClick() }
+        ThemeRes.sinkOnPress(this)
+        setOnClickListener { Haptics.commit(it); onClick() }
     }
 
     /** SPEC icon button (44dp, accent icon). */

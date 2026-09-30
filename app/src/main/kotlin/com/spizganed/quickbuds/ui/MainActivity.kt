@@ -336,15 +336,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
         connPill = findViewById<LinearLayout>(R.id.connPill)
         // No ripple: the pill sinks a little under the finger and springs back, like a real button.
-        connPill.setOnTouchListener { v, e ->
-            when (e.actionMasked) {
-                MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.92f).scaleY(0.92f)
-                    .setInterpolator(DecelerateInterpolator()).setDuration(90).start()
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> v.animate().scaleX(1f).scaleY(1f)
-                    .setInterpolator(OvershootInterpolator(3f)).setDuration(260).start()
-            }
-            false
-        }
+        ThemeRes.sinkOnPress(connPill)
         connDot = findViewById<ImageView>(R.id.connDot)
         connText = findViewById<TextView>(R.id.connText)
 

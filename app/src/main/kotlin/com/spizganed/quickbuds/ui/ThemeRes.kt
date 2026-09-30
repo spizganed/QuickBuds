@@ -327,6 +327,19 @@ object ThemeRes {
     /** Icon button / framed control: `card` fill, `outline` stroke, 14dp radius (SPEC section 2). */
     fun iconButton(context: Context, radiusDp: Float = 14f): Drawable = card(context, radiusDp)
 
+    /** No ripple: the view sinks a little under the finger and springs back, like a real button. Listener returns false, so clicks still work. */
+    fun sinkOnPress(v: View) {
+        v.setOnTouchListener { view, e ->
+            when (e.actionMasked) {
+                android.view.MotionEvent.ACTION_DOWN -> view.animate().scaleX(0.92f).scaleY(0.92f)
+                    .setInterpolator(android.view.animation.DecelerateInterpolator()).setDuration(90).start()
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> view.animate().scaleX(1f).scaleY(1f)
+                    .setInterpolator(android.view.animation.OvershootInterpolator(3f)).setDuration(260).start()
+            }
+            false
+        }
+    }
+
     /** Press ripple in `text` at low alpha, over [content] (or bounded by the view when null). */
     fun ripple(context: Context, content: android.graphics.drawable.Drawable? = null): RippleDrawable {
         val p = palette(context)
