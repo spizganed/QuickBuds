@@ -372,15 +372,18 @@ State: v3.9.2 released. The desktop app (`desktop/`, Rust + Slint) runs on Windo
 the tray; the Android updater fix (skips `desktop-v*`) is committed but not in a release yet, and must ship
 before the first desktop release.
 
-- **Next:** ROADMAP.md step 2, "Next, in order": noise control like the phone (ANC slides to the levels),
-  then desktop Dev tools, then reuse more of the phone UI. EQ writes and ANC / low latency from the desktop
+- **Next:** ROADMAP.md step 2, "Next, in order": ANC level slide and Dev tools are built (waiting for his
+  check), then reuse more of the phone UI. EQ writes and ANC / low latency from the desktop
   are untested on the buds: ask him for the result.
 - **Linux VM** (VirtualBox 7.2.20 at `C:\Program Files\Oracle\VirtualBox`, not on PATH): VM
   `QuickBuds-Linux` created (4 GB, 4 CPUs, 40 GB disk, USB 3 filter for the ASUS USB-BT400 dongle, SSH
   forward 127.0.0.1:2222). Ubuntu not installed yet. ISO `C:\Users\bartek\VirtualBox VMs\iso\
-  ubuntu-26.04.1-desktop-amd64.iso`, SHA256 `601e30fb...da1f` (releases.ubuntu.com/26.04/SHA256SUMS);
-  resume a partial one with `curl -C -` from mirror.init7.net, one process only. Next: unattended install,
-  pair the buds in the VM (then re-pair in Windows), BlueZ spike via the `bluer` profile API.
+  ubuntu-26.04.1-desktop-amd64.iso`, SHA256 verified. `VBoxManage unattended install` started 2026-09-30
+  (user `qb`, password in private memory, hostname `qb-linux`, post-install adds openssh-server, bluez,
+  build-essential, libdbus-1-dev). **It hangs at "Loading essential drivers"**: Windows' Memory integrity
+  (HVCI, Hyper-V) is on, so VirtualBox runs on the slow NEM fallback ("AMD-V is not available" in VBox.log).
+  Fix is his call: turn off Core isolation › Memory integrity and reboot, then rerun the unattended install.
+  Next after that: pair the buds in the VM (then re-pair in Windows), BlueZ spike via the `bluer` profile API.
 - Screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
   window message (WM_LBUTTONDOWN/UP); the scripts are not in the repo.
 - **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.
