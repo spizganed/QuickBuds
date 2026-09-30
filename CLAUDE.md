@@ -50,7 +50,7 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
   key, `assembleRelease` builds unsigned.
 - Release: `./gradlew assembleRelease bundleRelease`, name `QuickBuds<version>.apk` / `.aab`, then
   `gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"`.
-  The updater needs the `.apk` asset. No local copies. **Notes cover every user-visible change since
+  The updater needs the `.apk` asset. No local copies. Android tags are `v*`, desktop tags `desktop-v*`. **Notes cover every user-visible change since
   the last tag**: read `git log v<previous>..HEAD` first.
 
 ### Phone (Termux, often reached over SSH from the PC)
@@ -212,7 +212,8 @@ A change recreates open screens (part of the activity signature).
 - **Settings** (`SettingsActivity`): Appearance, General (language, haptics, background service, Dev
   tools button, default on), App. Find my earbuds and Wear detection are sheets
   (`FindBudsSheet`, `WearSheet`) opened from the Earbud settings hub, like the fit test.
-- **Update check** (`UpdateChecker`, `UpdateActivity`): GitHub latest release, `.apk` asset; on start (switch on the
+- **Update check** (`UpdateChecker`, `UpdateActivity`): newest GitHub release tagged `v*` with an `.apk` asset
+  (desktop releases and pre-releases are skipped); on start (switch on the
   update screen) at most every 12 h, silent on failure, one dialog per new tag.
 - **About:** Ko-fi button hidden while `AboutActivity.KOFI_URL` is null.
 - **Home layout** (`HomeLayoutActivity`): drag to reorder, eye to hide; prefs `homeRowOrder` /
@@ -277,6 +278,19 @@ user-visible string needs all 26** (lint does not catch a missing one). Constant
 - A `when` on UI string keys with no `else` fails silently (`"Trans"` vs `"Transparency"` hid for
   weeks). Check every state write has its refresh call.
 - Downloads go through MediaStore (`Download/QuickBuds/` holds both the crash reports and the log exports), never a plain `File`.
+
+## Desktop (`desktop/`, in progress)
+
+Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Plan in ROADMAP.md.
+
+- `cargo test` / `cargo build --release` in `desktop/`. `protocol.rs` mirrors `OpoProtocol` framing;
+  a protocol change lands in both apps, and in PROTOCOL.md, in one commit.
+- **Windows Bluetooth is Winsock** (`AF_BTH` + `BTHPROTO_RFCOMM`, `windows-sys`): connect by
+  service UUID with port 0 and Windows resolves the channel over SDP. Verified 2026-09-30 on the Buds 4:
+  079A connects, the init sequence and `0x8106` answer as on the phone. Never WinRT.
+- Buds found among Windows' paired devices, connected ones first; never hardcode an address.
+- **Distribution `[USER]`:** `.exe` installer and portable `.zip`, just the app: no drivers, no
+  services, no helper or background processes. Release tags `desktop-v<version>`, built by CI.
 
 ## Widgets
 

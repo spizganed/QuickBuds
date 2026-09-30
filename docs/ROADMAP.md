@@ -19,9 +19,12 @@ finished (ROADMAP-DONE.md).
    [CONTRIBUTING.md](./CONTRIBUTING.md) (build quickstart), [PACKET-CAPTURE.md](./PACKET-CAPTURE.md)
    (capture guide) and [TOOLCHAIN.md](./TOOLCHAIN.md) (Termux build and test device, SSH from a
    headless PC). **Next:** links from Reddit / XDA.
-2. **PC version: brainstorm session first.** A standalone Windows app (Linux too, maybe) that shares
-   the UI style, not the phone layout, plus a tray button for quick mode changes and no widget.
-   Language, UI toolkit and code sharing with the app are all open. Same repo (`[USER]` 2026-09-27).
+2. **PC version** (Windows and Linux), decided 2026-09-30: Rust + Slint in `desktop/`, same repo.
+   Window like accessory software plus a tray (battery on hover, right-click quick panel with ANC,
+   low latency and more). Every mobile feature that makes sense on a PC. Shipped as an `.exe`
+   installer and a portable `.zip`: no drivers, no services, no helper processes `[USER]`.
+   Done: the updater skips desktop releases; the Windows RFCOMM spike (079A, init, battery) works.
+   **Next:** Linux (BlueZ) spike, then the tray MVP, then feature screens in home-row order.
 
 ## Open
 

@@ -28,3 +28,6 @@ Thumbs.db
 
 # local/ is PC-only working material (packet captures, source SVGs). Never committed.
 local/
+
+# Desktop (Rust)
+desktop/target/

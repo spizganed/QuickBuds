@@ -1,0 +1,19 @@
+[package]
+name = "quickbuds"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "QuickBuds for Windows and Linux"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Networking_WinSock",
+    "Win32_Devices_Bluetooth",
+] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
+panic = "abort"
