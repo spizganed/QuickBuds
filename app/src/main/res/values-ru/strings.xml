@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Шутеры</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Помогите наладить работу ваших наушников</string>
-    <string name="report_body">QuickBuds проверен только на OnePlus Buds 4. На других моделях некоторые функции могут пока не работать.\n\nСообщите, что работает, а что нет на ваших наушниках, чтобы исправить это в следующей версии: создайте issue на GitHub с названием модели.\n\nПриложите лог: откройте Dev tools (значок вверху, включается в Настройки › Общие), попробуйте функцию, нажмите Export и приложите файл из Download/QuickBudsLogs. Также поможет Bluetooth HCI snoop log или adb logcat.</string>
+    <string name="report_body">QuickBuds проверен только на OnePlus Buds 4. На других моделях некоторые функции могут пока не работать.\n\nСообщите, что работает, а что нет на ваших наушниках, чтобы исправить это в следующей версии: создайте issue на GitHub с названием модели.\n\nПриложите лог: откройте Dev tools (значок вверху, включается в Настройки › Общие), попробуйте функцию, нажмите Export и приложите файл из Download/QuickBuds. Также поможет Bluetooth HCI snoop log или adb logcat.</string>
     <string name="report_open">Сообщить на GitHub</string>
     <string name="report_later">Понятно</string>
     <string name="row_smart_volume_title">Умная громкость</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Закрыть</string>
     <string name="dialog_cancel">Отмена</string>
     <string name="crash_title">QuickBuds аварийно завершилось в прошлый раз</string>
-    <string name="crash_saved_to">Сохранено в:\nDownload/QuickBudsCrash/\n\nЭто сообщение показывается один раз. Скопируйте или отправьте его, если хотите сохранить.</string>
+    <string name="crash_saved_to">Сохранено в:\nDownload/QuickBuds/\n\nЭто сообщение показывается один раз. Скопируйте или отправьте его, если хотите сохранить.</string>
     <string name="crash_copy">Копировать</string>
     <string name="crash_copied">Отчёт о сбое скопирован</string>
     <string name="crash_share">Поделиться</string>

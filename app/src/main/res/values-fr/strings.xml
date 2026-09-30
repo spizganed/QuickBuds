@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Jeux de tir</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Aidez à faire fonctionner vos écouteurs</string>
-    <string name="report_body">QuickBuds n’est testé que sur les OnePlus Buds 4. Sur d’autres modèles, certaines fonctions peuvent ne pas marcher encore.\n\nDites-nous ce qui marche et ce qui ne marche pas sur vos écouteurs, pour que la prochaine version le corrige : ouvrez une issue sur GitHub avec le nom de votre modèle.\n\nJoignez un journal : ouvrez Dev tools (icône en haut, activable dans Paramètres › Général), essayez la fonction, touchez Export et joignez le fichier de Download/QuickBudsLogs. Un journal Bluetooth HCI snoop ou adb logcat aide aussi.</string>
+    <string name="report_body">QuickBuds n’est testé que sur les OnePlus Buds 4. Sur d’autres modèles, certaines fonctions peuvent ne pas marcher encore.\n\nDites-nous ce qui marche et ce qui ne marche pas sur vos écouteurs, pour que la prochaine version le corrige : ouvrez une issue sur GitHub avec le nom de votre modèle.\n\nJoignez un journal : ouvrez Dev tools (icône en haut, activable dans Paramètres › Général), essayez la fonction, touchez Export et joignez le fichier de Download/QuickBuds. Un journal Bluetooth HCI snoop ou adb logcat aide aussi.</string>
     <string name="report_open">Signaler sur GitHub</string>
     <string name="report_later">Compris</string>
     <string name="row_smart_volume_title">Volume intelligent</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Fermer</string>
     <string name="dialog_cancel">Annuler</string>
     <string name="crash_title">QuickBuds a planté la dernière fois</string>
-    <string name="crash_saved_to">Enregistré dans :\nDownload/QuickBudsCrash/\n\nCe message ne s\'affiche qu\'une fois. Copiez-le ou partagez-le si vous voulez le garder.</string>
+    <string name="crash_saved_to">Enregistré dans :\nDownload/QuickBuds/\n\nCe message ne s\'affiche qu\'une fois. Copiez-le ou partagez-le si vous voulez le garder.</string>
     <string name="crash_copy">Copier</string>
     <string name="crash_copied">Rapport de plantage copié</string>
     <string name="crash_share">Partager</string>

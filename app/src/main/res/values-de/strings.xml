@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Shooter-Spiele</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Hilf mit, deine Buds zu unterstützen</string>
-    <string name="report_body">QuickBuds ist nur mit den OnePlus Buds 4 getestet. Auf anderen Modellen funktionieren manche Funktionen vielleicht noch nicht.\n\nBitte sag uns, was bei deinen Buds funktioniert und was nicht, damit die nächste Version es beheben kann: Erstelle ein Issue auf GitHub mit deinem Modellnamen.\n\nFüge ein Log bei: Öffne Dev tools (Symbol oben, einschaltbar unter Einstellungen › Allgemein), probiere die Funktion aus, tippe auf Export und hänge die Datei aus Download/QuickBudsLogs an. Ein Bluetooth-HCI-Snoop-Log oder adb logcat hilft auch.</string>
+    <string name="report_body">QuickBuds ist nur mit den OnePlus Buds 4 getestet. Auf anderen Modellen funktionieren manche Funktionen vielleicht noch nicht.\n\nBitte sag uns, was bei deinen Buds funktioniert und was nicht, damit die nächste Version es beheben kann: Erstelle ein Issue auf GitHub mit deinem Modellnamen.\n\nFüge ein Log bei: Öffne Dev tools (Symbol oben, einschaltbar unter Einstellungen › Allgemein), probiere die Funktion aus, tippe auf Export und hänge die Datei aus Download/QuickBuds an. Ein Bluetooth-HCI-Snoop-Log oder adb logcat hilft auch.</string>
     <string name="report_open">Auf GitHub melden</string>
     <string name="report_later">Verstanden</string>
     <string name="row_smart_volume_title">Intelligente Lautstärke</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Schließen</string>
     <string name="dialog_cancel">Abbrechen</string>
     <string name="crash_title">QuickBuds ist beim letzten Mal abgestürzt</string>
-    <string name="crash_saved_to">Gespeichert unter:\nDownload/QuickBudsCrash/\n\nDiese Meldung erscheint nur einmal. Kopiere oder teile sie, wenn du sie behalten willst.</string>
+    <string name="crash_saved_to">Gespeichert unter:\nDownload/QuickBuds/\n\nDiese Meldung erscheint nur einmal. Kopiere oder teile sie, wenn du sie behalten willst.</string>
     <string name="crash_copy">Kopieren</string>
     <string name="crash_copied">Absturzbericht kopiert</string>
     <string name="crash_share">Teilen</string>

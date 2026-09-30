@@ -296,19 +296,16 @@ object ThemeRes {
     fun pill(context: Context, fill: Int, radiusDp: Float): Drawable =
         if (nothing(context)) DotArt.Box(context, palette(context).card, fill, radiusDp) else shape(context, fill, null, radiusDp)
 
-    /**
-     * A group of rows or a home tile: [card], or nothing in the Nothing style ([USER] 2026-09-28: no cards,
-     * sections split by their labels, as on the Nothing widget).
-     */
-    fun group(context: Context): Drawable? = if (nothing(context)) null else card(context)
+    /** A group of rows or a home tile: the [card], in dots in the dot style ([USER] 2026-09-30: borders back on home). */
+    fun group(context: Context): Drawable? = card(context)
 
     /** The standard card: `card` fill, 1dp `outline` stroke. */
     /**
      * The selection mark ([USER] 2026-09-30: an outline, never a check), set as a row's or tile's foreground:
-     * a 2dp [color] outline, in the dot style one cell of dots. Classic's 24dp radius is the card's, so the corner rows,
-     * clipped to the card, keep a whole outline.
+     * a 2dp [color] outline, in the dot style one cell of dots. 24dp is the card's radius in both styles, so the corner rows
+     * line up with the card's own border.
      */
-    fun selectedBorder(context: Context, color: Int, radiusDp: Float = if (nothing(context)) 14f else 24f): android.graphics.drawable.Drawable {
+    fun selectedBorder(context: Context, color: Int, radiusDp: Float = 24f): android.graphics.drawable.Drawable {
         val r = dp(context, radiusDp).toFloat()
         if (!nothing(context)) return GradientDrawable().apply { cornerRadius = r; setStroke(dp(context, 2f), color) }
         return DotArt.Part(context, 0f, 0f, android.content.res.ColorStateList.valueOf(color)) { c, box, paint ->

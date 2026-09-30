@@ -103,7 +103,7 @@
     <string name="game_sound_type_shooter">Shooting games</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Help make your buds work</string>
-    <string name="report_body">QuickBuds is only tested on OnePlus Buds 4. On other models some features may not work yet.\n\nPlease tell us what works and what does not on your buds, so the next release can fix it: open an issue on GitHub with your model name.\n\nAttach a log: open Dev tools (header icon, can be turned on in Settings › General), try the feature, tap Export and add the file from Download/QuickBudsLogs. A Bluetooth HCI snoop log or adb logcat helps too.</string>
+    <string name="report_body">QuickBuds is only tested on OnePlus Buds 4. On other models some features may not work yet.\n\nPlease tell us what works and what does not on your buds, so the next release can fix it: open an issue on GitHub with your model name.\n\nAttach a log: open Dev tools (header icon, can be turned on in Settings › General), try the feature, tap Export and add the file from Download/QuickBuds. A Bluetooth HCI snoop log or adb logcat helps too.</string>
     <string name="report_open">Report on GitHub</string>
     <string name="report_later">Got it</string>
     <string name="row_smart_volume_title">Smart volume</string>
@@ -300,7 +300,7 @@
     <string name="dialog_close">Close</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="crash_title">QuickBuds crashed last time</string>
-    <string name="crash_saved_to">Saved to:\nDownload/QuickBudsCrash/\n\nThis message appears once. Copy or share it if you want to keep it.</string>
+    <string name="crash_saved_to">Saved to:\nDownload/QuickBuds/\n\nThis message appears once. Copy or share it if you want to keep it.</string>
     <string name="crash_copy">Copy</string>
     <string name="crash_copied">Crash report copied</string>
     <string name="crash_share">Share</string>

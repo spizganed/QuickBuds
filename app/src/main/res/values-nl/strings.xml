@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Shootergames</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Help je oordopjes goed te laten werken</string>
-    <string name="report_body">QuickBuds is alleen getest met de OnePlus Buds 4. Op andere modellen werken sommige functies misschien nog niet.\n\nLaat ons weten wat wel en niet werkt op jouw oordopjes, zodat de volgende versie het kan oplossen: open een issue op GitHub met je modelnaam.\n\nVoeg een log toe: open Dev tools (pictogram bovenaan, aan te zetten in Instellingen › Algemeen), probeer de functie, tik op Export en voeg het bestand uit Download/QuickBudsLogs toe. Een Bluetooth HCI-snooplog of adb logcat helpt ook.</string>
+    <string name="report_body">QuickBuds is alleen getest met de OnePlus Buds 4. Op andere modellen werken sommige functies misschien nog niet.\n\nLaat ons weten wat wel en niet werkt op jouw oordopjes, zodat de volgende versie het kan oplossen: open een issue op GitHub met je modelnaam.\n\nVoeg een log toe: open Dev tools (pictogram bovenaan, aan te zetten in Instellingen › Algemeen), probeer de functie, tik op Export en voeg het bestand uit Download/QuickBuds toe. Een Bluetooth HCI-snooplog of adb logcat helpt ook.</string>
     <string name="report_open">Melden op GitHub</string>
     <string name="report_later">Begrepen</string>
     <string name="row_smart_volume_title">Slim volume</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Sluiten</string>
     <string name="dialog_cancel">Annuleren</string>
     <string name="crash_title">QuickBuds is de vorige keer gecrasht</string>
-    <string name="crash_saved_to">Opgeslagen in:\nDownload/QuickBudsCrash/\n\nDit bericht verschijnt één keer. Kopieer of deel het als je het wilt bewaren.</string>
+    <string name="crash_saved_to">Opgeslagen in:\nDownload/QuickBuds/\n\nDit bericht verschijnt één keer. Kopieer of deel het als je het wilt bewaren.</string>
     <string name="crash_copy">Kopiëren</string>
     <string name="crash_copied">Crashrapport gekopieerd</string>
     <string name="crash_share">Delen</string>

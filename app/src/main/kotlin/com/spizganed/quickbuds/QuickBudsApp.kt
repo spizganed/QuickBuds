@@ -37,7 +37,7 @@ import java.util.Locale
  * WHERE THE FILE GOES — deliberately THREE places, because the whole point is
  * that the user can reach it by hand while the app is unusable:
  *
- *   1. Download/QuickBudsCrash/crash-<timestamp>.txt
+ *   1. Download/QuickBuds/crash-<timestamp>.txt
  *      The user-facing one. Written through MediaStore, which on API 29+ needs
  *      NO permission and produces a file any file manager and any PC can open.
  *      A new timestamped file per crash, so an older crash is never overwritten
@@ -199,8 +199,8 @@ class QuickBudsApp : Application() {
     }
 
     companion object {
-        /** Subfolder of Download holding crash reports. */
-        const val PUBLIC_DIR = "QuickBudsCrash"
+        /** Subfolder of Download holding crash reports (and the Dev Tools log exports). */
+        const val PUBLIC_DIR = "QuickBuds"
 
         /** Dev Tools' "Crash test" arms this; the next launch throws once in attachBaseContext. */
         const val PREF_CRASH_ON_LAUNCH = "devCrashOnLaunch"
@@ -220,7 +220,7 @@ object CrashLogger {
     /**
      * The public crash reports, newest first.
      *
-     * Scans the Download/QuickBudsCrash folder with a plain directory listing
+     * Scans the Download/QuickBuds folder with a plain directory listing
      * rather than a MediaStore query: the app may be running before the media
      * database has indexed a crash that happened seconds ago, and a stale index is
      * exactly the case that matters here.

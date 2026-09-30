@@ -106,7 +106,7 @@ class PalettePreviewView(context: Context, private val detailed: Boolean) : View
         val ringR = ((r - l) / 3 / 2 - dp(6f)).coerceAtMost(dp(10f))
         for (i in 0..2) {
             val cx = l + (r - l) * (i * 2 + 1) / 6
-            if (nothing) disc(c, cx, t + dp(23f), RING_CELLS, p.accent, null) else ring(c, cx, t + dp(23f), ringR, dp(3f), 1f)
+            if (nothing) disc(c, cx, t + dp(23f), RING_CELLS, p.accent) else ring(c, cx, t + dp(23f), ringR, dp(3f), 1f)
         }
         // Segment pill with the accent segment at the start.
         t += dp(54f)
@@ -118,7 +118,7 @@ class PalettePreviewView(context: Context, private val detailed: Boolean) : View
         val mid = (t + h - pad) / 2
         rrect(c, l + dp(8f), mid - dp(6f), l + (r - l) * 0.55f, mid - dp(2f), dp(2f), p.text, null)
         rrect(c, l + dp(8f), mid + dp(2f), l + (r - l) * 0.38f, mid + dp(5f), dp(2f), p.textSecondary, null)
-        if (nothing) disc(c, r - dp(12f), mid, 5, p.accent) else {
+        if (nothing) disc(c, r - dp(12f), mid, 7, p.accent) else {
             fill.color = p.accent
             c.drawCircle(r - dp(12f), mid, dp(5f), fill)
         }
@@ -172,5 +172,5 @@ class PalettePreviewView(context: Context, private val detailed: Boolean) : View
         text.textAlign = Paint.Align.CENTER
     }
 
-    private companion object { const val RING_CELLS = 9 }
+    private companion object { const val RING_CELLS = 13 }
 }

@@ -138,7 +138,8 @@ class ColorPickerView(
         private fun paint() {
             if (!nothing) background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(color)
+                // `color` alone would be GradientDrawable.getColor() (null: a transparent fill).
+                setColor(this@Swatch.color)
                 setStroke(ThemeRes.dp(context, ringDp), ring)
             }
             invalidate()

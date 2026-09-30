@@ -215,14 +215,33 @@ object SettingRowFactory {
         setBackgroundColor(outline)
     }
 
-    /** Card (SPEC section 2): 24dp radius, `outline` stroke, rows clipped to the corners. None in the Nothing style. */
-    fun card(context: Context): LinearLayout = LinearLayout(context).apply {
+    /** Card (SPEC section 2): 24dp radius, `outline` stroke, rows clipped to the corners. The dot style draws the same outline in dots ([USER] 2026-09-30). */
+    fun card(context: Context, radiusDp: Float = 24f): LinearLayout = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
-        background = ThemeRes.group(context)
+        background = ThemeRes.card(context, radiusDp)
         clipToOutline = true
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         )
+    }
+
+    /** Corner radius of a split row's card and of its selection outline: less than the 24dp cards, or a 52dp row reads as a pill. */
+    const val SPLIT_RADIUS = 16f
+
+    /** A plain column for [addSplit]: rows that are each their own card, with a gap ([USER] 2026-09-30: a selected row's outline fits its own card). */
+    fun splitList(context: Context): LinearLayout = LinearLayout(context).apply {
+        orientation = LinearLayout.VERTICAL
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+    }
+
+    /** Adds [row] to [list] as a card of its own, 8dp under the one before. */
+    fun addSplit(list: LinearLayout, row: View) {
+        val c = card(list.context, SPLIT_RADIUS)
+        (c.layoutParams as LinearLayout.LayoutParams).topMargin = if (list.childCount > 0) ThemeRes.dp(list.context, 8f) else 0
+        c.addView(row)
+        list.addView(c)
     }
 
     /** Adds [row] to [card], with a divider before every row but the first. */

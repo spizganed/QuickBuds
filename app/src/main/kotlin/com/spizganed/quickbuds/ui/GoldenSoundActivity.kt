@@ -89,7 +89,7 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         })
 
         root.addView(SettingRowFactory.sectionLabel(this, R.string.golden_profiles))
-        list = SettingRowFactory.card(this)
+        list = SettingRowFactory.splitList(this)
         root.addView(list)
         // The last active record, so its saved radar shows before the buds answer.
         cachedRadar()?.get(0)?.toIntOrNull()?.let { activeUid = it }
@@ -174,7 +174,6 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         }
         val accent = ThemeRes.color(this, R.attr.appColorAccent)
         for (r in records) {
-            if (list.childCount > 0) list.addView(SettingRowFactory.buildDivider(this))
             val active = r.uid == activeUid
             val row = SettingRowFactory.build(this, 0, 0, 0,
                 SettingRowFactory.iconButton(this, R.drawable.ic_delete, R.string.eq_delete) {
@@ -187,8 +186,8 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
                 text = r.name
                 if (active) setTextColor(accent)
             }
-            if (active) row.foreground = ThemeRes.selectedBorder(this, accent)
-            list.addView(row)
+            if (active) row.foreground = ThemeRes.selectedBorder(this, accent, SettingRowFactory.SPLIT_RADIUS)
+            SettingRowFactory.addSplit(list, row)
         }
     }
 

@@ -40,7 +40,7 @@ class LanguageActivity : Activity() {
 
         val root = SettingRowFactory.screen(this)
         root.addView(SettingRowFactory.title(this, R.string.settings_language_title))
-        val card = SettingRowFactory.card(this)
+        val card = SettingRowFactory.splitList(this)
         for ((tag, name) in ThemeRes.LANGUAGES) {
             val selected = tag == current || (!exact && base != "zh" && tag == base)
             val row = SettingRowFactory.build(this, 0, 0, 0, null) {
@@ -54,8 +54,8 @@ class LanguageActivity : Activity() {
                 text = name ?: getString(R.string.language_system)
                 if (selected) setTextColor(p.accent)
             }
-            if (selected) row.foreground = ThemeRes.selectedBorder(this, p.accent)
-            SettingRowFactory.addRow(card, row)
+            if (selected) row.foreground = ThemeRes.selectedBorder(this, p.accent, SettingRowFactory.SPLIT_RADIUS)
+            SettingRowFactory.addSplit(card, row)
         }
         root.addView(card)
 

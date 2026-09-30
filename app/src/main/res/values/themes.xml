@@ -44,7 +44,7 @@
     <!-- OLED Black (default). True black so the panel shuts pixels off. -->
     <style name="Theme.App.OLED" parent="Theme.App.Base">
         <item name="appColorBg">#000000</item>
-        <item name="appColorCard">#1C1C1E</item>
+        <item name="appColorCard">#000000</item>
         <item name="appColorAccent">#D71920</item>
         <item name="appColorTextPrimary">#FFFFFF</item>
         <item name="appColorTextSecondary">#9B9B9B</item>

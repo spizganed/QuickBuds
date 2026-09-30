@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Lövöldözős játékok</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Segíts, hogy a fülhallgatód működjön</string>
-    <string name="report_body">A QuickBuds csak OnePlus Buds 4-en van tesztelve. Más modelleken egyes funkciók még nem biztos, hogy működnek.\n\nÍrd meg, mi működik és mi nem a fülhallgatódon, hogy a következő verzió javíthassa: nyiss egy issue-t a GitHubon a modell nevével.\n\nCsatolj naplót: nyisd meg a Dev tools-t (ikon fent, a Beállítások › Általános alatt kapcsolható be), próbáld ki a funkciót, koppints az Exportra, és csatold a fájlt a Download/QuickBudsLogs mappából. Bluetooth HCI snoop napló vagy adb logcat is segít.</string>
+    <string name="report_body">A QuickBuds csak OnePlus Buds 4-en van tesztelve. Más modelleken egyes funkciók még nem biztos, hogy működnek.\n\nÍrd meg, mi működik és mi nem a fülhallgatódon, hogy a következő verzió javíthassa: nyiss egy issue-t a GitHubon a modell nevével.\n\nCsatolj naplót: nyisd meg a Dev tools-t (ikon fent, a Beállítások › Általános alatt kapcsolható be), próbáld ki a funkciót, koppints az Exportra, és csatold a fájlt a Download/QuickBuds mappából. Bluetooth HCI snoop napló vagy adb logcat is segít.</string>
     <string name="report_open">Jelentés a GitHubon</string>
     <string name="report_later">Értem</string>
     <string name="row_smart_volume_title">Intelligens hangerő</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Bezárás</string>
     <string name="dialog_cancel">Mégse</string>
     <string name="crash_title">A QuickBuds legutóbb összeomlott</string>
-    <string name="crash_saved_to">Mentve ide:\nDownload/QuickBudsCrash/\n\nEz az üzenet csak egyszer jelenik meg. Ha meg szeretné tartani, másolja vagy ossza meg.</string>
+    <string name="crash_saved_to">Mentve ide:\nDownload/QuickBuds/\n\nEz az üzenet csak egyszer jelenik meg. Ha meg szeretné tartani, másolja vagy ossza meg.</string>
     <string name="crash_copy">Másolás</string>
     <string name="crash_copied">Összeomlási jelentés másolva</string>
     <string name="crash_share">Megosztás</string>

@@ -15,7 +15,7 @@ Every color in the app comes from these 6 tokens. No hardcoded colors anywhere e
 | Token | OLED Black | Classic Dark | White |
 |---|---|---|---|
 | `background` | `#000000` | `#121214` | `#F2F2F4` |
-| `card` | `#1C1C1E` | `#232327` | `#FFFFFF` |
+| `card` | `#000000` | `#232327` | `#FFFFFF` |
 | `accent` | `#D71920` | `#D71920` | `#D71920` |
 | `text` | `#FFFFFF` | `#FFFFFF` | `#111113` |
 | `textSecondary` | `#9B9B9B` | `#A0A0A5` | `#6B6B70` |

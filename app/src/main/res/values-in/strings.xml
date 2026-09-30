@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Game tembak-tembakan</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Bantu buat earbud Anda berfungsi</string>
-    <string name="report_body">QuickBuds baru diuji di OnePlus Buds 4. Di model lain, beberapa fitur mungkin belum berfungsi.\n\nBeri tahu kami apa yang berfungsi dan tidak di earbud Anda agar rilis berikutnya bisa memperbaikinya: buka issue di GitHub dengan nama model Anda.\n\nLampirkan log: buka Dev tools (ikon di atas, bisa diaktifkan di Setelan › Umum), coba fiturnya, ketuk Export, lalu lampirkan file dari Download/QuickBudsLogs. Log Bluetooth HCI snoop atau adb logcat juga membantu.</string>
+    <string name="report_body">QuickBuds baru diuji di OnePlus Buds 4. Di model lain, beberapa fitur mungkin belum berfungsi.\n\nBeri tahu kami apa yang berfungsi dan tidak di earbud Anda agar rilis berikutnya bisa memperbaikinya: buka issue di GitHub dengan nama model Anda.\n\nLampirkan log: buka Dev tools (ikon di atas, bisa diaktifkan di Setelan › Umum), coba fiturnya, ketuk Export, lalu lampirkan file dari Download/QuickBuds. Log Bluetooth HCI snoop atau adb logcat juga membantu.</string>
     <string name="report_open">Laporkan di GitHub</string>
     <string name="report_later">Mengerti</string>
     <string name="row_smart_volume_title">Volume pintar</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Tutup</string>
     <string name="dialog_cancel">Batal</string>
     <string name="crash_title">QuickBuds mogok terakhir kali</string>
-    <string name="crash_saved_to">Disimpan ke:\nDownload/QuickBudsCrash/\n\nPesan ini hanya muncul sekali. Salin atau bagikan jika ingin menyimpannya.</string>
+    <string name="crash_saved_to">Disimpan ke:\nDownload/QuickBuds/\n\nPesan ini hanya muncul sekali. Salin atau bagikan jika ingin menyimpannya.</string>
     <string name="crash_copy">Salin</string>
     <string name="crash_copied">Laporan mogok disalin</string>
     <string name="crash_share">Bagikan</string>

@@ -98,17 +98,19 @@ class AncSegmentedView(
             // The outline as the shape in its colour with the track a cell inside, and a radius a little under
             // half the height: a stroke, or a full half-height radius, left a lone dot at each end.
             val pitch = DotArt.pitchPx(context)
-            box.set(0f, 0f, width.toFloat(), (h / pitch).toInt() * pitch)
-            val rad = minOf(dp(22f), box.height() / 2 * 0.85f)
+            val trackH = (h / pitch).toInt() * pitch
+            box.set(0f, 0f, width.toFloat(), trackH)
+            val rad = minOf(dp(22f), trackH / 2 * 0.85f)
             canvas.drawRoundRect(box, rad, rad, strokePaint.apply { style = Paint.Style.FILL })
             box.inset(pitch, pitch)
             canvas.drawRoundRect(box, rad - pitch, rad - pitch, trackPaint)
             // The selected segment: an accent outline a cell wide, the track inside ([USER] 2026-09-30: not a fill).
+            // Centred in the snapped track on a whole-cell gap, and concentric with its corners.
             if (pos >= 0f) {
-                val inset = dp(4f)
+                val inset = (dp(4f) / pitch).toInt().coerceAtLeast(1) * pitch
                 val segW = (width - inset * 2) / labels.size
-                box.set(inset + segW * pos, inset, inset + segW * (pos + 1), h - inset)
-                val pr = minOf(dp(18f), box.height() / 2 * 0.85f)
+                box.set(inset + segW * pos, inset, inset + segW * (pos + 1), trackH - inset)
+                val pr = minOf(rad - inset, box.height() / 2 * 0.85f)
                 canvas.drawRoundRect(box, pr, pr, pillPaint)
                 box.inset(pitch, pitch)
                 canvas.drawRoundRect(box, pr - pitch, pr - pitch, trackPaint)

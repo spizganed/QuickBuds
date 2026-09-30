@@ -173,6 +173,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
     private var shownSelection: Int? = null
     private var shownNames: Set<String> = emptySet()
     private val customRows = HashMap<Int, View>()
+    private lateinit var selection: SelectionSlider
     private val deleting = HashSet<String>()
 
     private val connection = object : ServiceConnection {
@@ -204,7 +205,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
         builtInLabel = sectionLabel(R.string.eq_recommended)
         root.addView(builtInLabel)
-        builtInCard = card()
+        builtInCard = SettingRowFactory.splitList(this)
         root.addView(builtInCard)
 
         // BassWave: a switch row, and the -5..+5 level slider under it while it is on.
@@ -237,7 +238,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
         customHeader = sectionLabel(R.string.eq_custom)
         root.addView(customHeader)
-        customCard = card()
+        customCard = SettingRowFactory.splitList(this)
         root.addView(customCard)
         customActions = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -247,6 +248,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         }
         root.addView(customActions)
 
+        selection = SelectionSlider(root)
         setContentView(ScrollView(this).apply { addView(root) })
         render()
     }
@@ -307,17 +309,18 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         val builtIns = builtInPresets()
         builtInLabel.visibility = if (builtIns.isEmpty()) View.GONE else View.VISIBLE
         builtInCard.visibility = builtInLabel.visibility
+        var selectedRow: View? = null
         builtIns.forEachIndexed { i, (id, label) ->
-            if (i > 0) builtInCard.addView(SettingRowFactory.buildDivider(this))
-            builtInCard.addView(choiceRow(getString(label), current == id, prevSelection == id) {
+            val row = choiceRow(getString(label), current == id, prevSelection == id) {
                 manager?.selectBuiltInEq(id)
-            })
+            }
+            if (current == id) selectedRow = row
+            SettingRowFactory.addSplit(builtInCard, row)
         }
 
         customCard.removeAllViews()
         customRows.clear()
         custom.forEachIndexed { i, p ->
-            if (i > 0) customCard.addView(SettingRowFactory.buildDivider(this))
             // Selecting a custom preset IS a save of it as it stands — same frame HeyMelody sends —
             // so opening its editor selects it too, exactly as in HeyMelody.
             // A tap only selects; the pencil at the row's end opens the editor.
@@ -325,8 +328,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 manager?.saveCustomEq(p)
             }
             customRows[p.id] = row
-            customCard.addView(row)
-            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames) slide(row, open = true)
+            SettingRowFactory.addSplit(customCard, row)
+            if (current == p.id) selectedRow = row
+            if (prevNames != null && custom.size > prevNames.size && p.name !in prevNames) slide(row, open = true) { selection.snap() }
         }
         customCard.visibility = if (custom.isEmpty() || !hasCustom(this)) View.GONE else View.VISIBLE
 
@@ -342,6 +346,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         customActions.visibility = if (customActions.childCount == 0) View.GONE else View.VISIBLE
         customHeader.visibility =
             if (customCard.visibility == View.GONE && customActions.visibility == View.GONE) View.GONE else View.VISIBLE
+        selection.moveTo(selectedRow, ThemeRes.color(this, R.attr.appColorAccent))
     }
 
     /**
@@ -570,7 +575,6 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                     }
                 } else setTextColor(to)
             })
-            if (selected) foreground = ThemeRes.selectedBorder(this@EqActivity, accent)
             if (onEdit != null) addView(iconButton(R.drawable.ic_pencil, R.string.eq_edit, onEdit).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(34f), dp(34f)).apply { marginStart = dp(12f) }
                 setPadding(dp(8f), dp(8f), dp(8f), dp(8f))

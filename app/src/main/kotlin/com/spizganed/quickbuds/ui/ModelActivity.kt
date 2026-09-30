@@ -47,12 +47,12 @@ class ModelActivity : Activity() {
                     if (selected) setTextColor(p.accent)
                 }
                 if (subtitle != null) SettingRowFactory.subtitle(this, r).text = subtitle
-                if (selected) r.foreground = ThemeRes.selectedBorder(this, p.accent)
+                if (selected) r.foreground = ThemeRes.selectedBorder(this, p.accent, SettingRowFactory.SPLIT_RADIUS)
             }
 
-        val auto = SettingRowFactory.card(this)
+        val auto = SettingRowFactory.splitList(this)
         val detected = ModelCatalog.detected(this)?.name
-        SettingRowFactory.addRow(auto, row(getString(R.string.model_auto),
+        SettingRowFactory.addSplit(auto, row(getString(R.string.model_auto),
             if (detected != null) getString(R.string.model_detected, detected) else getString(R.string.model_not_detected),
             manual == null) { ModelCatalog.setManual(this, null) })
         root.addView(auto)
@@ -60,9 +60,9 @@ class ModelActivity : Activity() {
         for ((brand, label) in listOf("OnePlus" to R.string.model_brand_oneplus, "OPPO" to R.string.model_brand_oppo,
                 "realme" to R.string.model_brand_realme, "DIZO" to R.string.model_brand_dizo)) {
             root.addView(SettingRowFactory.sectionLabel(this, label))
-            val card = SettingRowFactory.card(this)
+            val card = SettingRowFactory.splitList(this)
             for (m in models.filter { it.name.startsWith("$brand ") }.sortedBy { it.name.lowercase() }) {
-                SettingRowFactory.addRow(card, row(m.name, m.id.takeIf { nameCount[m.name]!! > 1 },
+                SettingRowFactory.addSplit(card, row(m.name, m.id.takeIf { nameCount[m.name]!! > 1 },
                     m.id == manual) { ModelCatalog.setManual(this, m.id) })
             }
             root.addView(card)

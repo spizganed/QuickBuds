@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">शूटिंग गेम</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">अपने ईयरबड्स को चलाने में मदद करें</string>
-    <string name="report_body">QuickBuds केवल OnePlus Buds 4 पर परखा गया है। दूसरे मॉडलों पर कुछ सुविधाएँ शायद अभी काम न करें।\n\nहमें बताएँ कि आपके ईयरबड्स पर क्या चलता है और क्या नहीं, ताकि अगली रिलीज़ में ठीक हो सके: GitHub पर अपने मॉडल के नाम के साथ एक issue खोलें।\n\nलॉग जोड़ें: Dev tools खोलें (ऊपर का आइकन, सेटिंग › सामान्य में चालू होता है), सुविधा आज़माएँ, Export दबाएँ और Download/QuickBudsLogs की फ़ाइल जोड़ें। Bluetooth HCI snoop लॉग या adb logcat भी मदद करता है।</string>
+    <string name="report_body">QuickBuds केवल OnePlus Buds 4 पर परखा गया है। दूसरे मॉडलों पर कुछ सुविधाएँ शायद अभी काम न करें।\n\nहमें बताएँ कि आपके ईयरबड्स पर क्या चलता है और क्या नहीं, ताकि अगली रिलीज़ में ठीक हो सके: GitHub पर अपने मॉडल के नाम के साथ एक issue खोलें।\n\nलॉग जोड़ें: Dev tools खोलें (ऊपर का आइकन, सेटिंग › सामान्य में चालू होता है), सुविधा आज़माएँ, Export दबाएँ और Download/QuickBuds की फ़ाइल जोड़ें। Bluetooth HCI snoop लॉग या adb logcat भी मदद करता है।</string>
     <string name="report_open">GitHub पर रिपोर्ट करें</string>
     <string name="report_later">समझ गया</string>
     <string name="row_smart_volume_title">स्मार्ट वॉल्यूम</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">बंद करें</string>
     <string name="dialog_cancel">रद्द करें</string>
     <string name="crash_title">QuickBuds पिछली बार क्रैश हुआ</string>
-    <string name="crash_saved_to">यहां सहेजा गया:\nDownload/QuickBudsCrash/\n\nयह संदेश एक बार दिखता है। रखना हो तो कॉपी या शेयर करें।</string>
+    <string name="crash_saved_to">यहां सहेजा गया:\nDownload/QuickBuds/\n\nयह संदेश एक बार दिखता है। रखना हो तो कॉपी या शेयर करें।</string>
     <string name="crash_copy">कॉपी करें</string>
     <string name="crash_copied">क्रैश रिपोर्ट कॉपी हुई</string>
     <string name="crash_share">शेयर करें</string>

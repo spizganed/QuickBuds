@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Nişancı oyunları</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Kulaklığınızın çalışmasına yardım edin</string>
-    <string name="report_body">QuickBuds yalnızca OnePlus Buds 4 üzerinde test edildi. Diğer modellerde bazı özellikler henüz çalışmayabilir.\n\nKulaklığınızda neyin çalışıp neyin çalışmadığını bize bildirin, bir sonraki sürümde düzeltelim: GitHub’da model adınızla bir issue açın.\n\nBir günlük ekleyin: Dev tools’u açın (üstteki simge, Ayarlar › Genel’den açılır), özelliği deneyin, Export’a dokunun ve Download/QuickBudsLogs içindeki dosyayı ekleyin. Bluetooth HCI snoop günlüğü veya adb logcat da işe yarar.</string>
+    <string name="report_body">QuickBuds yalnızca OnePlus Buds 4 üzerinde test edildi. Diğer modellerde bazı özellikler henüz çalışmayabilir.\n\nKulaklığınızda neyin çalışıp neyin çalışmadığını bize bildirin, bir sonraki sürümde düzeltelim: GitHub’da model adınızla bir issue açın.\n\nBir günlük ekleyin: Dev tools’u açın (üstteki simge, Ayarlar › Genel’den açılır), özelliği deneyin, Export’a dokunun ve Download/QuickBuds içindeki dosyayı ekleyin. Bluetooth HCI snoop günlüğü veya adb logcat da işe yarar.</string>
     <string name="report_open">GitHub’da bildir</string>
     <string name="report_later">Anladım</string>
     <string name="row_smart_volume_title">Akıllı ses seviyesi</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Kapat</string>
     <string name="dialog_cancel">İptal</string>
     <string name="crash_title">QuickBuds geçen sefer çöktü</string>
-    <string name="crash_saved_to">Kaydedildiği yer:\nDownload/QuickBudsCrash/\n\nBu mesaj bir kez görünür. Saklamak istiyorsanız kopyalayın veya paylaşın.</string>
+    <string name="crash_saved_to">Kaydedildiği yer:\nDownload/QuickBuds/\n\nBu mesaj bir kez görünür. Saklamak istiyorsanız kopyalayın veya paylaşın.</string>
     <string name="crash_copy">Kopyala</string>
     <string name="crash_copied">Çökme raporu kopyalandı</string>
     <string name="crash_share">Paylaş</string>

@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Jogos de tiro</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Ajude a fazer seus fones funcionarem</string>
-    <string name="report_body">O QuickBuds só foi testado nos OnePlus Buds 4. Em outros modelos, alguns recursos podem ainda não funcionar.\n\nConte o que funciona e o que não funciona nos seus fones, para a próxima versão corrigir: abra uma issue no GitHub com o nome do modelo.\n\nAnexe um log: abra Dev tools (ícone no topo, pode ser ativado em Configurações › Geral), teste o recurso, toque em Export e anexe o arquivo de Download/QuickBudsLogs. Um log Bluetooth HCI snoop ou adb logcat também ajuda.</string>
+    <string name="report_body">O QuickBuds só foi testado nos OnePlus Buds 4. Em outros modelos, alguns recursos podem ainda não funcionar.\n\nConte o que funciona e o que não funciona nos seus fones, para a próxima versão corrigir: abra uma issue no GitHub com o nome do modelo.\n\nAnexe um log: abra Dev tools (ícone no topo, pode ser ativado em Configurações › Geral), teste o recurso, toque em Export e anexe o arquivo de Download/QuickBuds. Um log Bluetooth HCI snoop ou adb logcat também ajuda.</string>
     <string name="report_open">Relatar no GitHub</string>
     <string name="report_later">Entendi</string>
     <string name="row_smart_volume_title">Volume inteligente</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Fechar</string>
     <string name="dialog_cancel">Cancelar</string>
     <string name="crash_title">O QuickBuds falhou da última vez</string>
-    <string name="crash_saved_to">Guardado em:\nDownload/QuickBudsCrash/\n\nEsta mensagem aparece só uma vez. Copie-a ou partilhe-a se a quiser guardar.</string>
+    <string name="crash_saved_to">Guardado em:\nDownload/QuickBuds/\n\nEsta mensagem aparece só uma vez. Copie-a ou partilhe-a se a quiser guardar.</string>
     <string name="crash_copy">Copiar</string>
     <string name="crash_copied">Relatório de falha copiado</string>
     <string name="crash_share">Partilhar</string>

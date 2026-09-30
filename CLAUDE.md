@@ -167,7 +167,8 @@ A change recreates open screens (part of the activity signature).
 - **Font: bundled Doto** (`res/font/doto.ttf`, SIL OFL, static instance wght 900 / ROND 100, license in
   `assets/Doto-OFL.txt`), on every phone `[USER]`. `ThemeRes.dotFont`, `ThemeOverlay.App.Nothing` for
   theme-set text. Monospaced and wide: long labels wrap.
-- No cards: `ThemeRes.group()` is null. Dialogs, sheets, buttons, chips, header buttons and text fields are
+- Cards are drawn in dots too `[USER]` 2026-09-30 (home battery card and feature list, `ThemeRes.group()`; settings screens,
+  `SettingRowFactory.card`): a grey dot outline. Earlier "no cards" (2026-09-28) is reversed. Dialogs, sheets, buttons, chips, header buttons and text fields are
   `DotArt.Box` (outline one cell of dots, fill dots inside; `solid` = smooth fill under a dot outline, used by
   sheets and dialogs). `ThemeRes.card / iconButton / chip / sheet / pill` pick it, so never build a
   `GradientDrawable` for a button by hand.
@@ -219,9 +220,9 @@ A change recreates open screens (part of the activity signature).
   Records in `protocol/GoldenSound.kt`. Fit test: `FitTestSheet`.
 - **Dev Tools:** packet log (Human / Detailed / Raw; Human puts every packet the decoder does not name on
   an amber line with its payload, Detailed adds the payload line to all; the framer's discarded bytes are logged
-  as `DISCARDED RX`; long press copies), Clear, Export (`Download/QuickBudsLogs/`),
+  as `DISCARDED RX`; long press copies), Clear, Export (`Download/QuickBuds/`),
   Reconnect, Disconnect, Crash test. Labels stay English-only. The crash report shows as a sheet (Copy, Share; tap outside to dismiss). The crash handler is installed in
-  `QuickBudsApp.attachBaseContext` (`Download/QuickBudsCrash/`).
+  `QuickBudsApp.attachBaseContext` (`Download/QuickBuds/`).
 
 ### Main screen
 
@@ -267,21 +268,20 @@ user-visible string needs all 26** (lint does not catch a missing one). Constant
 
 - A `when` on UI string keys with no `else` fails silently (`"Trans"` vs `"Transparency"` hid for
   weeks). Check every state write has its refresh call.
-- Downloads go through MediaStore (`QuickBudsCrash/`, `QuickBudsLogs/`), never a plain `File`.
+- Downloads go through MediaStore (`Download/QuickBuds/` holds both the crash reports and the log exports), never a plain `File`.
 
 ## Widgets
 
-`widget/AncWidgetProvider.kt`: providers **2x2** `BatteryWidgetProvider` (resizable `[USER]`, no separate 3x3: from
-`LARGE_MIN_DP` wide it renders the scaled layout, `Kind.LARGE`, `widgetLarge_<id>`) and **4x2**
+`widget/AncWidgetProvider.kt`: providers **2x2** `BatteryWidgetProvider` (fixed size `[USER]` 2026-09-30: resizing gave broken 3x2 / 2x3 shapes, so the scaled 3x3
+layout was removed; do not bring resizing back) and **4x2**
 `AncWidgetProvider` (fixed; old class names kept so placed widgets survive), one renderer `QuickBudsWidget.build`. No more sizes for now, no model name on any widget
 `[USER]`.
 
-- **Layouts are generated** by `scripts/widget-layouts.py` (`widget_pages`, `_m`, `_l`, `widget_grid`,
-  `_l`, `widget_disconnected`, each with a `_n` dot copy). Edit the script and rerun, never the XML.
+- **Layouts are generated** by `scripts/widget-layouts.py` (`widget_pages`, `_m`, `widget_grid`,
+  `widget_disconnected`, each with a `_n` dot copy). Edit the script and rerun, never the XML.
   **A new id needs its line in the renderer**, or RemoteViews fails ("Can't load widget"). Never a
   plain `<View>`. Check changes with `adb logcat` while the widget updates.
-- **The large layout is the 2x2 scaled** by `K` = `LARGE_SCALE` = 1.5645 (keep equal). No large-only values.
-  Script `GEO` = renderer `Geo` (keep equal).
+- Script `GEO` = renderer `Geo` (keep equal).
 - **Two pages per size, battery and controls** `[USER]`, stored per widget (`widgetPage_<id>`), swapped
   by a double tap (200 ms wait). No swap button, no widget settings screen `[USER]`: the Low latency
   button is always there and a tap never opens the app (a swap button, a hidden LL button and an
@@ -330,5 +330,5 @@ user-visible string needs all 26** (lint does not catch a missing one). Constant
   Pillow). Classic to `docs/screenshots/`, Dot matrix to `docs/screenshots/dot-matrix/`. It leaves the
   style set, so **run his style (dot-matrix) last**. It opens screens by visible text, so renaming a
   label breaks it. Widgets on the last home page are cropped to `widget-<size>.png`. The README shows
-  only: Classic main, Earbud settings, Equalizer, Hearing profile, three widgets, Dot matrix main and
-  3x3.
+  only: Classic main, Earbud settings, Equalizer, Hearing profile, two widgets, Dot matrix main and
+  2x2 widget.

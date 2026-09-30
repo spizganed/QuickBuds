@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Mga shooting game</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Tumulong para gumana ang iyong earbuds</string>
-    <string name="report_body">Sa OnePlus Buds 4 lang nasubukan ang QuickBuds. Sa ibang modelo, maaaring hindi pa gumagana ang ilang feature.\n\nSabihin sa amin kung ano ang gumagana at hindi sa iyong earbuds para maayos sa susunod na release: magbukas ng issue sa GitHub kasama ang pangalan ng modelo.\n\nMaglakip ng log: buksan ang Dev tools (icon sa itaas, mabubuksan sa Settings › General), subukan ang feature, i-tap ang Export at ilakip ang file mula sa Download/QuickBudsLogs. Nakakatulong din ang Bluetooth HCI snoop log o adb logcat.</string>
+    <string name="report_body">Sa OnePlus Buds 4 lang nasubukan ang QuickBuds. Sa ibang modelo, maaaring hindi pa gumagana ang ilang feature.\n\nSabihin sa amin kung ano ang gumagana at hindi sa iyong earbuds para maayos sa susunod na release: magbukas ng issue sa GitHub kasama ang pangalan ng modelo.\n\nMaglakip ng log: buksan ang Dev tools (icon sa itaas, mabubuksan sa Settings › General), subukan ang feature, i-tap ang Export at ilakip ang file mula sa Download/QuickBuds. Nakakatulong din ang Bluetooth HCI snoop log o adb logcat.</string>
     <string name="report_open">I-report sa GitHub</string>
     <string name="report_later">Sige</string>
     <string name="row_smart_volume_title">Smart volume</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Isara</string>
     <string name="dialog_cancel">Kanselahin</string>
     <string name="crash_title">Nag-crash ang QuickBuds noong nakaraan</string>
-    <string name="crash_saved_to">Na-save sa:\nDownload/QuickBudsCrash/\n\nIsang beses lang lalabas ang mensaheng ito. Kopyahin o ibahagi ito kung gusto mo itong itago.</string>
+    <string name="crash_saved_to">Na-save sa:\nDownload/QuickBuds/\n\nIsang beses lang lalabas ang mensaheng ito. Kopyahin o ibahagi ito kung gusto mo itong itago.</string>
     <string name="crash_copy">Kopyahin</string>
     <string name="crash_copied">Nakopya ang crash report</string>
     <string name="crash_share">Ibahagi</string>

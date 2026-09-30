@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Παιχνίδια σκοποβολής</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Βοήθησε να λειτουργούν τα ακουστικά σου</string>
-    <string name="report_body">Το QuickBuds έχει δοκιμαστεί μόνο στα OnePlus Buds 4. Σε άλλα μοντέλα κάποιες λειτουργίες ίσως δεν δουλεύουν ακόμη.\n\nΠες μας τι δουλεύει και τι όχι στα ακουστικά σου, για να το διορθώσει η επόμενη έκδοση: άνοιξε ένα issue στο GitHub με το όνομα του μοντέλου.\n\nΕπισύναψε ένα αρχείο καταγραφής: άνοιξε το Dev tools (εικονίδιο πάνω, ενεργοποιείται στις Ρυθμίσεις › Γενικά), δοκίμασε τη λειτουργία, πάτα Export και επισύναψε το αρχείο από το Download/QuickBudsLogs. Βοηθά και ένα Bluetooth HCI snoop log ή adb logcat.</string>
+    <string name="report_body">Το QuickBuds έχει δοκιμαστεί μόνο στα OnePlus Buds 4. Σε άλλα μοντέλα κάποιες λειτουργίες ίσως δεν δουλεύουν ακόμη.\n\nΠες μας τι δουλεύει και τι όχι στα ακουστικά σου, για να το διορθώσει η επόμενη έκδοση: άνοιξε ένα issue στο GitHub με το όνομα του μοντέλου.\n\nΕπισύναψε ένα αρχείο καταγραφής: άνοιξε το Dev tools (εικονίδιο πάνω, ενεργοποιείται στις Ρυθμίσεις › Γενικά), δοκίμασε τη λειτουργία, πάτα Export και επισύναψε το αρχείο από το Download/QuickBuds. Βοηθά και ένα Bluetooth HCI snoop log ή adb logcat.</string>
     <string name="report_open">Αναφορά στο GitHub</string>
     <string name="report_later">Κατάλαβα</string>
     <string name="row_smart_volume_title">Έξυπνη ένταση</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Κλείσιμο</string>
     <string name="dialog_cancel">Ακύρωση</string>
     <string name="crash_title">Το QuickBuds κατέρρευσε την προηγούμενη φορά</string>
-    <string name="crash_saved_to">Αποθηκεύτηκε στο:\nDownload/QuickBudsCrash/\n\nΑυτό το μήνυμα εμφανίζεται μία φορά. Αντιγράψτε ή κοινοποιήστε το αν θέλετε να το κρατήσετε.</string>
+    <string name="crash_saved_to">Αποθηκεύτηκε στο:\nDownload/QuickBuds/\n\nΑυτό το μήνυμα εμφανίζεται μία φορά. Αντιγράψτε ή κοινοποιήστε το αν θέλετε να το κρατήσετε.</string>
     <string name="crash_copy">Αντιγραφή</string>
     <string name="crash_copied">Η αναφορά σφάλματος αντιγράφηκε</string>
     <string name="crash_share">Κοινοποίηση</string>

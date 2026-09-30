@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Jocuri shooter</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Ajută-ne să facem căștile tale să meargă</string>
-    <string name="report_body">QuickBuds este testat doar pe OnePlus Buds 4. Pe alte modele, unele funcții s-ar putea să nu meargă încă.\n\nSpune-ne ce merge și ce nu pe căștile tale, ca următoarea versiune să le repare: deschide un issue pe GitHub cu numele modelului.\n\nAtașează un jurnal: deschide Dev tools (pictograma de sus, se activează din Setări › General), încearcă funcția, apasă Export și atașează fișierul din Download/QuickBudsLogs. Un jurnal Bluetooth HCI snoop sau adb logcat ajută și el.</string>
+    <string name="report_body">QuickBuds este testat doar pe OnePlus Buds 4. Pe alte modele, unele funcții s-ar putea să nu meargă încă.\n\nSpune-ne ce merge și ce nu pe căștile tale, ca următoarea versiune să le repare: deschide un issue pe GitHub cu numele modelului.\n\nAtașează un jurnal: deschide Dev tools (pictograma de sus, se activează din Setări › General), încearcă funcția, apasă Export și atașează fișierul din Download/QuickBuds. Un jurnal Bluetooth HCI snoop sau adb logcat ajută și el.</string>
     <string name="report_open">Raportează pe GitHub</string>
     <string name="report_later">Am înțeles</string>
     <string name="row_smart_volume_title">Volum inteligent</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Închide</string>
     <string name="dialog_cancel">Anulează</string>
     <string name="crash_title">QuickBuds s-a blocat data trecută</string>
-    <string name="crash_saved_to">Salvat în:\nDownload/QuickBudsCrash/\n\nAcest mesaj apare o singură dată. Copiază-l sau distribuie-l dacă vrei să-l păstrezi.</string>
+    <string name="crash_saved_to">Salvat în:\nDownload/QuickBuds/\n\nAcest mesaj apare o singură dată. Copiază-l sau distribuie-l dacă vrei să-l păstrezi.</string>
     <string name="crash_copy">Copiază</string>
     <string name="crash_copied">Raportul de blocare a fost copiat</string>
     <string name="crash_share">Distribuie</string>

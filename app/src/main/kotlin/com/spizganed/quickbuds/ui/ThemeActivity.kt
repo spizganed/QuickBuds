@@ -177,7 +177,7 @@ class ThemeActivity : Activity() {
             textSize = 14f
             setPadding(dp(4f), dp(18f), 0, dp(9f))
         })
-        val card = SettingRowFactory.card(this)
+        val card = SettingRowFactory.splitList(this)
         custom.forEach { preset ->
             val pencil = ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(44f), dp(44f))
@@ -192,8 +192,8 @@ class ThemeActivity : Activity() {
             ) { apply(preset.id, card) }
             row.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG).text = preset.name
             // Active: the selection border, like the built-in tiles.
-            if (preset.id == activeId) row.foreground = ThemeRes.selectedBorder(this, p.accent)
-            SettingRowFactory.addRow(card, row)
+            if (preset.id == activeId) row.foreground = ThemeRes.selectedBorder(this, p.accent, SettingRowFactory.SPLIT_RADIUS)
+            SettingRowFactory.addSplit(card, row)
         }
         val left = PaletteStore.MAX_CUSTOM - custom.size
         val newRow = SettingRowFactory.build(this, R.drawable.ic_plus, R.string.theme_new, 0, null) { createPreset() }
@@ -203,7 +203,7 @@ class ThemeActivity : Activity() {
             else -> getString(R.string.theme_new_sub, left)
         }
         if (left == 0) { newRow.isEnabled = false; newRow.alpha = 0.35f }
-        SettingRowFactory.addRow(card, newRow)
+        SettingRowFactory.addSplit(card, newRow)
         root.addView(card)
 
         root.addView(TextView(this).apply {
@@ -232,7 +232,7 @@ class ThemeActivity : Activity() {
 
     /**
      * 3x2 grid of a preset's six colours, 42dp wide, each dot outlined so dark dots stay visible.
-     * Dot style: six 6-cell discs a cell apart ([DotArt.disc]).
+     * Dot style: six 7-cell discs a cell apart ([DotArt.disc]).
      */
     private class SwatchGrid(context: Context, private val preset: Palette) : View(context) {
         private val nothing = ThemeRes.nothing(context)
@@ -250,9 +250,12 @@ class ThemeActivity : Activity() {
 
         override fun onDraw(c: Canvas) {
             if (nothing) {
+                val bg = ThemeRes.palette(context).background
                 DotArt.draw(context, c, width, height) { dc ->
                     preset.tokens.forEachIndexed { i, color ->
-                        DotArt.disc(context, dc, (i % 3) * (DISC + 1), (i / 3) * (DISC + 1), DISC, color, ring.color)
+                        // No outline, except on a colour that would vanish into the screen.
+                        val edge = if (Palette.contrast(color, bg) < 1.5) ring.color else color
+                        DotArt.disc(context, dc, (i % 3) * (DISC + 1), (i / 3) * (DISC + 1), DISC, color, edge)
                     }
                 }
                 return
@@ -268,6 +271,6 @@ class ThemeActivity : Activity() {
             }
         }
 
-        private companion object { const val DISC = 6 }
+        private companion object { const val DISC = 7 }
     }
 }

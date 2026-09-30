@@ -23,21 +23,20 @@ Every other screen (gestures, themes, fit test, settings and more) is in [docs/s
 
 ### Widgets
 
-Every size has a battery page and a controls page; switch with a double tap. The 2x2 can be resized and
-gets bigger.
+Every size has a battery page and a controls page; switch with a double tap. 
 
-| 2x2 | 2x2, resized | 4x2 |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-3x3-battery.png" width="220"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
+| 2x2 | 4x2 |
+| :---: | :---: |
+| <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
 
 ### Dot matrix style
 
 An optional style for the app and the widgets (Themes, colors & styles > Style): a dot font, no cards,
 dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matrix](docs/screenshots/dot-matrix).
 
-| Main screen | Resized 2x2 widget |
+| Main screen | 2x2 widget |
 | :---: | :---: |
-| <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-3x3-battery.png" width="220"> |
+| <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-2x2-battery.png" width="220"> |
 
 ## Features
 
@@ -90,7 +89,7 @@ and shows only the features each one has.
 
 **Own other buds? Please tell us what works.** Open an [issue](https://github.com/spizganed/QuickBuds/issues)
 with your model, what works and what does not, and a log: Dev tools › Export (the file lands in
-`Download/QuickBudsLogs/`), or a Bluetooth HCI snoop log / `adb logcat`. Each report lets the next release fix
+`Download/QuickBuds/`), or a Bluetooth HCI snoop log / `adb logcat`. Each report lets the next release fix
 that model. The app asks the same once, on first launch.
 
 <details><summary><b>OnePlus</b> (29 models)</summary>

@@ -79,7 +79,7 @@
     <string name="game_sound_type_shooter">Giochi sparatutto</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Aiutaci a far funzionare i tuoi auricolari</string>
-    <string name="report_body">QuickBuds è testato solo sui OnePlus Buds 4. Su altri modelli alcune funzioni potrebbero non funzionare ancora.\n\nFacci sapere cosa funziona e cosa no sui tuoi auricolari, così la prossima versione potrà correggerlo: apri una issue su GitHub con il nome del modello.\n\nAllega un log: apri Dev tools (icona in alto, attivabile in Impostazioni › Generali), prova la funzione, tocca Export e allega il file da Download/QuickBudsLogs. Anche un log Bluetooth HCI snoop o adb logcat è utile.</string>
+    <string name="report_body">QuickBuds è testato solo sui OnePlus Buds 4. Su altri modelli alcune funzioni potrebbero non funzionare ancora.\n\nFacci sapere cosa funziona e cosa no sui tuoi auricolari, così la prossima versione potrà correggerlo: apri una issue su GitHub con il nome del modello.\n\nAllega un log: apri Dev tools (icona in alto, attivabile in Impostazioni › Generali), prova la funzione, tocca Export e allega il file da Download/QuickBuds. Anche un log Bluetooth HCI snoop o adb logcat è utile.</string>
     <string name="report_open">Segnala su GitHub</string>
     <string name="report_later">Ho capito</string>
     <string name="row_smart_volume_title">Volume intelligente</string>
@@ -224,7 +224,7 @@
     <string name="dialog_close">Chiudi</string>
     <string name="dialog_cancel">Annulla</string>
     <string name="crash_title">QuickBuds si è chiuso in modo anomalo l\'ultima volta</string>
-    <string name="crash_saved_to">Salvato in:\nDownload/QuickBudsCrash/\n\nQuesto messaggio appare una sola volta. Copialo o condividilo se vuoi conservarlo.</string>
+    <string name="crash_saved_to">Salvato in:\nDownload/QuickBuds/\n\nQuesto messaggio appare una sola volta. Copialo o condividilo se vuoi conservarlo.</string>
     <string name="crash_copy">Copia</string>
     <string name="crash_copied">Rapporto sull\'arresto copiato</string>
     <string name="crash_share">Condividi</string>

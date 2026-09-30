@@ -48,7 +48,7 @@ class DevToolsActivity : Activity() {
 
     private companion object {
         /** Folder created under Download for exported logs. */
-        const val EXPORT_DIR_NAME = "QuickBudsLogs"
+        const val EXPORT_DIR_NAME = "QuickBuds"
 
     }
 
@@ -304,14 +304,14 @@ class DevToolsActivity : Activity() {
         SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
 
     /**
-     * Writes the export into Download/QuickBudsLogs/ so it is visible to file managers
+     * Writes the export into Download/QuickBuds/ so it is visible to file managers
      * and USB/MTP, and reachable over adb.
      *
      * Why MediaStore rather than File(): on Android 10+ the shared Download directory is
      * only writable through MediaStore for apps that do not hold All-Files-Access. Writing
      * it as a plain File fails silently or throws on 11+. The sibling
-     * /storage/emulated/0/QuickBudsLogs/ some file managers show is NOT reliably writable
-     * for the same reason, so Download/QuickBudsLogs is the dependable location.
+     * /storage/emulated/0/QuickBuds/ some file managers show is NOT reliably writable
+     * for the same reason, so Download/QuickBuds is the dependable location.
      *
      * Returns a human-readable location for the toast.
      */
