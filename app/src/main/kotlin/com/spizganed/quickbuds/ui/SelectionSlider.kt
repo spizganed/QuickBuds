@@ -25,9 +25,12 @@ class SelectionSlider(private val host: ViewGroup, private val key: String? = nu
     private val at = Rect()
     private var anim: ValueAnimator? = null
 
+    /** A [moveTo] waits for its draw pass; the layout listener must not snap the outline in between (it ran first and skipped every slide). */
+    private var pending = false
+
     init {
         // Rows move without being rebuilt too (the Bass boost slider opening): follow them.
-        host.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> if (anim?.isRunning != true) place(animate = false) }
+        host.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> if (!pending && anim?.isRunning != true) place(animate = false) }
     }
 
     /** Shows the outline on [row] (null hides it), sliding when it was already on screen. */
@@ -35,11 +38,13 @@ class SelectionSlider(private val host: ViewGroup, private val key: String? = nu
         this.row = row
         this.color = color
         this.radius = radiusDp
-        if (row == null) { hide(); return }
+        if (row == null) { pending = false; hide(); return }
+        pending = true
         // Rows are laid out on the next pass; measure them then.
         host.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 host.viewTreeObserver.removeOnPreDrawListener(this)
+                pending = false
                 place(animate = true)
                 return true
             }

@@ -335,6 +335,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         builtIns.forEachIndexed { i, (id, label) ->
             val row = choiceRow(getString(label), current == id, prevSelection == id) {
                 manager?.selectBuiltInEq(id)
+                render()
             }
             if (current == id) selectedRow = row
             SettingRowFactory.addSplit(builtInCard, row)
@@ -348,6 +349,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
             // A tap only selects; the pencil at the row's end opens the editor.
             val row = choiceRow(p.name, current == p.id, prevSelection == p.id, onEdit = { showEditor(p) }) {
                 manager?.saveCustomEq(p)
+                render()
             }
             customRows[p.id] = row
             SettingRowFactory.addSplit(customCard, row)
