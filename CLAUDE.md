@@ -303,7 +303,10 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
   `main.rs` (UI + tray glue), `ui/app.slint`.
 - **Software renderer** (set in `main`): ~25 MB RAM against ~130 MB with the GPU one. `SLINT_BACKEND`
   overrides it.
-- The quick panel (tray right-click) hides when it loses focus; closing the main window hides it, Quit exits.
+- Windows tray: left click opens the window, right click the quick panel (hides when it loses focus), battery in
+  the tooltip. **Linux tray is a menu** `[USER]` (AppIndicator has no clicks or tooltip): a battery line
+  `L:10 C:40 R:50`, Open QuickBuds, Quit; it runs on its own GTK thread (`linux_tray()`). Closing the main window
+  hides it, Quit exits.
 - **RFCOMM bridge (dev):** Dev tools › Bridge makes the Android app (`RfcommBridge`) pass raw RFCOMM bytes to
   one TCP client on `127.0.0.1:7979` (loopback only, off by default, not persisted). `QB_BRIDGE=127.0.0.1:7979`
   makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.

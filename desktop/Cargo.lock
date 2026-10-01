@@ -3937,6 +3937,7 @@ dependencies = [
 name = "quickbuds"
 version = "0.1.0"
 dependencies = [
+ "gtk",
  "resvg",
  "serde_json",
  "slint",

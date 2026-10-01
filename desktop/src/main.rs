@@ -1,4 +1,4 @@
-//! QuickBuds for the desktop: a window, a tray icon with a quick panel, one link thread.
+//! QuickBuds for the desktop: a window, a tray icon (with a quick panel on Windows), one link thread.
 #![windows_subsystem = "windows"]
 
 mod bt;
@@ -15,16 +15,26 @@ slint::include_modules!();
 use protocol::{AncModes, LEVELS};
 use session::{Cmd, Snapshot, Status};
 use slint::winit_030::{winit, EventResult, WinitWindowAccessor};
-use slint::{ComponentHandle, Image, ModelRc, PhysicalPosition, VecModel};
+use slint::{ComponentHandle, Image, ModelRc, VecModel};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Sender;
-use tray_icon::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
+use tray_icon::TrayIconBuilder;
+#[cfg(windows)]
+use tray_icon::{MouseButton, MouseButtonState, TrayIcon, TrayIconEvent};
+
+/// Windows: the tray icon itself (left click opens the window, right click the quick panel, battery in the
+/// tooltip). Linux: a tray icon can only open a menu (AppIndicator), so it is a battery line, Open and Quit,
+/// run on its own GTK thread; this sends it the battery line.
+#[cfg(windows)]
+type Tray = TrayIcon;
+#[cfg(not(windows))]
+type Tray = std::sync::mpsc::Sender<String>;
 
 struct App {
     main: MainWindow,
     panel: QuickPanel,
-    tray: TrayIcon,
+    tray: Tray,
     tx: Sender<Cmd>,
     /// Modes of the last buds seen: the controls stay in place (dimmed) while disconnected.
     modes: AncModes,
@@ -180,14 +190,24 @@ impl App {
             b.set_low_latency(s.low_latency.unwrap_or(false));
         }
 
-        let mut tip = String::from("QuickBuds");
-        if s.status == Status::On {
-            let parts: Vec<String> = [("status_left", 0), ("status_right", 1), ("status_case", 2)].iter()
-                .filter_map(|(k, i)| s.battery[*i].map(|b| format!("{} {}%", t(&self.tr, k), b.0)))
-                .collect();
-            if !parts.is_empty() { tip = format!("{}\n{}", s.name, parts.join(" · ")); }
+        #[cfg(windows)]
+        {
+            let mut tip = String::from("QuickBuds");
+            if s.status == Status::On {
+                let parts: Vec<String> = [("status_left", 0), ("status_right", 1), ("status_case", 2)].iter()
+                    .filter_map(|(k, i)| s.battery[*i].map(|b| format!("{} {}%", t(&self.tr, k), b.0)))
+                    .collect();
+                if !parts.is_empty() { tip = format!("{}\n{}", s.name, parts.join(" · ")); }
+            }
+            let _ = self.tray.set_tooltip(Some(tip));
         }
-        let _ = self.tray.set_tooltip(Some(tip));
+        // The menu's battery line is short: "L:10 C:40 R:50" [USER].
+        #[cfg(not(windows))]
+        let _ = self.tray.send(if s.status != Status::On { "QuickBuds".into() } else {
+            let line: Vec<String> = [("L", 0), ("C", 2), ("R", 1)].iter()
+                .filter_map(|(k, i)| s.battery[*i].map(|b| format!("{k}:{}", b.0))).collect();
+            if line.is_empty() { s.name.clone() } else { line.join(" ") }
+        });
     }
 }
 
@@ -220,6 +240,7 @@ fn show_main(w: &MainWindow) {
     w.window().with_winit_window(|w| w.focus_window());
 }
 
+#[cfg(windows)]
 fn on_tray(e: TrayIconEvent) {
     let TrayIconEvent::Click { button, button_state: MouseButtonState::Up, position, .. } = e else { return };
     with_app(|a| match button {
@@ -231,7 +252,7 @@ fn on_tray(e: TrayIconEvent) {
             let (x, y) = (position.x as i32, position.y as i32);
             let px = if x - w >= 0 { x - w } else { x };
             let py = if y - h >= 0 { y - h } else { y };
-            a.panel.window().set_position(PhysicalPosition::new(px, py));
+            a.panel.window().set_position(slint::PhysicalPosition::new(px, py));
             a.panel.show().ok();
             a.panel.window().with_winit_window(|w| w.focus_window());
         }
@@ -246,6 +267,35 @@ fn tray_icon() -> tray_icon::Icon {
     let s = size as f32 / tree.size().width().max(tree.size().height());
     resvg::render(&tree, resvg::tiny_skia::Transform::from_scale(s, s), &mut pm.as_mut());
     tray_icon::Icon::from_rgba(pm.take_demultiplied(), size, size).expect("tray icon")
+}
+
+#[cfg(not(windows))]
+fn linux_tray() -> std::sync::mpsc::Sender<String> {
+    use tray_icon::menu::{Menu, MenuEvent, MenuItem};
+    let (tx, rx) = std::sync::mpsc::channel::<String>();
+    std::thread::spawn(move || {
+        gtk::init().expect("gtk");
+        let battery = MenuItem::new("QuickBuds", false, None);
+        let open = MenuItem::new("Open QuickBuds", true, None);
+        let quit = MenuItem::new("Quit", true, None);
+        let menu = Menu::with_items(&[&battery, &open, &quit]).expect("tray menu");
+        let _tray = TrayIconBuilder::new().with_icon(tray_icon()).with_menu(Box::new(menu)).build().expect("tray");
+        let (open_id, quit_id) = (open.id().clone(), quit.id().clone());
+        MenuEvent::set_event_handler(Some(move |e: MenuEvent| {
+            if e.id == open_id {
+                let _ = slint::invoke_from_event_loop(|| with_app(|a| show_main(&a.main)));
+            } else if e.id == quit_id {
+                let _ = slint::invoke_from_event_loop(|| { let _ = slint::quit_event_loop(); });
+            }
+        }));
+        // ponytail: polls twice a second; battery changes slowly, an async channel is not worth it.
+        gtk::glib::timeout_add_local(std::time::Duration::from_millis(500), move || {
+            if let Some(text) = rx.try_iter().last() { battery.set_text(text); }
+            gtk::glib::ControlFlow::Continue
+        });
+        gtk::main();
+    });
+    tx
 }
 
 fn main() {
@@ -284,12 +334,16 @@ fn main() {
         EventResult::Propagate
     });
 
+    #[cfg(windows)]
     let tray = TrayIconBuilder::new()
         .with_icon(tray_icon())
         .with_tooltip("QuickBuds")
         .build()
         .expect("tray");
+    #[cfg(windows)]
     TrayIconEvent::set_event_handler(Some(|e| { let _ = slint::invoke_from_event_loop(move || on_tray(e)); }));
+    #[cfg(not(windows))]
+    let tray = linux_tray();
 
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
     APP.with(|a| *a.borrow_mut() = Some(App {
