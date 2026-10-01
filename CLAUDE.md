@@ -387,6 +387,11 @@ before the first desktop release.
 - **Next:** ROADMAP.md step 2, "Next, in order": ANC level slide and Dev tools are built (waiting for his
   check); phone-UI reuse started (Overview, Equalizer restyled; check on the buds), continue with it. EQ writes and ANC / low latency from the desktop
   are untested on the buds: ask him for the result.
+- **Linux app** (2026-10-01): builds and runs in the phone's proot through the bridge; the tray is a menu
+  (committed). Next: the BlueZ backend in `bt.rs` `[USER]` chose a blocking `dbus` crate for paired devices + a
+  raw kernel RFCOMM socket (libc) + a short SDP query for the 079A / 1107 channel, no async runtime. It needs real
+  Bluetooth to test (the VM below or a Linux PC). In the proot, a tray needs the real UID and the session bus
+  (`proot-distro login --user $(id -u)` + `DBUS_SESSION_BUS_ADDRESS`) and `TMPDIR` bound at its real path.
 - **Linux VM** (VirtualBox 7.2.20 at `C:\Program Files\Oracle\VirtualBox`, not on PATH): VM
   `QuickBuds-Linux` (4 GB, 4 CPUs, 40 GB disk, USB 3 filter for the ASUS USB-BT400 dongle, SSH forward
   127.0.0.1:2222). He turned Memory integrity off 2026-09-30; VirtualBox now runs on AMD-V (VBox.log
