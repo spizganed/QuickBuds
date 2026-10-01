@@ -57,8 +57,10 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
 - Release: `./gradlew assembleRelease bundleRelease`, name `QuickBuds<version>.apk` / `.aab`, then
   `gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"`.
   The updater needs the `.apk` asset. No local copies. Tags are `v*`; since 4.0.0 `[USER]` one release carries the Android files and the desktop
-  archives from `scripts/desktop-dist.sh <version>` (into `desktop/dist/`, git-ignored). `desktop-v*` is kept
-  free for desktop-only fixes (the updater skips it). **Notes cover every user-visible change since
+  archives. **CI** (`.github/workflows/desktop.yml`, Ubuntu 22.04 container) runs `cargo test` and
+  `scripts/desktop-dist.sh` on desktop changes and attaches the archives to every published release, so
+  `gh release create` only uploads the APK and AAB. Archive names come from `desktop/Cargo.toml` `version`:
+  bump it with the release. `desktop-v*` is kept free for desktop-only fixes (the updater skips it). **Notes cover every user-visible change since
   the last tag**: read `git log v<previous>..HEAD` first.
 
 ### Phone (Termux, often reached over SSH from the PC)
@@ -337,7 +339,7 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
   account); no libxdo (nothing links it); no Flatpak / AppImage / `.deb` until asked. Just
   the app: no drivers, no services, no helper or background processes. `scripts/desktop-dist.sh` cross-builds
   Windows and builds Linux in an Ubuntu 22.04 podman container (glibc 2.35; a CachyOS build needs 2.43).
-  No CI yet.
+  `QB_NATIVE=1` skips podman (CI).
 
 ## Widgets
 
