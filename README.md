@@ -14,10 +14,16 @@ home-screen widget.
 > **Desktop beta for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
 > no drivers and no background services: battery, noise control, low latency, the equalizer and a packet
 > log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
-> `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3,
-> libayatana-appindicator and libxdo; see its README). Pair the buds in your system's Bluetooth settings
-> first. With Dual connection on, the phone app and the desktop app work at the same time. Progress is in
+> `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3 and
+> libayatana-appindicator; see its README). Pair the buds in your system's Bluetooth settings first. With
+> Dual connection on, the phone app and the desktop app work at the same time. Progress is in
 > [ROADMAP.md](./docs/ROADMAP.md).
+>
+> **Arch Linux:** install it as a package (it comes to the AUR as `quickbuds-bin` once AUR sign-ups reopen):
+>
+> ```bash
+> git clone https://github.com/spizganed/QuickBuds && cd QuickBuds/desktop/aur && makepkg -si
+> ```
 
 ## Screenshots
 
