@@ -22,7 +22,7 @@ podman run --rm --userns=keep-id -v "$root:/repo" -v quickbuds-cargo:/cargo -w /
     set -e
     export DEBIAN_FRONTEND=noninteractive PATH=/cargo/bin:$PATH
     apt-get update -qq && apt-get install -y -qq curl build-essential pkg-config libdbus-1-dev libgtk-3-dev \
-      libxdo-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev >/dev/null
+      libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev >/dev/null
     command -v cargo >/dev/null || curl -sSf https://sh.rustup.rs | sh -s -- -y -q --profile minimal --no-modify-path
     cargo build --release
     chown -R '"$(id -u):$(id -g)"' /repo/desktop/target/ubuntu22'
@@ -51,8 +51,8 @@ EOF
 cat > "$pkg/README.txt" <<'EOF'
 QuickBuds for Linux (beta)
 
-Needs BlueZ and, from your distro: GTK 3, libayatana-appindicator3, libxdo, D-Bus
-(Debian/Ubuntu: libgtk-3-0 libayatana-appindicator3-1 libxdo3; Arch: gtk3 libayatana-appindicator xdotool).
+Needs BlueZ and, from your distro: GTK 3, libayatana-appindicator3, D-Bus
+(Debian/Ubuntu: libgtk-3-0 libayatana-appindicator3-1; Arch: makepkg -si in desktop/aur/ of the repo).
 Pair the buds in your system's Bluetooth settings first.
 
 Run in place: ./quickbuds

@@ -43,7 +43,7 @@ compiles Kotlin itself, so do not add the `org.jetbrains.kotlin.android` plugin.
 ### Desktop app (in progress)
 
 Rust (stable). Windows needs nothing else; Linux needs BlueZ and the development packages for D-Bus, GTK 3,
-libayatana-appindicator and libxdo (Arch: `dbus gtk3 libayatana-appindicator xdotool`).
+and libayatana-appindicator (Arch: `dbus gtk3 libayatana-appindicator`).
 
 ```bash
 cd desktop

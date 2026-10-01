@@ -38,7 +38,7 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
 - **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 22 / 4.0.0).
   Android ignores them on `<application>`. Verify with `aapt2 dump badging <apk>`.
 - `local.properties` (`sdk.dir=...`) is git-ignored.
-- **PC (CachyOS, fish shell, since 2026-10-01):** pacman `jdk21-openjdk android-tools rustup xdotool`
+- **PC (CachyOS, fish shell, since 2026-10-01):** pacman `jdk21-openjdk android-tools rustup`
   (`sudo pacman` needs no password: `/etc/sudoers.d/pacman`; other sudo commands are his). Universal fish vars
   `JAVA_HOME=/usr/lib/jvm/java-21-openjdk`, `ANDROID_HOME=~/Android/Sdk` (cmdline-tools 13114758,
   `platforms;android-37.0`, `build-tools;37.0.0`, `platform-tools`). Release keys in `local/keys/` here too.
@@ -330,7 +330,11 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
   makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.
   It is for the Linux build in the phone's Ubuntu proot, which has no Bluetooth; it does not test BlueZ.
 - **Distribution `[USER]`:** Windows: portable `.zip` with only `quickbuds.exe` (no installer for now). Linux:
-  `.tar.gz` (binary, `.desktop`, icon, README); AUR later; no Flatpak / AppImage / `.deb` until asked. Just
+  `.tar.gz` (binary, `.desktop`, icon, README); AUR `quickbuds-bin` from `desktop/aur/` (repackages that
+  tarball; per release: `_ver`, `_tag`, `sha256sums`, `pkgrel=1`, then `makepkg --printsrcinfo > .SRCINFO`, test
+  with `makepkg` + `namcap`, push PKGBUILD and .SRCINFO to `ssh://aur@aur.archlinux.org/quickbuds-bin.git`;
+  the AUR account is his: **not published yet**, AUR registration was closed 2026-10-01; push once he has an
+  account); no libxdo (nothing links it); no Flatpak / AppImage / `.deb` until asked. Just
   the app: no drivers, no services, no helper or background processes. `scripts/desktop-dist.sh` cross-builds
   Windows and builds Linux in an Ubuntu 22.04 podman container (glibc 2.35; a CachyOS build needs 2.43).
   No CI yet.
