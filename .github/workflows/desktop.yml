@@ -1,0 +1,64 @@
+# Desktop app: tests, then the release archives from scripts/desktop-dist.sh. On a published release the
+# archives are attached to it, so a release only needs the APK and AAB uploaded by hand.
+name: Desktop
+
+on:
+  push:
+    branches: [main]
+    paths: &paths
+      - 'desktop/**'
+      - 'app/src/main/res/**'
+      - 'app/src/main/assets/models.json'
+      - 'scripts/desktop-dist.sh'
+      - '.github/workflows/desktop.yml'
+  pull_request:
+    paths: *paths
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Ubuntu 22.04 (glibc 2.35), so the Linux binary runs on older distros too.
+    container: ubuntu:22.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Packages
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq curl git zip python3 build-essential pkg-config gcc-mingw-w64-x86-64 \
+            libdbus-1-dev libgtk-3-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev
+      - uses: actions/checkout@v4
+      - name: Rust
+        run: |
+          curl -sSf https://sh.rustup.rs | sh -s -- -y -q --profile minimal --target x86_64-pc-windows-gnu
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+      - name: Test
+        run: cd desktop && cargo test
+      - name: Archives
+        run: |
+          ver=$(sed -n 's/^version = "\(.*\)"/\1/p' desktop/Cargo.toml | head -1)
+          QB_NATIVE=1 scripts/desktop-dist.sh "$ver"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop
+          path: desktop/dist/*
+
+  attach:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop
+      - run: gh release upload "${{ github.event.release.tag_name }}" QuickBuds*.zip QuickBuds*.tar.gz --clobber -R "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
