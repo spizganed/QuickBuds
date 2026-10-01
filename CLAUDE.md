@@ -35,7 +35,7 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
 - **Device testing always uses `./gradlew assembleRelease`** `[USER]`, never the debug APK (signature
   clash; switching needs an uninstall). Install with `adb install -r`. Use `adb logcat` for what in-app
   logs miss.
-- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 21 / 3.9.2).
+- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 22 / 4.0.0).
   Android ignores them on `<application>`. Verify with `aapt2 dump badging <apk>`.
 - `local.properties` (`sdk.dir=...`) is git-ignored.
 - **PC (CachyOS, fish shell, since 2026-10-01):** pacman `jdk21-openjdk android-tools rustup xdotool`
@@ -56,7 +56,9 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
   key, `assembleRelease` builds unsigned.
 - Release: `./gradlew assembleRelease bundleRelease`, name `QuickBuds<version>.apk` / `.aab`, then
   `gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"`.
-  The updater needs the `.apk` asset. No local copies. Android tags are `v*`, desktop tags `desktop-v*`. **Notes cover every user-visible change since
+  The updater needs the `.apk` asset. No local copies. Tags are `v*`; since 4.0.0 `[USER]` one release carries the Android files and the desktop
+  archives from `scripts/desktop-dist.sh <version>` (into `desktop/dist/`, git-ignored). `desktop-v*` is kept
+  free for desktop-only fixes (the updater skips it). **Notes cover every user-visible change since
   the last tag**: read `git log v<previous>..HEAD` first.
 
 ### Phone (Termux, often reached over SSH from the PC)
@@ -327,8 +329,11 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
   one TCP client on `127.0.0.1:7979` (loopback only, off by default, not persisted). `QB_BRIDGE=127.0.0.1:7979`
   makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.
   It is for the Linux build in the phone's Ubuntu proot, which has no Bluetooth; it does not test BlueZ.
-- **Distribution `[USER]`:** `.exe` installer and portable `.zip`, just the app: no drivers, no
-  services, no helper or background processes. Release tags `desktop-v<version>`, built by CI.
+- **Distribution `[USER]`:** Windows: portable `.zip` with only `quickbuds.exe` (no installer for now). Linux:
+  `.tar.gz` (binary, `.desktop`, icon, README); AUR later; no Flatpak / AppImage / `.deb` until asked. Just
+  the app: no drivers, no services, no helper or background processes. `scripts/desktop-dist.sh` cross-builds
+  Windows and builds Linux in an Ubuntu 22.04 podman container (glibc 2.35; a CachyOS build needs 2.43).
+  No CI yet.
 
 ## Widgets
 
@@ -396,9 +401,9 @@ layout was removed; do not bring resizing back) and **4x2**
 
 ## TEMPORARY handoff (2026-09-30, delete this section once done)
 
-State: v3.9.2 released. The desktop app (`desktop/`, Rust + Slint) runs on Windows with Overview, Equalizer and
-the tray; the Android updater fix (skips `desktop-v*`) is committed but not in a release yet, and must ship
-before the first desktop release.
+State: 4.0.0 (Android + desktop beta in one `v4.0.0` release) prepared 2026-10-01. The desktop app runs on Windows
+and Linux with Overview, Equalizer, Dev tools and the tray. The Windows build of 4.0.0 is cross-built and not yet
+tested on Windows: he sets up Windows (VM or second partition) on 2026-10-02.
 
 - **Next:** ROADMAP.md step 2, "Next, in order": ANC level slide and Dev tools are built (waiting for his
   check); phone-UI reuse started (Overview, Equalizer restyled; check on the buds), continue with it. EQ writes and ANC / low latency from the desktop

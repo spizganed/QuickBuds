@@ -11,11 +11,13 @@
 QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app with a real
 home-screen widget.
 
-> **Desktop version in the works.** QuickBuds for **Windows and Linux** is being built in
-> [`desktop/`](./desktop): a small native app with a tray icon (battery on hover, quick controls on
-> right-click), no drivers and no background services. It already runs on Windows with battery, noise
-> control, low latency and the equalizer. There is no release yet; it will ship as an installer and a
-> portable zip. Progress is in [ROADMAP.md](./docs/ROADMAP.md).
+> **Desktop beta for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
+> no drivers and no background services: battery, noise control, low latency, the equalizer and a packet
+> log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
+> `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3,
+> libayatana-appindicator and libxdo; see its README). Pair the buds in your system's Bluetooth settings
+> first. With Dual connection on, the phone app and the desktop app work at the same time. Progress is in
+> [ROADMAP.md](./docs/ROADMAP.md).
 
 ## Screenshots
 

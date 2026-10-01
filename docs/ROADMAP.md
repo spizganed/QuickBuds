@@ -21,8 +21,9 @@ finished (ROADMAP-DONE.md).
    headless PC). **Next:** links from Reddit / XDA.
 2. **PC version** (Windows and Linux), decided 2026-09-30: Rust + Slint in `desktop/`, same repo.
    Window like accessory software plus a tray (battery on hover, right-click quick panel with ANC,
-   low latency and more). Every mobile feature that makes sense on a PC. Shipped as an `.exe`
-   installer and a portable `.zip`: no drivers, no services, no helper processes `[USER]`.
+   low latency and more). Every mobile feature that makes sense on a PC. Shipped as a portable `.zip`
+   (Windows) and a `.tar.gz` (Linux), no installer for now: no drivers, no services, no helper processes
+   `[USER]`. First beta ships in the 4.0.0 release.
    Done: the updater skips desktop releases; Windows: frameless window with our own title bar, sidebar +
    Overview (battery, noise control, low latency), Equalizer page (presets, band editor, Bass boost), tray
    quick panel, APK launcher icon. English only for now `[USER]`.
@@ -40,7 +41,7 @@ finished (ROADMAP-DONE.md).
       Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
    4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
       settings, App settings).
-   5. Linux (BlueZ): connects on a Linux PC (2026-10-01); full-app check next. Installer + portable zip in CI.
+   5. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. Archives in CI; AUR package.
 
 ## Open
 

@@ -31,3 +31,4 @@ local/
 
 # Desktop (Rust)
 desktop/target/
+desktop/dist/
