@@ -397,7 +397,8 @@ layout was removed; do not bring resizing back) and **4x2**
   label breaks it. Widgets on the first and last home page are cropped to `widget-<size>.png`; a third
   argument `widgets` (`... dot-matrix <serial> widgets`) sets the style and shoots only the widgets. The README shows
   only: Classic main, Earbud settings, Equalizer, Hearing profile, two widgets, Dot matrix main and
-  2x2 widget.
+  2x2 widget, plus the desktop window, tray strip and tray menu (`docs/screenshots/desktop/`, taken by hand with
+  `spectacle -b -n -a|-f` on his Plasma desktop; the menu needs his right-click during a timed capture).
 
 ## TEMPORARY handoff (2026-09-30, delete this section once done)
 
