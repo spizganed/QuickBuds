@@ -38,9 +38,15 @@ Do not create notes folders or session-plan files: durable knowledge goes here o
 - **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 21 / 3.9.2).
   Android ignores them on `<application>`. Verify with `aapt2 dump badging <apk>`.
 - `local.properties` (`sdk.dir=...`) is git-ignored.
-- PC: `export JAVA_HOME=$(ls -d ~/.jdks/jbr-21* | head -1)` first. Output in `app/build/outputs/`.
-- Wireless adb: `adb pair <ip:port> <code>` right after reading the code (stale = `protocol fault`),
-  then `adb connect` the **other** ip:port from the main Wireless debugging screen.
+- **PC (CachyOS, fish shell, since 2026-10-01):** pacman `jdk21-openjdk android-tools rustup xdotool`
+  (`sudo pacman` needs no password: `/etc/sudoers.d/pacman`; other sudo commands are his). Universal fish vars
+  `JAVA_HOME=/usr/lib/jvm/java-21-openjdk`, `ANDROID_HOME=~/Android/Sdk` (cmdline-tools 13114758,
+  `platforms;android-37.0`, `build-tools;37.0.0`, `platform-tools`). Release keys in `local/keys/` here too.
+  Output in `app/build/outputs/`.
+- Wireless adb: use the SDK's `~/Android/Sdk/platform-tools/adb` (Arch's `adb` has no mDNS);
+  `adb mdns services` gives the phone's ip:port. A new PC must `adb pair <ip:port> <code>` first, right after
+  he reads the code (stale = `protocol fault`), then `adb connect` the **other** ip:port from the main
+  Wireless debugging screen.
 
 ### Signing and releases
 
@@ -77,7 +83,8 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
 
 ## Working with the developer
 
-- Commits authored as `spizganed <spizganed@gmail.com>` (set `git config user.name/email` if the
+- Commits authored as `spizganed <328350196+spizganed@users.noreply.github.com>` `[USER]` (his GitHub
+  noreply address, never the gmail one; set `git config user.name/email` if the
   session differs); keep the `Co-Authored-By` trailer.
 - **Ask before every push, every time.** A past "yes" does not carry over.
 - He does device testing and design decisions; the agent does protocol, parsers and code, including
@@ -293,7 +300,12 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
 - **Windows Bluetooth is Winsock** (`AF_BTH` + `BTHPROTO_RFCOMM`, `windows-sys`): connect by
   service UUID with port 0 and Windows resolves the channel over SDP. Verified 2026-09-30 on the Buds 4:
   079A connects, the init sequence and `0x8106` answer as on the phone. Never WinRT.
-- Buds found among Windows' paired devices: only ones with an audio link, a `models.json` name first
+- **Linux Bluetooth is BlueZ without bluetoothd profiles** `[USER]`: paired list from D-Bus
+  `GetManagedObjects` (`dbus` crate, blocking), the RFCOMM channel from one SDP ServiceSearchAttribute request
+  over L2CAP PSM 1, then a kernel RFCOMM socket (`libc`). No async runtime, no `bluer`. Verified 2026-10-01 on
+  the Buds 4: 079A is channel 15 (as on Android), `0x8106` answers; the phone's link stays up alongside.
+  Hardware check: `cargo test live_battery -- --ignored --nocapture`.
+- Buds found among the system's paired devices: only ones with an audio link, a `models.json` name first
   (a user Connect tries any connected one); rescan every 5 s. Never hardcode an address.
 - **Shared, never copied:** `build.rs` turns `app/src/main/res/drawable/*.xml` into SVG and the listed
   `strings.xml` keys (all locales) into tables; `models.json` is `include_str!`'d. A new desktop icon or
@@ -387,20 +399,12 @@ before the first desktop release.
 - **Next:** ROADMAP.md step 2, "Next, in order": ANC level slide and Dev tools are built (waiting for his
   check); phone-UI reuse started (Overview, Equalizer restyled; check on the buds), continue with it. EQ writes and ANC / low latency from the desktop
   are untested on the buds: ask him for the result.
-- **Linux app** (2026-10-01): builds and runs in the phone's proot through the bridge; the tray is a menu
-  (committed). Next: the BlueZ backend in `bt.rs` `[USER]` chose a blocking `dbus` crate for paired devices + a
-  raw kernel RFCOMM socket (libc) + a short SDP query for the 079A / 1107 channel, no async runtime. It needs real
-  Bluetooth to test (the VM below or a Linux PC). In the proot, a tray needs the real UID and the session bus
-  (`proot-distro login --user $(id -u)` + `DBUS_SESSION_BUS_ADDRESS`) and `TMPDIR` bound at its real path.
-- **Linux VM** (VirtualBox 7.2.20 at `C:\Program Files\Oracle\VirtualBox`, not on PATH): VM
-  `QuickBuds-Linux` (4 GB, 4 CPUs, 40 GB disk, USB 3 filter for the ASUS USB-BT400 dongle, SSH forward
-  127.0.0.1:2222). He turned Memory integrity off 2026-09-30; VirtualBox now runs on AMD-V (VBox.log
-  "HMR3Init: AMD-V w/ nested paging"). The unattended install (user `qb`, password in private memory,
-  hostname `qb-linux`, post-install adds openssh-server, bluez, build-essential, libdbus-1-dev) was rerun
-  and was still running at the end of the session: check `VBoxManage showvminfo QuickBuds-Linux` and
-  `ssh -p 2222 qb@127.0.0.1`; if it failed, rerun `VBoxManage unattended install` with the same values.
-  Next: pair the buds in the VM (then re-pair in Windows), BlueZ spike via the `bluer` profile API.
-- Screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
+- **Linux app** (2026-10-01): the BlueZ backend in `bt.rs` connects on his CachyOS PC (the VM plan is
+  dropped); the tray menu works there (his check 2026-10-01). Next: his check of auto-connect, Overview, EQ
+  and ANC on Linux. In the phone's
+  proot, a tray needs the real UID and the session bus (`proot-distro login --user $(id -u)` +
+  `DBUS_SESSION_BUS_ADDRESS`) and `TMPDIR` bound at its real path.
+- Windows only: screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
   window message (WM_LBUTTONDOWN/UP); the scripts are not in the repo.
 - **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.
 - The phone has `~/tapt.sh <text>` (prints tap coordinates of a visible label from uiautomator); outside the repo.

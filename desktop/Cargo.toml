@@ -21,6 +21,9 @@ windows-sys = { version = "0.59", features = [
 # Linux tray icons need GTK running on their own thread (already a dependency of tray-icon there).
 [target.'cfg(not(windows))'.dependencies]
 gtk = "0.18"
+# BlueZ: paired devices over D-Bus (blocking), RFCOMM and SDP over kernel sockets.
+dbus = "0.9"
+libc = "0.2"
 
 [build-dependencies]
 slint-build = "1.18"

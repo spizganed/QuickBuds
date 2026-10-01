@@ -40,7 +40,7 @@ finished (ROADMAP-DONE.md).
       Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
    4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
       settings, App settings).
-   5. Linux (BlueZ) in the VM; installer + portable zip in CI.
+   5. Linux (BlueZ): connects on a Linux PC (2026-10-01); full-app check next. Installer + portable zip in CI.
 
 ## Open
 

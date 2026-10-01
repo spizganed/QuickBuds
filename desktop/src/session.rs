@@ -85,7 +85,7 @@ fn run(rx: Receiver<Cmd>, emit: Emit) {
     let mut manual = false;
     loop {
         if !paused {
-            // Auto-connect follows audio: only buds Windows has a link to. A known model name first;
+            // Auto-connect follows audio: only buds the system has a link to. A known model name first;
             // a user Connect also tries any other connected device.
             let mut devices: Vec<_> = bt::paired().into_iter()
                 .filter(|d| d.connected && (manual || is_known_name(&d.name))).collect();
