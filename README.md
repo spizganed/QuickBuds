@@ -46,6 +46,16 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matr
 | :---: | :---: |
 | <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-2x2-battery.png" width="220"> |
 
+### Desktop (beta)
+
+Windows and Linux (shown: KDE Plasma). The tray menu shows the battery; on Windows the tray opens quick controls.
+
+<img src="docs/screenshots/desktop/window.png" width="640">
+
+| Tray icon | Tray menu |
+| :---: | :---: |
+| <img src="docs/screenshots/desktop/tray.png" width="400"> | <img src="docs/screenshots/desktop/tray-menu.png" width="320"> |
+
 ## Features
 
 - **Knows your earbuds:** reads the model from the earbuds and matches it against HeyMelody's own
