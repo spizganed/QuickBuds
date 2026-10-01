@@ -14,7 +14,9 @@ slint::include_modules!();
 
 use protocol::{AncModes, LEVELS};
 use session::{Cmd, Snapshot, Status};
-use slint::winit_030::{winit, EventResult, WinitWindowAccessor};
+use slint::winit_030::{winit, WinitWindowAccessor};
+#[cfg(windows)]
+use slint::winit_030::EventResult;
 use slint::{ComponentHandle, Image, ModelRc, VecModel};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -33,6 +35,7 @@ type Tray = std::sync::mpsc::Sender<String>;
 
 struct App {
     main: MainWindow,
+    #[cfg(windows)]
     panel: QuickPanel,
     tray: Tray,
     tx: Sender<Cmd>,
@@ -130,7 +133,11 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     b.on_set_low_latency(|on| with_app(|a| { let _ = a.tx.send(Cmd::LowLatency(on)); }));
     b.on_connect(|| with_app(|a| { let _ = a.tx.send(Cmd::Connect); }));
     b.on_disconnect(|| with_app(|a| { let _ = a.tx.send(Cmd::Disconnect); }));
-    b.on_open_main(|| with_app(|a| { a.panel.hide().ok(); show_main(&a.main); }));
+    b.on_open_main(|| with_app(|a| {
+        #[cfg(windows)]
+        a.panel.hide().ok();
+        show_main(&a.main);
+    }));
     b.on_quit(|| { let _ = slint::quit_event_loop(); });
 }
 
@@ -164,7 +171,11 @@ impl App {
             if let Some(c) = t(&self.tr, level_names[li]).chars().next() { anc_label = format!("{anc_label} {}", c.to_uppercase()); }
         }
 
-        for b in [self.main.global::<Buds>(), self.panel.global::<Buds>()] {
+        #[cfg(windows)]
+        let globals = [self.main.global::<Buds>(), self.panel.global::<Buds>()];
+        #[cfg(not(windows))]
+        let globals = [self.main.global::<Buds>()];
+        for b in globals {
             b.set_status(match s.status { Status::Off => 0, Status::Connecting => 1, Status::On => 2 });
             b.set_name(s.name.as_str().into());
             let bat = |i: usize| s.battery[i].map_or(-1, |x| x.0 as i32);
@@ -306,9 +317,12 @@ fn main() {
             .select().expect("backend");
     }
     let main = MainWindow::new().expect("window");
+    // Windows only: on Wayland even a never-shown window is a toplevel, and Plasma lists it in the taskbar.
+    #[cfg(windows)]
     let panel = QuickPanel::new().expect("panel");
     let tr = translations();
     setup_ui(&main.global::<Buds>(), &main.global::<Tr>(), &tr);
+    #[cfg(windows)]
     setup_ui(&panel.global::<Buds>(), &panel.global::<Tr>(), &tr);
     // Sections of the phone app; each turns on when its page exists.
     let nav: Vec<NavEntry> = [
@@ -329,6 +343,7 @@ fn main() {
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
 
     // The quick panel closes when it loses focus, like the system's own tray flyouts.
+    #[cfg(windows)]
     panel.window().on_winit_window_event(|w, e| {
         if let winit::event::WindowEvent::Focused(false) = e { w.hide().ok(); }
         EventResult::Propagate
@@ -347,7 +362,7 @@ fn main() {
 
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
     APP.with(|a| *a.borrow_mut() = Some(App {
-        main: main.clone_strong(), panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
+        main: main.clone_strong(), #[cfg(windows)] panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
         snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0,
     }));
     with_app(|a| a.apply(Snapshot::default()));

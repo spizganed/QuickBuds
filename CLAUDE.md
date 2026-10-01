@@ -318,7 +318,8 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
 - Windows tray: left click opens the window, right click the quick panel (hides when it loses focus), battery in
   the tooltip. **Linux tray is a menu** `[USER]` (AppIndicator has no clicks or tooltip): a battery line
   `L:10 C:40 R:50`, Open QuickBuds, Quit; it runs on its own GTK thread (`linux_tray()`). Closing the main window
-  hides it, Quit exits.
+  hides it, Quit exits. **The quick panel exists only on Windows**: on Wayland every created window is a
+  toplevel (winit cannot create a hidden one), so a never-shown panel sat in Plasma's taskbar as an empty entry.
 - **RFCOMM bridge (dev):** Dev tools › Bridge makes the Android app (`RfcommBridge`) pass raw RFCOMM bytes to
   one TCP client on `127.0.0.1:7979` (loopback only, off by default, not persisted). `QB_BRIDGE=127.0.0.1:7979`
   makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.
