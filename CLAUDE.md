@@ -405,18 +405,26 @@ layout was removed; do not bring resizing back) and **4x2**
   2x2 widget, plus the desktop window, tray strip and tray menu (`docs/screenshots/desktop/`, taken by hand with
   `spectacle -b -n -a|-f` on his Plasma desktop; the menu needs his right-click during a timed capture).
 
-## TEMPORARY handoff (2026-09-30, delete this section once done)
+## TEMPORARY handoff (2026-10-01, delete this section once done)
 
-State: 4.0.0 (Android + desktop beta in one `v4.0.0` release) prepared 2026-10-01. The desktop app runs on Windows
-and Linux with Overview, Equalizer, Dev tools and the tray. The Windows build of 4.0.0 is cross-built and not yet
-tested on Windows: he sets up Windows (VM or second partition) on 2026-10-02.
+State: **v4.0.0 released** 2026-10-01 (Android 4.0.0 + desktop 4.0.0-beta archives in one release). Desktop CI
+runs green (`.github/workflows/desktop.yml`, first run 2026-10-01).
 
-- **Next:** ROADMAP.md step 2, "Next, in order": ANC level slide and Dev tools are built (waiting for his
-  check); phone-UI reuse started (Overview, Equalizer restyled; check on the buds), continue with it. EQ writes and ANC / low latency from the desktop
-  are untested on the buds: ask him for the result.
-- **Linux app** (2026-10-01): the BlueZ backend in `bt.rs` connects on his CachyOS PC (the VM plan is
-  dropped); the tray menu works there (his check 2026-10-01). Next: his check of auto-connect, Overview, EQ
-  and ANC on Linux.
+- **Unpushed:** the CI bump to Node 24 actions (checkout v7, upload-artifact v7, download-artifact v8). Ask him,
+  then push it with this handoff commit; the push runs CI and checks the bumped actions. `gh` now has the `workflow` scope.
+- **Windows (2026-10-02):** he sets up Windows (VM or second partition). Test the v4.0.0 zip there first: it is
+  cross-built (MinGW) and never ran on Windows. Check Winsock connect, the tray left click / quick panel (now
+  created only on Windows), EQ, ANC. A VM gets the Bluetooth adapter only while Linux does not use it.
+- **Linux app:** his checks passed 2026-10-01: auto-connect, Overview, EQ, ANC, tray menu, closing to the tray, and
+  settings sync with the phone in both directions.
+- **AUR:** `desktop/aur/` is ready; AUR registration was closed 2026-10-01. When he has an account: SSH key
+  `~/.ssh/aur` (`ssh-keygen -t ed25519 -f ~/.ssh/aur`), he adds the `.pub` on the AUR site, then push PKGBUILD +
+  .SRCINFO. Users are told to `makepkg -si` from a clone meanwhile.
+- **Next:** ROADMAP.md step 2, "Next, in order": phone-UI reuse (continue), then Dot matrix and the remaining pages.
+- This PC: the phone is paired for wireless adb (SDK adb, `adb mdns services` for the port). Desktop shortcut and
+  icon in `~/Desktop` / `~/.local/share` point at `desktop/target/release/quickbuds`. Screenshots on Plasma:
+  `spectacle -b -n -a|-f -o <png>`; KWin scripts over `qdbus6 org.kde.KWin /Scripting` list or activate windows.
+  The ponytail and caveman statusline badges are not set up (he was not asked yet).
 - Windows only: screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
   window message (WM_LBUTTONDOWN/UP); the scripts are not in the repo.
 - **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.
