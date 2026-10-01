@@ -137,7 +137,8 @@ Details and evidence in PROTOCOL.md (tags `[VENDOR]` / `[OSS]` / `[CAPTURE]` / `
 - **Only a user connect asks Android for phone audio** (`EXTRA_WITH_AUDIO`); automatic connects leave
   A2DP to the system. Exception: after a write that restarts the buds (power saving, codec), the
   reconnect asks once (`audioAfterRestart`).
-- The buds serve one control app at a time. For a HeyMelody capture, stop our service from Quick
+- The buds serve one control app **per connected device** (2026-10-01: with Dual connection on, the phone and the
+  Linux desktop app each keep a link, and a change from either shows in both). For a HeyMelody capture, stop our service from Quick
   Settings › Active apps (`am force-stop` gets undone by our reconnect).
 - **Background service** pref (`BudsService.PREF_BACKGROUND`, default on). Off: receivers do not start
   the service, `QuickBudsApp` stops it when no activity is visible, `MainActivity` unbinds in `onStop`.
@@ -295,7 +296,9 @@ user-visible string needs all 26** (lint does not catch a missing one). Constant
 
 Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Plan in ROADMAP.md.
 
-- `cargo test` / `cargo build --release` in `desktop/`. `protocol.rs` mirrors `OpoProtocol` framing;
+- `cargo test` / `cargo build --release` in `desktop/`. **Windows from Linux:** `cargo build --release --target
+  x86_64-pc-windows-gnu` (rustup target + pacman `mingw-w64-gcc`); the `.exe` imports only system DLLs. Use it to
+  check the Windows code compiles; Bluetooth still needs a real Windows to test. `protocol.rs` mirrors `OpoProtocol` framing;
   a protocol change lands in both apps, and in PROTOCOL.md, in one commit.
 - **Windows Bluetooth is Winsock** (`AF_BTH` + `BTHPROTO_RFCOMM`, `windows-sys`): connect by
   service UUID with port 0 and Windows resolves the channel over SDP. Verified 2026-09-30 on the Buds 4:
