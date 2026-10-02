@@ -41,7 +41,7 @@ finished (ROADMAP-DONE.md).
       Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
    4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
       settings, App settings).
-   5. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built by CI.
+   5. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open
 
