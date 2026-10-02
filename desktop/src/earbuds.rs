@@ -31,6 +31,9 @@ pub fn setup(main: &MainWindow) {
     let e = main.global::<Earbuds>();
     e.on_set_feature(|id, on| with_app(|a| { let _ = a.tx.send(Cmd::Feature(id as u8, on)); }));
     e.on_find(|on| with_app(|a| { let _ = a.tx.send(Cmd::Find(on)); }));
+    e.on_opened(|| with_app(|a| { let _ = a.tx.send(Cmd::EarbudReads); }));
+    e.on_alert_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::AlertVolume(l as u8)); }));
+    e.on_tap_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::TapLevel(l as u8)); }));
 }
 
 pub fn apply(a: &App) {
@@ -46,5 +49,13 @@ pub fn apply(a: &App) {
     e.set_features(ModelRc::new(VecModel::from(rows)));
     e.set_has_firmware(s.caps.supports(CMD_QUERY_FIRMWARE));
     e.set_has_find(s.caps.supports(CMD_FIND_BUDS));
+    e.set_has_alert(s.caps.supports(CMD_SET_ALERT_VOLUME) && s.alert_volume.is_some());
+    // Tap sensitivity where HeyMelody's model list has `tapLevelSetting`.
+    e.set_has_tap(s.model.is_some_and(|m| m["tapLevelSetting"] == 1) && s.caps.supports(CMD_SET_TAP_LEVEL) && s.tap_level.is_some());
+    // A held slider keeps its value (`Eq.dragging` is the window's one drag flag).
+    if !a.main.global::<crate::Eq>().get_dragging() {
+        if let Some(l) = s.alert_volume { e.set_alert(l as i32); }
+        if let Some((l, d)) = s.tap_level { e.set_tap(l as i32); e.set_tap_default(d as i32); }
+    }
     e.set_firmware(s.firmware.as_deref().unwrap_or("—").into());
 }

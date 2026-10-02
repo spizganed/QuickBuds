@@ -155,6 +155,8 @@ fn set_icons(b: &Buds) {
     b.set_icon_plus(svg_at(icons::PLUS, 18.0));
     b.set_icon_info(svg(icons::INFO));
     b.set_icon_find(svg(icons::FIND_BUDS));
+    b.set_icon_volume(svg_at(icons::VOLUME, 22.0));
+    b.set_icon_volume_off(svg_at(icons::VOLUME_OFF, 22.0));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -211,6 +213,11 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_find_warn_title(t(s, "find_warn_title").into());
     tr.set_find_warn_msg(t(s, "find_warn_msg").into());
     tr.set_find_warn_play(t(s, "find_warn_play").into());
+    tr.set_section_sounds(t(s, "earbuds_section_sounds").into());
+    tr.set_alert_title(t(s, "row_alert_title").into());
+    tr.set_tap_title(t(s, "tap_level_title").into());
+    tr.set_tap_hint(t(s, "tap_level_hint").into());
+    tr.set_tap_warning(t(s, "tap_level_warning").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
