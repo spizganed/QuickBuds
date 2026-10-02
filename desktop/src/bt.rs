@@ -18,6 +18,14 @@ pub struct Device {
     pub name: String,
     /// The system has an ACL link to it (audio connected).
     pub connected: bool,
+    /// It offers one of [SPP_UUIDS] (the system's cached service list): the vendor's control service.
+    pub vendor: bool,
+}
+
+/// "0000079a-d102-11e1-9b23-00025b00a5a5" (any case, braces or not) is one of [SPP_UUIDS].
+pub fn is_vendor_uuid(s: &str) -> bool {
+    let hex: String = s.chars().filter(|c| c.is_ascii_hexdigit()).collect();
+    u128::from_str_radix(&hex, 16).is_ok_and(|u| SPP_UUIDS.contains(&u))
 }
 
 pub enum Link {
@@ -52,7 +60,7 @@ fn bridge() -> Option<String> { std::env::var("QB_BRIDGE").ok() }
 /// Devices paired with the system; with `QB_BRIDGE`, only the bridge.
 pub fn paired() -> Vec<Device> {
     match bridge() {
-        Some(a) => vec![Device { addr: 0, name: format!("Bridge {a}"), connected: true }],
+        Some(a) => vec![Device { addr: 0, name: format!("Bridge {a}"), connected: true, vendor: true }],
         None => imp::paired(),
     }
 }
@@ -112,16 +120,27 @@ mod imp {
             loop {
                 let name = &info.szName;
                 let len = name.iter().position(|&c| c == 0).unwrap_or(name.len());
+                // The services Windows set up for it; a vendor service it has no driver for may be missing,
+                // so a device that answered once is also remembered (`session`).
+                let mut guids: [GUID; 32] = zeroed();
+                let mut count = guids.len() as u32;
+                let vendor = BluetoothEnumerateInstalledServices(std::ptr::null_mut(), &info, &mut count, guids.as_mut_ptr()) == 0
+                    && guids[..count.min(32) as usize].iter().any(|g| SPP_UUIDS.contains(&guid_u128(g)));
                 out.push(Device {
                     addr: info.Address.Anonymous.ullLong,
                     name: String::from_utf16_lossy(&name[..len]),
                     connected: info.fConnected != 0,
+                    vendor,
                 });
                 if BluetoothFindNextDevice(h, &mut info) == 0 { break; }
             }
             BluetoothFindDeviceClose(h);
         }
         out
+    }
+
+    fn guid_u128(g: &GUID) -> u128 {
+        (g.data1 as u128) << 96 | (g.data2 as u128) << 80 | (g.data3 as u128) << 64 | u64::from_be_bytes(g.data4) as u128
     }
 
     fn connect_uuid(addr: u64, uuid: u128) -> Result<Link, String> {
@@ -218,7 +237,9 @@ mod imp {
             if !flag(dev, "Paired") { continue; }
             let Some(addr) = prop_cast::<String>(dev, "Address").and_then(|a| parse_addr(a)) else { continue };
             let name = prop_cast::<String>(dev, "Alias").or_else(|| prop_cast(dev, "Name")).cloned().unwrap_or_default();
-            out.push(Device { addr, name, connected: flag(dev, "Connected") });
+            // BlueZ's cached SDP result: the services the device offered when it was paired.
+            let vendor = prop_cast::<Vec<String>>(dev, "UUIDs").is_some_and(|u| u.iter().any(|u| super::is_vendor_uuid(u)));
+            out.push(Device { addr, name, connected: flag(dev, "Connected"), vendor });
         }
         out
     }
@@ -320,6 +341,13 @@ mod imp {
         use super::*;
 
         #[test]
+        fn vendor_uuids() {
+            assert!(crate::bt::is_vendor_uuid("0000079a-d102-11e1-9b23-00025b00a5a5"));
+            assert!(crate::bt::is_vendor_uuid("{00001107-D102-11E1-9B23-00025B00A5A5}"));
+            assert!(!crate::bt::is_vendor_uuid("0000110b-0000-1000-8000-00805f9b34fb"));
+        }
+
+        #[test]
         fn address_round_trip() {
             let a = parse_addr("A8:E6:E8:92:C1:25").unwrap();
             assert_eq!(a, 0xA8E6E892C125);
@@ -331,8 +359,8 @@ mod imp {
         #[ignore]
         fn live_battery() {
             let devices = paired();
-            for d in &devices { println!("{:012X} {} connected={}", d.addr, d.name, d.connected); }
-            let d = devices.iter().find(|d| d.connected && crate::protocol::is_known_name(&d.name)).expect("no connected buds");
+            for d in &devices { println!("{:012X} {} connected={} vendor={}", d.addr, d.name, d.connected, d.vendor); }
+            let d = devices.iter().find(|d| d.connected && d.vendor).expect("no connected buds");
             for uuid in SPP_UUIDS { println!("SDP {uuid:032X}: {:?}", sdp_channel(d.addr, uuid)); }
             let mut link = connect(d.addr).expect("connect");
             link.write(&[0xAA, 0x07, 0x00, 0x00, 0x06, 0x01, 0x01, 0x00, 0x00]).unwrap();
