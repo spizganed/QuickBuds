@@ -40,8 +40,8 @@ finished (ROADMAP-DONE.md).
       status re-read; confirms for Adaptive sound and Power saving) and the firmware version. Wear detection
       (the buds' auto play/pause) and Find my earbuds added the same day. Then alert sound volume and tap
       sensitivity (read when the page opens). The model list (Automatic or a manual pick,
-      opened from a Model row there) followed. Still to come on it: Personalized ANC, the game sound and head
-      gesture types, fit test.
+      opened from a Model row there) followed. Then the fit test and the game sound and
+      head gesture type pickers. Still to come on it: Personalized ANC.
    3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open

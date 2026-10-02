@@ -122,6 +122,28 @@ export global Tr {
     in property <string> find-warn-msg;
     in property <string> find-warn-play;
     in property <string> section-sounds;
+    in property <string> fit-title;
+    in property <string> fit-sub;
+    in property <string> fit-hint;
+    in property <string> fit-play;
+    in property <string> fit-playing;
+    in property <string> fit-keep;
+    in property <string> fit-good;
+    in property <string> fit-average;
+    in property <string> fit-poor;
+    in property <string> fit-perfect;
+    in property <string> fit-adjust;
+    in property <string> fit-again;
+    in property <string> fit-insert;
+    in property <string> fit-failed;
+    in property <string> bud-left;
+    in property <string> bud-right;
+    in property <string> done;
+    in property <string> game-sound-type-title;
+    in property <string> head-motion-type-title;
+    in property <string> fit-tips-both;
+    in property <string> fit-tips-left;
+    in property <string> fit-tips-right;
     in property <string> model-title;
     in property <string> model-auto;
     in property <string> alert-title;
@@ -1013,6 +1035,15 @@ export struct FeatureItem {
     // Asked before turning on ("" = never); `confirm-off`: before turning off too.
     confirm: string,
     confirm-off: bool,
+    // A picker row under the switch: 0 none, 1 game sound type, 2 head gesture mapping.
+    choice-kind: int,
+    choice-title: string,
+    choice: string,
+}
+
+export struct Choice {
+    value: int,
+    label: string,
 }
 
 // The Earbud settings page's state (`earbuds.rs`).
@@ -1028,12 +1059,114 @@ export global Earbuds {
     in property <bool> has-tap;
     in-out property <int> tap: 3;
     in property <int> tap-default: 3;
+    in property <bool> has-fit;
+    in property <int> fit-left;
+    in property <int> fit-right;
+    in property <int> fit-seq;
+    in property <[Choice]> game-choices;
+    in property <int> game-current;
+    in property <[Choice]> head-choices;
+    in property <int> head-current;
+    callback choose(int, int);
+    callback fit(bool);
     callback opened();
     callback alert-released(int);
     callback tap-released(int);
     callback set-feature(int, bool);
     callback find(bool);
     public function stop-find() { if find-playing { find-playing = false; find(false); } }
+}
+
+// A list to pick one from (the phone's bottom sheet items); the current one has the outline.
+component ChoiceDialog inherits PopupWindow {
+    in property <string> title;
+    in property <[Choice]> items;
+    in property <int> current;
+    callback picked(int);
+    width: 340px;
+    Rectangle {
+        background: Dots.on ? Palette.bg : Palette.card;
+        border-radius: 14px;
+        border-width: Dots.on ? 0 : 1px;
+        border-color: Palette.outline;
+        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+        VerticalLayout {
+            padding: 20px;
+            spacing: 8px;
+            Text { text: root.title; color: Palette.text; font-size: 15px; font-weight: 600; }
+            for c in root.items: PresetRow {
+                name: c.label; selected: c.value == root.current;
+                clicked => { root.picked(c.value); }
+            }
+        }
+    }
+}
+
+// Earbud fit test (`FitTestSheet`): both buds in an ear, Play, one result per bud within 15 s; closing stops it.
+component FitDialog inherits PopupWindow {
+    // 0 ready, 1 insert the buds, 2 running, 3 failed, 4 perfect, 5 adjust
+    property <int> state;
+    property <bool> started;
+    property <bool> shown-result;
+    close-policy: PopupClosePolicy.no-auto-close;
+    width: 380px;
+    public function stop() { if started { started = false; Earbuds.fit(false); } }
+    function play() {
+        if Buds.left-wear != 2 || Buds.right-wear != 2 { state = 1; return; }
+        state = 2; started = true; shown-result = false;
+        Earbuds.fit(true);
+    }
+    pure function ok(s: int) -> bool { return s == 0 || s == 1 || s == 6; }
+    pure function word(s: int) -> string { return s == 1 ? Tr.fit-good : s == 0 ? Tr.fit-average : s == 6 ? Tr.fit-poor : ""; }
+    property <int> seq: Earbuds.fit-seq;
+    changed seq => {
+        if state != 2 { return; }
+        if !ok(Earbuds.fit-left) || !ok(Earbuds.fit-right) { state = 3; return; }
+        shown-result = true;
+        state = Earbuds.fit-left == 1 && Earbuds.fit-right == 1 ? 4 : 5;
+    }
+    Timer { interval: 15s; running: state == 2; triggered => { state = 3; } }
+    Rectangle {
+        background: Dots.on ? Palette.bg : Palette.card;
+        border-radius: 14px;
+        border-width: Dots.on ? 0 : 1px;
+        border-color: Palette.outline;
+        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+        VerticalLayout {
+            padding: 20px;
+            spacing: 12px;
+            Text {
+                text: [Tr.fit-title, Tr.fit-insert, Tr.fit-keep, Tr.fit-failed, Tr.fit-perfect, Tr.fit-adjust][state];
+                color: Palette.text; font-size: 15px; font-weight: 600; wrap: word-wrap;
+            }
+            if state != 2 && state != 4: Text {
+                text: state == 5 ? (Earbuds.fit-left != 1 && Earbuds.fit-right != 1 ? Tr.fit-tips-both : Earbuds.fit-left != 1 ? Tr.fit-tips-left : Tr.fit-tips-right) : Tr.fit-hint;
+                color: Palette.text2; font-size: 13px; wrap: word-wrap;
+            }
+            // "Left · Good", a good fit in the accent colour.
+            if shown-result: HorizontalLayout {
+                alignment: space-around;
+                for side[i] in [Earbuds.fit-left, Earbuds.fit-right]: Text {
+                    text: (i == 0 ? Tr.bud-left : Tr.bud-right) + " · " + word(side);
+                    color: side == 1 ? Palette.accent : Palette.text; font-size: 15px;
+                }
+            }
+            HorizontalLayout {
+                alignment: end;
+                spacing: 8px;
+                Chip { text: Tr.close; clicked => { stop(); state = 0; shown-result = false; root.close(); } }
+                Chip {
+                    primary: true;
+                    text: state == 2 ? Tr.fit-playing : state == 4 ? Tr.done : state == 5 ? Tr.fit-again : Tr.fit-play;
+                    clicked => {
+                        if state == 2 { return; }
+                        if state == 4 { stop(); state = 0; shown-result = false; root.close(); return; }
+                        play();
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Find my earbuds (`FindBudsSheet`): Play / Stop in place; a bud in an ear asks first (the tone is loud).
@@ -1135,12 +1268,14 @@ component EarbudsPage inherits Rectangle {
                     clicked => { root.open-models(); }
                 }
             }
-            if Earbuds.has-find: Card {
+            if Earbuds.has-find || Earbuds.has-fit: Card {
                 border-radius: 24px;
                 VerticalLayout {
                     padding-left: 20px;
                     padding-right: 20px;
-                    NavRow { icon: Buds.icon-find; title: Tr.find-row-title; subtitle: Tr.find-row-sub; clicked => { if Buds.on { find.show(); } } }
+                    if Earbuds.has-find: NavRow { icon: Buds.icon-find; title: Tr.find-row-title; subtitle: Tr.find-row-sub; clicked => { if Buds.on { find.show(); } } }
+                    if Earbuds.has-find && Earbuds.has-fit: Divider {}
+                    if Earbuds.has-fit: NavRow { icon: Buds.icon-earbud; title: Tr.fit-title; subtitle: Tr.fit-sub; clicked => { if Buds.on { fit.show(); } } }
                 }
             }
             if Earbuds.features.length > 0: SectionTitle { text: Tr.section-features; font-size: 13px; font-weight: 400; }
@@ -1161,6 +1296,11 @@ component EarbudsPage inherits Rectangle {
                                     Earbuds.set-feature(f.id, on);
                                 }
                             }
+                        }
+                        if f.choice-kind > 0: Divider {}
+                        if f.choice-kind > 0: NavRow {
+                            icon: f.icon; title: f.choice-title; subtitle: f.choice;
+                            clicked => { if !Buds.on { return; } if f.choice-kind == 1 { game.show(); } else { head.show(); } }
                         }
                     }
                 }
@@ -1214,6 +1354,19 @@ component EarbudsPage inherits Rectangle {
         x: (root.width - self.width) / 2; y: (root.height - 160px) / 2;
         title: root.ask-title; body: root.ask-body;
         accepted => { Earbuds.set-feature(root.ask-id, root.ask-on); }
+    }
+    game := ChoiceDialog {
+        x: (root.width - self.width) / 2; y: 120px;
+        title: Tr.game-sound-type-title; items: Earbuds.game-choices; current: Earbuds.game-current;
+        picked(v) => { Earbuds.choose(1, v); }
+    }
+    head := ChoiceDialog {
+        x: (root.width - self.width) / 2; y: 120px;
+        title: Tr.head-motion-type-title; items: Earbuds.head-choices; current: Earbuds.head-current;
+        picked(v) => { Earbuds.choose(2, v); }
+    }
+    fit := FitDialog {
+        x: (root.width - self.width) / 2; y: 120px;
     }
     find := FindDialog {
         x: (root.width - self.width) / 2; y: (root.height - 160px) / 2;

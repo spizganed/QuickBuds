@@ -33,6 +33,10 @@ const STRINGS: &[&str] = &[
     "wear_firmware_title", "wear_firmware_sub", "row_find_title", "row_find_sub", "find_title", "find_hint", "find_stop",
     "find_play", "find_warn_title", "find_warn_msg", "find_warn_play",
     "earbuds_section_sounds", "row_alert_title", "tap_level_title", "tap_level_hint", "tap_level_warning",
+    "game_sound_type_title", "game_sound_type_shooter", "game_sound_type_peace", "head_motion_type_title",
+    "head_motion_nod", "head_motion_shake", "gesture_bud_left", "gesture_bud_right", "gesture_done", "fit_title",
+    "fit_sub", "fit_hint", "fit_play", "fit_playing", "fit_keep", "fit_good", "fit_average", "fit_poor", "fit_perfect",
+    "fit_adjust", "fit_adjust_tips", "fit_both", "fit_left", "fit_right", "fit_again", "fit_insert", "fit_failed",
     "model_title", "model_auto", "model_detected", "model_not_detected",
     // Built-in preset names (`protocol::eq_builtins`)
     "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
