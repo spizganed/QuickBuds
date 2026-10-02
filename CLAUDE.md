@@ -77,7 +77,7 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
   "Unable to set daemon's environment variables" warning is harmless.
 - `core.filemode` is false; git keeps `gradlew` at 755. SDK shell scripts need `java -jar`.
 - **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, mirrored to the PC with scrcpy
-  (RDP was dropped: ~15 fps); started by `~/.shortcuts/scrappy` (Wi-Fi adb, no SSH; `ssh-terminal` = the old way with sshd), which runs `~/.local/bin/scrcpy-ready`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
+  (RDP was dropped: ~15 fps); started by `~/.shortcuts/scrappy` (Wi-Fi adb, no SSH; `ssh-terminal` = plain SSH into Termux, no desktop), which runs `~/.local/bin/scrcpy-ready`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
   --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`) and runs with `DISPLAY=:0
   QB_BRIDGE=127.0.0.1:7979`. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
   proot ones: proot is too slow for a browser.
