@@ -23,7 +23,11 @@ pub const CMD_SET_TAP_LEVEL: u16 = 0x042D;
 pub const CMD_QUERY_TAP_LEVEL: u16 = 0x0133;
 pub const CMD_FIT_TEST: u16 = 0x0405;
 pub const CMD_GOLDEN_DETECT: u16 = 0x040D;
+/// Personalized ANC (§9, unverified): `<action>` 1 test / 2 use the stored result / 3 cancel, ack `8412 <status>`;
+/// `0x011A` -> `00 <exist>`; the test's result is push `0B <r>` (0 applied, 1-5 a reason it failed).
 pub const CMD_PERSONAL_NOISE: u16 = 0x0412;
+pub const CMD_QUERY_PERSONAL_NOISE: u16 = 0x011A;
+pub const FEATURE_PERSONAL_NOISE: u8 = 0x0C;
 /// Game sound type `<type> 01`; read `0x012B` -> `00 <selected> <count> <types>` (§9).
 pub const CMD_GAME_SOUND: u16 = 0x0423;
 pub const CMD_QUERY_GAME_SOUND: u16 = 0x012B;
@@ -404,6 +408,9 @@ pub enum Event {
     HeadMotion(u8),
     /// Fit test result, left and right status (§9: 1 good, 0 average, 6 poor, else an error; 0xFF missing).
     FitResult(u8, u8),
+    PncStored(bool),
+    PncAck(u8),
+    PncResult(u8),
     /// (level, the buds' default)
     TapLevel(u8, u8),
 }
@@ -436,6 +443,8 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x810D if sub == Some(0) => Event::Features(pairs(&pl[1..])?),
         0x8130 | 0x8427 if sub == Some(0) && pl.len() >= 2 => Event::AlertVolume(pl[1]),
         0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
+        0x811A if sub == Some(0) && pl.len() >= 2 => Event::PncStored(pl[1] != 0),
+        0x8412 if !pl.is_empty() => Event::PncAck(pl[0]),
         0x812B if sub == Some(0) && pl.len() >= 3 => Event::GameSound(pl[1], pl[3..pl.len().min(3 + pl[2] as usize)].to_vec()),
         // `00 <count>` + UTF-8 `deviceType,versionType,version` triples
         0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
@@ -456,6 +465,7 @@ pub fn decode(p: &[u8]) -> Option<Event> {
                 Event::FitResult(of(1), of(2))
             }
             0xF5 if pl.len() >= 2 => Event::HeadMotion(pl[1]),
+            0x0B if pl.len() >= 2 => Event::PncResult(pl[1]),
             _ => return None,
         },
         _ => return None,
@@ -480,6 +490,9 @@ pub fn describe(e: &Event) -> String {
         Event::GameSound(t, all) => format!("Game sound type {t} (offered {all:?})"),
         Event::HeadMotion(t) => format!("Head gesture mapping {t}"),
         Event::FitResult(l, r) => format!("Fit test L={l} R={r}"),
+        Event::PncStored(e) => format!("Personalized ANC stored result: {e}"),
+        Event::PncAck(st) => format!("Personalized ANC ack {st}"),
+        Event::PncResult(r) => format!("Personalized ANC result {r}"),
         Event::TapLevel(l, d) => format!("Tap sensitivity {l} (default {d})"),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
@@ -505,6 +518,8 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_SET_HEAD_MOTION => "Set head gesture mapping",
         CMD_QUERY_HEAD_MOTION => "Query head gesture mapping",
         CMD_FIT_TEST => "Fit test",
+        CMD_PERSONAL_NOISE => "Personalized ANC",
+        CMD_QUERY_PERSONAL_NOISE => "Query personalized ANC",
         CMD_QUERY_ALERT_VOLUME => "Query alert volume",
         CMD_SET_TAP_LEVEL => "Set tap sensitivity",
         CMD_QUERY_TAP_LEVEL => "Query tap sensitivity",
@@ -635,6 +650,9 @@ mod tests {
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[4, 1, 1, 2, 1])), Some(Event::FitResult(1, 1))));
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[4, 2, 6])), Some(Event::FitResult(0xFF, 6))));
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0xF5, 1])), Some(Event::HeadMotion(1))));
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0x0B, 2])), Some(Event::PncResult(2))));
+        assert!(matches!(decode(&build_packet(0x811A, 1, &[0, 1])), Some(Event::PncStored(true))));
+        assert!(matches!(decode(&build_packet(0x8412, 1, &[15])), Some(Event::PncAck(15))));
     }
 
     #[test]

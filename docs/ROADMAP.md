@@ -41,7 +41,8 @@ finished (ROADMAP-DONE.md).
       (the buds' auto play/pause) and Find my earbuds added the same day. Then alert sound volume and tap
       sensitivity (read when the page opens). The model list (Automatic or a manual pick,
       opened from a Model row there) followed. Then the fit test and the game sound and
-      head gesture type pickers. Still to come on it: Personalized ANC.
+      head gesture type pickers. Personalized ANC last (unverified: no
+      owner yet). Earbud settings now has every item the phone's has, except the phone-only smart auto-pause.
    3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open

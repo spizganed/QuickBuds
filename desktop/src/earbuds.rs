@@ -39,6 +39,9 @@ pub fn setup(main: &MainWindow) {
         let _ = a.tx.send(if kind == 1 { Cmd::GameSoundType(v as u8) } else { Cmd::HeadMotion(v as u8) });
     }));
     e.on_fit(|on| with_app(|a| { let _ = a.tx.send(Cmd::FitTest(on)); }));
+    e.on_pnc_query(|| with_app(|a| { let _ = a.tx.send(Cmd::PncQuery); }));
+    e.on_pnc(|action| with_app(|a| { let _ = a.tx.send(Cmd::Pnc(action as u8)); }));
+    e.on_status_read(|| with_app(|a| { let _ = a.tx.send(Cmd::StatusRead); }));
 }
 
 /// HeyMelody's names for the game sound types; a type without one is not offered.
@@ -53,7 +56,18 @@ fn head_label(a: &App, t: u8) -> Option<String> {
 pub fn apply(a: &App) {
     let s = &a.snap;
     let flagged = |flag: Option<&str>| s.manual && flag.is_some_and(|f| s.model.is_some_and(|m| m[f] == 1));
-    let rows: Vec<FeatureItem> = ROWS.iter().filter_map(|&(id, flag, icon, title, sub, confirm, confirm_off)| {
+    // Personalized ANC first, as on the phone: the model's flag too (HeyMelody gates on it alone, and the
+    // Buds 4 list `0C` without having the feature). Turning it on runs the test flow, not a write.
+    let pnc_listed = s.features.iter().find(|f| f.0 == FEATURE_PERSONAL_NOISE).map(|f| f.1);
+    // A model without the key has no feature (`optInt` gives 0); no model at all leaves it to the buds.
+    let pnc = (s.model.map_or(true, |m| m["personalNoise"] == 1)
+        && (pnc_listed.is_some() || flagged(Some("personalNoise")))
+        && (s.caps.supports(CMD_PERSONAL_NOISE) || s.manual))
+        .then(|| FeatureItem {
+            id: FEATURE_PERSONAL_NOISE as i32, icon: svg(icons::MODE_ANC_MEDIUM), title: t(&a.tr, "pnc_title").into(),
+            sub: t(&a.tr, "pnc_sub").into(), on: pnc_listed == Some(1), flow: true, ..Default::default()
+        });
+    let rows: Vec<FeatureItem> = pnc.into_iter().chain(ROWS.iter().filter_map(|&(id, flag, icon, title, sub, confirm, confirm_off)| {
         let v = match s.features.iter().find(|f| f.0 == id) { Some(f) => f.1, None if flagged(flag) => 0, None => return None };
         // The picker under its switch: which game sound effect, or which head gesture answers.
         let (kind, choice_title, choice) = match id {
@@ -66,9 +80,9 @@ pub fn apply(a: &App) {
             id: id as i32, icon: svg(icon), title: t(&a.tr, title).into(), sub: t(&a.tr, sub).into(), on: v == 1,
             confirm: confirm.map_or("", |k| t(&a.tr, k)).into(), confirm_off,
             choice_kind: kind, choice_title: if kind > 0 { t(&a.tr, choice_title).into() } else { "".into() },
-            choice: choice.unwrap_or("—".into()).into(),
+            choice: choice.unwrap_or("—".into()).into(), flow: false,
         })
-    }).collect();
+    })).collect();
     let e = a.main.global::<Earbuds>();
     e.set_features(ModelRc::new(VecModel::from(rows)));
     e.set_has_firmware(s.caps.supports(CMD_QUERY_FIRMWARE));
@@ -77,6 +91,9 @@ pub fn apply(a: &App) {
     e.set_fit_left(s.fit.0 as i32);
     e.set_fit_right(s.fit.1 as i32);
     e.set_fit_seq(s.fit.2 as i32);
+    e.set_pnc_kind(s.pnc.0 as i32);
+    e.set_pnc_value(s.pnc.1 as i32);
+    e.set_pnc_seq(s.pnc.2 as i32);
     // The types the buds offer (`0x812B`), Off first; before a read, HeyMelody's usual Off + shooting.
     let offered = s.game_sound.as_ref().map(|g| g.1.clone()).filter(|t| !t.is_empty()).unwrap_or(vec![3]);
     let mut game: Vec<u8> = vec![0];
