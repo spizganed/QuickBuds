@@ -185,6 +185,9 @@ Rust, one crate, Slint UI, `tray-icon`. `cargo test` / `cargo build --release`. 
   size it is shown (`svg_at`), a scaled one blurs.
 - **Linux tray is a menu** `[USER]` (AppIndicator has no clicks). **The quick panel exists only on
   Windows** (on Wayland a never-shown window sat in the taskbar).
+- **Agent UI tests run on an invisible screen** (`scripts/desktop-vscreen.sh start|click|shot|stop`, Xvfb
+  `:99`, scale 1), never on his desktop: clicks sent to his Wayland session do not arrive. The app there
+  still connects to his real buds: click no control that writes unless the test needs it.
 - `QB_BRIDGE=127.0.0.1:7979` talks to the buds through the Android app's Dev tools › Bridge; it does not
   test BlueZ.
 - **Distribution `[USER]`:** Windows portable `.zip` (only the `.exe`), Linux `.tar.gz`. AUR `quickbuds-bin`
