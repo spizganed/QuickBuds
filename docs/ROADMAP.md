@@ -33,7 +33,9 @@ finished (ROADMAP-DONE.md).
       wear labels and the device name, noise pill with "ANC M", feature list with the phone's switch and an
       Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
    2. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
-      settings, App settings).
+      settings, App settings). **Dot matrix started 2026-10-02:** App settings › Style (Classic / Dot matrix,
+      saved in `settings.json`), Doto font, dot cards, rows, chips, segments, rings, switch, knobs and icons in
+      the window and the quick panel. Still smooth: the EQ curve. Needs his look on a real screen.
    3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open

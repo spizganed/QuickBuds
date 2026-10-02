@@ -3,6 +3,7 @@
 
 mod bt;
 mod devtools;
+mod dots;
 mod eq;
 mod protocol;
 mod session;
@@ -59,7 +60,73 @@ thread_local! { static APP: RefCell<Option<App>> = const { RefCell::new(None) };
 
 fn with_app(f: impl FnOnce(&mut App)) { APP.with(|a| a.borrow_mut().as_mut().map(f)); }
 
-fn svg(s: &str) -> Image { Image::load_from_svg_data(s.as_bytes()).expect("icon") }
+thread_local! {
+    /// The Dot matrix style is on, and the main window's scale factor: icons are drawn for both.
+    static STYLE: std::cell::Cell<(bool, f32)> = const { std::cell::Cell::new((false, 1.0)) };
+}
+
+/// An icon as the style draws it: the vector itself, or its dots (24 logical px tall).
+fn svg(s: &str) -> Image { svg_at(s, 24.0) }
+
+/// [svg] for an icon shown `size` logical px tall: dots are drawn at that size, a scaled dot image blurs.
+fn svg_at(s: &str, size: f32) -> Image {
+    let (dots_on, scale) = STYLE.get();
+    if dots_on { dots::icon(s, size, scale) } else { raw_svg(s) }
+}
+
+fn raw_svg(s: &str) -> Image { Image::load_from_svg_data(s.as_bytes()).expect("icon") }
+
+/// `settings.json` in the user's config folder (`%APPDATA%\QuickBuds`, `~/.config/quickbuds`).
+fn settings_path() -> Option<std::path::PathBuf> {
+    #[cfg(windows)]
+    let dir = std::env::var_os("APPDATA").map(|d| std::path::PathBuf::from(d).join("QuickBuds"));
+    #[cfg(not(windows))]
+    let dir = std::env::var_os("XDG_CONFIG_HOME").map(std::path::PathBuf::from)
+        .or_else(|| std::env::var_os("HOME").map(|h| std::path::PathBuf::from(h).join(".config")))
+        .map(|d| d.join("quickbuds"));
+    dir.map(|d| d.join("settings.json"))
+}
+
+fn load_settings() -> serde_json::Value {
+    settings_path().and_then(|p| std::fs::read_to_string(p).ok())
+        .and_then(|s| serde_json::from_str(&s).ok()).unwrap_or_else(|| serde_json::json!({}))
+}
+
+fn save_setting(key: &str, value: serde_json::Value) {
+    let Some(path) = settings_path() else { return };
+    let mut all = load_settings();
+    all[key] = value;
+    if let Some(dir) = path.parent() { let _ = std::fs::create_dir_all(dir); }
+    let _ = std::fs::write(path, serde_json::to_string_pretty(&all).unwrap_or_default());
+}
+
+/// The Dot matrix renderers for one window's `Dots` global.
+fn setup_dots(d: &Dots) {
+    let pitch = || dots::pitch_px(STYLE.get().1, dots::PITCH);
+    d.on_box_px(move |w, h, fill, stroke, r| dots::dot_box(w, h, fill, stroke, r, pitch()));
+    d.on_ring_px(|size, level, slot, tint, accent, track| dots::ring(size, level, slot, tint, accent, track));
+    d.on_knob_px(move |ring, fill| dots::knob(ring, fill, pitch()));
+    d.on_disc_px(move |n, c| dots::disc(n.max(1) as u32, c, pitch()));
+    d.on_set_on(|on| {
+        save_setting("dot_matrix", on.into());
+        with_app(|a| a.set_style(on, STYLE.get().1));
+    });
+}
+
+/// The sidebar's sections; each turns on when its page exists.
+fn nav() -> ModelRc<NavEntry> {
+    let nav: Vec<NavEntry> = [
+        (icons::LAYOUT, "Overview", true),
+        (icons::EQUALIZER, "Equalizer", true),
+        (icons::GESTURE, "Controls", false),
+        (icons::HEARING, "Hearing profile", false),
+        (icons::DEVICES, "Dual connection", false),
+        (icons::EARBUD, "Earbud settings", false),
+        (icons::SETTINGS_COG, "App settings", true),
+        (icons::DEV_TOOLS, "Dev tools", true),
+    ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg_at(icon, 20.0), name: name.into(), ready }).collect();
+    ModelRc::new(VecModel::from(nav))
+}
 
 /// English strings from `values/strings.xml`.
 // ponytail: English only for now [USER]; the other locales are already in `strings::LOCALES`.
@@ -72,7 +139,7 @@ fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
     &tr[strings::KEYS.iter().position(|k| *k == key).expect(key)]
 }
 
-fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
+fn set_icons(b: &Buds) {
     b.set_icon_left(svg(icons::BUD_LEFT));
     b.set_icon_right(svg(icons::BUD_RIGHT));
     b.set_icon_case(svg(icons::CASE));
@@ -81,10 +148,14 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     b.set_icon_adaptive(svg(icons::MODE_ADAPTIVE));
     b.set_icon_transparency(svg(icons::MODE_TRANSPARENCY));
     b.set_icon_low_latency(svg(icons::LOW_LATENCY));
-    b.set_icon_app(svg(icons::LAUNCHER));
+    b.set_icon_app(raw_svg(icons::LAUNCHER));
     b.set_icon_bass(svg(icons::EQUALIZER));
-    b.set_icon_chevron(svg(icons::CHEVRON_RIGHT));
-    b.set_icon_plus(svg(icons::PLUS));
+    b.set_icon_chevron(svg_at(icons::CHEVRON_RIGHT, 20.0));
+    b.set_icon_plus(svg_at(icons::PLUS, 18.0));
+}
+
+fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
+    set_icons(b);
 
     tr.set_connected(t(s, "conn_on").into());
     tr.set_connect(t(s, "conn_action_connect").into());
@@ -116,6 +187,9 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_eq_delete(t(s, "eq_delete").into());
     tr.set_eq_add(t(s, "eq_add").into());
     tr.set_eq_save(t(s, "eq_save").into());
+    tr.set_style_title(t(s, "widget_style_title").into());
+    tr.set_style_classic(t(s, "widget_style_classic").into());
+    tr.set_style_dots(t(s, "widget_style_nothing").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
@@ -152,6 +226,23 @@ fn level_info(id: &str) -> (&'static str, usize) {
 }
 
 impl App {
+    /// Switches the style (or redraws it for a new scale factor) in the window and the quick panel.
+    fn set_style(&mut self, on: bool, scale: f32) {
+        STYLE.set((on, scale));
+        #[cfg(windows)]
+        let windows = [(self.main.global::<Dots>(), self.main.global::<Buds>()), (self.panel.global::<Dots>(), self.panel.global::<Buds>())];
+        #[cfg(not(windows))]
+        let windows = [(self.main.global::<Dots>(), self.main.global::<Buds>())];
+        for (d, b) in windows {
+            d.set_scale(scale);
+            d.set_pitch(dots::pitch_px(scale, dots::PITCH));
+            d.set_on(on);
+            set_icons(&b);
+        }
+        self.main.set_nav(nav());
+        self.apply(self.snap.clone());
+    }
+
     fn apply(&mut self, s: Snapshot) {
         self.snap = s.clone();
         eq::apply(self);
@@ -324,19 +415,18 @@ fn main() {
     setup_ui(&main.global::<Buds>(), &main.global::<Tr>(), &tr);
     #[cfg(windows)]
     setup_ui(&panel.global::<Buds>(), &panel.global::<Tr>(), &tr);
-    // Sections of the phone app; each turns on when its page exists.
-    let nav: Vec<NavEntry> = [
-        (icons::LAYOUT, "Overview", true),
-        (icons::EQUALIZER, "Equalizer", true),
-        (icons::GESTURE, "Controls", false),
-        (icons::HEARING, "Hearing profile", false),
-        (icons::DEVICES, "Dual connection", false),
-        (icons::EARBUD, "Earbud settings", false),
-        (icons::SETTINGS_COG, "App settings", false),
-        (icons::DEV_TOOLS, "Dev tools", true),
-    ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg(icon), name: name.into(), ready }).collect();
-    main.set_nav(ModelRc::new(VecModel::from(nav)));
+    setup_dots(&main.global::<Dots>());
+    #[cfg(windows)]
+    setup_dots(&panel.global::<Dots>());
     window_chrome(&main);
+    // A new scale factor (another monitor) redraws the dots at its pitch.
+    main.window().on_winit_window_event(|_, e| {
+        if let winit::event::WindowEvent::ScaleFactorChanged { scale_factor, .. } = e {
+            let scale = *scale_factor as f32;
+            let _ = slint::invoke_from_event_loop(move || with_app(|a| a.set_style(STYLE.get().0, scale)));
+        }
+        slint::winit_030::EventResult::Propagate
+    });
     eq::setup(&main);
     devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
@@ -365,9 +455,10 @@ fn main() {
         main: main.clone_strong(), #[cfg(windows)] panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
         snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0,
     }));
-    with_app(|a| a.apply(Snapshot::default()));
-
     main.show().expect("show");
+    let dot_matrix = load_settings()["dot_matrix"].as_bool().unwrap_or(false);
+    let scale = main.window().scale_factor();
+    with_app(|a| a.set_style(dot_matrix, scale));
     // Closing the window hides it; the app lives in the tray until Quit.
     slint::run_event_loop_until_quit().expect("event loop");
 }

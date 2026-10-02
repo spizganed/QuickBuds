@@ -180,6 +180,9 @@ Rust, one crate, Slint UI, `tray-icon`. `cargo test` / `cargo build --release`. 
   request over L2CAP, kernel RFCOMM socket. No async runtime, no `bluer`. Hardware check:
   `cargo test live_battery -- --ignored --nocapture`.
 - Software renderer by default (~25 MB vs ~130 MB RAM).
+- Settings: `settings.json` in `%APPDATA%\QuickBuds` / `~/.config/quickbuds` (`save_setting`). Dot matrix
+  shapes are images from `dots.rs` (port of `DotArt`) through the `Dots` global; a dot icon is drawn at the
+  size it is shown (`svg_at`), a scaled one blurs.
 - **Linux tray is a menu** `[USER]` (AppIndicator has no clicks). **The quick panel exists only on
   Windows** (on Wayland a never-shown window sat in the taskbar).
 - `QB_BRIDGE=127.0.0.1:7979` talks to the buds through the Android app's Dev tools › Bridge; it does not
