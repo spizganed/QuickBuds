@@ -616,6 +616,8 @@ export global Eq {
     in property <[string]> freq-labels;
     // Path commands in the plot's own pixels (a Path keeps its viewbox's aspect ratio).
     in property <string> curve;
+    // The Dot matrix curve, set from Rust with `curve`.
+    in property <image> curve-dots;
     callback plot-resized(float, float);
     // A knob or slider is held: Rust leaves the values alone.
     in-out property <bool> dragging;
@@ -742,7 +744,13 @@ component EqEditor inherits Rectangle {
     changed width => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
     changed height => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
     init => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
-    Path {
+    if Dots.on: Image {
+        x: 0; y: knob / 2; width: Dots.snap(root.width); height: Dots.snap(plot-h - knob);
+        source: Eq.curve-dots;
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
+    }
+    if !Dots.on: Path {
         x: 0; y: knob / 2; width: root.width; height: plot-h - knob;
         viewbox-width: root.width / 1px; viewbox-height: (plot-h - knob) / 1px;
         stroke: Palette.accent; stroke-width: 2.5px;
@@ -835,8 +843,12 @@ component EqPage inherits VerticalLayout {
                             horizontal-stretch: 1;
                             height: 36px;
                             border-radius: 8px;
-                            border-width: 1px;
+                            border-width: Dots.on ? 0 : 1px;
                             border-color: name-input.has-focus ? Palette.accent : Palette.outline;
+                            if Dots.on: DotBox {
+                                width: 100%; height: 100%; radius: 8px; fill: Palette.card;
+                                stroke: name-input.has-focus ? Palette.accent : Palette.outline;
+                            }
                             name-input := TextInput {
                                 x: 12px; width: parent.width - 24px;
                                 text <=> Eq.edit-name;

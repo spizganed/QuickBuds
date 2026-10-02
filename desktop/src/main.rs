@@ -241,6 +241,7 @@ impl App {
         }
         self.main.set_nav(nav());
         self.apply(self.snap.clone());
+        eq::redraw(self);
     }
 
     fn apply(&mut self, s: Snapshot) {

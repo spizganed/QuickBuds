@@ -81,8 +81,14 @@ pub fn setup(main: &MainWindow) {
     eq.on_bass_released(|v| with_app(|a| send(a, Cmd::BassLevel(v as i8))));
 }
 
-fn redraw(a: &App) {
-    a.main.global::<Eq>().set_curve(curve(&a.gains.iter().collect::<Vec<_>>(), a.plot).into());
+/// The curve, and in the Dot matrix style its dots (drawn at physical pixels, the plot is logical).
+pub fn redraw(a: &App) {
+    let d = curve(&a.gains.iter().collect::<Vec<_>>(), a.plot);
+    let (dots_on, scale) = crate::STYLE.get();
+    let accent = a.main.global::<crate::Palette>().get_accent();
+    let eq = a.main.global::<Eq>();
+    eq.set_curve_dots(if dots_on { crate::dots::curve(&d, a.plot, accent, scale) } else { Default::default() });
+    eq.set_curve(d.into());
 }
 
 pub fn apply(a: &mut App) {
