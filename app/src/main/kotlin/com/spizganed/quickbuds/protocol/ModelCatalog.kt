@@ -41,9 +41,9 @@ object ModelCatalog {
     }
 
     fun find(models: List<Model>, id: String?, name: String?): Model? {
-        val byName = models.filter { name != null && it.name == name }
-        val byId = models.filter { id != null && it.id.equals(id, ignoreCase = true) }
-        return byName.firstOrNull { it in byId } ?: byName.firstOrNull() ?: byId.firstOrNull()
+        // The product id is unique in the list; the device name is only a fallback (the user can rename it).
+        return models.firstOrNull { id != null && it.id.equals(id, ignoreCase = true) }
+            ?: models.firstOrNull { name != null && it.name == name }
     }
 
     /** The detected model, ignoring a manual pick. Null = nothing read yet, or not in the list. */

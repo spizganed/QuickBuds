@@ -93,20 +93,36 @@ pub fn spawn(emit: impl Fn(Snapshot) + Send + 'static) -> Sender<Cmd> {
 
 enum End { Lost, UserDisconnect, Quit }
 
+/// Addresses that answered as buds before (`settings.json` "buds"), for systems that do not list the vendor service.
+fn remembered() -> Vec<u64> {
+    crate::load_settings()["buds"].as_array().into_iter().flatten()
+        .filter_map(|v| u64::from_str_radix(v.as_str()?, 16).ok()).collect()
+}
+
+fn remember(addr: u64) {
+    let mut list = remembered();
+    if addr == 0 || list.contains(&addr) { return; }
+    list.push(addr);
+    crate::save_setting("buds", list.iter().map(|a| format!("{a:012X}")).collect::<Vec<_>>().into());
+}
+
 fn run(rx: Receiver<Cmd>, emit: Emit) {
     let mut paused = false;
     let mut manual = false;
     loop {
         if !paused {
-            // Auto-connect follows audio: only buds the system has a link to. A known model name first;
-            // a user Connect also tries any other connected device.
-            let mut devices: Vec<_> = bt::paired().into_iter()
-                .filter(|d| d.connected && (manual || is_known_name(&d.name))).collect();
-            devices.sort_by_key(|d| !is_known_name(&d.name));
+            // Auto-connect follows audio: only buds the system has a link to. Buds are found by the vendor's
+            // control service (`BudsDevice.find`), or as the device that answered before; a known model name
+            // is the last resort. A user Connect also tries any other connected device.
+            let known = remembered();
+            let rank = |d: &bt::Device| if d.vendor || known.contains(&d.addr) { 0 } else if is_known_name(&d.name) { 1 } else { 2 };
+            let mut devices: Vec<_> = bt::paired().into_iter().filter(|d| d.connected && (manual || rank(d) < 2)).collect();
+            devices.sort_by_key(rank);
             for d in devices {
                 emit(Snapshot { status: Status::Connecting, name: d.name.clone(), ..Default::default() });
                 let Ok(link) = bt::connect(d.addr) else { continue };
                 let mut c = Conn::new(link, d.name, &emit);
+                c.addr = d.addr;
                 match c.serve(&rx) {
                     End::Lost => {}
                     End::UserDisconnect => paused = true,
@@ -129,6 +145,8 @@ fn run(rx: Receiver<Cmd>, emit: Emit) {
 
 struct Conn<'a> {
     link: bt::Link,
+    /// 0 for the bridge.
+    addr: u64,
     framer: Framer,
     seq: u8,
     /// The last ANC level sent, to name a report that says only "noise cancelling".
@@ -141,7 +159,7 @@ impl<'a> Conn<'a> {
     fn new(link: bt::Link, name: String, emit: &'a Emit) -> Self {
         let model = find_model(None, Some(&name));
         let s = Snapshot { status: Status::On, name, modes: AncModes::of(model), model, ..Default::default() };
-        Conn { link, framer: Framer::default(), seq: 0, level: None, s, emit }
+        Conn { link, addr: 0, framer: Framer::default(), seq: 0, level: None, s, emit }
     }
 
     fn send(&mut self, cmd: u16, seq: Option<u8>, payload: &[u8]) -> Result<(), String> {
@@ -212,7 +230,10 @@ impl<'a> Conn<'a> {
 
     fn serve(&mut self, rx: &Receiver<Cmd>) -> End {
         (self.emit)(self.s.clone());
-        match self.init().and_then(|_| self.run(rx)) {
+        let init = self.init();
+        // Buds that named their model are remembered, renamed or not.
+        if init.is_ok() && self.s.model.is_some() { remember(self.addr); }
+        match init.and_then(|_| self.run(rx)) {
             Ok(end) => end,
             Err(_) => End::Lost,
         }

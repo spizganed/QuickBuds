@@ -92,7 +92,9 @@ Details and evidence in PROTOCOL.md.
 
 ## Connection
 
-- **Which buds:** `BudsDevice.find()`. **Never hardcode an address** (phone or desktop).
+- **Which buds:** `BudsDevice.find()`; desktop: the vendor service `079A`/`1107` in the system's cached list,
+  or an address that answered before (`settings.json` "buds"), the name last. **Which model:** the product
+  id (unique in `models.json`), the name only without one. **Never hardcode an address** (phone or desktop).
 - Auto-connect follows audio (A2DP / HFP connected; ACL gives an 8 s fallback). A deliberate disconnect
   cancels `reconnectAfterLoss()`; a lid close (all-zero wear push) does not retry.
 - **Only a user connect asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Exception: the reconnect
