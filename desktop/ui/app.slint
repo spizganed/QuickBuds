@@ -121,6 +121,11 @@ export global Tr {
     in property <string> find-warn-title;
     in property <string> find-warn-msg;
     in property <string> find-warn-play;
+    in property <string> section-sounds;
+    in property <string> alert-title;
+    in property <string> tap-title;
+    in property <string> tap-hint;
+    in property <string> tap-warning;
 }
 
 export struct Level {
@@ -165,6 +170,8 @@ export global Buds {
     in property <image> icon-plus;
     in property <image> icon-info;
     in property <image> icon-find;
+    in property <image> icon-volume;
+    in property <image> icon-volume-off;
     // The ANC segment's label: "ANC", or "ANC M" while a level is on (the phone's and the widget's button).
     in property <string> anc-label: Tr.anc;
 
@@ -706,6 +713,7 @@ component HSlider inherits Rectangle {
     in property <int> minimum;
     in property <int> maximum;
     in-out property <int> value;
+    in property <bool> show-value: true;
     callback released(int);
     height: 48px;
     property <length> knob: Dots.on ? Dots.knob-size : 20px;
@@ -734,7 +742,7 @@ component HSlider inherits Rectangle {
         background: Palette.card;
         border-width: 3px; border-color: Palette.accent;
     }
-    Text {
+    if show-value: Text {
         x: frac * (parent.width - knob) + knob / 2 - 20px; y: 0; width: 40px;
         horizontal-alignment: center;
         text: (value > 0 ? "+" : "") + value;
@@ -1011,6 +1019,14 @@ export global Earbuds {
     in property <bool> has-find;
     // The locator tone is on: leaving the page or closing the dialog stops it.
     in-out property <bool> find-playing;
+    in property <bool> has-alert;
+    in-out property <int> alert: 5;
+    in property <bool> has-tap;
+    in-out property <int> tap: 3;
+    in property <int> tap-default: 3;
+    callback opened();
+    callback alert-released(int);
+    callback tap-released(int);
     callback set-feature(int, bool);
     callback find(bool);
     public function stop-find() { if find-playing { find-playing = false; find(false); } }
@@ -1089,6 +1105,7 @@ component Dialog inherits PopupWindow {
 
 // Earbud settings (`EarbudSettingsActivity`): the switches these buds list, and the firmware version.
 component EarbudsPage inherits Rectangle {
+    init => { Earbuds.opened(); }
     property <int> ask-id;
     property <bool> ask-on;
     property <string> ask-title;
@@ -1126,6 +1143,39 @@ component EarbudsPage inherits Rectangle {
                                     Earbuds.set-feature(f.id, on);
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            if Earbuds.has-tap: SectionTitle { text: Tr.tap-title; font-size: 13px; font-weight: 400; }
+            if Earbuds.has-tap: Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding: 20px;
+                    padding-bottom: 10px;
+                    Text { text: Tr.tap-hint; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+                    HSlider { minimum: 1; maximum: 5; value <=> Earbuds.tap; released(v) => { Earbuds.tap-released(v); } }
+                    // Below the buds' default, as HeyMelody warns.
+                    if Earbuds.tap < Earbuds.tap-default: Text { text: Tr.tap-warning; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+                }
+            }
+            if Earbuds.has-alert: SectionTitle { text: Tr.section-sounds; font-size: 13px; font-weight: 400; }
+            // No numbers, as in HeyMelody: a speaker left of the bar, muted at the lowest step (level 1 is silent).
+            if Earbuds.has-alert: Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding: 20px;
+                    padding-bottom: 6px;
+                    Text { text: Tr.alert-title; color: Palette.text; font-size: 15px; font-weight: 600; }
+                    HorizontalLayout {
+                        spacing: 12px;
+                        Image {
+                            source: Earbuds.alert <= 1 ? Buds.icon-volume-off : Buds.icon-volume;
+                            width: 22px; height: 22px; y: 22px; colorize: Palette.accent;
+                        }
+                        HSlider {
+                            horizontal-stretch: 1; minimum: 1; maximum: 10; show-value: false;
+                            value <=> Earbuds.alert; released(v) => { Earbuds.alert-released(v); }
                         }
                     }
                 }

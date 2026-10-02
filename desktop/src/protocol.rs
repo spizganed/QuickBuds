@@ -15,6 +15,12 @@ pub const CMD_SET_FEATURE: u16 = 0x0403;
 pub const CMD_SET_ANC: u16 = 0x0404;
 /// `01` start / `00` stop, both buds (§9 Find my earbuds).
 pub const CMD_FIND_BUDS: u16 = 0x0400;
+/// `<level>` 1..10, ack `8427 00 <level>`; read `0x0130` -> `00 <level>` (§9).
+pub const CMD_SET_ALERT_VOLUME: u16 = 0x0427;
+pub const CMD_QUERY_ALERT_VOLUME: u16 = 0x0130;
+/// `<level>` 1..5; read `0x0133` -> `00 <level> <default>` (§9, unverified).
+pub const CMD_SET_TAP_LEVEL: u16 = 0x042D;
+pub const CMD_QUERY_TAP_LEVEL: u16 = 0x0133;
 pub const CMD_FIT_TEST: u16 = 0x0405;
 pub const CMD_GOLDEN_DETECT: u16 = 0x040D;
 pub const CMD_PERSONAL_NOISE: u16 = 0x0412;
@@ -387,6 +393,9 @@ pub enum Event {
     GameMode(bool),
     /// `0x810D`: feature id -> value
     Features(Vec<(u8, u8)>),
+    AlertVolume(u8),
+    /// (level, the buds' default)
+    TapLevel(u8, u8),
 }
 
 fn pairs(b: &[u8]) -> Option<Vec<(u8, u8)>> {
@@ -412,6 +421,8 @@ pub fn decode(p: &[u8]) -> Option<Event> {
             Event::AncRaw(pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
         }
         0x810D if sub == Some(0) => Event::Features(pairs(&pl[1..])?),
+        0x8130 | 0x8427 if sub == Some(0) && pl.len() >= 2 => Event::AlertVolume(pl[1]),
+        0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
         // `00 <count>` + UTF-8 `deviceType,versionType,version` triples
         0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
         0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
@@ -444,6 +455,8 @@ pub fn describe(e: &Event) -> String {
         Event::Wear(v) => format!("Wear {}", v.iter().map(|(i, st)| format!("{}={}", side(*i), match st { 3 | 7 => "EAR", 4 => "CASE", 1 | 5 => "OUT", _ => "?" })).collect::<Vec<_>>().join(" ")),
         Event::AncRaw(raw) => format!("ANC report 0x{raw:X}"),
         Event::GameMode(on) => format!("Low latency {}", if *on { "on" } else { "off" }),
+        Event::AlertVolume(l) => format!("Alert volume {l}"),
+        Event::TapLevel(l, d) => format!("Tap sensitivity {l} (default {d})"),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
 }
@@ -462,6 +475,10 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_SET_FEATURE => "Set feature",
         CMD_SET_ANC => "Set ANC",
         CMD_FIND_BUDS => "Find earbuds",
+        CMD_SET_ALERT_VOLUME => "Set alert volume",
+        CMD_QUERY_ALERT_VOLUME => "Query alert volume",
+        CMD_SET_TAP_LEVEL => "Set tap sensitivity",
+        CMD_QUERY_TAP_LEVEL => "Query tap sensitivity",
         CMD_QUERY_FIRMWARE => "Query firmware",
         CMD_QUERY_EQ => "Query EQ",
         CMD_QUERY_EQ_ALL => "Query custom EQ",
@@ -572,6 +589,15 @@ mod tests {
         assert_eq!(anc.levels().len(), 4);
         let push = build_packet(EVT_PUSH, 7, &[2, 3, 1, 7, 2, 7, 3, 4]);
         assert!(matches!(decode(&push), Some(Event::Wear(w)) if w == [(1, 7), (2, 7), (3, 4)]));
+    }
+
+    #[test]
+    fn earbud_settings_replies() {
+        assert!(matches!(decode(&build_packet(0x8130, 1, &[0, 6])), Some(Event::AlertVolume(6))));
+        assert!(matches!(decode(&build_packet(0x8427, 1, &[0, 3])), Some(Event::AlertVolume(3))));
+        assert!(matches!(decode(&build_packet(0x8133, 1, &[0, 2, 3])), Some(Event::TapLevel(2, 3))));
+        // A failed read (status not 0) is no value.
+        assert!(decode(&build_packet(0x8130, 1, &[1, 6])).is_none());
     }
 
     #[test]

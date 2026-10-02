@@ -21,6 +21,10 @@ pub enum Cmd {
     Feature(u8, bool),
     /// The locator tone on both buds.
     Find(bool),
+    /// Earbud settings opened: the reads the phone's screen does then (alert volume, tap sensitivity).
+    EarbudReads,
+    AlertVolume(u8),
+    TapLevel(u8),
     Connect,
     Disconnect,
 }
@@ -53,6 +57,9 @@ pub struct Snapshot {
     pub bass_level: Option<i8>,
     /// `0x810D`: every feature id the buds listed, with its value.
     pub features: Vec<(u8, u8)>,
+    pub alert_volume: Option<u8>,
+    /// (level, the buds' default)
+    pub tap_level: Option<(u8, u8)>,
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -189,6 +196,8 @@ impl<'a> Conn<'a> {
                 None => return false,
             },
             Event::GameMode(on) => s.low_latency = Some(on),
+            Event::AlertVolume(l) => s.alert_volume = Some(l),
+            Event::TapLevel(l, d) => s.tap_level = Some((l, d)),
             Event::Features(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
@@ -304,6 +313,23 @@ impl<'a> Conn<'a> {
                         self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
                     }
                     Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,
+                    Cmd::EarbudReads => for cmd in [CMD_QUERY_ALERT_VOLUME, CMD_QUERY_TAP_LEVEL] {
+                        if !self.s.caps.supports(cmd) { continue; }
+                        self.send(cmd, None, &[])?;
+                        self.pump(120)?;
+                    },
+                    // Sent on release only, so the buds play one prompt per change; the ack carries the level.
+                    Cmd::AlertVolume(l) => {
+                        self.s.alert_volume = Some(l);
+                        self.send(CMD_SET_ALERT_VOLUME, None, &[l.clamp(1, 10)])?;
+                    }
+                    // Unverified on hardware: read back, so the slider shows what the buds kept.
+                    Cmd::TapLevel(l) => {
+                        if let Some(t) = self.s.tap_level.as_mut() { t.0 = l; }
+                        self.send(CMD_SET_TAP_LEVEL, None, &[l.clamp(1, 5)])?;
+                        self.pump(250)?;
+                        self.send(CMD_QUERY_TAP_LEVEL, None, &[])?;
+                    }
                     Cmd::Disconnect => return Ok(End::UserDisconnect),
                     Cmd::Connect => continue,
                 }
