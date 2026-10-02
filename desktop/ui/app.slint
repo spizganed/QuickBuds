@@ -122,6 +122,8 @@ export global Tr {
     in property <string> find-warn-msg;
     in property <string> find-warn-play;
     in property <string> section-sounds;
+    in property <string> model-title;
+    in property <string> model-auto;
     in property <string> alert-title;
     in property <string> tap-title;
     in property <string> tap-hint;
@@ -170,6 +172,7 @@ export global Buds {
     in property <image> icon-plus;
     in property <image> icon-info;
     in property <image> icon-find;
+    in property <image> icon-earbud;
     in property <image> icon-volume;
     in property <image> icon-volume-off;
     // The ANC segment's label: "ANC", or "ANC M" while a level is on (the phone's and the widget's button).
@@ -666,6 +669,7 @@ export global Eq {
 component PresetRow inherits Rectangle {
     in property <string> name;
     in property <bool> selected;
+    in property <bool> enabled: Buds.on;
     callback clicked;
     height: 48px;
     border-radius: 16px;
@@ -673,7 +677,7 @@ component PresetRow inherits Rectangle {
     border-width: Dots.on ? 0 : selected ? 2px : 1px;
     border-color: selected ? Palette.accent : Palette.outline;
     background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
-    opacity: Buds.on ? 1 : 0.35;
+    opacity: enabled ? 1 : 0.35;
     if Dots.on: DotBox {
         width: 100%; height: 100%;
         fill: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
@@ -684,7 +688,7 @@ component PresetRow inherits Rectangle {
         text: name; overflow: elide; vertical-alignment: center;
         color: selected ? Palette.accent : Palette.text; font-size: 14px;
     }
-    ta := TouchArea { enabled: Buds.on; mouse-cursor: pointer; clicked => { root.clicked(); } }
+    ta := TouchArea { enabled: root.enabled; mouse-cursor: pointer; clicked => { root.clicked(); } }
 }
 
 component AddRow inherits Rectangle {
@@ -1105,6 +1109,7 @@ component Dialog inherits PopupWindow {
 
 // Earbud settings (`EarbudSettingsActivity`): the switches these buds list, and the firmware version.
 component EarbudsPage inherits Rectangle {
+    callback open-models();
     init => { Earbuds.opened(); }
     property <int> ask-id;
     property <bool> ask-on;
@@ -1117,6 +1122,19 @@ component EarbudsPage inherits Rectangle {
             alignment: start;
             Text { text: Tr.earbuds-title; color: Palette.text; font-size: 26px; font-weight: 700; }
             if !Buds.on: Text { text: Tr.not-connected; color: Palette.text2; font-size: 13px; }
+            // Not a Card: the model list works while disconnected too.
+            Rectangle {
+                height: 64px;
+                border-radius: 24px;
+                background: Dots.on ? transparent : Palette.card;
+                if Dots.on: DotBox { width: 100%; height: 100%; radius: 24px; }
+                NavRow {
+                    x: 20px; width: parent.width - 40px;
+                    icon: Buds.icon-earbud; title: Tr.model-title;
+                    subtitle: Models.current == "" ? Tr.model-auto + " · " + Models.detected : Models.model-name;
+                    clicked => { root.open-models(); }
+                }
+            }
             if Earbuds.has-find: Card {
                 border-radius: 24px;
                 VerticalLayout {
@@ -1203,6 +1221,56 @@ component EarbudsPage inherits Rectangle {
     info := Dialog {
         x: (root.width - self.width) / 2; y: (root.height - 180px) / 2;
         title: Tr.firmware-dialog-title; body: Tr.firmware-dialog-body; ok: Tr.close; cancel: "";
+    }
+}
+
+export struct ModelRow {
+    id: string,
+    name: string,
+    // The id, where two rows share a name.
+    sub: string,
+}
+
+export struct ModelSection {
+    title: string,
+    rows: [ModelRow],
+}
+
+// The model list's state (`models.rs`).
+export global Models {
+    in property <[ModelSection]> sections;
+    // The manual pick's id, "" = Automatic.
+    in property <string> current;
+    in property <string> detected;
+    in property <string> model-name;
+    callback pick(string);
+}
+
+// The model list (`ModelActivity`): Automatic, then every model by brand. Selection is an outline.
+component ModelsPage inherits Rectangle {
+    callback back();
+    ScrollView {
+        VerticalLayout {
+            padding: 28px;
+            spacing: 8px;
+            alignment: start;
+            HorizontalLayout {
+                spacing: 12px;
+                Chip { text: "‹"; width: 40px; clicked => { root.back(); } }
+                Text { text: Tr.model-title; color: Palette.text; font-size: 26px; font-weight: 700; vertical-alignment: center; horizontal-stretch: 1; }
+            }
+            PresetRow { name: Tr.model-auto + "   ·   " + Models.detected; selected: Models.current == ""; enabled: true; clicked => { Models.pick(""); } }
+            for sec in Models.sections: VerticalLayout {
+                spacing: 8px;
+                padding-top: 8px;
+                SectionTitle { text: sec.title; font-size: 13px; font-weight: 400; }
+                for m in sec.rows: PresetRow {
+                    name: m.sub == "" ? m.name : m.name + "  (" + m.sub + ")";
+                    selected: Models.current == m.id; enabled: true;
+                    clicked => { Models.pick(m.id); }
+                }
+            }
+        }
     }
 }
 
@@ -1298,7 +1366,7 @@ export component MainWindow inherits Window {
                 Rectangle { height: 16px; }
                 for e[i] in root.nav: NavItem {
                     entry: e;
-                    active: root.page == i;
+                    active: root.page == i || (root.page == 8 && i == 5);
                     clicked => { root.page = i; }
                 }
                 Rectangle { vertical-stretch: 1; }
@@ -1307,7 +1375,9 @@ export component MainWindow inherits Window {
 
         // --- Content ---
         if root.page == 1: EqPage { horizontal-stretch: 1; }
-        if root.page == 5: EarbudsPage { horizontal-stretch: 1; }
+        if root.page == 5: EarbudsPage { horizontal-stretch: 1; open-models => { root.page = 8; } }
+        // The model list, opened from Earbud settings (no sidebar entry; the sidebar shows Earbud settings).
+        if root.page == 8: ModelsPage { horizontal-stretch: 1; back => { root.page = 5; } }
         if root.page == 6: SettingsPage { horizontal-stretch: 1; }
         if root.page == 7: DevPage { horizontal-stretch: 1; }
         if root.page == 0: VerticalLayout {

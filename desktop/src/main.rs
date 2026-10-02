@@ -6,6 +6,7 @@ mod devtools;
 mod dots;
 mod earbuds;
 mod eq;
+mod models;
 mod protocol;
 mod session;
 
@@ -155,6 +156,7 @@ fn set_icons(b: &Buds) {
     b.set_icon_plus(svg_at(icons::PLUS, 18.0));
     b.set_icon_info(svg(icons::INFO));
     b.set_icon_find(svg(icons::FIND_BUDS));
+    b.set_icon_earbud(svg(icons::EARBUD));
     b.set_icon_volume(svg_at(icons::VOLUME, 22.0));
     b.set_icon_volume_off(svg_at(icons::VOLUME_OFF, 22.0));
 }
@@ -214,6 +216,8 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_find_warn_msg(t(s, "find_warn_msg").into());
     tr.set_find_warn_play(t(s, "find_warn_play").into());
     tr.set_section_sounds(t(s, "earbuds_section_sounds").into());
+    tr.set_model_title(t(s, "model_title").into());
+    tr.set_model_auto(t(s, "model_auto").into());
     tr.set_alert_title(t(s, "row_alert_title").into());
     tr.set_tap_title(t(s, "tap_level_title").into());
     tr.set_tap_hint(t(s, "tap_level_hint").into());
@@ -276,6 +280,7 @@ impl App {
         self.snap = s.clone();
         eq::apply(self);
         earbuds::apply(self);
+        models::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -459,6 +464,7 @@ fn main() {
     });
     eq::setup(&main);
     earbuds::setup(&main);
+    models::setup(&main);
     devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));

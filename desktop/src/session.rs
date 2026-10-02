@@ -21,6 +21,8 @@ pub enum Cmd {
     Feature(u8, bool),
     /// The locator tone on both buds.
     Find(bool),
+    /// The model list's pick changed (`settings.json` "model_manual"): the model is looked up again.
+    ModelPicked,
     /// Earbud settings opened: the reads the phone's screen does then (alert volume, tap sensitivity).
     EarbudReads,
     AlertVolume(u8),
@@ -48,7 +50,12 @@ pub struct Snapshot {
     pub anc: Option<String>,
     pub modes: AncModes,
     pub low_latency: Option<bool>,
+    /// The model in use: the manual pick, else [detected](Self::detected).
     pub model: Option<&'static serde_json::Value>,
+    /// What the product id (else the name) says.
+    pub detected: Option<&'static serde_json::Value>,
+    /// The model was picked by hand: its `models.json` flags count as features (`Capabilities.offered`).
+    pub manual: bool,
     pub caps: Caps,
     pub firmware: Option<String>,
     pub eq_current: Option<u8>,
@@ -92,6 +99,20 @@ pub fn spawn(emit: impl Fn(Snapshot) + Send + 'static) -> Sender<Cmd> {
 }
 
 enum End { Lost, UserDisconnect, Quit }
+
+/// The manual pick, else the detected model; the ANC modes follow it.
+fn pick_model(s: &mut Snapshot) {
+    let manual = manual_model();
+    s.manual = manual.is_some();
+    s.model = manual.or(s.detected);
+    s.modes = AncModes::of(s.model);
+}
+
+/// The model picked by hand in the model list, if any.
+fn manual_model() -> Option<&'static serde_json::Value> {
+    let id = crate::load_settings()["model_manual"].as_str()?.to_string();
+    models().iter().find(|m| m["id"].as_str() == Some(&id))
+}
 
 /// Addresses that answered as buds before (`settings.json` "buds"), for systems that do not list the vendor service.
 fn remembered() -> Vec<u64> {
@@ -158,7 +179,8 @@ struct Conn<'a> {
 impl<'a> Conn<'a> {
     fn new(link: bt::Link, name: String, emit: &'a Emit) -> Self {
         let model = find_model(None, Some(&name));
-        let s = Snapshot { status: Status::On, name, modes: AncModes::of(model), model, ..Default::default() };
+        let mut s = Snapshot { status: Status::On, name, detected: model, ..Default::default() };
+        pick_model(&mut s);
         Conn { link, addr: 0, framer: Framer::default(), seq: 0, level: None, s, emit }
     }
 
@@ -192,8 +214,14 @@ impl<'a> Conn<'a> {
         match e {
             Event::Caps(c) => s.caps = c,
             Event::ProductId(id) => {
-                s.model = find_model(Some(&id), Some(&s.name));
-                s.modes = AncModes::of(s.model);
+                // Other buds than the manual pick was made for: back to Automatic (`ModelCatalog`).
+                let all = crate::load_settings();
+                if all["product_id"].as_str() != Some(&id) {
+                    crate::save_setting("product_id", id.as_str().into());
+                    if !all["model_manual"].is_null() { crate::save_setting("model_manual", serde_json::Value::Null); }
+                }
+                s.detected = find_model(Some(&id), Some(&s.name));
+                pick_model(s);
                 // The bridge (or an unknown device name) shows the model's name instead.
                 if let Some(n) = s.model.and_then(|m| m["name"].as_str()) {
                     if !is_known_name(&s.name) { s.name = n.to_string(); }
@@ -334,6 +362,7 @@ impl<'a> Conn<'a> {
                         self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
                     }
                     Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,
+                    Cmd::ModelPicked => pick_model(&mut self.s),
                     Cmd::EarbudReads => for cmd in [CMD_QUERY_ALERT_VOLUME, CMD_QUERY_TAP_LEVEL] {
                         if !self.s.caps.supports(cmd) { continue; }
                         self.send(cmd, None, &[])?;
