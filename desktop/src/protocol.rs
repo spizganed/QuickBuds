@@ -13,6 +13,8 @@ pub const CMD_QUERY_BROADCAST: u16 = 0x0200;
 pub const CMD_REGISTER_NOTIFY: u16 = 0x0205;
 pub const CMD_SET_FEATURE: u16 = 0x0403;
 pub const CMD_SET_ANC: u16 = 0x0404;
+/// `01` start / `00` stop, both buds (§9 Find my earbuds).
+pub const CMD_FIND_BUDS: u16 = 0x0400;
 pub const CMD_FIT_TEST: u16 = 0x0405;
 pub const CMD_GOLDEN_DETECT: u16 = 0x040D;
 pub const CMD_PERSONAL_NOISE: u16 = 0x0412;
@@ -459,6 +461,7 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_REGISTER_NOTIFY => "Register notifications",
         CMD_SET_FEATURE => "Set feature",
         CMD_SET_ANC => "Set ANC",
+        CMD_FIND_BUDS => "Find earbuds",
         CMD_QUERY_FIRMWARE => "Query firmware",
         CMD_QUERY_EQ => "Query EQ",
         CMD_QUERY_EQ_ALL => "Query custom EQ",

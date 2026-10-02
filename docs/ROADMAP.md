@@ -37,9 +37,9 @@ finished (ROADMAP-DONE.md).
       saved in `settings.json`), Doto font, dot cards, rows, chips, segments, rings, switch, knobs and icons in
       the window and the quick panel. The EQ curve is dots too (2026-10-02). Needs his look on a real screen.
       **Earbud settings started 2026-10-02:** the feature switches the buds list in `0x810D` (write, then the
-      status re-read; confirms for Adaptive sound and Power saving) and the firmware version. Still to come on
-      it: Personalized ANC, the game sound and head gesture types, tap sensitivity, wear detection, find, fit
-      test, sounds.
+      status re-read; confirms for Adaptive sound and Power saving) and the firmware version. Wear detection
+      (the buds' auto play/pause) and Find my earbuds added the same day. Still to come on it: Personalized ANC,
+      the game sound and head gesture types, tap sensitivity, fit test, sounds.
    3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open

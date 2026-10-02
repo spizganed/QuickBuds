@@ -10,6 +10,8 @@ use slint::{ComponentHandle, ModelRc, VecModel};
 // ponytail: Personalized ANC (0x0C) needs the phone's test flow, game sound and head gestures their type
 // pickers; they come with those.
 const ROWS: &[(u8, &str, &str, &str, Option<&str>, bool)] = &[
+    // Wear detection: the buds' own auto play/pause. The phone's smart auto-pause needs its media session.
+    (0x04, icons::EARBUD, "wear_firmware_title", "wear_firmware_sub", None, false),
     (0x09, icons::EQUALIZER, "row_vocal_title", "row_vocal_sub", None, false),
     (0x27, icons::LOW_LATENCY, "row_game_sound_title", "row_game_sound_sub", None, false),
     (0x1C, icons::VOLUME, "row_smart_volume_title", "row_smart_volume_sub", None, false),
@@ -26,7 +28,9 @@ const ROWS: &[(u8, &str, &str, &str, Option<&str>, bool)] = &[
 ];
 
 pub fn setup(main: &MainWindow) {
-    main.global::<Earbuds>().on_set_feature(|id, on| with_app(|a| { let _ = a.tx.send(Cmd::Feature(id as u8, on)); }));
+    let e = main.global::<Earbuds>();
+    e.on_set_feature(|id, on| with_app(|a| { let _ = a.tx.send(Cmd::Feature(id as u8, on)); }));
+    e.on_find(|on| with_app(|a| { let _ = a.tx.send(Cmd::Find(on)); }));
 }
 
 pub fn apply(a: &App) {
@@ -41,5 +45,6 @@ pub fn apply(a: &App) {
     let e = a.main.global::<Earbuds>();
     e.set_features(ModelRc::new(VecModel::from(rows)));
     e.set_has_firmware(s.caps.supports(CMD_QUERY_FIRMWARE));
+    e.set_has_find(s.caps.supports(CMD_FIND_BUDS));
     e.set_firmware(s.firmware.as_deref().unwrap_or("—").into());
 }
