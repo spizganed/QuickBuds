@@ -155,6 +155,12 @@ back.
 - Dev Tools log: Human / Detailed / Raw, unknown packets in amber with their payload, discarded bytes
   logged. Slider steps give a light haptic tick. The screenshot script runs in about 1.5 minutes.
 
+## Desktop
+
+- Noise control like the phone: clicking ANC slides the segments over to Low / Medium / High / Smart, in
+  the window and the tray panel. Dev tools page: packet log Human / Detailed / Raw, Clear, Export
+  (`Downloads\QuickBuds\`), Reconnect, Disconnect. Both checked by him (2026-10-02).
+
 ## Docs
 
 - Docs moved to `docs/`; only README, LICENSE and CLAUDE.md stay in root (2026-09-25).

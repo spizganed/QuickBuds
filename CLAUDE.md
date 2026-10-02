@@ -1,426 +1,226 @@
 # CLAUDE.md — working notes for QuickBuds
 
-The state the code does not show: toolchain, conventions, decisions, and mistakes already paid for.
+What the code does not show: toolchain, conventions, decisions, mistakes already paid for.
 `[USER]` = the developer's decision or report; do not re-litigate those.
 
 ## Project
 
-**QuickBuds**: an Android app (Kotlin, single module `:app`, sources in `app/src/main/kotlin/`) that
-controls OnePlus / OPPO / realme earbuds over classic Bluetooth **RFCOMM**. No vendor app, root, Shizuku
-or ADB needed. Package `com.spizganed.quickbuds`, GitHub `spizganed/QuickBuds` (branch `main`),
-GPL-3.0. Test setup: OnePlus Buds 4 on a Nothing Phone (3a), Android 16.
+**QuickBuds**: Android app (Kotlin, single module `:app`, sources in `app/src/main/kotlin/`) that controls
+OnePlus / OPPO / realme earbuds over classic Bluetooth **RFCOMM**. No vendor app, root, Shizuku or ADB.
+Package `com.spizganed.quickbuds`, GitHub `spizganed/QuickBuds` (branch `main`), GPL-3.0. Test setup:
+OnePlus Buds 4 on a Nothing Phone (3a), Android 16. Desktop app in `desktop/` (see Desktop).
 
 **Goal order:** parity with HeyMelody (only features HeyMelody shows for a real model), then our own
-extras (widgets, wear display), then other models.
+extras, then other models.
 
 | Doc | Use |
 |---|---|
-| [docs/ROADMAP.md](./docs/ROADMAP.md) | Live plan. Finished items move to [ROADMAP-DONE.md](./docs/ROADMAP-DONE.md). No release versions on items. |
+| [docs/ROADMAP.md](./docs/ROADMAP.md) | Live plan + "decided against" list. Finished items move to ROADMAP-DONE.md. No release versions on items. |
 | [docs/PROTOCOL.md](./docs/PROTOCOL.md) | **The wire format.** Read before any protocol work. |
-| [docs/PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | Capture guide (app log, HCI snoop, HeyMelody). |
-| [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) | Contributor build quickstart and rules. |
-| [docs/TOOLCHAIN.md](./docs/TOOLCHAIN.md) | Public write-up of the phone build setup. Keep in step with Build › Phone. |
-| [README.md](./README.md) | User-facing: features, install, credits. New `[OSS]` sources get a Credits line. |
+| [docs/PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md) | Capture guide. |
+| [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) | Contributor build quickstart. |
+| [docs/TOOLCHAIN.md](./docs/TOOLCHAIN.md) | Phone (Termux) build setup. Keep in step with Build › Phone. |
+| [README.md](./README.md) | User-facing. New `[OSS]` sources get a Credits line. |
+| `design/SPEC.md` | UI source of truth, except §1's view-tree PaletteApplier (theming here is attribute-based). |
 
-Root holds only `README.md`, `LICENSE` (verbatim GPL-3.0) and this file; other docs live in `docs/`.
-Do not create notes folders or session-plan files: durable knowledge goes here or in PROTOCOL.md.
+Root holds only `README.md`, `LICENSE` (verbatim GPL-3.0) and this file. No notes folders or session-plan
+files: durable knowledge goes here or in PROTOCOL.md.
 
 ## Build
 
 - Gradle 9.6.0, AGP 9.4.0, Kotlin 2.4.0. AGP 9 compiles Kotlin itself: never add the
   `org.jetbrains.kotlin.android` plugin; the root `kotlin-gradle-plugin` classpath only pins the version.
-- `compileSdk 37`, `targetSdk 37`, `minSdk 26`, Java 8. Target 37: an RFCOMM `read()` returns `-1` on a
-  dropped link (handled as "Connection lost"); portrait lock is ignored above 600dp.
-- Only dependency: `androidx.core:core:1.13.1`.
-- **Device testing always uses `./gradlew assembleRelease`** `[USER]`, never the debug APK (signature
-  clash; switching needs an uninstall). Install with `adb install -r`. Use `adb logcat` for what in-app
-  logs miss.
-- **Versions live only in `app/build.gradle.kts` `defaultConfig`** (current: versionCode 22 / 4.0.0).
-  Android ignores them on `<application>`. Verify with `aapt2 dump badging <apk>`.
-- `local.properties` (`sdk.dir=...`) is git-ignored.
-- **PC (CachyOS, fish shell, since 2026-10-01):** pacman `jdk21-openjdk android-tools rustup`
-  (`sudo pacman` needs no password: `/etc/sudoers.d/pacman`; other sudo commands are his). Universal fish vars
-  `JAVA_HOME=/usr/lib/jvm/java-21-openjdk`, `ANDROID_HOME=~/Android/Sdk` (cmdline-tools 13114758,
-  `platforms;android-37.0`, `build-tools;37.0.0`, `platform-tools`). Release keys in `local/keys/` here too.
-  Output in `app/build/outputs/`.
-- Wireless adb: use the SDK's `~/Android/Sdk/platform-tools/adb` (Arch's `adb` has no mDNS);
-  `adb mdns services` gives the phone's ip:port. A new PC must `adb pair <ip:port> <code>` first, right after
-  he reads the code (stale = `protocol fault`), then `adb connect` the **other** ip:port from the main
-  Wireless debugging screen.
+- `compileSdk`/`targetSdk` 37, `minSdk` 26, Java 8. Only dependency: `androidx.core:core`. On target 37 an
+  RFCOMM `read()` returns `-1` on a dropped link ("Connection lost"); portrait lock is ignored above 600dp.
+- **Device testing always uses `./gradlew assembleRelease`** `[USER]`, never debug (signature clash).
+  `adb install -r`; `adb logcat` for what in-app logs miss.
+- **Versions only in `app/build.gradle.kts` `defaultConfig`** (ignored on `<application>`).
+- **PC (CachyOS, fish shell):** `JAVA_HOME=/usr/lib/jvm/java-21-openjdk`, `ANDROID_HOME=~/Android/Sdk`.
+  `sudo pacman` needs no password; other sudo commands are his.
+- Wireless adb: use `~/Android/Sdk/platform-tools/adb` (Arch's has no mDNS); `adb mdns services` gives
+  ip:port. New pairing: `adb pair <ip:port> <code>` right after he reads the code (stale = `protocol
+  fault`), then `adb connect` the **other** ip:port from the main Wireless debugging screen.
+- **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0` after
+  every test); launch with `am start -n`, never `monkey`.
 
 ### Signing and releases
 
-- Release key: `local/keys/quickbuds-release.jks` + `local/keys/keystore.properties` (read by
-  `build.gradle.kts`). Git-ignored, on the PC and the phone only. **Never commit them or print the
-  password.** He must keep backups: the in-app updater only installs over the same key. Without the
-  key, `assembleRelease` builds unsigned.
-- Release: `./gradlew assembleRelease bundleRelease`, name `QuickBuds<version>.apk` / `.aab`, then
-  `gh release create v<version> <apk> <aab> --target <full sha> --title "QuickBuds <version>"`.
-  The updater needs the `.apk` asset. No local copies. Tags are `v*`; since 4.0.0 `[USER]` one release carries the Android files and the desktop
-  archives from `scripts/desktop-dist.sh <version>` (into `desktop/dist/`, git-ignored), uploaded with the APK
-  and AAB. Archive names come from `desktop/Cargo.toml` `version`: bump it with the release. **No GitHub
-  Actions** `[USER]` 2026-10-02 (removed: too noisy); Windows is tested by hand on Windows or a VM. `desktop-v*` is kept free for desktop-only fixes (the updater skips it). **Notes cover every user-visible change since
-  the last tag**: read `git log v<previous>..HEAD` first.
+- Release key: `local/keys/quickbuds-release.jks` + `keystore.properties`. **Never commit them or print the
+  password.** The in-app updater only installs over the same key.
+- Release: `./gradlew assembleRelease bundleRelease`, name `QuickBuds<version>.apk` / `.aab`, plus desktop
+  archives from `scripts/desktop-dist.sh <version>` (into `desktop/dist/`); bump `desktop/Cargo.toml`
+  `version` with the release. Then `gh release create v<version> <files> --target <full sha> --title
+  "QuickBuds <version>"`. One release carries Android and desktop files `[USER]`; no local copies.
+  `desktop-v*` tags are for desktop-only fixes (the updater skips them). **No GitHub Actions** `[USER]`.
+- **Notes cover every user-visible change since the last tag**: read `git log v<previous>..HEAD` first.
 
-### Phone (Termux, often reached over SSH from the PC)
+### Phone (Termux, reached over SSH)
 
-Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
-
-- `pkg install openjdk-21 aapt2 android-tools`; `JAVA_HOME` and `ANDROID_HOME=$HOME/android-sdk` in
-  `~/.bashrc`. SDK: cmdline-tools **13114758** (newer ones wrap an x86 binary; `termux-fix-shebang`
-  its `bin/`), `platforms;android-37.0`, `build-tools;37.0.0` with `aapt2` symlinked to Termux's.
-- `~/.gradle/gradle.properties`: `android.aapt2FromMavenOverride=$PREFIX/bin/aapt2`, configuration
-  cache, bigger heaps. **Never put the aapt2 override in the repo** (breaks the PC build).
-- `~/.gradle/init.d/quickbuds-phone.gradle.kts` moves output to `~/qb-build/` and disables
-  `lintVital*`. **Phone APK: `~/qb-build/_app/outputs/apk/release/app-release.apk`.** The daemon's
-  "Unable to set daemon's environment variables" warning is harmless.
-- `core.filemode` is false; git keeps `gradlew` at 755. SDK shell scripts need `java -jar`.
-- **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, mirrored to the PC with scrcpy
-  (RDP was dropped: ~15 fps); started by `~/.shortcuts/scrappy` (Wi-Fi adb, no SSH; `ssh-terminal` = plain SSH into Termux, no desktop), which runs `~/.local/bin/scrcpy-ready`. **No Ubuntu proot and no
-  Rust on the phone** (removed 2026-10-02 to free space `[USER]`): the desktop app builds on the PC and in CI. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
-  proot ones: proot is too slow for a browser.
-- **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0`
-  after every test); launch with `am start -n`, never `monkey`. Bring Termux to the front when done,
-  except over SSH.
+Setup is in TOOLCHAIN.md and lives outside the repo. Repo at `~/projects/QuickBuds`; APK at
+`~/qb-build/_app/outputs/apk/release/app-release.apk`. **Never put the aapt2 override in the repo** (breaks
+the PC build). No Rust on the phone: the desktop app builds on the PC. After an adb test on the phone
+itself (not over SSH), bring Termux to the front.
 
 ## Working with the developer
 
-- Commits authored as `spizganed <328350196+spizganed@users.noreply.github.com>` `[USER]` (his GitHub
-  noreply address, never the gmail one; set `git config user.name/email` if the
-  session differs); keep the `Co-Authored-By` trailer.
-- **Ask before every push, every time.** A past "yes" does not carry over.
-- He does device testing and design decisions; the agent does protocol, parsers and code, including
-  commits. He is the only source of on-device results: ask for the exact log line you need.
+- Commits authored as `spizganed <328350196+spizganed@users.noreply.github.com>` `[USER]` (never the gmail
+  one); keep the `Co-Authored-By` trailer.
+- **Ask before every push, every time.**
+- He does device testing and design decisions; the agent does protocol, parsers, code and commits. Ask
+  him for the exact log line you need.
 - **Revert first, reason after** when he reports a regression and asks for a revert.
-- Docs change in the same commit as the code; protocol changes always with their PROTOCOL.md entry.
-- Releases happen when he decides, not on a schedule.
+- Docs change in the same commit as the code; protocol changes with their PROTOCOL.md entry.
+- Releases happen when he decides.
 
-## Protocol rules that were paid for
+## Protocol rules
 
-Details and evidence in PROTOCOL.md (tags `[VENDOR]` / `[OSS]` / `[CAPTURE]` / `[GUESS]`).
+Details and evidence in PROTOCOL.md.
 
 - **HeyMelody is the `[VENDOR]` source for bytes**, studied for interoperability only. The repo carries
   only commands, payloads and per-model facts; **never vendor class, method or file names, code, or
-  how-to notes** (those stay in private memory).
-- **Never guess a payload.** A guessed write fails silently. **A wrong command number fails silently
-  too** (`0x0402` vs the real gesture write `0x0401`), so writes are read back and diffed.
-- SET and NOTIFY ANC encodings are different tables. Adaptive's SET bit is **11** (`01 01 00 08`),
-  not 8. Take bits from the model's `protocolIndex`, never a list position.
-- `0x01F0` / `0x01F2` are not commands (command byte + Seq). Battery `0x0106`, wearing `0x0109`.
-- **`0x0205` is count-first:** the app sends `03 01 02 03` (+ `04` / `08` / `0B` when listed). Never
-  shorten it; without `03`, bud-side ANC changes are invisible. `01 01 02 02` is a misread.
-- TotalLen is standard LEB128 (`buildPacket()` writes, `OppoPacketFramer` normalises); payload starts at
-  index 9 (`payloadOf()`).
-- **Gestures:** `fn` values are measured; do not re-derive them. `writeGestureBinding(side, ...)` writes
-  every slot the table has for that action except `BUTTON_ON_CALL` (`0x06`); **never hardcode a button
-  group** (the table's shape changes per bud). Menus per model come from `GestureModel`
-  (`models.json`); a new option needs its `supportBit` in `GestureAction` and `ORDER`.
-  `KeyFunctionParser.HEADER_SIZE = 2`. The hold's cycle is `0x0404 02 …`, not the `fn` byte. The diff
-  baseline is in prefs `QuickBudsKeyFnDiff`; an empty reply never overwrites it. The table prints in
-  `RX:`, `KEYFN:` and `LogDecoder`, all ending `RAW=[...]`.
+  how-to notes**.
+- **Never guess a payload.** Guessed writes and wrong command numbers fail silently: read writes back and
+  diff.
+- Gestures: `fn` values are measured, do not re-derive. **Never hardcode a button group** (the table is
+  per bud). A new gesture option needs its `supportBit` in `GestureAction` and `ORDER`. The diff baseline
+  (prefs `QuickBudsKeyFnDiff`) is never overwritten by an empty reply.
 - **Adding an ANC mode touches all of:** `AncModes`, `OpoProtocol.anc(bit)`, `BudsConnectionManager`
   (`sendAnc`, `lastAncLevelSent`), `BudsService` routing, `WidgetStateStore`, `WidgetSettings.MODES`,
   `WidgetActionReceiver`, `MainActivity` segments.
-- **Settled, do not raise again:** `0x0500` time request is not answered; case lid has no lasting state
-  and case charging is not shown; undecoded families (PROTOCOL.md §12) are not guessed from a few
-  samples.
+- **Settled, do not raise again:** `0x0500` time request is not answered; case lid has no lasting state and
+  case charging is not shown; undecoded families (PROTOCOL.md §12) are not guessed from a few samples.
 
 ## Connection
 
-`bluetooth/BudsConnectionManager.kt`, `BudsService`, `KeepAliveReceiver`.
-
-- **Which buds:** `BudsDevice.find()`: saved `budsAddress`, else the first bonded device with the
-  `079A` / `1107` UUID or a `models.json` name. **Never hardcode an address.**
-- UUID `079A` first (the one Buds 4 answers), `1107` second.
-- **Auto-connect follows audio:** RFCOMM connects when A2DP or HFP reports connected (logcat
-  `KeepAlive: audio profile state=2`); ACL sends a delayed (8 s) fallback. Manager retries 3x5 s.
-- After `Connection lost`, `reconnectAfterLoss()` retries 5x with growing delays; a deliberate
-  disconnect cancels it. A lid close (all-zero wear push) logs `Case closed` and does not retry.
-- **Only a user connect asks Android for phone audio** (`EXTRA_WITH_AUDIO`); automatic connects leave
-  A2DP to the system. Exception: after a write that restarts the buds (power saving, codec), the
-  reconnect asks once (`audioAfterRestart`).
-- The buds serve one control app **per connected device** (2026-10-01: with Dual connection on, the phone and the
-  Linux desktop app each keep a link, and a change from either shows in both). For a HeyMelody capture, stop our service from Quick
-  Settings › Active apps (`am force-stop` gets undone by our reconnect).
-- **Background service** pref (`BudsService.PREF_BACKGROUND`, default on). Off: receivers do not start
-  the service, `QuickBudsApp` stops it when no activity is visible, `MainActivity` unbinds in `onStop`.
-  `BudsService.onDestroy` closes the link.
-- Nothing is polled after connect; everything is pushed.
+- **Which buds:** `BudsDevice.find()`. **Never hardcode an address** (phone or desktop).
+- Auto-connect follows audio (A2DP / HFP connected; ACL gives an 8 s fallback). A deliberate disconnect
+  cancels `reconnectAfterLoss()`; a lid close (all-zero wear push) does not retry.
+- **Only a user connect asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Exception: the reconnect
+  after a write that restarts the buds (power saving, codec) asks once (`audioAfterRestart`).
+- The buds serve one control app per connected device (Dual connection: phone and desktop both work). For
+  a HeyMelody capture, stop our service from Quick Settings › Active apps (`am force-stop` gets undone by
+  our reconnect).
+- Background service pref `BudsService.PREF_BACKGROUND` (default on).
 
 ## UI
 
-Source of truth for the UI revision: `design/SPEC.md` (+ `design/*.png`), except SPEC §1's view-tree
-PaletteApplier: theming here is attribute-based. UI work never touches protocol or wear logic.
+UI work never touches protocol or wear logic. No Material Components `[USER]`.
 
 ### Theming
 
-- `ThemeRes.select(this)` runs **before** `super.onCreate` in every activity. **Never put
-  `android:theme` on `<application>`** (crashes on launch).
-- Palette: six attributes in `values/themes.xml` (`appColorBg/Card/Accent/TextPrimary/TextSecondary/
-  Outline`), one style per built-in preset. `Palette.kt` = `Palette` + `PaletteStore` (active id, up to
-  3 custom presets as JSON). A custom preset (or a built-in with an accent override,
-  `paletteAccent_<id>`) uses a built-in style plus `ThemeRes.PaletteFactory`, which swaps
-  `?attr/appColor*` at inflation. **No XML shapes with `?attr` colours**: build them in code
-  (`ThemeRes.card/chip/iconButton/sheet`).
-- Match system (`paletteAuto`): White in light mode, `paletteAutoDark` in dark. Never add `uiMode` to
-  `configChanges`.
-- Check colour changes on White and on a light custom preset. Contrast warnings (`Palette.contrast`)
-  never block saving.
-- Prefs file name only via `ThemeRes.PREFS_NAME` (`QuickBudsPrefs`).
-- One font family in Classic: `sans-serif` (set in `Theme.App.Base`, and on widget TextViews). Code uses
-  `ThemeRes.regular / medium / bold / headline`, never `DEFAULT_BOLD` or `sans-serif-medium` directly.
-- **Portrait only**: every `<activity>` needs `android:screenOrientation="portrait"` by hand.
-- Red accent is the default (`?attr/appColorAccent`) across icons, EQ curve, sliders, rings, noise
-  highlight.
+- `ThemeRes.select(this)` runs **before** `super.onCreate` in every activity. **Never put `android:theme`
+  on `<application>`** (crashes on launch). Never add `uiMode` to `configChanges`.
+- Palette = six `?attr/appColor*` attributes (`values/themes.xml`); custom presets swap them through
+  `ThemeRes.PaletteFactory`. **No XML shapes with `?attr` colours**: build them in code
+  (`ThemeRes.card/chip/iconButton/sheet/pill`), never a hand-made `GradientDrawable` for a button.
+- Check colour changes on White and on a light custom preset. Contrast warnings never block saving.
+- Prefs file name only via `ThemeRes.PREFS_NAME`.
+- Fonts via `ThemeRes.regular / medium / bold / headline`, never `DEFAULT_BOLD` or `sans-serif-medium`.
+- **Portrait only**: every `<activity>` needs `android:screenOrientation="portrait"`.
+- Red accent default (`?attr/appColorAccent`); battery percentage is always `text` colour, never red.
 
-### Styles: Classic / Dot matrix (one switch for the app and the widgets)
+### Dot matrix style
 
-`ThemeRes.nothing` (pref `styleNothing`, default off = Classic). **User-visible name: "Dot matrix"**
-`[USER]`: never "Nothing" (trademark) or "Pixel". Code keeps the `nothing` identifiers and `_n` layouts.
-A change recreates open screens (part of the activity signature).
+`ThemeRes.nothing` (pref `styleNothing`), one switch for app and widgets. **User-visible name: "Dot
+matrix"** `[USER]`, never "Nothing" (trademark) or "Pixel"; code keeps `nothing` / `_n`.
 
-- **Font: bundled Doto** (`res/font/doto.ttf`, SIL OFL, static instance wght 900 / ROND 100, license in
-  `assets/Doto-OFL.txt`), on every phone `[USER]`. `ThemeRes.dotFont`, `ThemeOverlay.App.Nothing` for
-  theme-set text. Monospaced and wide: long labels wrap.
-- Cards are drawn in dots too `[USER]` 2026-09-30 (home battery card and feature list, `ThemeRes.group()`; settings screens,
-  `SettingRowFactory.card`): a grey dot outline. Earlier "no cards" (2026-09-28) is reversed. Dialogs, sheets, buttons, chips, header buttons and text fields are
-  `DotArt.Box` (outline one cell of dots, fill dots inside; `solid` = smooth fill under a dot outline, used by
-  sheets and dialogs). `ThemeRes.card / iconButton / chip / sheet / pill` pick it, so never build a
-  `GradientDrawable` for a button by hand.
-- Home: `BudsStatusView` draws the widget's `dotRing`, numbers without `%`, no wear label (the glyph's
-  shade says it). `AncSegmentedView` draws `QuickBudsWidget.modeIcon` at a whole-pixel pitch
-  (~1.15dp), 72dp tall.
-- `DotArt`: live views as dots, pitch 2.2dp rounded to whole px, drawn without antialiasing so every dot of
-  a shape is one shade: `LevelSliderView`, `EqCurveView`,
-  `ColorSliderView`, switch track/thumb (`DotArt.Part`, thumb as tall as the track).
-  Swatches and small discs are `DotArt.disc` (a fixed cell pattern, like the knob). Dot outlines are the
-  shape filled in the outline colour with the fill a cell inside, never a thin stroke (it skips cells).
-  **Every knob is `DotArt.knob`** `[USER]`: one fixed 7x7 dot ring snapped to the grid (scaled circles came out a
-  different shape at every position). Never draw a dot-style knob with `drawCircle`.
-- Icons: `ThemeRes.tint` returns a `DotArt.Icon` (1.2dp, solid dots). The small action icons (tap x1/x2/x3,
-  hold, close, check, pencil, bin, cog) are `DotArt.Pattern`s drawn from a rule, not sampled from the vector,
-  so every dot is the same and shapes are symmetric `[USER]`; their vectors (simple, filled or bold
-  strokes) are the Classic look. Row dividers are one row of dots.
+- Font: bundled Doto on every phone `[USER]` (`ThemeRes.dotFont`). Wide: long labels wrap.
+- Cards are dot outlines `[USER]` 2026-09-30 (`ThemeRes.group()`, `SettingRowFactory.card`).
+- `DotArt` draws without antialiasing, pitch 2.2dp rounded to whole px. Dot outlines = shape filled in the
+  outline colour with the fill a cell inside, never a thin stroke. **Every knob is `DotArt.knob`** `[USER]`,
+  never `drawCircle`. Small action icons are rule-drawn `DotArt.Pattern`s `[USER]`, not sampled vectors.
 
 ### Shared components and screens
 
-- `SettingRowFactory`: `screen`, `title`, `sectionLabel`, `card`, `build`, `buildSwitch`,
-  `buildChevron`, `buildDivider`, `iconButton`. New screens use these. SPEC §5 icons are in
-  `res/drawable`.
-- Confirm dialogs go through `ConfirmDialog.show()`.
-- **Selection is an outline, never a checkmark** `[USER]`: `ThemeRes.selectedBorder()` as the row's or
-  tile's foreground (dots in the dot style). `ic_check` stays only on Done buttons.
-- **Motion helpers** `[USER]` (reuse, do not write new animators): `Motion.slide(view, open)` grows or folds a view
-  (height, alpha and the card gap; a shut view ends GONE); `SelectionSlider(host, key?)` is the selected-row outline as
-  one overlay that slides between rows (and across a recreate with a `key`; call `moveTo` after each render);
-  `ThemeRes.recreateFaded(activity)` is `recreate()` with a cross-fade (`QuickBudsApp` fades the new screen in);
-  `ThemeRes.sinkOnPress(view)` is the press-down effect for buttons (pair it with `Haptics.commit`).
-- **Lists you pick from** are split: `SettingRowFactory.splitList` + `addSplit` (one 16dp card per row, 8dp gap).
-  Screens with such lists keep their row views and update them in place (see `EqActivity.Choice`); a preset just
-  sent to create shows as a dimmed placeholder row that the real one adopts.
-- **Compact sizing** `[USER]`: ~10-15% under SPEC so home fits without scrolling (rows 62dp, rings 90dp,
-  segments 56dp, padding 16dp, gaps 12dp); touch targets stay ≥ 44dp.
-- No Material Components `[USER]`.
-- **Haptics:** `Haptics.commit(view)` once per kind of control, on user actions only, never on
-  programmatic changes. Widget taps: `Haptics.tick(context)` (usage HARDWARE_FEEDBACK; TOUCH is dropped
-  in the background).
-- **Settings** (`SettingsActivity`): Appearance, General (language, haptics, background service, Dev
-  tools button, default on), App. Find my earbuds and Wear detection are sheets
-  (`FindBudsSheet`, `WearSheet`) opened from the Earbud settings hub, like the fit test.
-- **Update check** (`UpdateChecker`, `UpdateActivity`): newest GitHub release tagged `v*` with an `.apk` asset
-  (desktop releases and pre-releases are skipped); on start (switch on the
-  update screen) at most every 12 h, silent on failure, one dialog per new tag.
-- **About:** Ko-fi button hidden while `AboutActivity.KOFI_URL` is null.
-- **Home layout** (`HomeLayoutActivity`): drag to reorder, eye to hide; prefs `homeRowOrder` /
-  `homeRowHidden`. **A new home row needs its key in `buildFeatureRows()` AND
-  `HomeLayoutActivity.ROWS`.**
-- **Presets:** `ThemeActivity`, `PresetEditActivity`, `PalettePreviewView`, `ColorPickerView` (hue,
-  saturation, brightness sliders + hex + swatches `@color/swatch_*`). Colour edits save on commit
-  (slider lift, hex done, swatch tap); rows are never rebuilt mid-drag.
-- **Hearing profile** (vendor "Golden Sound"; **never "Golden Sound" in a user-visible string**):
-  home row `golden` with a switch; tap opens `GoldenSoundActivity` (records on the phone in
-  `goldenRecords`, max 10, dated, no rename; the buds' own profile added on open; `HearingRadarView`
-  one ear at a time). Test: `GoldenTestSheet` (ear scan where `models.json` has `"earScan":1`).
-  Records in `protocol/GoldenSound.kt`. Fit test: `FitTestSheet`.
-- **Dev Tools:** packet log (Human / Detailed / Raw; Human puts every packet the decoder does not name on
-  an amber line with its payload, Detailed adds the payload line to all; the framer's discarded bytes are logged
-  as `DISCARDED RX`; long press copies), Clear, Export (`Download/QuickBuds/`),
-  Reconnect, Disconnect, Bridge (see Desktop), Crash test. Labels stay English-only. The crash report shows as a sheet (Copy, Share; tap outside to dismiss). The crash handler is installed in
-  `QuickBudsApp.attachBaseContext` (`Download/QuickBuds/`).
-
-### Main screen
-
-Header (model button `btnModel`, status chip = Connect/Disconnect, spacer, dev tools, cog) over
-`mainScroll` › `tiles`: `batteryCard`, `ancRow`, `featureList`, each an include whose root id is stable.
-
-- `batteryCard`: `BudsStatusView`, three 90dp rings, glyphs at their SVG ratio in 42x56 / 58x42
-  boxes, percentage always `text` colour (never red). Device name under the rings
-  (`ModelCatalog.current()`).
-- `ancRow`: `AncSegmentedView`, Off / ANC / Adaptive / Transparency. The ANC segment uses the widget's
-  `ic_mode_anc_medium` (not the headset). Tapping ANC slides in the level picker (the buds' levels,
-  Smart included; the lit level turns ANC off; auto-closes after 2 s idle). In ANC it shows "ANC L/M/H/S"
-  and the level's icon.
-- `featureList` (`buildFeatureRows()`): low latency, Hi-Res (codec picker on `highAudio` models), 3D
-  audio (Off / Fixed / Head tracking sheet on head-tracking models), Hearing profile, EQ, Dual
-  connection (home only), Earbud settings (hub `EarbudSettingsActivity`; **new firmware settings go in
-  the hub**).
-- Disconnected: nothing collapses; tiles go to alpha 0.35, disabled, switches set neutral **quietly**
-  (`syncingFeatures`) so no write goes out.
-- **No log on the main screen** (the `onStatus` listener callback was removed). **Never put user-visible output on a
-  packet-listener path** (fires per packet, storms the UI).
+- New screens use `SettingRowFactory`. Confirm dialogs use `ConfirmDialog.show()`.
+- **Selection is an outline, never a checkmark** `[USER]` (`ThemeRes.selectedBorder()`).
+- **Motion helpers** `[USER]`, never new animators: `Motion.slide`, `SelectionSlider` (call `moveTo` after
+  each render), `ThemeRes.recreateFaded`, `ThemeRes.sinkOnPress` (pair with `Haptics.commit`).
+- Lists you pick from: `SettingRowFactory.splitList` + `addSplit`; update rows in place (see
+  `EqActivity.Choice`).
+- **Compact sizing** `[USER]`: ~10-15% under SPEC so home fits without scrolling; touch targets ≥ 44dp.
+- Haptics: `Haptics.commit(view)` on user actions only, never programmatic changes. Widgets:
+  `Haptics.tick(context)`.
+- **New firmware settings go in the Earbud settings hub** (`EarbudSettingsActivity`).
+- **A new home row needs its key in `buildFeatureRows()` AND `HomeLayoutActivity.ROWS`.**
+- Hearing profile is the vendor's "Golden Sound": **never "Golden Sound" in a user-visible string.**
+- Colour edits save on commit; rows are never rebuilt mid-drag.
+- Dev Tools labels stay English-only.
+- Disconnected main screen: switches set neutral **quietly** (`syncingFeatures`) so no write goes out.
+- **No log on the main screen. Never put user-visible output on a packet-listener path** (storms the UI).
 
 ### Icons
 
-- Row and button bud icon: **`ic_earbud`** (filled, 24dp) `[USER]`. `ic_bud_left` / `ic_bud_right`
-  (true ratio 176x272; case 496x400) only where large: status rings, widgets, fit test.
-- Launcher: his two bud glyphs facing each other with bolt holes; the themed layer and `ic_stat_buds`
-  (notification) are one bud. Only the adaptive icon exists (minSdk 26).
-- Case icon keeps its LED dot and full-width lid cut.
-- Vector `width`/`height` must be the layout size, never the viewBox (a 1024dp icon once blew
-  RemoteViews' bitmap limit). **Never size icons with `wrap_content` + `adjustViewBounds`** (ratio
-  drift clips them); set the box. Icons in a set share units-per-dp and layout height.
+- Row and button bud icon: **`ic_earbud`** `[USER]`; `ic_bud_left` / `ic_bud_right` only where large.
+- Vector `width`/`height` = layout size, never the viewBox (a 1024dp icon blew RemoteViews' limit). **Never
+  size icons with `wrap_content` + `adjustViewBounds`**; set the box.
 
 ### Localisation
 
-26 locales (Asian, EU and more), machine-drafted and marked so; users report wording on GitHub. **A new
-user-visible string needs all 26** (lint does not catch a missing one). Constant strings are
-`translatable="false"`. `generateLocaleConfig` feeds Android 13+'s per-app language; the in-app list is
-`ThemeRes.LANGUAGES` (a new locale needs its line). Below 13, pref `appLanguage` is applied in
-`ThemeRes.select`. `LanguageActivity` has `configChanges="locale|layoutDirection"`.
+26 locales, machine-drafted. **A new user-visible string needs all 26** (lint does not catch a missing
+one). Constant strings are `translatable="false"`. A new locale needs its line in `ThemeRes.LANGUAGES`.
+No right-to-left languages `[USER]`.
 
 ### Traps
 
-- A `when` on UI string keys with no `else` fails silently (`"Trans"` vs `"Transparency"` hid for
-  weeks). Check every state write has its refresh call.
-- Downloads go through MediaStore (`Download/QuickBuds/` holds both the crash reports and the log exports), never a plain `File`.
+- A `when` on UI string keys with no `else` fails silently. Check every state write has its refresh call.
+- Downloads go through MediaStore (`Download/QuickBuds/`), never a plain `File`.
 
-## Desktop (`desktop/`, in progress)
+## Desktop (`desktop/`)
 
-Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Plan in ROADMAP.md.
+Rust, one crate, Slint UI, `tray-icon`. `cargo test` / `cargo build --release`. Windows check from Linux:
+`cargo build --release --target x86_64-pc-windows-gnu` (Bluetooth needs a real Windows).
 
-- `cargo test` / `cargo build --release` in `desktop/`. **Windows from Linux:** `cargo build --release --target
-  x86_64-pc-windows-gnu` (rustup target + pacman `mingw-w64-gcc`); the `.exe` imports only system DLLs. Use it to
-  check the Windows code compiles; Bluetooth still needs a real Windows to test. `protocol.rs` mirrors `OpoProtocol` framing;
-  a protocol change lands in both apps, and in PROTOCOL.md, in one commit.
-- **Windows Bluetooth is Winsock** (`AF_BTH` + `BTHPROTO_RFCOMM`, `windows-sys`): connect by
-  service UUID with port 0 and Windows resolves the channel over SDP. Verified 2026-09-30 on the Buds 4:
-  079A connects, the init sequence and `0x8106` answer as on the phone. Never WinRT.
-- **Linux Bluetooth is BlueZ without bluetoothd profiles** `[USER]`: paired list from D-Bus
-  `GetManagedObjects` (`dbus` crate, blocking), the RFCOMM channel from one SDP ServiceSearchAttribute request
-  over L2CAP PSM 1, then a kernel RFCOMM socket (`libc`). No async runtime, no `bluer`. Verified 2026-10-01 on
-  the Buds 4: 079A is channel 15 (as on Android), `0x8106` answers; the phone's link stays up alongside.
-  Hardware check: `cargo test live_battery -- --ignored --nocapture`.
-- Buds found among the system's paired devices: only ones with an audio link, a `models.json` name first
-  (a user Connect tries any connected one); rescan every 5 s. Never hardcode an address.
-- **Shared, never copied:** `build.rs` turns `app/src/main/res/drawable/*.xml` into SVG and the listed
-  `strings.xml` keys (all locales) into tables; `models.json` is `include_str!`'d. A new desktop icon or
-  string = add its name to `build.rs`. Desktop-only strings are English for now (`Tr` in `ui/app.slint`).
-- Files: `bt.rs` (sockets), `protocol.rs` (framing, parsers, ANC modes, capabilities, tests from captures),
-  `session.rs` (link thread, init sequence, commands, packet log `LOG`), `eq.rs`, `devtools.rs` (Dev tools page),
-  `main.rs` (UI + tray glue), `ui/app.slint`.
-- **Software renderer** (set in `main`): ~25 MB RAM against ~130 MB with the GPU one. `SLINT_BACKEND`
-  overrides it.
-- Windows tray: left click opens the window, right click the quick panel (hides when it loses focus), battery in
-  the tooltip. **Linux tray is a menu** `[USER]` (AppIndicator has no clicks or tooltip): a battery line
-  `L:10 C:40 R:50`, Open QuickBuds, Quit; it runs on its own GTK thread (`linux_tray()`). Closing the main window
-  hides it, Quit exits. **The quick panel exists only on Windows**: on Wayland every created window is a
-  toplevel (winit cannot create a hidden one), so a never-shown panel sat in Plasma's taskbar as an empty entry.
-- **RFCOMM bridge (dev):** Dev tools › Bridge makes the Android app (`RfcommBridge`) pass raw RFCOMM bytes to
-  one TCP client on `127.0.0.1:7979` (loopback only, off by default, not persisted). `QB_BRIDGE=127.0.0.1:7979`
-  makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.
-  It was for a Linux build with no Bluetooth (the phone's proot, removed 2026-10-02); it does not test BlueZ.
-- **Distribution `[USER]`:** Windows: portable `.zip` with only `quickbuds.exe` (no installer for now). Linux:
-  `.tar.gz` (binary, `.desktop`, icon, README); AUR `quickbuds-bin` from `desktop/aur/` (repackages that
-  tarball; per release: `_ver`, `_tag`, `sha256sums`, `pkgrel=1`, then `makepkg --printsrcinfo > .SRCINFO`, test
-  with `makepkg` + `namcap`, push PKGBUILD and .SRCINFO to `ssh://aur@aur.archlinux.org/quickbuds-bin.git`;
-  the AUR account is his: **not published yet**, AUR registration was closed 2026-10-01; push once he has an
-  account); no libxdo (nothing links it); no Flatpak / AppImage / `.deb` until asked. Just
-  the app: no drivers, no services, no helper or background processes. `scripts/desktop-dist.sh` cross-builds
-  Windows and builds Linux in an Ubuntu 22.04 podman container (glibc 2.35; a CachyOS build needs 2.43).
+- **A protocol change lands in `protocol.rs`, `OpoProtocol` and PROTOCOL.md in one commit.**
+- **Shared, never copied:** `build.rs` turns `app/src/main/res/drawable/*.xml` into SVG and listed
+  `strings.xml` keys into tables; `models.json` is `include_str!`'d. A new desktop icon or string = add
+  its name to `build.rs`. Desktop-only strings are English for now (`Tr` in `ui/app.slint`).
+- **Windows Bluetooth is Winsock** (`AF_BTH`, connect by UUID, port 0). Never WinRT.
+- **Linux Bluetooth is BlueZ without bluetoothd profiles** `[USER]`: D-Bus `GetManagedObjects`, one SDP
+  request over L2CAP, kernel RFCOMM socket. No async runtime, no `bluer`. Hardware check:
+  `cargo test live_battery -- --ignored --nocapture`.
+- Software renderer by default (~25 MB vs ~130 MB RAM).
+- **Linux tray is a menu** `[USER]` (AppIndicator has no clicks). **The quick panel exists only on
+  Windows** (on Wayland a never-shown window sat in the taskbar).
+- `QB_BRIDGE=127.0.0.1:7979` talks to the buds through the Android app's Dev tools › Bridge; it does not
+  test BlueZ.
+- **Distribution `[USER]`:** Windows portable `.zip` (only the `.exe`), Linux `.tar.gz`. AUR `quickbuds-bin`
+  in `desktop/aur/`: per release `_ver`, `_tag`, `sha256sums`, `pkgrel=1`, `makepkg --printsrcinfo >
+  .SRCINFO`, test with `makepkg` + `namcap`, push to `ssh://aur@aur.archlinux.org/quickbuds-bin.git`
+  (his account, **not published yet**). No Flatpak / AppImage / `.deb` until asked. No drivers, services
+  or helper processes. `desktop-dist.sh` builds Linux in an Ubuntu 22.04 podman container (glibc 2.35).
 
 ## Widgets
 
-`widget/AncWidgetProvider.kt`: providers **2x2** `BatteryWidgetProvider` (fixed size `[USER]` 2026-09-30: resizing gave broken 3x2 / 2x3 shapes, so the scaled 3x3
-layout was removed; do not bring resizing back) and **4x2**
-`AncWidgetProvider` (fixed; old class names kept so placed widgets survive), one renderer `QuickBudsWidget.build`. No more sizes for now, no model name on any widget
-`[USER]`.
+2x2 `BatteryWidgetProvider` and 4x2 `AncWidgetProvider` in `widget/AncWidgetProvider.kt` (old class
+names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 
-- **Layouts are generated** by `scripts/widget-layouts.py` (`widget_pages`, `_m`, `widget_grid`,
-  `widget_disconnected`, each with a `_n` dot copy). Edit the script and rerun, never the XML.
-  **A new id needs its line in the renderer**, or RemoteViews fails ("Can't load widget"). Never a
-  plain `<View>`. Check changes with `adb logcat` while the widget updates.
-- Script `GEO` = renderer `Geo` (keep equal).
-- **Two pages per size, battery and controls** `[USER]`, stored per widget (`widgetPage_<id>`), swapped
-  by a double tap (200 ms wait). No swap button, no widget settings screen `[USER]`: the Low latency
-  button is always there and a tap never opens the app (a swap button, a hidden LL button and an
-  open-app tap each broke the grid or the double tap). No automatic page change.
-- **Controls page:** ANC (opens the level picker `w_page2`, stays open until a pick; `widgetListAt_<id>`),
-  T, A (select, or Off when lit), LL (toggle). A missing feature leaves an empty cell. No cycle mode
-  `[USER]`: do not bring it back.
-- **Battery page:** two bud rings over the case row (icon + bar, 70% of its height, level inside).
-  4x2: three rings. Disconnected: only the Connect chip (FORCE_CONNECT with audio, or opens the app when
-  the background service is off).
-- **Flippers:** outer `w_pages` (content / picker), inner `w_slide0` / `w_slide1`. The host reapplies
-  cached views, so **every state `build()` sets must be set both ways** (visibility, intents, null
-  included), and each `setDisplayedChild` goes out **only in the update that changes it**
-  (`widgetChild_<id>`), or every widget flashes.
-- Animations: slides only, no fades, `@integer/widget_anim_ms` 280 ms, `animateFirstView="true"`,
-  press animator on every clickable. Battery enters/leaves on the left, controls on the right, picker
-  from the left.
-- Colours follow the active palette (tinted white shapes, bitmaps drawn per update); a palette change
-  calls `refreshAll`. `WidgetSettings` holds the per-widget page state and the mode list.
-- Tap flow: PendingIntent → `WidgetActionReceiver` (optimistic `WidgetStateStore.write`) → broadcast
-  `ACTION_WIDGET_COMMAND` with the **short** action name → `BudsService.executeWidgetCommand` →
-  `manager.sendAncXxx()` (fresh thread per send).
-
-### Dot matrix widgets
-
-- **Launchers ignore `@font/` in widget XML.** Every `_n` text is an ImageView the renderer fills with
-  Doto text (`setText`), height `sp x 1.2` from the script. Set widget text only through `setText`.
-- Graphics as dot matrices (`matrix()`, sampled at 8x): rings `RING_CELLS` = 42, mode icons on
-  `MODE_GRID` = 31 (`modeIcon()`), fixed dot counts on every size (the 2x2 is the baseline).
-  Unlit dots use `dim()`.
-- Wear shade (`nothingTint`): in ear `text`, out `textSecondary` 65%, in case 17%. Glyph fill 1.18
-  (buds) / 1.22 (case).
-- Case icon dotted at the ring pitch; `clearLed` always clears the LED dot and lid-cut row. The bar's
-  digits are Doto's own 5x7 digits (`GLYPHS`) in `text`, like the buds' percentages `[USER]`.
-- Numbers without `%` (Classic keeps `%`). Box radius 19dp (`widget_bg_n`), inner 16dp.
-- Tried and rejected `[USER]`: hollow or hidden glyphs, a lit box around bar digits, a split pill, the
-  bar as tall as the icon, a third ring on the 2x2.
+- **Layouts are generated** by `scripts/widget-layouts.py`: edit the script and rerun, never the XML.
+  Script `GEO` = renderer `Geo`. **A new id needs its line in the renderer** ("Can't load widget"). Never
+  a plain `<View>`. Check with `adb logcat` while the widget updates.
+- The host reapplies cached views: **every state `build()` sets must be set both ways** (null included),
+  and each `setDisplayedChild` goes out **only in the update that changes it** (`widgetChild_<id>`), or
+  every widget flashes.
+- **Launchers ignore `@font/` in widget XML**: dot-style text is an ImageView filled by `setText`.
+- Tap flow: `WidgetActionReceiver` (optimistic `WidgetStateStore.write`) → `ACTION_WIDGET_COMMAND` with
+  the **short** action name → `BudsService.executeWidgetCommand`.
+- Palette change calls `refreshAll`.
+- **Decided `[USER]`, do not bring back:** resizing or more sizes; model name on a widget; a swap button,
+  widget settings screen, hidden LL button or open-app tap (two pages swap by double tap only, no
+  automatic change); cycle mode. Dot style: hollow or hidden glyphs, a lit box around bar digits, a split
+  pill, the bar as tall as the icon, a third ring on the 2x2.
 
 ## Repo hygiene
 
-- **`local/` is local-only, never committed** `[USER]`: `keys/`, `logs/` (captures PROTOCOL.md
-  cites), `svgs/`. Doc references to `local/` point at the developer's machines.
-- Runtime `*.log` are ignored; handed-over captures (`*.log.txt`) are tracked.
-- **README screenshots are retaken after every big UI change**, in the same push `[USER]`:
-  `scripts/readme-screenshots.sh classic|dot-matrix [adb-serial]` (buds connected, phone in English,
-  Pillow). Classic to `docs/screenshots/`, Dot matrix to `docs/screenshots/dot-matrix/`. It leaves the
-  style set, so **run his style (dot-matrix) last**. It opens screens by visible text, so renaming a
-  label breaks it. Widgets on the first and last home page are cropped to `widget-<size>.png`; a third
-  argument `widgets` (`... dot-matrix <serial> widgets`) sets the style and shoots only the widgets. The README shows
-  only: Classic main, Earbud settings, Equalizer, Hearing profile, two widgets, Dot matrix main and
-  2x2 widget, plus the desktop window, tray strip and tray menu (`docs/screenshots/desktop/`, taken by hand with
-  `spectacle -b -n -a|-f` on his Plasma desktop; the menu needs his right-click during a timed capture).
+- **`local/` is local-only, never committed** `[USER]` (`keys/`, `logs/`, `svgs/`).
+- **README screenshots are retaken after every big UI change**, same push `[USER]`:
+  `scripts/readme-screenshots.sh classic|dot-matrix [adb-serial] [widgets]` (buds connected, phone in
+  English). **Run dot-matrix last** (it leaves the style set). It opens screens by visible text: renaming
+  a label breaks it. Desktop shots (`docs/screenshots/desktop/`) are taken by hand with `spectacle`.
 
-## TEMPORARY handoff (2026-10-01, delete this section once done)
+## Current state (2026-10-02)
 
-State: **v4.0.0 released** 2026-10-01 (Android 4.0.0 + desktop 4.0.0-beta archives in one release). No CI (removed 2026-10-02).
-
-- **Windows (2026-10-02):** he sets up Windows (VM or second partition). Test the v4.0.0 zip there first: it is
-  cross-built (MinGW) and never ran on Windows. Check Winsock connect, the tray left click / quick panel (now
-  created only on Windows), EQ, ANC. A VM gets the Bluetooth adapter only while Linux does not use it.
-- **Linux app:** his checks passed 2026-10-01: auto-connect, Overview, EQ, ANC, tray menu, closing to the tray, and
-  settings sync with the phone in both directions.
-- **AUR:** `desktop/aur/` is ready; AUR registration was closed 2026-10-01. When he has an account: SSH key
-  `~/.ssh/aur` (`ssh-keygen -t ed25519 -f ~/.ssh/aur`), he adds the `.pub` on the AUR site, then push PKGBUILD +
-  .SRCINFO. Users are told to `makepkg -si` from a clone meanwhile.
-- **Next:** ROADMAP.md step 2, "Next, in order": phone-UI reuse (continue), then Dot matrix and the remaining pages.
-- This PC: the phone is paired for wireless adb (SDK adb, `adb mdns services` for the port). Desktop shortcut and
-  icon in `~/Desktop` / `~/.local/share` point at `desktop/target/release/quickbuds`. Screenshots on Plasma:
-  `spectacle -b -n -a|-f -o <png>`; KWin scripts over `qdbus6 org.kde.KWin /Scripting` list or activate windows.
-  The ponytail and caveman statusline badges are not set up (he was not asked yet).
-- Windows only: screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
-  window message (WM_LBUTTONDOWN/UP); the scripts are not in the repo.
-- **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.
-- The phone has `~/tapt.sh <text>` (prints tap coordinates of a visible label from uiautomator); outside the repo.
+- v4.0.0 released 2026-10-01 (Android + desktop beta). Linux desktop app checked by him 2026-10-01.
+- **Next:** he tests the v4.0.0 Windows zip (cross-built, never ran on Windows): Winsock connect, tray left
+  click / quick panel, EQ, ANC. Then ROADMAP.md step 2.
+- **Waiting:** issue #1 (other-model logs): read them before changing anything; AUR account.
