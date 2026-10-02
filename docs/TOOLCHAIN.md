@@ -196,7 +196,8 @@ phone's hotspot: while the phone is on Wi-Fi and hosts a hotspot at once, frames
 Plasma's power manager calls `termux-brightness`, which needs a permission and
 would dim the real screen: hide its autostart entry.
 
-The desktop app needs a normal (glibc) Linux, so it builds in an Ubuntu proot:
+Optional, and no longer set up on the developer's phone (the desktop app builds on a Linux PC and in CI):
+the desktop app needs a normal (glibc) Linux, so on the phone it builds in an Ubuntu proot:
 `proot-distro install ubuntu`, then in it `build-essential pkg-config libfontconfig1-dev
 libfreetype-dev libxkbcommon-dev libxkbcommon-x11-0 libx11-dev libgtk-3-dev libxdo-dev
 libayatana-appindicator3-dev` and rustup. `cargo build` in `desktop/` takes about 8 minutes the first

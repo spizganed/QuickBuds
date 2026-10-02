@@ -77,10 +77,8 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
   "Unable to set daemon's environment variables" warning is harmless.
 - `core.filemode` is false; git keeps `gradlew` at 755. SDK shell scripts need `java -jar`.
 - **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, mirrored to the PC with scrcpy
-  (RDP was dropped: ~15 fps); started by `~/.shortcuts/scrappy` (Wi-Fi adb, no SSH; `ssh-terminal` = plain SSH into Termux, no desktop), which runs `~/.local/bin/scrcpy-ready`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
-  --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`; **removed 2026-10-02 to free
-  space** `[USER]`: reinstall rustup before building there; the proot stays for `spotify_player`) and runs with `DISPLAY=:0
-  QB_BRIDGE=127.0.0.1:7979`. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
+  (RDP was dropped: ~15 fps); started by `~/.shortcuts/scrappy` (Wi-Fi adb, no SSH; `ssh-terminal` = plain SSH into Termux, no desktop), which runs `~/.local/bin/scrcpy-ready`. **No Ubuntu proot and no
+  Rust on the phone** (removed 2026-10-02 to free space `[USER]`): the desktop app builds on the PC and in CI. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
   proot ones: proot is too slow for a browser.
 - **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0`
   after every test); launch with `am start -n`, never `monkey`. Bring Termux to the front when done,
@@ -331,7 +329,7 @@ Rust, one crate; Slint for the UI (GPLv3 licence), `tray-icon` for the tray. Pla
 - **RFCOMM bridge (dev):** Dev tools › Bridge makes the Android app (`RfcommBridge`) pass raw RFCOMM bytes to
   one TCP client on `127.0.0.1:7979` (loopback only, off by default, not persisted). `QB_BRIDGE=127.0.0.1:7979`
   makes `bt.rs` use it instead of Bluetooth; it connects on a user Connect only. Both apps see every reply.
-  It is for the Linux build in the phone's Ubuntu proot, which has no Bluetooth; it does not test BlueZ.
+  It was for a Linux build with no Bluetooth (the phone's proot, removed 2026-10-02); it does not test BlueZ.
 - **Distribution `[USER]`:** Windows: portable `.zip` with only `quickbuds.exe` (no installer for now). Linux:
   `.tar.gz` (binary, `.desktop`, icon, README); AUR `quickbuds-bin` from `desktop/aur/` (repackages that
   tarball; per release: `_ver`, `_tag`, `sha256sums`, `pkgrel=1`, then `makepkg --printsrcinfo > .SRCINFO`, test
@@ -418,9 +416,7 @@ tested on Windows: he sets up Windows (VM or second partition) on 2026-10-02.
   are untested on the buds: ask him for the result.
 - **Linux app** (2026-10-01): the BlueZ backend in `bt.rs` connects on his CachyOS PC (the VM plan is
   dropped); the tray menu works there (his check 2026-10-01). Next: his check of auto-connect, Overview, EQ
-  and ANC on Linux. In the phone's
-  proot, a tray needs the real UID and the session bus (`proot-distro login --user $(id -u)` +
-  `DBUS_SESSION_BUS_ADDRESS`) and `TMPDIR` bound at its real path.
+  and ANC on Linux.
 - Windows only: screenshots of the desktop app without moving his cursor: PrintWindow + DPI-aware PowerShell, clicks by
   window message (WM_LBUTTONDOWN/UP); the scripts are not in the repo.
 - **Waiting:** issue #1 (pratstick's other-model logs); read them before changing anything.
