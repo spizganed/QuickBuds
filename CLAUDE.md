@@ -78,7 +78,8 @@ Repo at `~/projects/QuickBuds`; all phone-specific setup lives outside the repo.
 - `core.filemode` is false; git keeps `gradlew` at 755. SDK shell scripts need `java -jar`.
 - **Linux desktop on the phone** (TOOLCHAIN.md §8): Plasma on Termux:X11, mirrored to the PC with scrcpy
   (RDP was dropped: ~15 fps); started by `~/.shortcuts/scrappy` (Wi-Fi adb, no SSH; `ssh-terminal` = plain SSH into Termux, no desktop), which runs `~/.local/bin/scrcpy-ready`. The desktop app builds in the Ubuntu proot (`proot-distro login ubuntu
-  --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`) and runs with `DISPLAY=:0
+  --shared-tmp`, rustup in `/root`, `CARGO_TARGET_DIR=/root/qb-target`; **removed 2026-10-02 to free
+  space** `[USER]`: reinstall rustup before building there; the proot stays for `spotify_player`) and runs with `DISPLAY=:0
   QB_BRIDGE=127.0.0.1:7979`. Desktop apps are native Termux packages (xfce4-terminal, `chromium`), not
   proot ones: proot is too slow for a browser.
 - **adb tests** `[USER]`: never leave auto-rotate on (`settings put system accelerometer_rotation 0`
