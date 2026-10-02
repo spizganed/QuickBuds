@@ -24,7 +24,12 @@ pub const CMD_QUERY_TAP_LEVEL: u16 = 0x0133;
 pub const CMD_FIT_TEST: u16 = 0x0405;
 pub const CMD_GOLDEN_DETECT: u16 = 0x040D;
 pub const CMD_PERSONAL_NOISE: u16 = 0x0412;
+/// Game sound type `<type> 01`; read `0x012B` -> `00 <selected> <count> <types>` (§9).
 pub const CMD_GAME_SOUND: u16 = 0x0423;
+pub const CMD_QUERY_GAME_SOUND: u16 = 0x012B;
+/// Head gesture mapping `<type>` (0 nod answers, 1 shake answers); read `0x0134`, the type comes as push `F5`.
+pub const CMD_SET_HEAD_MOTION: u16 = 0x0431;
+pub const CMD_QUERY_HEAD_MOTION: u16 = 0x0134;
 pub const CMD_QUERY_FIRMWARE: u16 = 0x0105;
 pub const CMD_QUERY_EQ: u16 = 0x010F;
 pub const CMD_QUERY_EQ_ALL: u16 = 0x0122;
@@ -394,9 +399,17 @@ pub enum Event {
     /// `0x810D`: feature id -> value
     Features(Vec<(u8, u8)>),
     AlertVolume(u8),
+    /// (selected, offered types)
+    GameSound(u8, Vec<u8>),
+    HeadMotion(u8),
+    /// Fit test result, left and right status (§9: 1 good, 0 average, 6 poor, else an error; 0xFF missing).
+    FitResult(u8, u8),
     /// (level, the buds' default)
     TapLevel(u8, u8),
 }
+
+/// `<a> <b>` pairs with no count byte.
+fn pairs_n(b: &[u8]) -> Vec<(u8, u8)> { b.chunks_exact(2).map(|c| (c[0], c[1])).collect() }
 
 fn pairs(b: &[u8]) -> Option<Vec<(u8, u8)>> {
     let (&count, rest) = b.split_first()?;
@@ -423,6 +436,7 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x810D if sub == Some(0) => Event::Features(pairs(&pl[1..])?),
         0x8130 | 0x8427 if sub == Some(0) && pl.len() >= 2 => Event::AlertVolume(pl[1]),
         0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
+        0x812B if sub == Some(0) && pl.len() >= 3 => Event::GameSound(pl[1], pl[3..pl.len().min(3 + pl[2] as usize)].to_vec()),
         // `00 <count>` + UTF-8 `deviceType,versionType,version` triples
         0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
         0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
@@ -435,6 +449,13 @@ pub fn decode(p: &[u8]) -> Option<Event> {
             0x02 => Event::Wear(pairs(&pl[1..])?),
             0x03 if pl.len() >= 5 && pl[1] == 1 && pl[2] == 1 => Event::AncRaw(u16::from_le_bytes([pl[3], pl[4]]) as u32),
             0x05 if pl.len() >= 2 => Event::GameMode(pl[1] != 0),
+            // `04 <dev> <s> <dev> <s>`, dev 01 left / 02 right
+            0x04 => {
+                let r = pairs_n(&pl[1..]);
+                let of = |d| r.iter().find(|x| x.0 == d).map_or(0xFF, |x| x.1);
+                Event::FitResult(of(1), of(2))
+            }
+            0xF5 if pl.len() >= 2 => Event::HeadMotion(pl[1]),
             _ => return None,
         },
         _ => return None,
@@ -456,6 +477,9 @@ pub fn describe(e: &Event) -> String {
         Event::AncRaw(raw) => format!("ANC report 0x{raw:X}"),
         Event::GameMode(on) => format!("Low latency {}", if *on { "on" } else { "off" }),
         Event::AlertVolume(l) => format!("Alert volume {l}"),
+        Event::GameSound(t, all) => format!("Game sound type {t} (offered {all:?})"),
+        Event::HeadMotion(t) => format!("Head gesture mapping {t}"),
+        Event::FitResult(l, r) => format!("Fit test L={l} R={r}"),
         Event::TapLevel(l, d) => format!("Tap sensitivity {l} (default {d})"),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
@@ -476,6 +500,11 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_SET_ANC => "Set ANC",
         CMD_FIND_BUDS => "Find earbuds",
         CMD_SET_ALERT_VOLUME => "Set alert volume",
+        CMD_GAME_SOUND => "Set game sound type",
+        CMD_QUERY_GAME_SOUND => "Query game sound type",
+        CMD_SET_HEAD_MOTION => "Set head gesture mapping",
+        CMD_QUERY_HEAD_MOTION => "Query head gesture mapping",
+        CMD_FIT_TEST => "Fit test",
         CMD_QUERY_ALERT_VOLUME => "Query alert volume",
         CMD_SET_TAP_LEVEL => "Set tap sensitivity",
         CMD_QUERY_TAP_LEVEL => "Query tap sensitivity",
@@ -601,6 +630,11 @@ mod tests {
         assert!(matches!(decode(&build_packet(0x8133, 1, &[0, 2, 3])), Some(Event::TapLevel(2, 3))));
         // A failed read (status not 0) is no value.
         assert!(decode(&build_packet(0x8130, 1, &[1, 6])).is_none());
+        assert!(matches!(decode(&build_packet(0x812B, 1, &[0, 3, 2, 0, 3])), Some(Event::GameSound(3, t)) if t == [0, 3]));
+        // Buds 4 capture: both good.
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[4, 1, 1, 2, 1])), Some(Event::FitResult(1, 1))));
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[4, 2, 6])), Some(Event::FitResult(0xFF, 6))));
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0xF5, 1])), Some(Event::HeadMotion(1))));
     }
 
     #[test]

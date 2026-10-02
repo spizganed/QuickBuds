@@ -27,6 +27,10 @@ pub enum Cmd {
     EarbudReads,
     AlertVolume(u8),
     TapLevel(u8),
+    GameSoundType(u8),
+    HeadMotion(u8),
+    /// `0x0405` start / stop.
+    FitTest(bool),
     Connect,
     Disconnect,
 }
@@ -67,6 +71,11 @@ pub struct Snapshot {
     pub alert_volume: Option<u8>,
     /// (level, the buds' default)
     pub tap_level: Option<(u8, u8)>,
+    /// (selected, offered types) from `0x812B`.
+    pub game_sound: Option<(u8, Vec<u8>)>,
+    pub head_motion: Option<u8>,
+    /// The last fit test result, and a count that changes with each one.
+    pub fit: (u8, u8, u32),
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -244,6 +253,9 @@ impl<'a> Conn<'a> {
             Event::GameMode(on) => s.low_latency = Some(on),
             Event::AlertVolume(l) => s.alert_volume = Some(l),
             Event::TapLevel(l, d) => s.tap_level = Some((l, d)),
+            Event::GameSound(t, all) => s.game_sound = Some((t, all)),
+            Event::HeadMotion(t) => s.head_motion = Some(t),
+            Event::FitResult(l, r) => s.fit = (l, r, s.fit.2 + 1),
             Event::Features(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
@@ -362,8 +374,24 @@ impl<'a> Conn<'a> {
                         self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
                     }
                     Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,
+                    Cmd::FitTest(on) => self.send(CMD_FIT_TEST, None, &[on as u8])?,
+                    // As `writeThenRead`: shown at once, then read back.
+                    Cmd::GameSoundType(t) => {
+                        if let Some(g) = self.s.game_sound.as_mut() { g.0 = t; }
+                        (self.emit)(self.s.clone());
+                        self.send(CMD_GAME_SOUND, None, &[t, 1])?;
+                        self.pump(400)?;
+                        self.send(CMD_QUERY_GAME_SOUND, None, &[])?;
+                    }
+                    Cmd::HeadMotion(t) => {
+                        self.s.head_motion = Some(t);
+                        (self.emit)(self.s.clone());
+                        self.send(CMD_SET_HEAD_MOTION, None, &[t])?;
+                        self.pump(400)?;
+                        self.send(CMD_QUERY_HEAD_MOTION, None, &[])?;
+                    }
                     Cmd::ModelPicked => pick_model(&mut self.s),
-                    Cmd::EarbudReads => for cmd in [CMD_QUERY_ALERT_VOLUME, CMD_QUERY_TAP_LEVEL] {
+                    Cmd::EarbudReads => for cmd in [CMD_QUERY_ALERT_VOLUME, CMD_QUERY_TAP_LEVEL, CMD_QUERY_GAME_SOUND, CMD_QUERY_HEAD_MOTION] {
                         if !self.s.caps.supports(cmd) { continue; }
                         self.send(cmd, None, &[])?;
                         self.pump(120)?;

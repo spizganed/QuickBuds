@@ -2,7 +2,7 @@
 
 use crate::protocol::*;
 use crate::session::Cmd;
-use crate::{icons, svg, t, with_app, App, Earbuds, FeatureItem, MainWindow};
+use crate::{icons, svg, t, with_app, App, Choice, Earbuds, FeatureItem, MainWindow};
 use slint::{ComponentHandle, ModelRc, VecModel};
 
 /// (feature id, `models.json` flag, icon, title, subtitle, confirm text, confirm turning off too), in the
@@ -35,6 +35,19 @@ pub fn setup(main: &MainWindow) {
     e.on_opened(|| with_app(|a| { let _ = a.tx.send(Cmd::EarbudReads); }));
     e.on_alert_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::AlertVolume(l as u8)); }));
     e.on_tap_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::TapLevel(l as u8)); }));
+    e.on_choose(|kind, v| with_app(|a| {
+        let _ = a.tx.send(if kind == 1 { Cmd::GameSoundType(v as u8) } else { Cmd::HeadMotion(v as u8) });
+    }));
+    e.on_fit(|on| with_app(|a| { let _ = a.tx.send(Cmd::FitTest(on)); }));
+}
+
+/// HeyMelody's names for the game sound types; a type without one is not offered.
+fn game_label(a: &App, t: u8) -> Option<String> {
+    Some(crate::t(&a.tr, match t { 0 => "anc_seg_off", 1 => "game_sound_type_peace", 3 => "game_sound_type_shooter", _ => return None }).into())
+}
+
+fn head_label(a: &App, t: u8) -> Option<String> {
+    Some(crate::t(&a.tr, match t { 0 => "head_motion_nod", 1 => "head_motion_shake", _ => return None }).into())
 }
 
 pub fn apply(a: &App) {
@@ -42,15 +55,39 @@ pub fn apply(a: &App) {
     let flagged = |flag: Option<&str>| s.manual && flag.is_some_and(|f| s.model.is_some_and(|m| m[f] == 1));
     let rows: Vec<FeatureItem> = ROWS.iter().filter_map(|&(id, flag, icon, title, sub, confirm, confirm_off)| {
         let v = match s.features.iter().find(|f| f.0 == id) { Some(f) => f.1, None if flagged(flag) => 0, None => return None };
+        // The picker under its switch: which game sound effect, or which head gesture answers.
+        let (kind, choice_title, choice) = match id {
+            0x27 if s.manual || s.caps.supports(CMD_GAME_SOUND) => (1, "game_sound_type_title",
+                s.game_sound.as_ref().and_then(|g| game_label(a, g.0))),
+            0x3B if s.caps.supports(CMD_SET_HEAD_MOTION) => (2, "head_motion_type_title", s.head_motion.and_then(|t| head_label(a, t))),
+            _ => (0, "", None),
+        };
         Some(FeatureItem {
             id: id as i32, icon: svg(icon), title: t(&a.tr, title).into(), sub: t(&a.tr, sub).into(), on: v == 1,
             confirm: confirm.map_or("", |k| t(&a.tr, k)).into(), confirm_off,
+            choice_kind: kind, choice_title: if kind > 0 { t(&a.tr, choice_title).into() } else { "".into() },
+            choice: choice.unwrap_or("—".into()).into(),
         })
     }).collect();
     let e = a.main.global::<Earbuds>();
     e.set_features(ModelRc::new(VecModel::from(rows)));
     e.set_has_firmware(s.caps.supports(CMD_QUERY_FIRMWARE));
     e.set_has_find(s.caps.supports(CMD_FIND_BUDS));
+    e.set_has_fit(s.caps.supports(CMD_FIT_TEST));
+    e.set_fit_left(s.fit.0 as i32);
+    e.set_fit_right(s.fit.1 as i32);
+    e.set_fit_seq(s.fit.2 as i32);
+    // The types the buds offer (`0x812B`), Off first; before a read, HeyMelody's usual Off + shooting.
+    let offered = s.game_sound.as_ref().map(|g| g.1.clone()).filter(|t| !t.is_empty()).unwrap_or(vec![3]);
+    let mut game: Vec<u8> = vec![0];
+    for t in offered { if !game.contains(&t) { game.push(t); } }
+    let choices = |list: &[u8], label: &dyn Fn(u8) -> Option<String>| -> ModelRc<Choice> {
+        ModelRc::new(VecModel::from(list.iter().filter_map(|&v| Some(Choice { value: v as i32, label: label(v)?.into() })).collect::<Vec<_>>()))
+    };
+    e.set_game_choices(choices(&game, &|t| game_label(a, t)));
+    e.set_game_current(s.game_sound.as_ref().map_or(-1, |g| g.0 as i32));
+    e.set_head_choices(choices(&[0, 1], &|t| head_label(a, t)));
+    e.set_head_current(s.head_motion.map_or(-1, |t| t as i32));
     e.set_has_alert(s.caps.supports(CMD_SET_ALERT_VOLUME) && s.alert_volume.is_some());
     // Tap sensitivity where HeyMelody's model list has `tapLevelSetting`.
     // Without the buds' word (a manual pick), the slider starts at the middle level.
