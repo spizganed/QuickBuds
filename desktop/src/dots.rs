@@ -192,6 +192,21 @@ pub fn ring(size: f32, level: i32, slot: i32, tint: Color, accent: Color, track:
     })
 }
 
+/// The EQ curve (SVG path `d` in a `w` x `h` logical plot) as `color` dots at the window's pitch: rendered at
+/// 4 samples a cell, a cell half covered is a dot.
+pub fn curve(d: &str, (w, h): (f32, f32), color: Color, scale: f32) -> Image {
+    let pitch = pitch_px(scale, PITCH);
+    let (cols, rows) = ((w * scale / pitch) as u32, (h * scale / pitch) as u32);
+    if d.is_empty() || cols == 0 || rows == 0 { return Image::default(); }
+    cached(format!("curve {d} {cols} {rows} {color:?}"), || {
+        // The stroke two cells wide, so a steep stretch stays one unbroken line of dots.
+        let svg = format!(r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}"><path d="{d}" fill="none" stroke="#fff" stroke-width="{}" stroke-linecap="round"/></svg>"##,
+            2.0 * pitch / scale);
+        let pm = render_svg(&svg, cols * 4, rows * 4, sk_color(color))?;
+        matrix(&pm, cols, rows, 4, pitch, 128, false, false)
+    })
+}
+
 /// The slider knob: a fixed ring of dots in `ring`, filled with `fill`.
 pub fn knob(ring: Color, fill: Color, pitch: f32) -> Image {
     cached(format!("knob {ring:?} {fill:?} {pitch}"), || {
