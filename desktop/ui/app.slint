@@ -1,6 +1,8 @@
-// QuickBuds desktop UI: the main window and the tray's quick panel. Classic style, Graphite palette.
+// QuickBuds desktop UI: the main window and the tray's quick panel. Classic or Dot matrix style, Graphite palette.
 
 import { ListView } from "std-widgets.slint";
+// The phone's bundled Doto, for the Dot matrix style.
+import "../../app/src/main/res/font/doto.ttf";
 
 export global Palette {
     in-out property <color> bg: #121214;
@@ -16,6 +18,50 @@ export global Palette {
         if wear == 2 { return text; }
         if wear == 3 { return text.transparentize(0.83); }
         return text2;
+    }
+    // The Dot matrix glyph shade (the widget's `nothingTint`): opaque blends, the dots have no alpha.
+    public pure function dot-tint(wear: int) -> color {
+        if wear == 2 { return text; }
+        if wear == 1 { return card.mix(text2, 0.35); }
+        return card.mix(text2, 0.83);
+    }
+}
+
+// The Dot matrix style (`dots.rs`). Shapes come from Rust as images at physical pixels, snapped to whole cells.
+export global Dots {
+    in property <bool> on;
+    in property <float> scale: 1;
+    // The dot pitch in physical px.
+    in property <float> pitch: 2;
+    callback set-on(bool);
+    pure callback box-px(float, float, color, color, float) -> image;
+    pure callback ring-px(float, int, int, color, color, color) -> image;
+    pure callback knob-px(color, color) -> image;
+    pure callback disc-px(int, color) -> image;
+    out property <string> font: on ? "Doto" : "Segoe UI";
+    // The largest whole number of cells inside `l`.
+    public pure function snap(l: length) -> length { return floor(l / 1px * scale / pitch) * pitch / scale * 1px; }
+    public pure function box(w: length, h: length, fill: color, stroke: color, r: length) -> image {
+        return box-px(w / 1px * scale, h / 1px * scale, fill, stroke, r / 1px * scale);
+    }
+    public pure function knob(ring: color, fill: color) -> image { return knob-px(ring, fill); }
+    // The knob's size in logical px (7 cells).
+    out property <length> knob-size: 7 * pitch / scale * 1px;
+}
+
+// A card, button or row outline as dots: the outline a cell of `stroke`, the fill a cell inside.
+component DotBox inherits Rectangle {
+    in property <color> fill: Palette.card;
+    in property <color> stroke: Palette.outline;
+    in property <length> radius: 16px;
+    Image {
+        width: Dots.snap(root.width);
+        height: Dots.snap(root.height);
+        x: round((root.width - self.width) / 2 * Dots.scale / 1px) / Dots.scale * 1px;
+        y: round((root.height - self.height) / 2 * Dots.scale / 1px) / Dots.scale * 1px;
+        source: Dots.box(root.width, root.height, root.fill, root.stroke, root.radius);
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
     }
 }
 
@@ -54,6 +100,9 @@ export global Tr {
     // ponytail: desktop-only strings, English until the translation pass.
     in property <string> open: "Open QuickBuds";
     in property <string> quit: "Quit";
+    in property <string> style-title: "Style";
+    in property <string> style-classic: "Classic";
+    in property <string> style-dots: "Dot matrix";
 }
 
 export struct Level {
@@ -111,9 +160,10 @@ export global Buds {
 }
 
 component Card inherits Rectangle {
-    background: Palette.card;
+    background: Dots.on ? transparent : Palette.card;
     border-radius: 16px;
     opacity: Buds.on ? 1 : 0.35;
+    if Dots.on: DotBox { width: 100%; height: 100%; radius: root.border-radius; }
 }
 
 component Ring {
@@ -126,12 +176,25 @@ component Ring {
     in property <string> label;
     in property <bool> label-bright;
     in property <length> size: 90px;
+    // 0 left, 1 case, 2 right; the Dot matrix ring draws its own glyph.
+    in property <int> slot;
+    in property <int> wear;
     property <float> frac: max(0, min(level, 99.9)) / 100;
     property <float> r: 45;
+    // Dot matrix: no label line (the glyph's shade shows wear, as on the phone).
+    property <bool> show-label: label != "" && !Dots.on;
     width: size;
-    height: size + (label == "" ? 20px : size > 60px ? 52px : 38px);
+    height: size + (!show-label ? 20px : size > 60px ? 52px : 38px);
 
-    Path {
+    if Dots.on: Image {
+        x: 0; y: 0; width: size; height: size;
+        source: Dots.ring-px(round(size / 1px * Dots.scale), Buds.on ? level : -1, slot,
+            !Buds.on ? Palette.outline : slot == 1 ? Palette.text : Palette.dot-tint(wear),
+            Palette.accent, Palette.card.mix(Palette.text2, 0.5));
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
+    }
+    if !Dots.on: Path {
         x: 0; y: 0; width: size; height: size;
         viewbox-width: 100; viewbox-height: 100;
         stroke: Palette.outline;
@@ -139,7 +202,7 @@ component Ring {
         MoveTo { x: 50; y: 5; }
         ArcTo { x: 49.99; y: 5; radius-x: r; radius-y: r; large-arc: true; sweep: true; }
     }
-    if level > 0: Path {
+    if level > 0 && !Dots.on: Path {
         x: 0; y: 0; width: size; height: size;
         viewbox-width: 100; viewbox-height: 100;
         stroke: Palette.accent;
@@ -152,7 +215,7 @@ component Ring {
             large-arc: frac > 0.5; sweep: true;
         }
     }
-    Image {
+    if !Dots.on: Image {
         source: glyph;
         width: glyph-w; height: glyph-h;
         x: (size - self.width) / 2; y: (size - self.height) / 2;
@@ -161,12 +224,12 @@ component Ring {
     Text {
         y: size + 4px; width: size;
         horizontal-alignment: center;
-        text: level < 0 ? "–" : level + "%" + (charging ? " ⚡" : "");
+        text: level < 0 ? "–" : level + (Dots.on ? "" : "%") + (charging ? " ⚡" : "");
         color: Palette.text;
         font-size: size > 60px ? 22px : 12px;
         font-weight: 600;
     }
-    if label != "": Text {
+    if show-label: Text {
         y: size + (size > 60px ? 34px : 22px); width: size;
         horizontal-alignment: center;
         text: label;
@@ -187,17 +250,17 @@ component Batteries inherits HorizontalLayout {
         return side;
     }
     Ring {
-        size: root.size; level: Buds.left; charging: Buds.left-charging;
+        size: root.size; level: Buds.left; charging: Buds.left-charging; slot: 0; wear: Buds.left-wear;
         label: labels ? wear-label(Buds.left-wear, Tr.left) : ""; label-bright: Buds.left-wear == 2;
         glyph: Buds.icon-left; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
         tint: Palette.wear-tint(Buds.left-wear);
     }
     Ring {
-        size: root.size; level: Buds.case; charging: Buds.case-charging; label: labels ? Tr.case : "";
+        size: root.size; level: Buds.case; charging: Buds.case-charging; label: labels ? Tr.case : ""; slot: 1;
         glyph: Buds.icon-case; glyph-w: root.size * 0.5; glyph-h: root.size * 0.4;
     }
     Ring {
-        size: root.size; level: Buds.right; charging: Buds.right-charging;
+        size: root.size; level: Buds.right; charging: Buds.right-charging; slot: 2; wear: Buds.right-wear;
         label: labels ? wear-label(Buds.right-wear, Tr.right) : ""; label-bright: Buds.right-wear == 2;
         glyph: Buds.icon-right; glyph-w: root.size * 0.32; glyph-h: root.size * 0.5;
         tint: Palette.wear-tint(Buds.right-wear);
@@ -209,35 +272,44 @@ component Segment inherits Rectangle {
     in property <string> label;
     in property <bool> selected;
     in property <bool> compact;
+    in property <bool> enabled: Buds.on;
     callback clicked;
     // Equal widths, whatever the label length.
     preferred-width: 0;
     horizontal-stretch: 1;
     border-radius: min(self.height, self.width) / 2;
-    background: selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
+    // Dot matrix: the selected segment is an accent outline, the track inside (not a fill).
+    property <color> lit: Dots.on ? Palette.accent : #FFFFFF;
+    background: Dots.on ? transparent : selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
     animate background { duration: 120ms; }
+    if Dots.on && (selected || ta.has-hover): DotBox {
+        width: 100%; height: 100%;
+        radius: min(root.height / 2 * 0.85, 22px);
+        fill: Palette.card;
+        stroke: selected ? Palette.accent : Palette.outline;
+    }
     VerticalLayout {
         alignment: center;
         spacing: 4px;
         padding-top: 6px;
         padding-bottom: 6px;
-        HorizontalLayout {
+        if icon.width > 0: HorizontalLayout {
             alignment: center;
             Image {
                 source: icon; width: 24px; height: 24px;
-                colorize: selected ? #FFFFFF : Palette.text2;
+                colorize: selected ? lit : Palette.text2;
             }
         }
         if !compact: Text {
             text: label;
             horizontal-alignment: center;
             font-size: 12px;
-            color: selected ? #FFFFFF : Palette.text2;
+            color: selected ? lit : Palette.text2;
             overflow: elide;
         }
     }
     ta := TouchArea {
-        enabled: Buds.on;
+        enabled: root.enabled;
         mouse-cursor: pointer;
         clicked => { root.clicked(); }
     }
@@ -300,11 +372,26 @@ component Toggle inherits Rectangle {
     // The phone's switch: a thin track under a thumb as tall as the switch, light grey when off.
     width: 44px;
     height: 24px;
-    Rectangle {
+    if !Dots.on: Rectangle {
         x: 6px; y: 6px; width: parent.width - 12px; height: 12px; border-radius: 6px;
         background: Palette.outline;
     }
-    Rectangle {
+    // Dot matrix: a dot track and a round dot thumb.
+    if Dots.on: DotBox {
+        x: 4px; y: 6px; width: parent.width - 8px; height: 12px;
+        fill: Palette.outline; stroke: Palette.outline; radius: 5px;
+    }
+    property <int> thumb-cells: floor(22px / 1px * Dots.scale / Dots.pitch);
+    if Dots.on: Image {
+        width: thumb-cells * Dots.pitch / Dots.scale * 1px; height: self.width;
+        y: (root.height - self.height) / 2;
+        x: root.checked ? root.width - self.width : 0;
+        animate x { duration: 120ms; }
+        source: Dots.disc-px(thumb-cells, root.checked ? Palette.accent : #E4E4E6);
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
+    }
+    if !Dots.on: Rectangle {
         width: 22px; height: 22px; border-radius: 11px;
         background: root.checked ? Palette.accent : #E4E4E6;
         animate background { duration: 120ms; }
@@ -346,12 +433,18 @@ component Chip inherits Rectangle {
     height: 34px;
     min-width: label.preferred-width + 28px;
     border-radius: 17px;
-    background: primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
-    border-width: primary ? 0 : 1px;
+    background: Dots.on ? transparent : primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
+    border-width: primary || Dots.on ? 0 : 1px;
     border-color: Palette.outline.brighter(0.3);
+    // Dot matrix: an outline, accent for the primary chip.
+    if Dots.on: DotBox {
+        width: 100%; height: 100%; radius: 14px;
+        fill: ta.has-hover ? Palette.outline : Palette.card;
+        stroke: root.primary ? Palette.accent : Palette.outline.brighter(0.3);
+    }
     label := Text {
         text: root.text;
-        color: root.primary ? #FFFFFF : Palette.text;
+        color: root.primary ? (Dots.on ? Palette.accent : #FFFFFF) : Palette.text;
         font-size: 13px;
         font-weight: 600;
     }
@@ -373,8 +466,12 @@ component NavItem inherits Rectangle {
     callback clicked;
     height: 40px;
     border-radius: 10px;
-    background: active ? Palette.accent.transparentize(0.85) : ta.has-hover && entry.ready ? Palette.outline : transparent;
+    background: Dots.on ? transparent : active ? Palette.accent.transparentize(0.85) : ta.has-hover && entry.ready ? Palette.outline : transparent;
     opacity: entry.ready ? 1 : 0.4;
+    if Dots.on && (active || (ta.has-hover && entry.ready)): DotBox {
+        width: 100%; height: 100%; radius: 10px;
+        fill: Palette.sidebar; stroke: active ? Palette.accent : Palette.outline;
+    }
     HorizontalLayout {
         padding-left: 12px;
         padding-right: 12px;
@@ -442,7 +539,11 @@ component NavRow inherits Rectangle {
 }
 
 // A row divider inside a card.
-component Divider inherits Rectangle { height: 1px; background: Palette.outline; }
+component Divider inherits Rectangle {
+    height: Dots.on ? Dots.pitch / Dots.scale * 1px : 1px;
+    background: Dots.on ? transparent : Palette.outline;
+    if Dots.on: DotBox { width: 100%; height: 100%; radius: 0; fill: Palette.outline; stroke: Palette.outline; }
+}
 
 component CaptionButton inherits Rectangle {
     in property <bool> danger;
@@ -537,10 +638,15 @@ component PresetRow inherits Rectangle {
     height: 48px;
     border-radius: 16px;
     // Selection is an outline, never a checkmark.
-    border-width: selected ? 2px : 1px;
+    border-width: Dots.on ? 0 : selected ? 2px : 1px;
     border-color: selected ? Palette.accent : Palette.outline;
-    background: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
     opacity: Buds.on ? 1 : 0.35;
+    if Dots.on: DotBox {
+        width: 100%; height: 100%;
+        fill: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+        stroke: selected ? Palette.accent : Palette.outline;
+    }
     Text {
         x: 18px; width: parent.width - 36px;
         text: name; overflow: elide; vertical-alignment: center;
@@ -554,10 +660,14 @@ component AddRow inherits Rectangle {
     callback clicked;
     height: 48px;
     border-radius: 16px;
-    border-width: 1px;
+    border-width: Dots.on ? 0 : 1px;
     border-color: Palette.outline;
-    background: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
     opacity: Buds.on ? 1 : 0.35;
+    if Dots.on: DotBox {
+        width: 100%; height: 100%;
+        fill: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    }
     HorizontalLayout {
         alignment: center;
         spacing: 10px;
@@ -573,16 +683,27 @@ component HSlider inherits Rectangle {
     in-out property <int> value;
     callback released(int);
     height: 48px;
-    property <length> knob: 20px;
+    property <length> knob: Dots.on ? Dots.knob-size : 20px;
     property <length> track-y: 30px;
     property <float> frac: (value - minimum) / (maximum - minimum);
-    Rectangle { y: track-y - 3px; height: 6px; border-radius: 3px; background: Palette.outline; }
-    Rectangle {
+    if !Dots.on: Rectangle { y: track-y - 3px; height: 6px; border-radius: 3px; background: Palette.outline; }
+    if !Dots.on: Rectangle {
         x: 0; y: track-y - 3px; height: 6px; border-radius: 3px;
         width: frac * (parent.width - knob) + knob / 2;
         background: Palette.accent;
     }
-    Rectangle {
+    // Dot matrix: a dot track, the accent part a second track over it, and the dot knob.
+    if Dots.on: DotBox { x: 0; y: track-y - 4px; width: parent.width; height: 8px; radius: 3px; fill: Palette.outline; stroke: Palette.outline; }
+    if Dots.on: DotBox {
+        x: 0; y: track-y - 4px; height: 8px; radius: 3px; fill: Palette.accent; stroke: Palette.accent;
+        width: frac * (parent.width - knob) + knob / 2;
+    }
+    if Dots.on: Image {
+        x: frac * (parent.width - knob); y: track-y - knob / 2; width: knob; height: knob;
+        source: Dots.knob(Palette.accent, Palette.card);
+        image-fit: ImageFit.fill; image-rendering: pixelated;
+    }
+    if !Dots.on: Rectangle {
         x: frac * (parent.width - knob); y: track-y - knob / 2;
         width: knob; height: knob; border-radius: knob / 2;
         background: Palette.card;
@@ -609,7 +730,7 @@ component HSlider inherits Rectangle {
 }
 
 component EqEditor inherits Rectangle {
-    property <length> knob: 18px;
+    property <length> knob: Dots.on ? Dots.knob-size : 18px;
     property <length> labels: 36px;
     property <length> plot-h: self.height - labels;
     property <length> band-w: self.width / max(1, Eq.gains.length);
@@ -630,7 +751,13 @@ component EqEditor inherits Rectangle {
     for g[i] in Eq.gains: Rectangle {
         x: i * band-w; y: 0; width: band-w; height: root.height;
         Rectangle { x: (parent.width - 2px) / 2; y: knob / 2; width: 2px; height: plot-h - knob; background: Palette.outline.transparentize(0.4); }
-        Rectangle {
+        if Dots.on: Image {
+            x: (parent.width - knob) / 2; y: (6 - g) / 12 * (plot-h - knob);
+            width: knob; height: knob;
+            source: Dots.knob(Palette.accent, ta.pressed || ta.has-hover ? Palette.accent : Palette.card);
+            image-fit: ImageFit.fill; image-rendering: pixelated;
+        }
+        if !Dots.on: Rectangle {
             x: (parent.width - knob) / 2; y: (6 - g) / 12 * (plot-h - knob);
             width: knob; height: knob; border-radius: knob / 2;
             background: ta.pressed || ta.has-hover ? Palette.accent.brighter(0.2) : Palette.accent;
@@ -830,6 +957,28 @@ component DevPage inherits VerticalLayout {
     Timer { interval: 500ms; running: true; triggered => { DevLog.refresh(); } }
 }
 
+// App settings (the phone's Settings and Theme screens): for now the style.
+component SettingsPage inherits VerticalLayout {
+    padding: 28px;
+    spacing: 16px;
+    Text { text: "App settings"; color: Palette.text; font-size: 26px; font-weight: 700; }
+    SectionTitle { text: Tr.style-title; font-size: 13px; font-weight: 400; }
+    // Classic / Dot matrix, like the phone's Theme screen: one switch for the window and the quick panel.
+    Rectangle {
+        height: 52px;
+        border-radius: self.height / 2;
+        background: Dots.on ? transparent : Palette.card;
+        if Dots.on: DotBox { width: 100%; height: 100%; radius: 22px; }
+        HorizontalLayout {
+            padding: 4px;
+            spacing: 4px;
+            Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
+            Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
+        }
+    }
+    Rectangle { vertical-stretch: 1; }
+}
+
 export component MainWindow inherits Window {
     in property <[NavEntry]> nav;
     in-out property <int> page: 0;
@@ -840,7 +989,7 @@ export component MainWindow inherits Window {
     preferred-width: 960px;
     preferred-height: 620px;
     background: Palette.bg;
-    default-font-family: "Segoe UI";
+    default-font-family: Dots.font;
     no-frame: true;
     // Window chrome, handled in Rust (winit): drag, minimize, maximize, hide, edge resize.
     in property <bool> max-state;
@@ -871,8 +1020,9 @@ export component MainWindow inherits Window {
                 spacing: 4px;
                 // Device card
                 Rectangle {
-                    background: Palette.card;
+                    background: Dots.on ? transparent : Palette.card;
                     border-radius: 14px;
+                    if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
                     VerticalLayout {
                         padding: 14px;
                         spacing: 10px;
@@ -907,6 +1057,7 @@ export component MainWindow inherits Window {
 
         // --- Content ---
         if root.page == 1: EqPage { horizontal-stretch: 1; }
+        if root.page == 6: SettingsPage { horizontal-stretch: 1; }
         if root.page == 7: DevPage { horizontal-stretch: 1; }
         if root.page == 0: VerticalLayout {
             horizontal-stretch: 1;
@@ -981,7 +1132,7 @@ export component QuickPanel inherits Window {
     width: 300px;
     height: 250px;
     background: Palette.outline;
-    default-font-family: "Segoe UI";
+    default-font-family: Dots.font;
 
     Rectangle {
         x: 1px; y: 1px;
