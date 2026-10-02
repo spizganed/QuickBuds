@@ -31,6 +31,12 @@ pub enum Cmd {
     HeadMotion(u8),
     /// `0x0405` start / stop.
     FitTest(bool),
+    /// Personalized ANC: `0x011A` (is a result stored?).
+    PncQuery,
+    /// `0x0412 <action>`; using the stored result re-reads the status after it.
+    Pnc(u8),
+    /// `0x010D`, after a Personalized ANC result applied (the buds switch `0C` on themselves).
+    StatusRead,
     Connect,
     Disconnect,
 }
@@ -76,6 +82,8 @@ pub struct Snapshot {
     pub head_motion: Option<u8>,
     /// The last fit test result, and a count that changes with each one.
     pub fit: (u8, u8, u32),
+    /// The last Personalized ANC event (1 stored, 2 ack, 3 result), its value, and a count that changes with each.
+    pub pnc: (u8, u8, u32),
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -256,6 +264,9 @@ impl<'a> Conn<'a> {
             Event::GameSound(t, all) => s.game_sound = Some((t, all)),
             Event::HeadMotion(t) => s.head_motion = Some(t),
             Event::FitResult(l, r) => s.fit = (l, r, s.fit.2 + 1),
+            Event::PncStored(e) => s.pnc = (1, e as u8, s.pnc.2 + 1),
+            Event::PncAck(st) => s.pnc = (2, st, s.pnc.2 + 1),
+            Event::PncResult(r) => s.pnc = (3, r, s.pnc.2 + 1),
             Event::Features(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
@@ -375,6 +386,12 @@ impl<'a> Conn<'a> {
                     }
                     Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,
                     Cmd::FitTest(on) => self.send(CMD_FIT_TEST, None, &[on as u8])?,
+                    Cmd::PncQuery => self.send(CMD_QUERY_PERSONAL_NOISE, None, &[])?,
+                    Cmd::Pnc(action) => {
+                        self.send(CMD_PERSONAL_NOISE, None, &[action])?;
+                        if action == 2 { self.pump(600)?; self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?; }
+                    }
+                    Cmd::StatusRead => self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?,
                     // As `writeThenRead`: shown at once, then read back.
                     Cmd::GameSoundType(t) => {
                         if let Some(g) = self.s.game_sound.as_mut() { g.0 = t; }

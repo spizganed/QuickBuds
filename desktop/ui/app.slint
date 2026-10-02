@@ -144,6 +144,25 @@ export global Tr {
     in property <string> fit-tips-both;
     in property <string> fit-tips-left;
     in property <string> fit-tips-right;
+    in property <string> pnc-title;
+    in property <string> pnc-sub;
+    in property <string> pnc-wear;
+    in property <string> pnc-stored-title;
+    in property <string> pnc-stored-body;
+    in property <string> pnc-use;
+    in property <string> pnc-test-again;
+    in property <string> pnc-test-title;
+    in property <string> pnc-test-body;
+    in property <string> pnc-start;
+    in property <string> pnc-testing;
+    in property <string> pnc-done;
+    in property <string> pnc-failed;
+    in property <string> pnc-retry;
+    in property <string> pnc-fail-quiet;
+    in property <string> pnc-fail-fit;
+    in property <string> pnc-fail-wind;
+    in property <string> pnc-fail-still;
+    in property <string> pnc-fail-audio;
     in property <string> model-title;
     in property <string> model-auto;
     in property <string> alert-title;
@@ -1039,6 +1058,8 @@ export struct FeatureItem {
     choice-kind: int,
     choice-title: string,
     choice: string,
+    // Turning it on runs the Personalized ANC flow instead of a write.
+    flow: bool,
 }
 
 export struct Choice {
@@ -1067,6 +1088,12 @@ export global Earbuds {
     in property <int> game-current;
     in property <[Choice]> head-choices;
     in property <int> head-current;
+    in property <int> pnc-kind;
+    in property <int> pnc-value;
+    in property <int> pnc-seq;
+    callback pnc-query();
+    callback pnc(int);
+    callback status-read();
     callback choose(int, int);
     callback fit(bool);
     callback opened();
@@ -1162,6 +1189,83 @@ component FitDialog inherits PopupWindow {
                         if state == 2 { return; }
                         if state == 4 { stop(); state = 0; shown-result = false; root.close(); return; }
                         play();
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Personalized ANC (`PersonalNoiseFlow`): both buds worn, then the stored result if the buds hold one (5 s for
+// the answer), else the ear canal test (a result within 15 s; closing cancels it).
+component PncDialog inherits PopupWindow {
+    // 0 asking, 1 stored result offered, 2 test intro, 3 testing, 4 failed, 5 wear both buds, 6 done
+    property <int> state;
+    property <int> reason;
+    close-policy: PopupClosePolicy.no-auto-close;
+    width: 380px;
+    pure function worn() -> bool { return Buds.left-wear == 2 && Buds.right-wear == 2; }
+    function start() {
+        if !worn() { state = 5; return; }
+        state = 0;
+        Earbuds.pnc-query();
+    }
+    function test() {
+        if !worn() { state = 5; return; }
+        state = 3;
+        Earbuds.pnc(1);
+    }
+    function finish() {
+        if state == 3 { Earbuds.pnc(3); }
+        state = 0;
+        root.close();
+    }
+    property <int> seq: Earbuds.pnc-seq;
+    changed seq => {
+        if Earbuds.pnc-kind == 1 && state == 0 { state = Earbuds.pnc-value != 0 ? 1 : 2; }
+        // A rejected write fails the test as well (status 15: another device busy).
+        if Earbuds.pnc-kind == 2 && state == 3 && Earbuds.pnc-value != 0 { reason = 0; state = 4; }
+        if Earbuds.pnc-kind == 3 && state == 3 {
+            if Earbuds.pnc-value == 0 { state = 6; Earbuds.status-read(); } else { reason = Earbuds.pnc-value; state = 4; }
+        }
+    }
+    Timer { interval: 5s; running: state == 0; triggered => { state = 2; } }
+    // The popup's content is built on each show: each opening starts the flow.
+    init => { start(); }
+    Timer { interval: 15s; running: state == 3; triggered => { reason = 0; state = 4; } }
+    Rectangle {
+        background: Dots.on ? Palette.bg : Palette.card;
+        border-radius: 14px;
+        border-width: Dots.on ? 0 : 1px;
+        border-color: Palette.outline;
+        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+        VerticalLayout {
+            padding: 20px;
+            spacing: 12px;
+            Text {
+                text: [Tr.pnc-title, Tr.pnc-stored-title, Tr.pnc-test-title, Tr.pnc-title, Tr.pnc-failed, Tr.pnc-title, Tr.pnc-title][state];
+                color: Palette.text; font-size: 15px; font-weight: 600; wrap: word-wrap;
+            }
+            Text {
+                text: [Tr.connecting, Tr.pnc-stored-body, Tr.pnc-test-body, Tr.pnc-testing,
+                    ["", Tr.pnc-fail-quiet, Tr.pnc-fail-fit, Tr.pnc-fail-wind, Tr.pnc-fail-still, Tr.pnc-fail-audio][reason <= 5 ? reason : 0],
+                    Tr.pnc-wear, Tr.pnc-done][state];
+                color: Palette.text2; font-size: 13px; wrap: word-wrap;
+            }
+            HorizontalLayout {
+                alignment: end;
+                spacing: 8px;
+                Chip {
+                    text: state == 1 ? Tr.pnc-test-again : state == 6 ? Tr.close : Tr.cancel;
+                    clicked => { if state == 1 { test(); } else { finish(); } }
+                }
+                if state == 1 || state == 2 || state == 4 || state == 5: Chip {
+                    primary: true;
+                    text: state == 1 ? Tr.pnc-use : state == 2 ? Tr.pnc-start : Tr.pnc-retry;
+                    clicked => {
+                        if state == 1 { Earbuds.pnc(2); state = 0; root.close(); }
+                        else if state == 5 { start(); }
+                        else { test(); }
                     }
                 }
             }
@@ -1289,7 +1393,9 @@ component EarbudsPage inherits Rectangle {
                         FeatureRow {
                             icon: f.icon; title: f.title; subtitle: f.sub; checked: f.on;
                             toggled(on) => {
-                                if f.confirm != "" && (on || f.confirm-off) {
+                                if f.flow && on {
+                                    pnc.show();
+                                } else if f.confirm != "" && (on || f.confirm-off) {
                                     ask-id = f.id; ask-on = on; ask-title = f.title; ask-body = f.confirm;
                                     ask.show();
                                 } else {
@@ -1364,6 +1470,9 @@ component EarbudsPage inherits Rectangle {
         x: (root.width - self.width) / 2; y: 120px;
         title: Tr.head-motion-type-title; items: Earbuds.head-choices; current: Earbuds.head-current;
         picked(v) => { Earbuds.choose(2, v); }
+    }
+    pnc := PncDialog {
+        x: (root.width - self.width) / 2; y: 120px;
     }
     fit := FitDialog {
         x: (root.width - self.width) / 2; y: 120px;

@@ -37,6 +37,7 @@ const STRINGS: &[&str] = &[
     "head_motion_nod", "head_motion_shake", "gesture_bud_left", "gesture_bud_right", "gesture_done", "fit_title",
     "fit_sub", "fit_hint", "fit_play", "fit_playing", "fit_keep", "fit_good", "fit_average", "fit_poor", "fit_perfect",
     "fit_adjust", "fit_adjust_tips", "fit_both", "fit_left", "fit_right", "fit_again", "fit_insert", "fit_failed",
+    "pnc_title", "pnc_sub", "pnc_wear", "pnc_stored_title", "pnc_stored_body", "pnc_use", "pnc_test_again", "pnc_test_title", "pnc_test_body", "pnc_start", "pnc_testing", "pnc_done", "pnc_failed", "pnc_retry", "pnc_fail_quiet", "pnc_fail_fit", "pnc_fail_wind", "pnc_fail_still", "pnc_fail_audio",
     "model_title", "model_auto", "model_detected", "model_not_detected",
     // Built-in preset names (`protocol::eq_builtins`)
     "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
