@@ -33,6 +33,7 @@ const STRINGS: &[&str] = &[
     "wear_firmware_title", "wear_firmware_sub", "row_find_title", "row_find_sub", "find_title", "find_hint", "find_stop",
     "find_play", "find_warn_title", "find_warn_msg", "find_warn_play",
     "earbuds_section_sounds", "row_alert_title", "tap_level_title", "tap_level_hint", "tap_level_warning",
+    "model_title", "model_auto", "model_detected", "model_not_detected",
     // Built-in preset names (`protocol::eq_builtins`)
     "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
     "eq_bass_boost", "eq_clear", "eq_gentle", "eq_default", "eq_dyn_simple", "eq_dyn_warm", "eq_dyn_punchy",

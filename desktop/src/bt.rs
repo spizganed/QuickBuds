@@ -22,12 +22,6 @@ pub struct Device {
     pub vendor: bool,
 }
 
-/// "0000079a-d102-11e1-9b23-00025b00a5a5" (any case, braces or not) is one of [SPP_UUIDS].
-pub fn is_vendor_uuid(s: &str) -> bool {
-    let hex: String = s.chars().filter(|c| c.is_ascii_hexdigit()).collect();
-    u128::from_str_radix(&hex, 16).is_ok_and(|u| SPP_UUIDS.contains(&u))
-}
-
 pub enum Link {
     Bt(imp::Link),
     Bridge(TcpStream),
@@ -238,10 +232,16 @@ mod imp {
             let Some(addr) = prop_cast::<String>(dev, "Address").and_then(|a| parse_addr(a)) else { continue };
             let name = prop_cast::<String>(dev, "Alias").or_else(|| prop_cast(dev, "Name")).cloned().unwrap_or_default();
             // BlueZ's cached SDP result: the services the device offered when it was paired.
-            let vendor = prop_cast::<Vec<String>>(dev, "UUIDs").is_some_and(|u| u.iter().any(|u| super::is_vendor_uuid(u)));
+            let vendor = prop_cast::<Vec<String>>(dev, "UUIDs").is_some_and(|u| u.iter().any(|u| is_vendor_uuid(u)));
             out.push(Device { addr, name, connected: flag(dev, "Connected"), vendor });
         }
         out
+    }
+
+    /// "0000079a-d102-11e1-9b23-00025b00a5a5" (BlueZ's form, any case) is one of [SPP_UUIDS].
+    fn is_vendor_uuid(s: &str) -> bool {
+        let hex: String = s.chars().filter(|c| c.is_ascii_hexdigit()).collect();
+        u128::from_str_radix(&hex, 16).is_ok_and(|u| SPP_UUIDS.contains(&u))
     }
 
     fn flag(dev: &PropMap, key: &str) -> bool { prop_cast::<bool>(dev, key).copied().unwrap_or(false) }
@@ -342,9 +342,9 @@ mod imp {
 
         #[test]
         fn vendor_uuids() {
-            assert!(crate::bt::is_vendor_uuid("0000079a-d102-11e1-9b23-00025b00a5a5"));
-            assert!(crate::bt::is_vendor_uuid("{00001107-D102-11E1-9B23-00025B00A5A5}"));
-            assert!(!crate::bt::is_vendor_uuid("0000110b-0000-1000-8000-00805f9b34fb"));
+            assert!(is_vendor_uuid("0000079a-d102-11e1-9b23-00025b00a5a5"));
+            assert!(is_vendor_uuid("{00001107-D102-11E1-9B23-00025B00A5A5}"));
+            assert!(!is_vendor_uuid("0000110b-0000-1000-8000-00805f9b34fb"));
         }
 
         #[test]
