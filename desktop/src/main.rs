@@ -4,6 +4,7 @@
 mod bt;
 mod devtools;
 mod dots;
+mod earbuds;
 mod eq;
 mod protocol;
 mod session;
@@ -121,7 +122,7 @@ fn nav() -> ModelRc<NavEntry> {
         (icons::GESTURE, "Controls", false),
         (icons::HEARING, "Hearing profile", false),
         (icons::DEVICES, "Dual connection", false),
-        (icons::EARBUD, "Earbud settings", false),
+        (icons::EARBUD, "Earbud settings", true),
         (icons::SETTINGS_COG, "App settings", true),
         (icons::DEV_TOOLS, "Dev tools", true),
     ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg_at(icon, 20.0), name: name.into(), ready }).collect();
@@ -152,6 +153,7 @@ fn set_icons(b: &Buds) {
     b.set_icon_bass(svg(icons::EQUALIZER));
     b.set_icon_chevron(svg_at(icons::CHEVRON_RIGHT, 20.0));
     b.set_icon_plus(svg_at(icons::PLUS, 18.0));
+    b.set_icon_info(svg(icons::INFO));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -190,6 +192,15 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_style_title(t(s, "widget_style_title").into());
     tr.set_style_classic(t(s, "widget_style_classic").into());
     tr.set_style_dots(t(s, "widget_style_nothing").into());
+    tr.set_earbuds_title(t(s, "earbuds_title").into());
+    tr.set_section_features(t(s, "earbuds_section_features").into());
+    tr.set_section_about(t(s, "earbuds_section_about").into());
+    tr.set_firmware_title(t(s, "row_firmware_title").into());
+    tr.set_firmware_dialog_title(t(s, "firmware_dialog_title").into());
+    tr.set_firmware_dialog_body(t(s, "firmware_dialog_body").into());
+    tr.set_close(t(s, "dialog_close").into());
+    tr.set_cancel(t(s, "dialog_cancel").into());
+    tr.set_ok(t(s, "dual_add_ok").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
@@ -247,6 +258,7 @@ impl App {
     fn apply(&mut self, s: Snapshot) {
         self.snap = s.clone();
         eq::apply(self);
+        earbuds::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -429,6 +441,7 @@ fn main() {
         slint::winit_030::EventResult::Propagate
     });
     eq::setup(&main);
+    earbuds::setup(&main);
     devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
