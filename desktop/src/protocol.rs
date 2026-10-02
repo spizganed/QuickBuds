@@ -26,6 +26,8 @@ pub const CMD_SAVE_CUSTOM_EQ: u16 = 0x0418;
 pub const CMD_SET_BASSWAVE: u16 = 0x041B;
 pub const EVT_EQ_CHANGED: u16 = 0x0504;
 pub const FEATURE_BASSWAVE: u8 = 0x1D;
+pub const FEATURE_POWER_SAVING: u8 = 0x17;
+pub const FEATURE_HEARING_OPTIMIZE: u8 = 0x38;
 pub const EVT_PUSH: u16 = 0x0204;
 
 /// Game mode's `0x0403` switch: `0x28` on buds with game sound (`0x0423`), `0x06` elsewhere (§9).

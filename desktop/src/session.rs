@@ -17,6 +17,8 @@ pub enum Cmd {
     EqDelete(Preset),
     BassWave(bool),
     BassLevel(i8),
+    /// A `0x0403` switch (Earbud settings), then the status re-read.
+    Feature(u8, bool),
     Connect,
     Disconnect,
 }
@@ -47,6 +49,8 @@ pub struct Snapshot {
     pub eq_custom: Vec<Preset>,
     pub bass_on: Option<bool>,
     pub bass_level: Option<i8>,
+    /// `0x810D`: every feature id the buds listed, with its value.
+    pub features: Vec<(u8, u8)>,
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -187,6 +191,9 @@ impl<'a> Conn<'a> {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
                 s.bass_on = get(FEATURE_BASSWAVE).or(s.bass_on);
+                for (id, v) in f {
+                    match s.features.iter_mut().find(|x| x.0 == id) { Some(x) => x.1 = v, None => s.features.push((id, v)) }
+                }
             }
         }
         true
@@ -284,6 +291,15 @@ impl<'a> Conn<'a> {
                     Cmd::BassLevel(l) => {
                         self.s.bass_level = Some(l);
                         self.eq_write(CMD_SET_BASSWAVE, &[0xFB, 0x05, l as u8])?;
+                    }
+                    // As `setFeatures`: the write, then the status read that shows what the buds kept.
+                    // Power saving restarts the buds: the link drops and the idle rescan reconnects.
+                    Cmd::Feature(id, on) => {
+                        if let Some(x) = self.s.features.iter_mut().find(|x| x.0 == id) { x.1 = on as u8; }
+                        (self.emit)(self.s.clone());
+                        self.send(CMD_SET_FEATURE, None, &[id, on as u8])?;
+                        self.pump(400)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
                     }
                     Cmd::Disconnect => return Ok(End::UserDisconnect),
                     Cmd::Connect => continue,
