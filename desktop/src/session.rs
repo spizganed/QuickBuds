@@ -19,6 +19,8 @@ pub enum Cmd {
     BassLevel(i8),
     /// A `0x0403` switch (Earbud settings), then the status re-read.
     Feature(u8, bool),
+    /// The locator tone on both buds.
+    Find(bool),
     Connect,
     Disconnect,
 }
@@ -301,6 +303,7 @@ impl<'a> Conn<'a> {
                         self.pump(400)?;
                         self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
                     }
+                    Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,
                     Cmd::Disconnect => return Ok(End::UserDisconnect),
                     Cmd::Connect => continue,
                 }

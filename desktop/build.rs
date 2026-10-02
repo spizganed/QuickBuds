@@ -11,7 +11,7 @@ const ICONS: &[&str] = &[
     "ic_mode_off", "ic_mode_anc_medium", "ic_mode_adaptive", "ic_mode_transparency",
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
-    "ic_chevron_right", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info",
+    "ic_chevron_right", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds",
 ];
 
 const STRINGS: &[&str] = &[
@@ -30,6 +30,8 @@ const STRINGS: &[&str] = &[
     "row_hearing_optimize_title", "row_hearing_optimize_sub", "hearing_optimize_confirm", "row_long_press_volume_title",
     "row_long_press_volume_sub", "row_head_motion_title", "row_head_motion_sub", "row_swift_pair_title",
     "row_swift_pair_sub", "row_power_saving_title", "row_power_saving_sub", "power_saving_confirm",
+    "wear_firmware_title", "wear_firmware_sub", "row_find_title", "row_find_sub", "find_title", "find_hint", "find_stop",
+    "find_play", "find_warn_title", "find_warn_msg", "find_warn_play",
     // Built-in preset names (`protocol::eq_builtins`)
     "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
     "eq_bass_boost", "eq_clear", "eq_gentle", "eq_default", "eq_dyn_simple", "eq_dyn_warm", "eq_dyn_punchy",

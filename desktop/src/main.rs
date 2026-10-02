@@ -154,6 +154,7 @@ fn set_icons(b: &Buds) {
     b.set_icon_chevron(svg_at(icons::CHEVRON_RIGHT, 20.0));
     b.set_icon_plus(svg_at(icons::PLUS, 18.0));
     b.set_icon_info(svg(icons::INFO));
+    b.set_icon_find(svg(icons::FIND_BUDS));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -201,6 +202,15 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_close(t(s, "dialog_close").into());
     tr.set_cancel(t(s, "dialog_cancel").into());
     tr.set_ok(t(s, "dual_add_ok").into());
+    tr.set_find_row_title(t(s, "row_find_title").into());
+    tr.set_find_row_sub(t(s, "row_find_sub").into());
+    tr.set_find_title(t(s, "find_title").into());
+    tr.set_find_hint(t(s, "find_hint").into());
+    tr.set_find_stop(t(s, "find_stop").into());
+    tr.set_find_play(t(s, "find_play").into());
+    tr.set_find_warn_title(t(s, "find_warn_title").into());
+    tr.set_find_warn_msg(t(s, "find_warn_msg").into());
+    tr.set_find_warn_play(t(s, "find_warn_play").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {

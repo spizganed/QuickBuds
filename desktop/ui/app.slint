@@ -112,6 +112,15 @@ export global Tr {
     in property <string> close: "Close";
     in property <string> cancel: "Cancel";
     in property <string> ok: "OK";
+    in property <string> find-row-title;
+    in property <string> find-row-sub;
+    in property <string> find-title;
+    in property <string> find-hint;
+    in property <string> find-stop;
+    in property <string> find-play;
+    in property <string> find-warn-title;
+    in property <string> find-warn-msg;
+    in property <string> find-warn-play;
 }
 
 export struct Level {
@@ -155,6 +164,7 @@ export global Buds {
     in property <image> icon-chevron;
     in property <image> icon-plus;
     in property <image> icon-info;
+    in property <image> icon-find;
     // The ANC segment's label: "ANC", or "ANC M" while a level is on (the phone's and the widget's button).
     in property <string> anc-label: Tr.anc;
 
@@ -998,7 +1008,52 @@ export global Earbuds {
     in property <[FeatureItem]> features;
     in property <bool> has-firmware;
     in property <string> firmware;
+    in property <bool> has-find;
+    // The locator tone is on: leaving the page or closing the dialog stops it.
+    in-out property <bool> find-playing;
     callback set-feature(int, bool);
+    callback find(bool);
+    public function stop-find() { if find-playing { find-playing = false; find(false); } }
+}
+
+// Find my earbuds (`FindBudsSheet`): Play / Stop in place; a bud in an ear asks first (the tone is loud).
+component FindDialog inherits PopupWindow {
+    property <bool> warn;
+    close-policy: PopupClosePolicy.no-auto-close;
+    width: 360px;
+    Rectangle {
+        background: Dots.on ? Palette.bg : Palette.card;
+        border-radius: 14px;
+        border-width: Dots.on ? 0 : 1px;
+        border-color: Palette.outline;
+        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+        VerticalLayout {
+            padding: 20px;
+            spacing: 12px;
+            Text { text: warn ? Tr.find-warn-title : Tr.find-title; color: Palette.text; font-size: 15px; font-weight: 600; wrap: word-wrap; }
+            Text { text: warn ? Tr.find-warn-msg : Tr.find-hint; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+            HorizontalLayout {
+                alignment: end;
+                spacing: 8px;
+                Chip { text: Tr.close; clicked => { warn = false; Earbuds.stop-find(); root.close(); } }
+                Chip {
+                    primary: true;
+                    text: Earbuds.find-playing ? Tr.find-stop : warn ? Tr.find-warn-play : Tr.find-play;
+                    clicked => {
+                        if Earbuds.find-playing {
+                            Earbuds.stop-find();
+                        } else if !warn && (Buds.left-wear == 2 || Buds.right-wear == 2) {
+                            warn = true;
+                        } else {
+                            warn = false;
+                            Earbuds.find-playing = true;
+                            Earbuds.find(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // A centred dialog: title, body, and Cancel / OK (`ConfirmDialog`); no Cancel with `cancel` "".
@@ -1045,6 +1100,14 @@ component EarbudsPage inherits Rectangle {
             alignment: start;
             Text { text: Tr.earbuds-title; color: Palette.text; font-size: 26px; font-weight: 700; }
             if !Buds.on: Text { text: Tr.not-connected; color: Palette.text2; font-size: 13px; }
+            if Earbuds.has-find: Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    NavRow { icon: Buds.icon-find; title: Tr.find-row-title; subtitle: Tr.find-row-sub; clicked => { if Buds.on { find.show(); } } }
+                }
+            }
             if Earbuds.features.length > 0: SectionTitle { text: Tr.section-features; font-size: 13px; font-weight: 400; }
             if Earbuds.features.length > 0: Card {
                 border-radius: 24px;
@@ -1084,6 +1147,9 @@ component EarbudsPage inherits Rectangle {
         title: root.ask-title; body: root.ask-body;
         accepted => { Earbuds.set-feature(root.ask-id, root.ask-on); }
     }
+    find := FindDialog {
+        x: (root.width - self.width) / 2; y: (root.height - 160px) / 2;
+    }
     info := Dialog {
         x: (root.width - self.width) / 2; y: (root.height - 180px) / 2;
         title: Tr.firmware-dialog-title; body: Tr.firmware-dialog-body; ok: Tr.close; cancel: "";
@@ -1115,6 +1181,7 @@ component SettingsPage inherits VerticalLayout {
 export component MainWindow inherits Window {
     in property <[NavEntry]> nav;
     in-out property <int> page: 0;
+    changed page => { Earbuds.stop-find(); }
     title: "QuickBuds";
     icon: Buds.icon-app;
     min-width: 900px;
