@@ -28,20 +28,13 @@ finished (ROADMAP-DONE.md).
    Overview (battery, noise control, low latency), Equalizer page (presets, band editor, Bass boost), tray
    quick panel, APK launcher icon. English only for now `[USER]`.
    **Next, in order** (`[USER]` 2026-09-30):
-   1. **Noise control like the phone and the widget** `[USER]`: no separate level bar under Off / ANC /
-      Adaptive / Transparency. Clicking ANC slides the segments over to Low / Medium / High / Smart, animated
-      (the phone's `AncSegmentedView` level picker); same in the tray panel. **Built 2026-09-30, waiting
-      for his check on the buds.**
-   2. **Dev tools** `[USER]` asap: the phone's Dev Tools equivalent (packet log Human / Detailed / Raw,
-      Clear, Export, Reconnect, Disconnect). **Built 2026-09-30** (sidebar entry; export to
-      `Downloads\QuickBuds\`; newest line on top; no copy on long press yet), waiting for his check.
-   3. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit
+   1. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit
       the desktop layout. **Started 2026-09-30:** Overview is the phone's home (status card L / Case / R with
       wear labels and the device name, noise pill with "ANC M", feature list with the phone's switch and an
       Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
-   4. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
+   2. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
       settings, App settings).
-   5. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
+   3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open
 
