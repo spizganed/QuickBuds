@@ -23,8 +23,8 @@ extras, then other models.
 | [README.md](./README.md) | User-facing. New `[OSS]` sources get a Credits line. |
 | `design/SPEC.md` | UI source of truth, except §1's view-tree PaletteApplier (theming here is attribute-based). |
 
-Root holds only `README.md`, `LICENSE` (verbatim GPL-3.0) and this file. No notes folders or session-plan
-files: durable knowledge goes here or in PROTOCOL.md.
+The only docs at the root are `README.md`, `LICENSE` (verbatim GPL-3.0) and this file. No notes folders or
+session-plan files: durable knowledge goes here or in PROTOCOL.md.
 
 ## Build
 
@@ -34,7 +34,7 @@ files: durable knowledge goes here or in PROTOCOL.md.
   RFCOMM `read()` returns `-1` on a dropped link ("Connection lost"); portrait lock is ignored above 600dp.
 - **Device testing always uses `./gradlew assembleRelease`** `[USER]`, never debug (signature clash).
   `adb install -r`; `adb logcat` for what in-app logs miss.
-- **Versions only in `app/build.gradle.kts` `defaultConfig`** (ignored on `<application>`).
+- **Android app version only in `app/build.gradle.kts` `defaultConfig`** (ignored on `<application>`).
 - **PC (CachyOS, fish shell):** `JAVA_HOME=/usr/lib/jvm/java-21-openjdk`, `ANDROID_HOME=~/Android/Sdk`.
   `sudo pacman` needs no password; other sudo commands are his.
 - Wireless adb: use `~/Android/Sdk/platform-tools/adb` (Arch's has no mDNS); `adb mdns services` gives
