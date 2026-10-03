@@ -226,9 +226,9 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   English). **Run dot-matrix last** (it leaves the style set). It opens screens by visible text: renaming
   a label breaks it. Desktop shots (`docs/screenshots/desktop/`) are taken by hand with `spectacle`.
 
-## Current state (2026-10-02)
+## Current state (2026-10-03)
 
-- v4.0.0 released 2026-10-01 (Android + desktop beta). Linux desktop app checked by him 2026-10-01.
-- **Next:** he tests the v4.0.0 Windows zip (cross-built, never ran on Windows): Winsock connect, tray left
+- v4.1.0 released 2026-10-03 (Ko-fi link, desktop Earbud settings). v4.0.0: 2026-10-01 (Android + desktop beta). Linux desktop app checked by him 2026-10-01.
+- **Next:** he tests the Windows zip (cross-built, never ran on Windows): Winsock connect, tray left
   click / quick panel, EQ, ANC. Then ROADMAP.md step 2.
 - **Waiting:** issue #1 (other-model logs): read them before changing anything; AUR account.

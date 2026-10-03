@@ -1,8 +1,8 @@
 # Maintainer: spizganed <328350196+spizganed@users.noreply.github.com>
 # Repackages the Linux archive from the GitHub release (built by scripts/desktop-dist.sh).
 pkgname=quickbuds-bin
-_ver=4.0.0-beta
-_tag=v4.0.0
+_ver=4.1.0-beta
+_tag=v4.1.0
 pkgver=${_ver//-/_}
 pkgrel=1
 pkgdesc="Control OnePlus / OPPO / realme earbuds over Bluetooth (desktop beta)"
@@ -14,7 +14,7 @@ depends=('bluez' 'dbus' 'fontconfig' 'gdk-pixbuf2' 'glib2' 'glibc' 'gtk3' 'hicol
 provides=('quickbuds')
 conflicts=('quickbuds')
 source=("$url/releases/download/$_tag/QuickBuds$_ver-linux-x64.tar.gz")
-sha256sums=('ac841dee5332e104abb20ead6a98ff2c1cf97beb0feaf10d1eb64eb014de1a4e')
+sha256sums=('ac26ca6b6833a1f605d5ede81edb667d8ea16eb83d6c0de765304fa40bd606c6')
 
 package() {
   cd "QuickBuds$_ver-linux-x64"
