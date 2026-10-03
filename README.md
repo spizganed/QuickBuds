@@ -11,6 +11,9 @@
 QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app with a real
 home-screen widget.
 
+QuickBuds is purely a passion and hobby project. If you like it and want to help out, feel free to
+donate on [Ko-fi](https://ko-fi.com/spizganed).
+
 > **Desktop beta for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
 > no drivers and no background services: battery, noise control, low latency, the equalizer and a packet
 > log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
