@@ -45,6 +45,8 @@ pub enum Cmd {
     ConnectDevice([u8; 6], bool),
     /// None = automatic.
     Preferred(Option<[u8; 6]>),
+    /// Hearing profile frames, in order; a switch among them re-reads the status after.
+    Hearing(Vec<Frame>),
     Connect,
     Disconnect,
 }
@@ -113,6 +115,9 @@ pub struct Line {
 
 // ponytail: unbounded; a cap if a days-long session ever shows in memory.
 pub static LOG: Mutex<Vec<Line>> = Mutex::new(Vec::new());
+
+/// Hearing profile replies and pushes, in order, for the page and the test to take (`hearing::apply`).
+pub static HEARING: Mutex<Vec<HearingEv>> = Mutex::new(Vec::new());
 
 pub fn app_start() -> Instant { *START.get_or_init(Instant::now) }
 static START: OnceLock<Instant> = OnceLock::new();
@@ -281,6 +286,7 @@ impl<'a> Conn<'a> {
             Event::PncResult(r) => s.pnc = (3, r, s.pnc.2 + 1),
             Event::Devices(d) => s.devices = d,
             Event::Preferred(m) => s.preferred = m,
+            Event::Hearing(h) => HEARING.lock().unwrap().push(h),
             Event::Features(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
@@ -468,6 +474,14 @@ impl<'a> Conn<'a> {
                         self.send(CMD_SET_TAP_LEVEL, None, &[l.clamp(1, 5)])?;
                         self.pump(250)?;
                         self.send(CMD_QUERY_TAP_LEVEL, None, &[])?;
+                    }
+                    Cmd::Hearing(frames) => {
+                        let switch = frames.iter().any(|f| f.0 == CMD_SET_FEATURE);
+                        for (cmd, p) in frames {
+                            self.send(cmd, None, &p)?;
+                            self.pump(60)?;
+                        }
+                        if switch { self.pump(400)?; self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?; }
                     }
                     Cmd::Disconnect => return Ok(End::UserDisconnect),
                     Cmd::Connect => continue,

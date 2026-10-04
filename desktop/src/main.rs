@@ -7,6 +7,7 @@ mod dots;
 mod dual;
 mod earbuds;
 mod eq;
+mod hearing;
 mod models;
 mod protocol;
 mod session;
@@ -122,7 +123,7 @@ fn nav() -> ModelRc<NavEntry> {
         (icons::LAYOUT, "Overview", true),
         (icons::EQUALIZER, "Equalizer", true),
         (icons::GESTURE, "Controls", false),
-        (icons::HEARING, "Hearing profile", false),
+        (icons::HEARING, "Hearing profile", true),
         (icons::DEVICES, "Dual connection", true),
         (icons::EARBUD, "Earbud settings", true),
         (icons::SETTINGS_COG, "App settings", true),
@@ -161,6 +162,7 @@ fn set_icons(b: &Buds) {
     b.set_icon_volume(svg_at(icons::VOLUME, 22.0));
     b.set_icon_volume_off(svg_at(icons::VOLUME_OFF, 22.0));
     b.set_icon_devices(svg(icons::DEVICES));
+    b.set_icon_hearing(svg(icons::HEARING));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -267,6 +269,15 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_tap_title(t(s, "tap_level_title").into());
     tr.set_tap_hint(t(s, "tap_level_hint").into());
     tr.set_tap_warning(t(s, "tap_level_warning").into());
+    tr.set_hearing_title(t(s, "row_golden_title").into());
+    tr.set_hearing_sub(t(s, "row_golden_sub").into());
+    tr.set_hearing_profiles(t(s, "golden_profiles").into());
+    tr.set_hearing_none(t(s, "golden_none").into());
+    tr.set_hearing_test_row(t(s, "golden_test_row").into());
+    tr.set_hearing_test_sub(t(s, "golden_test_sub").into());
+    tr.set_hearing_left(t(s, "golden_left").into());
+    tr.set_hearing_right(t(s, "golden_right").into());
+    tr.set_hearing_boost(t(s, "golden_boost").into());
     tr.set_dual_title(t(s, "dual_title").into());
     tr.set_dual_switch_sub(t(s, "dual_switch_sub").into());
     tr.set_dual_section_devices(t(s, "dual_section_devices").into());
@@ -335,6 +346,7 @@ impl App {
         earbuds::apply(self);
         models::apply(self);
         dual::apply(self);
+        hearing::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -520,6 +532,7 @@ fn main() {
     earbuds::setup(&main);
     models::setup(&main);
     dual::setup(&main);
+    hearing::setup(&main);
     devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
