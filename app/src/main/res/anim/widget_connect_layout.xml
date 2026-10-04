@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Runs once, when the connected widget layout is first laid out (never on an update reapplied to it). -->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/widget_connect"
+    android:delay="0" />

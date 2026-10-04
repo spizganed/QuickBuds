@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget: the pages come in when the buds connect (the host inflates the connected layout). The start offset lets the
+     launcher's own return-to-home transition finish first: a host stopped in another app applies the update as it comes
+     back, and an animation without the wait ran out of sight. -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:interpolator/decelerate_cubic"
+    android:startOffset="250"
+    android:duration="@integer/widget_anim_ms">
+    <translate android:fromYDelta="8%" android:toYDelta="0" />
+    <alpha android:fromAlpha="0.0" android:toAlpha="1.0" />
+</set>

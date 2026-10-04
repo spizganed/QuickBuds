@@ -195,12 +195,13 @@ for N in (False, True):
 <!-- {TITLE[size]} widget (design/widgets/WIDGETS.md 3). Generated as one family with the other sizes. Outer ViewFlipper
      w_pages: w_content, then the mode list w_page2. Inside w_content, one ViewFlipper per page, each an empty
      FrameLayout then the page, so each page has its own direction: w_slide0 (the battery page w_page0, in and out on
-     the left) and w_slide1 (the controls page w_page1, in and out on the right). Colours, icons and texts are set at runtime by
+     the left) and w_slide1 (the controls page w_page1, in and out on the right). w_pages' layout animation brings the
+     pages in once when the buds connect (the host inflates this layout then). Colours, icons and texts are set at runtime by
      widget/AncWidgetProvider.kt; a view added here needs its line in the renderer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
 {img("w_bg", "widget_bg")}
-<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="true">
+<ViewFlipper android:id="@+id/w_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_right" android:animateFirstView="true" android:layoutAnimation="@anim/widget_connect_layout">
 <FrameLayout android:id="@+id/w_content" android:layout_width="match_parent" android:layout_height="match_parent">
 <ViewFlipper android:id="@+id/w_slide0" android:layout_width="match_parent" android:layout_height="match_parent" android:inAnimation="@anim/widget_enter_left" android:outAnimation="@anim/widget_exit_left" android:animateFirstView="true">
 <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" />
