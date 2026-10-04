@@ -47,6 +47,8 @@ finished (ROADMAP-DONE.md).
       manager, connect / disconnect and the preferred device (unverified: Buds 4 lacks it).
       **Hearing profile added 2026-10-04:** the switch, the profiles kept on the PC (`settings.json`), the active
       one's radar and the hearing test with the ear scan (the test flow needs his run on the buds).
+      **Controls added 2026-10-04:** per-bud gestures from the model's `control` list and the buds' table, the
+      hold's noise cycle (shared or per bud) and the on-call rows. Every sidebar page now exists.
    3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open

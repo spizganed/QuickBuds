@@ -2,6 +2,7 @@
 #![windows_subsystem = "windows"]
 
 mod bt;
+mod controls;
 mod devtools;
 mod dots;
 mod dual;
@@ -122,7 +123,7 @@ fn nav() -> ModelRc<NavEntry> {
     let nav: Vec<NavEntry> = [
         (icons::LAYOUT, "Overview", true),
         (icons::EQUALIZER, "Equalizer", true),
-        (icons::GESTURE, "Controls", false),
+        (icons::GESTURE, "Controls", true),
         (icons::HEARING, "Hearing profile", true),
         (icons::DEVICES, "Dual connection", true),
         (icons::EARBUD, "Earbud settings", true),
@@ -269,6 +270,10 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_tap_title(t(s, "tap_level_title").into());
     tr.set_tap_hint(t(s, "tap_level_hint").into());
     tr.set_tap_warning(t(s, "tap_level_warning").into());
+    tr.set_gesture_title(t(s, "gesture_title").into());
+    tr.set_gesture_not_in_call(t(s, "gesture_section_not_in_call").into());
+    tr.set_gesture_on_call(t(s, "gesture_section_on_call").into());
+    tr.set_gesture_note(t(s, "gesture_write_note").into());
     tr.set_hearing_title(t(s, "row_golden_title").into());
     tr.set_hearing_sub(t(s, "row_golden_sub").into());
     tr.set_hearing_profiles(t(s, "golden_profiles").into());
@@ -347,6 +352,7 @@ impl App {
         models::apply(self);
         dual::apply(self);
         hearing::apply(self);
+        controls::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -533,6 +539,7 @@ fn main() {
     models::setup(&main);
     dual::setup(&main);
     hearing::setup(&main);
+    controls::setup(&main);
     devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));

@@ -527,6 +527,30 @@ pub fn hearing_radar(hearing: &[f32], scan: Option<(&[f32], u32)>) -> [f32; 6] {
     })
 }
 
+// --- Gestures (PROTOCOL.md §5, §6) ---
+
+/// The gesture table: read `0x0108` -> `<status> <count>` then `<dev> <btn> <act> <fn>` entries; write `0x0401`
+/// `<count> <entries>`, always the whole table (the entries we do not change come from the last read).
+pub const CMD_QUERY_KEY_FUNCTION: u16 = 0x0108;
+pub const CMD_SET_KEY_FUNCTION: u16 = 0x0401;
+/// The on-call group; its writes are one entry with `dev 04` (both buds).
+pub const BUTTON_ON_CALL: u8 = 0x06;
+/// The hold's noise cycle: one shared, or per bud on models with `longPressType`.
+pub const HOLD_TYPE_SHARED: u8 = 1;
+pub const HOLD_TYPE_LEFT: u8 = 3;
+pub const HOLD_TYPE_RIGHT: u8 = 4;
+
+/// `0x0401 <count> <entries>`.
+pub fn key_function_payload(table: &[[u8; 4]]) -> Vec<u8> {
+    std::iter::once(table.len() as u8).chain(table.iter().flatten().copied()).collect()
+}
+
+/// `0x0404 02 <type> <mask LE, 1-4 bytes>`: which modes the hold cycles (the mask uses SET_ANC's bits).
+pub fn hold_modes_payload(mask: u32, kind: u8) -> Vec<u8> {
+    let len = (1..=4).rev().find(|&n| n == 1 || mask >> ((n - 1) * 8) & 0xFF != 0).unwrap();
+    [&[2, kind][..], &mask.to_le_bytes()[..len]].concat()
+}
+
 /// One device on the buds' list.
 #[derive(Clone, PartialEq, Debug)]
 pub struct PairedDevice {
@@ -584,6 +608,10 @@ pub enum Event {
     TapLevel(u8, u8),
     Devices(Vec<PairedDevice>),
     Hearing(HearingEv),
+    /// `0x8108`: the gesture table, `[dev, btn, act, fn]` each.
+    KeyFunctions(Vec<[u8; 4]>),
+    /// `0x810C 00 02 <type> <mask LE>`: the hold's noise cycle.
+    HoldMask(u8, u32),
     /// None = automatic.
     Preferred(Option<[u8; 6]>),
 }
@@ -613,6 +641,11 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x810C if pl.len() >= 4 && pl[1] == 1 && pl[2] == 1 => {
             Event::AncRaw(pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
         }
+        0x810C if pl.len() >= 4 && pl[1] == 2 => {
+            Event::HoldMask(pl[2], pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
+        }
+        // A reply with no entries never replaces a table (a write is built from it).
+        0x8108 if sub == Some(0) && pl.len() >= 6 => Event::KeyFunctions(pl[2..].chunks_exact(4).map(|c| [c[0], c[1], c[2], c[3]]).collect()),
         0x810D if sub == Some(0) => Event::Features(pairs(&pl[1..])?),
         0x8130 | 0x8427 if sub == Some(0) && pl.len() >= 2 => Event::AlertVolume(pl[1]),
         0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
@@ -685,6 +718,8 @@ pub fn describe(e: &Event) -> String {
             HearingEv::Active(u, n, v) => format!("Hearing profile {u:08X} \"{n}\" {v:?}"),
             HearingEv::ActiveScan(u, d) => format!("Hearing profile ear scan {u:08X}, {} bytes", d.len()),
         },
+        Event::KeyFunctions(t) => format!("Gestures {}", t.iter().map(|e| format!("{:02X}/{:02X}/{:02X}={:02X}", e[0], e[1], e[2], e[3])).collect::<Vec<_>>().join(" ")),
+        Event::HoldMask(k, m) => format!("Hold cycle ({k}) 0x{m:04X}"),
         Event::Preferred(m) => format!("Preferred device {}", m.map_or("automatic".into(), |m| hex(&m))),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
@@ -723,6 +758,8 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_SAVE_CUSTOM_EQ => "Save custom EQ",
         CMD_SET_BASSWAVE => "Set bass boost",
         CMD_QUERY_DEVICES => "Query devices",
+        CMD_QUERY_KEY_FUNCTION => "Query gestures",
+        CMD_SET_KEY_FUNCTION => "Set gestures",
         CMD_GOLDEN_DETECT => "Hearing test",
         CMD_HEARING_RECORD => "Hearing profile",
         CMD_HEARING_RESTORE => "Hearing profile id",
@@ -877,6 +914,20 @@ mod tests {
         assert_eq!(hearing_snap(-30), -35);
         // A flat filter (b = a) changes nothing: the rim.
         assert_eq!(hearing_radar(&[1.0, 0.5, 0.2, 1.0, 0.5, 0.2], None), [10.0; 6]);
+    }
+
+    #[test]
+    fn gestures() {
+        // Buds 4 hold capture: `02 01 07 08` added Adaptive (bit 11) to a 3-stop cycle.
+        assert_eq!(hold_modes_payload(0x0807, HOLD_TYPE_SHARED), [2, 1, 7, 8]);
+        assert_eq!(hold_modes_payload(0x07, HOLD_TYPE_LEFT), [2, 3, 7]);
+        assert!(matches!(decode(&build_packet(0x810C, 1, &[0, 2, 1, 7, 8])), Some(Event::HoldMask(1, 0x0807))));
+        let t = [[1, 1, 1, 1], [2, 6, 2, 0x1D]];
+        let mut reply = vec![0, 2];
+        reply.extend(t.iter().flatten());
+        assert!(matches!(decode(&build_packet(0x8108, 1, &reply)), Some(Event::KeyFunctions(v)) if v == t));
+        assert_eq!(key_function_payload(&t), [2, 1, 1, 1, 1, 2, 6, 2, 0x1D]);
+        assert!(decode(&build_packet(0x8108, 1, &[0, 0])).is_none());
     }
 
     #[test]

@@ -45,6 +45,14 @@ pub enum Cmd {
     ConnectDevice([u8; 6], bool),
     /// None = automatic.
     Preferred(Option<[u8; 6]>),
+    /// Controls opened: the gesture table and the hold cycles of these noise types.
+    ControlsReads(Vec<u8>),
+    /// One gesture on one bud: (dev, act, fn), written into every slot that bud has for it, outside on-call.
+    Gesture(u8, u8, u8),
+    /// The hold's noise cycle: (mask, type).
+    HoldModes(u32, u8),
+    /// An on-call row: (act, fn), one entry for both buds.
+    OnCall(u8, u8),
     /// Hearing profile frames, in order; a switch among them re-reads the status after.
     Hearing(Vec<Frame>),
     Connect,
@@ -98,6 +106,10 @@ pub struct Snapshot {
     pub devices: Vec<PairedDevice>,
     /// None = automatic.
     pub preferred: Option<[u8; 6]>,
+    /// The last gesture table read, `[dev, btn, act, fn]`; None until read (no write without it).
+    pub keyfn: Option<Vec<[u8; 4]>>,
+    /// The hold's noise cycles read: (type, mask).
+    pub hold_masks: Vec<(u8, u32)>,
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -287,6 +299,8 @@ impl<'a> Conn<'a> {
             Event::Devices(d) => s.devices = d,
             Event::Preferred(m) => s.preferred = m,
             Event::Hearing(h) => HEARING.lock().unwrap().push(h),
+            Event::KeyFunctions(t) => s.keyfn = Some(t),
+            Event::HoldMask(k, m) => match s.hold_masks.iter_mut().find(|x| x.0 == k) { Some(x) => x.1 = m, None => s.hold_masks.push((k, m)) },
             Event::Features(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
@@ -474,6 +488,34 @@ impl<'a> Conn<'a> {
                         self.send(CMD_SET_TAP_LEVEL, None, &[l.clamp(1, 5)])?;
                         self.pump(250)?;
                         self.send(CMD_QUERY_TAP_LEVEL, None, &[])?;
+                    }
+                    Cmd::ControlsReads(types) => {
+                        if !self.s.caps.supports(CMD_QUERY_KEY_FUNCTION) { continue; }
+                        self.send(CMD_QUERY_KEY_FUNCTION, None, &[])?;
+                        for t in types { self.pump(120)?; self.send(CMD_QUERY_ANC, None, &[2, t])?; }
+                    }
+                    // The whole table goes back with this bud's slots changed; adopted at once so a second
+                    // write before the read-back does not undo the first. No table read: nothing is sent.
+                    Cmd::Gesture(dev, act, f) => {
+                        let Some(table) = self.s.keyfn.as_mut() else { continue };
+                        let mut hit = false;
+                        for e in table.iter_mut().filter(|e| e[0] == dev && e[2] == act && e[1] != BUTTON_ON_CALL) { e[3] = f; hit = true; }
+                        if !hit { continue; }
+                        let p = key_function_payload(table);
+                        (self.emit)(self.s.clone());
+                        self.send(CMD_SET_KEY_FUNCTION, None, &p)?;
+                        self.pump(600)?;
+                        self.send(CMD_QUERY_KEY_FUNCTION, None, &[])?;
+                    }
+                    Cmd::HoldModes(mask, t) => {
+                        self.send(CMD_SET_ANC, None, &hold_modes_payload(mask, t))?;
+                        self.pump(400)?;
+                        self.send(CMD_QUERY_ANC, None, &[2, t])?;
+                    }
+                    Cmd::OnCall(act, f) => {
+                        self.send(CMD_SET_KEY_FUNCTION, None, &[1, 4, BUTTON_ON_CALL, act, f])?;
+                        self.pump(400)?;
+                        self.send(CMD_QUERY_KEY_FUNCTION, None, &[])?;
                     }
                     Cmd::Hearing(frames) => {
                         let switch = frames.iter().any(|f| f.0 == CMD_SET_FEATURE);
