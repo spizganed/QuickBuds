@@ -81,6 +81,31 @@ fn svg_at(s: &str, size: f32) -> Image {
 
 fn raw_svg(s: &str) -> Image { Image::load_from_svg_data(s.as_bytes()).expect("icon") }
 
+/// The local time now: (year, month, day, hour, minute, second, millisecond).
+#[cfg(not(windows))]
+fn local_now() -> [u32; 7] {
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default();
+    // SAFETY: localtime_r fills the zeroed tm from a valid time_t.
+    let tm = unsafe {
+        let t = now.as_secs() as libc::time_t;
+        let mut tm: libc::tm = std::mem::zeroed();
+        libc::localtime_r(&t, &mut tm);
+        tm
+    };
+    [tm.tm_year as u32 + 1900, tm.tm_mon as u32 + 1, tm.tm_mday as u32, tm.tm_hour as u32, tm.tm_min as u32, tm.tm_sec as u32, now.subsec_millis()]
+}
+
+#[cfg(windows)]
+fn local_now() -> [u32; 7] {
+    // SAFETY: GetLocalTime fills the zeroed SYSTEMTIME.
+    let st = unsafe {
+        let mut st = std::mem::zeroed();
+        windows_sys::Win32::System::SystemInformation::GetLocalTime(&mut st);
+        st
+    };
+    [st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds].map(u32::from)
+}
+
 /// `settings.json` in the user's config folder (`%APPDATA%\QuickBuds`, `~/.config/quickbuds`).
 fn settings_path() -> Option<std::path::PathBuf> {
     #[cfg(windows)]
@@ -508,7 +533,6 @@ fn linux_tray() -> std::sync::mpsc::Sender<String> {
 }
 
 fn main() {
-    session::app_start();
     // Software rendering: ~25 MB instead of ~130 MB with the GPU renderer, and fast enough for this UI.
     if std::env::var_os("SLINT_BACKEND").is_none() {
         slint::BackendSelector::new().backend_name("winit".into()).renderer_name("software".into())
