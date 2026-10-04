@@ -12,6 +12,7 @@ const ICONS: &[&str] = &[
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
     "ic_chevron_right", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds", "ic_volume_off",
+    "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold",
 ];
 
 const STRINGS: &[&str] = &[
@@ -47,6 +48,15 @@ const STRINGS: &[&str] = &[
     "golden_right", "golden_step", "golden_next", "golden_finish", "golden_loud", "golden_creating", "golden_saved",
     "golden_saved_msg", "golden_stopped", "golden_stopped_music", "golden_stopped_wear", "golden_scan_failed",
     "golden_again", "golden_boost", "eq_delete_confirm",
+    "gesture_title", "gesture_section_not_in_call", "gesture_section_on_call", "gesture_write_note", "gesture_single",
+    "gesture_double", "gesture_triple", "gesture_slide", "gesture_hold", "gesture_extra_long", "gesture_on_call_double_tap",
+    "gesture_on_call_long_hold", "gesture_on_call_answer_end", "gesture_on_call_decline", "gesture_action_none",
+    "gesture_action_play_pause", "gesture_action_prev", "gesture_action_next", "gesture_action_assistant",
+    "gesture_action_game", "gesture_action_volume", "gesture_action_switch_track", "gesture_action_volume_up",
+    "gesture_action_volume_down", "gesture_action_switch_device", "gesture_action_anc_on", "gesture_action_anc_adaptive",
+    "gesture_action_anc_transparency", "gesture_action_anc_off", "gesture_action_anc_adaptive_short",
+    "gesture_action_anc_transparency_short", "gesture_action_anc_off_short", "gesture_not_set", "gesture_hold_rule",
+    "widget_mode_anc_high", "widget_mode_anc_low",
     // Built-in preset names (`protocol::eq_builtins`)
     "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
     "eq_bass_boost", "eq_clear", "eq_gentle", "eq_default", "eq_dyn_simple", "eq_dyn_warm", "eq_dyn_punchy",

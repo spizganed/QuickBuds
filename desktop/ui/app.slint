@@ -169,6 +169,10 @@ export global Tr {
     in property <string> tap-title;
     in property <string> tap-hint;
     in property <string> tap-warning;
+    in property <string> gesture-title;
+    in property <string> gesture-not-in-call;
+    in property <string> gesture-on-call;
+    in property <string> gesture-note;
     in property <string> hearing-title;
     in property <string> hearing-sub;
     in property <string> hearing-profiles;
@@ -598,6 +602,8 @@ component FeatureRow inherits HorizontalLayout {
     in property <bool> chevron;
     // Neither switch nor chevron (an info row).
     in property <bool> no-end;
+    // The current value, left of the chevron.
+    in property <string> value;
     callback toggled(bool);
     spacing: 16px;
     height: 64px;
@@ -613,6 +619,7 @@ component FeatureRow inherits HorizontalLayout {
         alignment: center;
         Toggle { checked: root.checked; toggled(on) => { root.toggled(on); } }
     }
+    if value != "": Text { text: value; color: Palette.text2; font-size: 13px; vertical-alignment: center; horizontal-alignment: right; overflow: elide; max-width: 260px; }
     if chevron && !no-end: Image {
         source: Buds.icon-chevron; width: 20px; height: 20px; y: (parent.height - self.height) / 2;
         colorize: Palette.accent;
@@ -625,9 +632,10 @@ component NavRow inherits Rectangle {
     in property <string> title;
     in property <string> subtitle;
     in property <bool> chevron: true;
+    in property <string> value;
     callback clicked;
     height: 64px;
-    FeatureRow { width: 100%; icon: root.icon; title: root.title; subtitle: root.subtitle; chevron: true; no-end: !root.chevron; }
+    FeatureRow { width: 100%; icon: root.icon; title: root.title; subtitle: root.subtitle; chevron: true; no-end: !root.chevron; value: root.value; }
     TouchArea { mouse-cursor: pointer; clicked => { root.clicked(); } }
 }
 
@@ -1557,6 +1565,135 @@ component ModelsPage inherits Rectangle {
     }
 }
 
+export struct ControlsRow {
+    icon: image,
+    title: string,
+    value: string,
+}
+
+export struct Pick {
+    value: int,
+    label: string,
+    on: bool,
+}
+
+// Controls' state (`controls.rs`); the dialogs are filled from Rust when a row opens.
+export global Controls {
+    in property <[ControlsRow]> rows;
+    in property <[ControlsRow]> calls;
+    in property <int> side;
+    in property <string> dialog-title;
+    in property <[Choice]> choices;
+    in property <int> choice-current;
+    in property <[Pick]> picks;
+    in property <string> pick-message;
+    callback opened();
+    callback set-side(int);
+    // 1 a list to pick one from, 2 the per-bud hold's choices, 3 the hold's noise modes.
+    callback open-row(int) -> int;
+    callback open-call(int);
+    // 3: the noise modes open next.
+    callback picked(int) -> int;
+    callback toggle(int);
+    callback done();
+}
+
+// The hold's noise modes (several, cycled in order): a click toggles, Done writes.
+component PickDialog inherits PopupWindow {
+    close-policy: PopupClosePolicy.no-auto-close;
+    width: 340px;
+    Rectangle {
+        background: Dots.on ? Palette.bg : Palette.card;
+        border-radius: 14px;
+        border-width: Dots.on ? 0 : 1px;
+        border-color: Palette.outline;
+        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+        VerticalLayout {
+            padding: 20px;
+            spacing: 8px;
+            Text { text: Controls.dialog-title; color: Palette.text; font-size: 15px; font-weight: 600; }
+            for p in Controls.picks: PresetRow { name: p.label; selected: p.on; clicked => { Controls.toggle(p.value); } }
+            if Controls.pick-message != "": Text { text: Controls.pick-message; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+            HorizontalLayout {
+                alignment: end;
+                spacing: 8px;
+                Chip { text: Tr.cancel; clicked => { root.close(); } }
+                Chip { text: Tr.done; primary: true; clicked => { Controls.done(); root.close(); } }
+            }
+        }
+    }
+}
+
+// Controls (`GestureActivity`): Left / Right, the gestures of that bud, then the on-call rows (both buds).
+component ControlsPage inherits Rectangle {
+    init => { Controls.opened(); }
+    ScrollView {
+        VerticalLayout {
+            padding: 28px;
+            spacing: 16px;
+            alignment: start;
+            Text { text: Tr.gesture-title; color: Palette.text; font-size: 26px; font-weight: 700; }
+            if !Buds.on: Text { text: Tr.not-connected; color: Palette.text2; font-size: 13px; }
+            Rectangle {
+                height: 52px;
+                border-radius: self.height / 2;
+                background: Dots.on ? transparent : Palette.card;
+                if Dots.on: DotBox { width: 100%; height: 100%; radius: 22px; }
+                HorizontalLayout {
+                    padding: 4px;
+                    spacing: 4px;
+                    Segment { enabled: true; label: Tr.bud-left; selected: Controls.side == 0; clicked => { Controls.set-side(0); } }
+                    Segment { enabled: true; label: Tr.bud-right; selected: Controls.side == 1; clicked => { Controls.set-side(1); } }
+                }
+            }
+            if Controls.rows.length > 0: SectionTitle { text: Tr.gesture-not-in-call; font-size: 13px; font-weight: 400; }
+            if Controls.rows.length > 0: Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    for r[i] in Controls.rows: VerticalLayout {
+                        if i > 0: Divider {}
+                        NavRow {
+                            icon: r.icon; title: r.title; subtitle: ""; value: r.value;
+                            clicked => {
+                                if !Buds.on { return; }
+                                let kind = Controls.open-row(i);
+                                if kind == 1 || kind == 2 { choice.show(); }
+                                if kind == 3 { picks.show(); }
+                            }
+                        }
+                    }
+                }
+            }
+            if Controls.calls.length > 0: SectionTitle { text: Tr.gesture-on-call; font-size: 13px; font-weight: 400; }
+            if Controls.calls.length > 0: Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    for r[i] in Controls.calls: VerticalLayout {
+                        if i > 0: Divider {}
+                        NavRow {
+                            icon: r.icon; title: r.title; subtitle: ""; value: r.value;
+                            clicked => { if Buds.on { Controls.open-call(i); choice.show(); } }
+                        }
+                    }
+                }
+            }
+            Text { text: Tr.gesture-note; color: Palette.text2; font-size: 12px; wrap: word-wrap; }
+        }
+    }
+    choice := ChoiceDialog {
+        x: (root.width - self.width) / 2; y: 100px;
+        title: Controls.dialog-title; items: Controls.choices; current: Controls.choice-current;
+        picked(v) => { if Controls.picked(v) == 3 { picks.show(); } }
+    }
+    picks := PickDialog {
+        x: (root.width - self.width) / 2; y: 100px;
+    }
+}
+
 export struct RadarLabel {
     x: float,
     y: float,
@@ -1953,6 +2090,7 @@ export component MainWindow inherits Window {
         if root.page == 5: EarbudsPage { horizontal-stretch: 1; open-models => { root.page = 8; } }
         // The model list, opened from Earbud settings (no sidebar entry; the sidebar shows Earbud settings).
         if root.page == 8: ModelsPage { horizontal-stretch: 1; back => { root.page = 5; } }
+        if root.page == 2: ControlsPage { horizontal-stretch: 1; }
         if root.page == 3: HearingPage { horizontal-stretch: 1; }
         if root.page == 4: DualPage { horizontal-stretch: 1; }
         if root.page == 6: SettingsPage { horizontal-stretch: 1; }
