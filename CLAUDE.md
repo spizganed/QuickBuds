@@ -228,7 +228,7 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 
 ## Current state (2026-10-03)
 
-- v4.1.0 released 2026-10-03 (Ko-fi link, desktop Earbud settings). v4.0.0: 2026-10-01 (Android + desktop beta). Linux desktop app checked by him 2026-10-01.
+- v4.2.0 released 2026-10-04 (desktop Controls, Hearing profile, Dual connection; widget connect animation). v4.1.0: 2026-10-03. v4.0.0: 2026-10-01 (Android + desktop beta). Linux desktop app checked by him 2026-10-01.
 - **Next:** he tests the Windows zip (cross-built, never ran on Windows): Winsock connect, tray left
   click / quick panel, EQ, ANC. Then ROADMAP.md step 2.
 - **Waiting:** issue #1 (other-model logs): read them before changing anything; AUR account.
