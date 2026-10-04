@@ -169,6 +169,14 @@ export global Tr {
     in property <string> tap-title;
     in property <string> tap-hint;
     in property <string> tap-warning;
+    in property <string> dual-title;
+    in property <string> dual-switch-sub;
+    in property <string> dual-section-devices;
+    in property <string> dual-section-all;
+    in property <string> dual-add-title;
+    in property <string> dual-add-message;
+    in property <string> dual-preferred;
+    in property <string> dual-preferred-sub;
 }
 
 export struct Level {
@@ -216,6 +224,7 @@ export global Buds {
     in property <image> icon-earbud;
     in property <image> icon-volume;
     in property <image> icon-volume-off;
+    in property <image> icon-devices;
     // The ANC segment's label: "ANC", or "ANC M" while a level is on (the phone's and the widget's button).
     in property <string> anc-label: Tr.anc;
 
@@ -1109,6 +1118,7 @@ component ChoiceDialog inherits PopupWindow {
     in property <string> title;
     in property <[Choice]> items;
     in property <int> current;
+    in property <string> message;
     callback picked(int);
     width: 340px;
     Rectangle {
@@ -1121,6 +1131,7 @@ component ChoiceDialog inherits PopupWindow {
             padding: 20px;
             spacing: 8px;
             Text { text: root.title; color: Palette.text; font-size: 15px; font-weight: 600; }
+            if root.message != "": Text { text: root.message; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
             for c in root.items: PresetRow {
                 name: c.label; selected: c.value == root.current;
                 clicked => { root.picked(c.value); }
@@ -1536,6 +1547,116 @@ component ModelsPage inherits Rectangle {
     }
 }
 
+export struct DualDevice {
+    name: string,
+    // Connected (this device) / Connected / Not connected
+    state: string,
+    // "Connect X?" / "Disconnect X?", and its button.
+    ask: string,
+    action: string,
+    can-click: bool,
+}
+
+// Dual connection's state (`dual.rs`).
+export global Dual {
+    in property <bool> on;
+    in property <[DualDevice]> devices;
+    // The model has HeyMelody's device manager: every paired device is listed and can be (dis)connected.
+    in property <bool> manages;
+    in property <bool> has-preferred;
+    in property <string> preferred;
+    in property <[Choice]> preferred-choices;
+    in property <int> preferred-current;
+    callback opened();
+    callback set-dual(bool);
+    callback connect-device(int);
+    callback set-preferred(int);
+}
+
+// Dual connection (`DualDeviceActivity`): the switch, the preferred device, the devices; Add device is instructions.
+component DualPage inherits Rectangle {
+    init => { Dual.opened(); }
+    property <int> ask-index;
+    property <string> ask-title;
+    property <string> ask-ok;
+    ScrollView {
+        VerticalLayout {
+            padding: 28px;
+            spacing: 16px;
+            alignment: start;
+            Text { text: Tr.dual-title; color: Palette.text; font-size: 26px; font-weight: 700; }
+            if !Buds.on: Text { text: Tr.not-connected; color: Palette.text2; font-size: 13px; }
+            Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    FeatureRow {
+                        icon: Buds.icon-devices; title: Tr.dual-title; subtitle: Tr.dual-switch-sub; checked: Dual.on;
+                        toggled(on) => { Dual.set-dual(on); }
+                    }
+                }
+            }
+            if Dual.has-preferred: Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    NavRow {
+                        icon: Buds.icon-devices; title: Tr.dual-preferred; subtitle: Dual.preferred;
+                        clicked => { if Buds.on { preferred.show(); } }
+                    }
+                }
+            }
+            SectionTitle { text: Dual.manages ? Tr.dual-section-all : Tr.dual-section-devices; font-size: 13px; font-weight: 400; }
+            Card {
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    for d[i] in Dual.devices: VerticalLayout {
+                        if i > 0: Divider {}
+                        Rectangle {
+                            height: 60px;
+                            VerticalLayout {
+                                alignment: center;
+                                spacing: 2px;
+                                Text { text: d.name; color: Palette.text; font-size: 15px; font-weight: 600; overflow: elide; }
+                                Text { text: d.state; color: Palette.text2; font-size: 12px; }
+                            }
+                            if d.can-click: TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => {
+                                    if !Buds.on { return; }
+                                    ask-index = i; ask-title = d.ask; ask-ok = d.action;
+                                    ask.show();
+                                }
+                            }
+                        }
+                    }
+                    if Dual.devices.length > 0: Divider {}
+                    NavRow { icon: Buds.icon-plus; title: Tr.dual-add-title; subtitle: ""; clicked => { add.show(); } }
+                }
+            }
+        }
+    }
+    ask := Dialog {
+        x: (root.width - self.width) / 2; y: (root.height - 140px) / 2;
+        title: root.ask-title; body: ""; ok: root.ask-ok;
+        accepted => { Dual.connect-device(root.ask-index); }
+    }
+    preferred := ChoiceDialog {
+        x: (root.width - self.width) / 2; y: 120px;
+        title: Tr.dual-preferred; message: Tr.dual-preferred-sub;
+        items: Dual.preferred-choices; current: Dual.preferred-current;
+        picked(v) => { Dual.set-preferred(v); }
+    }
+    add := Dialog {
+        x: (root.width - self.width) / 2; y: (root.height - 200px) / 2;
+        title: Tr.dual-add-title; body: Tr.dual-add-message; ok: Tr.ok; cancel: "";
+    }
+}
+
 // App settings (the phone's Settings and Theme screens): for now the style.
 component SettingsPage inherits VerticalLayout {
     padding: 28px;
@@ -1640,6 +1761,7 @@ export component MainWindow inherits Window {
         if root.page == 5: EarbudsPage { horizontal-stretch: 1; open-models => { root.page = 8; } }
         // The model list, opened from Earbud settings (no sidebar entry; the sidebar shows Earbud settings).
         if root.page == 8: ModelsPage { horizontal-stretch: 1; back => { root.page = 5; } }
+        if root.page == 4: DualPage { horizontal-stretch: 1; }
         if root.page == 6: SettingsPage { horizontal-stretch: 1; }
         if root.page == 7: DevPage { horizontal-stretch: 1; }
         if root.page == 0: VerticalLayout {

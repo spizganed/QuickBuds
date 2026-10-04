@@ -4,6 +4,7 @@
 mod bt;
 mod devtools;
 mod dots;
+mod dual;
 mod earbuds;
 mod eq;
 mod models;
@@ -122,7 +123,7 @@ fn nav() -> ModelRc<NavEntry> {
         (icons::EQUALIZER, "Equalizer", true),
         (icons::GESTURE, "Controls", false),
         (icons::HEARING, "Hearing profile", false),
-        (icons::DEVICES, "Dual connection", false),
+        (icons::DEVICES, "Dual connection", true),
         (icons::EARBUD, "Earbud settings", true),
         (icons::SETTINGS_COG, "App settings", true),
         (icons::DEV_TOOLS, "Dev tools", true),
@@ -159,6 +160,7 @@ fn set_icons(b: &Buds) {
     b.set_icon_earbud(svg(icons::EARBUD));
     b.set_icon_volume(svg_at(icons::VOLUME, 22.0));
     b.set_icon_volume_off(svg_at(icons::VOLUME_OFF, 22.0));
+    b.set_icon_devices(svg(icons::DEVICES));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -265,6 +267,14 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_tap_title(t(s, "tap_level_title").into());
     tr.set_tap_hint(t(s, "tap_level_hint").into());
     tr.set_tap_warning(t(s, "tap_level_warning").into());
+    tr.set_dual_title(t(s, "dual_title").into());
+    tr.set_dual_switch_sub(t(s, "dual_switch_sub").into());
+    tr.set_dual_section_devices(t(s, "dual_section_devices").into());
+    tr.set_dual_section_all(t(s, "dual_section_all").into());
+    tr.set_dual_add_title(t(s, "dual_add_title").into());
+    tr.set_dual_add_message(t(s, "dual_add_message").into());
+    tr.set_dual_preferred(t(s, "dual_preferred").into());
+    tr.set_dual_preferred_sub(t(s, "dual_preferred_sub").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
@@ -324,6 +334,7 @@ impl App {
         eq::apply(self);
         earbuds::apply(self);
         models::apply(self);
+        dual::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -508,6 +519,7 @@ fn main() {
     eq::setup(&main);
     earbuds::setup(&main);
     models::setup(&main);
+    dual::setup(&main);
     devtools::setup(&main);
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));

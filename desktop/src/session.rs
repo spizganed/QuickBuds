@@ -37,6 +37,14 @@ pub enum Cmd {
     Pnc(u8),
     /// `0x010D`, after a Personalized ANC result applied (the buds switch `0C` on themselves).
     StatusRead,
+    /// The Dual connection switch.
+    Dual(bool),
+    /// Dual connection opened: the device list, the status, and the preferred device if shown.
+    DualReads(bool),
+    /// Connect (true) or disconnect another device on the list.
+    ConnectDevice([u8; 6], bool),
+    /// None = automatic.
+    Preferred(Option<[u8; 6]>),
     Connect,
     Disconnect,
 }
@@ -84,6 +92,10 @@ pub struct Snapshot {
     pub fit: (u8, u8, u32),
     /// The last Personalized ANC event (1 stored, 2 ack, 3 result), its value, and a count that changes with each.
     pub pnc: (u8, u8, u32),
+    /// The buds' paired-device list (Dual connection).
+    pub devices: Vec<PairedDevice>,
+    /// None = automatic.
+    pub preferred: Option<[u8; 6]>,
 }
 
 type Emit = Box<dyn Fn(Snapshot) + Send>;
@@ -267,6 +279,8 @@ impl<'a> Conn<'a> {
             Event::PncStored(e) => s.pnc = (1, e as u8, s.pnc.2 + 1),
             Event::PncAck(st) => s.pnc = (2, st, s.pnc.2 + 1),
             Event::PncResult(r) => s.pnc = (3, r, s.pnc.2 + 1),
+            Event::Devices(d) => s.devices = d,
+            Event::Preferred(m) => s.preferred = m,
             Event::Features(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 s.low_latency = get(s.caps.game_mode_id()).or(s.low_latency);
@@ -392,6 +406,36 @@ impl<'a> Conn<'a> {
                         if action == 2 { self.pump(600)?; self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?; }
                     }
                     Cmd::StatusRead => self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?,
+                    // HeyMelody's order: the switch, the status re-read, then the follow-up; the buds push the list.
+                    Cmd::Dual(on) => {
+                        if let Some(x) = self.s.features.iter_mut().find(|x| x.0 == FEATURE_DUAL) { x.1 = on as u8; }
+                        (self.emit)(self.s.clone());
+                        self.send(CMD_SET_FEATURE, None, &[FEATURE_DUAL, on as u8])?;
+                        self.pump(250)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
+                        self.pump(250)?;
+                        self.send(CMD_DUAL_FOLLOWUP, None, &[0x08, 0x00, !on as u8])?;
+                    }
+                    Cmd::DualReads(preferred) => {
+                        self.send(CMD_QUERY_DEVICES, None, &[])?;
+                        self.pump(120)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
+                        if preferred && self.s.caps.supports(CMD_QUERY_PREFERRED) {
+                            self.pump(120)?;
+                            self.send(CMD_QUERY_PREFERRED, None, &[0x02])?;
+                        }
+                    }
+                    Cmd::ConnectDevice(mac, on) => {
+                        let mut p = vec![if on { 1 } else { 2 }];
+                        p.extend_from_slice(&mac);
+                        self.send(CMD_MULTI_CONNECT, None, &p)?;
+                    }
+                    Cmd::Preferred(mac) => {
+                        let p: Vec<u8> = match mac { None => vec![4, 0], Some(m) => [&[4, 1][..], &m].concat() };
+                        self.send(CMD_MULTI_CONNECT, None, &p)?;
+                        self.pump(250)?;
+                        self.send(CMD_QUERY_PREFERRED, None, &[0x02])?;
+                    }
                     // As `writeThenRead`: shown at once, then read back.
                     Cmd::GameSoundType(t) => {
                         if let Some(g) = self.s.game_sound.as_mut() { g.0 = t; }

@@ -46,6 +46,15 @@ pub const FEATURE_BASSWAVE: u8 = 0x1D;
 pub const FEATURE_POWER_SAVING: u8 = 0x17;
 pub const FEATURE_HEARING_OPTIMIZE: u8 = 0x38;
 pub const EVT_PUSH: u16 = 0x0204;
+/// Dual connection (§9): switch `0x11`; the device list `0x0112` -> `8112 00 <list>`, push `0204 06 <list>`.
+/// Each toggle is followed by `0x0413 08 00 <00 after on | 01 after off>` (HeyMelody's, meaning unknown).
+pub const FEATURE_DUAL: u8 = 0x11;
+pub const CMD_QUERY_DEVICES: u16 = 0x0112;
+pub const CMD_DUAL_FOLLOWUP: u16 = 0x0413;
+/// Device manager (§9, unverified): `01|02 <MAC>` connect / disconnect, `04 00` preferred device automatic,
+/// `04 01 <MAC>`; read `0x0132 02` -> `00 02 <00 | 01 <MAC>>`. MACs in written order (the list's reversed).
+pub const CMD_MULTI_CONNECT: u16 = 0x0429;
+pub const CMD_QUERY_PREFERRED: u16 = 0x0132;
 
 /// Game mode's `0x0403` switch: `0x28` on buds with game sound (`0x0423`), `0x06` elsewhere (§9).
 pub const FEATURE_GAME_MODE: u8 = 0x06;
@@ -385,6 +394,33 @@ pub fn eq_builtins(model: Option<&Value>, firmware: Option<&str>) -> Vec<(u8, &'
     }).collect()
 }
 
+/// One device on the buds' list.
+#[derive(Clone, PartialEq, Debug)]
+pub struct PairedDevice {
+    /// In written order.
+    pub mac: [u8; 6],
+    pub name: String,
+    pub connected: bool,
+    /// Flags bit 0: the device reading the list.
+    pub this_device: bool,
+}
+
+/// `<count>`, then `<MAC reversed, 6> <len> <state> <flags> <nameLen> <name>` per device; state `02` connected.
+pub fn parse_devices(b: &[u8]) -> Option<Vec<PairedDevice>> {
+    let (&count, mut rest) = b.split_first()?;
+    let mut out = Vec::new();
+    for _ in 0..count {
+        let h = rest.get(..10)?;
+        let n = h[9] as usize;
+        let name = String::from_utf8_lossy(rest.get(10..10 + n)?).into_owned();
+        let mut mac: [u8; 6] = h[..6].try_into().ok()?;
+        mac.reverse();
+        out.push(PairedDevice { mac, name, connected: h[7] == 2, this_device: h[8] & 1 != 0 });
+        rest = &rest[10 + n..];
+    }
+    Some(out)
+}
+
 // --- Incoming packets ---
 
 pub enum Event {
@@ -413,6 +449,9 @@ pub enum Event {
     PncResult(u8),
     /// (level, the buds' default)
     TapLevel(u8, u8),
+    Devices(Vec<PairedDevice>),
+    /// None = automatic.
+    Preferred(Option<[u8; 6]>),
 }
 
 /// `<a> <b>` pairs with no count byte.
@@ -451,6 +490,8 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
         EVT_EQ_CHANGED if !pl.is_empty() => Event::EqCurrent(pl[0]),
         0x8122 => Event::EqCustom(parse_presets(pl)?),
+        0x8112 if sub == Some(0) => Event::Devices(parse_devices(&pl[1..])?),
+        0x8132 if pl.len() >= 3 && pl[0] == 0 && pl[1] == 2 => Event::Preferred(if pl[2] == 0 { None } else { Some(pl.get(3..9)?.try_into().ok()?) }),
         // `00 FB 05 <level>`
         0x8124 if sub == Some(0) && pl.len() >= 4 => Event::BassLevel(pl[3] as i8),
         EVT_PUSH => match sub? {
@@ -466,6 +507,7 @@ pub fn decode(p: &[u8]) -> Option<Event> {
             }
             0xF5 if pl.len() >= 2 => Event::HeadMotion(pl[1]),
             0x0B if pl.len() >= 2 => Event::PncResult(pl[1]),
+            0x06 => Event::Devices(parse_devices(&pl[1..])?),
             _ => return None,
         },
         _ => return None,
@@ -494,6 +536,8 @@ pub fn describe(e: &Event) -> String {
         Event::PncAck(st) => format!("Personalized ANC ack {st}"),
         Event::PncResult(r) => format!("Personalized ANC result {r}"),
         Event::TapLevel(l, d) => format!("Tap sensitivity {l} (default {d})"),
+        Event::Devices(v) => format!("Devices: {}", v.iter().map(|d| format!("{} {}", d.name, if d.connected { "on" } else { "off" })).collect::<Vec<_>>().join(", ")),
+        Event::Preferred(m) => format!("Preferred device {}", m.map_or("automatic".into(), |m| hex(&m))),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
 }
@@ -530,6 +574,10 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_SET_EQ => "Set EQ",
         CMD_SAVE_CUSTOM_EQ => "Save custom EQ",
         CMD_SET_BASSWAVE => "Set bass boost",
+        CMD_QUERY_DEVICES => "Query devices",
+        CMD_DUAL_FOLLOWUP => "Dual follow-up",
+        CMD_MULTI_CONNECT => "Device manager",
+        CMD_QUERY_PREFERRED => "Query preferred device",
         _ => return None,
     })
 }
@@ -653,6 +701,20 @@ mod tests {
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0x0B, 2])), Some(Event::PncResult(2))));
         assert!(matches!(decode(&build_packet(0x811A, 1, &[0, 1])), Some(Event::PncStored(true))));
         assert!(matches!(decode(&build_packet(0x8412, 1, &[15])), Some(Event::PncAck(15))));
+    }
+
+    #[test]
+    fn dual_devices() {
+        // One connected device flagged as the reader, one dropped.
+        let mut list = vec![0, 2];
+        list.extend([0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 5, 2, 1, 2, b'P', b'C']);
+        list.extend([1, 2, 3, 4, 5, 6, 6, 0, 0, 3, b'T', b'a', b'b']);
+        let Some(Event::Devices(d)) = decode(&build_packet(0x8112, 1, &list)) else { panic!() };
+        assert_eq!(d[0], PairedDevice { mac: [0x11, 0x22, 0x33, 0x44, 0x55, 0x66], name: "PC".into(), connected: true, this_device: true });
+        assert_eq!((d[1].name.as_str(), d[1].connected, d[1].mac), ("Tab", false, [6, 5, 4, 3, 2, 1]));
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[6, 0])), Some(Event::Devices(v)) if v.is_empty()));
+        assert!(matches!(decode(&build_packet(0x8132, 1, &[0, 2, 0])), Some(Event::Preferred(None))));
+        assert!(matches!(decode(&build_packet(0x8132, 1, &[0, 2, 1, 1, 2, 3, 4, 5, 6])), Some(Event::Preferred(Some([1, 2, 3, 4, 5, 6])))));
     }
 
     #[test]
