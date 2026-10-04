@@ -45,6 +45,8 @@ finished (ROADMAP-DONE.md).
       owner yet). Earbud settings now has every item the phone's has, except the phone-only smart auto-pause.
       **Dual connection added 2026-10-04:** the switch, the buds' device list and, on models with the device
       manager, connect / disconnect and the preferred device (unverified: Buds 4 lacks it).
+      **Hearing profile added 2026-10-04:** the switch, the profiles kept on the PC (`settings.json`), the active
+      one's radar and the hearing test with the ear scan (the test flow needs his run on the buds).
    3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
 
 ## Open

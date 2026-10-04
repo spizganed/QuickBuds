@@ -42,6 +42,11 @@ const STRINGS: &[&str] = &[
     "dual_title", "dual_switch_sub", "dual_section_devices", "dual_section_all", "dual_connected", "dual_connected_this",
     "dual_add_title", "dual_add_message", "dual_connect_q", "dual_disconnect_q", "dual_preferred", "dual_preferred_auto",
     "dual_preferred_sub",
+    "row_golden_title", "row_golden_sub", "golden_profiles", "golden_none", "golden_test_row", "golden_test_sub",
+    "golden_test_title", "golden_prepare", "golden_start", "golden_scanning", "golden_scan_hint", "golden_left",
+    "golden_right", "golden_step", "golden_next", "golden_finish", "golden_loud", "golden_creating", "golden_saved",
+    "golden_saved_msg", "golden_stopped", "golden_stopped_music", "golden_stopped_wear", "golden_scan_failed",
+    "golden_again", "golden_boost", "eq_delete_confirm",
     // Built-in preset names (`protocol::eq_builtins`)
     "eq_balanced", "eq_clear_vocals", "eq_bass", "eq_classic", "eq_nature_balance", "eq_dynamic_bass",
     "eq_bass_boost", "eq_clear", "eq_gentle", "eq_default", "eq_dyn_simple", "eq_dyn_warm", "eq_dyn_punchy",

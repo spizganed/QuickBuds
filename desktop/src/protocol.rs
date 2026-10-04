@@ -394,6 +394,139 @@ pub fn eq_builtins(model: Option<&Value>, firmware: Option<&str>) -> Vec<(u8, &'
     }).collect()
 }
 
+// --- Hearing profile (PROTOCOL.md §9 Golden Sound) ---
+
+/// On / off; it applies the record stored on the buds.
+pub const FEATURE_HEARING: u8 = 0x0B;
+pub const CMD_HEARING_RECORD: u16 = 0x040E;
+pub const CMD_HEARING_RESTORE: u16 = 0x0411;
+pub const CMD_HEARING_SCAN_DATA: u16 = 0x0415;
+pub const CMD_HEARING_FILTER: u16 = 0x0116;
+pub const CMD_HEARING_SCAN_FILTER: u16 = 0x011F;
+pub const CMD_HEARING_ACTIVE: u16 = 0x0115;
+pub const CMD_HEARING_ACTIVE_SCAN: u16 = 0x011E;
+
+/// The hearing test slider's 25 stops.
+pub const HEARING_STOPS: [i8; 25] = [-120, -88, -55, -52, -49, -45, -41, -38, -35, -30, -25, -22, -19, -15, -11, -8, -5, -1, 3, 5, 7, 10, 13, 15, 17];
+/// The values a result can hold; a stop is saved as the nearest one.
+const HEARING_RESULTS: [i8; 12] = [-55, -49, -41, -35, -25, -19, -11, -5, 3, 7, 13, 17];
+/// Where each tone starts (`-30`), and the stop from which HeyMelody warns about loudness (value 10).
+pub const HEARING_START: usize = 9;
+pub const HEARING_LOUD: usize = 21;
+
+pub fn hearing_snap(v: i8) -> i8 { *HEARING_RESULTS.iter().min_by_key(|r| (**r as i32 - v as i32).abs()).unwrap() }
+
+/// A frame to send: (command, payload).
+pub type Frame = (u16, Vec<u8>);
+
+/// 12 x `<side> <freq> <value>`: left 1..6 then right 1..6.
+fn hearing_info(values: &[i8; 12]) -> Vec<u8> {
+    (0..12).flat_map(|i| [i as u8 / 6 + 1, i as u8 % 6 + 1, values[i] as u8]).collect()
+}
+
+/// Ear scan start / stop `04 01|00 <uid>`; the result is push `0E`.
+pub fn ear_scan(on: bool, uid: u32) -> Frame { (CMD_GOLDEN_DETECT, [&[4, on as u8][..], &uid.to_be_bytes()].concat()) }
+pub fn hearing_test(on: bool) -> Frame { (CMD_GOLDEN_DETECT, vec![2, on as u8]) }
+/// A tone on one bud, side 1 L / 2 R, freq 1..6; `tone_stop` goes before every new level.
+pub fn hearing_tone(side: u8, freq: u8, value: i8) -> Frame { (CMD_HEARING_RECORD, vec![3, 1, side, freq, value as u8]) }
+pub fn hearing_tone_stop() -> Frame { (CMD_HEARING_RECORD, vec![4]) }
+/// The filter of a result; the `0x8116` reply carries the enhance type.
+pub fn hearing_filter(uid: u32, values: &[i8; 12]) -> Frame {
+    (CMD_HEARING_FILTER, [vec![0x0C], hearing_info(values), uid.to_be_bytes().to_vec()].concat())
+}
+pub fn hearing_scan_filter(uid: u32, data: &[u8]) -> Frame {
+    (CMD_HEARING_SCAN_FILTER, [&(data.len() as u16).to_le_bytes()[..], data, &uid.to_be_bytes()].concat())
+}
+/// Applies a record: description id, record, ear scan (if any), then the switch on (HeyMelody's order).
+pub fn hearing_apply(uid: u32, name: &str, values: &[i8; 12], scan: &[u8], desc: u8) -> Vec<Frame> {
+    let mut out = Vec::new();
+    if desc > 0 { out.push((CMD_HEARING_RESTORE, vec![1, 1, 1, 0, desc])); }
+    out.push((CMD_HEARING_RECORD, [vec![3, 0x0C], hearing_info(values), uid.to_be_bytes().to_vec(), name.as_bytes().to_vec()].concat()));
+    if !scan.is_empty() {
+        out.push((CMD_HEARING_SCAN_DATA, [&[3][..], &(scan.len() as u16).to_le_bytes(), scan, &uid.to_be_bytes()].concat()));
+    }
+    out.push((CMD_SET_FEATURE, vec![FEATURE_HEARING, 1]));
+    out
+}
+
+fn be32(p: &[u8], i: usize) -> Option<u32> { Some(u32::from_be_bytes(p.get(i..i + 4)?.try_into().ok()?)) }
+fn le16(p: &[u8], i: usize) -> Option<usize> { Some(u16::from_le_bytes(p.get(i..i + 2)?.try_into().ok()?) as usize) }
+
+/// `0x8115` `00 03 0C <12 x side freq value> <uid> <name>`.
+fn parse_hearing_active(p: &[u8]) -> Option<HearingEv> {
+    if p.len() < 3 || p[0] != 0 || p[2] != 12 { return None; }
+    let end = 3 + 36;
+    let uid = be32(p, end)?;
+    let mut values = [0i8; 12];
+    for c in p[3..end].chunks_exact(3) {
+        if !(1..=2).contains(&c[0]) || !(1..=6).contains(&c[1]) { return None; }
+        values[(c[0] as usize - 1) * 6 + c[1] as usize - 1] = c[2] as i8;
+    }
+    Some(HearingEv::Active(uid, String::from_utf8_lossy(&p[end + 4..]).into_owned(), values))
+}
+
+/// `<action> <length LE> <data> <uid>` from `from` (push `0E` after its id, `0x811E` after its status).
+fn parse_hearing_scan(p: &[u8], from: usize) -> Option<(u32, Vec<u8>)> {
+    let len = le16(p, from + 1)?;
+    let start = from + 3;
+    if len == 0 { return None; }
+    Some((be32(p, start + len)?, p[start..start + len].to_vec()))
+}
+
+/// Filter replies, both ears (type `04`), floats LE, left half then right:
+/// `0x8116` `00 <uid> 04 <count LE> <packet> <enhance type> <floats>`,
+/// `0x811F` `00 <uid> 04 <rate LE> <count LE> <packet> <floats>`. Returns (rate, left, right).
+fn parse_curves(p: &[u8], scan: bool) -> Option<Curves> {
+    if p.len() < 11 || p[5] != 4 { return None; }
+    let fs = if scan { le16(p, 6)? as u32 } else { 44100 };
+    let count = if scan { le16(p, 8)? } else { le16(p, 6)? };
+    let start = if scan { 11 } else { 10 };
+    if count == 0 || count % 12 != 0 { return None; }
+    let f: Vec<f32> = p.get(start..start + count * 4)?.chunks_exact(4).map(|c| f32::from_le_bytes(c.try_into().unwrap())).collect();
+    Some((fs, f[..count / 2].to_vec(), f[count / 2..].to_vec()))
+}
+
+pub type Curves = (u32, Vec<f32>, Vec<f32>);
+
+#[derive(Clone, Debug)]
+pub enum HearingEv {
+    /// Push `08`: kind 2 test / 4 scan, status (1/3 audio playing, 5 a bud out, 7/10/255 failed).
+    Status(u8, u8),
+    /// Push `0E`: the ear scan finished.
+    EarScan(u32, Vec<u8>),
+    /// `0x8116`: a result's enhance type, and its hearing filters.
+    Filter(u32, u8, Option<Curves>),
+    /// `0x811F`: a record's ear-scan filters.
+    ScanCurves(u32, Curves),
+    /// `0x8115`: the record on the buds.
+    Active(u32, String, [i8; 12]),
+    /// `0x811E`: its ear-scan data.
+    ActiveScan(u32, Vec<u8>),
+}
+
+/// HeyMelody's radar axes (Hz), in its order (80 at the top, clockwise), and each one's scale in dB.
+pub const HEARING_AXES: [u32; 6] = [80, 10000, 4800, 2400, 1200, 250];
+const AXIS_SCALE: [f64; 6] = [7.5, 15.0, 15.0, 12.5, 12.5, 7.5];
+
+/// The summed response of biquads (a0 a1 a2 b0 b1 b2 each) at `freq`, in dB.
+fn response_db(c: &[f32], fs: u32, freq: u32) -> f64 {
+    let w = 2.0 * std::f64::consts::PI * freq as f64 / fs as f64;
+    let mag = |x: &[f32]| {
+        let (x0, x1, x2) = (x[0] as f64, x[1] as f64, x[2] as f64);
+        (x0 + x1 * w.cos() + x2 * (2.0 * w).cos()).hypot(-x1 * w.sin() - x2 * (2.0 * w).sin())
+    };
+    c.chunks_exact(6).map(|k| (mag(&k[..3]), mag(&k[3..]))).filter(|(d, n)| *d > 0.0 && *n > 0.0)
+        .map(|(d, n)| 20.0 * (n / d).log10()).sum()
+}
+
+/// One ear's radar radii (0..10, 10 = no change, at least 2), from its hearing and ear-scan filters.
+pub fn hearing_radar(hearing: &[f32], scan: Option<(&[f32], u32)>) -> [f32; 6] {
+    std::array::from_fn(|i| {
+        let db = response_db(hearing, 44100, HEARING_AXES[i]) + scan.map_or(0.0, |(c, fs)| response_db(c, fs, HEARING_AXES[i]));
+        (-db.abs() * 10.0 / AXIS_SCALE[i] + 10.0).max(2.0) as f32
+    })
+}
+
 /// One device on the buds' list.
 #[derive(Clone, PartialEq, Debug)]
 pub struct PairedDevice {
@@ -450,6 +583,7 @@ pub enum Event {
     /// (level, the buds' default)
     TapLevel(u8, u8),
     Devices(Vec<PairedDevice>),
+    Hearing(HearingEv),
     /// None = automatic.
     Preferred(Option<[u8; 6]>),
 }
@@ -490,6 +624,10 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
         EVT_EQ_CHANGED if !pl.is_empty() => Event::EqCurrent(pl[0]),
         0x8122 => Event::EqCustom(parse_presets(pl)?),
+        0x8115 => Event::Hearing(parse_hearing_active(pl)?),
+        0x811E if sub == Some(0) => { let (u, d) = parse_hearing_scan(pl, 1)?; Event::Hearing(HearingEv::ActiveScan(u, d)) }
+        0x8116 if sub == Some(0) && pl.len() >= 10 => Event::Hearing(HearingEv::Filter(be32(pl, 1)?, pl[9], parse_curves(pl, false))),
+        0x811F if sub == Some(0) => Event::Hearing(HearingEv::ScanCurves(be32(pl, 1)?, parse_curves(pl, true)?)),
         0x8112 if sub == Some(0) => Event::Devices(parse_devices(&pl[1..])?),
         0x8132 if pl.len() >= 3 && pl[0] == 0 && pl[1] == 2 => Event::Preferred(if pl[2] == 0 { None } else { Some(pl.get(3..9)?.try_into().ok()?) }),
         // `00 FB 05 <level>`
@@ -508,6 +646,8 @@ pub fn decode(p: &[u8]) -> Option<Event> {
             0xF5 if pl.len() >= 2 => Event::HeadMotion(pl[1]),
             0x0B if pl.len() >= 2 => Event::PncResult(pl[1]),
             0x06 => Event::Devices(parse_devices(&pl[1..])?),
+            0x08 if pl.len() >= 3 => Event::Hearing(HearingEv::Status(pl[1], pl[2])),
+            0x0E => { let (u, d) = parse_hearing_scan(pl, 1)?; Event::Hearing(HearingEv::EarScan(u, d)) }
             _ => return None,
         },
         _ => return None,
@@ -537,6 +677,14 @@ pub fn describe(e: &Event) -> String {
         Event::PncResult(r) => format!("Personalized ANC result {r}"),
         Event::TapLevel(l, d) => format!("Tap sensitivity {l} (default {d})"),
         Event::Devices(v) => format!("Devices: {}", v.iter().map(|d| format!("{} {}", d.name, if d.connected { "on" } else { "off" })).collect::<Vec<_>>().join(", ")),
+        Event::Hearing(h) => match h {
+            HearingEv::Status(k, st) => format!("Hearing {} status {st}", if *k == 4 { "scan" } else { "test" }),
+            HearingEv::EarScan(u, d) => format!("Ear scan {u:08X}, {} bytes", d.len()),
+            HearingEv::Filter(u, t, c) => format!("Hearing filter {u:08X} type {t}{}", c.as_ref().map_or(String::new(), |c| format!(", {} floats", c.1.len() * 2))),
+            HearingEv::ScanCurves(u, c) => format!("Ear scan filter {u:08X} {} Hz, {} floats", c.0, c.1.len() * 2),
+            HearingEv::Active(u, n, v) => format!("Hearing profile {u:08X} \"{n}\" {v:?}"),
+            HearingEv::ActiveScan(u, d) => format!("Hearing profile ear scan {u:08X}, {} bytes", d.len()),
+        },
         Event::Preferred(m) => format!("Preferred device {}", m.map_or("automatic".into(), |m| hex(&m))),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
@@ -575,6 +723,14 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_SAVE_CUSTOM_EQ => "Save custom EQ",
         CMD_SET_BASSWAVE => "Set bass boost",
         CMD_QUERY_DEVICES => "Query devices",
+        CMD_GOLDEN_DETECT => "Hearing test",
+        CMD_HEARING_RECORD => "Hearing profile",
+        CMD_HEARING_RESTORE => "Hearing profile id",
+        CMD_HEARING_SCAN_DATA => "Ear scan data",
+        CMD_HEARING_FILTER => "Query hearing filter",
+        CMD_HEARING_SCAN_FILTER => "Query ear scan filter",
+        CMD_HEARING_ACTIVE => "Query hearing profile",
+        CMD_HEARING_ACTIVE_SCAN => "Query hearing profile ear scan",
         CMD_DUAL_FOLLOWUP => "Dual follow-up",
         CMD_MULTI_CONNECT => "Device manager",
         CMD_QUERY_PREFERRED => "Query preferred device",
@@ -701,6 +857,26 @@ mod tests {
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0x0B, 2])), Some(Event::PncResult(2))));
         assert!(matches!(decode(&build_packet(0x811A, 1, &[0, 1])), Some(Event::PncStored(true))));
         assert!(matches!(decode(&build_packet(0x8412, 1, &[15])), Some(Event::PncAck(15))));
+    }
+
+    #[test]
+    fn hearing_frames() {
+        let v: [i8; 12] = [-55, -49, -41, -35, -25, -19, -11, -5, 3, 7, 13, 17];
+        // The apply record parses back as the buds' active record.
+        let apply = hearing_apply(0x01020304, "2026/09/29 01:53", &v, &[9; 168], 11);
+        assert_eq!(apply[0], (CMD_HEARING_RESTORE, vec![1, 1, 1, 0, 11]));
+        assert_eq!(&apply[2].1[..3], [3, 0xA8, 0]);
+        assert_eq!(apply[3], (CMD_SET_FEATURE, vec![FEATURE_HEARING, 1]));
+        let mut active = vec![0];
+        active.extend(&apply[1].1[..]);
+        let Some(Event::Hearing(HearingEv::Active(u, n, got))) = decode(&build_packet(0x8115, 1, &active)) else { panic!() };
+        assert_eq!((u, n.as_str(), got), (0x01020304, "2026/09/29 01:53", v));
+        let mut scan = vec![0x0E, 3, 2, 0, 7, 8];
+        scan.extend(5u32.to_be_bytes());
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &scan)), Some(Event::Hearing(HearingEv::EarScan(5, d))) if d == [7, 8]));
+        assert_eq!(hearing_snap(-30), -35);
+        // A flat filter (b = a) changes nothing: the rim.
+        assert_eq!(hearing_radar(&[1.0, 0.5, 0.2, 1.0, 0.5, 0.2], None), [10.0; 6]);
     }
 
     #[test]
