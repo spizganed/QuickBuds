@@ -4,7 +4,7 @@
 use crate::bt;
 use crate::protocol::*;
 use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
-use std::sync::{Mutex, OnceLock};
+use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
 pub enum Cmd {
@@ -116,8 +116,8 @@ type Emit = Box<dyn Fn(Snapshot) + Send>;
 
 /// One packet log line (Dev tools).
 pub struct Line {
-    /// Since the app started.
-    pub at: Duration,
+    /// Local time, "18:23:05.123".
+    pub at: String,
     /// "TX", "RX" or "DISCARDED RX".
     pub dir: &'static str,
     pub bytes: Vec<u8>,
@@ -131,11 +131,9 @@ pub static LOG: Mutex<Vec<Line>> = Mutex::new(Vec::new());
 /// Hearing profile replies and pushes, in order, for the page and the test to take (`hearing::apply`).
 pub static HEARING: Mutex<Vec<HearingEv>> = Mutex::new(Vec::new());
 
-pub fn app_start() -> Instant { *START.get_or_init(Instant::now) }
-static START: OnceLock<Instant> = OnceLock::new();
-
 fn log(dir: &'static str, bytes: Vec<u8>, human: Option<String>) {
-    LOG.lock().unwrap().push(Line { at: app_start().elapsed(), dir, bytes, human });
+    let [.., h, mi, sec, ms] = crate::local_now();
+    LOG.lock().unwrap().push(Line { at: format!("{h:02}:{mi:02}:{sec:02}.{ms:03}"), dir, bytes, human });
 }
 
 pub fn spawn(emit: impl Fn(Snapshot) + Send + 'static) -> Sender<Cmd> {
@@ -233,7 +231,7 @@ impl<'a> Conn<'a> {
     fn send(&mut self, cmd: u16, seq: Option<u8>, payload: &[u8]) -> Result<(), String> {
         let seq = seq.unwrap_or_else(|| { self.seq = self.seq % 0xFE + 1; self.seq });
         let p = build_packet(cmd, seq, payload);
-        log("TX", p.clone(), cmd_name(cmd).map(String::from));
+        log("TX", p.clone(), describe_tx(cmd, payload));
         self.link.write(&p)
     }
 
@@ -246,7 +244,8 @@ impl<'a> Conn<'a> {
             let mut changed = false;
             for p in self.framer.push(&buf[..n]) {
                 let e = decode(&p);
-                log("RX", p, e.as_ref().map(describe));
+                let human = e.as_ref().map(describe).or_else(|| describe_other(&p));
+                log("RX", p, human);
                 if let Some(e) = e { changed |= self.apply(e); }
             }
             if !self.framer.discarded.is_empty() { log("DISCARDED RX", std::mem::take(&mut self.framer.discarded), None); }

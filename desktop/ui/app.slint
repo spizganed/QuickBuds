@@ -1032,6 +1032,8 @@ export global DevLog {
     in property <[LogRow]> rows;
     in-out property <int> mode;
     in property <string> note;
+    // A monospace font the system has.
+    in property <string> font;
     callback refresh();
     callback set-mode(int);
     callback clear();
@@ -1062,7 +1064,7 @@ component DevPage inherits VerticalLayout {
             for r in DevLog.rows: Text {
                 text: r.text;
                 color: r.amber ? #E8A33D : Palette.text;
-                font-family: "Consolas";
+                font-family: DevLog.font;
                 font-size: 12px;
                 wrap: word-wrap;
             }

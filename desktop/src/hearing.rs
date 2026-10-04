@@ -84,27 +84,9 @@ fn random() -> u64 {
 }
 
 /// HeyMelody's record name, the local time "2026/09/29 01:53".
-#[cfg(not(windows))]
 fn now_name() -> String {
-    // SAFETY: localtime_r fills the zeroed tm from a valid time_t.
-    let tm = unsafe {
-        let t = libc::time(std::ptr::null_mut());
-        let mut tm: libc::tm = std::mem::zeroed();
-        libc::localtime_r(&t, &mut tm);
-        tm
-    };
-    format!("{:04}/{:02}/{:02} {:02}:{:02}", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min)
-}
-
-#[cfg(windows)]
-fn now_name() -> String {
-    // SAFETY: GetLocalTime fills the zeroed SYSTEMTIME.
-    let st = unsafe {
-        let mut st = std::mem::zeroed();
-        windows_sys::Win32::System::SystemInformation::GetLocalTime(&mut st);
-        st
-    };
-    format!("{:04}/{:02}/{:02} {:02}:{:02}", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute)
+    let [y, mo, d, h, mi, ..] = crate::local_now();
+    format!("{y:04}/{mo:02}/{d:02} {h:02}:{mi:02}")
 }
 
 pub fn setup(main: &MainWindow) {

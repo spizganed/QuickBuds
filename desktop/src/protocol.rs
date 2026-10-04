@@ -725,6 +725,43 @@ pub fn describe(e: &Event) -> String {
     }
 }
 
+/// The packet log's line for a frame we send: its name, with the value for the common writes.
+pub fn describe_tx(cmd: u16, p: &[u8]) -> Option<String> {
+    let name = cmd_name(cmd)?;
+    Some(match (cmd, p) {
+        (CMD_SET_FEATURE, [id, v, ..]) => format!("{name} {id:02X} {}", if *v == 1 { "on" } else { "off" }),
+        // `01 01 <bit>`: which mode bit; `02 <type> <mask>`: the hold's cycle.
+        (CMD_SET_ANC, [1, 1, bits @ ..]) => format!("{name} bit {}", bits.iter().rev().fold(0u32, |v, &b| v << 8 | b as u32).trailing_zeros()),
+        (CMD_SET_ANC, [2, t, mask @ ..]) => format!("Set hold cycle ({t}) 0x{:04X}", mask.iter().rev().fold(0u32, |v, &b| v << 8 | b as u32)),
+        (CMD_SET_EQ | CMD_SET_ALERT_VOLUME | CMD_SET_TAP_LEVEL, [v, ..]) => format!("{name} {v}"),
+        (CMD_FIND_BUDS | CMD_FIT_TEST, [v, ..]) => format!("{name} {}", if *v == 1 { "start" } else { "stop" }),
+        _ => name.into(),
+    })
+}
+
+/// The packet log's line for a packet [decode] does not turn into state: acks, the notification lists,
+/// button presses, the time request.
+pub fn describe_other(p: &[u8]) -> Option<String> {
+    let cmd = cmd_of(p);
+    let pl = payload_of(p);
+    Some(match cmd {
+        0x8400..=0x84FF => {
+            let name = cmd_name(cmd & 0x7FFF).map_or(format!("0x{:04X}", cmd & 0x7FFF), String::from);
+            match pl.first() { Some(0) => format!("{name}: ok"), Some(s) => format!("{name}: FAILED (status {s})"), None => format!("{name}: ack") }
+        }
+        0x8200 if pl.len() >= 2 => format!("Notifications offered: {}", hex(&pl[2..])),
+        0x8205 => "Notifications registered".into(),
+        0x0500 => "Time request (not answered)".into(),
+        0x0501 => "Bud state".into(),
+        // `F1 <side> <button> <action>`
+        EVT_PUSH if pl.first() == Some(&0xF1) && pl.len() >= 4 => format!("Button {} {}",
+            match pl[1] { 1 => "L", 2 => "R", _ => "?" },
+            match pl[3] { 0 => "single tap".into(), 2 => "double tap".into(), 3 => "triple tap".into(), 4 => "hold".into(),
+                7 => "slide up".into(), 8 => "slide down".into(), a => format!("action {a:02X}") }),
+        _ => return None,
+    })
+}
+
 /// The packet log's name for a command we send.
 pub fn cmd_name(cmd: u16) -> Option<&'static str> {
     Some(match cmd {

@@ -7,12 +7,11 @@ use slint::{ComponentHandle, Model, VecModel};
 
 /// The line as the given mode shows it (0 Human, 1 Detailed, 2 Raw).
 fn format(l: &Line, mode: i32) -> LogRow {
-    let ms = l.at.as_millis();
-    let t = format!("{:02}:{:02}.{:03}", ms / 60_000, ms / 1000 % 60, ms % 1000);
+    let t = &l.at;
     let frame = l.dir != "DISCARDED RX";
     let text = match (mode, frame, &l.human) {
         (2, _, _) | (_, false, _) => format!("{t} {} {}", l.dir, hex(&l.bytes)),
-        (0, true, Some(h)) => format!("{t} {} {h}", l.dir),
+        (0, true, Some(h)) => format!("{t}  {}  {h}", if l.dir == "TX" { "→" } else { "←" }),
         (_, true, h) => format!("{t} {} {}\n      {:04X} {}", l.dir, h.as_deref().unwrap_or("?"),
             cmd_of(&l.bytes), hex(payload_of(&l.bytes))),
     };
@@ -23,6 +22,7 @@ fn format(l: &Line, mode: i32) -> LogRow {
 pub fn setup(main: &MainWindow) {
     let d = main.global::<DevLog>();
     d.set_rows(VecModel::from_slice(&[]));
+    d.set_font(if cfg!(windows) { "Consolas" } else { "DejaVu Sans Mono" }.into());
     d.on_refresh(|| with_app(refresh));
     d.on_set_mode(|m| with_app(|a| { a.main.global::<DevLog>().set_mode(m); a.log_shown = 0; refresh(a); }));
     d.on_clear(|| with_app(|a| { LOG.lock().unwrap().clear(); a.log_shown = 0; refresh(a); }));
@@ -30,7 +30,11 @@ pub fn setup(main: &MainWindow) {
     d.on_export(|| with_app(|a| {
         let mode = a.main.global::<DevLog>().get_mode();
         let text: String = LOG.lock().unwrap().iter().map(|l| format(l, mode).text.to_string() + "\n").collect();
-        let dir = std::path::PathBuf::from(std::env::var_os("USERPROFILE").unwrap_or_default()).join("Downloads").join("QuickBuds");
+        #[cfg(windows)]
+        let home = std::env::var_os("USERPROFILE");
+        #[cfg(not(windows))]
+        let home = std::env::var_os("HOME");
+        let dir = std::path::PathBuf::from(home.unwrap_or_default()).join("Downloads").join("QuickBuds");
         let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs());
         let path = dir.join(format!("quickbuds-log-{secs}.txt"));
         let note = match std::fs::create_dir_all(&dir).and_then(|_| std::fs::write(&path, text)) {
