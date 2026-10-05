@@ -2,13 +2,10 @@
 #![windows_subsystem = "windows"]
 
 mod bt;
-mod controls;
 mod devtools;
 mod dots;
-mod dual;
 mod earbuds;
 mod eq;
-mod hearing;
 mod models;
 mod protocol;
 mod session;
@@ -31,9 +28,6 @@ use tray_icon::TrayIconBuilder;
 #[cfg(windows)]
 use tray_icon::{MouseButton, MouseButtonState, TrayIcon, TrayIconEvent};
 
-/// Windows: the tray icon itself (left click opens the window, right click the quick panel, battery in the
-/// tooltip). Linux: a tray icon can only open a menu (AppIndicator), so it is a battery line, Open and Quit,
-/// run on its own GTK thread; this sends it the battery line.
 #[cfg(windows)]
 type Tray = TrayIcon;
 #[cfg(not(windows))]
@@ -45,68 +39,31 @@ struct App {
     panel: QuickPanel,
     tray: Tray,
     tx: Sender<Cmd>,
-    /// Modes of the last buds seen: the controls stay in place (dimmed) while disconnected.
     modes: AncModes,
     last_level: Option<String>,
     tr: Vec<String>,
-    /// The last state from the session.
     snap: Snapshot,
-    /// The band editor's gains, updated in place while dragging.
     gains: Rc<VecModel<i32>>,
-    /// The preset (id, name) the name field was last filled from.
     edit_key: Option<(u8, String)>,
-    /// The band editor's plot size in pixels.
+    edit_gesture: Option<(u8, u8)>, // Tracks which earbud/action is being edited
     plot: (f32, f32),
-    /// Packet log lines already in the Dev tools list.
     log_shown: usize,
 }
 
 thread_local! { static APP: RefCell<Option<App>> = const { RefCell::new(None) }; }
-
 fn with_app(f: impl FnOnce(&mut App)) { APP.with(|a| a.borrow_mut().as_mut().map(f)); }
 
 thread_local! {
-    /// The Dot matrix style is on, and the main window's scale factor: icons are drawn for both.
     static STYLE: std::cell::Cell<(bool, f32)> = const { std::cell::Cell::new((false, 1.0)) };
 }
 
-/// An icon as the style draws it: the vector itself, or its dots (24 logical px tall).
 fn svg(s: &str) -> Image { svg_at(s, 24.0) }
-
-/// [svg] for an icon shown `size` logical px tall: dots are drawn at that size, a scaled dot image blurs.
 fn svg_at(s: &str, size: f32) -> Image {
     let (dots_on, scale) = STYLE.get();
     if dots_on { dots::icon(s, size, scale) } else { raw_svg(s) }
 }
-
 fn raw_svg(s: &str) -> Image { Image::load_from_svg_data(s.as_bytes()).expect("icon") }
 
-/// The local time now: (year, month, day, hour, minute, second, millisecond).
-#[cfg(not(windows))]
-fn local_now() -> [u32; 7] {
-    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default();
-    // SAFETY: localtime_r fills the zeroed tm from a valid time_t.
-    let tm = unsafe {
-        let t = now.as_secs() as libc::time_t;
-        let mut tm: libc::tm = std::mem::zeroed();
-        libc::localtime_r(&t, &mut tm);
-        tm
-    };
-    [tm.tm_year as u32 + 1900, tm.tm_mon as u32 + 1, tm.tm_mday as u32, tm.tm_hour as u32, tm.tm_min as u32, tm.tm_sec as u32, now.subsec_millis()]
-}
-
-#[cfg(windows)]
-fn local_now() -> [u32; 7] {
-    // SAFETY: GetLocalTime fills the zeroed SYSTEMTIME.
-    let st = unsafe {
-        let mut st = std::mem::zeroed();
-        windows_sys::Win32::System::SystemInformation::GetLocalTime(&mut st);
-        st
-    };
-    [st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds].map(u32::from)
-}
-
-/// `settings.json` in the user's config folder (`%APPDATA%\QuickBuds`, `~/.config/quickbuds`).
 fn settings_path() -> Option<std::path::PathBuf> {
     #[cfg(windows)]
     let dir = std::env::var_os("APPDATA").map(|d| std::path::PathBuf::from(d).join("QuickBuds"));
@@ -130,7 +87,6 @@ fn save_setting(key: &str, value: serde_json::Value) {
     let _ = std::fs::write(path, serde_json::to_string_pretty(&all).unwrap_or_default());
 }
 
-/// The Dot matrix renderers for one window's `Dots` global.
 fn setup_dots(d: &Dots) {
     let pitch = || dots::pitch_px(STYLE.get().1, dots::PITCH);
     d.on_box_px(move |w, h, fill, stroke, r| dots::dot_box(w, h, fill, stroke, r, pitch()));
@@ -143,14 +99,13 @@ fn setup_dots(d: &Dots) {
     });
 }
 
-/// The sidebar's sections; each turns on when its page exists.
 fn nav() -> ModelRc<NavEntry> {
     let nav: Vec<NavEntry> = [
         (icons::LAYOUT, "Overview", true),
         (icons::EQUALIZER, "Equalizer", true),
-        (icons::GESTURE, "Controls", true),
-        (icons::HEARING, "Hearing profile", true),
-        (icons::DEVICES, "Dual connection", true),
+        (icons::GESTURE, "Controls", true), // Enabled the Controls Page
+        (icons::HEARING, "Hearing profile", false),
+        (icons::DEVICES, "Dual connection", false),
         (icons::EARBUD, "Earbud settings", true),
         (icons::SETTINGS_COG, "App settings", true),
         (icons::DEV_TOOLS, "Dev tools", true),
@@ -158,8 +113,6 @@ fn nav() -> ModelRc<NavEntry> {
     ModelRc::new(VecModel::from(nav))
 }
 
-/// English strings from `values/strings.xml`.
-// ponytail: English only for now [USER]; the other locales are already in `strings::LOCALES`.
 fn translations() -> Vec<String> {
     let base = strings::LOCALES.iter().find(|l| l.0.is_empty()).unwrap().1;
     base.iter().map(|s| s.unwrap_or("").to_string()).collect()
@@ -187,13 +140,10 @@ fn set_icons(b: &Buds) {
     b.set_icon_earbud(svg(icons::EARBUD));
     b.set_icon_volume(svg_at(icons::VOLUME, 22.0));
     b.set_icon_volume_off(svg_at(icons::VOLUME_OFF, 22.0));
-    b.set_icon_devices(svg(icons::DEVICES));
-    b.set_icon_hearing(svg(icons::HEARING));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     set_icons(b);
-
     tr.set_connected(t(s, "conn_on").into());
     tr.set_connect(t(s, "conn_action_connect").into());
     tr.set_disconnect(t(s, "conn_action_disconnect").into());
@@ -263,7 +213,6 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_bud_left(t(s, "gesture_bud_left").into());
     tr.set_bud_right(t(s, "gesture_bud_right").into());
     tr.set_done(t(s, "gesture_done").into());
-    // "Adjust the position of the %1$s …", filled per side.
     let tips = |k| t(s, "fit_adjust_tips").replace("%1$s", t(s, k));
     tr.set_fit_tips_both(tips("fit_both").into());
     tr.set_game_sound_type_title(t(s, "game_sound_type_title").into());
@@ -295,31 +244,10 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_tap_title(t(s, "tap_level_title").into());
     tr.set_tap_hint(t(s, "tap_level_hint").into());
     tr.set_tap_warning(t(s, "tap_level_warning").into());
-    tr.set_gesture_title(t(s, "gesture_title").into());
-    tr.set_gesture_not_in_call(t(s, "gesture_section_not_in_call").into());
-    tr.set_gesture_on_call(t(s, "gesture_section_on_call").into());
-    tr.set_gesture_note(t(s, "gesture_write_note").into());
-    tr.set_hearing_title(t(s, "row_golden_title").into());
-    tr.set_hearing_sub(t(s, "row_golden_sub").into());
-    tr.set_hearing_profiles(t(s, "golden_profiles").into());
-    tr.set_hearing_none(t(s, "golden_none").into());
-    tr.set_hearing_test_row(t(s, "golden_test_row").into());
-    tr.set_hearing_test_sub(t(s, "golden_test_sub").into());
-    tr.set_hearing_left(t(s, "golden_left").into());
-    tr.set_hearing_right(t(s, "golden_right").into());
-    tr.set_hearing_boost(t(s, "golden_boost").into());
-    tr.set_dual_title(t(s, "dual_title").into());
-    tr.set_dual_switch_sub(t(s, "dual_switch_sub").into());
-    tr.set_dual_section_devices(t(s, "dual_section_devices").into());
-    tr.set_dual_section_all(t(s, "dual_section_all").into());
-    tr.set_dual_add_title(t(s, "dual_add_title").into());
-    tr.set_dual_add_message(t(s, "dual_add_message").into());
-    tr.set_dual_preferred(t(s, "dual_preferred").into());
-    tr.set_dual_preferred_sub(t(s, "dual_preferred_sub").into());
+    tr.set_ok(t(s, "dual_add_ok").into());
 
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
-            // The ANC segment picks the last level used, else Medium, else the first the buds have.
             let levels = a.modes.levels();
             let Some(l) = a.last_level.clone().filter(|l| levels.contains(&l.as_str()))
                 .or_else(|| levels.iter().find(|l| **l == "ANC-Medium").or(levels.first()).map(|l| l.to_string()))
@@ -341,7 +269,79 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     b.on_quit(|| { let _ = slint::quit_event_loop(); });
 }
 
-/// (mode id, icon, index into the level names)
+// Setup the actions and choices for the Controls page
+fn setup_controls(main: &MainWindow) {
+    let controls = main.global::<ControlsState>();
+    
+    controls.on_open_picker(move |dev, act| {
+        with_app(|a| {
+            // Serve different menus based on which action (act) was clicked:
+            // 2 = Double Tap, 3 = Triple Tap, 4 = Touch and Hold
+            let choices = match act {
+                2 => vec![
+                    Choice { value: 0x00, label: "None".into() },
+                    Choice { value: 0x01, label: "Play/Pause".into() },
+                    Choice { value: 0x05, label: "Previous Track".into() },
+                    Choice { value: 0x06, label: "Next Track".into() },
+                    Choice { value: 0x03, label: "Voice Assistant (not supported on desktop)".into() },
+                    Choice { value: 0x11, label: "Low Latency".into() },
+                ],
+                3 => vec![
+                    Choice { value: 0x00, label: "None".into() },
+                    Choice { value: 0x05, label: "Previous Track".into() },
+                    Choice { value: 0x06, label: "Next Track".into() },
+                    Choice { value: 0x03, label: "Voice Assistant (not supported on desktop)".into() },
+                    Choice { value: 0x11, label: "Game Mode".into() },
+                ],
+                4 => vec![
+                    Choice { value: 0x00, label: "None".into() },
+                    Choice { value: 0x0B, label: "Volume Up".into() },
+                    Choice { value: 0x0C, label: "Volume Down".into() },
+                    Choice { value: 0x08, label: "Noise Control".into() },
+                ],
+                _ => vec![],
+            };
+            
+            a.main.global::<ControlsState>().set_available_choices(ModelRc::new(VecModel::from(choices)));
+            a.edit_gesture = Some((dev as u8, act as u8));
+        });
+    });
+
+    controls.on_set_gesture(move |fn_id| {
+        with_app(|a| {
+            if let Some((dev, act)) = a.edit_gesture {
+                let _ = a.tx.send(Cmd::SetGesture(dev, act, fn_id as u8));
+                
+                // Update the UI text label instantly
+                let label = match fn_id {
+                    0x00 => "None",
+                    0x01 => "Play/Pause",
+                    0x03 => "Voice Assistant (not supported on desktop)",
+                    0x05 => "Previous Track",
+                    0x06 => "Next Track",
+                    0x08 => "Noise Control",
+                    0x0B => "Volume Up",
+                    0x0C => "Volume Down",
+                    0x11 => if act == 3 { "Game Mode" } else { "Low Latency" },
+                    _ => "Unknown",
+                };
+                
+                let controls = a.main.global::<ControlsState>();
+                match (dev, act) {
+                    (1, 2) => controls.set_left_double(label.into()),
+                    (2, 2) => controls.set_right_double(label.into()),
+                    (1, 3) => controls.set_left_triple(label.into()),
+                    (2, 3) => controls.set_right_triple(label.into()),
+                    (1, 4) => controls.set_left_hold(label.into()),
+                    (2, 4) => controls.set_right_hold(label.into()),
+                    _ => {}
+                }
+            }
+        });
+    });
+}
+
+
 fn level_info(id: &str) -> (&'static str, usize) {
     match id {
         "ANC-Light" => (icons::MODE_ANC_LOW, 0),
@@ -352,7 +352,6 @@ fn level_info(id: &str) -> (&'static str, usize) {
 }
 
 impl App {
-    /// Switches the style (or redraws it for a new scale factor) in the window and the quick panel.
     fn set_style(&mut self, on: bool, scale: f32) {
         STYLE.set((on, scale));
         #[cfg(windows)]
@@ -375,9 +374,6 @@ impl App {
         eq::apply(self);
         earbuds::apply(self);
         models::apply(self);
-        dual::apply(self);
-        hearing::apply(self);
-        controls::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
@@ -388,7 +384,6 @@ impl App {
         let anc = s.anc.clone().unwrap_or_default();
         let is_level = LEVELS.contains(&anc.as_str());
         let (anc_icon, li) = level_info(if is_level { &anc } else { "" });
-        // "ANC M": the level's first letter, as on the phone's segment and the widget's button.
         let mut anc_label = t(&self.tr, "anc_seg_anc").to_string();
         if is_level {
             if let Some(c) = t(&self.tr, level_names[li]).chars().next() { anc_label = format!("{anc_label} {}", c.to_uppercase()); }
@@ -409,7 +404,6 @@ impl App {
             b.set_left_charging(chg(0));
             b.set_right_charging(chg(1));
             b.set_case_charging(chg(2));
-            // §8: 3/7 in ear, 4 in case, 1/5 out
             let wear = |i: usize| match s.wear[i] { 3 | 7 => 2, 4 => 3, 1 | 5 => 1, _ => 0 };
             b.set_left_wear(wear(0));
             b.set_right_wear(wear(1));
@@ -435,7 +429,6 @@ impl App {
             }
             let _ = self.tray.set_tooltip(Some(tip));
         }
-        // The menu's battery line is short: "L:10 C:40 R:50" [USER].
         #[cfg(not(windows))]
         let _ = self.tray.send(if s.status != Status::On { "QuickBuds".into() } else {
             let line: Vec<String> = [("L", 0), ("C", 2), ("R", 1)].iter()
@@ -445,7 +438,6 @@ impl App {
     }
 }
 
-/// The frameless main window's own title bar and edges, through winit.
 fn window_chrome(main: &MainWindow) {
     use winit::window::ResizeDirection as R;
     let w = main.as_weak();
@@ -480,9 +472,8 @@ fn on_tray(e: TrayIconEvent) {
     with_app(|a| match button {
         MouseButton::Left => { a.panel.hide().ok(); show_main(&a.main); }
         MouseButton::Right => {
-            // Above the cursor and left of it (taskbar at the bottom right); below it if that is off screen.
             let scale = a.panel.window().scale_factor();
-            let (w, h) = ((300.0 * scale) as i32, (250.0 * scale) as i32);
+            let (w, h) = ((360.0 * scale) as i32, (310.0 * scale) as i32);
             let (x, y) = (position.x as i32, position.y as i32);
             let px = if x - w >= 0 { x - w } else { x };
             let py = if y - h >= 0 { y - h } else { y };
@@ -522,7 +513,6 @@ fn linux_tray() -> std::sync::mpsc::Sender<String> {
                 let _ = slint::invoke_from_event_loop(|| { let _ = slint::quit_event_loop(); });
             }
         }));
-        // ponytail: polls twice a second; battery changes slowly, an async channel is not worth it.
         gtk::glib::timeout_add_local(std::time::Duration::from_millis(500), move || {
             if let Some(text) = rx.try_iter().last() { battery.set_text(text); }
             gtk::glib::ControlFlow::Continue
@@ -533,15 +523,37 @@ fn linux_tray() -> std::sync::mpsc::Sender<String> {
 }
 
 fn main() {
-    // Software rendering: ~25 MB instead of ~130 MB with the GPU renderer, and fast enough for this UI.
+    session::app_start();
     if std::env::var_os("SLINT_BACKEND").is_none() {
         slint::BackendSelector::new().backend_name("winit".into()).renderer_name("software".into())
             .select().expect("backend");
     }
     let main = MainWindow::new().expect("window");
-    // Windows only: on Wayland even a never-shown window is a toplevel, and Plasma lists it in the taskbar.
     #[cfg(windows)]
     let panel = QuickPanel::new().expect("panel");
+
+    #[cfg(windows)]
+    {
+        use slint::winit_030::winit::platform::windows::WindowExtWindows;
+        
+        // Hide the mini UI from the taskbar
+        panel.window().with_winit_window(|w| {
+            w.set_skip_taskbar(true);
+        });
+        
+        // Render and apply the SVG icon to the main window taskbar
+        if let Ok(tree) = resvg::usvg::Tree::from_str(icons::LAUNCHER, &Default::default()) {
+            let size = 64; 
+            if let Some(mut pm) = resvg::tiny_skia::Pixmap::new(size, size) {
+                let s = size as f32 / tree.size().width().max(tree.size().height());
+                resvg::render(&tree, resvg::tiny_skia::Transform::from_scale(s, s), &mut pm.as_mut());
+                if let Ok(icon) = slint::winit_030::winit::window::Icon::from_rgba(pm.take_demultiplied(), size, size) {
+                    main.window().with_winit_window(|w| w.set_window_icon(Some(icon)));
+                }
+            }
+        }
+    }
+
     let tr = translations();
     setup_ui(&main.global::<Buds>(), &main.global::<Tr>(), &tr);
     #[cfg(windows)]
@@ -550,7 +562,7 @@ fn main() {
     #[cfg(windows)]
     setup_dots(&panel.global::<Dots>());
     window_chrome(&main);
-    // A new scale factor (another monitor) redraws the dots at its pitch.
+    
     main.window().on_winit_window_event(|_, e| {
         if let winit::event::WindowEvent::ScaleFactorChanged { scale_factor, .. } = e {
             let scale = *scale_factor as f32;
@@ -558,17 +570,19 @@ fn main() {
         }
         slint::winit_030::EventResult::Propagate
     });
-    eq::setup(&main);
+    
+    eq::setup(&main.global::<Eq>());
+    #[cfg(windows)]
+    eq::setup(&panel.global::<Eq>());
+    
     earbuds::setup(&main);
     models::setup(&main);
-    dual::setup(&main);
-    hearing::setup(&main);
-    controls::setup(&main);
     devtools::setup(&main);
+    setup_controls(&main); // Sets up the new Gesture bindings
+    
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
 
-    // The quick panel closes when it loses focus, like the system's own tray flyouts.
     #[cfg(windows)]
     panel.window().on_winit_window_event(|w, e| {
         if let winit::event::WindowEvent::Focused(false) = e { w.hide().ok(); }
@@ -587,14 +601,16 @@ fn main() {
     let tray = linux_tray();
 
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
+    
     APP.with(|a| *a.borrow_mut() = Some(App {
-        main: main.clone_strong(), #[cfg(windows)] panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
-        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0,
+        main: main.clone_strong(), 
+        #[cfg(windows)] panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
+        snap: Snapshot::default(), gains, edit_key: None, edit_gesture: None, plot: (0.0, 0.0), log_shown: 0,
     }));
+    
     main.show().expect("show");
     let dot_matrix = load_settings()["dot_matrix"].as_bool().unwrap_or(false);
     let scale = main.window().scale_factor();
     with_app(|a| a.set_style(dot_matrix, scale));
-    // Closing the window hides it; the app lives in the tray until Quit.
     slint::run_event_loop_until_quit().expect("event loop");
 }
