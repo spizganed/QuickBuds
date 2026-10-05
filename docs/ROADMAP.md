@@ -57,10 +57,6 @@ Nothing.
 
 ## Waiting on others
 
-- **First other-model reports** (issue #1, pratstick: OnePlus Nord Buds 2R, realme Buds Wireless 3,
-  Galaxy S24; still no reply, 2026-09-30). Their logs are the first non-Buds 4 evidence: read them
-  before changing anything. Every write on another model stays unverified until an owner reads one
-  back.
 - **Nord Buds 3 Pro reconnect loop** (issue #2, Android and Debian desktop, 2026-10-05): the buds reset
   the link 3-5 s after connect. Fix candidates: answering their requests (time, PROTOCOL.md §9) and
   subscribing only to offered events (§4). Waiting for an owner to test the next version.
