@@ -235,8 +235,9 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   screen (window 1100x760, `env -u WAYLAND_DISPLAY`), his PC's name masked in a throwaway build; the
   tray by hand with `spectacle`.
 
-## Current state (2026-10-05)
+## Current state (2026-10-06)
 
-- Latest release v4.3.0 (2026-10-05). The Windows zip is cross-built and has never run on Windows.
+- Latest release v4.3.1 (2026-10-06: desktop self-update). The Windows zip is cross-built and has never
+  run on Windows.
 - **Next:** ROADMAP.md step 2, starting with his Windows zip test.
-- **Waiting:** issue #2 owners testing 4.3.0 (read their logs before changing anything); AUR account.
+- **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
