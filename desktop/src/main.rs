@@ -144,13 +144,13 @@ fn setup_dots(d: &Dots) {
 }
 
 /// The sidebar's sections; each turns on when its page exists.
-fn nav() -> ModelRc<NavEntry> {
+fn nav(eq_ready: bool, controls_ready: bool, hearing_ready: bool, dual_ready: bool) -> ModelRc<NavEntry> {
     let nav: Vec<NavEntry> = [
         (icons::LAYOUT, "Overview", true),
-        (icons::EQUALIZER, "Equalizer", true),
-        (icons::GESTURE, "Controls", true),
-        (icons::HEARING, "Hearing profile", true),
-        (icons::DEVICES, "Dual connection", true),
+        (icons::EQUALIZER, "Equalizer", eq_ready),
+        (icons::GESTURE, "Controls", controls_ready),
+        (icons::HEARING, "Hearing profile", hearing_ready),
+        (icons::DEVICES, "Dual connection", dual_ready),
         (icons::EARBUD, "Earbud settings", true),
         (icons::SETTINGS_COG, "App settings", true),
         (icons::DEV_TOOLS, "Dev tools", true),
@@ -365,13 +365,25 @@ impl App {
             d.set_on(on);
             set_icons(&b);
         }
-        self.main.set_nav(nav());
+        let s = &self.snap;
+        let has_eq = s.model.is_some_and(|m| m.get("equalizer").is_some() || m.get("equalizerMode").is_some() || m.get("customEqualizer").is_some());
+        let has_controls = s.model.is_some_and(|m| m.get("control").is_some() || m.get("callControl").is_some());
+        let has_hearing = s.caps.supports(crate::protocol::CMD_GOLDEN_DETECT) || s.features.iter().any(|f| f.0 == crate::protocol::FEATURE_HEARING);
+        let has_dual = s.features.iter().any(|f| f.0 == crate::protocol::FEATURE_DUAL) || s.model.is_some_and(|m| m.get("multiConnect").is_some());
+        self.main.set_nav(nav(has_eq, has_controls, has_hearing, has_dual));
         self.apply(self.snap.clone());
         eq::redraw(self);
     }
 
     fn apply(&mut self, s: Snapshot) {
         self.snap = s.clone();
+        
+        let has_eq = s.model.is_some_and(|m| m.get("equalizer").is_some() || m.get("equalizerMode").is_some() || m.get("customEqualizer").is_some());
+        let has_controls = s.model.is_some_and(|m| m.get("control").is_some() || m.get("callControl").is_some());
+        let has_hearing = s.caps.supports(crate::protocol::CMD_GOLDEN_DETECT) || s.features.iter().any(|f| f.0 == crate::protocol::FEATURE_HEARING);
+        let has_dual = s.features.iter().any(|f| f.0 == crate::protocol::FEATURE_DUAL) || s.model.is_some_and(|m| m.get("multiConnect").is_some());
+        self.main.set_nav(nav(has_eq, has_controls, has_hearing, has_dual));
+        
         eq::apply(self);
         earbuds::apply(self);
         models::apply(self);
