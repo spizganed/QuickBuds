@@ -314,6 +314,15 @@ pub fn eq_has_custom(model: Option<&Value>, caps: &Caps) -> bool {
     flag(model, "customEqualizer") && caps.supports(CMD_SAVE_CUSTOM_EQ)
 }
 
+/// Any equalizer at all (`EqActivity.hasEq`): custom presets, or built-in ones on a model with `equalizer` 1..4.
+pub fn eq_has(model: Option<&Value>, caps: &Caps) -> bool {
+    eq_has_custom(model, caps)
+        || (1..=4).contains(&model.map_or(1, |m| m["equalizer"].as_i64().unwrap_or(0))) && caps.supports(CMD_SET_EQ)
+}
+
+/// The buds listed switch `id` in their last `0x810D` reply; nothing read yet = yes (`Capabilities.hasFeature`).
+pub fn has_feature(features: &[(u8, u8)], id: u8) -> bool { features.is_empty() || features.iter().any(|f| f.0 == id) }
+
 pub fn eq_has_bass(model: Option<&Value>, caps: &Caps) -> bool {
     flag(model, "bassEngineSupport") && caps.supports(CMD_SET_BASSWAVE)
 }
@@ -853,8 +862,40 @@ pub fn payload_of(p: &[u8]) -> &[u8] { &p[header_len(p)..] }
 
 pub fn seq_of(p: &[u8]) -> u8 { p[header_len(p) - 3] }
 
-/// The `0x8500` payload for [REQ_TIME].
-pub fn time_reply(unix: u32) -> Vec<u8> { [&[0u8][..], &unix.to_le_bytes()].concat() }
+/// HeyMelody's answer `(cmd, payload)` to a frame the buds send on their own, or `None`
+/// (PROTOCOL.md §9 "Requests from the buds"). `[VENDOR]`
+pub fn answer_for(p: &[u8], unix: u32) -> Option<(u16, Vec<u8>)> {
+    let cmd = cmd_of(p);
+    let pl = payload_of(p);
+    if cmd & 0x8000 != 0 { return None; }
+    let answer = match cmd {
+        REQ_TIME => [&[0u8][..], &unix.to_le_bytes()].concat(),
+        0x050C => vec![0, 1, 0],
+        0x051C => vec![0, 0, 0],
+        // ponytail: always "invalid"; HeyMelody answers the phone's spatial mode, which we do not have.
+        0x051D => vec![1],
+        EVT_PUSH => match pl.first() {
+            Some(0xF2) => vec![0, 0xF2],
+            Some(0xF4) => json_ack(&pl[1..]),
+            _ => return None,
+        },
+        _ if ![0x0100, 0x0200, 0x0300, 0x0400, 0x0500, 0x0F00].contains(&(cmd & 0x7F00)) => vec![1],
+        _ => return None,
+    };
+    Some((cmd | 0x8000, answer))
+}
+
+/// `F4` JSON push: `00 F4 {"cmd":<its cmd>}`, `01 F4` if it does not parse.
+fn json_ack(json: &[u8]) -> Vec<u8> {
+    if json.is_empty() { return vec![0, 0xF4]; }
+    match serde_json::from_slice::<Value>(json) {
+        Ok(v) => {
+            let echo = match v["cmd"].as_str() { Some(c) => serde_json::json!({ "cmd": c }), None => serde_json::json!({}) };
+            [&[0u8, 0xF4][..], echo.to_string().as_bytes()].concat()
+        }
+        Err(_) => vec![1, 0xF4],
+    }
+}
 
 /// Splits the RFCOMM byte stream into packets. Bytes before an `AA` are dropped into `discarded` (for the log).
 #[derive(Default)]
@@ -901,6 +942,10 @@ mod tests {
         assert_eq!(parse_presets(&list), Some(vec![p.clone()]));
         assert_eq!(&p.encode(EQ_SAVE)[..5], [2, 0xFA, 0x06, 4, 7]);
         assert_eq!(firmware_version("1,2,138,2,2,138,3,1,01,3,2,105").as_deref(), Some("138.138.105"));
+        // Gates: the Enco Buds have no equalizer; a switch list without 0x11 hides Dual connection.
+        assert!(eq_has(find_model(Some("065414"), None), &Caps(None)));
+        assert!(!eq_has(find_model(Some("062410"), None), &Caps(None)));
+        assert!(has_feature(&[], FEATURE_DUAL) && !has_feature(&[(FEATURE_HEARING, 1)], FEATURE_DUAL));
         let b = eq_builtins(find_model(Some("065414"), Some("OnePlus Buds 4")), Some("138.138.105"));
         assert_eq!(b, [(0, "eq_balanced"), (1, "eq_clear_vocals"), (2, "eq_bass")]);
     }
@@ -922,7 +967,12 @@ mod tests {
         assert_eq!(anc.levels().len(), 4);
         let req = build_packet(REQ_TIME, 0x14, &[0, 0, 0, 0]);
         assert_eq!((cmd_of(&req), seq_of(&req)), (REQ_TIME, 0x14));
-        assert_eq!(time_reply(0x6700_1234), [0, 0x34, 0x12, 0x00, 0x67]);
+        assert_eq!(answer_for(&req, 0x6700_1234), Some((0x8500, vec![0, 0x34, 0x12, 0x00, 0x67])));
+        let json = build_packet(EVT_PUSH, 0xFF, &[&[0xF4u8][..], br#"{"cmd":"a2dp_caton","ver":"1"}"#].concat());
+        assert_eq!(answer_for(&json, 0), Some((0x8204, [&[0u8, 0xF4][..], br#"{"cmd":"a2dp_caton"}"#].concat())));
+        assert_eq!(answer_for(&build_packet(EVT_PUSH, 3, &[2, 3, 1, 3]), 0), None);
+        assert_eq!(answer_for(&build_packet(0x0600, 9, &[]), 0), Some((0x8600, vec![1])));
+        assert_eq!(answer_for(&build_packet(0x8105, 9, &[0]), 0), None);
         let push = build_packet(EVT_PUSH, 7, &[2, 3, 1, 7, 2, 7, 3, 4]);
         assert!(matches!(decode(&push), Some(Event::Wear(w)) if w == [(1, 7), (2, 7), (3, 4)]));
     }

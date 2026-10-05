@@ -331,6 +331,9 @@ fn paint_noise(a: &App, m: &Model) {
     c.set_pick_message(if working.len() == 1 && m.hold_min == 1 { t(&a.tr, "gesture_hold_rule").into() } else { "".into() });
 }
 
+/// Buds with a gesture table to edit (`EarbudSettingsActivity`'s gestures row).
+pub fn available(s: &Snapshot) -> bool { s.caps.supports(CMD_SET_KEY_FUNCTION) && !Model::of(s).rows.is_empty() }
+
 pub fn apply(a: &App) {
     let s = &a.snap;
     let m = Model::of(s);

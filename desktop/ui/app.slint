@@ -219,6 +219,8 @@ export global Buds {
     in property <bool> has-transparency;
     in property <[Level]> levels;
     in property <bool> low-latency;
+    in property <bool> has-game: true;
+    in property <bool> has-eq: true;
 
     in property <image> icon-left;
     in property <image> icon-right;
@@ -558,10 +560,10 @@ component NavItem inherits Rectangle {
     in property <NavEntry> entry;
     in property <bool> active;
     callback clicked;
-    height: 40px;
+    height: entry.ready ? 40px : 0px;
+    visible: entry.ready;
     border-radius: 10px;
     background: Dots.on ? transparent : active ? Palette.accent.transparentize(0.85) : ta.has-hover && entry.ready ? Palette.outline : transparent;
-    opacity: entry.ready ? 1 : 0.4;
     if Dots.on && (active || (ta.has-hover && entry.ready)): DotBox {
         width: 100%; height: 100%; radius: 10px;
         fill: Palette.sidebar; stroke: active ? Palette.accent : Palette.outline;
@@ -578,7 +580,6 @@ component NavItem inherits Rectangle {
             text: entry.name; vertical-alignment: center; horizontal-stretch: 1;
             color: Palette.text; font-size: 14px; font-weight: active ? 600 : 400;
         }
-        if !entry.ready: Text { text: "Soon"; vertical-alignment: center; color: Palette.text2; font-size: 11px; }
     }
     ta := TouchArea {
         enabled: entry.ready;
@@ -2122,20 +2123,20 @@ export component MainWindow inherits Window {
                 border-radius: self.height / 2;
                 AncSegments { x: 4px; y: 4px; width: parent.width - 8px; height: parent.height - 8px; }
             }
-            Card {
+            if Buds.has-game || Buds.has-eq: Card {
                 border-radius: 24px;
                 VerticalLayout {
                     padding-left: 20px;
                     padding-right: 20px;
-                    FeatureRow {
+                    if Buds.has-game: FeatureRow {
                         icon: Buds.icon-low-latency;
                         title: Tr.game-title;
                         subtitle: Tr.game-sub;
                         checked: Buds.low-latency;
                         toggled(on) => { Buds.set-low-latency(on); }
                     }
-                    Divider {}
-                    NavRow {
+                    if Buds.has-game && Buds.has-eq: Divider {}
+                    if Buds.has-eq: NavRow {
                         icon: Buds.icon-bass;
                         title: Tr.eq-row-title;
                         subtitle: Tr.eq-row-sub;
@@ -2189,7 +2190,7 @@ export component QuickPanel inherits Window {
             }
             Batteries { size: 54px; labels: false; }
             AncSegments { compact: true; height: 40px; opacity: Buds.on ? 1 : 0.35; }
-            LowLatencyRow { opacity: Buds.on ? 1 : 0.35; }
+            if Buds.has-game: LowLatencyRow { opacity: Buds.on ? 1 : 0.35; }
             HorizontalLayout {
                 spacing: 8px;
                 alignment: end;

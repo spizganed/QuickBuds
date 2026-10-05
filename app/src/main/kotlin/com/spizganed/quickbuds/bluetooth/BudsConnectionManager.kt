@@ -1098,11 +1098,10 @@ class BudsConnectionManager(private val context: Context) {
         val cmd = OpoProtocol.u16(packet, 4)
         val payload = payloadOf(packet)
 
-        // Some buds drop the link a few seconds after an unanswered time request (issue #2).
-        if (cmd == OpoProtocol.REQ_TIME) {
-            sendRaw(OpoProtocol.timeReply(packet[6].toInt() and 0xFF, System.currentTimeMillis() / 1000), "time reply")
-            return
-        }
+        // Some buds drop the link a few seconds after an unanswered request (issue #2: the time request).
+        OpoProtocol.answerFor(cmd, packet[6].toInt() and 0xFF, payload, System.currentTimeMillis() / 1000)
+            ?.let { sendRaw(it, "answer %04X".format(cmd)) }
+        if (cmd == OpoProtocol.REQ_TIME) return
 
         // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
         if (cmd == 0x8100) {
