@@ -265,7 +265,8 @@ impl<'a> Conn<'a> {
                     crate::save_setting("product_id", id.as_str().into());
                     if !all["model_manual"].is_null() { crate::save_setting("model_manual", serde_json::Value::Null); }
                 }
-                s.detected = find_model(Some(&id), Some(&s.name));
+                // Prioritize matching by exact Bluetooth name, fallback to generic Product ID
+                s.detected = find_model(None, Some(&s.name)).or_else(|| find_model(Some(&id), Some(&s.name)));
                 pick_model(s);
                 // The bridge (or an unknown device name) shows the model's name instead.
                 if let Some(n) = s.model.and_then(|m| m["name"].as_str()) {
@@ -276,9 +277,20 @@ impl<'a> Conn<'a> {
             Event::EqCurrent(id) => s.eq_current = Some(id),
             Event::EqCustom(list) => s.eq_custom = list,
             Event::BassLevel(l) => s.bass_level = Some(l),
-            Event::Battery(v) => for (i, level, charging) in v {
-                if (1..=3).contains(&i) { s.battery[i as usize - 1] = Some((level, charging)); }
-            },
+            Event::Battery(v) => {
+                let mut present = [false; 3];
+                for (i, level, charging) in v {
+                    if (1..=3).contains(&i) {
+                        let idx = i as usize - 1;
+                        s.battery[idx] = Some((level, charging));
+                        present[idx] = true;
+                    }
+                }
+                // Clear components that stopped reporting (e.g. closed case lid)
+                for i in 0..3 {
+                    if !present[i] { s.battery[i] = None; }
+                }
+            }
             Event::Wear(v) => for (i, st) in v {
                 if (1..=3).contains(&i) { s.wear[i as usize - 1] = st; }
             },
