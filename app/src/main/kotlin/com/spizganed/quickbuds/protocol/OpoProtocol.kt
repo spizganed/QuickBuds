@@ -191,11 +191,46 @@ object OpoProtocol {
         return head + payload
     }
 
-    /** Time request `0x0500` from the buds: answered `8500 <its seq> 00 <unix seconds u32 LE>`, as HeyMelody does (PROTOCOL.md §9). */
+    /** Time request `0x0500` from the buds (PROTOCOL.md §9). */
     const val REQ_TIME = 0x0500
-    fun timeReply(seq: Int, unixSeconds: Long): ByteArray {
-        val t = unixSeconds.toInt()
-        return buildPacket(REQ_TIME or 0x8000, seq, byteArrayOf(0, t.toByte(), (t shr 8).toByte(), (t shr 16).toByte(), (t shr 24).toByte()))
+    /** Command groups HeyMelody knows; a request from the buds in any other gets `01`. */
+    private val KNOWN_GROUPS = setOf(0x0100, 0x0200, 0x0300, 0x0400, 0x0500, 0x0F00)
+
+    /**
+     * HeyMelody's answer to a frame the buds send on their own, or null (PROTOCOL.md §9 "Requests
+     * from the buds"). [cmd], [seq], [payload] are the incoming frame's. `[VENDOR]`
+     */
+    fun answerFor(cmd: Int, seq: Int, payload: ByteArray, unixSeconds: Long): ByteArray? {
+        if (cmd and 0x8000 != 0) return null
+        val answer = when (cmd) {
+            REQ_TIME -> unixSeconds.toInt().let { t ->
+                byteArrayOf(0, t.toByte(), (t shr 8).toByte(), (t shr 16).toByte(), (t shr 24).toByte())
+            }
+            0x050C -> byteArrayOf(0, 1, 0)
+            0x051C -> byteArrayOf(0, 0, 0)
+            // ponytail: always "invalid"; HeyMelody answers the phone's spatial mode, which we do not have.
+            0x051D -> byteArrayOf(1)
+            CMD_ACTIVE_REPORT -> when (payload.firstOrNull()?.toInt()?.and(0xFF)) {
+                0xF2 -> byteArrayOf(0, 0xF2.toByte())
+                0xF4 -> jsonAck(payload.copyOfRange(1, payload.size))
+                else -> null
+            }
+            else -> if (cmd and 0x7F00 !in KNOWN_GROUPS) byteArrayOf(1) else null
+        } ?: return null
+        return buildPacket(cmd or 0x8000, seq, answer)
+    }
+
+    /** `F4` JSON push: `00 F4 {"cmd":<its cmd>}`, `01 F4` if it does not parse. */
+    private fun jsonAck(json: ByteArray): ByteArray {
+        val head = byteArrayOf(0, 0xF4.toByte())
+        val text = String(json, Charsets.UTF_8)
+        if (text.isEmpty()) return head
+        return try {
+            val cmd = org.json.JSONObject(text).opt("cmd")
+            head + org.json.JSONObject().apply { if (cmd is String) put("cmd", cmd) }.toString().toByteArray()
+        } catch (e: org.json.JSONException) {
+            byteArrayOf(1, 0xF4.toByte())
+        }
     }
 
     fun buildHandshake(): ByteArray = buildPacket(CMD_HANDSHAKE)

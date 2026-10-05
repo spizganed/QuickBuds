@@ -132,7 +132,7 @@ Details in the sections cited. `—` = empty payload.
 
 | Cmd | Name |
 |---|---|
-| `0x0500` / `0x0501` | Time request (§9), answered `8500 00 <time>` / bud state |
+| `0x0500` / `0x0501` | Time request (§9, answered) / bud state |
 | `0x0504` | EQ mode changed: `<id>` (§9) |
 | `0x0510` | Spatial type changed: `<type>` (§9) |
 
@@ -196,7 +196,9 @@ disturbed, suspect the last two (they were added last).
 | `0B` | Personalised ANC result (§9) | when the bitmap has `0x0412` |
 | `0E` | Golden Sound ear scan result (§9) | pushed, not in the list |
 | `F1` | Gesture fired (§6) | `[OSS]` debug channel |
-| `F2`, `F3` | `[OSS]` debug / JSON channels | no |
+| `F2` | Connected-devices info `[VENDOR]`, acked (§9) | no |
+| `F3` | `[OSS]` debug channel | no |
+| `F4` | Diagnostic JSON `[VENDOR]`, acked (§9) | pushed, not in the list |
 | `F5` | Head gesture type `[VENDOR]` | — |
 
 ### Subscribing — `0x0205`
@@ -609,21 +611,30 @@ entry: <MAC, 6 bytes reversed> <len> <state> <flags> <nameLen> <name UTF-8>
   disconnect (MAC in written order, the reverse of the list); `03 <MAC>` unpair (unused). Preferred
   device: `0x0429 04 00` automatic, `04 01 <MAC>`; read `0x0132 02` → `00 02 <00 | 01 <MAC>>`.
 
-### Time request — `0x0500` `[CAPTURE]`+`[VENDOR]`
+### Requests from the buds — answered as HeyMelody does `[VENDOR]`
 
-The buds send `0x0501` and `0x0500` when a device connects. HeyMelody answers `0x0500` with
-`8500 <same Seq> 00 <Unix seconds u32 LE>` `[VENDOR]`, adding `<zone offset seconds s32 LE>` only for
-models its server config flags (not in `models.json`, so not sent). **QuickBuds answers the same way**
-(`OpoProtocol.timeReply`, `protocol::time_reply`).
+Some firmwares wait for these answers and reset the link when none comes. Nord Buds 3 Pro
+(`064414`, issue #2) `[CAPTURE]`: sends `0x0500` with a real Seq and `00 00 00 00`, resends it, stops
+answering queries and resets the link 3-5 s after connect, every time, when it goes unanswered. Buds 4
+sends `0x0500` empty and works either way. Both apps answer from one function (`OpoProtocol.answerFor`,
+`protocol::answer_for`); every answer echoes the request's Seq and sets `0x8000` on its cmd.
 
-- Buds 4 sends it empty and works without the answer.
-- Nord Buds 3 Pro (`064414`, issue #2) `[CAPTURE]` sends it with a real Seq and `00 00 00 00`, resends it,
-  stops answering queries and resets the link 3-5 s after connect, every time, when it is not answered.
-  The answer is the fix candidate; not yet confirmed on those buds.
-- HeyMelody does **not** ack `0x0204` pushes in general: only events `F2` (device list) and `F4` (JSON)
-  get `8204 <same Seq> <status> <event>` `[VENDOR]`. Battery, wear and ANC pushes get no reply.
-- A request from the buds in a command group HeyMelody does not know gets `<cmd | 0x8000> <same Seq> 01`
-  `[VENDOR]`. `0x0501` gets no reply.
+| From the buds | Answer | Meaning |
+|---|---|---|
+| `0x0500` | `00 <Unix seconds u32 LE>` | Time request, sent on connect with `0x0501` |
+| `0x050C` | `00 01 00` | Last byte: is the foreground app on a list the buds hold (no) |
+| `0x051C` | `00 00 00` | The app's capabilities; middle byte = fast discovery (off) |
+| `0x051D` | `01` | The phone's spatial mode. HeyMelody answers it later with the mode, `01` only for bad data; we always send `01` |
+| `0x0204` push `F2` | `00 F2` | Connected-devices info (HeyMelody's status 00 = parsed) |
+| `0x0204` push `F4` | `00 F4 {"cmd":<its cmd>}` | Diagnostic JSON; `01 F4` if it does not parse. Buds 4 sends these with Seq `FF` |
+| a cmd outside groups `01`-`05`, `0F` | `01` | Unknown request |
+
+- No other push gets an answer: battery, wear, ANC, `06` and the rest are not acked by HeyMelody either.
+  `0x0501` and `0x0504` get none.
+- HeyMelody adds `<zone offset seconds s32 LE>` to the time answer for models whose model list flags
+  `utcTimeZone`. The full list in the `[OSS]` repos (OppoPods, OppoPodsManager; 137 models, the source
+  of `models.json`) flags none, so the 4-byte form goes out for every model. A newer list may flag some.
+- Seen on Buds 4 after the change `[CAPTURE]` 2026-10-05: `0x0500` answered within 5 ms, link unchanged.
 
 ---
 

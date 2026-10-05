@@ -87,7 +87,8 @@ Details and evidence in PROTOCOL.md.
 - **Adding an ANC mode touches all of:** `AncModes`, `OpoProtocol.anc(bit)`, `BudsConnectionManager`
   (`sendAnc`, `lastAncLevelSent`), `BudsService` routing, `WidgetStateStore`, `WidgetSettings.MODES`,
   `WidgetActionReceiver`, `MainActivity` segments.
-- `0x0500` time request is answered like HeyMelody (some buds drop the link without it, issue #2).
+- **Requests from the buds are answered like HeyMelody** (PROTOCOL.md §9; some buds drop the link
+  without, issue #2). A new one goes into `answerFor` / `answer_for`, never a handler of its own.
 - **Settled, do not raise again:** case lid has no lasting state and
   case charging is not shown; undecoded families (PROTOCOL.md §12) are not guessed from a few samples.
 
@@ -145,6 +146,7 @@ matrix"** `[USER]`, never "Nothing" (trademark) or "Pixel"; code keeps `nothing`
 - Haptics: `Haptics.commit(view)` on user actions only, never programmatic changes. Widgets:
   `Haptics.tick(context)`.
 - **New firmware settings go in the Earbud settings hub** (`EarbudSettingsActivity`).
+- **Rows and pages show only what the buds have** (`rowSupported`, desktop `Has`); a new one is gated in both apps.
 - **A new home row needs its key in `buildFeatureRows()` AND `HomeLayoutActivity.ROWS`.**
 - Hearing profile is the vendor's "Golden Sound": **never "Golden Sound" in a user-visible string.**
 - Colour edits save on commit; rows are never rebuilt mid-drag.

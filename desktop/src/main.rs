@@ -59,6 +59,8 @@ struct App {
     plot: (f32, f32),
     /// Packet log lines already in the Dev tools list.
     log_shown: usize,
+    /// What the last connected buds have; kept while disconnected, like [App::modes].
+    has: Has,
 }
 
 thread_local! { static APP: RefCell<Option<App>> = const { RefCell::new(None) }; }
@@ -143,14 +145,32 @@ fn setup_dots(d: &Dots) {
     });
 }
 
-/// The sidebar's sections; each turns on when its page exists.
-fn nav() -> ModelRc<NavEntry> {
+/// What the last connected buds have, as the phone gates its rows: game mode, equalizer, controls,
+/// hearing profile, dual connection. Nothing read yet = all.
+#[derive(Clone, Copy, PartialEq)]
+struct Has { game: bool, eq: bool, controls: bool, hearing: bool, dual: bool }
+
+impl Has {
+    const ALL: Has = Has { game: true, eq: true, controls: true, hearing: true, dual: true };
+    fn of(s: &Snapshot) -> Has {
+        Has {
+            game: protocol::has_feature(&s.features, s.caps.game_mode_id()),
+            eq: protocol::eq_has(s.model, &s.caps),
+            controls: controls::available(s),
+            hearing: protocol::has_feature(&s.features, protocol::FEATURE_HEARING),
+            dual: protocol::has_feature(&s.features, protocol::FEATURE_DUAL),
+        }
+    }
+}
+
+/// The sidebar's sections; a page the buds have no feature for is hidden.
+fn nav(h: Has) -> ModelRc<NavEntry> {
     let nav: Vec<NavEntry> = [
         (icons::LAYOUT, "Overview", true),
-        (icons::EQUALIZER, "Equalizer", true),
-        (icons::GESTURE, "Controls", true),
-        (icons::HEARING, "Hearing profile", true),
-        (icons::DEVICES, "Dual connection", true),
+        (icons::EQUALIZER, "Equalizer", h.eq),
+        (icons::GESTURE, "Controls", h.controls),
+        (icons::HEARING, "Hearing profile", h.hearing),
+        (icons::DEVICES, "Dual connection", h.dual),
         (icons::EARBUD, "Earbud settings", true),
         (icons::SETTINGS_COG, "App settings", true),
         (icons::DEV_TOOLS, "Dev tools", true),
@@ -365,7 +385,7 @@ impl App {
             d.set_on(on);
             set_icons(&b);
         }
-        self.main.set_nav(nav());
+        self.main.set_nav(nav(self.has));
         self.apply(self.snap.clone());
         eq::redraw(self);
     }
@@ -379,6 +399,12 @@ impl App {
         hearing::apply(self);
         controls::apply(self);
         if s.status == Status::On { self.modes = s.modes.clone(); }
+        if s.status == Status::On && Has::of(&s) != self.has {
+            self.has = Has::of(&s);
+            self.main.set_nav(nav(self.has));
+            let h = self.has;
+            if !match self.main.get_page() { 1 => h.eq, 2 => h.controls, 3 => h.hearing, 4 => h.dual, _ => true } { self.main.set_page(0); }
+        }
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
         let levels: Vec<Level> = self.modes.levels().into_iter().map(|id| {
@@ -422,6 +448,8 @@ impl App {
             b.set_has_transparency(self.modes.supports(protocol::TRANSPARENCY));
             b.set_levels(ModelRc::new(VecModel::from(levels.clone())));
             b.set_low_latency(s.low_latency.unwrap_or(false));
+            b.set_has_game(self.has.game);
+            b.set_has_eq(self.has.eq);
         }
 
         #[cfg(windows)]
@@ -589,7 +617,7 @@ fn main() {
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
     APP.with(|a| *a.borrow_mut() = Some(App {
         main: main.clone_strong(), #[cfg(windows)] panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
-        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0,
+        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0, has: Has::ALL,
     }));
     main.show().expect("show");
     let dot_matrix = load_settings()["dot_matrix"].as_bool().unwrap_or(false);

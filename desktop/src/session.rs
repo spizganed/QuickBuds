@@ -245,15 +245,11 @@ impl<'a> Conn<'a> {
             for p in self.framer.push(&buf[..n]) {
                 let e = decode(&p);
                 let human = e.as_ref().map(describe).or_else(|| describe_other(&p));
-                // Some buds drop the link a few seconds after an unanswered time request (issue #2).
-                if cmd_of(&p) == REQ_TIME {
-                    let now = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |d| d.as_secs() as u32);
-                    let seq = seq_of(&p);
-                    log("RX", p, human);
-                    self.send(REQ_TIME | 0x8000, Some(seq), &time_reply(now))?;
-                    continue;
-                }
+                // Some buds drop the link a few seconds after an unanswered request (issue #2: the time request).
+                let now = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |d| d.as_secs() as u32);
+                let answer = answer_for(&p, now).map(|a| (a, seq_of(&p)));
                 log("RX", p, human);
+                if let Some(((cmd, pl), seq)) = answer { self.send(cmd, Some(seq), &pl)?; }
                 if let Some(e) = e { changed |= self.apply(e); }
             }
             if !self.framer.discarded.is_empty() { log("DISCARDED RX", std::mem::take(&mut self.framer.discarded), None); }
