@@ -7,6 +7,7 @@
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
 [![Release](https://img.shields.io/github/v/release/spizganed/QuickBuds)](https://github.com/spizganed/QuickBuds/releases/latest)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/spizganed)
 
 QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app with a real
 home-screen widget.
@@ -15,8 +16,8 @@ QuickBuds is purely a passion and hobby project. If you like it and want to help
 donate on [Ko-fi](https://ko-fi.com/spizganed).
 
 > **Desktop beta for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
-> no drivers and no background services: battery, noise control, low latency, the equalizer and a packet
-> log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
+> no drivers and no background services: battery, noise control, low latency, the equalizer, gestures,
+> hearing profile, dual connection, earbud settings and a packet log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
 > `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3 and
 > libayatana-appindicator; see its README). Pair the buds in your system's Bluetooth settings first. With
 > Dual connection on, the phone app and the desktop app work at the same time. Progress is in
