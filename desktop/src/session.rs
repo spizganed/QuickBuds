@@ -5,7 +5,7 @@ use crate::bt;
 use crate::protocol::*;
 use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
 use std::sync::Mutex;
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 pub enum Cmd {
     Anc(String),
@@ -245,6 +245,14 @@ impl<'a> Conn<'a> {
             for p in self.framer.push(&buf[..n]) {
                 let e = decode(&p);
                 let human = e.as_ref().map(describe).or_else(|| describe_other(&p));
+                // Some buds drop the link a few seconds after an unanswered time request (issue #2).
+                if cmd_of(&p) == REQ_TIME {
+                    let now = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |d| d.as_secs() as u32);
+                    let seq = seq_of(&p);
+                    log("RX", p, human);
+                    self.send(REQ_TIME | 0x8000, Some(seq), &time_reply(now))?;
+                    continue;
+                }
                 log("RX", p, human);
                 if let Some(e) = e { changed |= self.apply(e); }
             }

@@ -191,6 +191,13 @@ object OpoProtocol {
         return head + payload
     }
 
+    /** Time request `0x0500` from the buds: answered `8500 <its seq> 00 <unix seconds u32 LE>`, as HeyMelody does (PROTOCOL.md §9). */
+    const val REQ_TIME = 0x0500
+    fun timeReply(seq: Int, unixSeconds: Long): ByteArray {
+        val t = unixSeconds.toInt()
+        return buildPacket(REQ_TIME or 0x8000, seq, byteArrayOf(0, t.toByte(), (t shr 8).toByte(), (t shr 16).toByte(), (t shr 24).toByte()))
+    }
+
     fun buildHandshake(): ByteArray = buildPacket(CMD_HANDSHAKE)
     fun buildQueryProductId(): ByteArray = buildPacket(CMD_QUERY_PRODUCT_ID)
     fun buildQueryBroadcastCodes(): ByteArray = buildPacket(CMD_QUERY_BROADCAST)
