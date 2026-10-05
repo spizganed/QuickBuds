@@ -203,12 +203,16 @@ disturbed, suspect the last two (they were added last).
 
 ### Subscribing — `0x0205`
 
-Payload **`<count> <ids...>`, count first** `[CAPTURE]`. The app sends `03 01 02 03` (battery, wear,
-ANC), plus `04` / `08` / `0B` as above (`OpoProtocol.registerNotifications()`). HeyMelody registers
-every id the buds list `[VENDOR]`.
+Payload **`<count> <ids...>`, count first** `[CAPTURE]`. The app asks for `01 02 03` (battery, wear,
+ANC), plus `04` / `08` / `0B` as above, **kept to the ids the buds offer in `0x8200`**
+(`OpoProtocol.notifyIds`, `protocol::notify_ids`). HeyMelody registers exactly the offered list
+`[VENDOR]`; on buds without `0x0205` in their bitmap it sends `0x0201 <id>` once per id instead.
 
 - **Never `01 01 02 02`**: that is "count 1, battery only". The buds ACK it and never push wear.
-- **Never drop `03`**: without it, ANC changes made on the buds send nothing at all.
+- **Never drop `03` when the buds offer it**: on Buds 4, without it, ANC changes made on the buds send
+  nothing at all.
+- Nord Buds 3 Pro (issue #2) `[CAPTURE]` offers only `00 02 02 01` (wear, battery). Asked for
+  `01 02 03 04 08 0B`, it never sent `0x8205`. It still pushed an ANC change once without `03`.
 - The `0x8205` ack does not simply echo the list. One sample: `01 02 01 00 02 00`, perhaps
   `[id][enable]` pairs `[GUESS]`. If it lists fewer ids than asked, part was rejected.
 

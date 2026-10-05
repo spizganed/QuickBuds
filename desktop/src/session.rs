@@ -75,6 +75,8 @@ pub struct Snapshot {
     pub battery: [Option<(u8, bool)>; 3],
     /// Left, right, case: raw wear status (§8), 0 = unknown.
     pub wear: [u8; 3],
+    /// The events the buds offer (`0x8200`), once read.
+    pub offered: Option<Vec<u8>>,
     pub anc: Option<String>,
     pub modes: AncModes,
     pub low_latency: Option<bool>,
@@ -278,6 +280,7 @@ impl<'a> Conn<'a> {
             }
             Event::Firmware(f) => s.firmware = Some(f),
             Event::EqCurrent(id) => s.eq_current = Some(id),
+            Event::Offered(o) => s.offered = Some(o),
             Event::EqCustom(list) => s.eq_custom = list,
             Event::BassLevel(l) => s.bass_level = Some(l),
             Event::Battery(v) => for (i, level, charging) in v {
@@ -334,8 +337,13 @@ impl<'a> Conn<'a> {
             self.send(cmd, None, &[])?;
             self.pump(200)?;
         }
+        let ids = notify_ids(&self.s.caps, self.s.offered.as_deref());
+        if !self.s.caps.supports(CMD_REGISTER_NOTIFY) {
+            for &id in &ids { self.send(CMD_REGISTER_ONE, None, &[id])?; }
+            self.pump(200)?;
+        }
         let queries: [(u16, Option<u8>, Vec<u8>); 6] = [
-            (CMD_REGISTER_NOTIFY, None, register_payload(&self.s.caps)),
+            (CMD_REGISTER_NOTIFY, None, register_payload(&ids)),
             (CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY.to_vec()),
             (CMD_QUERY_ANC, None, vec![1, 1]),
             (CMD_QUERY_BATTERY, Some(0xF0), vec![]),
@@ -343,7 +351,7 @@ impl<'a> Conn<'a> {
             (CMD_QUERY_FIRMWARE, None, vec![]),
         ];
         for (cmd, seq, payload) in queries {
-            if !self.s.caps.supports(cmd) { continue; }
+            if !self.s.caps.supports(cmd) || cmd == CMD_REGISTER_NOTIFY && ids.is_empty() { continue; }
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;
         }

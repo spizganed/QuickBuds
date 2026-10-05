@@ -10,6 +10,8 @@ pub const CMD_QUERY_WEARING: u16 = 0x0109;
 pub const CMD_QUERY_ANC: u16 = 0x010C;
 pub const CMD_QUERY_STATUS: u16 = 0x010D;
 pub const CMD_QUERY_BROADCAST: u16 = 0x0200;
+/// Subscribe one event (`<id>`), for buds without `0x0205` in their bitmap `[VENDOR]`.
+pub const CMD_REGISTER_ONE: u16 = 0x0201;
 pub const CMD_REGISTER_NOTIFY: u16 = 0x0205;
 pub const CMD_SET_FEATURE: u16 = 0x0403;
 pub const CMD_SET_ANC: u16 = 0x0404;
@@ -72,13 +74,23 @@ pub fn anc_payload(bit: u8) -> Vec<u8> {
 }
 
 /// `0x0205`, count first; never shorter than `03 01 02 03` (§4).
-pub fn register_payload(caps: &Caps) -> Vec<u8> {
+/// The events to subscribe to: ours, kept to those the buds offer in `0x8200` when they sent one, as
+/// HeyMelody subscribes to the offered list only (§4). Some firmwares never ack a list with others.
+pub fn notify_ids(caps: &Caps, offered: Option<&[u8]>) -> Vec<u8> {
     let mut ids = vec![1, 2, 3];
     if caps.supports(CMD_FIT_TEST) { ids.push(0x04); }
     if caps.supports(CMD_GOLDEN_DETECT) { ids.push(0x08); }
     if caps.supports(CMD_PERSONAL_NOISE) { ids.push(0x0B); }
-    ids.insert(0, ids.len() as u8);
+    if let Some(o) = offered { ids.retain(|i| o.contains(i)); }
     ids
+}
+
+/// `0x0205` payload: count, then the ids.
+pub fn register_payload(ids: &[u8]) -> Vec<u8> { [&[ids.len() as u8][..], ids].concat() }
+
+/// `0x8200` = `00 <count> <codes>`.
+pub fn offered_events(pl: &[u8]) -> Option<Vec<u8>> {
+    match pl { [0, n, codes @ ..] => codes.get(..*n as usize).map(<[u8]>::to_vec), _ => None }
 }
 
 /// `0x010D`: count, then the feature ids the phone app reads.
@@ -593,6 +605,8 @@ pub fn parse_devices(b: &[u8]) -> Option<Vec<PairedDevice>> {
 
 pub enum Event {
     Firmware(String),
+    /// `0x8200`: the events the buds offer.
+    Offered(Vec<u8>),
     EqCurrent(u8),
     EqCustom(Vec<Preset>),
     BassLevel(i8),
@@ -641,6 +655,7 @@ pub fn decode(p: &[u8]) -> Option<Event> {
     Some(match cmd_of(p) {
         0x8100 => Event::Caps(Caps::parse(pl)?),
         0x8103 => Event::ProductId(product_id(pl)?),
+        0x8200 => Event::Offered(offered_events(pl)?),
         // `[status][count][pairs]`
         0x8106 if sub == Some(0) => Event::Battery(battery(&pl[1..])),
         0x8109 => {
@@ -703,6 +718,7 @@ pub fn describe(e: &Event) -> String {
     let side = |i: u8| ["?", "L", "R", "Case"][(i as usize).min(3)];
     match e {
         Event::Firmware(f) => format!("Firmware {f}"),
+        Event::Offered(o) => format!("Notifications offered: {}", hex(o)),
         Event::EqCurrent(id) => format!("EQ preset {id}"),
         Event::EqCustom(v) => format!("Custom EQ: {}", v.iter().map(|p| format!("{} \"{}\"", p.id, p.name)).collect::<Vec<_>>().join(", ")),
         Event::BassLevel(l) => format!("Bass boost level {l}"),
@@ -760,7 +776,6 @@ pub fn describe_other(p: &[u8]) -> Option<String> {
             let name = cmd_name(cmd & 0x7FFF).map_or(format!("0x{:04X}", cmd & 0x7FFF), String::from);
             match pl.first() { Some(0) => format!("{name}: ok"), Some(s) => format!("{name}: FAILED (status {s})"), None => format!("{name}: ack") }
         }
-        0x8200 if pl.len() >= 2 => format!("Notifications offered: {}", hex(&pl[2..])),
         0x8205 => "Notifications registered".into(),
         REQ_TIME => "Time request".into(),
         0x8500 => "Time reply".into(),
@@ -965,6 +980,11 @@ mod tests {
         assert_eq!(anc_payload(anc.bit(ADAPTIVE).unwrap()), [1, 1, 0x00, 0x08]);
         assert_eq!(anc.mode_for_raw(1 << 3, None).as_deref(), Some(OFF));
         assert_eq!(anc.levels().len(), 4);
+        // Nord Buds 3 Pro offers battery and wear only: nothing else is asked for (issue #2).
+        let offered = offered_events(&[0, 2, 2, 1]).unwrap();
+        assert_eq!(notify_ids(&Caps(None), Some(&offered)), [1, 2]);
+        assert_eq!(notify_ids(&Caps(None), None), [1, 2, 3, 4, 8, 0x0B]);
+        assert_eq!(register_payload(&[1, 2]), [2, 1, 2]);
         let req = build_packet(REQ_TIME, 0x14, &[0, 0, 0, 0]);
         assert_eq!((cmd_of(&req), seq_of(&req)), (REQ_TIME, 0x14));
         assert_eq!(answer_for(&req, 0x6700_1234), Some((0x8500, vec![0, 0x34, 0x12, 0x00, 0x67])));
