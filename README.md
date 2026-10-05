@@ -63,6 +63,8 @@ Windows and Linux (shown: KDE Plasma). The tray menu shows the battery; on Windo
 
 <img src="docs/screenshots/desktop/window.png" width="640">
 
+Every page, and the Dot matrix style, is in [docs/screenshots/desktop](docs/screenshots/desktop).
+
 | Tray icon | Tray menu |
 | :---: | :---: |
 | <img src="docs/screenshots/desktop/tray.png" width="400"> | <img src="docs/screenshots/desktop/tray-menu.png" width="320"> |
