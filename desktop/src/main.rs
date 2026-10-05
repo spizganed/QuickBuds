@@ -12,6 +12,7 @@ mod hearing;
 mod models;
 mod protocol;
 mod session;
+mod update;
 
 mod icons { include!(concat!(env!("OUT_DIR"), "/icons.rs")); }
 mod strings { include!(concat!(env!("OUT_DIR"), "/strings.rs")); }
@@ -191,6 +192,7 @@ fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
 
 fn set_icons(b: &Buds) {
     b.set_icon_left(svg(icons::BUD_LEFT));
+    b.set_icon_update(svg(icons::UPDATE));
     b.set_icon_right(svg(icons::BUD_RIGHT));
     b.set_icon_case(svg(icons::CASE));
     b.set_icon_off(svg(icons::MODE_OFF));
@@ -245,6 +247,12 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_eq_add(t(s, "eq_add").into());
     tr.set_eq_save(t(s, "eq_save").into());
     tr.set_style_title(t(s, "widget_style_title").into());
+    tr.set_update_title(t(s, "update_title").into());
+    tr.set_update_installed(t(s, "update_installed").into());
+    tr.set_update_check(t(s, "update_check").into());
+    tr.set_update_install(t(s, "update_install").into());
+    tr.set_update_auto_title(t(s, "update_auto_title").into());
+    tr.set_update_auto_sub(t(s, "update_auto_sub").into());
     tr.set_style_classic(t(s, "widget_style_classic").into());
     tr.set_style_dots(t(s, "widget_style_nothing").into());
     tr.set_earbuds_title(t(s, "earbuds_title").into());
@@ -623,6 +631,7 @@ fn main() {
     let dot_matrix = load_settings()["dot_matrix"].as_bool().unwrap_or(false);
     let scale = main.window().scale_factor();
     with_app(|a| a.set_style(dot_matrix, scale));
+    update::setup(&main);
     // Closing the window hides it; the app lives in the tray until Quit.
     slint::run_event_loop_until_quit().expect("event loop");
 }

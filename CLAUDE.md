@@ -51,7 +51,7 @@ session-plan files: durable knowledge goes here or in PROTOCOL.md.
   archives from `scripts/desktop-dist.sh <version>` (into `desktop/dist/`); bump `desktop/Cargo.toml`
   `version` with the release. Then `gh release create v<version> <files> --target <full sha> --title
   "QuickBuds <version>"`. One release carries Android and desktop files `[USER]`; no local copies.
-  `desktop-v*` tags are for desktop-only fixes (the updater skips them). **No GitHub Actions** `[USER]`.
+  `desktop-v*` tags are for desktop-only fixes (the phone's updater skips them; the desktop's takes both). **No GitHub Actions** `[USER]`.
 - **Notes cover every user-visible change since the last tag**: read `git log v<previous>..HEAD` first.
 
 ### Phone (Termux, reached over SSH)
@@ -185,6 +185,10 @@ Rust, one crate, Slint UI, `tray-icon`. `cargo test` / `cargo build --release`. 
   request over L2CAP, kernel RFCOMM socket. No async runtime, no `bluer`. Hardware check:
   `cargo test live_battery -- --ignored --nocapture`.
 - Software renderer by default (~25 MB vs ~130 MB RAM).
+- **Updater** (`update.rs`): GitHub releases via `curl`, unpacked with `tar`, binary renamed to `.old` and
+  replaced, new one started. Never touches a binary in a folder it cannot write (opens the release page).
+  Archive names (`QuickBuds<ver>-windows-x64.zip` / `-linux-x64.tar.gz`) are what it looks for: keep them.
+  Test it on the invisible screen with a binary built as an older version, outside the repo.
 - Settings: `settings.json` in `%APPDATA%\QuickBuds` / `~/.config/quickbuds` (`save_setting`). Dot matrix
   shapes are images from `dots.rs` (port of `DotArt`) through the `Dots` global; a dot icon is drawn at the
   size it is shown (`svg_at`), a scaled one blurs.

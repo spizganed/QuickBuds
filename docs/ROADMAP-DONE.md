@@ -162,6 +162,7 @@ back.
   settings, App settings, Dev tools), Dot matrix style, tray (Linux: a menu; Windows: quick panel).
   Shipped as a Windows `.zip` and a Linux `.tar.gz`. Linux (BlueZ) checked by him 2026-10-01.
 - Pages and overview rows hide what the buds lack, as on the phone (4.3.0, 2026-10-05).
+- Self-update from App settings, check on start (4.3.1, 2026-10-06): Windows and a writable Linux folder.
 - Noise control like the phone: clicking ANC slides the segments over to Low / Medium / High / Smart, in
   the window and the tray panel. Dev tools page: packet log Human / Detailed / Raw, Clear, Export
   (`Downloads\QuickBuds\`), Reconnect, Disconnect. Both checked by him (2026-10-02).

@@ -66,6 +66,21 @@ component DotBox inherits Rectangle {
 }
 
 // Strings from the phone app's strings.xml (set from Rust for the system language).
+export global Update {
+    in property <string> installed;
+    in property <string> status;
+    // The newer version found, "" = none.
+    in property <string> available;
+    in property <string> notice;
+    // Its folder is writable: else the button opens the release page.
+    in property <bool> can-install;
+    in property <bool> busy;
+    in property <bool> auto;
+    callback check();
+    callback install();
+    callback set-auto(bool);
+}
+
 export global Tr {
     in property <string> connected: "Connected";
     in property <string> connect: "Connect";
@@ -101,6 +116,12 @@ export global Tr {
     in property <string> open: "Open QuickBuds";
     in property <string> quit: "Quit";
     in property <string> style-title: "Style";
+    in property <string> update-title: "App update";
+    in property <string> update-installed: "Installed";
+    in property <string> update-check: "Check again";
+    in property <string> update-install: "Install";
+    in property <string> update-auto-title: "Check on start";
+    in property <string> update-auto-sub: "Look for a new version when the app opens";
     in property <string> style-classic: "Classic";
     in property <string> style-dots: "Dot matrix";
     in property <string> earbuds-title;
@@ -233,6 +254,7 @@ export global Buds {
     in property <image> icon-app;
     in property <image> icon-bass;
     in property <image> icon-chevron;
+    in property <image> icon-update;
     in property <image> icon-plus;
     in property <image> icon-info;
     in property <image> icon-find;
@@ -256,9 +278,11 @@ export global Buds {
 }
 
 component Card inherits Rectangle {
+    // App settings, not the buds': never dimmed.
+    in property <bool> live;
     background: Dots.on ? transparent : Palette.card;
     border-radius: 16px;
-    opacity: Buds.on ? 1 : 0.35;
+    opacity: Buds.on || live ? 1 : 0.35;
     if Dots.on: DotBox { width: 100%; height: 100%; radius: root.border-radius; }
 }
 
@@ -464,6 +488,7 @@ component AncSegments inherits Rectangle {
 
 component Toggle inherits Rectangle {
     in property <bool> checked;
+    in property <bool> live;
     callback toggled(bool);
     // The phone's switch: a thin track under a thumb as tall as the switch, light grey when off.
     width: 44px;
@@ -496,7 +521,7 @@ component Toggle inherits Rectangle {
         animate x { duration: 120ms; }
     }
     TouchArea {
-        enabled: Buds.on;
+        enabled: Buds.on || root.live;
         mouse-cursor: pointer;
         clicked => { root.toggled(!root.checked); }
     }
@@ -605,6 +630,8 @@ component FeatureRow inherits HorizontalLayout {
     in property <bool> no-end;
     // The current value, left of the chevron.
     in property <string> value;
+    // Works while disconnected (an app setting).
+    in property <bool> live;
     callback toggled(bool);
     spacing: 16px;
     height: 64px;
@@ -618,7 +645,7 @@ component FeatureRow inherits HorizontalLayout {
     }
     if !chevron: VerticalLayout {
         alignment: center;
-        Toggle { checked: root.checked; toggled(on) => { root.toggled(on); } }
+        Toggle { checked: root.checked; live: root.live; toggled(on) => { root.toggled(on); } }
     }
     if value != "": Text { text: value; color: Palette.text2; font-size: 13px; vertical-alignment: center; horizontal-alignment: right; overflow: elide; max-width: 260px; }
     if chevron && !no-end: Image {
@@ -2008,6 +2035,35 @@ component SettingsPage inherits VerticalLayout {
             Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
         }
     }
+    SectionTitle { text: Tr.update-title; font-size: 13px; font-weight: 400; }
+    Card {
+        live: true;
+        border-radius: 24px;
+        VerticalLayout {
+            padding-left: 20px;
+            padding-right: 20px;
+            HorizontalLayout {
+                spacing: 8px;
+                FeatureRow {
+                    icon: Buds.icon-update; title: Tr.update-installed + " " + Update.installed; subtitle: Update.status;
+                    chevron: true; no-end: true;
+                }
+                if Update.available != "": VerticalLayout {
+                    alignment: center;
+                    Chip {
+                        text: Update.can-install ? Tr.update-install : "Open release page"; primary: true;
+                        clicked => { if !Update.busy { Update.install(); } }
+                    }
+                }
+                VerticalLayout { alignment: center; Chip { text: Tr.update-check; clicked => { Update.check(); } } }
+            }
+            Divider {}
+            FeatureRow {
+                icon: Buds.icon-update; title: Tr.update-auto-title; subtitle: Tr.update-auto-sub;
+                checked: Update.auto; live: true; toggled(on) => { Update.set-auto(on); }
+            }
+        }
+    }
     Rectangle { vertical-stretch: 1; }
 }
 
@@ -2102,8 +2158,15 @@ export component MainWindow inherits Window {
             horizontal-stretch: 1;
             padding: 28px;
             spacing: 16px;
-
-
+            if Update.available != "": Card {
+                live: true;
+                border-radius: 24px;
+                NavRow {
+                    x: 20px; width: parent.width - 40px;
+                    icon: Buds.icon-update; title: Update.notice; subtitle: Tr.update-installed + " " + Update.installed;
+                    clicked => { root.page = 6; }
+                }
+            }
             // The phone's home: status card, noise pill, feature list.
             Card {
                 border-radius: 24px;
