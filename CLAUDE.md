@@ -87,10 +87,10 @@ Details and evidence in PROTOCOL.md.
 - **Adding an ANC mode touches all of:** `AncModes`, `OpoProtocol.anc(bit)`, `BudsConnectionManager`
   (`sendAnc`, `lastAncLevelSent`), `BudsService` routing, `WidgetStateStore`, `WidgetSettings.MODES`,
   `WidgetActionReceiver`, `MainActivity` segments.
-- **Requests from the buds are answered like HeyMelody** (PROTOCOL.md §9; some buds drop the link
-  without, issue #2). A new one goes into `answerFor` / `answer_for`, never a handler of its own.
-- **Settled, do not raise again:** case lid has no lasting state and
-  case charging is not shown; undecoded families (PROTOCOL.md §12) are not guessed from a few samples.
+- **Behave like HeyMelody toward the buds** (some drop the link otherwise, issue #2): answer their
+  requests in `answerFor` / `answer_for` (PROTOCOL.md §9); subscribe only to offered events (§4).
+- **Settled, do not raise again:** case lid has no lasting state and case charging is not shown;
+  undecoded families (PROTOCOL.md §12) are not guessed from a few samples.
 
 ## Connection
 
@@ -231,7 +231,6 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 
 ## Current state (2026-10-05)
 
-- v4.3.0 released 2026-10-05 (answers the buds' requests, offered-only subscription: issue #2; desktop hides what the buds lack). v4.2.0: 2026-10-04. v4.1.0: 2026-10-03. v4.0.0: 2026-10-01 (Android + desktop beta). Linux desktop app checked by him 2026-10-01.
-- **Next:** he tests the Windows zip (cross-built, never ran on Windows): Winsock connect, tray left
-  click / quick panel, EQ, ANC. Then ROADMAP.md step 2.
-- **Waiting:** issue #2 owners testing 4.3.0 (read their logs before changing anything); AUR account. Issue #1 closed 2026-10-05, no reply.
+- Latest release v4.3.0 (2026-10-05). The Windows zip is cross-built and has never run on Windows.
+- **Next:** ROADMAP.md step 2, starting with his Windows zip test.
+- **Waiting:** issue #2 owners testing 4.3.0 (read their logs before changing anything); AUR account.

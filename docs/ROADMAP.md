@@ -19,37 +19,12 @@ finished (ROADMAP-DONE.md).
    [CONTRIBUTING.md](./CONTRIBUTING.md) (build quickstart), [PACKET-CAPTURE.md](./PACKET-CAPTURE.md)
    (capture guide) and [TOOLCHAIN.md](./TOOLCHAIN.md) (Termux build and test device, SSH from a
    headless PC). **Next:** links from Reddit / XDA.
-2. **PC version** (Windows and Linux), decided 2026-09-30: Rust + Slint in `desktop/`, same repo.
-   Window like accessory software plus a tray (battery on hover, right-click quick panel with ANC,
-   low latency and more). Every mobile feature that makes sense on a PC. Shipped as a portable `.zip`
-   (Windows) and a `.tar.gz` (Linux), no installer for now: no drivers, no services, no helper processes
-   `[USER]`. First beta ships in the 4.0.0 release.
-   Done: the updater skips desktop releases; Windows: frameless window with our own title bar, sidebar +
-   Overview (battery, noise control, low latency), Equalizer page (presets, band editor, Bass boost), tray
-   quick panel, APK launcher icon. English only for now `[USER]`.
-   **Next, in order** (`[USER]` 2026-09-30):
-   1. **Reuse the phone UI as much as possible** `[USER]`: same components and look, only arranged to fit
-      the desktop layout. **Started 2026-09-30:** Overview is the phone's home (status card L / Case / R with
-      wear labels and the device name, noise pill with "ANC M", feature list with the phone's switch and an
-      Equalizer row); Equalizer uses split preset rows, a "+ New" row and the value-over-knob bass slider.
-   2. Dot matrix style, then the remaining pages (Controls, Hearing profile, Dual connection, Earbud
-      settings, App settings). **Dot matrix started 2026-10-02:** App settings › Style (Classic / Dot matrix,
-      saved in `settings.json`), Doto font, dot cards, rows, chips, segments, rings, switch, knobs and icons in
-      the window and the quick panel. The EQ curve is dots too (2026-10-02). Needs his look on a real screen.
-      **Earbud settings started 2026-10-02:** the feature switches the buds list in `0x810D` (write, then the
-      status re-read; confirms for Adaptive sound and Power saving) and the firmware version. Wear detection
-      (the buds' auto play/pause) and Find my earbuds added the same day. Then alert sound volume and tap
-      sensitivity (read when the page opens). The model list (Automatic or a manual pick,
-      opened from a Model row there) followed. Then the fit test and the game sound and
-      head gesture type pickers. Personalized ANC last (unverified: no
-      owner yet). Earbud settings now has every item the phone's has, except the phone-only smart auto-pause.
-      **Dual connection added 2026-10-04:** the switch, the buds' device list and, on models with the device
-      manager, connect / disconnect and the preferred device (unverified: Buds 4 lacks it).
-      **Hearing profile added 2026-10-04:** the switch, the profiles kept on the PC (`settings.json`), the active
-      one's radar and the hearing test with the ear scan (the test flow needs his run on the buds).
-      **Controls added 2026-10-04:** per-bud gestures from the model's `control` list and the buds' table, the
-      hold's noise cycle (shared or per bud) and the on-call rows. Every sidebar page now exists.
-   3. Linux (BlueZ): works on a Linux PC (2026-10-01), settings sync with the phone. AUR `quickbuds-bin` prepared (`desktop/aur/`), published once AUR registration reopens. Archives built locally (`scripts/desktop-dist.sh`).
+2. **PC version** (Windows and Linux), decided 2026-09-30: Rust + Slint in `desktop/`, same repo, every
+   phone page that makes sense on a PC (done, ROADMAP-DONE.md › Desktop). Still open:
+   - **Windows:** he tests the cross-built zip (Winsock connect, tray left click / quick panel, EQ, ANC).
+   - His look at Dot matrix on a real screen, and his run of the hearing test flow on the buds.
+   - Unverified (no owner): Personalized ANC, the dual-connection device manager and preferred device.
+   - AUR `quickbuds-bin` (`desktop/aur/`): published once AUR registration reopens.
 
 ## Open
 
