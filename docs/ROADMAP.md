@@ -12,18 +12,19 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 
 ## The plan, in order (`[USER]` 2026-09-27)
 
-Each step is done before the next one starts. Parity for other models and the codebase audit are
-finished (ROADMAP-DONE.md).
+Each step is done before the next one starts. Parity for other models, the codebase audit and the
+contributor docs are finished (ROADMAP-DONE.md).
 
-1. **Contributor docs and the toolchain write-up** ([USER] 2026-09-30):
-   [CONTRIBUTING.md](./CONTRIBUTING.md) (build quickstart), [PACKET-CAPTURE.md](./PACKET-CAPTURE.md)
-   (capture guide) and [TOOLCHAIN.md](./TOOLCHAIN.md) (Termux build and test device, SSH from a
-   headless PC). **Next:** links from Reddit / XDA.
-2. **PC version** (Windows and Linux), decided 2026-09-30: Rust + Slint in `desktop/`, same repo, every
+1. **PC version** (Windows and Linux), decided 2026-09-30: Rust + Slint in `desktop/`, same repo, every
    phone page that makes sense on a PC (done, ROADMAP-DONE.md › Desktop). Still open:
    - **Windows:** he tests the cross-built zip (Winsock connect, tray left click / quick panel, EQ, ANC).
-   - His look at Dot matrix on a real screen, and his run of the hearing test flow on the buds.
-   - Unverified (no owner): Personalized ANC, the dual-connection device manager and preferred device.
+   - **Dot matrix font on PC:** the style works on his PC (tested 2026-10-06), but Doto at 12-15 px
+     on a 1x screen smears into thin grey strokes (a dot is under 2 px). The rest of the UI is fine.
+     The hearing test flow works fully on his PC. **Question** (he decides): Doto only for text of
+     20 px and up on desktop with the system font for the rest, every Dot matrix text at 20 px and up,
+     or a second pixel font made for small sizes.
+   - Personalized ANC, the dual-connection device manager and preferred device have no owner to test
+     them: treated as working until an issue says otherwise ([USER] 2026-10-06).
    - AUR `quickbuds-bin` (`desktop/aur/`): published once AUR registration reopens.
 
 ## Open

@@ -239,5 +239,5 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 
 - Latest release v4.3.1 (2026-10-06: desktop self-update). The Windows zip is cross-built and has never
   run on Windows.
-- **Next:** ROADMAP.md step 2, starting with his Windows zip test.
+- **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.

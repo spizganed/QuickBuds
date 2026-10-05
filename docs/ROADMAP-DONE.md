@@ -174,7 +174,7 @@ back.
   copyright notice (author, app, GPL-3.0-or-later) is in the README (2026-09-25).
 - Account mentions removed: neither HeyMelody nor QuickBuds needs one (2026-09-25).
 - Contributor docs (2026-09-30): CONTRIBUTING.md (build quickstart), PACKET-CAPTURE.md rewritten as a
-  capture guide, TOOLCHAIN.md (the phone as build and test device).
+  capture guide, TOOLCHAIN.md (the phone as build and test device). Linked from Reddit / XDA.
 - Interop facts only (2026-09-29): no vendor class, method or file names in the repo; the `[VENDOR]`
   bytes stay. README trademark notice.
 - TOOLCHAIN.md says why the phone is the whole machine and how the AI assistant is set up (2026-09-30).
