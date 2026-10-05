@@ -330,19 +330,45 @@ impl<'a> Conn<'a> {
             self.send(cmd, None, &[])?;
             self.pump(200)?;
         }
-        let queries: [(u16, Option<u8>, Vec<u8>); 6] = [
-            (CMD_REGISTER_NOTIFY, None, register_payload(&self.s.caps)),
-            (CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY.to_vec()),
-            (CMD_QUERY_ANC, None, vec![1, 1]),
-            (CMD_QUERY_BATTERY, Some(0xF0), vec![]),
-            (CMD_QUERY_WEARING, Some(0xF2), vec![]),
-            (CMD_QUERY_FIRMWARE, None, vec![]),
-        ];
-        for (cmd, seq, payload) in queries {
-            if !self.s.caps.supports(cmd) { continue; }
-            self.send(cmd, seq, &payload)?;
+
+        self.send(CMD_REGISTER_NOTIFY, None, &register_payload(&self.s.caps))?;
+        self.pump(200)?;
+        self.send(CMD_QUERY_BATTERY, Some(0xF0), &[])?;
+        self.pump(200)?;
+
+        let m = self.s.model;
+
+        if m.is_some_and(|m| m.get("noiseReductionMode").is_some()) {
+            if self.s.caps.supports(CMD_QUERY_ANC) {
+                self.send(CMD_QUERY_ANC, None, &[1, 1])?;
+                self.pump(200)?;
+            }
+        }
+
+        let has_features = m.is_some_and(|m| {
+            ["vocalEnhance", "gameSound", "controlAutoVolumeSupport", "swiftPair", 
+             "longPressVolume", "tapLevelSetting", "earScan", "spatialTypes", "highAudio"]
+            .iter().any(|k| m.get(*k).is_some())
+        });
+        if has_features && self.s.caps.supports(CMD_QUERY_STATUS) {
+            self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
             self.pump(200)?;
         }
+
+        let has_wear = m.is_some_and(|m| m.get("wearDetection").is_some() || m.get("inEarDetection").is_some());
+        if has_wear && self.s.caps.supports(CMD_QUERY_WEARING) {
+            self.send(CMD_QUERY_WEARING, Some(0xF2), &[])?;
+            self.pump(200)?;
+        }
+
+        let needs_firmware = m.is_some_and(|m| {
+            m.get("equalizerModeCompat").is_some() || m.get("equalizerModeByVersion").is_some()
+        });
+        if needs_firmware && self.s.caps.supports(CMD_QUERY_FIRMWARE) {
+            self.send(CMD_QUERY_FIRMWARE, None, &[])?;
+            self.pump(200)?;
+        }
+
         self.eq_reads()
     }
 
