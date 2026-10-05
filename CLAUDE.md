@@ -87,7 +87,8 @@ Details and evidence in PROTOCOL.md.
 - **Adding an ANC mode touches all of:** `AncModes`, `OpoProtocol.anc(bit)`, `BudsConnectionManager`
   (`sendAnc`, `lastAncLevelSent`), `BudsService` routing, `WidgetStateStore`, `WidgetSettings.MODES`,
   `WidgetActionReceiver`, `MainActivity` segments.
-- **Settled, do not raise again:** `0x0500` time request is not answered; case lid has no lasting state and
+- `0x0500` time request is answered like HeyMelody (some buds drop the link without it, issue #2).
+- **Settled, do not raise again:** case lid has no lasting state and
   case charging is not shown; undecoded families (PROTOCOL.md §12) are not guessed from a few samples.
 
 ## Connection

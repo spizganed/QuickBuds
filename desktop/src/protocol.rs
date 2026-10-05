@@ -42,6 +42,8 @@ pub const CMD_SET_EQ: u16 = 0x0406;
 pub const CMD_SAVE_CUSTOM_EQ: u16 = 0x0418;
 pub const CMD_SET_BASSWAVE: u16 = 0x041B;
 pub const EVT_EQ_CHANGED: u16 = 0x0504;
+/// Time request (§9): answered `8500 <its seq> 00 <unix seconds u32 LE>`, as HeyMelody does.
+pub const REQ_TIME: u16 = 0x0500;
 pub const FEATURE_BASSWAVE: u8 = 0x1D;
 pub const FEATURE_POWER_SAVING: u8 = 0x17;
 pub const FEATURE_HEARING_OPTIMIZE: u8 = 0x38;
@@ -751,7 +753,8 @@ pub fn describe_other(p: &[u8]) -> Option<String> {
         }
         0x8200 if pl.len() >= 2 => format!("Notifications offered: {}", hex(&pl[2..])),
         0x8205 => "Notifications registered".into(),
-        0x0500 => "Time request (not answered)".into(),
+        REQ_TIME => "Time request".into(),
+        0x8500 => "Time reply".into(),
         0x0501 => "Bud state".into(),
         // `F1 <side> <button> <action>`
         EVT_PUSH if pl.first() == Some(&0xF1) && pl.len() >= 4 => format!("Button {} {}",
@@ -848,6 +851,11 @@ pub fn cmd_of(p: &[u8]) -> u16 {
 
 pub fn payload_of(p: &[u8]) -> &[u8] { &p[header_len(p)..] }
 
+pub fn seq_of(p: &[u8]) -> u8 { p[header_len(p) - 3] }
+
+/// The `0x8500` payload for [REQ_TIME].
+pub fn time_reply(unix: u32) -> Vec<u8> { [&[0u8][..], &unix.to_le_bytes()].concat() }
+
 /// Splits the RFCOMM byte stream into packets. Bytes before an `AA` are dropped into `discarded` (for the log).
 #[derive(Default)]
 pub struct Framer { buf: Vec<u8>, pub discarded: Vec<u8> }
@@ -912,6 +920,9 @@ mod tests {
         assert_eq!(anc_payload(anc.bit(ADAPTIVE).unwrap()), [1, 1, 0x00, 0x08]);
         assert_eq!(anc.mode_for_raw(1 << 3, None).as_deref(), Some(OFF));
         assert_eq!(anc.levels().len(), 4);
+        let req = build_packet(REQ_TIME, 0x14, &[0, 0, 0, 0]);
+        assert_eq!((cmd_of(&req), seq_of(&req)), (REQ_TIME, 0x14));
+        assert_eq!(time_reply(0x6700_1234), [0, 0x34, 0x12, 0x00, 0x67]);
         let push = build_packet(EVT_PUSH, 7, &[2, 3, 1, 7, 2, 7, 3, 4]);
         assert!(matches!(decode(&push), Some(Event::Wear(w)) if w == [(1, 7), (2, 7), (3, 4)]));
     }

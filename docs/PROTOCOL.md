@@ -132,7 +132,7 @@ Details in the sections cited. `—` = empty payload.
 
 | Cmd | Name |
 |---|---|
-| `0x0500` / `0x0501` | Time request (§9). Not answered, by decision |
+| `0x0500` / `0x0501` | Time request (§9), answered `8500 00 <time>` / bud state |
 | `0x0504` | EQ mode changed: `<id>` (§9) |
 | `0x0510` | Spatial type changed: `<type>` (§9) |
 
@@ -609,11 +609,21 @@ entry: <MAC, 6 bytes reversed> <len> <state> <flags> <nameLen> <name UTF-8>
   disconnect (MAC in written order, the reverse of the list); `03 <MAC>` unpair (unused). Preferred
   device: `0x0429 04 00` automatic, `04 01 <MAC>`; read `0x0132 02` → `00 02 <00 | 01 <MAC>>`.
 
-### Time request — `0x0500` `[CAPTURE]`
+### Time request — `0x0500` `[CAPTURE]`+`[VENDOR]`
 
-The buds send `0x0501` and `0x0500` (empty) when a device reconnects. HeyMelody answers `0x0500` with
-`8500 00 <Unix seconds u32 LE>`. **QuickBuds does not answer, by decision**: nothing depends on it and
-no OSS client answers it. `0x0501` is unknown.
+The buds send `0x0501` and `0x0500` when a device connects. HeyMelody answers `0x0500` with
+`8500 <same Seq> 00 <Unix seconds u32 LE>` `[VENDOR]`, adding `<zone offset seconds s32 LE>` only for
+models its server config flags (not in `models.json`, so not sent). **QuickBuds answers the same way**
+(`OpoProtocol.timeReply`, `protocol::time_reply`).
+
+- Buds 4 sends it empty and works without the answer.
+- Nord Buds 3 Pro (`064414`, issue #2) `[CAPTURE]` sends it with a real Seq and `00 00 00 00`, resends it,
+  stops answering queries and resets the link 3-5 s after connect, every time, when it is not answered.
+  The answer is the fix candidate; not yet confirmed on those buds.
+- HeyMelody does **not** ack `0x0204` pushes in general: only events `F2` (device list) and `F4` (JSON)
+  get `8204 <same Seq> <status> <event>` `[VENDOR]`. Battery, wear and ANC pushes get no reply.
+- A request from the buds in a command group HeyMelody does not know gets `<cmd | 0x8000> <same Seq> 01`
+  `[VENDOR]`. `0x0501` gets no reply.
 
 ---
 
