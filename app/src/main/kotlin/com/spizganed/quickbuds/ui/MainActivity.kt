@@ -1076,7 +1076,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * yet = shown. Earbud settings gates its own rows.
      */
     private fun rowSupported(key: String): Boolean = when (key) {
-        "game" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GAME_MODE)
+        "game" -> Capabilities.hasFeature(this, Capabilities.gameModeId(this))
         "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC) || codecPicker()
         "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND) || spatialByType()
         "golden" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_GOLDEN_SOUND)
