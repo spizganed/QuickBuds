@@ -270,11 +270,30 @@ object OpoProtocol {
      * HeyMelody registers every id the buds list in 0x8200 (`registerMultiNotification`).
      * 0x08 (Golden Sound test status) likewise, when the buds have the test (`0x040D`), 2026-09-29.
      */
-    fun registerNotifications(fitTest: Boolean = false, golden: Boolean = false, personalNoise: Boolean = false): ByteArray {
-        val ids = listOf(0x01, 0x02, 0x03) + (if (fitTest) listOf(EVT_FIT_TEST) else emptyList()) +
+    /**
+     * The events to subscribe to: ours, kept to those the buds offer in `0x8200` when they sent one,
+     * as HeyMelody subscribes to the offered list only (PROTOCOL.md §4). Some firmwares never ack a
+     * list with others.
+     */
+    fun notifyIds(fitTest: Boolean, golden: Boolean, personalNoise: Boolean, offered: Set<Int>?): List<Int> =
+        (listOf(0x01, 0x02, 0x03) + (if (fitTest) listOf(EVT_FIT_TEST) else emptyList()) +
             (if (golden) listOf(EVT_GOLDEN_STATUS) else emptyList()) +
-            (if (personalNoise) listOf(EVT_PERSONAL_NOISE) else emptyList())
-        return buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(ids.size.toByte()) + ids.map { it.toByte() })
+            (if (personalNoise) listOf(EVT_PERSONAL_NOISE) else emptyList()))
+            .filter { offered == null || it in offered }
+
+    fun registerNotifications(ids: List<Int>): ByteArray =
+        buildPacket(CMD_REGISTER_NOTIFY, payload = byteArrayOf(ids.size.toByte()) + ids.map { it.toByte() })
+
+    /** Subscribe one event, for buds without `0x0205` in their bitmap. `[VENDOR]` */
+    const val CMD_REGISTER_ONE = 0x0201
+    fun registerOne(id: Int): ByteArray = buildPacket(CMD_REGISTER_ONE, payload = byteArrayOf(id.toByte()))
+
+    /** `0x8200` = `00 <count> <codes>`, or null. */
+    fun offeredEvents(payload: ByteArray): Set<Int>? {
+        if (payload.size < 2 || payload[0].toInt() != 0) return null
+        val n = payload[1].toInt() and 0xFF
+        if (payload.size < 2 + n) return null
+        return (0 until n).map { payload[2 + it].toInt() and 0xFF }.toSet()
     }
 
     // --- Golden Sound test (PROTOCOL.md §9), `[CAPTURE]` 2026-09-29 + `[VENDOR]` ---

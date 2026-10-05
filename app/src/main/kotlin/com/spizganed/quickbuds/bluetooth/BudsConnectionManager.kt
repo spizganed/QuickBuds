@@ -297,6 +297,7 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     private fun runInitSequence() {
+        offeredEvents = null
         Thread {
             try {
                 delay(300); sendRawBlocking(OpoProtocol.buildHandshake(), "handshake")
@@ -308,10 +309,16 @@ class BudsConnectionManager(private val context: Context) {
                     if (!Capabilities.supports(context, cmd)) { log("skip $label: not supported"); return }
                     delay(200); sendRawBlocking(packet, label)
                 }
-                query(OpoProtocol.CMD_REGISTER_NOTIFY,
-                    OpoProtocol.registerNotifications(Capabilities.supports(context, OpoProtocol.CMD_FIT_TEST),
-                        Capabilities.supports(context, OpoProtocol.CMD_GOLDEN_DETECT),
-                        Capabilities.supports(context, OpoProtocol.CMD_PERSONAL_NOISE)), "register notify")
+                delay(200)
+                val ids = OpoProtocol.notifyIds(Capabilities.supports(context, OpoProtocol.CMD_FIT_TEST),
+                    Capabilities.supports(context, OpoProtocol.CMD_GOLDEN_DETECT),
+                    Capabilities.supports(context, OpoProtocol.CMD_PERSONAL_NOISE), offeredEvents)
+                when {
+                    ids.isEmpty() -> log("skip register notify: the buds offer none of ours")
+                    Capabilities.supports(context, OpoProtocol.CMD_REGISTER_NOTIFY) ->
+                        sendRawBlocking(OpoProtocol.registerNotifications(ids), "register notify")
+                    else -> ids.forEach { sendRawBlocking(OpoProtocol.registerOne(it), "register notify $it") }
+                }
                 query(OpoProtocol.CMD_QUERY_STATUS, OpoProtocol.queryStatus(), "query status")
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
                 query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
@@ -473,6 +480,8 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     // --- Equalizer (PROTOCOL.md §9). Read on demand by the EQ screen, re-read after every write. ---
+    /** The events these buds offer (`0x8200`), once read; reset on each connect. */
+    @Volatile private var offeredEvents: Set<Int>? = null
     @Volatile var eqCurrent: Int? = null
         private set
     @Volatile var eqCustom: List<EqCodec.Preset> = emptyList()
@@ -1102,6 +1111,8 @@ class BudsConnectionManager(private val context: Context) {
         OpoProtocol.answerFor(cmd, packet[6].toInt() and 0xFF, payload, System.currentTimeMillis() / 1000)
             ?.let { sendRaw(it, "answer %04X".format(cmd)) }
         if (cmd == OpoProtocol.REQ_TIME) return
+
+        if (cmd == 0x8200) { offeredEvents = OpoProtocol.offeredEvents(payload); return }
 
         // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
         if (cmd == 0x8100) {

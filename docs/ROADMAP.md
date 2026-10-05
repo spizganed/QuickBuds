@@ -61,6 +61,9 @@ Nothing.
   Galaxy S24; still no reply, 2026-09-30). Their logs are the first non-Buds 4 evidence: read them
   before changing anything. Every write on another model stays unverified until an owner reads one
   back.
+- **Nord Buds 3 Pro reconnect loop** (issue #2, Android and Debian desktop, 2026-10-05): the buds reset
+  the link 3-5 s after connect. Fix candidates: answering their requests (time, PROTOCOL.md §9) and
+  subscribing only to offered events (§4). Waiting for an owner to test the next version.
 
 ## Decided against — do not re-suggest
 
@@ -88,7 +91,6 @@ Nothing.
 - Earbud fall detection (`deviceLostRemind`, one model: Enco Clip2) ([USER] 2026-09-29).
 - Custom UI styles as a file (import / export): the built-in styles stay the only ones ([USER] 2026-09-29).
 - **Any feature that needs a connection to a server** (OPPO's or anyone's): not built ([USER] 2026-09-29).
-- The time request `0x0500` / `0x0501`: no feature needs it (PROTOCOL.md §9).
 - Firmware updates: too risky, a failed flash can brick the buds. The firmware row says to update from
   HeyMelody ([USER] 2026-09-29).
 - From HeyMelody's device page ([USER] 2026-09-29): Zen mode (sound packs from OPPO's servers flashed to the
