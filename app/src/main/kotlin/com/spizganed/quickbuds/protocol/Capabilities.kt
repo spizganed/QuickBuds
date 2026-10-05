@@ -78,6 +78,10 @@ object Capabilities {
         return saved.split(',').any { it.toIntOrNull() == cmd }
     }
 
+    /** The game mode switch: `0x28` on buds with game sound types, else `0x06`. */
+    fun gameModeId(context: Context) = if (supports(context, OpoProtocol.CMD_GAME_SOUND))
+        OpoProtocol.FEATURE_GAME_MODE_MAIN else OpoProtocol.FEATURE_GAME_MODE
+
     fun hasFeature(context: Context, id: Int): Boolean {
         val saved = prefs(context).getString(KEY_FEATURES, null).orEmpty()
         if (saved.isEmpty()) return true
