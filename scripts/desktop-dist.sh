@@ -2,7 +2,7 @@
 # Builds the desktop release archives into desktop/dist/:
 #   QuickBuds<version>-windows-x64.zip   quickbuds.exe only (portable, system DLLs only)
 #   QuickBuds<version>-linux-x64.tar.gz  binary + .desktop + icon + README
-# Usage: scripts/desktop-dist.sh <version>   (e.g. 4.0.0-beta)
+# Usage: scripts/desktop-dist.sh <version>   (e.g. 4.3.0)
 # Needs: rustup target x86_64-pc-windows-gnu, mingw-w64-gcc, podman, zip, python3.
 # Linux builds in Ubuntu 22.04 (glibc 2.35) so the binary runs on older distros than the build PC.
 set -euo pipefail
@@ -49,7 +49,7 @@ Terminal=false
 Categories=AudioVideo;Audio;
 EOF
 cat > "$pkg/README.txt" <<'EOF'
-QuickBuds for Linux (beta)
+QuickBuds for Linux
 
 Needs BlueZ and, from your distro: GTK 3, libayatana-appindicator3, D-Bus
 (Debian/Ubuntu: libgtk-3-0 libayatana-appindicator3-1; Arch: makepkg -si in desktop/aur/ of the repo).

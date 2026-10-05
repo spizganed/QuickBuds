@@ -1,11 +1,11 @@
 # Maintainer: spizganed <328350196+spizganed@users.noreply.github.com>
 # Repackages the Linux archive from the GitHub release (built by scripts/desktop-dist.sh).
 pkgname=quickbuds-bin
-_ver=4.1.0-beta
-_tag=v4.1.0
+_ver=4.3.0
+_tag=v4.3.0
 pkgver=${_ver//-/_}
 pkgrel=1
-pkgdesc="Control OnePlus / OPPO / realme earbuds over Bluetooth (desktop beta)"
+pkgdesc="Control OnePlus / OPPO / realme earbuds over Bluetooth"
 arch=('x86_64')
 url="https://github.com/spizganed/QuickBuds"
 license=('GPL-3.0-only')

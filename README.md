@@ -15,12 +15,13 @@ home-screen widget.
 QuickBuds is purely a passion and hobby project. If you like it and want to help out, feel free to
 donate on [Ko-fi](https://ko-fi.com/spizganed).
 
-> **Desktop beta for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
+> **Desktop app for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
 > no drivers and no background services: battery, noise control, low latency, the equalizer, gestures,
 > hearing profile, dual connection, earbud settings and a packet log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
 > `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3 and
 > libayatana-appindicator; see its README). Pair the buds in your system's Bluetooth settings first. With
-> Dual connection on, the phone app and the desktop app work at the same time. Progress is in
+> Dual connection on, the phone app and the desktop app work at the same time. From 4.3.1 it updates itself
+> from App settings (a packaged install shows the release page instead). Progress is in
 > [ROADMAP.md](./docs/ROADMAP.md).
 >
 > **Arch Linux:** install it as a package (it comes to the AUR as `quickbuds-bin` once AUR sign-ups reopen):
@@ -56,7 +57,7 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matr
 | :---: | :---: |
 | <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-2x2-battery.png" width="220"> |
 
-### Desktop (beta)
+### Desktop
 
 Windows and Linux (shown: KDE Plasma). The tray menu shows the battery; on Windows the tray opens quick controls.
 

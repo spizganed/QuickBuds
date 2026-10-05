@@ -1,6 +1,6 @@
 [package]
 name = "quickbuds"
-version = "4.3.0-beta"
+version = "4.3.0"
 edition = "2021"
 license = "GPL-3.0-only"
 description = "QuickBuds for Windows and Linux"
