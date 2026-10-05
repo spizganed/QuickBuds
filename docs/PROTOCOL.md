@@ -213,8 +213,8 @@ ANC), plus `04` / `08` / `0B` as above, **kept to the ids the buds offer in `0x8
   nothing at all.
 - Nord Buds 3 Pro (issue #2) `[CAPTURE]` offers only `00 02 02 01` (wear, battery). Asked for
   `01 02 03 04 08 0B`, it never sent `0x8205`. It still pushed an ANC change once without `03`.
-- The `0x8205` ack does not simply echo the list. One sample: `01 02 01 00 02 00`, perhaps
-  `[id][enable]` pairs `[GUESS]`. If it lists fewer ids than asked, part was rejected.
+- The `0x8205` ack: `01 02 01 00 02 00` and, for five ids, `01 05 01 00 02 00 03 00 04 00 08 00`
+  (Buds 4): `01 <count>`, then `<id> 00` per id `[GUESS]`. Fewer ids than asked = part rejected.
 
 ---
 
@@ -610,7 +610,7 @@ entry: <MAC, 6 bytes reversed> <len> <state> <flags> <nameLen> <name UTF-8>
   listed). Flags: bit 0 this phone, bit 1 main audio device, bit 2 playing, bits 3-5 device type.
 - Toggle: `0x0403 11 00/01`, then `0x0413 08 00 01` after off / `08 00 00` after on (also sent when the
   screen opens). Meaning unknown; replayed verbatim.
-- **Device manager** `[VENDOR]`, wired, unverified: models whose `multiConnectFunctions` list it (11;
+- **Device manager** `[VENDOR]`, wired, unverified: models whose `multiConnect` lists it (11;
   bitmap bit 59 `0x0429` / `0x0132`, Buds 4 lacks it). `0x0429 01 <MAC>` connect, `02 <MAC>`
   disconnect (MAC in written order, the reverse of the list); `03 <MAC>` unpair (unused). Preferred
   device: `0x0429 04 00` automatic, `04 01 <MAC>`; read `0x0132 02` → `00 02 <00 | 01 <MAC>>`.
@@ -680,11 +680,11 @@ sends `0x0500` empty and works either way. Both apps answer from one function (`
 ## 12. Open questions
 
 - Hold cycle mask: bit 1 alone has never been cleared (§5).
-- Pushes `F1` `act 00`, `F2`, `F3`; the Smart level pushes `03 04 01 …` (§5).
+- Pushes `F1` `act 00`, `F3`; the `F2` layout; the Smart level pushes `03 04 01 …` (§5).
 - The recurring `F1` family `AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`, and `02 01 08 0C 02` /
   `02 01 07 0B 02` (non-multiples of ten; maybe a fine battery field). **Do not guess these from a
   few samples.**
-- The `0x8205` ack layout (§4): one sample.
+- The `0x8205` ack layout (§4): the meaning of its bytes.
 - `0x0404` with a level form `01 02 <level>` (`[OSS]` mentions it). Unverified.
 - `0x8134` head gesture reply layout; `0x0413 08 00 xx`; switch `05`; `0x0501`.
 - Other models' ANC bits, gesture writes and `[VENDOR]` features: unverified until an owner reads a

@@ -157,6 +157,11 @@ back.
 
 ## Desktop
 
+- Rust + Slint app in `desktop/` (4.0.0 beta, 2026-10-01): frameless window and sidebar, the phone's
+  pages rearranged for a PC (Overview, Equalizer, Controls, Hearing profile, Dual connection, Earbud
+  settings, App settings, Dev tools), Dot matrix style, tray (Linux: a menu; Windows: quick panel).
+  Shipped as a Windows `.zip` and a Linux `.tar.gz`. Linux (BlueZ) checked by him 2026-10-01.
+- Pages and overview rows hide what the buds lack, as on the phone (4.3.0, 2026-10-05).
 - Noise control like the phone: clicking ANC slides the segments over to Low / Medium / High / Smart, in
   the window and the tray panel. Dev tools page: packet log Human / Detailed / Raw, Clear, Export
   (`Downloads\QuickBuds\`), Reconnect, Disconnect. Both checked by him (2026-10-02).
