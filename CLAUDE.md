@@ -231,7 +231,9 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 - **README screenshots are retaken after every big UI change**, same push `[USER]`:
   `scripts/readme-screenshots.sh classic|dot-matrix [adb-serial] [widgets]` (buds connected, phone in
   English). **Run dot-matrix last** (it leaves the style set). It opens screens by visible text: renaming
-  a label breaks it. Desktop shots (`docs/screenshots/desktop/`) are taken by hand with `spectacle`.
+  a label breaks it. Desktop shots (`docs/screenshots/desktop/`): the pages on the invisible
+  screen (window 1100x760, `env -u WAYLAND_DISPLAY`), his PC's name masked in a throwaway build; the
+  tray by hand with `spectacle`.
 
 ## Current state (2026-10-05)
 
