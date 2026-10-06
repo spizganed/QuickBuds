@@ -2,6 +2,9 @@
 
 Visual reference: the mockup screenshots in `design/`. Rebuild everything in native XML layouts and vector drawables. Do not port any HTML.
 
+The app uses no Material Components (CLAUDE.md): where this spec names one (`MaterialSwitch`,
+`MaterialAlertDialogBuilder`, `CircularProgressIndicator`, `TextInputEditText`), the app draws its own.
+
 **Hard rule:** do not change any protocol, RFCOMM, packet, or wear-state logic. This spec is UI only. Every setting already auto-applies and saves on finger lift, so keep that behavior exactly as it is.
 
 Mockup pixels map 1:1 to `dp`, and text sizes map 1:1 to `sp` (the mockups are drawn at 390 dp width).
@@ -21,14 +24,10 @@ Every color in the app comes from these 6 tokens. No hardcoded colors anywhere e
 | `textSecondary` | `#9B9B9B` | `#A0A0A5` | `#6B6B70` |
 | `outline` | `#2E2E30` | `#34343A` | `#DDDDE0` |
 
-### Runtime theming (required because of custom presets)
-XML themes are compiled, so custom user colors cannot be theme overlays. Use a runtime palette for **all** presets, including the built-in ones:
-
-- `data class Palette(val id: String, val name: String, val builtIn: Boolean, val background: Int, val card: Int, val accent: Int, val text: Int, val textSecondary: Int, val outline: Int)`
-- `PaletteRepository` stores the custom presets as JSON in DataStore or SharedPreferences. There are at most **3 custom presets**; they can be created, renamed, duplicated, and deleted. It also stores the active preset id.
-- `PaletteManager` exposes the active palette (StateFlow/LiveData). Each screen applies it in `onCreate`/`onViewCreated` and again when it changes: backgrounds via `setBackgroundColor`, or `GradientDrawable.setColor`/`setStroke` for cards; icons via `ImageViewCompat.setImageTintList`; text via `setTextColor`; switches via tint lists.
-- Tip: write a small `PaletteApplier` that walks a view tree and styles views by tag (`android:tag="card"`, `"icon_accent"`, `"text_secondary"`, …). That avoids per-screen boilerplate.
-- Set the status bar and navigation bar colors to `background`, and pick light or dark bar icons from `background` luminance.
+### Theming
+Was: a runtime `PaletteApplier` that walks the view tree. Is: six `?attr/appColor*` theme attributes;
+custom presets swap them through `ThemeRes.PaletteFactory` (CLAUDE.md › Theming). At most **3 custom
+presets**. Status and navigation bars use `background`, with light or dark icons from its luminance.
 
 ### Derived colors (not user-editable, computed from tokens)
 - Toggle track: `outline`, slightly lightened on dark themes (mockup: `#3A3A3C`)
@@ -179,15 +178,3 @@ All icons use a 24×24 viewport, stroke width 2.2, round caps and joins, tinted 
 | `ic_warning` | `M12,3l10,18H2z M12,10v5 M12,18h0.01` |
 
 Convert the rest (palette, haptics, info, copy) from any standard icon set to the same stroke style so they match.
-
-## 6. Suggested implementation order
-
-1. `Palette`, `PaletteRepository`, `PaletteManager`, `PaletteApplier`. Migrate all existing hardcoded colors to the tokens.
-2. Shared components: card and row styles, the trailing slot, the switch style, icon buttons, the status chip.
-3. Home: connected, then disconnected, then the earbud glyph states.
-4. Disconnect dialog and EQ editor header.
-5. Settings screen, replacing the old bottom sheet.
-6. Theme & colors, then Edit preset.
-7. Haptics hook-up.
-
-Work one step at a time and build-check after each step.

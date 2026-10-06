@@ -1,8 +1,7 @@
 # Capturing the earbuds' traffic
 
-How to record what goes between the phone and the earbuds, for a bug report or to learn a new command.
-**Capture first, then build:** a guessed payload or command number fails silently on the buds, and
-guessing has cost this project whole sessions more than once.
+Record the traffic between the phone and the earbuds, for a bug report or to learn a new command.
+**Capture first, then build.** A guessed payload or command number fails silently on the buds.
 
 Two ways, from easy to thorough:
 
@@ -21,8 +20,10 @@ never shows up in the app's log.
 3. Do each action (a setting in the app, or a gesture on the buds) and **wait at least 3 seconds**
    before the next one. Write down what you did and the time.
 4. Repeat the round once, so a one-off frame gets a chance to show again.
-5. Dev tools › **Export**. (The Dev tools log has Human, Detailed and Raw hex tabs; packets the app cannot
-   decode show in amber with their whole payload, and bytes it could not frame as `DISCARDED RX`.) The file lands in `Download/QuickBuds/`.
+5. Dev tools › **Export**. The file lands in `Download/QuickBuds/`.
+
+The Dev tools log has Simple, Detailed and Raw views. Packets the app cannot decode show in amber with
+their whole payload. Bytes it cannot frame show as `DISCARDED RX`.
 
 With adb, skip the export. The app writes the same lines to a file (a 2 x 512 KB ring) and to logcat:
 
@@ -41,8 +42,8 @@ adb logcat -d -s QuickBuds-Packets:D   # instant, but other apps can rotate it o
 | `BTN EVT:` | A gesture on the buds (the `0xF1` family): side, button, action. |
 | `KEYFN DIFF:` | What changed in the gesture table between two reads. |
 
-**No log line does not mean no frame.** A filter once hid a real push for weeks ("verified three
-times" that ANC raised no event). When the app's log is silent, check with the HCI log.
+**No log line does not mean no frame.** Was: a filter hid the ANC push, and "ANC raises no event"
+was believed for weeks. When the app's log is silent, check the HCI log.
 
 ## 2. Bluetooth HCI snoop log
 

@@ -1,193 +1,120 @@
 # QuickBuds — Done
 
-What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
+Finished and confirmed work, one line per item. The live plan is in [ROADMAP.md](./ROADMAP.md).
+Details are in PROTOCOL.md, CLAUDE.md and git history.
 
 ## Connection and push
 
-- Any paired OPPO / OnePlus / realme buds connect, not only his Buds 4 (2026-09-28, GitHub issue #1):
-  `BudsDevice` replaced a hardcoded MAC left from the single-device days; saved address, else the first
-  bonded device with the `079A` / `1107` UUID or a `models.json` name.
-- Packet logging: every received `AA` frame and every sent command, timestamped.
-- Wear, battery, ANC and Game Mode are pushed by the buds (PROTOCOL.md). Nothing is polled: the
-  300 s status keep-alive was dropped 2026-09-27 after days of use without it showed no stale link.
-- Reconnect after a lost link (e.g. after a codec switch): fast and consistent.
-- Status reply `0x810D` decoded: Hi-Res, 3D audio and low latency show the buds' own state on connect.
-- The last `0x810D` reply is persisted, so the switches open at the last known state instead of
-  jumping when the connect-time read lands (2026-09-25).
-- Gesture, hold and on-call config are read from the buds on every connect.
-- Connect/Disconnect drive phone audio too, like HeyMelody's "device sync" (2026-09-25, confirmed
-  by him; faster than HeyMelody). Disconnect calls the hidden `BluetoothHeadset/A2dp.disconnect()` by
-  reflection, nothing goes to the buds. A user connect (pill, Dev Tools) calls
-  `BluetoothA2dp.connect()`; automatic connects leave A2DP to Android, which fixed audio getting stuck
-  on auto-connect (2026-09-25). `Headset.connect()` is refused for ordinary apps, and the
-  system brings HFP up itself ~10 s later. Found in a btsnoop + bugreport of HeyMelody, 2026-09-24.
-
-- Auto-connect when the phone's audio link comes up (A2DP / HFP), confirmed by him 2026-09-27.
-- Model lookup back to HeyMelody's order, name and id, then name, then id (2026-10-06, issue #5): OPPO
-  Enco Buds2 report the realme Buds Q2s id `060C12`, so id-first hid their equalizer.
-- Settings › "Hide old battery levels" (2026-10-06, issue #5, default off): a battery report clears the
-  parts it leaves out instead of keeping their last level.
+- Any paired OPPO / OnePlus / realme buds connect (issue #1). Was: a hardcoded MAC. Is: the saved
+  address, else the first bonded device with the `079A` / `1107` UUID or a `models.json` name.
+- The buds push wear, battery, ANC and game mode (PROTOCOL.md §4). Nothing is polled.
+  Was: a 300 s status keep-alive. Is: none; days of use showed no stale link.
+- Reconnect after a lost link (for example after a codec switch) is fast and consistent.
+- The status reply `0x810D` is decoded and persisted. Hi-Res, 3D audio and low latency open at the
+  last known state.
+- Gesture, hold and on-call config are read on every connect.
+- Connect / Disconnect also drive phone audio, as HeyMelody's "device sync" does. Disconnect calls
+  the hidden `BluetoothHeadset/A2dp.disconnect()` by reflection; nothing goes to the buds. A user
+  connect calls `BluetoothA2dp.connect()`; automatic connects leave A2DP to Android (Was: audio got
+  stuck on auto-connect). `Headset.connect()` is refused for ordinary apps; the system brings HFP up
+  about 10 s later.
+- Auto-connect when the phone's audio link comes up (A2DP / HFP).
+- Model lookup in HeyMelody's order: name and id, then name, then id (issue #5). Was: id first, which
+  hid the Enco Buds2 equalizer (they report the realme Buds Q2s id).
+- Settings › "Hide old battery levels" (issue #5, default off).
 
 ## Controls
 
-- Hearing profile (HeyMelody's "Golden Sound", renamed, [USER] 2026-09-29): on/off (feature `0x0B`, read
-  back), the hearing test in the app (ear scan, 12 tones, save, apply), profiles kept on the phone, the
-  buds' own profile read back, and HeyMelody's radar per ear. Full run confirmed by him on Buds 4.
-- Earbud fit test (2026-09-29): HeyMelody's sheet from Earbud settings, `0x0405` and event `0x04`,
-  confirmed on Buds 4.
-- ANC: Off / Transparency / Adaptive / Low / Medium / High on the main screen and widget.
-  Changes made on the buds show up in the app.
-- Earbud gestures: tap, double, triple, hold and slide per bud. The function values were measured,
-  not guessed (PROTOCOL.md §5–6). Hold follows HeyMelody's rule of at least one mode.
-- Dual connection: switch plus connected-device list (a home screen row), HeyMelody's exact write
-  sequence (PROTOCOL.md §9, capture 2026-09-25), and HeyMelody's "Add device" pairing instructions.
-- Voice assistant gesture on double / triple tap, same options as HeyMelody; `0x03` confirmed
-  against HeyMelody's own write (2026-09-25).
-- Case lid: a close is announced by an all-zero wear push before the link drops; the app then
-  skips its reconnect retries (capture 2026-09-25). There is no lasting lid state to show.
-- On-call gestures: write verified, and confirmed on a real call by him (2026-09-25).
+- Hearing profile (HeyMelody's "Golden Sound"): on/off, the hearing test in the app, profiles kept on
+  the phone, the buds' own profile read back, the radar per ear. Confirmed on Buds 4.
+- Earbud fit test (`0x0405`, event `04`). Confirmed on Buds 4.
+- ANC: Off / Transparency / Adaptive / Low / Medium / High / Smart, on the main screen and the widget.
+  Changes made on the buds show in the app.
+- Earbud gestures: tap, double, triple, hold and slide per bud, with measured `fn` values (PROTOCOL.md
+  §6). Hold keeps at least one mode, as HeyMelody does.
+- Voice assistant gesture on double / triple tap (`0x03`, matches HeyMelody's write).
+- On-call gestures: write verified and confirmed on a real call.
+- Dual connection: switch, connected-device list, HeyMelody's write sequence and "Add device" help.
+- Case lid: an all-zero wear push announces a close. The app skips its reconnect retries.
 - Equalizer: built-in presets, Bass boost with level, up to 3 custom presets on a draggable curve
-  with rename and delete (PROTOCOL.md §9).
-- EQ preset copy / import as text (`QB-EQ:<gains>:<name>`), via the clipboard. Removed later [USER]: not needed.
-- Hi-Res codec and 3D audio switches (mutually exclusive, with a reconnect warning), and low latency.
-- Find my earbuds: the buds' own tone on both buds, with an in-ear warning.
-- Wear detection (now a sheet): the firmware's auto play/pause, and our own smart auto-pause (pause only
-  when both buds are out, never auto-play). The two are mutually exclusive.
-- Smart as a fourth ANC level (app and widget, confirmed on Buds 4, 2026-09-27).
-- Firmware version (`0x0105`) in Earbud settings › About earbuds, formatted as HeyMelody shows it
-  (PROTOCOL.md §3).
-- Alert-sound volume slider (HeyMelody style, muted icon at the lowest step) in Earbud settings → Sounds (PROTOCOL.md §9).
+  with rename and delete.
+- Hi-Res and 3D audio switches (mutually exclusive, with a reconnect warning), and low latency.
+- Find my earbuds (both buds, in-ear warning).
+- Wear detection sheet: the firmware's auto play/pause, or our smart auto-pause (pause only when both
+  buds are out). The two are mutually exclusive.
+- Firmware version (`0x0105`) in Earbud settings › About earbuds, formatted as HeyMelody shows it.
+- Alert-sound volume slider in Earbud settings › Sounds.
 - In-app updater from GitHub releases.
 
 ## Other models
 
-Built from HeyMelody's own model list (`[VENDOR]`) and the OSS clients' packet builders (`[OSS]`). Shown on
-device by picking a model by hand; every write stays unverified until an owner of that model reads one
-back.
+Built from HeyMelody's model list (`[VENDOR]`) and the OSS clients (`[OSS]`). Every write stays
+unverified until an owner of that model reads one back.
 
-- Capability gating (2026-09-27): the buds' `0x8100` bitmap and `0x810D` list decide which rows and
-  connect-time queries appear (PROTOCOL.md §4).
-- Per-model noise control (2026-09-27): HeyMelody's `noiseReductionMode` sets the bits both ways and the
-  segments, levels and widget buttons (PROTOCOL.md §5).
-- Detection and the model list (2026-09-27): product id + Bluetooth name as HeyMelody matches them, the
-  model under the rings, and a model picker (Automatic or any of 127 models by brand).
-- Built-in EQ presets per model (2026-09-29): HeyMelody's `equalizerMode` names and numbers.
-- Gestures per model (2026-09-29): rows and options from HeyMelody's `control` / `callControl` lists, plus
-  volume up / down and switch devices; per-bud holds, the hold with top-level ANC levels, on-call single
-  tap / double-tap decline (PROTOCOL.md §6).
-- The switches Buds 4 lacks (2026-09-29), in Earbud settings › Features: vocal enhancement, game sound
-  effects, smart volume, adaptive volume, adaptive ear, pause when asleep, power saving (asks first). Game
-  mode writes `0x28` on game-sound buds (PROTOCOL.md §9).
-- Device check of the model-list features (2026-09-29, HEAD build on Buds 4): on Automatic, Earbud settings ›
-  Features shows none of the new rows (only power saving, which Buds 4 lists itself); Nord Buds 4 picked by hand
-  shows Swift Pair and the game sound rows, Open Buds shows touch and hold volume and smart volume. No feature
-  write reached the buds.
-- Power saving `0x17` on Buds 4 (2026-09-29): listed by the buds, the write works (a restart, audio brought
-  back by the app), and nothing visible changes (PROTOCOL.md §9). The row stays ([USER]): it is harmless and
-  was researched as far as the phone side can see; its effect is internal to the buds.
-- 3D audio's type form `0x0422` (2026-09-29): Off / Fixed / Head tracking on Buds Pro 2, Buds Pro 3 and
-  Enco X3, a type switch on other `0x012A` buds; game sound's type `0x0423` as a sheet (PROTOCOL.md §9).
-- The rest of HeyMelody's model-list features (2026-09-29), same section: conversation awareness,
-  adaptive sound (asks before turning on), touch and hold volume, head gestures with the nod / shake
-  choice `0x0431`, Windows Swift Pair. The voice features were decided against (PROTOCOL.md §9).
-- Equalizer per model (2026-09-29): the EQ row, custom presets and BassWave appear only where HeyMelody
-  shows them; new presets get the model's bands (10 on 8 models) and its preset cap (PROTOCOL.md §9).
-  Checked on device with models picked by hand; Buds 4 unchanged. The firmware row explains that updates
-  belong in HeyMelody.
-- Personalized noise cancellation (2026-09-29), Earbud settings › Features: the ear canal test, the stored
-  result offered first, the failure reasons (PROTOCOL.md §9). Unverified on buds (Buds 4 lacks it).
-- Tap sensitivity (2026-09-29), Earbud settings: levels 1..5 with the below-default warning (PROTOCOL.md
-  §9). Unverified on buds.
-- Dual connection device manager (2026-09-29), on the 11 models that have it: every paired device, a tap
-  connects or disconnects it, and the preferred device (PROTOCOL.md §9). "This device" now comes from the
-  list's own flag. Unverified on buds (Buds 4 lack it).
-- Codec picker (2026-09-29) on the three `highAudio` models: the Hi-Res row picks the codec and its switch
-  is Hi-Res, live only with LDAC or LHDC V5 (PROTOCOL.md §9). Unverified on buds; Buds 4 answers the reads.
-- Firmware-gated EQ presets (2026-09-29, 13 models): `equalizerModeCompat` / `equalizerModeByVersion`,
-  shown once the buds' firmware reaches the entry's minimum (PROTOCOL.md §9). Unverified on buds.
-- Parity check (2026-09-29): every item on HeyMelody's device page is built or decided against
-  (ROADMAP.md, Decided against).
-- A once-only first-launch note and a README section asking owners of other models to report (3.7.0).
+- Capability gating: the `0x8100` bitmap and the `0x810D` list decide rows and connect-time queries.
+- Detection and a model picker (Automatic, or any model by brand). The model shows under the rings.
+- Per model: noise control modes and levels, built-in EQ presets, EQ row / custom presets / BassWave,
+  10-band presets and preset cap, firmware-gated presets, gesture rows and options (per-bud holds,
+  on-call rows).
+- Earbud settings › Features: every switch in HeyMelody's model list except the ones decided against
+  (vocal enhancement, game sound, smart / adaptive volume, adaptive ear, pause when asleep, power
+  saving, conversation awareness, adaptive sound, touch-and-hold volume, head gestures, Swift Pair).
+- Power saving `0x17` works on Buds 4 (restart, audio brought back) with no visible effect. The row
+  stays `[USER]`.
+- 3D audio type (`0x0422`): Off / Fixed / Head tracking where the model has it. Game sound type as a sheet.
+- Personalized noise cancellation, tap sensitivity, the dual connection device manager and the codec
+  picker (`highAudio` models). Unverified: Buds 4 lacks them.
+- Parity check: every item on HeyMelody's device page is built or decided against.
+- A first-launch note and a README section ask owners of other models to report.
 
 ## Appearance
 
-- UI revision after design/SPEC.md (2026-09-26): six-token themes (OLED Black, Classic Dark, White),
-  an accent per built-in theme, up to 3 custom colour presets with a live preview, a full Settings
-  screen, and a home screen whose rows can be dragged and hidden. Details in CLAUDE.md.
-- White preset redesigned and Match system (White in light mode, OLED Black or Classic Dark in dark
-  mode, live, widgets included), 2026-09-27. Checked on device both ways.
-- Colour picker: the last five committed colours under the quick swatches.
-- Classic / Nothing style for the app and the widgets, one switch in Theme & colors (2026-09-28):
-  Nothing's dot font, no cards, dot-matrix rings, icons, switches, sliders and EQ curve.
-- One font family per style (`sans-serif` in Classic; the OEM font no longer leaks in).
-- Home noise control: the ANC segment slides into the level picker (Smart included) and shows the level.
-- Launcher and notification icons from the app's own bud glyphs; the themed icon is one bud.
-- 27 languages (26 machine-drafted), picked in the app's own Language screen. Checked on device.
-- Wear and case icons traced verbatim from `local/svgs/`. Portrait-locked on every screen.
+- UI after design/SPEC.md: OLED Black, Classic Dark and White, an accent per theme, up to 3 custom
+  colour presets with live preview, a Settings screen, home rows that can be dragged and hidden.
+- Match system: White in light mode, OLED Black or Classic Dark in dark mode, widgets included.
+- Colour picker keeps the last five committed colours.
+- Classic / Dot matrix style for the app and the widgets, one switch.
+- One font family per style. The OEM font no longer leaks in.
+- Home noise control: the ANC segment slides into the level picker and shows the level.
+- Launcher and notification icons from the app's bud glyphs. The themed icon is one bud.
+- 27 languages (26 machine-drafted) in the app's own Language screen.
+- Wear and case icons traced from `local/svgs/`. Every screen is portrait-locked.
+- Dot style: dotted boxes for buttons, chips, sheets and dialogs. Rule-drawn action icons.
+- Find my earbuds, Wear detection and every confirm, notice and crash report are bottom sheets.
 
 ## Widgets
 
-- 2x2 (resizable, scaled up when wide) and 4x2, each with a battery page and a controls page (ANC with a
-  level picker, Transparency, Adaptive, Low latency), swapped by a double tap (200 ms).
-- Slides only, like a carousel; the widget stays on the controls page after a change. Haptic tick on taps.
-- Both styles share one design (`scripts/widget-layouts.py`); the cycle mode and mode button are gone.
-  Details in CLAUDE.md, Widgets.
+- 2x2 and 4x2, each with a battery page and a controls page (ANC with level picker, Transparency,
+  Adaptive, Low latency). A double tap swaps pages. Haptic tick on taps.
+- Both styles share one design (`scripts/widget-layouts.py`). The ANC button shows the level ("ANC L").
 
 ## Tooling and release
 
-- Dev Tools: Human-readable / Raw hex log, Clear, Export, Reconnect, Disconnect, Crash test, styled like
-  Settings (2026-09-27). The layout, screenshot and widget reports were deleted; adb covers them.
-- Crash handler installed in `QuickBudsApp.attachBaseContext`, before any app code; verified on device.
-- Dead code sweep (2026-09-27): lint `UnusedResources` and unreferenced Kotlin.
-- Whole-codebase audit (2026-09-30, `/ponytail-audit`): unused listener callbacks and constants,
-  `BudStateParser` and duplicate u16 / hex helpers cut; the app checked on device afterwards.
-- Signed release builds with a version set in one place (`app/build.gradle.kts`).
-- The 60-minute wakelock is gone (2026-09-28); `dumpsys power` shows it no longer taken.
-- README screenshots scripted (`scripts/readme-screenshots.sh`, Classic and Nothing sets); the README
-  shows only the key ones (2026-09-29).
-- The in-app updater deletes its downloaded APK on the next start (2026-09-29). The packet log caps
-  itself at 2 x 512 KB.
-
-## UI pass (2026-09-30)
-
-- Dot style: dotted boxes for buttons, chips, sheets and dialogs (`DotArt.Box`); accent buttons are outlines;
-  the small action icons (taps, hold, close, check, pencil, bin, cog, menu, connection dot) are drawn from
-  rules, not sampled; smoother EQ curve; no lone dot on the bud icons.
-- Widget settings, the swap button, the 3x3 widget and EQ import / export removed; the 2x2 resizes. The
-  ANC button shows the level ("ANC L").
-- Find my earbuds, Wear detection and every confirm / notice / crash report are bottom sheets.
-- Dev Tools log: Human / Detailed / Raw, unknown packets in amber with their payload, discarded bytes
-  logged. Slider steps give a light haptic tick. The screenshot script runs in about 1.5 minutes.
+- Dev Tools: Simple / Detailed / Raw log, Clear, Export, Reconnect, Disconnect, Crash test. Unknown
+  packets show in amber with their payload. The packet log caps itself at 2 x 512 KB.
+- Crash handler in `QuickBudsApp.attachBaseContext`, before any app code.
+- Dead code sweeps and a whole-codebase audit (`/ponytail-audit`).
+- Signed release builds. The version is set in one place (`app/build.gradle.kts`).
+- Was: a 60-minute wakelock. Is: none.
+- README screenshots are scripted (`scripts/readme-screenshots.sh`, about 1.5 minutes).
+- The in-app updater deletes its downloaded APK on the next start.
+- Selection outlines slide on the language and model lists. Dot-matrix boxes of one size share a
+  bitmap (model list: 0.12 s, was 1.08 s).
 
 ## Desktop
 
-- Rust + Slint app in `desktop/` (4.0.0 beta, 2026-10-01): frameless window and sidebar, the phone's
-  pages rearranged for a PC (Overview, Equalizer, Controls, Hearing profile, Dual connection, Earbud
-  settings, App settings, Dev tools), Dot matrix style, tray (Linux: a menu; Windows: quick panel).
-  Shipped as a Windows `.zip` and a Linux `.tar.gz`. Linux (BlueZ) checked by him 2026-10-01.
-- Pages and overview rows hide what the buds lack, as on the phone (4.3.0, 2026-10-05).
-- Self-update from App settings, check on start (4.3.1, 2026-10-06): Windows and a writable Linux folder.
-- Noise control like the phone: clicking ANC slides the segments over to Low / Medium / High / Smart, in
-  the window and the tray panel. Dev tools page: packet log Human / Detailed / Raw, Clear, Export
-  (`Downloads\QuickBuds\`), Reconnect, Disconnect. Both checked by him (2026-10-02).
+- Rust + Slint app in `desktop/`: frameless window and sidebar, the phone's pages arranged for a PC,
+  Dot matrix style, tray (Linux: a menu; Windows: quick panel). Windows `.zip` and Linux `.tar.gz`.
+  Linux (BlueZ) checked by him.
+- Pages and overview rows hide what the buds lack, as on the phone.
+- Self-update from App settings, check on start.
+- Noise control slides to the levels, in the window and the tray panel. Dev tools page with the
+  packet log, Export (`Downloads\QuickBuds\`), Reconnect, Disconnect.
 
 ## Docs
 
-- Docs moved to `docs/`; only README, LICENSE and CLAUDE.md stay in root (2026-09-25).
-- LICENSE rewritten from the official gnu.org GPL-3.0 text; GitHub detects it as `gpl-3.0`. The
-  copyright notice (author, app, GPL-3.0-or-later) is in the README (2026-09-25).
-- Account mentions removed: neither HeyMelody nor QuickBuds needs one (2026-09-25).
-- Contributor docs (2026-09-30): CONTRIBUTING.md (build quickstart), PACKET-CAPTURE.md rewritten as a
-  capture guide, TOOLCHAIN.md (the phone as build and test device). Linked from Reddit / XDA.
-- Interop facts only (2026-09-29): no vendor class, method or file names in the repo; the `[VENDOR]`
-  bytes stay. README trademark notice.
-- TOOLCHAIN.md says why the phone is the whole machine and how the AI assistant is set up (2026-09-30).
-- README: Play Protect "Install anyway" note, widget sizes corrected (2026-09-30).
-
-## Bug fixes (2026-09-30)
-
-- The selection outline slides on the language and model lists; both keep their rows instead of rebuilding.
-- The language screen no longer relaunches on the first pick (the locale change also changes the keyboard
-  configuration).
-- Dot-matrix boxes of one size share a bitmap: the model list (138 rows) shows in 0.12 s instead of 1.08 s.
-- Smaller widget (4x1 / 2x1): scrapped until a good idea comes (see ROADMAP.md, Decided against).
+- Docs in `docs/`. Only README, LICENSE and CLAUDE.md stay in the root.
+- LICENSE is the official GPL-3.0 text (GitHub detects `gpl-3.0`). The copyright notice is in the README.
+- Contributor docs: CONTRIBUTING.md, PACKET-CAPTURE.md, TOOLCHAIN.md.
+- Interop facts only: no vendor class, method or file names in the repo. README trademark notice.
+- All docs in ASD-STE100 style (CLAUDE.md › Writing rules).

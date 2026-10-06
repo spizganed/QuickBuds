@@ -20,11 +20,11 @@ donate on [Ko-fi](https://ko-fi.com/spizganed).
 > hearing profile, dual connection, earbud settings and a packet log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
 > `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3 and
 > libayatana-appindicator; see its README). Pair the buds in your system's Bluetooth settings first. With
-> Dual connection on, the phone app and the desktop app work at the same time. From 4.3.1 it updates itself
-> from App settings (a packaged install shows the release page instead). Progress is in
+> Dual connection on, the phone app and the desktop app work at the same time. It updates itself from
+> App settings (a packaged install shows the release page instead). Progress is in
 > [ROADMAP.md](./docs/ROADMAP.md).
 >
-> **Arch Linux:** install it as a package (it comes to the AUR as `quickbuds-bin` once AUR sign-ups reopen):
+> **Arch Linux:** build the package from the repo (it goes to the AUR as `quickbuds-bin` when AUR sign-ups open again):
 >
 > ```bash
 > git clone https://github.com/spizganed/QuickBuds && cd QuickBuds/desktop/aur && makepkg -si
@@ -77,7 +77,7 @@ Every page, and the Dot matrix style, is in [docs/screenshots/desktop](docs/scre
 - **Battery and wear status** for each bud and the case, live.
 - **Noise control:** Off, Noise cancelling (Low / Medium / High / Smart), Adaptive and Transparency. Changes
   made on the earbuds show up instantly.
-- **Equalizer:** built-in presets, up to 3 custom 6-band presets you draw on a curve, and bass boost.
+- **Equalizer:** built-in presets, up to 3 custom presets you draw on a curve, and bass boost.
   Saved on the earbuds.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
 - **Hearing profile:** a hearing test (ear scan, then 6 tones per ear) that tunes the sound to your

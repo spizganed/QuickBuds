@@ -153,9 +153,8 @@ wearing `0x0109`.
 0x0108 gesture table → 0x010C 02 01 hold cycle
 ```
 
-Nothing is polled after that: battery, wear, ANC and game mode are pushed. The periodic "keep-alive"
-poll of the OSS sources was dropped with no stale link seen `[USER]`. If the early steps ever look
-disturbed, suspect the last two (they were added last).
+Nothing is polled after that: battery, wear, ANC and game mode are pushed. Was: the `[OSS]`
+keep-alive poll. Is: none; no stale link seen `[USER]`.
 
 ### What the buds are and accept
 
@@ -182,10 +181,10 @@ disturbed, suspect the last two (they were added last).
 
 ### Batch query — `0x012F` `[CAPTURE]`
 
-HeyMelody on the Buds 4 (2026-10-06): after `0x0100`, `0x0200` and `0x0205` it sends **one `0x012F`
-frame carrying 24 queries**, not the queries one by one. Bitmap bit 56; buds without it (Enco Buds2:
-4-byte bitmap) get the queries separately. Both apps do the same: with bit 56, the connect-time reads
-(after the event registration) go out as one `0x012F`; a status read later goes alone.
+HeyMelody on the Buds 4: after `0x0100`, `0x0200` and `0x0205` it sends **one `0x012F` frame with
+24 queries**. Bitmap bit 56. Buds without it (Enco Buds2: 4-byte bitmap) get the queries one by one.
+Both apps do the same: with bit 56, the connect-time reads after the event registration go out as
+one `0x012F`. A later status read goes alone.
 
 - Request payload: `<count>`, then per query `<cmd LE> <len LE> <payload>`. Buds 4 (`0D 01 0A 00 …` =
   `0x010D` with 10 bytes): `0102 FFFF`, `0106`, `010B`, `0103`, `0101 0002`, `0114`, `0105`, `0107`,
@@ -234,11 +233,9 @@ ANC), plus `04` / `08` / `0B` as above, **kept to the ids the buds offer in `0x8
 - **Never drop `03` when the buds offer it**: on Buds 4, without it, ANC changes made on the buds send
   nothing at all.
 - Nord Buds 3 Pro (issue #2) `[CAPTURE]` offers only `00 02 02 01` (wear, battery). Asked for
-  `01 02 03 04 08 0B`, it never sent `0x8205`. It still pushed an ANC change once without `03`.
-- OPPO Enco Buds2 (issue #5, product id `060C12`, bitmap `00 9B 2C 50 80`) `[CAPTURE]` also offers
-  `02 01`. Asked for exactly `02 01 02`, it sent no `0x8205` and answered nothing after it (not
-  `0x010D`, `0x0106`, `0x0109`, `0x0105` or `0x010F`); the link dropped ~6 s later. The
-  reporter's test: without `0x010D` the link stays up and wear, battery and firmware answer `[CAPTURE]`.
+  `01 02 03 04 08 0B`, it sent no `0x8205`. It still pushed an ANC change once without `03`.
+- OPPO Enco Buds2 (issue #5, id `060C12`, bitmap `00 9B 2C 50 80`) `[CAPTURE]` also offers `02 01`.
+  It sends no `0x8205`. The cause of its link drop was the long `0x010D` list, not the subscription (§9).
 - The `0x8205` ack: `01 02 01 00 02 00` and, for five ids, `01 05 01 00 02 00 03 00 04 00 08 00`
   (Buds 4): `01 <count>`, then `<id> 00` per id `[GUESS]`. Fewer ids than asked = part rejected.
 
@@ -305,8 +302,7 @@ one level down (Buds 4's Off has a child at 3, Transparency one at 8).
 - Query: `0x010C 01 01` → `00 01 01 <LO> <HI>` (status, echo, value). Read on every connect, so a
   reconnect corrects the display.
 - `AncEventParser` accepts a push only when bytes 1-2 are `01 01`. A hold-cycle write also raises a
-  subType `03` push, shaped `03 02 01 <mask>`; decoding it as a mode once stuck the display on a false
-  mode.
+  push `03 02 01 <mask>`. It is not a mode (Was: decoded as one, the display stuck on a false mode).
 - **Smart** `[CAPTURE]`: SET bit 7 is acked and pushed as `0x0080`. Right after, the buds pushed
   `03 04 01 20 00` and `03 04 01 40 00`: probably the level Smart chose `[GUESS]`. Not parsed.
 
@@ -481,24 +477,31 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 
 ### Feature switches — `0x0403 <id> <01/00>`, read with `0x010D`
 
-`0x010D <count> <ids>` → `00 <count> [<id> <value>]...`; only ids the firmware has come back
-`[CAPTURE]`. **The ids are per model** `[VENDOR]`, as HeyMelody builds them: `05`, then one id per
-feature its model data has. `models.json` `statusQuery` holds the list (81 HeyMelody models, generated
-from HeyMelody 116.9.0's built-in data); Buds 4 = `05 04 0B 11 18 06 1B 1D 1C` (= the capture), Enco Buds2
-= `05 06` `[USER]`. Rule `[VENDOR]`: `05`, then in this order, per `function` key (value exactly `1`
-unless noted): `04` wearDetection, `0B` hearingEnhancement(New), `0C` personalNoise (or
+`0x010D <count> <ids>` → `00 <count> [<id> <value>]...`. Only ids the firmware has come back
+`[CAPTURE]`.
+
+- **The ids are per model** `[VENDOR]`. `models.json` `statusQuery` holds the list (81 HeyMelody
+  models, from HeyMelody 116.9.0's built-in data). Buds 4: `05 04 0B 11 18 06 1B 1D 1C` (matches the
+  capture). Enco Buds2: `05 06` `[USER]`.
+- **A longer list drops some links.** Was: one fixed 23-id list, which dropped the Enco Buds2 (issue
+  #5). Is: the per-model list. `02 05 0D` kept that link up `[CAPTURE]`.
+- A model without `statusQuery` (realme, hand-added) gets the 23 ids, plus `1A` where it has `windNoise`.
+- A row whose id the model is not asked for does not show (HeyMelody parity: no Power saving or
+  Personalised ANC on Buds 4).
+- Parsed into `featureStates`, logged as `FEATURES:`. The buds' list wins over the model list while connected.
+
+How HeyMelody builds the list `[VENDOR]`: `05`, then one id per `function` key, in this order (value
+exactly `1` unless noted):
+
+`04` wearDetection, `0B` hearingEnhancement(New), `0C` personalNoise (or
 personalNoiseCompat.personalNoise), `0D` clickTakePic(New), `0F` zenMode > 0, `11` multiDevicesConnect
 1/2, `09` vocalEnhance, `13` headSetSoundRecord, `18` highToneQuality 1/2, `17` longPowerMode, `15`
-smartCall, `16` deviceLostRemind, `14` voiceWake 1/3, `19` voiceCommand 1/2, `06` gameMode or gameModeList,
-`1B` spatialTypes, `1D` bassEngineSupport, `1C` controlAutoVolumeSupport, `1E` collectLogs, `21`
-gameEqPkgList, (`1F` OPPO / OnePlus phones only, skipped), `22 23 24` spineHealth, `27 28` gameSoundList
-or bitmap `0x0423`, `30` adaptiveVolume, `31` adaptiveEar, `32` speechPerception, `34` meetingAssistant,
-`35` longPressVolume, `37` swiftPair, `38` hearingOptimize, `39` incomingCallControl, `3B` headMotion,
-`3A` sleepDetection. A longer list drops some links (issue #5: the old fixed 23-id list dropped the Enco Buds2; `02 05 0D`
-kept it up `[CAPTURE]`). A model without `statusQuery` (realme, hand-added) still gets the 23 ids, plus `1A`
-where it has `windNoise`. Rows for ids a model is not asked for do not show (HeyMelody parity: no Power
-saving or Personalised ANC on Buds 4). Parsed into
-`featureStates`, logged as `FEATURES:`. The buds' list wins over the model list while connected.
+smartCall, `16` deviceLostRemind, `14` voiceWake 1/3, `19` voiceCommand 1/2, `06` gameMode or
+gameModeList, `1B` spatialTypes, `1D` bassEngineSupport, `1C` controlAutoVolumeSupport, `1E`
+collectLogs, `21` gameEqPkgList, (`1F` OPPO / OnePlus phones only, skipped), `22 23 24` spineHealth,
+`27 28` gameSoundList or bitmap `0x0423`, `30` adaptiveVolume, `31` adaptiveEar, `32`
+speechPerception, `34` meetingAssistant, `35` longPressVolume, `37` swiftPair, `38` hearingOptimize,
+`39` incomingCallControl, `3B` headMotion, `3A` sleepDetection.
 
 | Id | Switch | Notes |
 |---|---|---|
@@ -531,11 +534,10 @@ Ids `09`-`3B` without a `[CAPTURE]` are `[VENDOR]`, wired, unverified on buds. A
 **Decided against** `[USER]`: voice wakeup `14`, voice commands `19`, incoming-call voice control
 `39`, neck health `22`-`24` (needs OPPO's Health app), meeting assistant `34`.
 
-- **Power saving `17`** `[CAPTURE]`: either write restarts the buds; the link returns ~12 s later
-  and `0x810D` shows the new value. No visible difference in ANC, gestures, wear, codec (LHDC V5
-  48 kHz / 24-bit) or link parameters; the effect is internal. The buds do not bring phone audio back
-  by themselves; the app asks for it. HeyMelody and the system melody app never show this row; it is a
-  China-market feature `[VENDOR]`.
+- **Power saving `17`** `[CAPTURE]`: either write restarts the buds. The link returns about 12 s
+  later and `0x810D` shows the new value. ANC, gestures, wear, codec (LHDC V5 48 kHz / 24-bit) and link
+  parameters do not change. The buds do not bring phone audio back; the app asks for it. HeyMelody
+  does not show this row (China-market feature `[VENDOR]`).
 - **Head gesture mapping** `[VENDOR]`: `0x0431 00` = nod answers / shake declines, `01` = the reverse.
   Read `0x0134`; HeyMelody parses the type only from push `F5 <type>`. Bitmap bit 63.
 - **Game sound type** `[VENDOR]`: `0x0423 <type> 01`, Off (`0`) included. Read `0x012B` →
@@ -707,7 +709,7 @@ sends `0x0500` empty and works either way. Both apps answer from one function (`
 - HeyMelody adds `<zone offset seconds s32 LE>` to the time answer for models whose model list flags
   `utcTimeZone`. The full list in the `[OSS]` repos (OppoPods, OppoPodsManager; 137 models, the source
   of `models.json`) flags none, so the 4-byte form goes out for every model. A newer list may flag some.
-- Seen on Buds 4 after the change `[CAPTURE]` 2026-10-05: `0x0500` answered within 5 ms, link unchanged.
+- Buds 4 `[CAPTURE]`: `0x0500` answered within 5 ms, link unchanged.
 
 ---
 

@@ -1,9 +1,9 @@
 # Contributing to QuickBuds
 
-Thanks for helping. The most useful contribution right now is **a report from an owner of earbuds
-other than the OnePlus Buds 4**: every other model's writes are built from HeyMelody's data but not
-confirmed on real buds. Code contributions are welcome too; this page gets you from a clone to a
-running build.
+Thanks for helping. The most useful contribution is **a report from an owner of earbuds other than
+the OnePlus Buds 4**. The writes for every other model come from HeyMelody's data, but no real buds
+confirm them yet. Code contributions are welcome too. This page takes you from a clone to a running
+build.
 
 ## Reporting a model
 
@@ -40,7 +40,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 Versions: Gradle 9.6.0, AGP 9.4.0, Kotlin 2.4.0, `compileSdk` / `targetSdk` 37, `minSdk` 26. AGP 9
 compiles Kotlin itself, so do not add the `org.jetbrains.kotlin.android` plugin.
 
-### Desktop app (in progress)
+### Desktop app
 
 Rust (stable). Windows needs nothing else; Linux needs BlueZ and the development packages for D-Bus, GTK 3,
 and libayatana-appindicator (Arch: `dbus gtk3 libayatana-appindicator`).

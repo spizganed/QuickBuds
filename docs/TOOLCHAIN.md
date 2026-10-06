@@ -1,26 +1,17 @@
 # Building on the phone
 
-QuickBuds is built, installed and tested on the same Android phone it runs on. The phone is the
-build machine and the test device at once. A PC is optional: it only opens an SSH session to the
-phone for a bigger keyboard and screen. This page is the setup, for anyone who wants to work the
-same way.
-
-## Why it is built this way
-
-The developer has a desktop at home but no laptop. QuickBuds is also worked on in free time at the
-day job, and the work PC is kept clean on purpose: nothing is installed or downloaded on it, and no
-project files are put on it. So the phone is the whole machine: Termux builds, adb installs and tests,
-and the work PC only opens an SSH session using the ssh client that Windows 11's default terminal
-already has. Everything stays on the phone.
+QuickBuds can be built, installed and tested on the Android phone it runs on. The phone is the build
+machine and the test device. A PC is optional: it opens an SSH session to the phone for a bigger
+keyboard and screen. The developer uses this setup where the PC must stay clean (nothing installed,
+no project files on it). This page is the setup.
 
 ## AI assistant
 
-The code is written with [Claude Code](https://claude.com/claude-code) running inside Termux on the
-phone, so the assistant builds, installs and reads logcat itself over the same adb link. The usual
-setup is Claude Opus 5.5 at medium effort, with two plugins that keep it lean: **ponytail** (full:
-the shortest solution that works, no speculative code) and **caveman** (lite: terse replies). The
-rules the assistant follows live in [CLAUDE.md](../CLAUDE.md). Device testing and design decisions stay
-with the developer; the assistant does protocol, parsers and code.
+The code is written with [Claude Code](https://claude.com/claude-code) in Termux on the phone. The
+assistant builds, installs and reads logcat itself over the same adb link. Two plugins keep it lean:
+**ponytail** (the shortest solution that works) and **caveman** (short replies). Its rules are in
+[CLAUDE.md](../CLAUDE.md). The developer does device tests and design decisions. The assistant does
+protocol, parsers and code.
 
 ## The setup
 
@@ -176,6 +167,8 @@ Start a build over SSH and it keeps going on the phone. The PC only shows the ou
 
 ## 8. A Linux desktop on the phone, and the desktop app
 
+The developer's phone does not have this set up now (removed to free space).
+
 Termux's x11 repository has a whole desktop, native: `pkg install plasma-desktop kwin-x11 konsole
 dolphin pulseaudio termux-x11-nightly` plus the Termux:X11 app. Plasma runs on the Termux:X11 display
 (`termux-x11 :0 -xstartup <script that runs dbus-launch startplasma-x11>`). Every Termux tool (Gradle,
@@ -196,7 +189,6 @@ phone's hotspot: while the phone is on Wi-Fi and hosts a hotspot at once, frames
 Plasma's power manager calls `termux-brightness`, which needs a permission and
 would dim the real screen: hide its autostart entry.
 
-Not set up on the developer's phone right now (removed after 4.4.0 to free space).
 The desktop app needs a normal (glibc) Linux: Termux's own `rust` targets Android (winit then wants
 `android-activity` and fails), and rustup cannot lock its files in Termux's home. On the phone it builds in
 a Debian proot, used to compile and run `cargo test`:
