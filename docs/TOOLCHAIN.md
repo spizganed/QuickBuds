@@ -198,13 +198,31 @@ would dim the real screen: hide its autostart entry.
 
 The desktop app needs a normal (glibc) Linux: Termux's own `rust` targets Android (winit then wants
 `android-activity` and fails), and rustup cannot lock its files in Termux's home. On the phone it builds in
-a Debian proot, used to compile and run `cargo test` (full builds and releases stay on the PC):
+a Debian proot, used to compile and run `cargo test`:
 `proot-distro install debian`, then in it `build-essential pkg-config libdbus-1-dev libgtk-3-dev
 libxdo-dev libfontconfig-dev libxkbcommon-dev` and rustup. Run the tests with
 `proot-distro login debian --bind ~/projects/QuickBuds:/qb -- bash -c 'cd /qb/desktop &&
 CARGO_TARGET_DIR=/root/qb-target ~/.cargo/bin/cargo test --release'` (the first build takes several
 minutes). proot has no Bluetooth; `QB_BRIDGE=127.0.0.1:7979` talks to the buds through the Android app's
 Dev tools › Bridge.
+
+Release archives can be cross-built on the phone too (`scripts/desktop-dist.sh` needs podman, so do its
+steps by hand), all into `desktop/dist/`:
+
+- **Windows:** in the Debian proot, `apt install gcc-mingw-w64-x86-64 zip`, `rustup target add
+  x86_64-pc-windows-gnu`, `cargo build --release --target x86_64-pc-windows-gnu`, zip `quickbuds.exe`.
+  Check `x86_64-w64-mingw32-objdump -p quickbuds.exe | grep "DLL Name"` lists only system DLLs.
+- **Linux x64:** `proot-distro install ubuntu:22.04` (the image the script uses, so glibc 2.35). In it,
+  `dpkg --add-architecture amd64`; mark the existing sources `[arch=arm64]` and add `[arch=amd64]` lines for
+  `archive.ubuntu.com` / `security.ubuntu.com` (jammy, jammy-updates, jammy-security; main universe); install
+  `gcc-x86-64-linux-gnu` and the script's `-dev` packages as `:amd64`; rustup with target
+  `x86_64-unknown-linux-gnu`. Build with `PKG_CONFIG_ALLOW_CROSS=1`,
+  `PKG_CONFIG_PATH`/`PKG_CONFIG_LIBDIR=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig` (the second
+  dir holds `xproto.pc`), `CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER` and
+  `CC_x86_64_unknown_linux_gnu=x86_64-linux-gnu-gcc`. Package it with the tail of the script (from
+  `pkg=$dist/...`, with the binary and `icons.rs` placed under `desktop/target/ubuntu22/release/`). Termux's
+  umask is 077: `chmod` 755/644 before `tar`, or the archive's files are owner-only.
+  Check `objdump -T` tops out at `GLIBC_2.35` and `NEEDED` matches the previous release.
 
 ## Gotchas
 
