@@ -335,7 +335,7 @@ impl<'a> Conn<'a> {
     }
 
     /// PROTOCOL.md "Init sequence": 300 ms before the first frame, then 200 ms apart; reads only if listed.
-    fn init(&mut self) -> Result<(), String> {
+        fn init(&mut self) -> Result<(), String> {
         self.pump(300)?;
         for cmd in [CMD_HANDSHAKE, CMD_QUERY_PRODUCT_ID, CMD_QUERY_BROADCAST] {
             self.send(cmd, None, &[])?;
@@ -346,7 +346,7 @@ impl<'a> Conn<'a> {
             for &id in &ids { self.send(CMD_REGISTER_ONE, None, &[id])?; }
             self.pump(200)?;
         }
-        let queries: [(u16, Option<u8>, Vec<u8>); 6] = [
+        let queries = [
             (CMD_REGISTER_NOTIFY, None, register_payload(&ids)),
             (CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY.to_vec()),
             (CMD_QUERY_ANC, None, vec![1, 1]),
@@ -354,17 +354,29 @@ impl<'a> Conn<'a> {
             (CMD_QUERY_WEARING, Some(0xF2), vec![]),
             (CMD_QUERY_FIRMWARE, None, vec![]),
         ];
+        
         for (cmd, seq, payload) in queries {
             if !self.s.caps.supports(cmd) || cmd == CMD_REGISTER_NOTIFY && ids.is_empty() { continue; }
+            
+            // 1. UI Truth Check (models.json)
+            let explicitly_no_anc = self.s.model.map_or(false, |m| m["noiseReductionMode"].as_array().is_none());
+            if cmd == CMD_QUERY_ANC && explicitly_no_anc { continue; }
+
+            // 2. Hardware Overrides Truth Check (model_overrides.json)
+            if cmd == CMD_QUERY_STATUS && !is_supported(self.s.model, "supportsStatus") { continue; }
+            if cmd == CMD_QUERY_WEARING && !is_supported(self.s.model, "supportsWearing") { continue; }
+            if cmd == CMD_QUERY_FIRMWARE && !is_supported(self.s.model, "supportsFirmware") { continue; }
+
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;
         }
         self.eq_reads()
     }
 
-    /// The EQ reads these buds list, in order (`sendThenRead`); after a write too, since only the buds know
-    /// the ids after a create or delete.
     fn eq_reads(&mut self) -> Result<(), String> {
+        // THE EQ TRUTH CHECK: Strictly blocks EQ for buds that don't have it in models.json
+        if !eq_has(self.s.model, &self.s.caps) { return Ok(()); }
+
         for cmd in [CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE] {
             if !self.s.caps.supports(cmd) { continue; }
             self.send(cmd, None, &[])?;
