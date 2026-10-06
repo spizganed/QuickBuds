@@ -196,14 +196,15 @@ phone's hotspot: while the phone is on Wi-Fi and hosts a hotspot at once, frames
 Plasma's power manager calls `termux-brightness`, which needs a permission and
 would dim the real screen: hide its autostart entry.
 
-Optional, and no longer set up on the developer's phone (the desktop app builds on a Linux PC):
-the desktop app needs a normal (glibc) Linux, so on the phone it builds in an Ubuntu proot:
-`proot-distro install ubuntu`, then in it `build-essential pkg-config libfontconfig1-dev
-libfreetype-dev libxkbcommon-dev libxkbcommon-x11-0 libx11-dev libgtk-3-dev libxdo-dev
-libayatana-appindicator3-dev` and rustup. `cargo build` in `desktop/` takes about 8 minutes the first
-time. Run it with `proot-distro login ubuntu --shared-tmp -- env DISPLAY=:0 QB_BRIDGE=127.0.0.1:7979
-<binary>`: proot has no Bluetooth, so it talks to the buds through the Android app's Dev tools ›
-Bridge.
+The desktop app needs a normal (glibc) Linux: Termux's own `rust` targets Android (winit then wants
+`android-activity` and fails), and rustup cannot lock its files in Termux's home. On the phone it builds in
+a Debian proot, used to compile and run `cargo test` (full builds and releases stay on the PC):
+`proot-distro install debian`, then in it `build-essential pkg-config libdbus-1-dev libgtk-3-dev
+libxdo-dev libfontconfig-dev libxkbcommon-dev` and rustup. Run the tests with
+`proot-distro login debian --bind ~/projects/QuickBuds:/qb -- bash -c 'cd /qb/desktop &&
+CARGO_TARGET_DIR=/root/qb-target ~/.cargo/bin/cargo test --release'` (the first build takes several
+minutes). proot has no Bluetooth; `QB_BRIDGE=127.0.0.1:7979` talks to the buds through the Android app's
+Dev tools › Bridge.
 
 ## Gotchas
 

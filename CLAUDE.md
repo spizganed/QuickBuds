@@ -58,7 +58,8 @@ session-plan files: durable knowledge goes here or in PROTOCOL.md.
 
 Setup is in TOOLCHAIN.md and lives outside the repo. Repo at `~/projects/QuickBuds`; APK at
 `~/qb-build/_app/outputs/apk/release/app-release.apk`. **Never put the aapt2 override in the repo** (breaks
-the PC build). No Rust on the phone: the desktop app builds on the PC. After an adb test on the phone
+the PC build). Desktop checks on the phone: `cargo test` in a Debian proot (TOOLCHAIN.md); builds and releases
+stay on the PC. After an adb test on the phone
 itself (not over SSH), bring Termux to the front.
 
 ## Working with the developer
@@ -98,7 +99,8 @@ Details and evidence in PROTOCOL.md.
 
 - **Which buds:** `BudsDevice.find()`; desktop: the vendor service `079A`/`1107` in the system's cached list,
   or an address that answered before (`settings.json` "buds"), the name last. **Which model:** HeyMelody's
-  order, name and id, then name, then id (PROTOCOL.md §4; some buds reuse another model's id, issue #5). **Never hardcode an address** (phone or desktop).
+  order, name and id, then name, then id (PROTOCOL.md §4; some buds reuse another model's id,
+  issue #5). **Never hardcode an address** (phone or desktop).
 - Auto-connect follows audio (A2DP / HFP connected; ACL gives an 8 s fallback). A deliberate disconnect
   cancels `reconnectAfterLoss()`; a lid close (all-zero wear push) does not retry.
 - **Only a user connect asks Android for phone audio** (`EXTRA_WITH_AUDIO`). Exception: the reconnect
@@ -242,4 +244,5 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 - Latest release v4.3.1 (2026-10-06: desktop self-update). The Windows zip is cross-built and has never
   run on Windows.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
-- **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
+- **Waiting:** issue #2 owners testing 4.3.x; issue #5 (Enco Buds2 loop) reporter testing init without
+  `0x010D`. Read their logs before changing anything. AUR account.

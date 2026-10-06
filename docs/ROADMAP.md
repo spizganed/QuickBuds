@@ -34,8 +34,11 @@ Nothing.
 ## Waiting on others
 
 - **Nord Buds 3 Pro reconnect loop** (issue #2, Android and Debian desktop, 2026-10-05): the buds reset
-  the link 3-5 s after connect. Fix candidates: answering their requests (time, PROTOCOL.md §9) and
-  subscribing only to offered events (§4). Waiting for an owner to test the next version.
+  the link 3-5 s after connect. 4.3.0 answers their requests (time, PROTOCOL.md §9) and subscribes only
+  to offered events (§4). Waiting for an owner to test it.
+- **OPPO Enco Buds2 reconnect loop** (issue #5, desktop, 2026-10-06): after `0x0200` the buds answer
+  nothing (no `0x8205`, not even `0x0106`) and drop the link ~6 s later. They never send `0x0500`.
+  Asked the reporter to try the init without `0x010D`; if that holds, gate only that query.
 
 ## Decided against — do not re-suggest
 
