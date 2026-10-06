@@ -350,8 +350,17 @@ impl<'a> Conn<'a> {
             (CMD_QUERY_WEARING, Some(0xF2), vec![]),
             (CMD_QUERY_FIRMWARE, None, vec![]),
         ];
-        for (cmd, seq, payload) in queries {
+                for (cmd, seq, payload) in queries {
             if !self.s.caps.supports(cmd) || cmd == CMD_REGISTER_NOTIFY && ids.is_empty() { continue; }
+            
+            // Safe init: if the buds sent an `offered` list but omitted ID 3, they are a budget model.
+            // Sending heavy queries will likely crash their firmware.
+            if let Some(offered) = self.s.offered.as_deref() {
+                if !offered.contains(&3) && matches!(cmd, CMD_QUERY_STATUS | CMD_QUERY_ANC | CMD_QUERY_FIRMWARE) {
+                    continue;
+                }
+            }
+
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;
         }
@@ -360,7 +369,12 @@ impl<'a> Conn<'a> {
 
     /// The EQ reads these buds list, in order (`sendThenRead`); after a write too, since only the buds know
     /// the ids after a create or delete.
-    fn eq_reads(&mut self) -> Result<(), String> {
+        fn eq_reads(&mut self) -> Result<(), String> {
+        // Safe gate: Don't blast EQ queries to buds that don't offer advanced notifications
+        if let Some(offered) = self.s.offered.as_deref() {
+            if !offered.contains(&3) { return Ok(()); }
+        }
+
         for cmd in [CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE] {
             if !self.s.caps.supports(cmd) { continue; }
             self.send(cmd, None, &[])?;
