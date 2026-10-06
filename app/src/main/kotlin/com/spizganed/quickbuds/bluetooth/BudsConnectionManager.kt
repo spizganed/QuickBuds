@@ -12,6 +12,7 @@ import android.util.Log
 import com.spizganed.quickbuds.protocol.AncEventParser
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.BatteryParser
+import com.spizganed.quickbuds.protocol.LogDecoder
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.EqCodec
@@ -1097,8 +1098,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
             cmd == 0x811A || cmd == 0x8133 || cmd == 0x8132 || // personalized ANC, tap sensitivity, preferred device
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
-            cmd == OpoProtocol.CMD_REGISTER_NOTIFY ||
-            cmd == OpoProtocol.CMD_BATCH_REPLY           // unpacked in handlePacket
+            cmd in LogDecoder.REPLY_NAMES                // decoded elsewhere, see there
         if (explained) return
 
         val head = OpoProtocol.bytesToHex(payload.take(4).toByteArray())

@@ -10,6 +10,26 @@ package com.spizganed.quickbuds.protocol
  */
 object LogDecoder {
 
+    /**
+     * Replies the connection manager decodes itself (its own log line follows, e.g. `CODEC:`), named here
+     * so the raw line does not read "Unknown packet". A reply handled there and missing here = add it.
+     */
+    val REPLY_NAMES = mapOf(
+        0x810F to "EQ current", 0x8112 to "Device list", 0x8114 to "Codec", 0x8115 to "Hearing profile",
+        0x8116 to "Hearing profile", 0x811A to "Personalised ANC", 0x811E to "Hearing profile",
+        0x811F to "Hearing profile", 0x8123 to "Codec list", 0x8124 to "Bass level", 0x812A to "Spatial type",
+        0x812B to "Game sound", 0x812F to "Batch reply (answers follow as RX[batch])", 0x8132 to "Preferred device",
+        0x8133 to "Tap sensitivity", 0x8200 to "Offered events", 0x8205 to "Notifications registered",
+        0x8427 to "Alert volume ack"
+    )
+
+    /** `0x0204` subTypes decoded in the connection manager (its own log line follows), named the same way. */
+    private val PUSH_NAMES = mapOf(
+        0x06 to "dual connection devices", OpoProtocol.EVT_GOLDEN_STATUS to "hearing test status",
+        OpoProtocol.EVT_PERSONAL_NOISE to "personalised ANC result", OpoProtocol.EVT_EAR_SCAN to "ear scan",
+        0xF2 to "request (answered)", 0xF4 to "JSON request (answered)", OpoProtocol.EVT_HEAD_MOTION_TYPE to "head motion type"
+    )
+
     enum class Direction { TX, RX, STATUS }
 
     /** Describes a decoded packet for human-readable display. */
@@ -208,6 +228,8 @@ object LogDecoder {
                             sb.append("Button/gesture: ")
                             sb.append(UserInteractionParser.describe(payload))
                         }
+                        in PUSH_NAMES -> sb.append("Active report: ${PUSH_NAMES[subType]} ")
+                            .append(OpoProtocol.bytesToHex(payload.copyOfRange(1, payload.size)))
                         else -> {
                             // A subType we don't decode. Annotated with its payload head
                             // so an unattributed gesture frame (e.g. subType 0xFF /
@@ -280,7 +302,8 @@ object LogDecoder {
                 else "status=0x%02X".format(payload[0].toInt() and 0xFF)
                 "Ack for set 0x%04X (%s%s)".format(setCmd, status, if (ok) " = ok" else "")
             }
-            else -> "Unknown packet $cmdHex"
+            else -> REPLY_NAMES[cmd]?.let { "$it ($cmdHex): ${OpoProtocol.bytesToHex(payload)}" }
+                ?: "Unknown packet $cmdHex"
         }
     }
 
