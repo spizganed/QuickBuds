@@ -121,7 +121,7 @@ type Emit = Box<dyn Fn(Snapshot) + Send>;
 pub struct Line {
     /// Local time, "18:23:05.123".
     pub at: String,
-    /// "TX", "RX" or "DISCARDED RX".
+    /// "TX", "RX", "DISCARDED RX", or "NOTE" (a connection change in words, no bytes).
     pub dir: &'static str,
     pub bytes: Vec<u8>,
     /// The decoded description; None = a packet nothing here names (amber in Human).
@@ -189,11 +189,12 @@ fn run(rx: Receiver<Cmd>, emit: Emit) {
             for d in devices {
                 emit(Snapshot { status: Status::Connecting, name: d.name.clone(), ..Default::default() });
                 let Ok(link) = bt::connect(d.addr) else { continue };
+                log("NOTE", Vec::new(), Some(format!("Connected to {}", d.name)));
                 let mut c = Conn::new(link, d.name, &emit);
                 c.addr = d.addr;
                 match c.serve(&rx) {
-                    End::Lost => {}
-                    End::UserDisconnect => paused = true,
+                    End::Lost => log("NOTE", Vec::new(), Some("Connection lost".into())),
+                    End::UserDisconnect => { log("NOTE", Vec::new(), Some("Disconnected".into())); paused = true }
                     End::Quit => return,
                 }
                 break;

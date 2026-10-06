@@ -30,6 +30,7 @@ import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.bluetooth.RfcommBridge
 import com.spizganed.quickbuds.protocol.LogDecoder
+import com.spizganed.quickbuds.protocol.SimpleLog
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,9 +39,10 @@ import java.util.Locale
 /**
  * Dev Tools screen.
  *
- * Shows two views of the PacketLogger log:
- *   - Human-readable: decoded packet descriptions (e.g. "L=EAR R=OUT Case=CASE", "ANC -> Deep")
- *   - Raw hex: the original timestamped log lines as written to packets.log
+ * Shows two views of the PacketLogger log (Export saves the raw file either way):
+ *   - Simple: what happened, in plain words ([SimpleLog]); protocol steps are left out
+ *   - Detailed: every line decoded ([LogDecoder]), with the bytes under each packet
+ * Both use one colour per kind: sent by the app, from the buds, connection, problem.
  *
  * Also provides Clear / Export of the log, Reconnect / Disconnect, the RFCOMM bridge and the crash logger test.
  * The layout, screenshot and widget reports were removed 2026-09-27: adb covers them.
@@ -59,9 +61,8 @@ class DevToolsActivity : Activity() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    /** 0 human (unknown packets get a payload line), 1 detailed (a payload line for every packet), 2 raw. */
+    /** 0 simple, 1 detailed. */
     private var mode = 0
-    private val isHumanTab get() = mode != 2
 
     /** Line count at the last paint — lets refreshLog() skip no-op rebuilds. */
     private var lastLineCount = -1
@@ -83,7 +84,7 @@ class DevToolsActivity : Activity() {
         val root = SettingRowFactory.screen(this)
         root.addView(SettingRowFactory.title(this, R.string.action_dev_tools))
 
-        tabs = AncSegmentedView(this, listOf("Human", "Detailed", "Raw hex")).apply {
+        tabs = AncSegmentedView(this, listOf("Simple", "Detailed")).apply {
             selected = 0
             onSegmentTapped = { i -> switchTo(i) }
         }
@@ -159,7 +160,7 @@ class DevToolsActivity : Activity() {
                 return@setOnLongClickListener true
             }
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val tabName = listOf("human-readable", "detailed", "raw hex")[mode]
+            val tabName = listOf("simple", "detailed")[mode]
             val label = "QuickBuds Log ($tabName)"
             cm.setPrimaryClip(ClipData.newPlainText(label, body))
             Toast.makeText(
@@ -228,11 +229,8 @@ class DevToolsActivity : Activity() {
      * timeline would corrupt a capture, and the log file is the thing being used
      * to reason about the protocol.
      *
-     * The result is only readable while the human tab is selected, so this checks
-     * first rather than silently writing into a hex view.
      */
     private fun showInLog(message: String) {
-        if (!isHumanTab) switchTo(0)
         logText.append("\n[dev] $message\n")
         lastLineCount = PacketLogger.getLines().size
         scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
@@ -250,6 +248,13 @@ class DevToolsActivity : Activity() {
         val sb = android.text.SpannableStringBuilder()
         val p = ThemeRes.palette(this)
         val amber = 0xFFE8A93A.toInt()
+        val green = 0xFF3FB950.toInt()
+        fun color(k: SimpleLog.Kind) = when (k) {
+            SimpleLog.Kind.SENT -> p.accent
+            SimpleLog.Kind.RECEIVED -> p.text
+            SimpleLog.Kind.CONNECTION -> green
+            SimpleLog.Kind.PROBLEM -> amber
+        }
         // The time in its own colour (a mix of the accent and the grey), so lines separate at a glance.
         val time = Palette.blend(p.textSecondary, p.accent, 0.55f)
         fun add(text: String, color: Int, bold: Boolean = false) {
@@ -259,8 +264,14 @@ class DevToolsActivity : Activity() {
             if (bold) sb.setSpan(android.text.style.StyleSpan(Typeface.BOLD), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         for (line in lines) {
-            if (mode == 2) { sb.append(line).append("\n"); continue }
             val d = LogDecoder.decode(line)
+            val simple = SimpleLog.of(line.substringAfter("  "))
+            if (mode == 0) {
+                if (simple == null) continue
+                add(LogDecoder.displayTime(d.rawTimestamp) + "  ", time)
+                add(simple.text + "\n", color(simple.kind), simple.kind == SimpleLog.Kind.PROBLEM)
+                continue
+            }
             add(LogDecoder.displayTime(d.rawTimestamp) + "  ", time)
             when (d.direction) {
                 LogDecoder.Direction.TX -> add("\u2192 TX ", p.accent, true)
@@ -268,10 +279,15 @@ class DevToolsActivity : Activity() {
                 LogDecoder.Direction.STATUS -> {}
             }
             val text = if (d.label != null) "[${d.label}] ${d.description}" else d.description
-            add(text, if (d.unknown) amber else if (d.direction == LogDecoder.Direction.STATUS) p.textSecondary else p.text)
+            add(text, when {
+                d.unknown -> amber
+                d.direction == LogDecoder.Direction.TX -> p.accent
+                d.direction == LogDecoder.Direction.RX -> p.text
+                simple?.kind == SimpleLog.Kind.CONNECTION || simple?.kind == SimpleLog.Kind.PROBLEM -> color(simple.kind)
+                else -> p.textSecondary
+            })
             sb.append("\n")
-            // Unknown packets always show their payload; the detailed tab shows it for every packet.
-            if (d.detail != null && (d.unknown || mode == 1)) add("           ${d.detail}\n", if (d.unknown) amber else p.textSecondary)
+            if (d.detail != null) add("           ${d.detail}\n", if (d.unknown) amber else p.textSecondary)
         }
         logText.text = sb
         if (wasAtBottom) {
