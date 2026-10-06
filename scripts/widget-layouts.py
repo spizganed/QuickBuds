@@ -2,7 +2,7 @@
 # Generates the two widget page layouts (2x2 widget_pages, 4x2 widget_pages_m) as one
 # family. Edit here, run `python3 scripts/widget-layouts.py` from the repo root, commit the XML with it.
 # Also the level picker grids (widget_grid) and widget_disconnected.
-# Classic and Nothing share one structure ([USER] 2026-09-28); they differ in fonts, spacing (GEO) and, at runtime, boxes.
+# Classic and Nothing share one structure (2026-09-28); they differ in fonts, spacing (GEO) and, at runtime, boxes.
 import os
 RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "src", "main", "res", "layout") + os.sep
 IMG = 'android:scaleType="fitXY" android:importantForAccessibility="no"'
@@ -12,11 +12,11 @@ PRESS = 'android:stateListAnimator="@animator/widget_press"'
 # The boxes themselves are painted at runtime (QuickBudsWidget.paint / panelColor).
 N = False
 # The 2x2 battery page's spacing in dp, per style; QuickBudsWidget.Geo mirrors it, keep them equal. side / vert: page
-# padding (4dp more above and below, [USER] 2026-09-28: fill the gaps a little, not at the sides); gap between boxes;
+# padding (4dp more above and below, 2026-09-28: fill the gaps a little, not at the sides); gap between boxes;
 # ring panel paddings top, outer (widget side), inner (the other ring's side), bottom; row: the case row's padding.
 # Nothing: no boxes, rings 6dp from the sides and apart. Classic: boxed panels, each ring centred in its box.
 # pm: the percentage's top margin. Classic is tighter above and below, so its case row gets room next to the wear text
-# ([USER] 2026-09-28: make the case row bigger on Classic too).
+# (2026-09-28: make the case row bigger on Classic too).
 GEO = {True: dict(side=3, vert=7, gap=4, top=3, outer=3, inner=1, bottom=4, row=3, pm=5),
        False: dict(side=6, vert=8, gap=6, top=4, outer=7, inner=7, bottom=3, row=4, pm=2)}
 def g(k): return GEO[N][k]
@@ -35,7 +35,7 @@ def text(i, sp, bold=False, extra=""):
                 f'android:adjustViewBounds="true" android:scaleType="fitCenter" {extra}/>')
     bold_font = 'android:fontFamily="@font/doto" android:textStyle="bold"' if N else 'android:fontFamily="sans-serif" android:textStyle="bold"'
     font = bold_font if bold or N else 'android:fontFamily="sans-serif-medium"'
-    # No font padding: it left visible gaps under the percentages ([USER] 2026-09-28).
+    # No font padding: it left visible gaps under the percentages (2026-09-28).
     pad_off = 'android:includeFontPadding="false" '
     return (f'<TextView android:id="@+id/{i}" android:layout_width="wrap_content" android:layout_height="wrap_content" {pad_off}'
             f'android:textSize="{sp}sp" {font} android:maxLines="1" android:ellipsize="end" android:gravity="center" {extra}/>')
@@ -45,12 +45,12 @@ def panel(side, first, pct, label, fit=True, last=False):
     # 2x2: the ring takes the panel's free height. 3x2 / 3x3: the renderer sizes the ring from the
     # widget's real size, and ring + texts sit centred as one group.
     # Nothing: the ring is as tall as it is wide (the bitmap is square, so the ratio is exact), and ring + percentage
-    # sit centred as one group: a ring filling the free height left a gap above the percentage ([USER] 2026-09-28).
+    # sit centred as one group: a ring filling the free height left a gap above the percentage (2026-09-28).
     ring = ('android:layout_width="match_parent" android:layout_height="wrap_content" android:adjustViewBounds="true" android:scaleType="fitCenter"' if fit
             else 'android:layout_width="wrap_content" android:layout_height="wrap_content" android:scaleType="center"')
     # Square sizes: panels as tall as ring + texts; the case row below takes the rest.
     h = "wrap_content" if fit else "match_parent"
-    # Nothing: the sides facing the other ring get 1dp, so the rings grow into the gap between them ([USER] 2026-09-28:
+    # Nothing: the sides facing the other ring get 1dp, so the rings grow into the gap between them (2026-09-28:
     # 16dp was too wide) and sit 6dp from the edges, the same as the gap. Classic: each ring centred in its box (GEO).
     s, e = (g("outer"), g("inner")) if first else (g("inner"), g("outer"))
     inner_pad = (f'android:paddingTop="{g("top")}dp" android:paddingStart="{s}dp" android:paddingEnd="{e}dp" android:paddingBottom="{g("bottom")}dp"'
@@ -70,7 +70,7 @@ def panel(side, first, pct, label, fit=True, last=False):
 
 def case_bar(sp):
     side, mg = g("row"), 6
-    # The row takes all the height the rings leave, so only the paddings separate them ([USER] 2026-09-28: no
+    # The row takes all the height the rings leave, so only the paddings separate them (2026-09-28: no
     # gaps); the case icon fills its height and the renderer sizes the bar from it (QuickBudsWidget.caseRowDp).
     # The level is drawn inside the bar (QuickBudsWidget.bar); w_pct_case stays hidden.
     bar = f'''<FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="{mg}dp">
@@ -91,7 +91,7 @@ def battery(size):
     # 2x2 and 3x3: two bud panels over the case bar, 4x2 (wide): three
     # panels in a row.
     if size == "m":
-        # Nothing: no wear text, so the percentages grow into the room ([USER] 2026-09-28).
+        # Nothing: no wear text, so the percentages grow into the room (2026-09-28).
         pct = 20 if N else 18
         panels = "\n".join([panel("left", True, pct, 12, False), panel("case", False, pct, 12, False), panel("right", False, pct, 12, False, True)])
         return f'''<FrameLayout android:id="@+id/w_page0" android:layout_width="match_parent" android:layout_height="match_parent">
@@ -112,7 +112,7 @@ def battery(size):
 </LinearLayout>'''
 
 def quick(size):
-    """Controls page ([USER] 2026-09-28; Classic too): ANC (opens the level picker), T, A, LL as four equal buttons,
+    """Controls page (2026-09-28; Classic too): ANC (opens the level picker), T, A, LL as four equal buttons,
     a 2x2 grid on the square sizes, one row on the 4x2."""
     # Nothing: the dot icon fills the free height. Classic: a vector at a fixed size.
     icon = ('android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside"' if N
@@ -138,7 +138,7 @@ def quick(size):
 </FrameLayout>'''
 
 def grid(icon, sp):
-    # Nothing: the icon fills the cell's free height, as on the mode button ([USER] 2026-09-28: too much dead space).
+    # Nothing: the icon fills the cell's free height, as on the mode button (2026-09-28: too much dead space).
     cell_box = ('android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:scaleType="centerInside"' if N
                 else f'android:layout_width="{icon}dp" android:layout_height="{icon}dp"')
     def cell(k, first):
@@ -168,7 +168,7 @@ def grid(icon, sp):
 
 def disconnected():
     return f'''<?xml version="1.0" encoding="utf-8"?>
-<!-- Every widget while disconnected: only the main screen's Connect chip ([USER] 2026-09-27). Generated
+<!-- Every widget while disconnected: only the main screen's Connect chip (2026-09-27). Generated
      by scripts/widget-layouts.py: colours, icons and texts are set at runtime by widget/AncWidgetProvider.kt; a view added here
      needs its line in the renderer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"

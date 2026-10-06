@@ -180,7 +180,7 @@ fn nav(h: Has) -> ModelRc<NavEntry> {
 }
 
 /// English strings from `values/strings.xml`.
-// ponytail: English only for now [USER]; the other locales are already in `strings::LOCALES`.
+// ponytail: English only for now; the other locales are already in `strings::LOCALES`.
 fn translations() -> Vec<String> {
     let base = strings::LOCALES.iter().find(|l| l.0.is_empty()).unwrap().1;
     base.iter().map(|s| s.unwrap_or("").to_string()).collect()
@@ -473,7 +473,7 @@ impl App {
             }
             let _ = self.tray.set_tooltip(Some(tip));
         }
-        // The menu's battery line is short: "L:10 C:40 R:50" [USER].
+        // The menu's battery line is short: "L:10 C:40 R:50".
         #[cfg(not(windows))]
         let _ = self.tray.send(if s.status != Status::On { "QuickBuds".into() } else {
             let line: Vec<String> = [("L", 0), ("C", 2), ("R", 1)].iter()

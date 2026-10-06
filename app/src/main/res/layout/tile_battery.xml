@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- The device name, under the rings (moved out of the header 2026-09-27, [USER]). -->
+    <!-- The device name, under the rings (moved out of the header 2026-09-27). -->
     <TextView
         android:id="@+id/deviceNameText"
         android:layout_width="match_parent"

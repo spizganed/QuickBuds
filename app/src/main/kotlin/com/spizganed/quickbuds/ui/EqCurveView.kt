@@ -145,7 +145,7 @@ class EqCurveView(context: Context) : View(context) {
     }
 
     /**
-     * The curve as dots ([USER] 2026-09-30: it was jagged). A stroke sampled at one point per cell came out one
+     * The curve as dots (2026-09-30: it was jagged). A stroke sampled at one point per cell came out one
      * cell thick in one place and two in the next; here each cell the path passes through is lit once, so the line
      * is one even, connected row of dots. Called inside [DotArt.draw], where one cell is one pixel.
      */

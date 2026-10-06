@@ -22,7 +22,7 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
 
 /**
  * Earbud settings — the hub for everything about the buds themselves rather than the sound
- * (`[USER]` 2026-09-25, option A): gestures, wear detection, dual connection, find, and the
+ * (2026-09-25, option A): gestures, wear detection, dual connection, find, and the
  * alert-sound volume. It keeps the main screen to the audio controls. New firmware settings belong
  * here too.
  */
@@ -114,7 +114,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         // --- About: the firmware version as HeyMelody shows it (read on connect, `0x0105`) ---
         if (Capabilities.supports(this, OpoProtocol.CMD_QUERY_FIRMWARE)) {
             root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_about))
-            // No firmware updates here ([USER] 2026-09-29): a failed flash can brick the buds, so a tap
+            // No firmware updates here (2026-09-29): a failed flash can brick the buds, so a tap
             // points to HeyMelody instead.
             val row = SettingRowFactory.build(this, R.drawable.ic_info, R.string.row_firmware_title, 0, null) {
                 ConfirmDialog.show(this, getString(R.string.firmware_dialog_title),
@@ -289,7 +289,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         // --- Sounds: alert-sound volume, 1..10: `0x0427`, read back with `0x0130`. [CAPTURE] 2026-09-25 ---
         // Sent on release only, so the buds play one prompt per change, not one per step.
         // No numbers, as in HeyMelody: a speaker icon left of the bar, muted at the lowest step
-        // (level 1 is silent on the buds, `[USER]` 2026-09-25).
+        // (level 1 is silent on the buds, 2026-09-25).
         root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_sounds))
         alertSpeaker = ImageView(this).apply {
             layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f))

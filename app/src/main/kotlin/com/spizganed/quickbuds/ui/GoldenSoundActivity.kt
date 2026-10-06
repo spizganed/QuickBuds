@@ -35,7 +35,7 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
     private var testSheet: GoldenTestSheet? = null
     private lateinit var radar: HearingRadarView
     private lateinit var radarCard: LinearLayout
-    /** The ear the radar shows: 0 left, 1 right ([USER] 2026-09-29: one ear at a time reads better). */
+    /** The ear the radar shows: 0 left, 1 right (2026-09-29: one ear at a time reads better). */
     private var ear = 0
     /** Filters per record uid, read from the buds for the graph: hearing (left, right), ear scan (fs, left, right). */
     private val hearingCurves = HashMap<Int, Pair<FloatArray, FloatArray>>()

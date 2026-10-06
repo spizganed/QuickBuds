@@ -1510,7 +1510,7 @@ component EarbudsPage inherits Rectangle {
                 }
             }
             if Earbuds.has-firmware: SectionTitle { text: Tr.section-about; font-size: 13px; font-weight: 400; }
-            // No firmware updates here [USER]: a failed flash can brick the buds, so a click points to HeyMelody.
+            // No firmware updates here: a failed flash can brick the buds, so a click points to HeyMelody.
             if Earbuds.has-firmware: Card {
                 border-radius: 24px;
                 VerticalLayout {
@@ -1829,7 +1829,7 @@ component HearingPage inherits Rectangle {
                     }
                 }
             }
-            // One ear at a time reads better [USER].
+            // One ear at a time reads better.
             if Hearing.has-radar: Card {
                 border-radius: 24px;
                 VerticalLayout {

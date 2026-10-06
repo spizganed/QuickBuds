@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Equalizer. Five square-edged spectrum bars of different heights, a Winamp-style visualiser
-  ([USER] 2026-09-28: the old four sliders read as four lines). Drawn on a 21-cell grid (24/21 units a cell):
+  (2026-09-28: the old four sliders read as four lines). Drawn on a 21-cell grid (24/21 units a cell):
   the Nothing style's 24dp row icon is 21 dots across at 420 dpi, so every edge falls between dots.
   Bars 3 cells wide, 1 apart; tops at cells 10, 4, 7, 2, 12; bottoms at 20.
 -->

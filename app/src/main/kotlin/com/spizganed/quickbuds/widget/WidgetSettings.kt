@@ -26,7 +26,7 @@ object WidgetSettings {
         Mode("adapt", "Adaptive", R.string.anc_seg_adapt, R.string.anc_seg_adapt, R.drawable.ic_mode_adaptive),
         Mode("off", "Off", R.string.anc_seg_off, R.string.anc_seg_off, R.drawable.ic_mode_off)
     )
-    /** How long a tap waits for a second one ([USER] 2026-09-28: 400 ms felt slow). */
+    /** How long a tap waits for a second one (2026-09-28: 400 ms felt slow). */
     const val DOUBLE_TAP_MS = 200L
 
     private const val KEY_LIST_AT = "widgetListAt_"
@@ -40,7 +40,7 @@ object WidgetSettings {
         MODES.firstOrNull { it.store == ancMode } ?: MODES.first { it.key == if (ancMode.isEmpty()) "off" else "med" }
 
     /**
-     * The controls page's ANC level picker ([USER] 2026-09-28): the levels these buds have, no Off (the lit
+     * The controls page's ANC level picker (2026-09-28): the levels these buds have, no Off (the lit
      * level turns ANC off, as a lit T or A button does).
      */
     fun ancPicker(c: Context): List<Mode> {

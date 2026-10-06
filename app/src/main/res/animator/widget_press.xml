@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Widget buttons: pushed down while held, springing back on release ([USER] 2026-09-28). Set on every
+<!-- Widget buttons: pushed down while held, springing back on release (2026-09-28). Set on every
      clickable widget view by scripts/widget-layouts.py; the host runs it, so it needs no code. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">

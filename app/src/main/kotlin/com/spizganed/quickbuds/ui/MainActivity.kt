@@ -340,7 +340,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         connDot = findViewById<ImageView>(R.id.connDot)
         connText = findViewById<TextView>(R.id.connText)
 
-        // The pill is also THE connect/disconnect button (`[USER]` 2026-09-23, as HeyMelody has
+        // The pill is also THE connect/disconnect button (2026-09-23, as HeyMelody has
         // one): the dot shows the state, the word is the action. Same service actions as Dev Tools.
         connPill.setOnClickListener {
             val connected = lastConnShown == true
@@ -670,7 +670,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     /**
      * The segments and the level picker, for the modes these buds have. Rebuilt when the model changes.
-     * The picker is the widget's ([USER] 2026-09-28; it replaced the Low / Medium / High pills): the ANC
+     * The picker is the widget's (2026-09-28; it replaced the Low / Medium / High pills): the ANC
      * segment slides it in, a pick applies that level and slides back, the lit level turns ANC off.
      */
     private fun buildAnc() {
@@ -701,7 +701,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         levelView.visibility = View.VISIBLE
         levelView.animate().translationX(0f).setDuration(ms).withEndAction(null)
         ancView.animate().translationX(w).setDuration(ms).withEndAction { ancView.visibility = View.INVISIBLE }
-        // No pick within 2 s after the slide: back by itself ([USER] 2026-09-28: 1 s was too fast).
+        // No pick within 2 s after the slide: back by itself (2026-09-28: 1 s was too fast).
         levelView.removeCallbacks(autoClose)
         levelView.postDelayed(autoClose, ms + 2000)
     }
@@ -919,7 +919,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, EqActivity::class.java)) }
         )
 
-        // --- 5. Dual connection, on the home screen too ([USER] 2026-09-26) ---
+        // --- 5. Dual connection, on the home screen too (2026-09-26) ---
         addRow(
             "dual",
             SettingRowFactory.build(
@@ -928,7 +928,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, DualDeviceActivity::class.java)) }
         )
 
-        // --- 6. Earbud settings: gestures, wear detection, find, alert volume (option A, [USER] 2026-09-25) ---
+        // --- 6. Earbud settings: gestures, wear detection, find, alert volume (option A, 2026-09-25) ---
         // Keeps this card to what changes the sound. App update moved to the cog.
         addRow("earbuds", 
             SettingRowFactory.build(

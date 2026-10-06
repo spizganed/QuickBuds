@@ -120,7 +120,7 @@ object PaletteStore {
     private const val KEY_ACTIVE = "paletteActive"
     private const val KEY_CUSTOM = "paletteCustom"
     private const val KEY_ACCENT = "paletteAccent_"
-    /** Match system ([USER] 2026-09-27): White in light mode, [KEY_AUTO_DARK] in dark mode. */
+    /** Match system (2026-09-27): White in light mode, [KEY_AUTO_DARK] in dark mode. */
     private const val KEY_AUTO = "paletteAuto"
     private const val KEY_AUTO_DARK = "paletteAutoDark"
     /** The pre-preset theme index (0 OLED, 1 Dark, 2 Light), migrated once. */
@@ -189,7 +189,7 @@ object PaletteStore {
         return Palette(id, ThemeRes.builtInName(c, id), true, t[0], t[1], accentOverride(c, id) ?: t[2], t[3], t[4], t[5])
     }
 
-    /** The user's accent for a built-in preset ([USER] 2026-09-26), or null for the style's own. */
+    /** The user's accent for a built-in preset (2026-09-26), or null for the style's own. */
     fun accentOverride(c: Context, id: String): Int? {
         val p = prefs(c)
         val key = KEY_ACCENT + id

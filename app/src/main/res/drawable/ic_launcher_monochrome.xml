@@ -4,7 +4,7 @@
 
   One bud, not the foreground's pair: Nothing's launcher fits every themed icon's longest side to
   the same size (about 60 px on the Phone (3a)), so the wide pair came out short and looked tiny
-  ([USER] 2026-09-28). The tall single bud fills that size. Path data is the left bud with its
+  (2026-09-28). The tall single bud fills that size. Path data is the left bud with its
   bolt hole, verbatim from ic_launcher_foreground.xml, scaled 0.1686 (45 units tall, the pair's
   height there) and centred on its ink bounds, so a launcher that does not resize stays inside the
   safe circle.

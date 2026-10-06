@@ -56,7 +56,7 @@ class AncSegmentedView(
     /**
      * Nothing style: the widget's dot-matrix mode icons ([QuickBudsWidget.modeIcon]), white, tinted when drawn.
      * Rendered at a whole-pixel pitch (about 1.15dp) and drawn unscaled: shrunk from the widget's 8 px pitch to
-     * 28dp, each dot fell on fractional pixels and smeared ([USER] 2026-09-28).
+     * 28dp, each dot fell on fractional pixels and smeared (2026-09-28).
      */
     private val dotPitch = Math.round(dp(1.15f)).coerceAtLeast(2).toFloat()
     private val dots: MutableList<Bitmap?> =
@@ -104,7 +104,7 @@ class AncSegmentedView(
             canvas.drawRoundRect(box, rad, rad, strokePaint.apply { style = Paint.Style.FILL })
             box.inset(pitch, pitch)
             canvas.drawRoundRect(box, rad - pitch, rad - pitch, trackPaint)
-            // The selected segment: an accent outline a cell wide, the track inside ([USER] 2026-09-30: not a fill).
+            // The selected segment: an accent outline a cell wide, the track inside (2026-09-30: not a fill).
             // Centred in the snapped track on a whole-cell gap, and concentric with its corners.
             if (pos >= 0f) {
                 val inset = (dp(4f) / pitch).toInt().coerceAtLeast(1) * pitch
@@ -146,7 +146,7 @@ class AncSegmentedView(
         // The dot icons get more room: 31 dots in 22dp would blur into a grey disc.
         val iconSize = dp(if (dots.isEmpty()) 22f else 28f)
         // Icon, gap and the label's cap height as one block, centred in the height, so the space above the
-        // icon and below the label are equal ([USER] 2026-09-28).
+        // icon and below the label are equal (2026-09-28).
         val iconH = dots.firstOrNull { it != null }?.height?.toFloat() ?: iconSize
         textPaint.getTextBounds("H", 0, 1, capBounds)
         val capH = capBounds.height().toFloat()

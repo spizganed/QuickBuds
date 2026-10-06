@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Widget: a view slides in from the left (the battery page, the mode list, the mode button; [USER] 2026-09-27). -->
+<!-- Widget: a view slides in from the left (the battery page, the mode list, the mode button; 2026-09-27). -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:interpolator/decelerate_cubic"
     android:duration="@integer/widget_anim_ms">

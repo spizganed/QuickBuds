@@ -13,7 +13,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
 /**
- * Home layout ([USER] 2026-09-26): the main screen itself, in an edit mode. The battery and
+ * Home layout (2026-09-26): the main screen itself, in an edit mode. The battery and
  * noise control tiles are shown as they are (fixed, not interactive); each sound settings row can
  * be held and dragged to a new place, and has an eye button that shows or hides it (hidden rows
  * are greyed). Nothing is saved until the check; the X or Back discards the changes.

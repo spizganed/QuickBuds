@@ -1220,7 +1220,7 @@ class BudsConnectionManager(private val context: Context) {
                 log("KEYFN DIFF: ${keyFnDiff(table)}")
 
                 // Repaint the LOCAL record from the buds' own truth, not just our diagnostic
-                // log — `[USER]` 2026-09-22. This is what makes GestureActivity/on-call show
+                // log — 2026-09-22. This is what makes GestureActivity/on-call show
                 // what the buds actually have bound after a reconnect, even if something other
                 // than this app changed it (HeyMelody, another phone, a PC tool). See
                 // GestureConfigStore.syncFromDevice() / OnCallConfigStore.syncFromDevice().

@@ -70,7 +70,7 @@ object KeyFunctionParser {
      * caught it writing this exact group while he toggled its on-call section on/off/on/off,
      * twice over, with the `0x8108` read-back diffing exactly the slot he touched each time.
      *
-     * Two rows exist in HeyMelody, confirmed `[USER]`: **double tap** (`None` / `Answer + end
+     * Two rows exist in HeyMelody, confirmed: **double tap** (`None` / `Answer + end
      * call`, one combined option) and **long hold** (`None` / `Decline call`). Measured from
      * the capture:
      *

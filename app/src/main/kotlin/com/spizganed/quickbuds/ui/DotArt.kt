@@ -50,7 +50,7 @@ object DotArt {
         val c = Canvas(bmp)
         c.scale(1f / pitch, 1f / pitch)
         // Views (sliders, curves): no antialiasing, so a cell is either covered or empty and every dot keeps the
-        // paint's own colour. Antialiased edges gave the knob's ring dots several shades ([USER] 2026-09-30).
+        // paint's own colour. Antialiased edges gave the knob's ring dots several shades (2026-09-30).
         if (!solid && color == null) c.drawFilter = noAa
         draw(c)
         bmp.getPixels(px, 0, cols, 0, 0, cols, rows)
@@ -62,7 +62,7 @@ object DotArt {
         }
     }
 
-    /** The one knob every dot-style slider and the EQ curve use ([USER] 2026-09-30): a fixed round ring of dots. */
+    /** The one knob every dot-style slider and the EQ curve use (2026-09-30): a fixed round ring of dots. */
     private val KNOB = listOf("..###..", ".#...#.", "#.....#", "#.....#", "#.....#", ".#...#.", "..###..")
     private val knobPaint = Paint()
     private val clear = Paint().apply { xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR) }
@@ -182,7 +182,7 @@ object DotArt {
     }
 
     /**
-     * A box (card, button, chip, sheet, dialog) as dots ([ThemeRes.card] in the dot style, [USER] 2026-09-30):
+     * A box (card, button, chip, sheet, dialog) as dots ([ThemeRes.card] in the dot style, 2026-09-30):
      * the outline one cell of dots, the fill dots a cell inside, both drawn once per size. [solid]: the fill is one
      * smooth shape under the dot outline; [base]: a smooth shape behind the dotted fill, for a sheet or dialog over other content. [topOnly]: square bottom corners.
      */
@@ -243,7 +243,7 @@ object DotArt {
 
     /**
      * An icon drawn from a rule instead of sampled from a vector, so every dot is the same and every shape is
-     * symmetric ([USER] 2026-09-30: the tap dots were uneven and not round). [lit] says whether cell (x, y) of the
+     * symmetric (2026-09-30: the tap dots were uneven and not round). [lit] says whether cell (x, y) of the
      * [cols] x [rows] grid is a dot; the grid is centred in the bounds at the icon pitch.
      */
     class Pattern(

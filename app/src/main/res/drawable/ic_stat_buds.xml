@@ -2,7 +2,7 @@
 <!--
   Status-bar small icon of the service notification, and Dev Tools' Reconnect action: the same single
   bud as the themed launcher icon (ic_launcher_monochrome.xml, path data verbatim, bolt hole included),
-  22 units tall in the 24 viewport, centred on its ink bounds ([USER] 2026-09-28).
+  22 units tall in the 24 viewport, centred on its ink bounds (2026-09-28).
   Android draws small icons as a silhouette from the alpha channel only, so it stays solid white.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"

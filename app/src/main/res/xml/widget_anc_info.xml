@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 4x2 widget (AncWidgetProvider; 3x2 before 2026-09-27). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
-     Fixed size, not resizable ([USER] 2026-09-27). updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
+     Fixed size, not resizable (2026-09-27). updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
     android:minHeight="110dp"

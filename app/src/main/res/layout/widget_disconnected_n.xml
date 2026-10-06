@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Every widget while disconnected: only the main screen's Connect chip ([USER] 2026-09-27). Generated
+<!-- Every widget while disconnected: only the main screen's Connect chip (2026-09-27). Generated
      by scripts/widget-layouts.py: colours, icons and texts are set at runtime by widget/AncWidgetProvider.kt; a view added here
      needs its line in the renderer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"

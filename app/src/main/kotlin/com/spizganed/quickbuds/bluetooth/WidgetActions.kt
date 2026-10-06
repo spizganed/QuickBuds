@@ -6,7 +6,7 @@ object WidgetActions {
     const val ACTION_ANC_SELECT = "com.spizganed.quickbuds.action.ANC_SELECT"
     const val ACTION_GAME_TOGGLE = "com.spizganed.quickbuds.action.GAME_TOGGLE"
     /**
-     * Controls page ([USER] 2026-09-28): a quick button, target in [EXTRA_ANC_TARGET]. "anc" opens the
+     * Controls page (2026-09-28): a quick button, target in [EXTRA_ANC_TARGET]. "anc" opens the
      * level picker; "trans" / "adapt" select that mode, or Off when it is the current one.
      */
     const val ACTION_QUICK      = "com.spizganed.quickbuds.action.QUICK"

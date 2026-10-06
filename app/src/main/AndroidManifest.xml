@@ -65,7 +65,7 @@
 
 
         <!--
-          Every activity below is locked to portrait — [USER] 2026-09-22, "the app should be
+          Every activity below is locked to portrait — 2026-09-22, "the app should be
           portrait mode only no rotation." No layout in this app has a landscape variant, so an
           allowed rotation would just stretch/reflow the existing portrait layouts, not show a
           real landscape design. `screenOrientation` has no `<application>`-level equivalent; it

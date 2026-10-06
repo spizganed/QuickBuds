@@ -12,7 +12,7 @@ import android.widget.TextView
 import com.spizganed.quickbuds.R
 
 /**
- * About ([USER] 2026-09-26): icon, name, version and tagline, a GitHub button and a Ko-fi one (both open the
+ * About (2026-09-26): icon, name, version and tagline, a GitHub button and a Ko-fi one (both open the
  * phone's default browser; no Ko-fi button while [KOFI_URL] is null), and the license with a pointer to the credits.
  */
 class AboutActivity : Activity() {
@@ -107,7 +107,7 @@ class AboutActivity : Activity() {
 
     companion object {
         const val GITHUB_URL = "https://github.com/spizganed/QuickBuds"
-        /** Null hides the button ([USER] 2026-09-29: it was hidden until the page existed). */
+        /** Null hides the button (2026-09-29: it was hidden until the page existed). */
         val KOFI_URL: String? = "https://ko-fi.com/spizganed"
     }
 }

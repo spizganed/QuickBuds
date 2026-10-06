@@ -25,7 +25,7 @@ import com.spizganed.quickbuds.widget.WidgetStateStore
  *   3. "When not on call", then one row per gesture
  *   4. "When on call", two rows (double tap / long hold) — added 2026-09-22, see
  *      [OnCallGesture]. UNLIKE EVERYTHING ABOVE, this section has no Left/Right
- *      reach: it is one shared setting for both buds (`[USER]`-confirmed), so the
+ *      reach: it is one shared setting for both buds (confirmed), so the
  *      side selector at the top does not affect it.
  *
  * Tapping a gesture row opens a bottom dialog listing the actions that gesture
@@ -102,7 +102,7 @@ class GestureActivity : Activity() {
 
         // --- On-call gestures, BELOW the normal list ---
         //
-        // No Left/Right selector reads into this card — `[USER]`-confirmed 2026-09-22,
+        // No Left/Right selector reads into this card — confirmed 2026-09-22,
         // these two rows are ONE shared setting for both buds, unlike everything above.
         // See PROTOCOL.md §6 and [OnCallGesture].
         onCallLabel = SettingRowFactory.sectionLabel(this, R.string.gesture_section_on_call)
@@ -132,7 +132,7 @@ class GestureActivity : Activity() {
     }
 
     /**
-     * Repaints on every return to this screen, not just on create. `[USER]` 2026-09-22: the
+     * Repaints on every return to this screen, not just on create. 2026-09-22: the
      * local record this screen reads ([GestureConfigStore]/[OnCallConfigStore]) is now kept in
      * sync with the buds' own table on every connect (see `BudsConnectionManager`'s `0x8108`/
      * `0x010C` handling), but only `onResume` — never `onCreate` alone — catches a sync that
@@ -199,7 +199,7 @@ class GestureActivity : Activity() {
      *
      * THE HOLD'S NON-EMPTY CASE SENDS THREE WRITES, ON PURPOSE. The key-function write binds the
      * gesture to "cycles ANC" at all — sent for BOTH [GestureSide.LEFT] and [GestureSide.RIGHT],
-     * unlike every other gesture, because `[USER]`-confirmed 2026-09-22 the hold is a SHARED control
+     * unlike every other gesture, because confirmed 2026-09-22 the hold is a SHARED control
      * (PROTOCOL.md §5.1) and every capture has shown both buds' key-function slots holding the same
      * `fn`. Writing only the currently-selected side would leave the OTHER bud's table entry
      * disagreeing with what the cycle actually does on it. A third write, to
@@ -279,7 +279,7 @@ class GestureActivity : Activity() {
     }
 
     private fun paintSideButton(button: Button, active: Boolean) {
-        // The chosen side is an outline, like every other selection ([USER] 2026-09-30).
+        // The chosen side is an outline, like every other selection (2026-09-30).
         val accent = ThemeRes.color(this, R.attr.appColorAccent)
         button.background = ThemeRes.chip(this, false)
         button.foreground = if (active) ThemeRes.selectedBorder(this, accent, 10f) else null
@@ -322,7 +322,7 @@ class GestureActivity : Activity() {
      * One on-call row. Same [SettingRowFactory] shape as [buildGestureRow] so the section
      * does not look like a second, different screen — but the value shown and the dialog
      * behind it are a plain on/off, not a multi-option picker, because that is all HeyMelody
-     * itself offers here (`[USER]`, PROTOCOL.md §6).
+     * itself offers here (PROTOCOL.md §6).
      */
     private fun buildOnCallRow(gesture: OnCallGesture): View {
         val enabled = OnCallConfigStore.isEnabled(this, gesture)
@@ -383,7 +383,7 @@ class GestureActivity : Activity() {
     /**
      * Icon per gesture. Slide and hold still borrow existing drawables.
      *
-     * One dot per tap (`[USER]` 2026-09-25) — the same dot, so the three still read as
+     * One dot per tap (2026-09-25) — the same dot, so the three still read as
      * variants of one gesture. They were all a single dot before, which could not tell them apart.
      */
     private fun iconFor(gesture: Gesture): Int = when (gesture) {
@@ -402,7 +402,7 @@ class GestureActivity : Activity() {
      * open with a Done button, because "add or remove several" cannot work if the
      * first tap dismisses it.
      *
-     * THE TAP-AND-HOLD RULE — at least one — matches HeyMelody (`[USER]` screenshot
+     * THE TAP-AND-HOLD RULE — at least one — matches HeyMelody (screenshot
      * 2026-09-23): any single mode is allowed, the last ticked mode cannot be unticked,
      * and with exactly one ticked the sheet shows an info note that the hold will not
      * switch modes. Done with an empty selection (only reachable from a never-set hold)

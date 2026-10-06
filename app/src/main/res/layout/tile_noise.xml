@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Home tile: noise control (SPEC 3.1), no section label ([USER] 2026-09-30). Cannot be hidden. The segmented control and the ANC
+<!-- Home tile: noise control (SPEC 3.1), no section label (2026-09-30). Cannot be hidden. The segmented control and the ANC
      level picker that slides in over it go into ancSlot in code. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ancRow"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 2x2 widget (BatteryWidgetProvider). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
-     Fixed size ([USER] 2026-09-30): resizing gave broken 3x2 / 2x3 shapes. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
+     Fixed size (2026-09-30): resizing gave broken 3x2 / 2x3 shapes. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="110dp"
     android:minHeight="110dp"

@@ -38,11 +38,11 @@
           must stay green/grey in every theme. The LABEL colour comes from the same
           state colours, set in MainActivity.renderConnectionPill.
 
-          LEFT side of the header since 2026-09-27 ([USER]): the device name moved into the
+          LEFT side of the header since 2026-09-27: the device name moved into the
           battery tile, so long translations of "Disconnect" no longer cut it off. A minimum
           width keeps Connect / Disconnect from making the pill jump in size much.
         -->
-        <!-- Opens the model list (ModelActivity), [USER] 2026-09-27. -->
+        <!-- Opens the model list (ModelActivity), 2026-09-27. -->
         <ImageButton
             android:id="@+id/btnModel"
             android:layout_width="@dimen/header_icon_button"
