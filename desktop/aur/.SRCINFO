@@ -19,6 +19,6 @@ pkgbase = quickbuds-bin
 	provides = quickbuds
 	conflicts = quickbuds
 	source = https://github.com/spizganed/QuickBuds/releases/download/v4.5.0/QuickBuds4.5.0-linux-x64.tar.gz
-	sha256sums = 6234e46465ec2bfa127f2e7ee286f97d4c283653ff97be8ca6b4631a85320fa0
+	sha256sums = f3f827f283d468c4718da78524242448a9ee32491d6331901f650a8c1db4f0c5
 
 pkgname = quickbuds-bin
