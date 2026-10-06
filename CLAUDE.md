@@ -251,8 +251,8 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
 - **Issue #8:** realme Buds Air7 Pro ANC and gestures from realme Link data, wired, unverified; the
   reporter is asked to test (read back ANC mode, one gesture, the hold cycle). 27 more realme models
-  (5 neckbands `oneButton`, 5 with `bothHold`) are generated the same way, on branch `realme-batch` (not merged) until that log
-  confirms the bits (generator and steps: agent memory `realme-link-decompile`). Desktop side built and
+  (5 neckbands `oneButton`, 5 with `bothHold`) are generated the same way, merged to `main` 2026-10-06, also unverified
+  (generator and steps: agent memory `realme-link-decompile`). Desktop side built and
   tested on the PC 2026-10-06. Wind noise `0x1A` (realme Link) is asked only for models with `windNoise`.
   The phone runs this build.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.

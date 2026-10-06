@@ -589,6 +589,9 @@ the active record; the phone keeps the list. A record: 4-byte id (big-endian, ch
   alone, whatever the bitmap says; realme Link never writes one with the other (on some models it only
   warns). The Air7 Pro lists `0x012A` / `0x0422` but leaves `0x012A` unanswered. Our own key
   `"spatialSwitch":1` (realme models with 3D sound). Wired, unverified.
+- **realme Link's `0x0403` ids** `[VENDOR]`, not used yet: dynamic bass `1D`, vocal enhance `09`, `0C`
+  "enhance voice" (ours: personalised ANC applied; do not assume they match), game mode `06`, wear `04`,
+  dual `11`. It reports power saving as `05` (ours `17` from HeyMelody: unresolved).
 - **`18` is a quality switch, not a codec switch** `[CAPTURE]`: LHDC V5 either way. On: 44.1-192 kHz,
   400 kbps cap. Off: 44.1 / 48 kHz, 256 kbps. The phone chose 48 kHz / 24-bit both times. No LDAC on
   Buds 4.
