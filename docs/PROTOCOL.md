@@ -180,6 +180,24 @@ disturbed, suspect the last two (they were added last).
 - **`0x810D` lists only the switches the firmware has** (§9). A missing id = no such switch
   `[CAPTURE]`+`[OSS]`.
 
+### Batch query — `0x012F` `[CAPTURE]`
+
+HeyMelody on the Buds 4 (2026-10-06): after `0x0100`, `0x0200` and `0x0205` it sends **one `0x012F`
+frame carrying 24 queries**, not the queries one by one. Bitmap bit 56; buds without it (Enco Buds2:
+4-byte bitmap) get the queries separately. We do not send it.
+
+- Request payload: `<count>`, then per query `<cmd LE> <len LE> <payload>`. Buds 4 (`0D 01 0A 00 …` =
+  `0x010D` with 10 bytes): `0102 FFFF`, `0106`, `010B`, `0103`, `0101 0002`, `0114`, `0105`, `0107`,
+  `0108 020301`, `010C 0201`, `010C 0101`, `010C 0301`, `010C 0401`, `010F`,
+  `010D 09 05 04 0B 11 18 06 1B 1D 1C`, `0121`, `0123`, `0118 0101`, `011C`, `0115`, `011E`, `0122`,
+  `0105`, `0109`.
+- Replies: several `0x812F` frames with the request's seq, each `00 <count>` then per answer
+  `<cmd LE> <len LE> <normal reply payload>` (here 1 + 21 + 2 = 24 answers).
+- **HeyMelody's `0x010D` id list for the Buds 4 is `05 04 0B 11 18 06 1B 1D 1C`**; the buds answered
+  `00 08 05 00 04 00 0B 01 11 01 18 01 06 00 1B 00 1D 01` (no `1C`). It does not ask for `17`, `0C`,
+  `09`, `30`-`3B`. OppoPodsManager's model list predicts `0D` and no `06` for this model, so its
+  `function` maps are not HeyMelody's current server list.
+
 ### Broadcast codes (`0x8200`) and pushes
 
 `0x8200` = `00 <count> <codes>`. Buds 4 `[CAPTURE]`: `00 09 01 02 03 04 08 0B F1 F2 F3`.

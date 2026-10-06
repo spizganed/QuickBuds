@@ -56,11 +56,13 @@ Ids go out in the table's order (HeyMelody's order).
   (realme Buds Q2s, `function` = `fastDiscovery` only) it would be `01 05`. We send our fixed 23-id list
   to every model (`OpoProtocol.queryStatus()`, `protocol::STATUS_QUERY`), which the reporter confirmed
   drops the link. That `02 05 0D` keeps it up is not tested yet (asked on #5).
-- **OnePlus Buds 4** by the same list: `05 04 0B 0D 11 18 1B 1D 1C`. It has no `gameMode` /
-  `gameModeList`, `longPowerMode` or `personalNoise`, yet the buds answer `06`, `17` and `0C` and we show
-  rows for them. Either OppoPodsManager's list (versionCode 16007000) is older than HeyMelody's server
-  list, or HeyMelody reads those states elsewhere. Settle this before step 3 (watch HeyMelody's `0x010D`
-  in a btsnoop capture on the Buds 4).
+- **OnePlus Buds 4, captured** (PROTOCOL.md "Batch query"): HeyMelody asks `05 04 0B 11 18 06 1B 1D 1C`,
+  inside a `0x012F` batch. OppoPodsManager's list predicted `05 04 0B 0D 11 18 1B 1D 1C`: the order and
+  the rule hold, the data does not (server list has `gameMode`, no `clickTakePic`). So **the Enco Buds2's
+  `05 0D` is only a best guess** from old data; the reporter's test decides it.
+- HeyMelody never asks the Buds 4 for `17` (power saving) or `0C` (personalised ANC), and we show both
+  rows from our wider query. With a per-model query those rows would go, unless the model data keeps the
+  flags. Decide that with him before step 3.
 - Gadgetbridge does the same with a per-model list and sends no `0x010D` at all to Enco Buds2.
 
 ## Plan (replaces the "learn it per device" proposal in CLAUDE.md)
@@ -70,8 +72,9 @@ Ids go out in the table's order (HeyMelody's order).
 2. **The data:** our `models.json` is trimmed and lacks most of these keys (it has `vocalEnhance`,
    `bassEngineSupport`, `controlAutoVolumeSupport`, `personalNoise`, `spatialTypes`, `longPressVolume`,
    `swiftPair`; `multiConnect` / `highAudio` / `gameSound` are other keys, not the ones above). HeyMelody fetches its list
-   from its server; the APK bundles none. Source for the full maps: OppoPodsManager's `DeviceModels.json`
-   `[OSS]` (HeyMelody's 137 models with full `function` maps). Add the keys the table needs to
+   from its server; the APK bundles none. OppoPodsManager's `DeviceModels.json` `[OSS]` has full
+   `function` maps but is out of date (Buds 4 capture above). Better: the current server list (find its
+   URL in the decompile), or a capture per model. Add the keys the table needs to
    `models.json` (or one precomputed `"status"` id list per model, built by a script from that file).
 3. **Code, in one commit with PROTOCOL.md §9:** build the query per model in `OpoProtocol.queryStatus()`
    and `protocol.rs` (`STATUS_QUERY` becomes a function). The same model lookup decides it, so a model
