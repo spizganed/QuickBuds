@@ -23,7 +23,7 @@ import com.spizganed.quickbuds.widget.WidgetStateStore
  *   2. a Left / Right selector — the two buds are configured separately, because
  *      they can be bound to different actions
  *   3. "When not on call", then one row per gesture
- *   4. "When on call", two rows (double tap / long hold) — added 2026-09-22, see
+ *   4. "When on call", two rows (double tap / long hold), see
  *      [OnCallGesture]. UNLIKE EVERYTHING ABOVE, this section has no Left/Right
  *      reach: it is one shared setting for both buds (confirmed), so the
  *      side selector at the top does not affect it.
@@ -102,7 +102,7 @@ class GestureActivity : Activity() {
 
         // --- On-call gestures, BELOW the normal list ---
         //
-        // No Left/Right selector reads into this card — confirmed 2026-09-22,
+        // No Left/Right selector reads into this card:
         // these two rows are ONE shared setting for both buds, unlike everything above.
         // See PROTOCOL.md §6 and [OnCallGesture].
         onCallLabel = SettingRowFactory.sectionLabel(this, R.string.gesture_section_on_call)
@@ -132,8 +132,8 @@ class GestureActivity : Activity() {
     }
 
     /**
-     * Repaints on every return to this screen, not just on create. 2026-09-22: the
-     * local record this screen reads ([GestureConfigStore]/[OnCallConfigStore]) is now kept in
+     * Repaints on every return to this screen, not just on create. The
+     * local record this screen reads ([GestureConfigStore]/[OnCallConfigStore]) is kept in
      * sync with the buds' own table on every connect (see `BudsConnectionManager`'s `0x8108`/
      * `0x010C` handling), but only `onResume` — never `onCreate` alone — catches a sync that
      * happened while this Activity was merely backgrounded (e.g. a reconnect while the user was
@@ -199,7 +199,7 @@ class GestureActivity : Activity() {
      *
      * THE HOLD'S NON-EMPTY CASE SENDS THREE WRITES, ON PURPOSE. The key-function write binds the
      * gesture to "cycles ANC" at all — sent for BOTH [GestureSide.LEFT] and [GestureSide.RIGHT],
-     * unlike every other gesture, because confirmed 2026-09-22 the hold is a SHARED control
+     * unlike every other gesture, because the hold is a SHARED control
      * (PROTOCOL.md §5.1) and every capture has shown both buds' key-function slots holding the same
      * `fn`. Writing only the currently-selected side would leave the OTHER bud's table entry
      * disagreeing with what the cycle actually does on it. A third write, to
@@ -279,7 +279,7 @@ class GestureActivity : Activity() {
     }
 
     private fun paintSideButton(button: Button, active: Boolean) {
-        // The chosen side is an outline, like every other selection (2026-09-30).
+        // The chosen side is an outline, like every other selection.
         val accent = ThemeRes.color(this, R.attr.appColorAccent)
         button.background = ThemeRes.chip(this, false)
         button.foreground = if (active) ThemeRes.selectedBorder(this, accent, 10f) else null
@@ -383,8 +383,8 @@ class GestureActivity : Activity() {
     /**
      * Icon per gesture. Slide and hold still borrow existing drawables.
      *
-     * One dot per tap (2026-09-25) — the same dot, so the three still read as
-     * variants of one gesture. They were all a single dot before, which could not tell them apart.
+     * One dot per tap — the same dot, so the three still read as
+     * variants of one gesture.
      */
     private fun iconFor(gesture: Gesture): Int = when (gesture) {
         Gesture.SINGLE_TAP -> R.drawable.ic_tap_single
@@ -402,8 +402,8 @@ class GestureActivity : Activity() {
      * open with a Done button, because "add or remove several" cannot work if the
      * first tap dismisses it.
      *
-     * THE TAP-AND-HOLD RULE — at least one — matches HeyMelody (screenshot
-     * 2026-09-23): any single mode is allowed, the last ticked mode cannot be unticked,
+     * THE TAP-AND-HOLD RULE — at least one — matches HeyMelody (screenshot):
+     * any single mode is allowed, the last ticked mode cannot be unticked,
      * and with exactly one ticked the sheet shows an info note that the hold will not
      * switch modes. Done with an empty selection (only reachable from a never-set hold)
      * just closes without writing.

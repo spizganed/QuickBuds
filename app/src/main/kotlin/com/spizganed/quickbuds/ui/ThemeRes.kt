@@ -122,7 +122,7 @@ object ThemeRes {
     private const val KEY_NOTHING = "styleNothing"
 
     /**
-     * The app's style, shared with the widgets (2026-09-28: one switch for both). True: Dot matrix (Doto
+     * The app's style, shared with the widgets (one switch for both). True: Dot matrix (Doto
      * text, no cards, dot-matrix rings and mode icons). False (default): Classic.
      */
     fun nothing(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NOTHING, false)
@@ -296,12 +296,12 @@ object ThemeRes {
     fun pill(context: Context, fill: Int, radiusDp: Float): Drawable =
         if (nothing(context)) DotArt.Box(context, palette(context).card, fill, radiusDp) else shape(context, fill, null, radiusDp)
 
-    /** A group of rows or a home tile: the [card], in dots in the dot style (2026-09-30: borders back on home). */
+    /** A group of rows or a home tile: the [card], in dots in the dot style (borders back on home). */
     fun group(context: Context): Drawable? = card(context)
 
     /** The standard card: `card` fill, 1dp `outline` stroke. */
     /**
-     * The selection mark (2026-09-30: an outline, never a check), set as a row's or tile's foreground:
+     * The selection mark (an outline, never a check), set as a row's or tile's foreground:
      * a 2dp [color] outline, in the dot style one cell of dots. 24dp is the card's radius in both styles, so the corner rows
      * line up with the card's own border.
      */
@@ -402,7 +402,7 @@ object ThemeRes {
         val p = palette(context)
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf())
         // Nothing style on a light palette: a card-coloured dot thumb has no shadow and vanished
-        // into the page (2026-09-29), so it takes textSecondary there.
+        // into the page, so it takes textSecondary there.
         val off = if (nothing(context) && p.isLight) p.textSecondary else p.thumbOff
         return ColorStateList(states, intArrayOf(p.accent, off)) to
             ColorStateList(states, intArrayOf(p.track, p.track))

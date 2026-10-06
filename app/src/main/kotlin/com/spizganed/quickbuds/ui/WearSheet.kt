@@ -8,8 +8,8 @@ import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.protocol.OpoProtocol
 
 /**
- * Wear detection, a bottom sheet: the buds' own auto play/pause (`0x0403` feature `0x04`, `[CAPTURE]`
- * 2026-09-25) and our smart auto-pause (BudsService.smartPause), which pauses only when BOTH buds are out.
+ * Wear detection, a bottom sheet: the buds' own auto play/pause (`0x0403` feature `0x04`, `[CAPTURE]`)
+ * and our smart auto-pause (BudsService.smartPause), which pauses only when BOTH buds are out.
  *
  * The two are mutually exclusive: the firmware pauses as soon as ONE bud is out, which would defeat the
  * smart one. Turning either on turns the other off.

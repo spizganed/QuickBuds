@@ -233,7 +233,7 @@ enum class GestureAction(
  * PROTOCOL.md §6). A row is a `control` entry; its options are the [GestureAction.supportBit]s in
  * its `support` mask, in HeyMelody's own order. For Buds 4
  * this gives exactly the rows and options the screen had when they were hand-written from
- * HeyMelody's UI (2026-09-21).
+ * HeyMelody's UI.
  *
  * The hold ([Gesture.TAP_HOLD]) offers the model's top-level noise modes, and its cycle mask
  * uses each mode's `protocolIndex`, so the
@@ -438,7 +438,7 @@ object GestureConfigStore {
         context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
     /**
-     * TAP_HOLD IS DELIBERATELY SIDE-INDEPENDENT, unlike every other gesture. 2026-09-22,
+     * TAP_HOLD IS DELIBERATELY SIDE-INDEPENDENT, unlike every other gesture,
      * confirmed by a captured HeyMelody write with no `deviceType` field at all in the hold-mask
      * command (PROTOCOL.md §5.1): the ANC cycle's membership is ONE setting for both buds, not two.
      * Keying its storage by `side` — as this function did until now — meant switching the Left/Right
@@ -515,7 +515,7 @@ object GestureConfigStore {
     }
 
     /**
-     * Overwrites the LOCAL record from the buds' own table — 2026-09-22. Called by
+     * Overwrites the LOCAL record from the buds' own table. Called by
      * `BudsConnectionManager` after every `0x8108` read (every connect, and after any write's
      * verify-read), so this screen shows what the buds are actually doing rather than whatever
      * we last wrote ourselves. Without this, a binding changed by HeyMelody, another phone, or a
@@ -654,7 +654,7 @@ object OnCallConfigStore {
     }
 
     /**
-     * Overwrites the LOCAL record from the buds' own table — 2026-09-22, same reasoning
+     * Overwrites the LOCAL record from the buds' own table, same reasoning
      * and call sites as [GestureConfigStore.syncFromDevice]. Both on-call rows mirror to
      * `dev=0x01` AND `dev=0x02` identically (PROTOCOL.md §6), so either side's entry is enough;
      * this reads `dev=0x01`.

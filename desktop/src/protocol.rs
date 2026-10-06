@@ -1042,7 +1042,7 @@ mod tests {
 
     #[test]
     fn buds4_from_capture() {
-        // Replies the Buds 4 sent to the spike (2026-09-30).
+        // Replies the Buds 4 sent to the spike.
         let caps = Caps::parse(&[0x00, 0xFF, 0x77, 0x5A, 0xEA, 0x67, 0x0E, 0x20, 0x07]).unwrap();
         assert_eq!(caps.game_mode_id(), FEATURE_GAME_MODE);
         assert_eq!(product_id(&[0x00, 0x14, 0x54, 0x06]).as_deref(), Some("065414"));

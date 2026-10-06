@@ -19,7 +19,7 @@ import kotlin.math.min
  *
  * Wear, from the buds' status codes (same meaning the widget uses):
  *   3 / 7 = in ear  -> glyph `text`,                   label "In ear" in `text`, semibold
- *   4 / 0 = in case -> glyph `textSecondary` at 45%,   label "In case" (no badge, 2026-09-26)
+ *   4 / 0 = in case -> glyph `textSecondary` at 45%,   label "In case" (no badge)
  *   other known     -> glyph `textSecondary`,          label "Out of ear"
  *
  * Disconnected ([connected] false) keeps exactly the same size: track-only rings, glyphs in the
@@ -76,11 +76,11 @@ class BudsStatusView(context: Context) : View(context) {
     private val arcBox = RectF()
     private val semibold = ThemeRes.medium(context)
 
-    /** 90dp (SPEC 104, made ~13% shorter, 2026-09-26), shrunk only if three columns cannot fit on a very narrow screen. */
+    /** 90dp (SPEC 104, made ~13% shorter), shrunk only if three columns cannot fit on a very narrow screen. */
     private val ringSize get() = min(dp(90f), width / 3f - dp(8f))
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        // Nothing style: no label line (2026-09-28: the glyph's shade shows wear, as on the Nothing widget).
+        // Nothing style: no label line (the glyph's shade shows wear, as on the Nothing widget).
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (nothing) 127f else 148f).toInt())
     }
 

@@ -138,8 +138,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Shows widget [id]'s level picker. It stays open until a pick (the lit level turns ANC off)
-     * (2026-09-28: the 5 s auto-close shut it while he was still choosing).
+     * Shows widget [id]'s level picker. It stays open until a pick (the lit level turns ANC off).
      */
     private fun openList(context: Context, id: Int) {
         WidgetSettings.setListOpenedAt(context, id, System.currentTimeMillis())

@@ -76,8 +76,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /** Last connection state shown in the pill, so a redundant notify does nothing. */
     private var lastConnShown: Boolean? = null
 
-    // Status card + noise control, both custom-drawn (redesign 2026-09-23): see BudsStatusView and
-    // AncSegmentedView. They replaced two cards of ImageViews/ProgressBars and four ANC buttons.
+    // Status card + noise control, both custom-drawn: see BudsStatusView and
+    // AncSegmentedView.
     private lateinit var statusView: BudsStatusView
     private lateinit var ancView: AncSegmentedView
     /** The ANC level picker: the widget's, in the mode pill's place while open ([openLevels]). */
@@ -340,7 +340,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         connDot = findViewById<ImageView>(R.id.connDot)
         connText = findViewById<TextView>(R.id.connText)
 
-        // The pill is also THE connect/disconnect button (2026-09-23, as HeyMelody has
+        // The pill is also THE connect/disconnect button (as HeyMelody has
         // one): the dot shows the state, the word is the action. Same service actions as Dev Tools.
         connPill.setOnClickListener {
             val connected = lastConnShown == true
@@ -670,7 +670,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     /**
      * The segments and the level picker, for the modes these buds have. Rebuilt when the model changes.
-     * The picker is the widget's (2026-09-28; it replaced the Low / Medium / High pills): the ANC
+     * The picker is the widget's (it replaced the Low / Medium / High pills): the ANC
      * segment slides it in, a pick applies that level and slides back, the lit level turns ANC off.
      */
     private fun buildAnc() {
@@ -701,7 +701,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         levelView.visibility = View.VISIBLE
         levelView.animate().translationX(0f).setDuration(ms).withEndAction(null)
         ancView.animate().translationX(w).setDuration(ms).withEndAction { ancView.visibility = View.INVISIBLE }
-        // No pick within 2 s after the slide: back by itself (2026-09-28: 1 s was too fast).
+        // No pick within 2 s after the slide: back by itself (1 s was too fast).
         levelView.removeCallbacks(autoClose)
         levelView.postDelayed(autoClose, ms + 2000)
     }
@@ -771,7 +771,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     /**
      * Applies an ANC mode: sends the command, updates state, repaints everything.
      *
-     * Smart is an ANC level (its pill after High, 2026-09-27: near-full HeyMelody parity).
+     * Smart is an ANC level (its pill after High: near-full HeyMelody parity).
      * Adaptive is a different mode, not another name for it: the buds set them with
      * different bits (0x0800 vs 0x0080) and report them differently too.
      */
@@ -919,7 +919,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, EqActivity::class.java)) }
         )
 
-        // --- 5. Dual connection, on the home screen too (2026-09-26) ---
+        // --- 5. Dual connection, on the home screen too ---
         addRow(
             "dual",
             SettingRowFactory.build(
@@ -928,7 +928,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ) { startActivity(Intent(this, DualDeviceActivity::class.java)) }
         )
 
-        // --- 6. Earbud settings: gestures, wear detection, find, alert volume (option A, 2026-09-25) ---
+        // --- 6. Earbud settings: gestures, wear detection, find, alert volume (option A) ---
         // Keeps this card to what changes the sound. App update moved to the cog.
         addRow("earbuds", 
             SettingRowFactory.build(

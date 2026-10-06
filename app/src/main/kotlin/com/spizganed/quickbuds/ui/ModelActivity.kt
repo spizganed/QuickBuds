@@ -14,7 +14,7 @@ import com.spizganed.quickbuds.widget.AncWidgetProvider
 /**
  * The model list, opened from the header button before the connect pill: Automatic (what
  * [ModelCatalog] detects) and every model HeyMelody's list has, by brand (realme and its DIZO
- * included, 2026-09-27). A pick overrides detection until Automatic is picked again or
+ * included). A pick overrides detection until Automatic is picked again or
  * other buds connect. The rows are built once and only recoloured, so the selection outline slides
  * ([SelectionSlider]).
  */

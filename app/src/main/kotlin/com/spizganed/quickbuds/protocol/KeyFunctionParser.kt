@@ -65,7 +65,7 @@ object KeyFunctionParser {
     const val BUTTON_PRIMARY = 0x01
 
     /**
-     * `btn 0x06` — the on-call bindings. `[CAPTURE]`-confirmed 2026-09-22 (see
+     * `btn 0x06` — the on-call bindings. `[CAPTURE]` 2026-09-22 (see
      * PACKET-CAPTURE.md Option C), no longer a guess: an HCI capture of HeyMelody itself
      * caught it writing this exact group while he toggled its on-call section on/off/on/off,
      * twice over, with the `0x8108` read-back diffing exactly the slot he touched each time.

@@ -180,9 +180,8 @@ class BudsConnectionManager(private val context: Context) {
     fun isConnected(): Boolean = isReady && bluetoothSocket?.isConnected == true
 
     /**
-     * Drops or restores the phone's own audio link, the way HeyMelody's Connect/Disconnect does
-     * (bugreport 2026-09-24): the hidden
-     * `connect()`/`disconnect()` on the A2DP and Headset proxies, by reflection. Headset `connect()`
+     * Drops or restores the phone's own audio link, the way HeyMelody's Connect/Disconnect does:
+     * the hidden `connect()`/`disconnect()` on the A2DP and Headset proxies, by reflection. Headset `connect()`
      * is refused for ordinary apps, so connecting asks A2DP only and the system brings HFP up by
      * itself (~10 s). Connecting an already-connected profile is a no-op.
      */
@@ -218,8 +217,7 @@ class BudsConnectionManager(private val context: Context) {
         lastDevice = device
         // Only a connect the user asked for (the pill) brings phone audio up. An automatic one —
         // ACL receiver, retries, reconnect after loss — leaves audio to Android: asking for A2DP
-        // while the system is auto-connecting raced it and left audio stuck (fixed and confirmed
-        // on device 2026-09-25).
+        // while the system is auto-connecting raced it and left audio stuck.
         if (withAudio) setPhoneAudio(device, on = true)
         log("Initiating RFCOMM connection to ${device.name}...")
         rememberDeviceName(device)
@@ -349,7 +347,7 @@ class BudsConnectionManager(private val context: Context) {
 
     /**
      * A link we did not close ourselves dropped — typically the buds restarting after a codec
-     * change, which drops us 2-3 times in a row while they settle (log 2026-09-23). Nothing else
+     * change, which drops us 2-3 times in a row while they settle. Nothing else
      * would reconnect: KeepAliveReceiver only fires on ACL_CONNECTED, and the buds can drop just
      * our RFCOMM channel while the Bluetooth link itself stays up. Growing delays give them time
      * to settle; a connection that lived 30 s starts the count over.
@@ -496,7 +494,7 @@ class BudsConnectionManager(private val context: Context) {
 
     // Each write updates the cached state FIRST, then sends and re-reads. The three replies land one
     // by one and each repaints; without this, the replies that arrive before the new values snapped
-    // the UI back to the old ones for a moment (the slider "jump" he saw 2026-09-23).
+    // the UI back to the old ones for a moment.
 
     fun selectBuiltInEq(id: Int) {
         eqCurrent = id
@@ -1220,7 +1218,7 @@ class BudsConnectionManager(private val context: Context) {
                 log("KEYFN DIFF: ${keyFnDiff(table)}")
 
                 // Repaint the LOCAL record from the buds' own truth, not just our diagnostic
-                // log — 2026-09-22. This is what makes GestureActivity/on-call show
+                // log. This is what makes GestureActivity/on-call show
                 // what the buds actually have bound after a reconnect, even if something other
                 // than this app changed it (HeyMelody, another phone, a PC tool). See
                 // GestureConfigStore.syncFromDevice() / OnCallConfigStore.syncFromDevice().
@@ -1241,14 +1239,9 @@ class BudsConnectionManager(private val context: Context) {
             for (i in minOf(payload.size, 7) - 1 downTo 3) value = (value shl 8) or (payload[i].toInt() and 0xFF)
 
             // Current-mode answer, echo `01 01` — queried once on every connect
-            // (OpoProtocol.queryAncMode()). FIXED 2026-09-22: this used to be un-handled here
-            // entirely, on the wrong assumption that AncEventParser's PUSH path already covered
-            // it. It does not: a push only arrives on a CHANGE, so a reconnect where nothing
-            // changed since the last (possibly stale, possibly bogus) persisted value left the
-            // display wrong indefinitely — exactly what surfaced as "UI shows ANC-Low after a
-            // fresh install, buds are really Off, no tone played" and sent us looking for the
-            // real bug (a DIFFERENT one, see AncEventParser.isAncEvent()). Reading this reply
-            // corrects the display on every connect regardless of what was persisted before.
+            // (OpoProtocol.queryAncMode()). A push arrives only on a CHANGE, so without this reply a
+            // reconnect where nothing changed keeps a stale persisted value on screen. Reading it
+            // corrects the display on every connect.
             if (echo1 == 0x01 && echo2 == 0x01) {
                 val mode = AncModes.of(context).modeForRaw(value, lastAncLevelSent)
                 if (mode != null) {

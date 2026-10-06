@@ -9,8 +9,7 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
- * Which paired device is "the buds". Until 3.4.0 this was one hardcoded MAC (the developer's
- * Buds 4), so no one else could connect (GitHub issue #1). Now: the address saved last (the buds
+ * Which paired device is "the buds": the address saved last (the buds
  * whose audio connected most recently, see [KeepAliveReceiver]), else the first bonded device that
  * offers one of the OPPO SPP UUIDs or carries a model name from `models.json`.
  */

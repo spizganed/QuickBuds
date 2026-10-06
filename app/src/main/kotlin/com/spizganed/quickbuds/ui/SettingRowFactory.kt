@@ -160,7 +160,7 @@ object SettingRowFactory {
             if (ThemeRes.nothing(context)) {
                 trackDrawable = DotArt.Part(context, 44f, 24f, track) { c, b, p -> c.drawRoundRect(b, b.height() / 2, b.height() / 2, p) }
                 thumbDrawable = DotArt.Part(context, 24f, 24f, thumb) { c, b, p ->
-                    // As tall as the track (2026-09-28: no padding around the thumb).
+                    // As tall as the track (no padding around the thumb).
                     c.drawCircle(b.centerX(), b.centerY(), b.height() / 2, p)
                 }
                 thumbTintList = null
@@ -215,7 +215,7 @@ object SettingRowFactory {
         setBackgroundColor(outline)
     }
 
-    /** Card (SPEC section 2): 24dp radius, `outline` stroke, rows clipped to the corners. The dot style draws the same outline in dots (2026-09-30). */
+    /** Card (SPEC section 2): 24dp radius, `outline` stroke, rows clipped to the corners. The dot style draws the same outline in dots. */
     fun card(context: Context, radiusDp: Float = 24f): LinearLayout = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
         background = ThemeRes.card(context, radiusDp)
@@ -228,7 +228,7 @@ object SettingRowFactory {
     /** Corner radius of a split row's card and of its selection outline: less than the 24dp cards, or a 52dp row reads as a pill. */
     const val SPLIT_RADIUS = 16f
 
-    /** A plain column for [addSplit]: rows that are each their own card, with a gap (2026-09-30: a selected row's outline fits its own card). */
+    /** A plain column for [addSplit]: rows that are each their own card, with a gap (a selected row's outline fits its own card). */
     fun splitList(context: Context): LinearLayout = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
         layoutParams = LinearLayout.LayoutParams(

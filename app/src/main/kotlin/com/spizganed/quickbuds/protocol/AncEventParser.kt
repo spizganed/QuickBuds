@@ -18,7 +18,7 @@ package com.spizganed.quickbuds.protocol
  *
  * PAYLOAD is exactly 5 bytes: `03 01 01 LO HI`.
  *
- * THE MAPPING IS NOW CONFIRMED (2026-09-18, capture with a known starting mode).
+ * THE MAPPING IS CONFIRMED (capture with a known starting mode).
  * He cycled from Off on BOTH buds and reported the order, and both buds produced
  * the identical three values, so this is not side-dependent:
  *
@@ -48,7 +48,7 @@ object AncEventParser {
     /**
      * True if this 0x0204 payload is a GENUINE ANC-changed event.
      *
-     * `[CAPTURE]`-caused bug, found and fixed 2026-09-22: `setHoldAncModes()`'s write also raises
+     * `setHoldAncModes()`'s write also raises
      * a `subType 0x03` frame (PROTOCOL.md §5's `[CAPTURE]` note on this), but its payload is
      * `03 02 01 <mask LE>` — the `0x010C` switch-list QUERY's own echo shape, not this event's.
      * The real event is always `03 01 01 <value LE>` (see the class doc). Before this fix,

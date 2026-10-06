@@ -62,8 +62,8 @@ object Capabilities {
     }
 
     /**
-     * `0x8103` payload `00 <id, 3 bytes LE>` -> "065414". `[CAPTURE]` Buds 4 answers `00 14 54 06`
-     * (2026-09-27); `[OSS]` OppoPods `ProductIdParser` reads it the same way. Colour variants are
+     * `0x8103` payload `00 <id, 3 bytes LE>` -> "065414". `[CAPTURE]` Buds 4 answers `00 14 54 06`;
+     * `[OSS]` OppoPods `ProductIdParser` reads it the same way. Colour variants are
      * folded into one id ([ModelCatalog.normalise]).
      */
     fun productId(payload: ByteArray): String? {

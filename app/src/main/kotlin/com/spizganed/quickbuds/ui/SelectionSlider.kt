@@ -10,7 +10,7 @@ import android.view.animation.DecelerateInterpolator
 
 /**
  * The [ThemeRes.selectedBorder] of a list of rows as one outline in [host]'s overlay, slid from row to row
- * (2026-09-30) instead of appearing on the new one. [host] is the rows' common parent (it scrolls with
+ * instead of appearing on the new one. [host] is the rows' common parent (it scrolls with
  * them), so the rows may sit in several cards. The slider outlives row rebuilds: call [moveTo] after each one.
  * With a [key] the last position is kept across the screen's own recreate(), so a pick that recreates the
  * activity (a theme) still slides from where the outline was.

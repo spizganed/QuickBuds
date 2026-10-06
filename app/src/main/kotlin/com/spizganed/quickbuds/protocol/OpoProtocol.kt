@@ -67,7 +67,7 @@ object OpoProtocol {
     /**
      * setKeyFunction — write the gesture bindings back.
      *
-     * **`0x0401` IS CONFIRMED ON THE DEVICE (2026-09-22).** Every write is acked
+     * **`0x0401` IS CONFIRMED ON THE DEVICE.** Every write is acked
      * immediately — `RX AA 08 00 00 01 84 .. 01 00 00`, payload `00` = success — and the
      * `0x8108` read-back then shows a real `KEYFN DIFF:` change. The feature works.
      *
@@ -259,21 +259,21 @@ object OpoProtocol {
      * firmware ACKed that happily and silently never sent wear events, which is
      * why wear appeared to be poll-only. Do NOT revert to that.
      *
-     * 0x03 (ANC) WAS ADDED on 2026-09-18. The buds advertise their event ids in
+     * 0x03 (ANC): the buds advertise their event ids in
      * the 0x8200 broadcast-codes reply, which lists `01 02 03 04 08 0B F1 F2 F3` —
      * 03 is offered, and the ANC subType 0x03 push arrived only unreliably while we
      * had not subscribed to it. Subscribing is the documented way to make a 0x0204
      * subType arrive, and it is how wear was fixed, so the same reasoning applies.
      *
-     * CONFIRMED ON DEVICE 2026-09-19. The 0x8205 ACK lists `01 02 03`, and a bud-side
+     * CONFIRMED ON DEVICE: the 0x8205 ACK lists `01 02 03`, and a bud-side
      * gesture now updates the app circles AND the widget, including a gesture REBOUND
      * to a different mode cycle. If ANC ever stops following gestures, check the ACK
      * still lists `01 02 03` first — a firmware that rejects the longer list would ACK
      * a shorter one.
      *
-     * 0x04 (fit test result) is added when the buds have the fit test (`0x0405`), 2026-09-29:
+     * 0x04 (fit test result) is added when the buds have the fit test (`0x0405`):
      * HeyMelody registers every id the buds list in 0x8200 (`registerMultiNotification`).
-     * 0x08 (Golden Sound test status) likewise, when the buds have the test (`0x040D`), 2026-09-29.
+     * 0x08 (Golden Sound test status) likewise, when the buds have the test (`0x040D`).
      */
     /**
      * The events to subscribe to: ours, kept to those the buds offer in `0x8200` when they sent one,
@@ -374,7 +374,7 @@ object OpoProtocol {
      * Reports (`0x810C`, `0x0204` subType 3) name the SAME tree's bits, but a mode's child where it
      * has one (Buds 4 reports Off as bit 3, Transparency as bit 8). Setting a child bit was tried
      * once and sent the wrong mode: SET uses the parent. Adaptive's bit is 11, not 8: `8` gives
-     * `01 01 00 01`, a different mode (fixed 2026-09-22).
+     * `01 01 00 01`, a different mode.
      */
     fun anc(bit: Int): ByteArray {
         val arr = ByteArray(2 + bit / 8 + 1)
@@ -627,9 +627,9 @@ object OpoProtocol {
      */
     fun queryStatus(statusQuery: String? = null, windNoise: Boolean = false): ByteArray {
         val ids = (statusQuery?.split(' ')?.map { it.toInt(16).toByte() }?.toByteArray() ?: byteArrayOf(
-            // Feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too;
-            // 0x09 onwards on the second line 2026-09-29, the Earbud settings Features switches.
-            // 0x32 onwards on the third line 2026-09-29, the rest of HeyMelody's list; 0x0C personalized ANC.
+            // Feature ids. 0x1D (BassWave): HeyMelody asks for it too.
+            // Second line: the Earbud settings Features switches.
+            // Third line: the rest of HeyMelody's list; 0x0C personalized ANC.
             0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
             0x09, 0x17, 0x30, 0x31, 0x3A,
             0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C

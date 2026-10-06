@@ -45,7 +45,6 @@ import java.util.Locale
  * Both use one colour per kind: sent by the app, from the buds, connection, problem.
  *
  * Also provides Clear / Export of the log, Reconnect / Disconnect, the RFCOMM bridge and the crash logger test.
- * The layout, screenshot and widget reports were removed 2026-09-27: adb covers them.
  */
 class DevToolsActivity : Activity() {
 

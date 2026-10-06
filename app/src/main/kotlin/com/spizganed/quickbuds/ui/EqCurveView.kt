@@ -76,7 +76,7 @@ class EqCurveView(context: Context) : View(context) {
     /**
      * What is DRAWN, per band, in fractional dB. It follows the finger exactly while dragging and
      * glides onto the snapped value on release. Drawing the snapped int directly made the point jump
-     * between 13 fixed steps, which read as a low frame rate (2026-09-23).
+     * between 13 fixed steps, which read as a low frame rate.
      */
     private var pos = FloatArray(0)
     private var settle: ValueAnimator? = null
@@ -145,7 +145,7 @@ class EqCurveView(context: Context) : View(context) {
     }
 
     /**
-     * The curve as dots (2026-09-30: it was jagged). A stroke sampled at one point per cell came out one
+     * The curve as dots (it was jagged). A stroke sampled at one point per cell came out one
      * cell thick in one place and two in the next; here each cell the path passes through is lit once, so the line
      * is one even, connected row of dots. Called inside [DotArt.draw], where one cell is one pixel.
      */

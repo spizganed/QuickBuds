@@ -4,7 +4,7 @@ import android.app.Activity
 import com.spizganed.quickbuds.R
 
 /**
- * Confirm prompt as a bottom sheet (2026-09-30: dialogs are sheets): title, secondary body, the action
+ * Confirm prompt as a bottom sheet (dialogs are sheets): title, secondary body, the action
  * button and, unless [show] gets no `cancelRes`, a Cancel button under it. Used for Disconnect, deleting a preset,
  * warnings and notices.
  */

@@ -75,7 +75,7 @@ class ThemeActivity : Activity() {
         if (!::selection.isInitialized) selection = SelectionSlider(root, "theme")
         root.addView(SettingRowFactory.title(this, R.string.theme_title))
 
-        // --- Style: Classic or Nothing, for the app and the widgets (2026-09-28) ---
+        // --- Style: Classic or Nothing, for the app and the widgets ---
         root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_style_title))
         root.addView(AncSegmentedView(this, listOf(getString(R.string.widget_style_classic), getString(R.string.widget_style_nothing))).apply {
             selected = if (ThemeRes.nothing(this@ThemeActivity)) 1 else 0
@@ -141,7 +141,7 @@ class ThemeActivity : Activity() {
             addView(autoRow)
         })
 
-        // --- Accent of the applied built-in preset (2026-09-26) ---
+        // --- Accent of the applied built-in preset ---
         val active = ThemeRes.palette(this)
         if (active.builtIn) {
             val accentCard = SettingRowFactory.card(this).apply {
