@@ -194,6 +194,7 @@
     <string name="gesture_triple">Тройное касание</string>
     <string name="gesture_slide">Свайп</string>
     <string name="gesture_hold">Удержание</string>
+    <string name="gesture_both_hold">Удержание обоих наушников</string>
     <string name="gesture_extra_long">Долгое удержание</string>
     <string name="gesture_on_call_double_tap">Двойное касание</string>
     <string name="gesture_on_call_long_hold">Долгое удержание</string>

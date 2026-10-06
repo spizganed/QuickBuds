@@ -864,7 +864,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                     manager.setCodec(codec, isChecked)
                 }
             }
-            val dropSpatial = isChecked && spatialOn()
+            val dropSpatial = isChecked && spatialOn() && !spatialSwitchOnly()
             confirmReconnect(
                 if (dropSpatial) R.string.codec_msg_hires_drops_spatial else R.string.codec_msg_reconnect
             ) {
@@ -956,8 +956,15 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * Spatial audio as HeyMelody picks it (PROTOCOL.md §9): buds whose bitmap has `0x012A` (or a
      * hand-picked model with head tracking) take a type through `0x0422`, the rest feature `0x1B`.
      */
-    private fun spatialByType() = Capabilities.supports(this, OpoProtocol.CMD_QUERY_SPATIAL_TYPE) ||
-        (ModelCatalog.manual(this) != null && spatialHeadTracking())
+    private fun spatialByType() = !spatialSwitchOnly() &&
+        (Capabilities.supports(this, OpoProtocol.CMD_QUERY_SPATIAL_TYPE) ||
+            (ModelCatalog.manual(this) != null && spatialHeadTracking()))
+
+    /**
+     * Our own key `spatialSwitch` (realme Link data, PROTOCOL.md §9): spatial is feature `1B` alone and
+     * Hi-Res `18` alone, never written together, whatever the bitmap says.
+     */
+    private fun spatialSwitchOnly() = ModelCatalog.current(this)?.json?.optInt("spatialSwitch") == 1
 
     /** The model's `spatialTypes` has `2`: Off / Fixed / Head tracking instead of a plain switch. */
     private fun spatialHeadTracking() =
@@ -968,7 +975,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     /** Spatial and Hi-Res never coexist: turning spatial on with Hi-Res on asks first, then drops Hi-Res. */
     private fun setSpatial(type: Int) {
-        val dropHires = type != 0 && featureOn(OpoProtocol.FEATURE_HIRES_CODEC)
+        val dropHires = type != 0 && featureOn(OpoProtocol.FEATURE_HIRES_CODEC) && !spatialSwitchOnly()
         val write = {
             spatialSwitch?.let { setSwitchQuiet(it, type != 0) }
             val hiresOff = OpoProtocol.FEATURE_HIRES_CODEC to false

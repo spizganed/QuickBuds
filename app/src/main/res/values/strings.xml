@@ -237,6 +237,7 @@
     <string name="gesture_triple">Triple tap</string>
     <string name="gesture_slide">Slide</string>
     <string name="gesture_hold">Hold</string>
+    <string name="gesture_both_hold">Hold both earbuds</string>
     <string name="gesture_extra_long">Extra-long hold</string>
 
     <!--

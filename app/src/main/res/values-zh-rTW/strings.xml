@@ -194,6 +194,7 @@
     <string name="gesture_triple">三擊</string>
     <string name="gesture_slide">滑動</string>
     <string name="gesture_hold">長按</string>
+    <string name="gesture_both_hold">同時長按兩隻耳機</string>
     <string name="gesture_extra_long">超長按</string>
     <string name="gesture_on_call_double_tap">雙擊</string>
     <string name="gesture_on_call_long_hold">長按</string>

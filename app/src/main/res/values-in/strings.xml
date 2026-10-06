@@ -194,6 +194,7 @@
     <string name="gesture_triple">Ketuk tiga kali</string>
     <string name="gesture_slide">Geser</string>
     <string name="gesture_hold">Tahan</string>
+    <string name="gesture_both_hold">Tahan kedua earbud</string>
     <string name="gesture_extra_long">Tahan lebih lama</string>
     <string name="gesture_on_call_double_tap">Ketuk dua kali</string>
     <string name="gesture_on_call_long_hold">Tahan lama</string>

@@ -732,8 +732,8 @@ class BudsConnectionManager(private val context: Context) {
      * sides themselves. Verified the same way — re-read and let the `KEYFN DIFF:` line show
      * what actually changed.
      */
-    fun sendOnCall(act: Int, fn: Int) {
-        sendRaw(OpoProtocol.setOnCall(act, fn), "On-call act 0x%02X -> fn 0x%02X".format(act, fn))
+    fun sendOnCall(act: Int, fn: Int, button: Int = KeyFunctionParser.BUTTON_ON_CALL) {
+        sendRaw(OpoProtocol.setOnCall(act, fn, button), "Both-buds btn 0x%02X act 0x%02X -> fn 0x%02X".format(button, act, fn))
         verifyKeyFunctionAfterDelay()
     }
 

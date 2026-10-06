@@ -194,6 +194,7 @@
     <string name="gesture_triple">トリプルタップ</string>
     <string name="gesture_slide">スライド</string>
     <string name="gesture_hold">長押し</string>
+    <string name="gesture_both_hold">両方を長押し</string>
     <string name="gesture_extra_long">超長押し</string>
     <string name="gesture_on_call_double_tap">ダブルタップ</string>
     <string name="gesture_on_call_long_hold">長押し（長め）</string>

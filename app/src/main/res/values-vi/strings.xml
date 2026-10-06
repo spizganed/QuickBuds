@@ -194,6 +194,7 @@
     <string name="gesture_triple">Chạm ba lần</string>
     <string name="gesture_slide">Vuốt</string>
     <string name="gesture_hold">Nhấn giữ</string>
+    <string name="gesture_both_hold">Nhấn giữ cả hai bên</string>
     <string name="gesture_extra_long">Nhấn giữ lâu</string>
     <string name="gesture_on_call_double_tap">Chạm hai lần</string>
     <string name="gesture_on_call_long_hold">Nhấn giữ lâu</string>

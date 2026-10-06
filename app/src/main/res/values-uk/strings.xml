@@ -194,6 +194,7 @@
     <string name="gesture_triple">Потрійний дотик</string>
     <string name="gesture_slide">Свайп</string>
     <string name="gesture_hold">Утримання</string>
+    <string name="gesture_both_hold">Утримання обох навушників</string>
     <string name="gesture_extra_long">Довге утримання</string>
     <string name="gesture_on_call_double_tap">Подвійний дотик</string>
     <string name="gesture_on_call_long_hold">Довге утримання</string>

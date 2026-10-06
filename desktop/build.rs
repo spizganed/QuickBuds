@@ -53,7 +53,7 @@ const STRINGS: &[&str] = &[
     "golden_again", "golden_boost", "eq_delete_confirm",
     "gesture_title", "gesture_section_not_in_call", "gesture_section_on_call", "gesture_write_note", "gesture_single",
     "gesture_double", "gesture_triple", "gesture_slide", "gesture_hold", "gesture_extra_long", "gesture_on_call_double_tap",
-    "gesture_on_call_long_hold", "gesture_on_call_answer_end", "gesture_on_call_decline", "gesture_action_none",
+    "gesture_on_call_long_hold", "gesture_both_hold", "gesture_on_call_answer_end", "gesture_on_call_decline", "gesture_action_none",
     "gesture_action_play_pause", "gesture_action_prev", "gesture_action_next", "gesture_action_assistant",
     "gesture_action_game", "gesture_action_volume", "gesture_action_switch_track", "gesture_action_volume_up",
     "gesture_action_volume_down", "gesture_action_switch_device", "gesture_action_anc_on", "gesture_action_anc_adaptive",

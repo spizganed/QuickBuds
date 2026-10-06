@@ -268,7 +268,11 @@ class GestureModel private constructor(
      * Our own key `sharedHoldMask` (realme Link data, PROTOCOL.md §6): a per-bud hold whose noise
      * cycle is one mask for both buds, written and read as [OpoProtocol.HOLD_TYPE_SHARED].
      */
-    private val sharedHoldMask: Boolean = false
+    private val sharedHoldMask: Boolean = false,
+    /** Our own key `oneButton` (realme Link data, PROTOCOL.md §6): a neckband, one button on `dev 01`. */
+    val oneButton: Boolean = false,
+    /** Our own key `bothHold` (realme Link data): the [OnCallGesture.BOTH_HOLD] row. */
+    val bothHold: Boolean = false
 ) {
     val isEmpty get() = rows.isEmpty() && onCall.isEmpty()
 
@@ -383,7 +387,8 @@ class GestureModel private constructor(
             val holdChoices = if (longPressType == 0) emptyList()
                 else intArrayOf(512, HOLD_NOISE, 1, 8192).filter { longPressType and it != 0 }
             return GestureModel(rows, holdBits, onCall, name == "OnePlus Buds" || name == "OnePlus Buds Z",
-                longPressType != 0, holdChoices, holdMin, levelBits, json.optInt("sharedHoldMask") == 1)
+                longPressType != 0, holdChoices, holdMin, levelBits, json.optInt("sharedHoldMask") == 1,
+                json.optInt("oneButton") == 1, json.optInt("bothHold") == 1)
         }
 
         /**
@@ -601,7 +606,8 @@ enum class OnCallGesture(
     val act: Int,
     val enabledFn: Int,
     /** `[VENDOR]` The model list's `callControl` action for this row. */
-    val callAction: Int
+    val callAction: Int,
+    val button: Int = KeyFunctionParser.BUTTON_ON_CALL
 ) {
     /** `[VENDOR]` callControl 32: single tap answers / ends (Buds Pro 3, Enco X3). */
     SINGLE_TAP(
@@ -620,6 +626,15 @@ enum class OnCallGesture(
     LONG_HOLD(
         R.string.gesture_on_call_long_hold, R.string.gesture_on_call_decline, "long_hold",
         OpoProtocol.ON_CALL_ACT_LONG_HOLD, OpoProtocol.ON_CALL_FN_DECLINE, 31
+    ),
+    /**
+     * `[VENDOR]` realme Link (issue #8): holding both buds, `04 01 04 <fn>`, game mode or none.
+     * Not an on-call row (shown with the gestures, `"bothHold":1`); read back from its own
+     * `dev 04` entry, so it is never confused with a bud's hold (`dev 01` / `02`, same act).
+     */
+    BOTH_HOLD(
+        R.string.gesture_both_hold, R.string.gesture_action_game, "both_hold",
+        0x04, GestureAction.GAME_MODE.functionByte, -1, KeyFunctionParser.BUTTON_PRIMARY
     )
 }
 
@@ -651,7 +666,8 @@ object OnCallConfigStore {
     fun syncFromDevice(context: Context, table: KeyFunctionParser.Table) {
         for (gesture in OnCallGesture.values()) {
             val entry = table.entries.firstOrNull {
-                it.button == KeyFunctionParser.BUTTON_ON_CALL && it.action == gesture.act
+                it.button == gesture.button && it.action == gesture.act &&
+                    (gesture != OnCallGesture.BOTH_HOLD || it.deviceType == KeyFunctionParser.DEVICE_TYPE_BOTH)
             } ?: continue
             when (entry.function) {
                 0x00 -> setEnabled(context, gesture, false)

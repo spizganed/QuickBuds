@@ -194,6 +194,7 @@
     <string name="gesture_triple">Toque triplo</string>
     <string name="gesture_slide">Deslizar</string>
     <string name="gesture_hold">Manter premido</string>
+    <string name="gesture_both_hold">Manter premidos os dois auriculares</string>
     <string name="gesture_extra_long">Manter premido mais tempo</string>
     <string name="gesture_on_call_double_tap">Toque duplo</string>
     <string name="gesture_on_call_long_hold">Premir longamente</string>

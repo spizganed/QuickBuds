@@ -194,6 +194,7 @@
     <string name="gesture_triple">Tripla koppintás</string>
     <string name="gesture_slide">Csúsztatás</string>
     <string name="gesture_hold">Nyomva tartás</string>
+    <string name="gesture_both_hold">Mindkét fülhallgató nyomva tartása</string>
     <string name="gesture_extra_long">Hosszú nyomva tartás</string>
     <string name="gesture_on_call_double_tap">Dupla koppintás</string>
     <string name="gesture_on_call_long_hold">Hosszú nyomva tartás</string>

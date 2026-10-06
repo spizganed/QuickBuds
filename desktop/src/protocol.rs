@@ -559,6 +559,8 @@ pub const CMD_QUERY_KEY_FUNCTION: u16 = 0x0108;
 pub const CMD_SET_KEY_FUNCTION: u16 = 0x0401;
 /// The on-call group; its writes are one entry with `dev 04` (both buds).
 pub const BUTTON_ON_CALL: u8 = 0x06;
+/// realme both-buds hold (issue #8): `04 01 04 <fn>`, read back as its own `dev 04` entry.
+pub const BUTTON_PRIMARY: u8 = 0x01;
 /// The hold's noise cycle: one shared, or per bud on models with `longPressType`.
 pub const HOLD_TYPE_SHARED: u8 = 1;
 pub const HOLD_TYPE_LEFT: u8 = 3;

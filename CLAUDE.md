@@ -250,7 +250,11 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   cross-built and has never run on Windows.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
 - **Issue #8:** realme Buds Air7 Pro ANC and gestures from realme Link data, wired, unverified; the
-  reporter is asked to test (read back ANC mode, one gesture, the hold cycle) before more realme models.
+  reporter is asked to test (read back ANC mode, one gesture, the hold cycle). 27 more realme models
+  (5 neckbands `oneButton`, 5 with `bothHold`) are generated the same way, uncommitted until that log
+  confirms the bits (generator and steps: agent memory `realme-link-decompile`). Desktop side of the
+  batch never compiled: run `cargo test` / `cargo build` on the PC first (3 new tests in `controls.rs`).
+  The phone runs this uncommitted build.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
 - **Issue #5 (in progress):** the reporter confirmed `0x010D` (our fixed 23-id status query) drops the
   Enco Buds2 link. HeyMelody builds that query per model and would send those buds only `02 05 0D`.

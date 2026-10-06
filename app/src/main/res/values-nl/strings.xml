@@ -194,6 +194,7 @@
     <string name="gesture_triple">Drievoudige tik</string>
     <string name="gesture_slide">Vegen</string>
     <string name="gesture_hold">Vasthouden</string>
+    <string name="gesture_both_hold">Beide oordopjes vasthouden</string>
     <string name="gesture_extra_long">Lang vasthouden</string>
     <string name="gesture_on_call_double_tap">Dubbele tik</string>
     <string name="gesture_on_call_long_hold">Lang vasthouden</string>

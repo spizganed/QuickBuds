@@ -1617,6 +1617,8 @@ export global Controls {
     in property <[ControlsRow]> rows;
     in property <[ControlsRow]> calls;
     in property <int> side;
+    // A neckband: no Left / Right.
+    in property <bool> one-button;
     in property <string> dialog-title;
     in property <[Choice]> choices;
     in property <int> choice-current;
@@ -1669,7 +1671,7 @@ component ControlsPage inherits Rectangle {
             alignment: start;
             Text { text: Tr.gesture-title; color: Palette.text; font-size: 26px; font-weight: 700; }
             if !Buds.on: Text { text: Tr.not-connected; color: Palette.text2; font-size: 13px; }
-            Rectangle {
+            if !Controls.one-button: Rectangle {
                 height: 52px;
                 border-radius: self.height / 2;
                 background: Dots.on ? transparent : Palette.card;

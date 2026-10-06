@@ -194,6 +194,7 @@
     <string name="gesture_triple">세 번 탭</string>
     <string name="gesture_slide">슬라이드</string>
     <string name="gesture_hold">길게 누르기</string>
+    <string name="gesture_both_hold">양쪽 길게 누르기</string>
     <string name="gesture_extra_long">더 길게 누르기</string>
     <string name="gesture_on_call_double_tap">두 번 탭</string>
     <string name="gesture_on_call_long_hold">오래 누르기</string>

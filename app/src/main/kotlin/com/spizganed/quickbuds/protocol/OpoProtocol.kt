@@ -499,10 +499,10 @@ object OpoProtocol {
     const val ON_CALL_ACT_LONG_HOLD = 0x06
     const val ON_CALL_FN_DECLINE = 0x1C
 
-    private fun onCallPayload(act: Int, fn: Int) = byteArrayOf(
+    private fun onCallPayload(act: Int, fn: Int, button: Int) = byteArrayOf(
         0x01,
         KeyFunctionParser.DEVICE_TYPE_BOTH.toByte(),
-        KeyFunctionParser.BUTTON_ON_CALL.toByte(),
+        button.toByte(),
         act.toByte(),
         fn.toByte()
     )
@@ -513,8 +513,9 @@ object OpoProtocol {
      */
     const val ON_CALL_ACT_SINGLE_TAP = 0x01
 
-    fun setOnCall(act: Int, fn: Int): ByteArray =
-        buildPacket(CMD_SET_KEY_FUNCTION, payload = onCallPayload(act, fn))
+    /** [button] is [KeyFunctionParser.BUTTON_ON_CALL], or `btn 01` for the realme both-buds hold. */
+    fun setOnCall(act: Int, fn: Int, button: Int = KeyFunctionParser.BUTTON_ON_CALL): ByteArray =
+        buildPacket(CMD_SET_KEY_FUNCTION, payload = onCallPayload(act, fn, button))
 
     // --- Equalizer, all [CAPTURE] 2026-09-23 (PROTOCOL.md §9) ---
 

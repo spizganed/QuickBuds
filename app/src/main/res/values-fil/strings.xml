@@ -194,6 +194,7 @@
     <string name="gesture_triple">Tatlong tap</string>
     <string name="gesture_slide">Slide</string>
     <string name="gesture_hold">Pindutin nang matagal</string>
+    <string name="gesture_both_hold">Pindutin nang matagal ang parehong earbuds</string>
     <string name="gesture_extra_long">Pindutin nang mas matagal</string>
     <string name="gesture_on_call_double_tap">Dobleng tap</string>
     <string name="gesture_on_call_long_hold">Mas matagal na pindot</string>

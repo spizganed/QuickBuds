@@ -194,6 +194,7 @@
     <string name="gesture_triple">Ketik tiga kali</string>
     <string name="gesture_slide">Leret</string>
     <string name="gesture_hold">Tahan</string>
+    <string name="gesture_both_hold">Tahan kedua-dua fon telinga</string>
     <string name="gesture_extra_long">Tahan lebih lama</string>
     <string name="gesture_on_call_double_tap">Ketik dua kali</string>
     <string name="gesture_on_call_long_hold">Tahan lama</string>

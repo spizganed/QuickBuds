@@ -194,6 +194,7 @@
     <string name="gesture_triple">Dreimal tippen</string>
     <string name="gesture_slide">Wischen</string>
     <string name="gesture_hold">Halten</string>
+    <string name="gesture_both_hold">Beide Earbuds halten</string>
     <string name="gesture_extra_long">Lange halten</string>
     <string name="gesture_on_call_double_tap">Zweimal tippen</string>
     <string name="gesture_on_call_long_hold">Lange halten</string>

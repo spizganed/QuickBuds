@@ -48,6 +48,7 @@ class GestureActivity : Activity() {
 
     private lateinit var btnLeft: Button
     private lateinit var btnRight: Button
+    private lateinit var sideRow: View
     private lateinit var gestureList: LinearLayout
     private lateinit var onCallList: LinearLayout
     private lateinit var onCallLabel: View
@@ -81,6 +82,7 @@ class GestureActivity : Activity() {
         sideRow.addView(btnLeft)
         sideRow.addView(btnRight)
         root.addView(sideRow)
+        this.sideRow = sideRow
 
         // --- 3. Gesture list ---
         val scroll = ScrollView(this).apply {
@@ -247,6 +249,9 @@ class GestureActivity : Activity() {
      */
     private fun render() {
         model = GestureModel.of(this)
+        // A neckband has one button, written as the left bud (`dev 01`).
+        if (model.oneButton) side = GestureSide.LEFT
+        sideRow.visibility = if (model.oneButton) View.GONE else View.VISIBLE
 
         paintSideButton(btnLeft, side == GestureSide.LEFT)
         paintSideButton(btnRight, side == GestureSide.RIGHT)
@@ -255,6 +260,10 @@ class GestureActivity : Activity() {
         for ((index, gesture) in model.rows.keys.withIndex()) {
             if (index > 0) gestureList.addView(SettingRowFactory.buildDivider(this))
             gestureList.addView(buildGestureRow(gesture))
+        }
+        if (model.bothHold) {
+            gestureList.addView(SettingRowFactory.buildDivider(this))
+            gestureList.addView(buildOnCallRow(OnCallGesture.BOTH_HOLD))
         }
 
         // Rebuilt on every render() too, same as gestureList above, even though it does
@@ -325,7 +334,7 @@ class GestureActivity : Activity() {
             when (gesture) {
                 OnCallGesture.SINGLE_TAP -> R.drawable.ic_tap_single
                 OnCallGesture.DOUBLE_TAP, OnCallGesture.DOUBLE_TAP_DECLINE -> R.drawable.ic_tap_double
-                OnCallGesture.LONG_HOLD -> R.drawable.ic_hold
+                OnCallGesture.LONG_HOLD, OnCallGesture.BOTH_HOLD -> R.drawable.ic_hold
             },
             gesture.rowLabelRes,
             0,

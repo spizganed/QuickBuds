@@ -52,7 +52,8 @@ pub enum Cmd {
     /// The hold's noise cycle: (mask, type).
     HoldModes(u32, u8),
     /// An on-call row: (act, fn), one entry for both buds.
-    OnCall(u8, u8),
+    /// A both-buds entry (`dev 04`): button, act, fn.
+    OnCall(u8, u8, u8),
     /// Hearing profile frames, in order; a switch among them re-reads the status after.
     Hearing(Vec<Frame>),
     Connect,
@@ -527,8 +528,8 @@ impl<'a> Conn<'a> {
                         self.pump(400)?;
                         self.send(CMD_QUERY_ANC, None, &[2, t])?;
                     }
-                    Cmd::OnCall(act, f) => {
-                        self.send(CMD_SET_KEY_FUNCTION, None, &[1, 4, BUTTON_ON_CALL, act, f])?;
+                    Cmd::OnCall(btn, act, f) => {
+                        self.send(CMD_SET_KEY_FUNCTION, None, &[1, 4, btn, act, f])?;
                         self.pump(400)?;
                         self.send(CMD_QUERY_KEY_FUNCTION, None, &[])?;
                     }

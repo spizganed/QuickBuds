@@ -256,14 +256,15 @@ Each model's `noiseReductionMode` in `assets/models.json` (`protocol/AncModes.kt
   Off 1, Transparency 2` (9 models: **Buds 4's Off bytes turn ANC on there**); `Off 0, Transparency 1,
   Light 2, Deep 3` (Enco X, Buds Z2), plus `Smart 4` on Buds Pro. Voice-transparency modes that need a
   per-bud support read (4 OPPO models) are not offered.
-- A model with no `noiseReductionMode` (95 of 137) gets no noise control. Before detection, Buds 4's
+- A model with no `noiseReductionMode` (76 of 137) gets no noise control. Before detection, Buds 4's
   tree is used.
 - **realme models** `[VENDOR]` (realme Link 5.5.514): HeyMelody lists some realme ids with no modes;
   realme Link has their data. Its write and report tables are **the same** (unlike Buds 4): Off `01`,
   Transparency `02`, Light `04`, Deep (and plain ANC) `08`, Medium `10`, Smart `20`. As a tree: Off 0,
-  Transparency 1, ANC 3 with children Light 2, Deep 3, Medium 4, Smart 5. In `models.json` for the
-  realme Buds Air7 Pro (`064C12`), wired, unverified (issue #8). Its log's `0x810C 01 01` value `02` =
-  Transparency.
+  Transparency 1, ANC 3 with children Light 2, Deep 3, Medium 4, Smart 5 (only the levels a model
+  has; T200 / T300 / T500 / T200x / Wireless 3 have plain ANC, N1 / T310 no Smart). In `models.json`
+  for 23 realme models, wired, unverified (issue #8; Air7 Pro first). The Air7 Pro log's
+  `0x810C 01 01` value `02` = Transparency.
 
 ### SET — `0x0404 01 01 <mask>` `[OSS]`+`[CAPTURE]`
 
@@ -408,11 +409,20 @@ Buds 4: `1:516 2:8807 3:3154531 5:3584`, hold `27` — matches HeyMelody's menus
   none (512) has one fixed option and writes nothing. Buds 4 `[CAPTURE]`: double tap
   `0401 01 04 06 02 1D` / `…02 00`, long hold `0401 01 04 06 06 1C` / `…06 00`; one write lands on both
   buds, labels confirmed on a real call `[USER]`.
-- **realme Buds Air7 Pro** `[VENDOR]` (realme Link, issue #8), wired, unverified: per bud, double tap
-  581, triple tap 8801, hold `longPressType` 8833. Same `fn` bytes as above, `dev` 1 / 2, `btn 01`.
-  Its hold cycle is **one mask for both buds** (`0x0404 02 01 <mask>`, read `0x010C 02 01`; the log's
-  `0A` = ANC + Transparency): our own key `"sharedHoldMask":1` keeps type 1 on a per-bud hold.
-- **Per-bud hold** (`longPressType`, 9 models): options 512 none, 128 noise cycle, 1 voice assistant,
+- **realme models** `[VENDOR]` (realme Link, issue #8), wired, unverified: per-bud double tap, triple
+  tap and hold, same `fn` bytes as above, `dev` 1 / 2, `btn 01`. A hold with the noise cycle is
+  `longPressType` 8833; its cycle is **one mask for both buds** (`0x0404 02 01 <mask>`, read
+  `0x010C 02 01`; the Air7 Pro log's `0A` = ANC + Transparency), so our own key `"sharedHoldMask":1`
+  keeps type 1 on a per-bud hold. **Holding both buds** (Air 3S, T01, T110, T200 Lite, T200x): one
+  entry `04 01 04 <fn>`, game mode `11` or none, read back as its own `dev 04` entry (realme Link reads
+  it so; Buds 4 fans `dev 04` on-call writes out to both sides instead). Our own key `"bothHold":1`,
+  shown as a gesture row; written like an on-call row. Not offered: volume on the noise-cycle hold
+  (T500, Air8, T200x), AI options.
+- **realme neckbands** `[VENDOR]` (Wireless 3 Neo, 5 ANC, 6, 6 ANC, 6 Neo), wired, unverified: one button
+  written as the left bud, `01 01 <act> <fn>`, act 1-4 (single, double, triple, hold). Our own key
+  `"oneButton":1` hides Left / Right. The noise button of the two ANC ones (`01 04 01 08`, single
+  press = the noise cycle) is not offered.
+- **Per-bud hold** (`longPressType`, 25 models): options 512 none, 128 noise cycle, 1 voice assistant,
   8192 game mode. Each bud written alone (`dev` 1/2, `act 04`); the cycle mask per bud with type 3 / 4,
   read with `0x010C 02 03` / `02 04`.
 - **Minimum modes in the cycle:** `minSelectCount`, else 2 on OnePlus models and per-bud holds, else 1
@@ -574,6 +584,10 @@ the active record; the phone keeps the list. A record: 4-byte id (big-endian, ch
 - **Spatial and Hi-Res are mutually exclusive.** HeyMelody warns, then: spatial on = `1B 01` then
   `18 00`; Hi-Res on = `1B 00` then `18 01`.
 - **Any `18` change drops the link**; the buds reconnect ~4 s later.
+- **realme models** `[VENDOR]` (realme Link, issue #8): 3D sound is feature `1B` alone and Hi-Res `18`
+  alone, whatever the bitmap says; realme Link never writes one with the other (on some models it only
+  warns). The Air7 Pro lists `0x012A` / `0x0422` but leaves `0x012A` unanswered. Our own key
+  `"spatialSwitch":1` (realme models with 3D sound). Wired, unverified.
 - **`18` is a quality switch, not a codec switch** `[CAPTURE]`: LHDC V5 either way. On: 44.1-192 kHz,
   400 kbps cap. Off: 44.1 / 48 kHz, 256 kbps. The phone chose 48 kHz / 24-bit both times. No LDAC on
   Buds 4.

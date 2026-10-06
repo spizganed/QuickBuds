@@ -194,6 +194,7 @@
     <string name="gesture_triple">Trojité klepnutí</string>
     <string name="gesture_slide">Posun</string>
     <string name="gesture_hold">Podržení</string>
+    <string name="gesture_both_hold">Podržení obou sluchátek</string>
     <string name="gesture_extra_long">Dlouhé podržení</string>
     <string name="gesture_on_call_double_tap">Dvojité klepnutí</string>
     <string name="gesture_on_call_long_hold">Dlouhé podržení</string>

@@ -168,7 +168,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 } else {
                     val g = OnCallGesture.values().firstOrNull { it.serviceRow == row }
                     if (g == null) statusLog("<< SET_ON_CALL: unknown row '$row', ignored")
-                    else manager?.sendOnCall(g.act, if (enabled) g.enabledFn else 0x00)
+                    else manager?.sendOnCall(g.act, if (enabled) g.enabledFn else 0x00, g.button)
                 }
             }
             else -> statusLog("[SVC] onStartCommand (no action)")

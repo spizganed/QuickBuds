@@ -194,6 +194,7 @@
     <string name="gesture_triple">Triple toque</string>
     <string name="gesture_slide">Deslizar</string>
     <string name="gesture_hold">Mantener</string>
+    <string name="gesture_both_hold">Mantener ambos auriculares</string>
     <string name="gesture_extra_long">Mantener más tiempo</string>
     <string name="gesture_on_call_double_tap">Doble toque</string>
     <string name="gesture_on_call_long_hold">Mantener pulsado</string>

@@ -194,6 +194,7 @@
     <string name="gesture_triple">Üç kez dokunma</string>
     <string name="gesture_slide">Kaydırma</string>
     <string name="gesture_hold">Basılı tutma</string>
+    <string name="gesture_both_hold">İki kulaklıkta basılı tutma</string>
     <string name="gesture_extra_long">Uzun basılı tutma</string>
     <string name="gesture_on_call_double_tap">Çift dokunma</string>
     <string name="gesture_on_call_long_hold">Uzun basılı tutma</string>

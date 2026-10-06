@@ -72,6 +72,10 @@ struct Model {
     per_bud: bool,
     /// Our `sharedHoldMask` (realme Link data): a per-bud hold with one noise mask for both buds.
     shared_mask: bool,
+    /// Our `oneButton` (realme Link data): a neckband, one button written as the left bud.
+    one_button: bool,
+    /// Our `bothHold` (realme Link data): a last row, holding both buds = game mode or none.
+    both_hold: bool,
     hold_choices: Vec<i64>,
     hold_min: usize,
     /// OnePlus Buds Pro: its ANC levels are one "ANC" option.
@@ -113,6 +117,8 @@ impl Model {
         m.old_track = name == "OnePlus Buds" || name == "OnePlus Buds Z";
         m.per_bud = long_press != 0;
         m.shared_mask = json["sharedHoldMask"].as_i64() == Some(1);
+        m.one_button = json["oneButton"].as_i64() == Some(1);
+        m.both_hold = json["bothHold"].as_i64() == Some(1);
         m.hold_choices = if long_press == 0 { vec![] } else { [512, HOLD_NOISE, 1, 8192].into_iter().filter(|b| long_press & b != 0).collect() };
         m
     }
@@ -174,7 +180,7 @@ fn hold_bits(json: &Value, mut level_bits: Option<&mut Vec<u8>>) -> Option<Vec<(
 
 /// Where a pick goes.
 #[derive(Clone, Copy)]
-enum Target { Row(usize), HoldChoice, Call(usize) }
+enum Target { Row(usize), HoldChoice, Call(usize), BothHold }
 
 #[derive(Default)]
 struct State { side: u8, target: Option<Target>, working: Vec<usize> }
@@ -207,6 +213,12 @@ fn current(s: &Snapshot, m: &Model, side: u8, g: usize) -> Option<Vec<usize>> {
 }
 
 /// An on-call row's state: Some(on), None unknown.
+/// The both-buds hold: its own `dev 04` entry, game mode (`11`) or none.
+fn both_hold_on(s: &Snapshot) -> Option<bool> {
+    let e = s.keyfn.as_ref()?.iter().find(|e| e[0] == 4 && e[1] == BUTTON_PRIMARY && e[2] == 4)?;
+    match e[3] { 0 => Some(false), 0x11 => Some(true), _ => None }
+}
+
 fn call_on(s: &Snapshot, i: usize) -> Option<bool> {
     let e = s.keyfn.as_ref()?.iter().find(|e| e[1] == BUTTON_ON_CALL && e[2] == ON_CALL[i].2)?;
     match e[3] { 0 => Some(false), f if f == ON_CALL[i].3 => Some(true), _ => None }
@@ -239,6 +251,17 @@ pub fn setup(main: &MainWindow) {
     // 1 a single-choice list, 2 the per-bud hold's choices, 3 the hold's noise modes; 0 nothing to open.
     c.on_open_row(|i| with_app_ret(|a| {
         let m = Model::of(&a.snap);
+        if m.both_hold && i as usize == m.rows.len() {
+            st(|s| s.target = Some(Target::BothHold));
+            let c = a.main.global::<Controls>();
+            c.set_dialog_title(t(&a.tr, "gesture_both_hold").into());
+            c.set_choices(ModelRc::new(VecModel::from(vec![
+                Choice { value: 0, label: t(&a.tr, "gesture_action_none").into() },
+                Choice { value: 1, label: t(&a.tr, "gesture_action_game").into() },
+            ])));
+            c.set_choice_current(both_hold_on(&a.snap).map_or(-2, |on| on as i32));
+            return 1;
+        }
         let Some(&(g, _)) = m.rows.get(i as usize) else { return 0 };
         let side = st(|s| s.side);
         let cur = current(&a.snap, &m, side, g);
@@ -288,7 +311,8 @@ pub fn setup(main: &MainWindow) {
                 return 3;
             }
             Some(Target::HoldChoice) => write(a, &m, side, TAP_HOLD, &[v as usize]),
-            Some(Target::Call(k)) => send(a, Cmd::OnCall(ON_CALL[k].2, if v == 1 { ON_CALL[k].3 } else { 0 })),
+            Some(Target::Call(k)) => send(a, Cmd::OnCall(BUTTON_ON_CALL, ON_CALL[k].2, if v == 1 { ON_CALL[k].3 } else { 0 })),
+            Some(Target::BothHold) => send(a, Cmd::OnCall(BUTTON_PRIMARY, 4, if v == 1 { 0x11 } else { 0 })),
             None => {}
         }
         0
@@ -340,11 +364,16 @@ pub fn available(s: &Snapshot) -> bool { s.caps.supports(CMD_SET_KEY_FUNCTION) &
 pub fn apply(a: &App) {
     let s = &a.snap;
     let m = Model::of(s);
+    if m.one_button { st(|x| x.side = 1); }
     let side = st(|x| x.side);
-    let rows: Vec<ControlsRow> = m.rows.iter().map(|(g, _)| ControlsRow {
+    let mut rows: Vec<ControlsRow> = m.rows.iter().map(|(g, _)| ControlsRow {
         icon: svg(GESTURES[*g].4), title: t(&a.tr, GESTURES[*g].0).into(),
         value: current(s, &m, side, *g).map_or("—".into(), |c| describe(a, &c)).into(),
     }).collect();
+    if m.both_hold {
+        rows.push(ControlsRow { icon: svg(icons::HOLD), title: t(&a.tr, "gesture_both_hold").into(),
+            value: both_hold_on(s).map_or("—", |on| t(&a.tr, if on { "gesture_action_game" } else { "gesture_action_none" })).into() });
+    }
     let calls: Vec<ControlsRow> = m.on_call.iter().map(|k| ControlsRow {
         icon: svg(ON_CALL[*k].5), title: t(&a.tr, ON_CALL[*k].0).into(),
         value: call_on(s, *k).map_or("—", |on| t(&a.tr, if on { ON_CALL[*k].1 } else { "gesture_action_none" })).into(),
@@ -353,6 +382,7 @@ pub fn apply(a: &App) {
     c.set_rows(ModelRc::new(VecModel::from(rows)));
     c.set_calls(ModelRc::new(VecModel::from(calls)));
     c.set_side(side as i32 - 1);
+    c.set_one_button(m.one_button);
 }
 
 #[cfg(test)]
@@ -381,5 +411,24 @@ mod tests {
         let s = Snapshot { keyfn: Some(vec![[1, 1, 4, 0x08], [2, 1, 4, 0x08]]), hold_masks: vec![(1, 0x000A)], ..Default::default() };
         assert_eq!(current(&s, &m, 1, TAP_HOLD).map(|v| v.len()), Some(2));
         assert_eq!(current(&s, &m, 2, TAP_HOLD).map(|v| v.len()), Some(2));
+    }
+
+    #[test]
+    fn wireless6_one_button() {
+        let m = Model::parse(find_model(Some("051C52"), None).unwrap());
+        assert!(m.one_button && m.rows.len() == 4);
+        // The button is the left bud's slot: single tap play/pause.
+        let s = Snapshot { keyfn: Some(vec![[1, 1, 1, 0x01]]), ..Default::default() };
+        assert_eq!(current(&s, &m, 1, 0).map(|v| v.len()), Some(1));
+    }
+
+    #[test]
+    fn t110_both_hold() {
+        let m = Model::parse(find_model(Some("062812"), None).unwrap());
+        assert!(m.both_hold);
+        // The bud's own hold (dev 1, act 4) is not the both-buds one (dev 4).
+        let s = Snapshot { keyfn: Some(vec![[1, 1, 4, 0x01], [4, 1, 4, 0x11]]), ..Default::default() };
+        assert_eq!(both_hold_on(&s), Some(true));
+        assert_eq!(current(&s, &m, 1, 4).map(|v| v.len()), Some(1));
     }
 }

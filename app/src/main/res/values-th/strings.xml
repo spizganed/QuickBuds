@@ -194,6 +194,7 @@
     <string name="gesture_triple">แตะสามครั้ง</string>
     <string name="gesture_slide">ปัด</string>
     <string name="gesture_hold">กดค้าง</string>
+    <string name="gesture_both_hold">กดค้างทั้งสองข้าง</string>
     <string name="gesture_extra_long">กดค้างนาน</string>
     <string name="gesture_on_call_double_tap">แตะสองครั้ง</string>
     <string name="gesture_on_call_long_hold">กดค้างนาน</string>

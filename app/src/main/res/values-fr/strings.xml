@@ -194,6 +194,7 @@
     <string name="gesture_triple">Triple appui</string>
     <string name="gesture_slide">Glissement</string>
     <string name="gesture_hold">Appui long</string>
+    <string name="gesture_both_hold">Appui long sur les deux écouteurs</string>
     <string name="gesture_extra_long">Appui très long</string>
     <string name="gesture_on_call_double_tap">Double appui</string>
     <string name="gesture_on_call_long_hold">Appui prolongé</string>

@@ -194,6 +194,7 @@
     <string name="gesture_triple">Τριπλό πάτημα</string>
     <string name="gesture_slide">Σύρσιμο</string>
     <string name="gesture_hold">Παρατεταμένο πάτημα</string>
+    <string name="gesture_both_hold">Παρατεταμένο πάτημα και στα δύο</string>
     <string name="gesture_extra_long">Πολύ παρατεταμένο πάτημα</string>
     <string name="gesture_on_call_double_tap">Διπλό πάτημα</string>
     <string name="gesture_on_call_long_hold">Πολύ παρατεταμένο πάτημα</string>

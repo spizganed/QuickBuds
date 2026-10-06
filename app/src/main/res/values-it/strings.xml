@@ -194,6 +194,7 @@
     <string name="gesture_triple">Triplo tocco</string>
     <string name="gesture_slide">Scorrimento</string>
     <string name="gesture_hold">Pressione prolungata</string>
+    <string name="gesture_both_hold">Pressione prolungata su entrambi</string>
     <string name="gesture_extra_long">Pressione molto prolungata</string>
     <string name="gesture_on_call_double_tap">Doppio tocco</string>
     <string name="gesture_on_call_long_hold">Pressione lunga</string>

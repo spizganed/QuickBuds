@@ -194,6 +194,7 @@
     <string name="gesture_triple">তিনবার ট্যাপ</string>
     <string name="gesture_slide">স্লাইড</string>
     <string name="gesture_hold">চেপে ধরা</string>
+    <string name="gesture_both_hold">দুটি ইয়ারবাড চেপে ধরা</string>
     <string name="gesture_extra_long">দীর্ঘক্ষণ চেপে ধরা</string>
     <string name="gesture_on_call_double_tap">দুবার ট্যাপ</string>
     <string name="gesture_on_call_long_hold">দীর্ঘক্ষণ চেপে ধরা</string>

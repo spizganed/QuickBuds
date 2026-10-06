@@ -194,6 +194,7 @@
     <string name="gesture_triple">Atingere triplă</string>
     <string name="gesture_slide">Glisare</string>
     <string name="gesture_hold">Ținere apăsată</string>
+    <string name="gesture_both_hold">Ținere apăsată pe ambele căști</string>
     <string name="gesture_extra_long">Ținere apăsată lungă</string>
     <string name="gesture_on_call_double_tap">Atingere dublă</string>
     <string name="gesture_on_call_long_hold">Apăsare lungă</string>
