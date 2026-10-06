@@ -241,8 +241,10 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 
 ## Current state (2026-10-06)
 
-- Latest release v4.3.1 (2026-10-06: desktop self-update). The Windows zip is cross-built and has never
-  run on Windows.
+- Latest release v4.4.0 (2026-10-06: model lookup name-first, "Hide old battery levels"), released from
+  the phone with the APK and AAB only. **Its desktop archives are still missing**: on the PC run
+  `scripts/desktop-dist.sh 4.4.0`, `gh release upload v4.4.0 desktop/dist/*`, then the AUR bump. The
+  Windows zip is cross-built and has never run on Windows.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
 - **Waiting:** issue #2 owners testing 4.3.x; issue #5 (Enco Buds2 loop) reporter testing init without
   `0x010D`. Read their logs before changing anything. AUR account.
