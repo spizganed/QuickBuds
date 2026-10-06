@@ -943,6 +943,24 @@ pub fn battery(payload: &[u8]) -> Vec<(u8, u8, bool)> {
     rest.chunks_exact(2).take(count as usize).map(|c| (c[0], c[1] & 0x7F, c[1] & 0x80 != 0)).collect()
 }
 
+pub fn is_supported(model: Option<&serde_json::Value>, feature_key: &str) -> bool {
+    let Some(m) = model else { return true; }; // Trust unknown buds
+    let Some(id) = m["id"].as_str() else { return true; };
+    // Load the overrides manifest into memory once
+    static OVERRIDES: std::sync::OnceLock<Vec<serde_json::Value>> = std::sync::OnceLock::new();
+    let overrides = OVERRIDES.get_or_init(|| {
+        let s = include_str!("../model_overrides.json");
+        serde_json::from_str(s).unwrap_or_default()
+    });
+    if let Some(o) = overrides.iter().find(|o| o["id"].as_str() == Some(id)) {
+        if let Some(val) = o[feature_key].as_bool() {
+            return val;
+        }
+    }
+    
+    true // If not explicitly marked false, trust the hardware
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
