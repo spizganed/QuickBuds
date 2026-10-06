@@ -178,6 +178,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         }
         switch(OpoProtocol.FEATURE_VOCAL_ENHANCE, "vocalEnhance", R.drawable.ic_equalizer,
             R.string.row_vocal_title, R.string.row_vocal_sub)
+        switch(OpoProtocol.FEATURE_WIND_NOISE, "windNoise", R.drawable.ic_anc,
+            R.string.row_wind_noise_title, R.string.row_wind_noise_sub)
         switch(OpoProtocol.FEATURE_GAME_SOUND, "gameSound", R.drawable.ic_low_latency,
             R.string.row_game_sound_title, R.string.row_game_sound_sub)
         // Which effect it applies: `0x0423 <type> 01`, HeyMelody's radio list (PROTOCOL.md §9).

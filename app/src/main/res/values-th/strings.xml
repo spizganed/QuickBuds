@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">ฟีเจอร์</string>
     <string name="row_vocal_title">เสริมเสียงร้อง</string>
     <string name="row_vocal_sub">เสียงร้องในเพลงชัดขึ้น</string>
+    <string name="row_wind_noise_title">ลดเสียงลม</string>
+    <string name="row_wind_noise_sub">ลดเสียงลมเมื่ออยู่กลางแจ้ง</string>
     <string name="row_game_sound_title">เอฟเฟกต์เสียงเกม</string>
     <string name="row_game_sound_sub">เสียงดีขึ้นเมื่อเริ่มเกม</string>
     <string name="spatial_fixed">คงที่</string>

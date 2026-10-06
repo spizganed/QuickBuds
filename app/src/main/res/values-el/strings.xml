@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Λειτουργίες</string>
     <string name="row_vocal_title">Ενίσχυση φωνητικών</string>
     <string name="row_vocal_sub">Πιο καθαρά φωνητικά στα τραγούδια</string>
+    <string name="row_wind_noise_title">Μείωση θορύβου ανέμου</string>
+    <string name="row_wind_noise_sub">Λιγότερος θόρυβος ανέμου σε εξωτερικούς χώρους</string>
     <string name="row_game_sound_title">Ηχητικά εφέ παιχνιδιών</string>
     <string name="row_game_sound_sub">Καλύτερος ήχος όταν ξεκινά ένα παιχνίδι</string>
     <string name="spatial_fixed">Σταθερό</string>

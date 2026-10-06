@@ -479,7 +479,7 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 ### Feature switches — `0x0403 <id> <01/00>`, read with `0x010D`
 
 `0x010D <count> <ids>` → `00 <count> [<id> <value>]...`; only ids the firmware has come back
-`[CAPTURE]`. The app asks 23 ids; Buds 4 answers `05 04 0B 11 18 06 1B 1D 17 0C`. Parsed into
+`[CAPTURE]`. The app asks 23 ids (24 with `1A` where the model has `windNoise`); Buds 4 answers `05 04 0B 11 18 06 1B 1D 17 0C`. Parsed into
 `featureStates`, logged as `FEATURES:`. The buds' list wins over the model list while connected.
 
 | Id | Switch | Notes |
@@ -493,6 +493,7 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 | `11` | Dual connection | see below `[CAPTURE]` |
 | `17` | Power saving | restarts the buds, see below `[CAPTURE]` |
 | `18` | Hi-Res | quality switch, drops the link, see below `[CAPTURE]` |
+| `1A` | Wind noise reduction | realme Link `[VENDOR]`; asked in `0x010D` only for models with flag `windNoise` (Air7 Pro), unverified |
 | `1B` | Spatial sound | on models without `0x012A` `[CAPTURE]` |
 | `1C` | Smart volume | flag `controlAutoVolumeSupport` |
 | `1D` | BassWave | `[CAPTURE]` |

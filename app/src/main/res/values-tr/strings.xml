@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Özellikler</string>
     <string name="row_vocal_title">Vokal güçlendirme</string>
     <string name="row_vocal_sub">Şarkılarda daha net vokal</string>
+    <string name="row_wind_noise_title">Rüzgar gürültüsü azaltma</string>
+    <string name="row_wind_noise_sub">Dışarıda daha az rüzgar gürültüsü</string>
     <string name="row_game_sound_title">Oyun ses efektleri</string>
     <string name="row_game_sound_sub">Oyun başlayınca gelişmiş ses</string>
     <string name="spatial_fixed">Sabit</string>

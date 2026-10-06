@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Fitur</string>
     <string name="row_vocal_title">Peningkatan vokal</string>
     <string name="row_vocal_sub">Vokal lebih jernih dalam lagu</string>
+    <string name="row_wind_noise_title">Pengurangan bising angin</string>
+    <string name="row_wind_noise_sub">Lebih sedikit bising angin di luar ruangan</string>
     <string name="row_game_sound_title">Efek suara game</string>
     <string name="row_game_sound_sub">Suara lebih baik saat game dimulai</string>
     <string name="spatial_fixed">Tetap</string>

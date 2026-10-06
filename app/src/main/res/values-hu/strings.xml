@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Funkciók</string>
     <string name="row_vocal_title">Énekhang-kiemelés</string>
     <string name="row_vocal_sub">Tisztább ének a dalokban</string>
+    <string name="row_wind_noise_title">Szélzajcsökkentés</string>
+    <string name="row_wind_noise_sub">Kevesebb szélzaj a szabadban</string>
     <string name="row_game_sound_title">Játék hangeffektek</string>
     <string name="row_game_sound_sub">Jobb hang játék indításakor</string>
     <string name="spatial_fixed">Rögzített</string>

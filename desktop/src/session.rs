@@ -349,7 +349,7 @@ impl<'a> Conn<'a> {
         }
         let queries: [(u16, Option<u8>, Vec<u8>); 6] = [
             (CMD_REGISTER_NOTIFY, None, register_payload(&ids)),
-            (CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY.to_vec()),
+            (CMD_QUERY_STATUS, Some(0x00), status_query(self.s.model)),
             (CMD_QUERY_ANC, None, vec![1, 1]),
             (CMD_QUERY_BATTERY, Some(0xF0), vec![]),
             (CMD_QUERY_WEARING, Some(0xF2), vec![]),
@@ -432,30 +432,30 @@ impl<'a> Conn<'a> {
                         (self.emit)(self.s.clone());
                         self.send(CMD_SET_FEATURE, None, &[id, on as u8])?;
                         self.pump(400)?;
-                        self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?;
                     }
                     Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,
                     Cmd::FitTest(on) => self.send(CMD_FIT_TEST, None, &[on as u8])?,
                     Cmd::PncQuery => self.send(CMD_QUERY_PERSONAL_NOISE, None, &[])?,
                     Cmd::Pnc(action) => {
                         self.send(CMD_PERSONAL_NOISE, None, &[action])?;
-                        if action == 2 { self.pump(600)?; self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?; }
+                        if action == 2 { self.pump(600)?; self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?; }
                     }
-                    Cmd::StatusRead => self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?,
+                    Cmd::StatusRead => self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?,
                     // HeyMelody's order: the switch, the status re-read, then the follow-up; the buds push the list.
                     Cmd::Dual(on) => {
                         if let Some(x) = self.s.features.iter_mut().find(|x| x.0 == FEATURE_DUAL) { x.1 = on as u8; }
                         (self.emit)(self.s.clone());
                         self.send(CMD_SET_FEATURE, None, &[FEATURE_DUAL, on as u8])?;
                         self.pump(250)?;
-                        self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?;
                         self.pump(250)?;
                         self.send(CMD_DUAL_FOLLOWUP, None, &[0x08, 0x00, !on as u8])?;
                     }
                     Cmd::DualReads(preferred) => {
                         self.send(CMD_QUERY_DEVICES, None, &[])?;
                         self.pump(120)?;
-                        self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?;
                         if preferred && self.s.caps.supports(CMD_QUERY_PREFERRED) {
                             self.pump(120)?;
                             self.send(CMD_QUERY_PREFERRED, None, &[0x02])?;
@@ -539,7 +539,7 @@ impl<'a> Conn<'a> {
                             self.send(cmd, None, &p)?;
                             self.pump(60)?;
                         }
-                        if switch { self.pump(400)?; self.send(CMD_QUERY_STATUS, Some(0x00), STATUS_QUERY)?; }
+                        if switch { self.pump(400)?; self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?; }
                     }
                     Cmd::Disconnect => return Ok(End::UserDisconnect),
                     Cmd::Connect => continue,

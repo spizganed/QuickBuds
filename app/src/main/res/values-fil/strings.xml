@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Mga feature</string>
     <string name="row_vocal_title">Vocal enhancement</string>
     <string name="row_vocal_sub">Mas malinaw na boses sa mga kanta</string>
+    <string name="row_wind_noise_title">Pagbawas ng ingay ng hangin</string>
+    <string name="row_wind_noise_sub">Mas kaunting ingay ng hangin sa labas</string>
     <string name="row_game_sound_title">Sound effects sa laro</string>
     <string name="row_game_sound_sub">Mas magandang tunog pagsimula ng laro</string>
     <string name="spatial_fixed">Nakapirmi</string>

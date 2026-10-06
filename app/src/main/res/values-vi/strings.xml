@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Tính năng</string>
     <string name="row_vocal_title">Tăng cường giọng hát</string>
     <string name="row_vocal_sub">Giọng hát rõ hơn trong bài hát</string>
+    <string name="row_wind_noise_title">Giảm tiếng ồn gió</string>
+    <string name="row_wind_noise_sub">Ít tiếng ồn gió hơn khi ở ngoài trời</string>
     <string name="row_game_sound_title">Hiệu ứng âm thanh trò chơi</string>
     <string name="row_game_sound_sub">Âm thanh tốt hơn khi vào trò chơi</string>
     <string name="spatial_fixed">Cố định</string>

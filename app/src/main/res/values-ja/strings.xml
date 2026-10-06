@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">機能</string>
     <string name="row_vocal_title">ボーカル強調</string>
     <string name="row_vocal_sub">曲のボーカルをよりクリアに</string>
+    <string name="row_wind_noise_title">風切り音の低減</string>
+    <string name="row_wind_noise_sub">屋外での風切り音を抑える</string>
     <string name="row_game_sound_title">ゲーム効果音</string>
     <string name="row_game_sound_sub">ゲーム起動時にサウンドを強化</string>
     <string name="spatial_fixed">固定</string>

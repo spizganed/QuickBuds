@@ -11,7 +11,7 @@ const ICONS: &[&str] = &[
     "ic_mode_off", "ic_mode_anc_medium", "ic_mode_adaptive", "ic_mode_transparency",
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
-    "ic_chevron_right", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds", "ic_volume_off",
+    "ic_chevron_right", "ic_anc", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds", "ic_volume_off",
     "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold", "ic_update",
 ];
 
@@ -28,7 +28,7 @@ const STRINGS: &[&str] = &[
     "eq_rename", "eq_delete", "eq_add", "eq_save", "widget_style_title", "widget_style_classic", "widget_style_nothing",
     "earbuds_title", "earbuds_section_features", "earbuds_section_about", "row_firmware_title", "firmware_dialog_title",
     "firmware_dialog_body", "dialog_close", "dialog_cancel", "dual_add_ok",
-    "row_vocal_title", "row_vocal_sub", "row_game_sound_title", "row_game_sound_sub", "row_smart_volume_title",
+    "row_vocal_title", "row_vocal_sub", "row_wind_noise_title", "row_wind_noise_sub", "row_game_sound_title", "row_game_sound_sub", "row_smart_volume_title",
     "row_smart_volume_sub", "row_adaptive_volume_title", "row_adaptive_volume_sub", "row_adaptive_ear_title",
     "row_adaptive_ear_sub", "row_sleep_title", "row_sleep_sub", "row_speech_title", "row_speech_sub",
     "row_hearing_optimize_title", "row_hearing_optimize_sub", "hearing_optimize_confirm", "row_long_press_volume_title",

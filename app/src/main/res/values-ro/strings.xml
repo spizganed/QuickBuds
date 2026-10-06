@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Funcții</string>
     <string name="row_vocal_title">Îmbunătățire vocală</string>
     <string name="row_vocal_sub">Voce mai clară în melodii</string>
+    <string name="row_wind_noise_title">Reducerea zgomotului vântului</string>
+    <string name="row_wind_noise_sub">Mai puțin zgomot de vânt afară</string>
     <string name="row_game_sound_title">Efecte sonore pentru jocuri</string>
     <string name="row_game_sound_sub">Sunet îmbunătățit la pornirea unui joc</string>
     <string name="spatial_fixed">Fix</string>

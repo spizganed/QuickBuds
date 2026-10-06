@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">기능</string>
     <string name="row_vocal_title">보컬 강화</string>
     <string name="row_vocal_sub">노래의 보컬을 더 선명하게</string>
+    <string name="row_wind_noise_title">바람 소음 감소</string>
+    <string name="row_wind_noise_sub">야외에서 바람 소음 줄이기</string>
     <string name="row_game_sound_title">게임 사운드 효과</string>
     <string name="row_game_sound_sub">게임 시작 시 사운드 강화</string>
     <string name="spatial_fixed">고정</string>

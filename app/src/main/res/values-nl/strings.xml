@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Functies</string>
     <string name="row_vocal_title">Stemversterking</string>
     <string name="row_vocal_sub">Duidelijkere zang in nummers</string>
+    <string name="row_wind_noise_title">Windruisonderdrukking</string>
+    <string name="row_wind_noise_sub">Minder windruis buiten</string>
     <string name="row_game_sound_title">Game-geluidseffecten</string>
     <string name="row_game_sound_sub">Beter geluid als een game start</string>
     <string name="spatial_fixed">Vast</string>

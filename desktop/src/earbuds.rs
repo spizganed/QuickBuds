@@ -14,6 +14,7 @@ const ROWS: &[(u8, Option<&str>, &str, &str, &str, Option<&str>, bool)] = &[
     // Wear detection: the buds' own auto play/pause. The phone's smart auto-pause needs its media session.
     (0x04, None, icons::EARBUD, "wear_firmware_title", "wear_firmware_sub", None, false),
     (0x09, Some("vocalEnhance"), icons::EQUALIZER, "row_vocal_title", "row_vocal_sub", None, false),
+    (FEATURE_WIND_NOISE, Some("windNoise"), icons::ANC, "row_wind_noise_title", "row_wind_noise_sub", None, false),
     (0x27, Some("gameSound"), icons::LOW_LATENCY, "row_game_sound_title", "row_game_sound_sub", None, false),
     (0x1C, Some("controlAutoVolumeSupport"), icons::VOLUME, "row_smart_volume_title", "row_smart_volume_sub", None, false),
     (0x30, None, icons::VOLUME, "row_adaptive_volume_title", "row_adaptive_volume_sub", None, false),

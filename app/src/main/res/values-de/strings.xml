@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Funktionen</string>
     <string name="row_vocal_title">Gesangsverstärkung</string>
     <string name="row_vocal_sub">Klarerer Gesang in Songs</string>
+    <string name="row_wind_noise_title">Windgeräuschreduzierung</string>
+    <string name="row_wind_noise_sub">Weniger Windgeräusche im Freien</string>
     <string name="row_game_sound_title">Spiel-Soundeffekte</string>
     <string name="row_game_sound_sub">Besserer Klang beim Spielstart</string>
     <string name="spatial_fixed">Fest</string>

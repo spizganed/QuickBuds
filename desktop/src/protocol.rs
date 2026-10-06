@@ -93,11 +93,19 @@ pub fn offered_events(pl: &[u8]) -> Option<Vec<u8>> {
     match pl { [0, n, codes @ ..] => codes.get(..*n as usize).map(<[u8]>::to_vec), _ => None }
 }
 
-/// `0x010D`: count, then the feature ids the phone app reads.
-pub const STATUS_QUERY: &[u8] = &[
-    0x17, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
-    0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C,
-];
+/// realme Link's wind noise switch; asked only for models with the `windNoise` flag.
+pub const FEATURE_WIND_NOISE: u8 = 0x1A;
+
+/// `0x010D`: count, then the feature ids the phone app reads (`OpoProtocol.queryStatus`). The model's
+/// `windNoise` flag adds [FEATURE_WIND_NOISE]; every other model's query is unchanged.
+pub fn status_query(model: Option<&serde_json::Value>) -> Vec<u8> {
+    let mut q = vec![
+        0x17, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
+        0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C,
+    ];
+    if model.is_some_and(|m| m["windNoise"] == 1) { q.push(FEATURE_WIND_NOISE); q[0] += 1; }
+    q
+}
 
 /// Commands behind each bit of the `0x8100` handshake bitmap (same table as `Capabilities.kt`).
 const BIT_COMMANDS: &[&[u16]] = &[
@@ -948,6 +956,15 @@ pub fn battery(payload: &[u8]) -> Vec<(u8, u8, bool)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn status_query_wind_noise() {
+        let plain = status_query(None);
+        assert_eq!((plain[0] as usize, plain.len()), (23, 24));
+        let air7 = serde_json::json!({"windNoise": 1});
+        let q = status_query(Some(&air7));
+        assert_eq!((q[0], q[q.len() - 1], &q[1..24]), (24, FEATURE_WIND_NOISE, &plain[1..]));
+    }
 
     #[test]
     fn eq_presets() {

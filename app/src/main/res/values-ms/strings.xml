@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Ciri</string>
     <string name="row_vocal_title">Peningkatan vokal</string>
     <string name="row_vocal_sub">Vokal lebih jelas dalam lagu</string>
+    <string name="row_wind_noise_title">Pengurangan bunyi angin</string>
+    <string name="row_wind_noise_sub">Kurang bunyi angin di luar</string>
     <string name="row_game_sound_title">Kesan bunyi permainan</string>
     <string name="row_game_sound_sub">Bunyi lebih baik apabila permainan bermula</string>
     <string name="spatial_fixed">Tetap</string>

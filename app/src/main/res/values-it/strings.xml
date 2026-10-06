@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Funzioni</string>
     <string name="row_vocal_title">Miglioramento vocale</string>
     <string name="row_vocal_sub">Voci più chiare nei brani</string>
+    <string name="row_wind_noise_title">Riduzione del rumore del vento</string>
+    <string name="row_wind_noise_sub">Meno rumore del vento all\'aperto</string>
     <string name="row_game_sound_title">Effetti sonori di gioco</string>
     <string name="row_game_sound_sub">Suono migliorato all\'avvio di un gioco</string>
     <string name="spatial_fixed">Fisso</string>

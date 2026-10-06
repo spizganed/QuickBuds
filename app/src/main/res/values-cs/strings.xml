@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Funkce</string>
     <string name="row_vocal_title">Zvýraznění vokálů</string>
     <string name="row_vocal_sub">Čistší zpěv ve skladbách</string>
+    <string name="row_wind_noise_title">Potlačení hluku větru</string>
+    <string name="row_wind_noise_sub">Méně hluku větru venku</string>
     <string name="row_game_sound_title">Herní zvukové efekty</string>
     <string name="row_game_sound_sub">Lepší zvuk po spuštění hry</string>
     <string name="spatial_fixed">Pevný</string>

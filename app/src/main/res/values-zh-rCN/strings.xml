@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">功能</string>
     <string name="row_vocal_title">人声增强</string>
     <string name="row_vocal_sub">歌曲人声更清晰</string>
+    <string name="row_wind_noise_title">风噪抑制</string>
+    <string name="row_wind_noise_sub">减少户外风噪</string>
     <string name="row_game_sound_title">游戏音效</string>
     <string name="row_game_sound_sub">进入游戏时增强音效</string>
     <string name="spatial_fixed">固定</string>

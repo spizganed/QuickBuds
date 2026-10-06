@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">ফিচার</string>
     <string name="row_vocal_title">ভোকাল এনহ্যান্সমেন্ট</string>
     <string name="row_vocal_sub">গানে আরও স্পষ্ট কণ্ঠ</string>
+    <string name="row_wind_noise_title">বাতাসের শব্দ কমানো</string>
+    <string name="row_wind_noise_sub">বাইরে বাতাসের শব্দ কম</string>
     <string name="row_game_sound_title">গেম সাউন্ড ইফেক্ট</string>
     <string name="row_game_sound_sub">গেম শুরু হলে উন্নত সাউন্ড</string>
     <string name="spatial_fixed">স্থির</string>

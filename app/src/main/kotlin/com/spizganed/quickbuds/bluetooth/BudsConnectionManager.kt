@@ -319,7 +319,7 @@ class BudsConnectionManager(private val context: Context) {
                         sendRawBlocking(OpoProtocol.registerNotifications(ids), "register notify")
                     else -> ids.forEach { sendRawBlocking(OpoProtocol.registerOne(it), "register notify $it") }
                 }
-                query(OpoProtocol.CMD_QUERY_STATUS, OpoProtocol.queryStatus(), "query status")
+                query(OpoProtocol.CMD_QUERY_STATUS, statusQuery(), "query status")
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
                 query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
                 query(OpoProtocol.CMD_QUERY_BATTERY, OpoProtocol.queryBattery(), "query battery")
@@ -418,7 +418,7 @@ class BudsConnectionManager(private val context: Context) {
         Thread {
             try {
                 sendRawBlocking(OpoProtocol.setFeature(OpoProtocol.FEATURE_DUAL_DEVICE, on), "Dual device -> $on")
-                sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
+                sendRawBlocking(statusQuery(), "verify features")
                 sendRawBlocking(OpoProtocol.dualFollowup(on), "Dual follow-up")
             } catch (e: Exception) {
                 log("DUAL WRITE failed: ${e.message}")
@@ -586,7 +586,7 @@ class BudsConnectionManager(private val context: Context) {
                     sendRawBlocking(OpoProtocol.setFeature(id, on), "Feature 0x%02X -> %s".format(id, on))
                 }
                 Thread.sleep(400)
-                sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
+                sendRawBlocking(statusQuery(), "verify features")
             } catch (e: Exception) {
                 log("FEATURE WRITE failed: ${e.message}")
             }
@@ -603,7 +603,7 @@ class BudsConnectionManager(private val context: Context) {
                 for (p in packets) { sendRawBlocking(p, "golden"); Thread.sleep(60) }
                 if (packets.any { OppoPacketFramer.normalise(it).let { f -> f[4].toInt() == 0x03 && f[5].toInt() == 0x04 } }) {
                     Thread.sleep(400)
-                    sendRawBlocking(OpoProtocol.queryStatus(), "verify features")
+                    sendRawBlocking(statusQuery(), "verify features")
                 }
             } catch (e: Exception) {
                 log("GOLDEN WRITE failed: ${e.message}")
@@ -748,7 +748,11 @@ class BudsConnectionManager(private val context: Context) {
         }.start()
     }
 
-    fun requestFullStatus() { sendRaw(OpoProtocol.queryStatus(), "manual status") }
+    fun requestFullStatus() { sendRaw(statusQuery(), "manual status") }
+
+    /** `0x010D` for the model in use (PROTOCOL.md §9): wind noise only where the model has the flag. */
+    private fun statusQuery() =
+        OpoProtocol.queryStatus(ModelCatalog.current(context)?.json?.optInt("windNoise") == 1)
 
     /** Timestamp of the last ANC command we flushed; see noteUnattributed(). */
     private var lastAncFlushAt = 0L

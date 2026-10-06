@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Функції</string>
     <string name="row_vocal_title">Посилення вокалу</string>
     <string name="row_vocal_sub">Чіткіший вокал у піснях</string>
+    <string name="row_wind_noise_title">Придушення шуму вітру</string>
+    <string name="row_wind_noise_sub">Менше шуму вітру надворі</string>
     <string name="row_game_sound_title">Ігрові звукові ефекти</string>
     <string name="row_game_sound_sub">Кращий звук під час запуску гри</string>
     <string name="spatial_fixed">Фіксований</string>

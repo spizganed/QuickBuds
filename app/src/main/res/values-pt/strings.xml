@@ -71,6 +71,8 @@
     <string name="earbuds_section_features">Funcionalidades</string>
     <string name="row_vocal_title">Realce vocal</string>
     <string name="row_vocal_sub">Vozes mais nítidas nas músicas</string>
+    <string name="row_wind_noise_title">Redução de ruído do vento</string>
+    <string name="row_wind_noise_sub">Menos ruído do vento ao ar livre</string>
     <string name="row_game_sound_title">Efeitos sonoros de jogos</string>
     <string name="row_game_sound_sub">Som melhorado ao iniciar um jogo</string>
     <string name="spatial_fixed">Fixo</string>
