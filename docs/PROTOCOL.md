@@ -216,7 +216,8 @@ ANC), plus `04` / `08` / `0B` as above, **kept to the ids the buds offer in `0x8
   `01 02 03 04 08 0B`, it never sent `0x8205`. It still pushed an ANC change once without `03`.
 - OPPO Enco Buds2 (issue #5, product id `060C12`, bitmap `00 9B 2C 50 80`) `[CAPTURE]` also offers
   `02 01`. Asked for exactly `02 01 02`, it sent no `0x8205` and answered nothing after it (not
-  `0x010D`, `0x0106`, `0x0109`, `0x0105` or `0x010F`); the link dropped ~6 s later. Cause still open.
+  `0x010D`, `0x0106`, `0x0109`, `0x0105` or `0x010F`); the link dropped ~6 s later. The
+  reporter's test: without `0x010D` the link stays up and wear, battery and firmware answer `[CAPTURE]`.
 - The `0x8205` ack: `01 02 01 00 02 00` and, for five ids, `01 05 01 00 02 00 03 00 04 00 08 00`
   (Buds 4): `01 <count>`, then `<id> 00` per id `[GUESS]`. Fewer ids than asked = part rejected.
 
