@@ -59,7 +59,8 @@ session-plan files: durable knowledge goes here or in PROTOCOL.md.
 Setup is in TOOLCHAIN.md and lives outside the repo. Repo at `~/projects/QuickBuds`; APK at
 `~/qb-build/_app/outputs/apk/release/app-release.apk`. **Never put the aapt2 override in the repo** (breaks
 the PC build). Desktop on the phone (TOOLCHAIN.md): `cargo test` in a Debian proot; release archives cross-built
-there (Windows) and in an Ubuntu 22.04 proot (Linux x64, glibc 2.35). After an adb test on the phone
+there (Windows) and in an Ubuntu 22.04 proot (Linux x64, glibc 2.35). Both proots were removed after
+4.4.0 to free space: set them up again from TOOLCHAIN.md when needed. After an adb test on the phone
 itself (not over SSH), bring Termux to the front.
 
 ## Working with the developer
@@ -208,6 +209,8 @@ Rust, one crate, Slint UI, `tray-icon`. `cargo test` / `cargo build --release`. 
   .SRCINFO`, test with `makepkg` + `namcap`, push to `ssh://aur@aur.archlinux.org/quickbuds-bin.git`
   (his account, **not published yet**). No Flatpak / AppImage / `.deb` until asked. No drivers, services
   or helper processes. `desktop-dist.sh` builds Linux in an Ubuntu 22.04 podman container (glibc 2.35).
+  On the phone `makepkg` cannot run (root in proot, arm64): edit `.SRCINFO` by hand to match the PKGBUILD,
+  and run `makepkg --printsrcinfo`, `makepkg` and `namcap` on the PC before the AUR push.
 
 ## Widgets
 
