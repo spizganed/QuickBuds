@@ -78,9 +78,10 @@ itself (not over SSH), bring Termux to the front.
 
 Details and evidence in PROTOCOL.md.
 
-- **HeyMelody is the `[VENDOR]` source for bytes**, studied for interoperability only. The repo carries
-  only commands, payloads and per-model facts; **never vendor class, method or file names, code, or
-  how-to notes**.
+- **HeyMelody is the `[VENDOR]` source for bytes**, studied for interoperability only. realme Link is
+  the source for realme models HeyMelody lists without data (issue #8, PROTOCOL.md §5). The repo
+  carries only commands, payloads and per-model facts; **never vendor class, method or file names,
+  code, or how-to notes**.
 - **Never guess a payload.** Guessed writes and wrong command numbers fail silently: read writes back and
   diff.
 - Gestures: `fn` values are measured, do not re-derive. **Never hardcode a button group** (the table is
@@ -248,6 +249,8 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   the phone (TOOLCHAIN.md). AUR files bumped; `makepkg` / `namcap` not run (needs x86_64). The Windows zip is
   cross-built and has never run on Windows.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
+- **Issue #8:** realme Buds Air7 Pro ANC and gestures from realme Link data, wired, unverified; the
+  reporter is asked to test (read back ANC mode, one gesture, the hold cycle) before more realme models.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
 - **Issue #5 (in progress):** the reporter confirmed `0x010D` (our fixed 23-id status query) drops the
   Enco Buds2 link. HeyMelody builds that query per model and would send those buds only `02 05 0D`.

@@ -4,7 +4,7 @@ The OPPO / OnePlus / realme earbud RFCOMM protocol as QuickBuds uses it. Current
 the history of how it was found is in git.
 
 **Evidence tags.** Every claim carries one:
-`[VENDOR]` HeyMelody's behaviour (studied for interoperability only) ·
+`[VENDOR]` HeyMelody's behaviour, or realme Link's where a line says so (studied for interoperability only) ·
 `[OSS]` a public project from the README's Credits ·
 `[CAPTURE]` seen on our own device (captures in `local/logs/`, on the developer's machine) ·
 `[USER]` the developer's report · `[GUESS]` unverified.
@@ -256,8 +256,14 @@ Each model's `noiseReductionMode` in `assets/models.json` (`protocol/AncModes.kt
   Off 1, Transparency 2` (9 models: **Buds 4's Off bytes turn ANC on there**); `Off 0, Transparency 1,
   Light 2, Deep 3` (Enco X, Buds Z2), plus `Smart 4` on Buds Pro. Voice-transparency modes that need a
   per-bud support read (4 OPPO models) are not offered.
-- A model with no `noiseReductionMode` (96 of 137) gets no noise control. Before detection, Buds 4's
+- A model with no `noiseReductionMode` (95 of 137) gets no noise control. Before detection, Buds 4's
   tree is used.
+- **realme models** `[VENDOR]` (realme Link 5.5.514): HeyMelody lists some realme ids with no modes;
+  realme Link has their data. Its write and report tables are **the same** (unlike Buds 4): Off `01`,
+  Transparency `02`, Light `04`, Deep (and plain ANC) `08`, Medium `10`, Smart `20`. As a tree: Off 0,
+  Transparency 1, ANC 3 with children Light 2, Deep 3, Medium 4, Smart 5. In `models.json` for the
+  realme Buds Air7 Pro (`064C12`), wired, unverified (issue #8). Its log's `0x810C 01 01` value `02` =
+  Transparency.
 
 ### SET — `0x0404 01 01 <mask>` `[OSS]`+`[CAPTURE]`
 
@@ -402,7 +408,11 @@ Buds 4: `1:516 2:8807 3:3154531 5:3584`, hold `27` — matches HeyMelody's menus
   none (512) has one fixed option and writes nothing. Buds 4 `[CAPTURE]`: double tap
   `0401 01 04 06 02 1D` / `…02 00`, long hold `0401 01 04 06 06 1C` / `…06 00`; one write lands on both
   buds, labels confirmed on a real call `[USER]`.
-- **Per-bud hold** (`longPressType`, 8 models): options 512 none, 128 noise cycle, 1 voice assistant,
+- **realme Buds Air7 Pro** `[VENDOR]` (realme Link, issue #8), wired, unverified: per bud, double tap
+  581, triple tap 8801, hold `longPressType` 8833. Same `fn` bytes as above, `dev` 1 / 2, `btn 01`.
+  Its hold cycle is **one mask for both buds** (`0x0404 02 01 <mask>`, read `0x010C 02 01`; the log's
+  `0A` = ANC + Transparency): our own key `"sharedHoldMask":1` keeps type 1 on a per-bud hold.
+- **Per-bud hold** (`longPressType`, 9 models): options 512 none, 128 noise cycle, 1 voice assistant,
   8192 game mode. Each bud written alone (`dev` 1/2, `act 04`); the cycle mask per bud with type 3 / 4,
   read with `0x010C 02 03` / `02 04`.
 - **Minimum modes in the cycle:** `minSelectCount`, else 2 on OnePlus models and per-bud holds, else 1

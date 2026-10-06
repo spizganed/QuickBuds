@@ -263,7 +263,12 @@ class GestureModel private constructor(
      * `[VENDOR]` OnePlus Buds Pro only: its ANC levels are top-level modes shown as one "ANC"
      * option, whose bit is the current level's (see [holdMask]).
      */
-    private val ancLevelBits: List<Int> = emptyList()
+    private val ancLevelBits: List<Int> = emptyList(),
+    /**
+     * Our own key `sharedHoldMask` (realme Link data, PROTOCOL.md §6): a per-bud hold whose noise
+     * cycle is one mask for both buds, written and read as [OpoProtocol.HOLD_TYPE_SHARED].
+     */
+    private val sharedHoldMask: Boolean = false
 ) {
     val isEmpty get() = rows.isEmpty() && onCall.isEmpty()
 
@@ -305,7 +310,7 @@ class GestureModel private constructor(
 
     /** The hold cycle's noise type for a bud ([OpoProtocol.HOLD_TYPE_SHARED] unless [perBudHold]). */
     fun holdType(side: GestureSide): Int = when {
-        !perBudHold -> OpoProtocol.HOLD_TYPE_SHARED
+        !perBudHold || sharedHoldMask -> OpoProtocol.HOLD_TYPE_SHARED
         side == GestureSide.LEFT -> OpoProtocol.HOLD_TYPE_LEFT
         else -> OpoProtocol.HOLD_TYPE_RIGHT
     }
@@ -378,7 +383,7 @@ class GestureModel private constructor(
             val holdChoices = if (longPressType == 0) emptyList()
                 else intArrayOf(512, HOLD_NOISE, 1, 8192).filter { longPressType and it != 0 }
             return GestureModel(rows, holdBits, onCall, name == "OnePlus Buds" || name == "OnePlus Buds Z",
-                longPressType != 0, holdChoices, holdMin, levelBits)
+                longPressType != 0, holdChoices, holdMin, levelBits, json.optInt("sharedHoldMask") == 1)
         }
 
         /**

@@ -70,6 +70,8 @@ struct Model {
     old_track: bool,
     /// `longPressType`: each bud has its own hold, its choices in [Model::hold_choices].
     per_bud: bool,
+    /// Our `sharedHoldMask` (realme Link data): a per-bud hold with one noise mask for both buds.
+    shared_mask: bool,
     hold_choices: Vec<i64>,
     hold_min: usize,
     /// OnePlus Buds Pro: its ANC levels are one "ANC" option.
@@ -110,6 +112,7 @@ impl Model {
             && c["support"].as_i64().unwrap_or(0) & 512 != 0)).collect();
         m.old_track = name == "OnePlus Buds" || name == "OnePlus Buds Z";
         m.per_bud = long_press != 0;
+        m.shared_mask = json["sharedHoldMask"].as_i64() == Some(1);
         m.hold_choices = if long_press == 0 { vec![] } else { [512, HOLD_NOISE, 1, 8192].into_iter().filter(|b| long_press & b != 0).collect() };
         m
     }
@@ -139,10 +142,10 @@ impl Model {
     }
 
     fn hold_type(&self, side: u8) -> u8 {
-        if !self.per_bud { HOLD_TYPE_SHARED } else if side == 1 { HOLD_TYPE_LEFT } else { HOLD_TYPE_RIGHT }
+        if !self.per_bud || self.shared_mask { HOLD_TYPE_SHARED } else if side == 1 { HOLD_TYPE_LEFT } else { HOLD_TYPE_RIGHT }
     }
 
-    fn hold_types(&self) -> Vec<u8> { if self.per_bud { vec![HOLD_TYPE_LEFT, HOLD_TYPE_RIGHT] } else { vec![HOLD_TYPE_SHARED] } }
+    fn hold_types(&self) -> Vec<u8> { if self.per_bud && !self.shared_mask { vec![HOLD_TYPE_LEFT, HOLD_TYPE_RIGHT] } else { vec![HOLD_TYPE_SHARED] } }
 
     /// A per-bud hold's non-noise choice that a `fn` stands for.
     fn hold_choice_for(&self, f: u8) -> Option<usize> {
@@ -368,5 +371,15 @@ mod tests {
         let s = Snapshot { keyfn: Some(vec![[1, 1, 1, 0x01], [2, 1, 4, 0x08], [1, 6, 2, 0x1D]]), hold_masks: vec![(1, 0x0003)], ..Default::default() };
         assert_eq!(current(&s, &m, 1, 0), Some(vec![1]));
         assert_eq!(current(&s, &m, 1, TAP_HOLD).map(|v| v.len()), Some(2));
+    }
+
+    #[test]
+    fn air7_pro_shared_hold_mask() {
+        let m = Model::parse(find_model(Some("064C12"), None).unwrap());
+        assert!(m.per_bud && m.hold_types() == vec![HOLD_TYPE_SHARED]);
+        // Issue #8 log: both holds bound to the cycle, `010C 02 01` mask 0x0A = ANC (bit 3) + Transparency (bit 1).
+        let s = Snapshot { keyfn: Some(vec![[1, 1, 4, 0x08], [2, 1, 4, 0x08]]), hold_masks: vec![(1, 0x000A)], ..Default::default() };
+        assert_eq!(current(&s, &m, 1, TAP_HOLD).map(|v| v.len()), Some(2));
+        assert_eq!(current(&s, &m, 2, TAP_HOLD).map(|v| v.len()), Some(2));
     }
 }
