@@ -253,4 +253,4 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   Enco Buds2 link. HeyMelody builds that query per model and would send those buds only `02 05 0D`.
   Findings and plan: **[docs/ISSUE5-STATUS-QUERY.md](./docs/ISSUE5-STATUS-QUERY.md)** (temporary; delete
   it when the change lands). Reporter's test 2026-10-06: `02 05 0D` keeps the link up; they
-  will close PR #7 and retest from `main` (credit them in commit and notes). Next: plan step 2 (PC emulator).
+  closed PR #7 and will retest from `main` (credit them in commit and notes). Next: plan step 2 (PC emulator).

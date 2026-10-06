@@ -74,8 +74,8 @@ Decided `[USER]` 2026-10-06: follow HeyMelody's per-model list. HeyMelody shows 
 nor Power saving for the Buds 4, so those rows going away is parity. Use the `0x012F` batch where the
 bitmap has it.
 
-1. **Reporter's test: done 2026-10-06.** `02 05 0D` keeps the link up. The reporter agreed to close
-   PR #7 in favour of the per-model query; they will test again once it is on `main` and asked for
+1. **Reporter's test: done 2026-10-06.** `02 05 0D` keeps the link up. The reporter closed PR #7
+   in favour of the per-model query; they will test again once it is on `main` and asked for
    credit in the commit and release notes.
 2. **Current model data, on the PC:** run HeyMelody in a rooted Android emulator and read the model list
    it downloads (current `function` maps for every model). The steps live in the agent's memory, not
