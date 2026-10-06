@@ -248,5 +248,11 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   the phone (TOOLCHAIN.md). AUR files bumped; `makepkg` / `namcap` not run (needs x86_64). The Windows zip is
   cross-built and has never run on Windows.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
-- **Waiting:** issue #2 owners testing 4.3.x; issue #5 (Enco Buds2 loop) reporter testing init without
-  `0x010D`. Read their logs before changing anything. AUR account.
+- **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
+- **To decide on the PC (issue #5):** the reporter confirmed `0x010D` (our 23-id status query) is what
+  drops the Enco Buds2 link (desktop; Android untested). Their ideas: a remote `exceptions.json` (no: server
+  rule) or a `"skipStatus"` flag in `models.json` (fragile: vendor list, and these buds report another
+  model's id). Agent's proposal: learn it per device in both apps; if the link drops within a few seconds of
+  `0x010D`, remember that address and skip `0x010D` from then on (one loop before it settles; those buds
+  then show no Hi-Res / 3D / low latency state, features they lack anyway). Open: does HeyMelody send
+  `0x010D` to them, or a shorter id list (needs the decompile recreated)? No reply on #5 until he decides.
