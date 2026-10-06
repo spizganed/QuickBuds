@@ -55,11 +55,14 @@ Ids go out in the table's order (HeyMelody's order).
   has `clickTakePic: 1` and none of the other keys, so HeyMelody sends **`0x010D 02 05 0D`**. By id
   (realme Buds Q2s, `function` = `fastDiscovery` only) it would be `01 05`. We send our fixed 23-id list
   to every model (`OpoProtocol.queryStatus()`, `protocol::STATUS_QUERY`), which the reporter confirmed
-  drops the link. That `02 05 0D` keeps it up is not tested yet (asked on #5).
+  drops the link. **Tested 2026-10-06** (reporter, clean v4.4.0 desktop, `STATUS_QUERY = 02 05 0D`):
+  the link stays up, reply `810D 00 02 05 00 0D 01` (`05`=0, `0D`=1) in 36 ms; battery, wear,
+  firmware, EQ and gestures read and write normally `[CAPTURE]`. `01 05` not tested (not needed).
+  Same log: our `010C 02 01` ANC query got no reply (these buds have no ANC; link unaffected).
 - **OnePlus Buds 4, captured** (PROTOCOL.md "Batch query"): HeyMelody asks `05 04 0B 11 18 06 1B 1D 1C`,
   inside a `0x012F` batch. OppoPodsManager's list predicted `05 04 0B 0D 11 18 1B 1D 1C`: the order and
-  the rule hold, the data does not (server list has `gameMode`, no `clickTakePic`). So **the Enco Buds2's
-  `05 0D` is only a best guess** from old data; the reporter's test decides it.
+  the rule hold, the data does not (server list has `gameMode`, no `clickTakePic`). The Enco Buds2's
+  `05 0D` came from old data, but the reporter's test confirmed it.
 - HeyMelody never asks the Buds 4 for `17` (power saving) or `0C` (personalised ANC), and we show both
   rows from our wider query. With a per-model query those rows would go, unless the model data keeps the
   flags. Decide that with him before step 3.
@@ -71,8 +74,9 @@ Decided `[USER]` 2026-10-06: follow HeyMelody's per-model list. HeyMelody shows 
 nor Power saving for the Buds 4, so those rows going away is parity. Use the `0x012F` batch where the
 bitmap has it.
 
-1. **Reporter's test** (asked on #5): `02 05 0D`, then `01 05`, as `STATUS_QUERY` on a clean v4.4.0
-   desktop build. PR #7 on hold until then (review posted).
+1. **Reporter's test: done 2026-10-06.** `02 05 0D` keeps the link up. The reporter agreed to close
+   PR #7 in favour of the per-model query; they will test again once it is on `main` and asked for
+   credit in the commit and release notes.
 2. **Current model data, on the PC:** run HeyMelody in a rooted Android emulator and read the model list
    it downloads (current `function` maps for every model). The steps live in the agent's memory, not
    here (vendor details stay out of the repo). Diff it against `models.json` and OppoPodsManager's

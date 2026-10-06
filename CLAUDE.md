@@ -252,4 +252,5 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 - **Issue #5 (in progress):** the reporter confirmed `0x010D` (our fixed 23-id status query) drops the
   Enco Buds2 link. HeyMelody builds that query per model and would send those buds only `02 05 0D`.
   Findings and plan: **[docs/ISSUE5-STATUS-QUERY.md](./docs/ISSUE5-STATUS-QUERY.md)** (temporary; delete
-  it when the change lands). Asked the reporter 2026-10-06 to test `02 05 0D` then `01 05`; PR #7 on hold.
+  it when the change lands). Reporter's test 2026-10-06: `02 05 0D` keeps the link up; they
+  will close PR #7 and retest from `main` (credit them in commit and notes). Next: plan step 2 (PC emulator).
