@@ -172,8 +172,21 @@ pub fn models() -> &'static [Value] {
 pub fn find_model(id: Option<&str>, name: Option<&str>) -> Option<&'static Value> {
     let m = models();
     let by_name = |x: &&Value| name.is_some() && x["name"].as_str() == name;
-    let by_id = |x: &&Value| id.is_some_and(|id| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(id)));
-    m.iter().find(by_id).or_else(|| m.iter().find(by_name))
+    
+    if let Some(target_id) = id {
+        let mut matches = m.iter().filter(|x| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(target_id)));
+        if let Some(first) = matches.next() {
+            if matches.next().is_some() {
+                // Multiple models share this ID. Use name as tie-breaker, fallback to first.
+                return m.iter()
+                    .filter(|x| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(target_id)))
+                    .find(by_name)
+                    .or(Some(first));
+            }
+            return Some(first);
+        }
+    }
+    m.iter().find(by_name)
 }
 
 pub fn is_known_name(name: &str) -> bool { models().iter().any(|m| m["name"].as_str() == Some(name)) }
