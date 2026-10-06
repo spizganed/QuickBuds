@@ -196,6 +196,7 @@ phone's hotspot: while the phone is on Wi-Fi and hosts a hotspot at once, frames
 Plasma's power manager calls `termux-brightness`, which needs a permission and
 would dim the real screen: hide its autostart entry.
 
+Not set up on the developer's phone right now (removed after 4.4.0 to free space).
 The desktop app needs a normal (glibc) Linux: Termux's own `rust` targets Android (winit then wants
 `android-activity` and fails), and rustup cannot lock its files in Termux's home. On the phone it builds in
 a Debian proot, used to compile and run `cargo test`:
