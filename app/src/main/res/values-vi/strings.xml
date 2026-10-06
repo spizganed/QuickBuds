@@ -250,6 +250,8 @@
     <string name="layout_cancel">Hủy</string>
     <string name="settings_haptics_title">Phản hồi xúc giác</string>
     <string name="settings_haptics_sub">Rung khi thay đổi cài đặt</string>
+    <string name="settings_clear_battery_title">Ẩn mức pin cũ</string>
+    <string name="settings_clear_battery_sub">Xóa mức pin mà tai nghe ngừng báo, như hộp sạc sau khi đóng nắp</string>
     <string name="settings_background_title">Dịch vụ nền</string>
     <string name="settings_background_sub">Giữ kết nối khi đóng ứng dụng</string>
     <string name="settings_background_warn_title">Tắt dịch vụ nền?</string>

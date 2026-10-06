@@ -250,6 +250,8 @@
     <string name="layout_cancel">Annuleren</string>
     <string name="settings_haptics_title">Haptische feedback</string>
     <string name="settings_haptics_sub">Trillen als een instelling verandert</string>
+    <string name="settings_clear_battery_title">Oude batterijniveaus verbergen</string>
+    <string name="settings_clear_battery_sub">Wis een niveau dat de oordopjes niet meer melden, zoals de case na het sluiten</string>
     <string name="settings_background_title">Achtergrondservice</string>
     <string name="settings_background_sub">Verbonden blijven als de app gesloten is</string>
     <string name="settings_background_warn_title">Achtergrondservice uitzetten?</string>

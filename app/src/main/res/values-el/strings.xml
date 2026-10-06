@@ -250,6 +250,8 @@
     <string name="layout_cancel">Ακύρωση</string>
     <string name="settings_haptics_title">Απτική απόκριση</string>
     <string name="settings_haptics_sub">Δόνηση όταν αλλάζει μια ρύθμιση</string>
+    <string name="settings_clear_battery_title">Απόκρυψη παλιών επιπέδων μπαταρίας</string>
+    <string name="settings_clear_battery_sub">Διαγραφή επιπέδου που τα ακουστικά σταματούν να αναφέρουν, π.χ. η θήκη όταν κλείσει</string>
     <string name="settings_background_title">Υπηρεσία παρασκηνίου</string>
     <string name="settings_background_sub">Παραμονή σε σύνδεση με κλειστή την εφαρμογή</string>
     <string name="settings_background_warn_title">Απενεργοποίηση υπηρεσίας παρασκηνίου;</string>

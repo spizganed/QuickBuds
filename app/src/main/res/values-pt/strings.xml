@@ -250,6 +250,8 @@
     <string name="layout_cancel">Cancelar</string>
     <string name="settings_haptics_title">Resposta tátil</string>
     <string name="settings_haptics_sub">Vibrar quando uma definição muda</string>
+    <string name="settings_clear_battery_title">Ocultar níveis de bateria antigos</string>
+    <string name="settings_clear_battery_sub">Limpar um nível que os fones deixam de informar, como o estojo depois de fechado</string>
     <string name="settings_background_title">Serviço em segundo plano</string>
     <string name="settings_background_sub">Manter a ligação com a app fechada</string>
     <string name="settings_background_warn_title">Desativar o serviço em segundo plano?</string>

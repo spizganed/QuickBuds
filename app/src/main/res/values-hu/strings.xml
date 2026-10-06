@@ -250,6 +250,8 @@
     <string name="layout_cancel">Mégse</string>
     <string name="settings_haptics_title">Haptikus visszajelzés</string>
     <string name="settings_haptics_sub">Rezgés beállítás módosításakor</string>
+    <string name="settings_clear_battery_title">Régi akkuszintek elrejtése</string>
+    <string name="settings_clear_battery_sub">Törli azt a szintet, amelyet a fülhallgató már nem jelent, pl. a tokét a fedél zárása után</string>
     <string name="settings_background_title">Háttérszolgáltatás</string>
     <string name="settings_background_sub">Kapcsolat fenntartása bezárt alkalmazásnál is</string>
     <string name="settings_background_warn_title">Kikapcsolja a háttérszolgáltatást?</string>

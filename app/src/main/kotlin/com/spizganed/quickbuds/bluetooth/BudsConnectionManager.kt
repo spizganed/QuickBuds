@@ -1504,15 +1504,12 @@ class BudsConnectionManager(private val context: Context) {
         val battery = BatteryParser.parse(packet)
         val activeBattery = BatteryParser.parseActive(packet)
 
-        if (battery != null) {
-            if (battery.left != null) lastLeft = battery.left
-            if (battery.right != null) lastRight = battery.right
-            if (battery.case != null) lastCase = battery.case
-            emitBattery()
-        } else if (activeBattery != null) {
-            if (activeBattery.left != null) lastLeft = activeBattery.left
-            if (activeBattery.right != null) lastRight = activeBattery.right
-            if (activeBattery.case != null) lastCase = activeBattery.case
+        (battery ?: activeBattery)?.let { b ->
+            // Settings › Hide old battery levels: a part the report leaves out is cleared, not kept.
+            val clear = BudsService.clearMissingBattery(context)
+            if (b.left != null || clear) lastLeft = b.left
+            if (b.right != null || clear) lastRight = b.right
+            if (b.case != null || clear) lastCase = b.case
             emitBattery()
         }
     }

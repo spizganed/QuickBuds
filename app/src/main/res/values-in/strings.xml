@@ -250,6 +250,8 @@
     <string name="layout_cancel">Batal</string>
     <string name="settings_haptics_title">Umpan balik haptik</string>
     <string name="settings_haptics_sub">Bergetar saat pengaturan berubah</string>
+    <string name="settings_clear_battery_title">Sembunyikan level baterai lama</string>
+    <string name="settings_clear_battery_sub">Hapus level yang tidak lagi dilaporkan earbud, seperti case setelah tutupnya ditutup</string>
     <string name="settings_background_title">Layanan latar belakang</string>
     <string name="settings_background_sub">Tetap terhubung saat aplikasi ditutup</string>
     <string name="settings_background_warn_title">Matikan layanan latar belakang?</string>

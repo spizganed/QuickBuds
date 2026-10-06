@@ -250,6 +250,8 @@
     <string name="layout_cancel">Cancelar</string>
     <string name="settings_haptics_title">Respuesta háptica</string>
     <string name="settings_haptics_sub">Vibrar al cambiar un ajuste</string>
+    <string name="settings_clear_battery_title">Ocultar niveles de batería antiguos</string>
+    <string name="settings_clear_battery_sub">Borrar un nivel que los auriculares dejan de informar, como el estuche al cerrar la tapa</string>
     <string name="settings_background_title">Servicio en segundo plano</string>
     <string name="settings_background_sub">Mantener la conexión con la app cerrada</string>
     <string name="settings_background_warn_title">¿Desactivar el servicio en segundo plano?</string>

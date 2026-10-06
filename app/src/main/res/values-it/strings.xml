@@ -250,6 +250,8 @@
     <string name="layout_cancel">Annulla</string>
     <string name="settings_haptics_title">Feedback aptico</string>
     <string name="settings_haptics_sub">Vibra quando cambia un\'impostazione</string>
+    <string name="settings_clear_battery_title">Nascondi livelli batteria vecchi</string>
+    <string name="settings_clear_battery_sub">Cancella un livello che gli auricolari non segnalano più, come la custodia chiusa</string>
     <string name="settings_background_title">Servizio in background</string>
     <string name="settings_background_sub">Resta connesso con l\'app chiusa</string>
     <string name="settings_background_warn_title">Disattivare il servizio in background?</string>

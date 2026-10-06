@@ -250,6 +250,8 @@
     <string name="layout_cancel">Anuluj</string>
     <string name="settings_haptics_title">Wibracje przy dotyku</string>
     <string name="settings_haptics_sub">Wibruj przy zmianie ustawienia</string>
+    <string name="settings_clear_battery_title">Ukryj stare poziomy baterii</string>
+    <string name="settings_clear_battery_sub">Czyść poziom, którego słuchawki już nie zgłaszają, np. etui po zamknięciu</string>
     <string name="settings_background_title">Usługa w tle</string>
     <string name="settings_background_sub">Pozostań połączony po zamknięciu aplikacji</string>
     <string name="settings_background_warn_title">Wyłączyć usługę w tle?</string>

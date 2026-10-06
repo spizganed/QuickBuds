@@ -253,6 +253,8 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_update_install(t(s, "update_install").into());
     tr.set_update_auto_title(t(s, "update_auto_title").into());
     tr.set_update_auto_sub(t(s, "update_auto_sub").into());
+    tr.set_clear_battery_title(t(s, "settings_clear_battery_title").into());
+    tr.set_clear_battery_sub(t(s, "settings_clear_battery_sub").into());
     tr.set_style_classic(t(s, "widget_style_classic").into());
     tr.set_style_dots(t(s, "widget_style_nothing").into());
     tr.set_earbuds_title(t(s, "earbuds_title").into());

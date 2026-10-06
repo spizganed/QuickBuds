@@ -76,6 +76,9 @@ export global Update {
     in property <bool> can-install;
     in property <bool> busy;
     in property <bool> auto;
+    // Settings › Hide old battery levels (`clear_battery`).
+    in property <bool> clear-battery;
+    callback set-clear-battery(bool);
     callback check();
     callback install();
     callback set-auto(bool);
@@ -122,6 +125,8 @@ export global Tr {
     in property <string> update-install: "Install";
     in property <string> update-auto-title: "Check on start";
     in property <string> update-auto-sub: "Look for a new version when the app opens";
+    in property <string> clear-battery-title: "Hide old battery levels";
+    in property <string> clear-battery-sub: "Clear a level the buds stop reporting, like the case after the lid closes";
     in property <string> style-classic: "Classic";
     in property <string> style-dots: "Dot matrix";
     in property <string> earbuds-title;
@@ -2061,6 +2066,11 @@ component SettingsPage inherits VerticalLayout {
             FeatureRow {
                 icon: Buds.icon-update; title: Tr.update-auto-title; subtitle: Tr.update-auto-sub;
                 checked: Update.auto; live: true; toggled(on) => { Update.set-auto(on); }
+            }
+            Divider {}
+            FeatureRow {
+                icon: Buds.icon-case; title: Tr.clear-battery-title; subtitle: Tr.clear-battery-sub;
+                checked: Update.clear-battery; live: true; toggled(on) => { Update.set-clear-battery(on); }
             }
         }
     }

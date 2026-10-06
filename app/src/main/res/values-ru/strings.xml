@@ -250,6 +250,8 @@
     <string name="layout_cancel">Отмена</string>
     <string name="settings_haptics_title">Тактильный отклик</string>
     <string name="settings_haptics_sub">Вибрация при изменении настройки</string>
+    <string name="settings_clear_battery_title">Скрывать старый заряд</string>
+    <string name="settings_clear_battery_sub">Сбрасывать уровень, о котором наушники перестали сообщать, например кейса после закрытия</string>
     <string name="settings_background_title">Фоновая служба</string>
     <string name="settings_background_sub">Оставаться подключённым при закрытом приложении</string>
     <string name="settings_background_warn_title">Выключить фоновую службу?</string>

@@ -17,7 +17,8 @@ const ICONS: &[&str] = &[
 
 const STRINGS: &[&str] = &[
     "update_title", "update_installed", "update_latest", "update_check", "update_checking", "update_up_to_date",
-    "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "update_found_title",
+    "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
+    "settings_clear_battery_sub", "update_found_title",
     "conn_on", "conn_action_connect", "conn_action_disconnect", "conn_connecting", "dual_not_connected",
     "status_left", "status_right", "status_case", "anc_section", "anc_seg_off", "anc_seg_anc",
     "anc_seg_adapt", "anc_seg_trans", "anc_mode_low", "anc_mode_medium", "anc_mode_high",

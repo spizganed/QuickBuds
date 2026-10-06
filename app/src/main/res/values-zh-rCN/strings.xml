@@ -250,6 +250,8 @@
     <string name="layout_cancel">取消</string>
     <string name="settings_haptics_title">触感反馈</string>
     <string name="settings_haptics_sub">更改设置时振动</string>
+    <string name="settings_clear_battery_title">隐藏过时的电量</string>
+    <string name="settings_clear_battery_sub">清除耳机不再报告的电量，例如合上盖子后的充电盒</string>
     <string name="settings_background_title">后台服务</string>
     <string name="settings_background_sub">关闭应用后保持连接</string>
     <string name="settings_background_warn_title">关闭后台服务？</string>

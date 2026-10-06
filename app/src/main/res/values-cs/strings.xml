@@ -250,6 +250,8 @@
     <string name="layout_cancel">Zrušit</string>
     <string name="settings_haptics_title">Haptická odezva</string>
     <string name="settings_haptics_sub">Vibrovat při změně nastavení</string>
+    <string name="settings_clear_battery_title">Skrýt staré úrovně baterie</string>
+    <string name="settings_clear_battery_sub">Vymazat úroveň, kterou sluchátka přestanou hlásit, např. pouzdro po zavření víka</string>
     <string name="settings_background_title">Služba na pozadí</string>
     <string name="settings_background_sub">Zůstat připojeno i při zavřené aplikaci</string>
     <string name="settings_background_warn_title">Vypnout službu na pozadí?</string>

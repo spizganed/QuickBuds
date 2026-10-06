@@ -250,6 +250,8 @@
     <string name="layout_cancel">Avbryt</string>
     <string name="settings_haptics_title">Haptisk återkoppling</string>
     <string name="settings_haptics_sub">Vibrera när en inställning ändras</string>
+    <string name="settings_clear_battery_title">Dölj gamla batterinivåer</string>
+    <string name="settings_clear_battery_sub">Rensa en nivå som hörlurarna slutar rapportera, som fodralet när locket stängts</string>
     <string name="settings_background_title">Bakgrundstjänst</string>
     <string name="settings_background_sub">Förbli ansluten när appen är stängd</string>
     <string name="settings_background_warn_title">Stänga av bakgrundstjänsten?</string>

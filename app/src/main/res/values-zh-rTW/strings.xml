@@ -250,6 +250,8 @@
     <string name="layout_cancel">取消</string>
     <string name="settings_haptics_title">觸覺回饋</string>
     <string name="settings_haptics_sub">變更設定時震動</string>
+    <string name="settings_clear_battery_title">隱藏過時的電量</string>
+    <string name="settings_clear_battery_sub">清除耳機不再回報的電量，例如蓋上蓋子後的充電盒</string>
     <string name="settings_background_title">背景服務</string>
     <string name="settings_background_sub">關閉應用程式後保持連線</string>
     <string name="settings_background_warn_title">關閉背景服務？</string>

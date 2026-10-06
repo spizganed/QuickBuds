@@ -250,6 +250,8 @@
     <string name="layout_cancel">Annuler</string>
     <string name="settings_haptics_title">Retour haptique</string>
     <string name="settings_haptics_sub">Vibrer quand un réglage change</string>
+    <string name="settings_clear_battery_title">Masquer les anciens niveaux de batterie</string>
+    <string name="settings_clear_battery_sub">Effacer un niveau que les écouteurs ne signalent plus, comme le boîtier une fois fermé</string>
     <string name="settings_background_title">Service en arrière-plan</string>
     <string name="settings_background_sub">Rester connecté quand l\'app est fermée</string>
     <string name="settings_background_warn_title">Désactiver le service en arrière-plan ?</string>

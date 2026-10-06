@@ -250,6 +250,8 @@
     <string name="layout_cancel">Anulează</string>
     <string name="settings_haptics_title">Feedback haptic</string>
     <string name="settings_haptics_sub">Vibrează când se schimbă o setare</string>
+    <string name="settings_clear_battery_title">Ascunde nivelurile vechi ale bateriei</string>
+    <string name="settings_clear_battery_sub">Șterge un nivel pe care căștile nu-l mai raportează, de ex. carcasa după închidere</string>
     <string name="settings_background_title">Serviciu în fundal</string>
     <string name="settings_background_sub">Rămâi conectat cu aplicația închisă</string>
     <string name="settings_background_warn_title">Dezactivezi serviciul în fundal?</string>

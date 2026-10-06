@@ -250,6 +250,8 @@
     <string name="layout_cancel">Abbrechen</string>
     <string name="settings_haptics_title">Haptisches Feedback</string>
     <string name="settings_haptics_sub">Vibrieren, wenn sich eine Einstellung ändert</string>
+    <string name="settings_clear_battery_title">Alte Akkustände ausblenden</string>
+    <string name="settings_clear_battery_sub">Einen Stand löschen, den die Earbuds nicht mehr melden, etwa das Case nach dem Schließen</string>
     <string name="settings_background_title">Hintergrunddienst</string>
     <string name="settings_background_sub">Bei geschlossener App verbunden bleiben</string>
     <string name="settings_background_warn_title">Hintergrunddienst ausschalten?</string>

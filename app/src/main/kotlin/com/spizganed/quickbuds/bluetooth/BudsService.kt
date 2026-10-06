@@ -298,13 +298,14 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         statusLog("[SVC] Battery: L=$left C=$case R=$right " +
                 "(chg: $chargingLeft/$chargingCase/$chargingRight)")
         val st = WidgetStateStore.read(this)
-        if (left != null) st.leftBattery = left
+        val clear = clearMissingBattery(this)
+        if (left != null || clear) st.leftBattery = left ?: -1
+        if (case != null || clear) st.caseBattery = case ?: -1
         if (case != null) {
-            st.caseBattery = case
             // heartbeat: a closed lid stops these, so freshness == lid open
             st.caseBatteryAt = System.currentTimeMillis()
         }
-        if (right != null) st.rightBattery = right
+        if (right != null || clear) st.rightBattery = right ?: -1
         WidgetStateStore.write(this, st)
         AncWidgetProvider.refreshAll(this)
     }
@@ -420,6 +421,15 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
         fun backgroundAllowed(c: Context) =
             c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREF_BACKGROUND, true)
+
+        /**
+         * Settings › Hide old battery levels (default off). On: each battery report replaces all three
+         * levels, so a part it leaves out (the case after the lid closes) shows blank instead of its last level.
+         */
+        const val PREF_CLEAR_BATTERY = "clearMissingBattery"
+
+        fun clearMissingBattery(c: Context) =
+            c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREF_CLEAR_BATTERY, false)
         const val EXTRA_FIND_ON = "find_on"
         const val EXTRA_ON_CALL_ROW = "on_call_row"   // OnCallGesture.serviceRow
         const val EXTRA_ON_CALL_ENABLED = "on_call_enabled"
