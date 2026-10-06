@@ -245,9 +245,9 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 
 ## Current state (2026-10-06)
 
-- Latest release v4.4.0 (2026-10-06: model lookup name-first, "Hide old battery levels"), built entirely on
-  the phone (TOOLCHAIN.md). AUR files bumped; `makepkg` / `namcap` not run (needs x86_64). The Windows zip is
-  cross-built and has never run on Windows.
+- Latest release v4.5.0 (2026-10-06: per-model status query and `0x012F` batch, realme noise control and
+  gestures, wind noise), built on the PC, Buds 4 tested on both apps. The Windows zip is cross-built and has
+  never run on Windows.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
 - **Issue #8:** realme Buds Air7 Pro ANC and gestures from realme Link data, wired, unverified; the
   reporter is asked to test (read back ANC mode, one gesture, the hold cycle). 27 more realme models
@@ -257,5 +257,5 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   The phone runs this build.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
 - **Issue #5:** per-model `0x010D` query (`models.json` `statusQuery`) and the `0x012F` batch at connect,
-  on `main` 2026-10-06, unreleased. @Abhishek-banal (Enco Buds2, closed PR #7) retests from `main`; credit
+  in v4.5.0. @Abhishek-banal (Enco Buds2, closed PR #7) retests from `main`; credit
   them in the release notes. Buds 4 check pending (his device test).

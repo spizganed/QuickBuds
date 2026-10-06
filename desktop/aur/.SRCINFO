@@ -1,6 +1,6 @@
 pkgbase = quickbuds-bin
 	pkgdesc = Control OnePlus / OPPO / realme earbuds over Bluetooth
-	pkgver = 4.4.0
+	pkgver = 4.5.0
 	pkgrel = 1
 	url = https://github.com/spizganed/QuickBuds
 	arch = x86_64
@@ -18,7 +18,7 @@ pkgbase = quickbuds-bin
 	depends = libxkbcommon
 	provides = quickbuds
 	conflicts = quickbuds
-	source = https://github.com/spizganed/QuickBuds/releases/download/v4.4.0/QuickBuds4.4.0-linux-x64.tar.gz
-	sha256sums = 522ce0ecb58e9e464647f45000180f55fc59633339ea6d483ab67795c0fd716d
+	source = https://github.com/spizganed/QuickBuds/releases/download/v4.5.0/QuickBuds4.5.0-linux-x64.tar.gz
+	sha256sums = 6234e46465ec2bfa127f2e7ee286f97d4c283653ff97be8ca6b4631a85320fa0
 
 pkgname = quickbuds-bin
