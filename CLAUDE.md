@@ -256,9 +256,6 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
   tested on the PC 2026-10-06. Wind noise `0x1A` (realme Link) is asked only for models with `windNoise`.
   The phone runs this build.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
-- **Issue #5 (in progress):** the reporter confirmed `0x010D` (our fixed 23-id status query) drops the
-  Enco Buds2 link. HeyMelody builds that query per model (`05 0D` or `05 06` for those buds, see the plan).
-  Findings and plan: **[docs/ISSUE5-STATUS-QUERY.md](./docs/ISSUE5-STATUS-QUERY.md)** (temporary; delete
-  it when step 4 lands). Step 3 done 2026-10-06: per-model query (`models.json` `statusQuery`, Enco Buds2
-  `05 06` `[USER]`); @Abhishek-banal (closed PR #7) retests from `main`, credit them in the release notes.
-  Next: step 4 (`0x012F` batch), needs his go.
+- **Issue #5:** per-model `0x010D` query (`models.json` `statusQuery`) and the `0x012F` batch at connect,
+  on `main` 2026-10-06, unreleased. @Abhishek-banal (Enco Buds2, closed PR #7) retests from `main`; credit
+  them in the release notes. Buds 4 check pending (his device test).

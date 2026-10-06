@@ -245,7 +245,13 @@ impl<'a> Conn<'a> {
         loop {
             let n = self.link.read(&mut buf)?;
             let mut changed = false;
-            for p in self.framer.push(&buf[..n]) {
+            for p in self.framer.push(&buf[..n]).into_iter().flat_map(|p| {
+                // A batch reply is logged as it came, then handled as the replies it carries.
+                if cmd_of(&p) != CMD_BATCH_REPLY { return vec![p]; }
+                let parts = unbatch(&p);
+                log("RX", p, Some(format!("batch reply, {} answers", parts.len())));
+                parts
+            }) {
                 let e = decode(&p);
                 let human = e.as_ref().map(describe).or_else(|| describe_other(&p));
                 // Some buds drop the link a few seconds after an unanswered request (issue #2: the time request).
@@ -355,12 +361,20 @@ impl<'a> Conn<'a> {
             (CMD_QUERY_WEARING, Some(0xF2), vec![]),
             (CMD_QUERY_FIRMWARE, None, vec![]),
         ];
+        // Buds with the `0x012F` batch get the reads in one frame, as HeyMelody sends them.
+        let batch = self.s.caps.supports(CMD_BATCH);
+        let mut reads = Vec::new();
         for (cmd, seq, payload) in queries {
             if !self.s.caps.supports(cmd) || cmd == CMD_REGISTER_NOTIFY && ids.is_empty() { continue; }
+            if batch && cmd != CMD_REGISTER_NOTIFY { reads.push((cmd, payload)); continue; }
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;
         }
-        self.eq_reads()
+        if !batch { return self.eq_reads(); }
+        reads.extend([CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE].into_iter()
+            .filter(|&c| self.s.caps.supports(c)).map(|c| (c, vec![])));
+        if !reads.is_empty() { self.send(CMD_BATCH, None, &batch_payload(&reads))?; self.pump(200)?; }
+        Ok(())
     }
 
     /// The EQ reads these buds list, in order (`sendThenRead`); after a write too, since only the buds know

@@ -35,6 +35,9 @@ object OpoProtocol {
     const val CMD_QUERY_FIRMWARE = 0x0105
     const val CMD_QUERY_ANC = 0x010C
     const val CMD_QUERY_STATUS = 0x010D
+    /** Several queries in one frame (bitmap bit 56), answered by one or more [CMD_BATCH_REPLY]. */
+    const val CMD_BATCH = 0x012F
+    const val CMD_BATCH_REPLY = 0x812F
     const val CMD_QUERY_EQ = 0x010F
     const val CMD_QUERY_EQ_ALL = 0x0122
     const val CMD_QUERY_BASSWAVE_LEVEL = 0x0124
@@ -632,6 +635,33 @@ object OpoProtocol {
             0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C
         )) + if (windNoise) byteArrayOf(FEATURE_WIND_NOISE.toByte()) else byteArrayOf()
         return buildPacket(CMD_QUERY_STATUS, seq = 0x00, payload = byteArrayOf(ids.size.toByte()) + ids)
+    }
+
+    /**
+     * `0x012F` (PROTOCOL.md "Batch query"): built query [packets] in one frame, `<count>` then
+     * `<cmd LE> <len LE> <payload>` each. Each packet's length fits in one byte (short queries).
+     */
+    fun batch(packets: List<ByteArray>): ByteArray {
+        val body = packets.flatMap { p -> (p.copyOfRange(4, 6) + p.copyOfRange(7, 9 + u16(p, 7))).toList() }
+        return buildPacket(CMD_BATCH, payload = byteArrayOf(packets.size.toByte()) + body)
+    }
+
+    /**
+     * `0x812F` = `00 <count>`, then `<cmd LE> <len LE> <reply payload>` per answer, `cmd` being the query's:
+     * (reply cmd, payload) pairs, stopping at the first that runs past the end.
+     */
+    fun batchReplies(payload: ByteArray): List<Pair<Int, ByteArray>> {
+        if (payload.size < 2 || payload[0].toInt() != 0) return emptyList()
+        val out = mutableListOf<Pair<Int, ByteArray>>()
+        var o = 2
+        repeat(payload[1].toInt() and 0xFF) {
+            if (o + 4 > payload.size) return out
+            val len = u16(payload, o + 2)
+            if (o + 4 + len > payload.size) return out
+            out += (u16(payload, o) or 0x8000) to payload.copyOfRange(o + 4, o + 4 + len)
+            o += 4 + len
+        }
+        return out
     }
 
     /** Little-endian unsigned 16-bit value at [i]. */

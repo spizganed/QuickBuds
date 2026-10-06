@@ -38,8 +38,8 @@ Nothing.
   to offered events (§4). Waiting for an owner to test it.
 - **OPPO Enco Buds2 reconnect loop** (issue #5, desktop, 2026-10-06): after `0x0200` the buds answer
   nothing (no `0x8205`, not even `0x0106`) and drop the link ~6 s later. They never send `0x0500`.
-  The reporter confirmed `0x010D` is the trigger. **Question** (he decides): how to skip it for such buds
-  (CLAUDE.md › Current state has the options).
+  The reporter confirmed `0x010D` is the trigger. Fixed on `main` (per-model query as HeyMelody,
+  PROTOCOL.md §9; `0x012F` batch at connect): waiting for the reporter's retest.
 
 ## Decided against — do not re-suggest
 

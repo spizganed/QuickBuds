@@ -9,6 +9,9 @@ pub const CMD_QUERY_BATTERY: u16 = 0x0106;
 pub const CMD_QUERY_WEARING: u16 = 0x0109;
 pub const CMD_QUERY_ANC: u16 = 0x010C;
 pub const CMD_QUERY_STATUS: u16 = 0x010D;
+/// Several queries in one frame (bitmap bit 56), answered by one or more `0x812F` (`OpoProtocol.CMD_BATCH`).
+pub const CMD_BATCH: u16 = 0x012F;
+pub const CMD_BATCH_REPLY: u16 = 0x812F;
 pub const CMD_QUERY_BROADCAST: u16 = 0x0200;
 /// Subscribe one event (`<id>`), for buds without `0x0205` in their bitmap `[VENDOR]`.
 pub const CMD_REGISTER_ONE: u16 = 0x0201;
@@ -777,6 +780,7 @@ pub fn describe_tx(cmd: u16, p: &[u8]) -> Option<String> {
         (CMD_SET_ANC, [1, 1, bits @ ..]) => format!("{name} bit {}", bits.iter().rev().fold(0u32, |v, &b| v << 8 | b as u32).trailing_zeros()),
         (CMD_SET_ANC, [2, t, mask @ ..]) => format!("Set hold cycle ({t}) 0x{:04X}", mask.iter().rev().fold(0u32, |v, &b| v << 8 | b as u32)),
         (CMD_SET_EQ | CMD_SET_ALERT_VOLUME | CMD_SET_TAP_LEVEL, [v, ..]) => format!("{name} {v}"),
+        (CMD_BATCH, [n, ..]) => format!("{name}, {n} queries"),
         (CMD_FIND_BUDS | CMD_FIT_TEST, [v, ..]) => format!("{name} {}", if *v == 1 { "start" } else { "stop" }),
         _ => name.into(),
     })
@@ -810,6 +814,7 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
     Some(match cmd {
         CMD_HANDSHAKE => "Handshake",
         CMD_QUERY_PRODUCT_ID => "Query product id",
+        CMD_BATCH => "Batch query",
         CMD_QUERY_BATTERY => "Query battery",
         CMD_QUERY_WEARING => "Query wearing",
         CMD_QUERY_ANC => "Query ANC",
@@ -891,6 +896,34 @@ pub fn cmd_of(p: &[u8]) -> u16 {
 
 pub fn payload_of(p: &[u8]) -> &[u8] { &p[header_len(p)..] }
 
+/// `0x012F` payload (PROTOCOL.md "Batch query"): `<count>`, then `<cmd LE> <len LE> <payload>` per query.
+pub fn batch_payload(queries: &[(u16, Vec<u8>)]) -> Vec<u8> {
+    let mut b = vec![queries.len() as u8];
+    for (cmd, pl) in queries {
+        b.extend_from_slice(&cmd.to_le_bytes());
+        b.extend_from_slice(&(pl.len() as u16).to_le_bytes());
+        b.extend_from_slice(pl);
+    }
+    b
+}
+
+/// A `0x812F` frame as the normal replies it carries (`00 <count>`, then `<cmd LE> <len LE> <reply
+/// payload>`, `cmd` being the query's), each a frame with the batch's seq; stops at one that runs past the end.
+pub fn unbatch(p: &[u8]) -> Vec<Vec<u8>> {
+    let (pl, seq) = (payload_of(p), seq_of(p));
+    let mut out = Vec::new();
+    let [0, n, rest @ ..] = pl else { return out };
+    let mut r = rest;
+    for _ in 0..*n {
+        let [c0, c1, l0, l1, tail @ ..] = r else { break };
+        let len = u16::from_le_bytes([*l0, *l1]) as usize;
+        if tail.len() < len { break; }
+        out.push(build_packet(u16::from_le_bytes([*c0, *c1]) | 0x8000, seq, &tail[..len]));
+        r = &tail[len..];
+    }
+    out
+}
+
 pub fn seq_of(p: &[u8]) -> u8 { p[header_len(p) - 3] }
 
 /// HeyMelody's answer `(cmd, payload)` to a frame the buds send on their own, or `None`
@@ -969,6 +1002,15 @@ mod tests {
         let air7 = serde_json::json!({"windNoise": 1});
         let q = status_query(Some(&air7));
         assert_eq!((q[0], q[q.len() - 1], &q[1..24]), (24, FEATURE_WIND_NOISE, &plain[1..]));
+    }
+
+    #[test]
+    fn batch_round_trip() {
+        assert_eq!(batch_payload(&[(0x0106, vec![]), (0x010C, vec![2, 1])]), [2, 6, 1, 0, 0, 0x0C, 1, 2, 0, 2, 1]);
+        // Two answers (battery, ANC), then one cut short.
+        let reply = build_packet(CMD_BATCH_REPLY, 7, &[0, 3, 6, 1, 4, 0, 0, 1, 1, 0x64, 0x0C, 1, 2, 0, 0, 2, 0x0D, 1, 9, 0, 0]);
+        let got = unbatch(&reply);
+        assert_eq!(got, [build_packet(0x8106, 7, &[0, 1, 1, 0x64]), build_packet(0x810C, 7, &[0, 2])]);
     }
 
     #[test]

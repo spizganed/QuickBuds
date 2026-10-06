@@ -304,9 +304,12 @@ class BudsConnectionManager(private val context: Context) {
                 delay(200); sendRawBlocking(OpoProtocol.buildQueryProductId(), "query product id")
                 delay(200); sendRawBlocking(OpoProtocol.buildQueryBroadcastCodes(), "query broadcast codes")
                 // The handshake reply (0x8100) has landed by now; the reads below go out only if
-                // these buds list them, as HeyMelody does (see Capabilities).
+                // these buds list them, as HeyMelody does (see Capabilities). Buds with the `0x012F`
+                // batch get them in one frame at the end, as HeyMelody sends them.
+                val batch = if (Capabilities.supports(context, OpoProtocol.CMD_BATCH)) mutableListOf<ByteArray>() else null
                 fun query(cmd: Int, packet: ByteArray, label: String) {
                     if (!Capabilities.supports(context, cmd)) { log("skip $label: not supported"); return }
+                    if (batch != null) { batch += packet; return }
                     delay(200); sendRawBlocking(packet, label)
                 }
                 delay(200)
@@ -336,6 +339,7 @@ class BudsConnectionManager(private val context: Context) {
                 query(OpoProtocol.CMD_QUERY_CODEC, OpoProtocol.queryCodec(), "query codec")
                 query(OpoProtocol.CMD_QUERY_GAME_SOUND, OpoProtocol.queryGameSound(), "query game sound")
                 query(OpoProtocol.CMD_QUERY_HEAD_MOTION_TYPE, OpoProtocol.queryHeadMotionType(), "query head motion type")
+                if (!batch.isNullOrEmpty()) { delay(200); sendRawBlocking(OpoProtocol.batch(batch), "batch query (${batch.size})") }
             } catch (e: Exception) {
                 log("Init sequence error: ${e.message}")
             }
@@ -1093,7 +1097,8 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
             cmd == 0x811A || cmd == 0x8133 || cmd == 0x8132 || // personalized ANC, tap sensitivity, preferred device
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
-            cmd == OpoProtocol.CMD_REGISTER_NOTIFY
+            cmd == OpoProtocol.CMD_REGISTER_NOTIFY ||
+            cmd == OpoProtocol.CMD_BATCH_REPLY           // unpacked in handlePacket
         if (explained) return
 
         val head = OpoProtocol.bytesToHex(payload.take(4).toByteArray())
@@ -1101,8 +1106,9 @@ class BudsConnectionManager(private val context: Context) {
             "head=[$head] ancFlush=${if (System.currentTimeMillis() - lastAncFlushAt < 4000) "YES" else "no"}")
     }
 
-    private fun handlePacket(packet: ByteArray) {
-        log("RX: ${OpoProtocol.bytesToHex(packet)}")
+    /** [batched]: one answer unpacked from a `0x812F` batch reply, as if it came on its own. */
+    private fun handlePacket(packet: ByteArray, batched: Boolean = false) {
+        log("${if (batched) "RX[batch]" else "RX"}: ${OpoProtocol.bytesToHex(packet)}")
         noteUnattributed(packet)
         handler.post { listeners.forEach { it.onPacketReceived(packet) } }
 
@@ -1116,6 +1122,11 @@ class BudsConnectionManager(private val context: Context) {
         if (cmd == OpoProtocol.REQ_TIME) return
 
         if (cmd == 0x8200) { offeredEvents = OpoProtocol.offeredEvents(payload); return }
+        if (cmd == OpoProtocol.CMD_BATCH_REPLY) {
+            for ((c, p) in OpoProtocol.batchReplies(payload))
+                handlePacket(OpoProtocol.buildPacket(c, packet[6].toInt() and 0xFF, p), batched = true)
+            return
+        }
 
         // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
         if (cmd == 0x8100) {

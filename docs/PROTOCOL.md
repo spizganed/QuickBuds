@@ -184,7 +184,8 @@ disturbed, suspect the last two (they were added last).
 
 HeyMelody on the Buds 4 (2026-10-06): after `0x0100`, `0x0200` and `0x0205` it sends **one `0x012F`
 frame carrying 24 queries**, not the queries one by one. Bitmap bit 56; buds without it (Enco Buds2:
-4-byte bitmap) get the queries separately. We do not send it.
+4-byte bitmap) get the queries separately. Both apps do the same: with bit 56, the connect-time reads
+(after the event registration) go out as one `0x012F`; a status read later goes alone.
 
 - Request payload: `<count>`, then per query `<cmd LE> <len LE> <payload>`. Buds 4 (`0D 01 0A 00 …` =
   `0x010D` with 10 bytes): `0102 FFFF`, `0106`, `010B`, `0103`, `0101 0002`, `0114`, `0105`, `0107`,
@@ -192,7 +193,9 @@ frame carrying 24 queries**, not the queries one by one. Bitmap bit 56; buds wit
   `010D 09 05 04 0B 11 18 06 1B 1D 1C`, `0121`, `0123`, `0118 0101`, `011C`, `0115`, `011E`, `0122`,
   `0105`, `0109`.
 - Replies: several `0x812F` frames with the request's seq, each `00 <count>` then per answer
-  `<cmd LE> <len LE> <normal reply payload>` (here 1 + 21 + 2 = 24 answers).
+  `<cmd LE> <len LE> <normal reply payload>` (here 1 + 21 + 2 = 24 answers). `cmd` is the query's;
+  each answer is handled as reply `cmd | 0x8000` `[VENDOR]`, and one whose status byte is not `00` is
+  dropped. Logged as `RX[batch]` (Android) / after a `batch reply, N answers` line (desktop).
 - **HeyMelody's `0x010D` id list for the Buds 4 is `05 04 0B 11 18 06 1B 1D 1C`**; the buds answered
   `00 08 05 00 04 00 0B 01 11 01 18 01 06 00 1B 00 1D 01` (no `1C`). It does not ask for `17`, `0C`,
   `09`, `30`-`3B`. OppoPodsManager's model list predicts `0D` and no `06` for this model, so its
@@ -482,7 +485,16 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 `[CAPTURE]`. **The ids are per model** `[VENDOR]`, as HeyMelody builds them: `05`, then one id per
 feature its model data has. `models.json` `statusQuery` holds the list (81 HeyMelody models, generated
 from HeyMelody 116.9.0's built-in data); Buds 4 = `05 04 0B 11 18 06 1B 1D 1C` (= the capture), Enco Buds2
-= `05 06`. A longer list drops some links (issue #5: the old fixed 23-id list dropped the Enco Buds2; `02 05 0D`
+= `05 06` `[USER]`. Rule `[VENDOR]`: `05`, then in this order, per `function` key (value exactly `1`
+unless noted): `04` wearDetection, `0B` hearingEnhancement(New), `0C` personalNoise (or
+personalNoiseCompat.personalNoise), `0D` clickTakePic(New), `0F` zenMode > 0, `11` multiDevicesConnect
+1/2, `09` vocalEnhance, `13` headSetSoundRecord, `18` highToneQuality 1/2, `17` longPowerMode, `15`
+smartCall, `16` deviceLostRemind, `14` voiceWake 1/3, `19` voiceCommand 1/2, `06` gameMode or gameModeList,
+`1B` spatialTypes, `1D` bassEngineSupport, `1C` controlAutoVolumeSupport, `1E` collectLogs, `21`
+gameEqPkgList, (`1F` OPPO / OnePlus phones only, skipped), `22 23 24` spineHealth, `27 28` gameSoundList
+or bitmap `0x0423`, `30` adaptiveVolume, `31` adaptiveEar, `32` speechPerception, `34` meetingAssistant,
+`35` longPressVolume, `37` swiftPair, `38` hearingOptimize, `39` incomingCallControl, `3B` headMotion,
+`3A` sleepDetection. A longer list drops some links (issue #5: the old fixed 23-id list dropped the Enco Buds2; `02 05 0D`
 kept it up `[CAPTURE]`). A model without `statusQuery` (realme, hand-added) still gets the 23 ids, plus `1A`
 where it has `windNoise`. Rows for ids a model is not asked for do not show (HeyMelody parity: no Power
 saving or Personalised ANC on Buds 4). Parsed into
