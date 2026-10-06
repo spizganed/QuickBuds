@@ -173,20 +173,19 @@ pub fn find_model(id: Option<&str>, name: Option<&str>) -> Option<&'static Value
     let m = models();
     let by_name = |x: &&Value| name.is_some() && x["name"].as_str() == name;
     
-    if let Some(target_id) = id {
-        let mut matches = m.iter().filter(|x| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(target_id)));
-        if let Some(first) = matches.next() {
-            if matches.next().is_some() {
-                // Multiple models share this ID. Use name as tie-breaker, fallback to first.
-                return m.iter()
-                    .filter(|x| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(target_id)))
-                    .find(by_name)
-                    .or(Some(first));
-            }
-            return Some(first);
-        }
+    // 1. If the exact Bluetooth name is an official factory model (e.g. "OPPO Enco Buds2"),
+    // trust the name over the ID. BBK hardware often reports wrong/recycled IDs for budget models.
+    if let Some(known_name) = m.iter().find(by_name) {
+        return Some(known_name);
     }
-    m.iter().find(by_name)
+    
+    // 2. If the user renamed their buds (e.g. "My Buds"), the name won't match any official model.
+    // Fall back to safely trusting the Product ID.
+    if let Some(target_id) = id {
+        return m.iter().find(|x| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(target_id)));
+    }
+    
+    None
 }
 
 pub fn is_known_name(name: &str) -> bool { models().iter().any(|m| m["name"].as_str() == Some(name)) }
