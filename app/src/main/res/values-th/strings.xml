@@ -250,6 +250,8 @@
     <string name="layout_cancel">ยกเลิก</string>
     <string name="settings_haptics_title">การสั่นตอบสนอง</string>
     <string name="settings_haptics_sub">สั่นเมื่อมีการเปลี่ยนการตั้งค่า</string>
+    <string name="settings_clear_battery_title">ซ่อนระดับแบตเตอรี่เก่า</string>
+    <string name="settings_clear_battery_sub">ล้างระดับที่หูฟังหยุดรายงาน เช่น เคสหลังปิดฝา</string>
     <string name="settings_background_title">บริการเบื้องหลัง</string>
     <string name="settings_background_sub">เชื่อมต่อไว้เมื่อปิดแอป</string>
     <string name="settings_background_warn_title">ปิดบริการเบื้องหลังไหม</string>

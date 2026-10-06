@@ -250,6 +250,8 @@
     <string name="layout_cancel">취소</string>
     <string name="settings_haptics_title">햅틱 피드백</string>
     <string name="settings_haptics_sub">설정이 바뀔 때 진동</string>
+    <string name="settings_clear_battery_title">오래된 배터리 잔량 숨기기</string>
+    <string name="settings_clear_battery_sub">이어버드가 더 이상 보고하지 않는 잔량을 지웁니다(뚜껑을 닫은 후의 케이스 등)</string>
     <string name="settings_background_title">백그라운드 서비스</string>
     <string name="settings_background_sub">앱을 닫아도 연결 유지</string>
     <string name="settings_background_warn_title">백그라운드 서비스를 끌까요?</string>

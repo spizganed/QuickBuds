@@ -250,6 +250,8 @@
     <string name="layout_cancel">বাতিল</string>
     <string name="settings_haptics_title">হ্যাপটিক ফিডব্যাক</string>
     <string name="settings_haptics_sub">সেটিং বদলালে কম্পন</string>
+    <string name="settings_clear_battery_title">পুরোনো ব্যাটারি স্তর লুকান</string>
+    <string name="settings_clear_battery_sub">বাডস যে স্তর জানানো বন্ধ করে তা মুছুন, যেমন ঢাকনা বন্ধের পর কেস</string>
     <string name="settings_background_title">ব্যাকগ্রাউন্ড সার্ভিস</string>
     <string name="settings_background_sub">অ্যাপ বন্ধ থাকলেও সংযুক্ত থাকুন</string>
     <string name="settings_background_warn_title">ব্যাকগ্রাউন্ড সার্ভিস বন্ধ করবেন?</string>

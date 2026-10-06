@@ -250,6 +250,8 @@
     <string name="layout_cancel">रद्द करें</string>
     <string name="settings_haptics_title">हैप्टिक फ़ीडबैक</string>
     <string name="settings_haptics_sub">सेटिंग बदलने पर वाइब्रेट करें</string>
+    <string name="settings_clear_battery_title">पुराने बैटरी स्तर छिपाएँ</string>
+    <string name="settings_clear_battery_sub">बड्स जो स्तर बताना बंद कर दें उसे हटाएँ, जैसे ढक्कन बंद होने के बाद केस</string>
     <string name="settings_background_title">बैकग्राउंड सेवा</string>
     <string name="settings_background_sub">ऐप बंद होने पर भी कनेक्टेड रहें</string>
     <string name="settings_background_warn_title">बैकग्राउंड सेवा बंद करें?</string>

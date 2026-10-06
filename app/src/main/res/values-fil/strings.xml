@@ -250,6 +250,8 @@
     <string name="layout_cancel">Kanselahin</string>
     <string name="settings_haptics_title">Haptic feedback</string>
     <string name="settings_haptics_sub">Mag-vibrate kapag nagbago ang isang setting</string>
+    <string name="settings_clear_battery_title">Itago ang lumang antas ng baterya</string>
+    <string name="settings_clear_battery_sub">Burahin ang antas na hindi na iniuulat ng buds, gaya ng case pagkasara ng takip</string>
     <string name="settings_background_title">Background service</string>
     <string name="settings_background_sub">Manatiling nakakonekta kahit sarado ang app</string>
     <string name="settings_background_warn_title">I-off ang background service?</string>

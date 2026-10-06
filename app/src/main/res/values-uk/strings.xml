@@ -250,6 +250,8 @@
     <string name="layout_cancel">Скасувати</string>
     <string name="settings_haptics_title">Тактильний відгук</string>
     <string name="settings_haptics_sub">Вібрація під час зміни налаштування</string>
+    <string name="settings_clear_battery_title">Приховувати старий заряд</string>
+    <string name="settings_clear_battery_sub">Скидати рівень, про який навушники перестали повідомляти, наприклад кейса після закриття</string>
     <string name="settings_background_title">Фонова служба</string>
     <string name="settings_background_sub">Залишатися підключеним, коли застосунок закрито</string>
     <string name="settings_background_warn_title">Вимкнути фонову службу?</string>

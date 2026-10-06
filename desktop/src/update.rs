@@ -135,6 +135,8 @@ pub fn setup(main: &MainWindow) {
     g.set_auto(auto);
     g.on_check(|| with_app(check));
     g.on_set_auto(|on| with_app(|a| { save_setting("update_auto", on.into()); a.main.global::<Update>().set_auto(on); }));
+    g.set_clear_battery(load_settings()["clear_battery"].as_bool().unwrap_or(false));
+    g.on_set_clear_battery(|on| with_app(|a| { save_setting("clear_battery", on.into()); a.main.global::<Update>().set_clear_battery(on); }));
     g.on_install(|| with_app(|a| {
         let Some(r) = FOUND.lock().unwrap().take() else { return };
         if !can_install() { open_page(); *FOUND.lock().unwrap() = Some(r); return; }

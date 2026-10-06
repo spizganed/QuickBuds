@@ -250,6 +250,8 @@
     <string name="layout_cancel">キャンセル</string>
     <string name="settings_haptics_title">触覚フィードバック</string>
     <string name="settings_haptics_sub">設定が変わるときに振動</string>
+    <string name="settings_clear_battery_title">古いバッテリー残量を隠す</string>
+    <string name="settings_clear_battery_sub">イヤホンが報告しなくなった残量を消去します（ふたを閉じた後のケースなど）</string>
     <string name="settings_background_title">バックグラウンドサービス</string>
     <string name="settings_background_sub">アプリを閉じても接続を維持</string>
     <string name="settings_background_warn_title">バックグラウンドサービスをオフにしますか？</string>

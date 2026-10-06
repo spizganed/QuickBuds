@@ -283,9 +283,13 @@ impl<'a> Conn<'a> {
             Event::Offered(o) => s.offered = Some(o),
             Event::EqCustom(list) => s.eq_custom = list,
             Event::BassLevel(l) => s.bass_level = Some(l),
-            Event::Battery(v) => for (i, level, charging) in v {
-                if (1..=3).contains(&i) { s.battery[i as usize - 1] = Some((level, charging)); }
-            },
+            Event::Battery(v) => {
+                // Settings › Hide old battery levels: a part the report leaves out is cleared, not kept.
+                if crate::load_settings()["clear_battery"].as_bool() == Some(true) { s.battery = [None; 3]; }
+                for (i, level, charging) in v {
+                    if (1..=3).contains(&i) { s.battery[i as usize - 1] = Some((level, charging)); }
+                }
+            }
             Event::Wear(v) => for (i, st) in v {
                 if (1..=3).contains(&i) { s.wear[i as usize - 1] = st; }
             },

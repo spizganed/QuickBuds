@@ -250,6 +250,8 @@
     <string name="layout_cancel">İptal</string>
     <string name="settings_haptics_title">Dokunsal geri bildirim</string>
     <string name="settings_haptics_sub">Bir ayar değişince titreşim</string>
+    <string name="settings_clear_battery_title">Eski pil seviyelerini gizle</string>
+    <string name="settings_clear_battery_sub">Kulaklığın artık bildirmediği seviyeyi temizle, ör. kapak kapandıktan sonra kutu</string>
     <string name="settings_background_title">Arka plan hizmeti</string>
     <string name="settings_background_sub">Uygulama kapalıyken bağlı kal</string>
     <string name="settings_background_warn_title">Arka plan hizmeti kapatılsın mı?</string>

@@ -91,6 +91,8 @@ Details and evidence in PROTOCOL.md.
   requests in `answerFor` / `answer_for` (PROTOCOL.md §9); subscribe only to offered events (§4).
 - **Settled, do not raise again:** case lid has no lasting state and case charging is not shown;
   undecoded families (PROTOCOL.md §12) are not guessed from a few samples.
+- A battery report that leaves a part out keeps its last level; Settings › "Hide old battery levels"
+  (`clearMissingBattery` / desktop `clear_battery`, default off) clears it instead `[USER]` (issue #5).
 
 ## Connection
 
