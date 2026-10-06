@@ -41,9 +41,11 @@ object ModelCatalog {
     }
 
     fun find(models: List<Model>, id: String?, name: String?): Model? {
-        // The product id is unique in the list; the device name is only a fallback (the user can rename it).
-        return models.firstOrNull { id != null && it.id.equals(id, ignoreCase = true) }
-            ?: models.firstOrNull { name != null && it.name == name }
+        // HeyMelody's order (PROTOCOL.md §4): name and id, then name (some buds reuse another model's id,
+        // issue #5), then id (a renamed device).
+        val byId = { m: Model -> id != null && m.id.equals(id, ignoreCase = true) }
+        val byName = { m: Model -> name != null && m.name == name }
+        return models.firstOrNull { byName(it) && byId(it) } ?: models.firstOrNull(byName) ?: models.firstOrNull(byId)
     }
 
     /** The detected model, ignoring a manual pick. Null = nothing read yet, or not in the list. */

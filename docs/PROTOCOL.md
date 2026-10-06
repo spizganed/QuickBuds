@@ -171,7 +171,8 @@ disturbed, suspect the last two (they were added last).
 - **Model lookup** `[VENDOR]` (`ModelCatalog.find`): entries in `assets/models.json` whose `name`
   equals the Bluetooth name exactly, and those whose `id` equals the product id. An entry matching
   both wins, then the first name match, then the first id match. A model picked by hand overrides it
-  until other buds connect.
+  until other buds connect. Name before id matters: OPPO Enco Buds2 report `060C12`, the realme Buds Q2s
+  id (issue #5) `[CAPTURE]`; a renamed device matches no name and falls back to its id.
 - **`0x8105` firmware** `[CAPTURE]`: `00 <count>` then UTF-8 `deviceType,versionType,version` triples.
   Buds 4: `00 04` + `1,2,138,2,2,138,3,1,01,3,2,105`. HeyMelody shows `138.138.105`: the `versionType` 2
   versions in reply order, joined by dots (`OpoProtocol.firmwareVersion()`). Device types 1 / 2 / 3 are

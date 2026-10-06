@@ -173,7 +173,8 @@ pub fn find_model(id: Option<&str>, name: Option<&str>) -> Option<&'static Value
     let m = models();
     let by_name = |x: &&Value| name.is_some() && x["name"].as_str() == name;
     let by_id = |x: &&Value| id.is_some_and(|id| x["id"].as_str().is_some_and(|i| i.eq_ignore_ascii_case(id)));
-    m.iter().find(by_id).or_else(|| m.iter().find(by_name))
+    // HeyMelody's order (PROTOCOL.md §4): name and id, then name, then id.
+    m.iter().find(|x| by_name(x) && by_id(x)).or_else(|| m.iter().find(by_name)).or_else(|| m.iter().find(by_id))
 }
 
 pub fn is_known_name(name: &str) -> bool { models().iter().any(|m| m["name"].as_str() == Some(name)) }
@@ -972,8 +973,10 @@ mod tests {
         assert_eq!(caps.game_mode_id(), FEATURE_GAME_MODE);
         assert_eq!(product_id(&[0x00, 0x14, 0x54, 0x06]).as_deref(), Some("065414"));
         let anc = AncModes::of(find_model(Some("065414"), Some("OnePlus Buds 4")));
-        // The id wins over a device name the user changed, even to another model's.
-        assert_eq!(find_model(Some("065414"), Some("OnePlus Nord Buds 2R")).unwrap()["name"], "OnePlus Buds 4");
+        // A renamed device keeps its model by id; a factory name beats a reused id (issue #5: the Enco
+        // Buds2 report the Q2s id 060C12).
+        assert_eq!(find_model(Some("065414"), Some("My buds")).unwrap()["name"], "OnePlus Buds 4");
+        assert_eq!(find_model(Some("060C12"), Some("OPPO Enco Buds2")).unwrap()["id"], "064810");
         assert_eq!(find_model(None, Some("OnePlus Buds 4")).unwrap()["id"], "065414");
         // Adaptive's SET bit is 11, `01 01 00 08` (CLAUDE.md); Off is reported as bit 3, Off's child.
         assert_eq!(anc.bit(OFF), Some(0));
