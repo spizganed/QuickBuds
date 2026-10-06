@@ -67,22 +67,23 @@ Ids go out in the table's order (HeyMelody's order).
 
 ## Plan (replaces the "learn it per device" proposal in CLAUDE.md)
 
-1. **Ask the reporter first** to try `02 05 0D`, then `01 05`, as `STATUS_QUERY` on a clean v4.4.0
-   desktop build, and say whether the link stays up.
-2. **The data:** our `models.json` is trimmed and lacks most of these keys (it has `vocalEnhance`,
-   `bassEngineSupport`, `controlAutoVolumeSupport`, `personalNoise`, `spatialTypes`, `longPressVolume`,
-   `swiftPair`; `multiConnect` / `highAudio` / `gameSound` are other keys, not the ones above). HeyMelody fetches its list
-   from its server; the APK bundles none. OppoPodsManager's `DeviceModels.json` `[OSS]` has full
-   `function` maps but is out of date (Buds 4 capture above). Better: the current server list (find its
-   URL in the decompile), or a capture per model. Add the keys the table needs to
-   `models.json` (or one precomputed `"status"` id list per model, built by a script from that file).
+Decided `[USER]` 2026-10-06: follow HeyMelody's per-model list. HeyMelody shows neither Personalised ANC
+nor Power saving for the Buds 4, so those rows going away is parity. Use the `0x012F` batch where the
+bitmap has it.
+
+1. **Reporter's test** (asked on #5): `02 05 0D`, then `01 05`, as `STATUS_QUERY` on a clean v4.4.0
+   desktop build. PR #7 on hold until then (review posted).
+2. **Current model data, on the PC:** run HeyMelody in a rooted Android emulator and read the model list
+   it downloads (current `function` maps for every model). The steps live in the agent's memory, not
+   here (vendor details stay out of the repo). Diff it against `models.json` and OppoPodsManager's
+   `DeviceModels.json` `[OSS]` (out of date, see the Buds 4 capture above). Take only per-model facts:
+   the keys the table needs, added to `models.json`. If the emulator route fails: captures per model;
+   models without data keep today's 23-id query.
 3. **Code, in one commit with PROTOCOL.md §9:** build the query per model in `OpoProtocol.queryStatus()`
    and `protocol.rs` (`STATUS_QUERY` becomes a function). The same model lookup decides it, so a model
-   picked by hand changes the list too. A model with no `models.json` match: `01 05`.
-4. **Check nothing we show disappears:** today's switches read their state from the `0x810D` reply.
-   For every model with a row (Buds 4 first: it answers `05 04 0B 11 18 06 1B 1D 17 0C`), the new list
-   must still include each id a visible row needs. If a row's id is not in the vendor map, the row
-   should not show either (HeyMelody parity).
-5. **Desktop:** `cargo test` needs a proot (removed). On mobile data, set up the Debian proot again from
-   TOOLCHAIN.md, or leave the desktop half and its tests for the PC.
+   picked by hand changes the list too. Rows whose id is no longer asked disappear (HeyMelody parity).
+4. **`0x012F` batch at connect** (PROTOCOL.md "Batch query"), both apps, where the bitmap has bit 56:
+   one frame instead of the separate queries; replies split per answer into the normal handlers.
+5. **Builds:** Android builds on the phone. Desktop `cargo test` needs the Debian proot (removed) or
+   the PC; release both apps together.
 6. Delete this file; drop the issue #5 block from CLAUDE.md "Current state".
