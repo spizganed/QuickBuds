@@ -13,11 +13,11 @@ import com.spizganed.quickbuds.widget.QuickBudsWidget
 import kotlin.math.min
 
 /**
- * The home screen's battery tile (design/SPEC.md 3.1-3.3): left bud, case and right bud, each in a
+ * The home screen's battery tile: left bud, case and right bud, each in a
  * 104dp battery ring, with the percentage and a wear label under it. Drawn in one view, in the
  * same language as [EqCurveView] / [LevelSliderView].
  *
- * Wear, from the buds' status codes (same meaning the widget uses; design/widgets/WIDGETS.md 1):
+ * Wear, from the buds' status codes (same meaning the widget uses):
  *   3 / 7 = in ear  -> glyph `text`,                   label "In ear" in `text`, semibold
  *   4 / 0 = in case -> glyph `textSecondary` at 45%,   label "In case" (no badge, [USER] 2026-09-26)
  *   other known     -> glyph `textSecondary`,          label "Out of ear"

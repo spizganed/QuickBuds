@@ -61,7 +61,7 @@ import java.util.WeakHashMap
  * Anything that needs a themed colour should call ThemeRes.color(context, R.attr.x)
  * rather than getColor(R.color.x) directly, when the value differs per theme.
  *
- * CUSTOM PRESETS (design/SPEC.md sections 1, 3.7, 3.8)
+ * CUSTOM PRESETS
  * There are six token attributes (themes.xml). A built-in preset is a compiled style
  * that sets them. A custom preset cannot be a style, so [select] picks the base style
  * with the matching light/dark window and installs [PaletteFactory], which swaps each

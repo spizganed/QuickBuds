@@ -28,7 +28,7 @@ import com.spizganed.quickbuds.ui.Palette
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
- * The home-screen widgets (design/widgets/WIDGETS.md, 2026-09-27). One provider per size, so each
+ * The home-screen widgets. One provider per size, so each
  * has its own picker entry and cell size, and the old class names keep placed widgets alive:
  *
  *  - [BatteryWidgetProvider] 2x2

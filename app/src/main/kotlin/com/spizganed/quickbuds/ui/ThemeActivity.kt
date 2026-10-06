@@ -16,7 +16,7 @@ import android.widget.TextView
 import com.spizganed.quickbuds.R
 
 /**
- * Theme & colors (design/SPEC.md 3.7): the style (Classic / Nothing), the three built-in presets as preview tiles, then the
+ * Theme & colors: the style (Classic / Nothing), the three built-in presets as preview tiles, then the
  * custom presets (at most 3) as rows, then "New preset". Tapping a tile or a row applies that
  * preset at once; the pencil opens [PresetEditActivity].
  */

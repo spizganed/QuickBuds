@@ -308,7 +308,7 @@
     <string name="preset_recent">हाल के</string>
     <string name="preset_hex">हेक्स रंग</string>
 
-    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <!-- Widgets and widget settings -->
     <string name="widget_style_title">स्टाइल</string>
     <string name="widget_style_classic">क्लासिक</string>
     <string name="widget_mode_anc_low">ANC कम</string>

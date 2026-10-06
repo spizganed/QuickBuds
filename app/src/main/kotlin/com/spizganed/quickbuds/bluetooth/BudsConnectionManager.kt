@@ -181,7 +181,7 @@ class BudsConnectionManager(private val context: Context) {
 
     /**
      * Drops or restores the phone's own audio link, the way HeyMelody's Connect/Disconnect does
-     * (bugreport 2026-09-24, ROADMAP-DONE.md "Connection and push"): the hidden
+     * (bugreport 2026-09-24): the hidden
      * `connect()`/`disconnect()` on the A2DP and Headset proxies, by reflection. Headset `connect()`
      * is refused for ordinary apps, so connecting asks A2DP only and the system brings HFP up by
      * itself (~10 s). Connecting an already-connected profile is a no-op.

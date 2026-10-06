@@ -6,16 +6,16 @@ the history of how it was found is in git.
 **Evidence tags.** Every claim carries one:
 `[VENDOR]` HeyMelody's behaviour, or realme Link's where a line says so (studied for interoperability only) ·
 `[OSS]` a public project from the README's Credits ·
-`[CAPTURE]` seen on our own device (captures in `local/logs/`, on the developer's machine) ·
-`[USER]` the developer's report · `[GUESS]` unverified.
+`[CAPTURE]` seen in a capture on our own buds · `[TESTED]` checked by hand on our own buds ·
+`[GUESS]` unverified.
 Never promote a claim without evidence. Never remove a `[GUESS]` tag to tidy up.
 
 **Test device:** OnePlus Buds 4, firmware `B4.1-260810-1153` (HeyMelody shows `138.138.105`). Other models differ in feature ids, button
 ids and ANC bits. "Wired, unverified" means the app sends it but no owner of that model has read a
 write back.
 
-**Update this file in the same commit as the code change.** Keep section numbers stable: code and
-CLAUDE.md cite them.
+**Update this file in the same commit as the code change.** Keep section numbers stable: the code
+cites them.
 
 ---
 
@@ -154,7 +154,7 @@ wearing `0x0109`.
 ```
 
 Nothing is polled after that: battery, wear, ANC and game mode are pushed. Was: the `[OSS]`
-keep-alive poll. Is: none; no stale link seen `[USER]`.
+keep-alive poll. Is: none; no stale link seen `[TESTED]`.
 
 ### What the buds are and accept
 
@@ -324,7 +324,7 @@ setting**; clearing `fn` to `0x00` does not stop the cycle `[CAPTURE]`.
 - A single-bit mask is valid (HeyMelody's minimum is one mode) `[CAPTURE]`. The app never sends 0.
 - **Level bits are dropped silently**: `0x0021` was ACKed `00` and read back `0x0001` `[CAPTURE]`. The
   hold's ANC stop is always bit 1, the level last set by hand.
-- One shared setting for both buds (type `01`) `[USER]`+`[CAPTURE]`.
+- One shared setting for both buds (type `01`) `[TESTED]`+`[CAPTURE]`.
 - Bit 1 alone has never been cleared in a test (§12).
 
 ### Mistakes not to repeat
@@ -398,7 +398,7 @@ Each model's `control` and `callControl` in `assets/models.json`: one entry per 
 | 128 | noise cycle `08` | | 8192 | game mode `11` |
 | 256 | favourite music `09` | | 32768 / 65536 / 131072 | collect music / zen / AI summary |
 
-Buds 4: `1:516 2:8807 3:3154531 5:3584`, hold `27` — matches HeyMelody's menus `[USER]`.
+Buds 4: `1:516 2:8807 3:3154531 5:3584`, hold `27` — matches HeyMelody's menus `[TESTED]`.
 
 - `action` → `act`: 1-6 are themselves; 16/17/18 = acts 1/2/3 (stem-press models); 11, 20, 27 = the
   hold's ANC cycle on act 4 (options = the model's top-level noise modes); 7, 8, 12-15 are text-only
@@ -407,7 +407,7 @@ Buds 4: `1:516 2:8807 3:3154531 5:3584`, hold `27` — matches HeyMelody's menus
   act 6. Support 524288 = answer/end `1D`, 262144 = decline `1C`, 131072 = AI summary. A row without
   none (512) has one fixed option and writes nothing. Buds 4 `[CAPTURE]`: double tap
   `0401 01 04 06 02 1D` / `…02 00`, long hold `0401 01 04 06 06 1C` / `…06 00`; one write lands on both
-  buds, labels confirmed on a real call `[USER]`.
+  buds, labels confirmed on a real call `[TESTED]`.
 - **realme models** `[VENDOR]` (realme Link, issue #8), wired, unverified: per-bud double tap, triple
   tap and hold, same `fn` bytes as above, `dev` 1 / 2, `btn 01`. A hold with the noise cycle is
   `longPressType` 8833; its cycle is **one mask for both buds** (`0x0404 02 01 <mask>`, read
@@ -482,7 +482,7 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 
 - **The ids are per model** `[VENDOR]`. `models.json` `statusQuery` holds the list (81 HeyMelody
   models, from HeyMelody 116.9.0's built-in data). Buds 4: `05 04 0B 11 18 06 1B 1D 1C` (matches the
-  capture). Enco Buds2: `05 06` `[USER]`.
+  capture). Enco Buds2: `05 06` `[TESTED]`.
 - **A longer list drops some links.** Was: one fixed 23-id list, which dropped the Enco Buds2 (issue
   #5). Is: the per-model list. `02 05 0D` kept that link up `[CAPTURE]`.
 - A model without `statusQuery` (realme, hand-added) gets the 23 ids, plus `1A` where it has `windNoise`.
@@ -531,7 +531,7 @@ speechPerception, `34` meetingAssistant, `35` longPressVolume, `37` swiftPair, `
 Ids `09`-`3B` without a `[CAPTURE]` are `[VENDOR]`, wired, unverified on buds. A row shows where
 `0x810D` lists the id, or a hand-picked model has the flag.
 
-**Decided against** `[USER]`: voice wakeup `14`, voice commands `19`, incoming-call voice control
+**Decided against** `[TESTED]`: voice wakeup `14`, voice commands `19`, incoming-call voice control
 `39`, neck health `22`-`24` (needs OPPO's Health app), meeting assistant `34`.
 
 - **Power saving `17`** `[CAPTURE]`: either write restarts the buds. The link returns about 12 s

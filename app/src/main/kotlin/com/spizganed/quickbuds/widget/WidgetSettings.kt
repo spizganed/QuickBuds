@@ -6,7 +6,7 @@ import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
- * Widget settings (design/widgets/WIDGETS.md 5), shared by every placed widget. Each setter
+ * Widget settings, shared by every placed widget. Each setter
  * repaints all widgets. Also holds the per-widget "mode list is open" stamp (WIDGETS.md 4).
  */
 object WidgetSettings {

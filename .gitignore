@@ -8,10 +8,7 @@ local.properties
 .cxx/
 captures/
 
-# CodeAssist leftovers — NOT used on the PC build (see CLAUDE.md).
-# module.toml is CodeAssist's own project model; the real build is Gradle now.
-# NOTE: the old `*.toml` rule was removed deliberately — it would have swallowed
-# a Gradle version catalog (gradle/libs.versions.toml).
+# CodeAssist leftovers
 .platform/
 module.toml
 *.class
@@ -20,13 +17,8 @@ module.toml
 .DS_Store
 Thumbs.db
 
-# Runtime logs written by the app itself. These are regenerated on every run and
-# grow without bound; they are not committed. Packet captures that were handed
-# over for analysis are different — they are evidence, they live in local/logs/
-# and they ARE tracked.
+# Logs, and local working files (keys, captures, source SVGs)
 *.log
-
-# local/ is PC-only working material (packet captures, source SVGs). Never committed.
 local/
 
 # Desktop (Rust)

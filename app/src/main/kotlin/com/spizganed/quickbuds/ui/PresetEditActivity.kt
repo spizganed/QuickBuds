@@ -18,7 +18,7 @@ import com.spizganed.quickbuds.R
 import java.util.Locale
 
 /**
- * Edit preset (design/SPEC.md 3.8). The screen is drawn in the ACTIVE theme; only the preview is
+ * Edit preset. The screen is drawn in the ACTIVE theme; only the preview is
  * drawn in the preset's colours. Every change applies to the preview live and saves on commit
  * (finger lift, hex done, swatch tap, name done / focus loss), the same pattern as the EQ.
  */

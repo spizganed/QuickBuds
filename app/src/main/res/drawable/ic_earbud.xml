@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One earbud, filled (head, stem down the right; [USER] 2026-09-30: filled, not an outline): the rows' and buttons' bud icon. design/SPEC.md
-     section 5 style: 24x24 viewport, 2.2 stroke, round caps and joins. White, tinted at runtime. The ring and
+<!-- One earbud, filled (head, stem down the right; [USER] 2026-09-30: filled, not an outline): the rows' and buttons' bud icon. 
+     24x24 viewport, 2.2 stroke, round caps and joins. White, tinted at runtime. The ring and
      fit test glyphs (ic_bud_left / ic_bud_right) stay for large sizes. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"

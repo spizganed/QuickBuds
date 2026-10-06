@@ -15,7 +15,7 @@ import android.view.animation.DecelerateInterpolator
 import com.spizganed.quickbuds.widget.QuickBudsWidget
 
 /**
- * Noise-control switcher (design/SPEC.md 3.1): a card-style container (22dp radius, 4dp padding)
+ * Noise-control switcher: a card-style container (22dp radius, 4dp padding)
  * holding equal-width 64dp segments, each a 22dp icon over an 11.5sp label. The accent fill SLIDES
  * to the active segment. A tap reports the segment index through [onSegmentTapped]; the fill only
  * moves when [selected] is set — i.e. when the buds' state says so. [selected] = -1 is the neutral

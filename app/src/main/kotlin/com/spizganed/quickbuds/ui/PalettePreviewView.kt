@@ -8,7 +8,7 @@ import android.view.View
 import com.spizganed.quickbuds.R
 
 /**
- * A mini home screen drawn in ANY palette, not the active one (design/SPEC.md 3.7 and 3.8).
+ * A mini home screen drawn in ANY palette, not the active one.
  *
  * [detailed] false: the 150dp preset tile — a card with three rings, a segment pill, a row with
  * two text lines and a dot. [active] adds the 2dp accent stroke.

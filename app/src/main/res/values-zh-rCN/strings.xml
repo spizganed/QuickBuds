@@ -308,7 +308,7 @@
     <string name="preset_recent">最近</string>
     <string name="preset_hex">十六进制颜色</string>
 
-    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <!-- Widgets and widget settings -->
     <string name="widget_style_title">样式</string>
     <string name="widget_style_classic">经典</string>
     <string name="widget_mode_anc_low">降噪 低</string>

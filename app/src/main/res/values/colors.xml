@@ -2,7 +2,7 @@
 <resources>
     <color name="ic_launcher_background">#000000</color>
 
-    <!-- Edit preset quick swatches (design/SPEC.md 3.8). Picker choices, not app colours. -->
+    <!-- Edit preset quick swatches. Picker choices, not app colours. -->
     <color name="swatch_red">#D71920</color>
     <color name="swatch_orange">#E8742A</color>
     <color name="swatch_green">#22A06B</color>

@@ -11,7 +11,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 /**
- * The six colour tokens of one preset (design/SPEC.md section 1).
+ * The six colour tokens of one preset.
  *
  * Built-in presets are NOT stored as literals here: their values live once, in
  * values/themes.xml, and are read back from the compiled style (see [PaletteStore.builtIn]).

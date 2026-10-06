@@ -387,7 +387,7 @@
     <string name="preset_recent">Recent</string>
     <string name="preset_hex">Hex colour</string>
 
-    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <!-- Widgets and widget settings -->
     <string name="widget_style_title">Style</string>
     <string name="widget_style_classic">Classic</string>
     <string name="widget_style_nothing" translatable="false">Dot matrix</string>

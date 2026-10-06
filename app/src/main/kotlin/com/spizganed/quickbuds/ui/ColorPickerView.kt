@@ -16,7 +16,7 @@ import com.spizganed.quickbuds.R
 import java.util.Locale
 
 /**
- * Inline colour picker (design/SPEC.md 3.8, plus saturation and brightness so white, black and
+ * Inline colour picker (plus saturation and brightness so white, black and
  * greys are reachable, [USER] 2026-09-26): hue, saturation and brightness sliders, a hex field and
  * the five quick swatches. [onChange] fires while a slider drags; [onCommit] on finger lift, hex
  * done / focus loss, or a swatch tap. Used by Edit preset and by the built-in accent picker.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The three built-in presets, as compiled styles (design/SPEC.md section 1).
+  The three built-in presets, as compiled styles.
 
   Every colour in the app comes from the six token attributes below. Each style
   sets all six; ThemeRes.color() resolves them against the CURRENT theme, and XML

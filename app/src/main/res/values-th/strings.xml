@@ -308,7 +308,7 @@
     <string name="preset_recent">ล่าสุด</string>
     <string name="preset_hex">สีแบบเลขฐานสิบหก</string>
 
-    <!-- Widgets and widget settings (design/widgets/WIDGETS.md) -->
+    <!-- Widgets and widget settings -->
     <string name="widget_style_title">สไตล์</string>
     <string name="widget_style_classic">คลาสสิก</string>
     <string name="widget_mode_anc_low">ANC ต่ำ</string>

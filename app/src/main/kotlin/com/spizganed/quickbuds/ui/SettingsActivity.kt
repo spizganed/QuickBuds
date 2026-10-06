@@ -10,7 +10,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
 
 /**
- * Settings (design/SPEC.md 3.6), a full screen reached from the header cog. Same layout pattern
+ * Settings, a full screen reached from the header cog. Same layout pattern
  * as Earbud settings: title, then sectioned cards. Toggles save on change; no confirmation.
  */
 class SettingsActivity : Activity() {

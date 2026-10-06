@@ -35,7 +35,6 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 - **A debug build cannot install over the release app** (different signing key). Uninstall the
   release first, and uninstall the debug build before going back.
 - `./gradlew assembleRelease` without the release key builds an unsigned APK. That is expected.
-- No PC? The whole project builds and installs on the phone itself: [TOOLCHAIN.md](/docs/TOOLCHAIN.md).
 
 Versions: Gradle 9.6.0, AGP 9.4.0, Kotlin 2.4.0, `compileSdk` / `targetSdk` 37, `minSdk` 26. AGP 9
 compiles Kotlin itself, so do not add the `org.jetbrains.kotlin.android` plugin.
@@ -75,7 +74,6 @@ Per-model data (features, noise control modes, EQ presets, gestures) is in
 Read before changing anything:
 
 - [PROTOCOL.md](/docs/PROTOCOL.md): the wire format. Every claim is tagged with its source.
-- [CLAUDE.md](/CLAUDE.md): the conventions and the decisions already made, with the reasons.
 - [ROADMAP.md](/docs/ROADMAP.md): the plan, and the list of features decided against. Please check that
   list before proposing a feature.
 

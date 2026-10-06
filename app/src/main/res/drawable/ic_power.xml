@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Background service. Same stroke style as design/SPEC.md section 5. White, tinted at runtime. -->
+<!-- Background service. Same stroke style as the other icons. White, tinted at runtime. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">

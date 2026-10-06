@@ -32,7 +32,7 @@ donate on [Ko-fi](https://ko-fi.com/spizganed).
 
 ## Screenshots
 
-<!-- Retaken with scripts/readme-screenshots.sh classic, then dot-matrix; see CLAUDE.md. -->
+<!-- Taken with scripts/readme-screenshots.sh classic, then dot-matrix. -->
 
 | Main screen | Earbud settings | Equalizer | Hearing profile |
 | :---: | :---: | :---: | :---: |
@@ -159,9 +159,8 @@ DIZO Wireless, DIZO GoPods D, DIZO GoPods.
 
 - [CONTRIBUTING.md](./docs/CONTRIBUTING.md): build quickstart (Android and desktop), where things are, the rules that matter.
 - [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md): capturing the earbuds' traffic, HeyMelody's included.
-- [TOOLCHAIN.md](./docs/TOOLCHAIN.md): building and testing on the phone itself, over SSH from a PC.
 - [PROTOCOL.md](./docs/PROTOCOL.md): the wire format, every claim tagged with its source.
-- [CLAUDE.md](./CLAUDE.md): conventions and decisions. The plan is in [ROADMAP.md](./docs/ROADMAP.md).
+- [ROADMAP.md](./docs/ROADMAP.md): the plan, and the features decided against.
 
 ## Credits
 
