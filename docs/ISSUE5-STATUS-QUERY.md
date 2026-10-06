@@ -83,7 +83,7 @@ bitmap has it.
    `05 04 0B 11 18 06 1B 1D 1C` = the capture. **Enco Buds2 (`064810`) gives `05 06`**, not `05 0D` (the
    reporter tested `05 0D` only): decide which to send. 81 of the 82 ids are in `models.json` (missing:
    OPPO Enco Buds3s `06F450`); models without data keep today's 23-id query.
-3. **Code, in one commit with PROTOCOL.md §9:** build the query per model in `OpoProtocol.queryStatus()`
+3. **Done 2026-10-06** (Enco Buds2 get `05 06` `[USER]`). **Code, in one commit with PROTOCOL.md §9:** build the query per model in `OpoProtocol.queryStatus()`
    and `protocol.rs` (`status_query(model)`, already a function since the wind noise flag). The same model lookup decides it, so a model
    picked by hand changes the list too. Rows whose id is no longer asked disappear (HeyMelody parity).
 4. **`0x012F` batch at connect** (PROTOCOL.md "Batch query"), both apps, where the bitmap has bit 56:

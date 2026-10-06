@@ -618,16 +618,19 @@ object OpoProtocol {
         return buildPacket(CMD_SET_KEY_FUNCTION, payload = payload)
     }
 
-    /** [windNoise]: the model's `windNoise` flag adds [FEATURE_WIND_NOISE]; every other model's query is unchanged. */
-    fun queryStatus(windNoise: Boolean = false): ByteArray {
-        val ids = byteArrayOf(
+    /**
+     * [statusQuery]: the model's `statusQuery` (hex ids, HeyMelody's per-model list, PROTOCOL.md §9); a model
+     * without one gets the full list below. [windNoise]: the model's `windNoise` flag adds [FEATURE_WIND_NOISE].
+     */
+    fun queryStatus(statusQuery: String? = null, windNoise: Boolean = false): ByteArray {
+        val ids = (statusQuery?.split(' ')?.map { it.toInt(16).toByte() }?.toByteArray() ?: byteArrayOf(
             // Feature ids. 0x1D (BassWave) added 2026-09-23 — HeyMelody asks for it too;
             // 0x09 onwards on the second line 2026-09-29, the Earbud settings Features switches.
             // 0x32 onwards on the third line 2026-09-29, the rest of HeyMelody's list; 0x0C personalized ANC.
             0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
             0x09, 0x17, 0x30, 0x31, 0x3A,
             0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C
-        ) + if (windNoise) byteArrayOf(FEATURE_WIND_NOISE.toByte()) else byteArrayOf()
+        )) + if (windNoise) byteArrayOf(FEATURE_WIND_NOISE.toByte()) else byteArrayOf()
         return buildPacket(CMD_QUERY_STATUS, seq = 0x00, payload = byteArrayOf(ids.size.toByte()) + ids)
     }
 

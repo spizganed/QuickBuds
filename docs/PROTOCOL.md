@@ -479,7 +479,13 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 ### Feature switches — `0x0403 <id> <01/00>`, read with `0x010D`
 
 `0x010D <count> <ids>` → `00 <count> [<id> <value>]...`; only ids the firmware has come back
-`[CAPTURE]`. The app asks 23 ids (24 with `1A` where the model has `windNoise`); Buds 4 answers `05 04 0B 11 18 06 1B 1D 17 0C`. Parsed into
+`[CAPTURE]`. **The ids are per model** `[VENDOR]`, as HeyMelody builds them: `05`, then one id per
+feature its model data has. `models.json` `statusQuery` holds the list (81 HeyMelody models, generated
+from HeyMelody 116.9.0's built-in data); Buds 4 = `05 04 0B 11 18 06 1B 1D 1C` (= the capture), Enco Buds2
+= `05 06`. A longer list drops some links (issue #5: the old fixed 23-id list dropped the Enco Buds2; `02 05 0D`
+kept it up `[CAPTURE]`). A model without `statusQuery` (realme, hand-added) still gets the 23 ids, plus `1A`
+where it has `windNoise`. Rows for ids a model is not asked for do not show (HeyMelody parity: no Power
+saving or Personalised ANC on Buds 4). Parsed into
 `featureStates`, logged as `FEATURES:`. The buds' list wins over the model list while connected.
 
 | Id | Switch | Notes |

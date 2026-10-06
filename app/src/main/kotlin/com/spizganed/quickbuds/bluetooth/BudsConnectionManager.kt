@@ -750,9 +750,10 @@ class BudsConnectionManager(private val context: Context) {
 
     fun requestFullStatus() { sendRaw(statusQuery(), "manual status") }
 
-    /** `0x010D` for the model in use (PROTOCOL.md §9): wind noise only where the model has the flag. */
-    private fun statusQuery() =
-        OpoProtocol.queryStatus(ModelCatalog.current(context)?.json?.optInt("windNoise") == 1)
+    /** `0x010D` for the model in use (PROTOCOL.md §9): its own id list, wind noise only where the model has the flag. */
+    private fun statusQuery() = ModelCatalog.current(context)?.json.let {
+        OpoProtocol.queryStatus(it?.optString("statusQuery")?.ifEmpty { null }, it?.optInt("windNoise") == 1)
+    }
 
     /** Timestamp of the last ANC command we flushed; see noteUnattributed(). */
     private var lastAncFlushAt = 0L

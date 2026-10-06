@@ -96,14 +96,19 @@ pub fn offered_events(pl: &[u8]) -> Option<Vec<u8>> {
 /// realme Link's wind noise switch; asked only for models with the `windNoise` flag.
 pub const FEATURE_WIND_NOISE: u8 = 0x1A;
 
-/// `0x010D`: count, then the feature ids the phone app reads (`OpoProtocol.queryStatus`). The model's
-/// `windNoise` flag adds [FEATURE_WIND_NOISE]; every other model's query is unchanged.
+/// `0x010D`: count, then the feature ids (`OpoProtocol.queryStatus`): the model's `statusQuery` (HeyMelody's
+/// per-model list, PROTOCOL.md §9), else the full list. The `windNoise` flag adds [FEATURE_WIND_NOISE].
 pub fn status_query(model: Option<&serde_json::Value>) -> Vec<u8> {
-    let mut q = vec![
-        0x17, 0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
-        0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C,
-    ];
-    if model.is_some_and(|m| m["windNoise"] == 1) { q.push(FEATURE_WIND_NOISE); q[0] += 1; }
+    let mut ids: Vec<u8> = match model.and_then(|m| m["statusQuery"].as_str()) {
+        Some(s) => s.split(' ').filter_map(|h| u8::from_str_radix(h, 16).ok()).collect(),
+        None => vec![
+            0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
+            0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C,
+        ],
+    };
+    if model.is_some_and(|m| m["windNoise"] == 1) { ids.push(FEATURE_WIND_NOISE); }
+    let mut q = vec![ids.len() as u8];
+    q.extend(ids);
     q
 }
 
@@ -964,6 +969,14 @@ mod tests {
         let air7 = serde_json::json!({"windNoise": 1});
         let q = status_query(Some(&air7));
         assert_eq!((q[0], q[q.len() - 1], &q[1..24]), (24, FEATURE_WIND_NOISE, &plain[1..]));
+    }
+
+    #[test]
+    fn status_query_per_model() {
+        // Buds 4: HeyMelody's captured list. Enco Buds2: the short list that keeps their link up (issue #5).
+        let buds4 = find_model(Some("065414"), None);
+        assert_eq!(status_query(buds4), [9, 0x05, 0x04, 0x0B, 0x11, 0x18, 0x06, 0x1B, 0x1D, 0x1C]);
+        assert_eq!(status_query(find_model(Some("064810"), None)), [2, 0x05, 0x06]);
     }
 
     #[test]
