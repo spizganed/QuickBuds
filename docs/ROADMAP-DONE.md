@@ -23,6 +23,10 @@ What is finished and confirmed. The live plan is in [ROADMAP.md](./ROADMAP.md).
   system brings HFP up itself ~10 s later. Found in a btsnoop + bugreport of HeyMelody, 2026-09-24.
 
 - Auto-connect when the phone's audio link comes up (A2DP / HFP), confirmed by him 2026-09-27.
+- Model lookup back to HeyMelody's order, name and id, then name, then id (2026-10-06, issue #5): OPPO
+  Enco Buds2 report the realme Buds Q2s id `060C12`, so id-first hid their equalizer.
+- Settings › "Hide old battery levels" (2026-10-06, issue #5, default off): a battery report clears the
+  parts it leaves out instead of keeping their last level.
 
 ## Controls
 
