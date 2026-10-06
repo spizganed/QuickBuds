@@ -51,16 +51,22 @@ Temporary working note. Delete it once the change lands; the facts move to PROTO
 
 Ids go out in the table's order (HeyMelody's order).
 
-- **OPPO Enco Buds2** report `060C12` (realme Buds Q2s). That entry has no `function` map, so HeyMelody
-  would send **`0x010D 01 05`**. We send our fixed 23-id list to every model
-  (`OpoProtocol.queryStatus()`, `protocol::STATUS_QUERY`), which the reporter confirmed drops the link.
-  That `01 05` keeps it up is not tested yet.
+- **OPPO Enco Buds2** (`064810`, matched by name; they report `060C12`) `[OSS]` vendor list: `function`
+  has `clickTakePic: 1` and none of the other keys, so HeyMelody sends **`0x010D 02 05 0D`**. By id
+  (realme Buds Q2s, `function` = `fastDiscovery` only) it would be `01 05`. We send our fixed 23-id list
+  to every model (`OpoProtocol.queryStatus()`, `protocol::STATUS_QUERY`), which the reporter confirmed
+  drops the link. That `02 05 0D` keeps it up is not tested yet (asked on #5).
+- **OnePlus Buds 4** by the same list: `05 04 0B 0D 11 18 1B 1D 1C`. It has no `gameMode` /
+  `gameModeList`, `longPowerMode` or `personalNoise`, yet the buds answer `06`, `17` and `0C` and we show
+  rows for them. Either OppoPodsManager's list (versionCode 16007000) is older than HeyMelody's server
+  list, or HeyMelody reads those states elsewhere. Settle this before step 3 (watch HeyMelody's `0x010D`
+  in a btsnoop capture on the Buds 4).
 - Gadgetbridge does the same with a per-model list and sends no `0x010D` at all to Enco Buds2.
 
 ## Plan (replaces the "learn it per device" proposal in CLAUDE.md)
 
-1. **Ask the reporter first** to try `0x010D 01 05` (Dev tools / desktop packet send) and say whether
-   the link stays up.
+1. **Ask the reporter first** to try `02 05 0D`, then `01 05`, as `STATUS_QUERY` on a clean v4.4.0
+   desktop build, and say whether the link stays up.
 2. **The data:** our `models.json` is trimmed and lacks most of these keys (it has `vocalEnhance`,
    `bassEngineSupport`, `controlAutoVolumeSupport`, `personalNoise`, `spatialTypes`, `longPressVolume`,
    `swiftPair`; `multiConnect` / `highAudio` / `gameSound` are other keys, not the ones above). HeyMelody fetches its list

@@ -250,6 +250,6 @@ names kept so placed widgets survive), one renderer `QuickBudsWidget.build`.
 - **Next:** ROADMAP.md step 1 (PC version): his Windows zip test, the desktop Dot matrix font.
 - **Waiting:** issue #2 owners testing 4.3.x (read their logs before changing anything); AUR account.
 - **Issue #5 (in progress):** the reporter confirmed `0x010D` (our fixed 23-id status query) drops the
-  Enco Buds2 link. HeyMelody builds that query per model and would send those buds only `01 05`.
+  Enco Buds2 link. HeyMelody builds that query per model and would send those buds only `02 05 0D`.
   Findings and plan: **[docs/ISSUE5-STATUS-QUERY.md](./docs/ISSUE5-STATUS-QUERY.md)** (temporary; delete
   it when the change lands). No reply on #5 until he decides.
