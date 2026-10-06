@@ -1,0 +1,16 @@
+[
+  {
+    "id": "060C12",
+    "name": "realme Buds Q2s",
+    "supportsStatus": false,
+    "supportsWearing": true,
+    "supportsFirmware": true
+  },
+  {
+    "id": "064810",
+    "name": "OPPO Enco Buds2",
+    "supportsStatus": false,
+    "supportsWearing": true,
+    "supportsFirmware": true
+  }
+]
