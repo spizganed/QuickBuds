@@ -2264,6 +2264,8 @@ component SettingsPage inherits Rectangle {
 export component MainWindow inherits Window {
     in property <[NavEntry]> nav;
     in-out property <int> page: 0;
+    // The page the model list goes back to.
+    property <int> models-from: 5;
     changed page => { Earbuds.stop-find(); Hearing.test-closed(); }
     title: "QuickBuds";
     icon: Buds.icon-app;
@@ -2329,9 +2331,26 @@ export component MainWindow inherits Window {
                     VerticalLayout {
                         padding: 14px;
                         spacing: 10px;
-                        Text {
-                            text: Buds.name == "" ? "No earbuds" : Buds.name;
-                            color: Palette.text; font-size: 15px; font-weight: 600; overflow: elide;
+                        // The name opens the model list.
+                        Rectangle {
+                            height: 28px;
+                            border-radius: 8px;
+                            background: name-ta.has-hover ? Palette.outline : transparent;
+                            animate background { duration: Motion.fast; }
+                            HorizontalLayout {
+                                padding-left: 4px;
+                                spacing: 4px;
+                                Text {
+                                    text: Buds.name == "" ? "No earbuds" : Buds.name;
+                                    color: Palette.text; font-size: 15px; font-weight: 600; overflow: elide;
+                                    vertical-alignment: center; horizontal-stretch: 1;
+                                }
+                                Image { source: Buds.icon-chevron; width: 20px; height: 20px; y: (parent.height - self.height) / 2; }
+                            }
+                            name-ta := TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { if root.page != 8 { root.models-from = root.page; root.page = 8; } }
+                            }
                         }
                         HorizontalLayout {
                             spacing: 8px;
@@ -2353,7 +2372,7 @@ export component MainWindow inherits Window {
                 Rectangle { height: 16px; }
                 for e[i] in root.nav: NavItem {
                     entry: e;
-                    active: root.page == i || (root.page == 8 && i == 5) || (root.page == 9 && i == 6);
+                    active: root.page == i || (root.page == 8 && i == root.models-from) || (root.page == 9 && i == 6);
                     clicked => { root.page = i; }
                     at(y) => { side.nav-y = y; side.placed = true; }
                 }
@@ -2363,9 +2382,9 @@ export component MainWindow inherits Window {
 
         // --- Content ---
         if root.page == 1: PageIn { EqPage { } }
-        if root.page == 5: PageIn { EarbudsPage { open-models => { root.page = 8; } } }
-        // The model list, opened from Earbud settings (no sidebar entry; the sidebar shows Earbud settings).
-        if root.page == 8: PageIn { ModelsPage { back => { root.page = 5; } } }
+        if root.page == 5: PageIn { EarbudsPage { open-models => { root.models-from = 5; root.page = 8; } } }
+        // The model list, opened from Earbud settings or the device name (no sidebar entry).
+        if root.page == 8: PageIn { ModelsPage { back => { root.page = root.models-from; } } }
         if root.page == 2: PageIn { ControlsPage { } }
         if root.page == 3: PageIn { HearingPage { } }
         if root.page == 4: PageIn { DualPage { } }
