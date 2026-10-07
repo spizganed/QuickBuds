@@ -291,7 +291,7 @@ fn paint(a: &App) {
     let active = st(|s| s.active);
     let h = a.main.global::<Hearing>();
     h.set_profiles(ModelRc::new(VecModel::from(list.iter().enumerate()
-        .map(|(i, r)| EqRow { id: i as i32, name: r.name.as_str().into() }).collect::<Vec<_>>())));
+        .map(|(i, r)| EqRow { id: i as i32, name: r.name.as_str().into(), pending: false }).collect::<Vec<_>>())));
     h.set_active(list.iter().position(|r| r.uid == active).map_or(-1, |i| i as i32));
     h.set_delete_names(ModelRc::new(VecModel::from(list.iter()
         .map(|r| t(&a.tr, "eq_delete_confirm").replace("%1$s", &r.name).into()).collect::<Vec<slint::SharedString>>())));

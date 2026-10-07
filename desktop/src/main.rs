@@ -55,6 +55,8 @@ struct App {
     snap: Snapshot,
     /// The band editor's gains, updated in place while dragging.
     gains: Rc<VecModel<i32>>,
+    /// EQ creates and deletes the buds have not confirmed yet.
+    eq_pending: eq::Pending,
     /// The preset (id, name) the name field was last filled from.
     edit_key: Option<(u8, String)>,
     /// The band editor's plot size in pixels.
@@ -232,6 +234,19 @@ fn language_ui(main: &MainWindow, tr: &[String]) {
         report::CATEGORY_KEYS.iter().map(|k| t(tr, k).into()).collect::<Vec<slint::SharedString>>())));
 }
 
+/// The default size shows every page without a scroll; on a smaller screen the window shrinks to fit it.
+fn fit_screen(win: &slint::Window) {
+    let fit = win.with_winit_window(|w| {
+        let m = w.current_monitor().or_else(|| w.primary_monitor())?;
+        let screen = m.size().to_logical::<f32>(m.scale_factor());
+        let size = w.inner_size().to_logical::<f32>(w.scale_factor());
+        // Room for the panel and the window frame.
+        let fit = slint::LogicalSize::new((screen.width * 0.95).min(size.width), (screen.height * 0.9).min(size.height));
+        (fit.width < size.width || fit.height < size.height).then_some(fit)
+    });
+    if let Some(Some(fit)) = fit { win.set_size(fit); }
+}
+
 fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
     &tr[strings::KEYS.iter().position(|k| *k == key).expect(key)]
 }
@@ -258,6 +273,7 @@ fn set_icons(b: &Buds) {
     b.set_icon_devices(svg(icons::DEVICES));
     b.set_icon_hearing(svg(icons::HEARING));
     b.set_icon_language(svg(icons::LANGUAGE));
+    b.set_icon_palette(svg(icons::PALETTE));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -687,7 +703,10 @@ fn main() {
     setup_dots(&panel.global::<Dots>());
     window_chrome(&main);
     // A new scale factor (another monitor) redraws the dots at its pitch.
-    main.window().on_winit_window_event(|_, e| {
+    // The first event: the winit window exists from here on.
+    let fitted = std::cell::Cell::new(false);
+    main.window().on_winit_window_event(move |w, e| {
+        if !fitted.replace(true) { fit_screen(w); }
         if let winit::event::WindowEvent::ScaleFactorChanged { scale_factor, .. } = e {
             let scale = *scale_factor as f32;
             let _ = slint::invoke_from_event_loop(move || with_app(|a| a.set_style(STYLE.get().0, scale)));
@@ -728,7 +747,7 @@ fn main() {
     let tx = session::spawn(|s| { let _ = slint::invoke_from_event_loop(move || with_app(|a| a.apply(s))); });
     APP.with(|a| *a.borrow_mut() = Some(App {
         main: main.clone_strong(), #[cfg(windows)] panel, tray, tx, modes: AncModes::default(), last_level: None, tr,
-        snap: Snapshot::default(), gains, edit_key: None, plot: (0.0, 0.0), log_shown: 0, has: Has::ALL,
+        snap: Snapshot::default(), gains, eq_pending: Default::default(), edit_key: None, plot: (0.0, 0.0), log_shown: 0, has: Has::ALL,
     }));
     main.show().expect("show");
     let dot_matrix = load_settings()["dot_matrix"].as_bool().unwrap_or(false);

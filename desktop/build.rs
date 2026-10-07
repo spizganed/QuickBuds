@@ -13,7 +13,7 @@ const ICONS: &[&str] = &[
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
     "ic_chevron_right", "ic_anc", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds", "ic_volume_off",
-    "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold", "ic_update", "ic_hires", "ic_spatial", "ic_language",
+    "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold", "ic_update", "ic_hires", "ic_spatial", "ic_language", "ic_palette",
 ];
 
 const STRINGS: &[&str] = &[

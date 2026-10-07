@@ -5,6 +5,17 @@ use crate::protocol::*;
 use crate::session::{Cmd, Snapshot, Status};
 use crate::{t, with_app, App, Eq, EqRow, MainWindow};
 use slint::{ComponentHandle, Model, ModelRc, VecModel};
+use std::time::{Duration, Instant};
+
+/// How long a create or delete shows before the buds' re-read confirms it (the re-read takes about a second).
+const HOLD: Duration = Duration::from_secs(4);
+
+/// Creates and deletes sent but not yet in the buds' list: the page shows them at once, like the phone.
+#[derive(Default)]
+pub struct Pending {
+    added: Vec<(String, Instant)>,
+    deleted: Vec<(u8, Instant)>,
+}
 
 fn send(a: &App, c: Cmd) { let _ = a.tx.send(c); }
 
@@ -43,11 +54,15 @@ pub fn setup(main: &MainWindow) {
         if let Some(p) = a.snap.eq_custom.iter().find(|p| p.id == id as u8) { send(a, Cmd::EqSave(p.clone())); }
     }));
     eq.on_add(|| with_app(|a| {
-        let name = (1..=9).map(|i| format!("Custom{i}")).find(|n| a.snap.eq_custom.iter().all(|p| &p.name != n));
+        // A name sent in the last seconds is taken too: two quick clicks must not make two of one name.
+        let name = (1..=9).map(|i| format!("Custom{i}")).find(|n|
+            a.snap.eq_custom.iter().all(|p| &p.name != n) && a.eq_pending.added.iter().all(|(m, _)| m != n));
         let Some(name) = name else { return };
         // The buds' own presets' bands if they have any, else the model's.
         let freqs = a.snap.eq_custom.first().map(|p| p.freqs.clone()).unwrap_or_else(|| eq_model_freqs(a.snap.model));
         send(a, Cmd::EqCreate(Preset::new(&name, freqs)));
+        a.eq_pending.added.push((name, Instant::now()));
+        held(a);
     }));
     eq.on_delete(|| with_app(|a| {
         let Some(p) = editing(&a.snap).cloned() else { return };
@@ -55,7 +70,9 @@ pub fn setup(main: &MainWindow) {
         if let Some((id, _)) = eq_builtins(a.snap.model, a.snap.firmware.as_deref()).first() {
             send(a, Cmd::EqBuiltIn(*id));
         }
+        a.eq_pending.deleted.push((p.id, Instant::now()));
         send(a, Cmd::EqDelete(p));
+        held(a);
     }));
     eq.on_rename(|name| with_app(|a| {
         let Some(mut p) = editing(&a.snap).cloned() else { return };
@@ -91,19 +108,33 @@ pub fn redraw(a: &App) {
     eq.set_curve(d.into());
 }
 
+/// Shows a create or delete now, and again when its hold ends, so a never-confirmed one goes away.
+fn held(a: &mut App) {
+    apply(a);
+    slint::Timer::single_shot(HOLD + Duration::from_millis(100), || with_app(apply));
+}
+
 pub fn apply(a: &mut App) {
     let s = &a.snap;
+    let pend = &mut a.eq_pending;
+    pend.added.retain(|(n, t)| t.elapsed() < HOLD && s.eq_custom.iter().all(|p| &p.name != n));
+    pend.deleted.retain(|(id, t)| t.elapsed() < HOLD && s.eq_custom.iter().any(|p| p.id == *id));
+    let gone = |id: u8| pend.deleted.iter().any(|(d, _)| *d == id);
     let eq = a.main.global::<Eq>();
     let has_custom = eq_has_custom(s.model, &s.caps);
     let builtins: Vec<EqRow> = if s.caps.supports(CMD_SET_EQ) {
         eq_builtins(s.model, s.firmware.as_deref()).into_iter()
-            .map(|(id, key)| EqRow { id: id as i32, name: t(&a.tr, key).into() }).collect()
+            .map(|(id, key)| EqRow { id: id as i32, name: t(&a.tr, key).into(), pending: false }).collect()
     } else { Vec::new() };
-    let customs: Vec<EqRow> = s.eq_custom.iter().map(|p| EqRow { id: p.id as i32, name: p.name.as_str().into() }).collect();
+    // A deleted preset is gone at once; a created one shows dimmed until the buds list it.
+    let mut customs: Vec<EqRow> = s.eq_custom.iter().filter(|p| !gone(p.id))
+        .map(|p| EqRow { id: p.id as i32, name: p.name.as_str().into(), pending: false }).collect();
+    customs.extend(pend.added.iter().map(|(n, _)| EqRow { id: -1, name: n.as_str().into(), pending: true }));
+    let current = s.eq_current.filter(|&c| !gone(c));
     eq.set_builtins(ModelRc::new(VecModel::from(builtins)));
     eq.set_can_add(s.status == Status::On && has_custom && customs.len() < eq_max_custom(s.model));
     eq.set_customs(ModelRc::new(VecModel::from(customs)));
-    eq.set_current(s.eq_current.map_or(-1, |c| c as i32));
+    eq.set_current(current.map_or(-1, |c| c as i32));
     eq.set_has_custom(has_custom);
     eq.set_has_bass(eq_has_bass(s.model, &s.caps));
     eq.set_bass_on(s.bass_on.unwrap_or(false));
@@ -112,7 +143,7 @@ pub fn apply(a: &mut App) {
     let dragging = eq.get_dragging();
     if !dragging { eq.set_bass_level(s.bass_level.unwrap_or(0) as i32); }
 
-    let edit = editing(s).cloned();
+    let edit = editing(s).filter(|p| Some(p.id) == current).cloned();
     eq.set_editing(edit.is_some());
     let Some(p) = edit else { a.edit_key = None; return };
     // The name field is refilled only when the preset or its saved name changes, not while typing.

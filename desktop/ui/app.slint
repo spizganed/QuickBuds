@@ -288,6 +288,7 @@ export global Buds {
     in property <image> icon-left;
     in property <image> icon-right;
     in property <image> icon-case;
+    in property <image> icon-palette;
     in property <image> icon-off;
     in property <image> icon-anc;
     in property <image> icon-adaptive;
@@ -811,6 +812,8 @@ component TitleBar inherits Rectangle {
 export struct EqRow {
     id: int,
     name: string,
+    // Sent to the buds, not listed by them yet: dimmed, not clickable.
+    pending: bool,
 }
 
 // The Equalizer page's state, filled from Rust (`App::apply`).
@@ -847,28 +850,28 @@ export global Eq {
     callback bass-released(int);
 }
 
+// A row in a preset Card: flat, the selected one has an accent bar and accent text.
 component PresetRow inherits Rectangle {
     in property <string> name;
     in property <bool> selected;
     in property <bool> enabled: Buds.on;
     callback clicked;
-    height: 48px;
-    border-radius: 16px;
-    // Selection is an outline, never a checkmark.
-    border-width: Dots.on ? 0 : selected ? 2px : 1px;
-    border-color: selected ? Palette.accent : Palette.outline;
-    background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    height: 40px;
+    border-radius: 10px;
+    background: ta.has-hover ? Palette.outline : transparent;
     animate background { duration: Motion.fast; }
-    opacity: enabled ? 1 : 0.35;
-    if Dots.on: DotBox {
-        width: 100%; height: 100%;
-        fill: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
-        stroke: selected ? Palette.accent : Palette.outline;
+    Rectangle {
+        x: 6px; y: (parent.height - self.height) / 2;
+        width: 3px; height: selected ? 18px : 0;
+        border-radius: 1.5px;
+        background: Palette.accent;
+        animate height { duration: Motion.fast; easing: ease-out; }
     }
     Text {
         x: 18px; width: parent.width - 36px;
         text: name; overflow: elide; vertical-alignment: center;
         color: selected ? Palette.accent : Palette.text; font-size: 14px;
+        font-weight: selected ? 600 : 400;
     }
     ta := TouchArea { enabled: root.enabled; mouse-cursor: pointer; clicked => { root.clicked(); } }
 }
@@ -876,19 +879,12 @@ component PresetRow inherits Rectangle {
 component AddRow inherits Rectangle {
     in property <string> text;
     callback clicked;
-    height: 48px;
-    border-radius: 16px;
-    border-width: Dots.on ? 0 : 1px;
-    border-color: Palette.outline;
-    background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    height: 40px;
+    border-radius: 10px;
+    background: ta.has-hover ? Palette.outline : transparent;
     animate background { duration: Motion.fast; }
-    opacity: Buds.on ? 1 : 0.35;
-    if Dots.on: DotBox {
-        width: 100%; height: 100%;
-        fill: ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
-    }
     HorizontalLayout {
-        alignment: center;
+        padding-left: 14px;
         spacing: 10px;
         Image { source: Buds.icon-plus; width: 18px; height: 18px; y: (parent.height - self.height) / 2; colorize: Palette.accent; }
         Text { text: root.text; color: Palette.text; font-size: 14px; vertical-alignment: center; }
@@ -1027,23 +1023,36 @@ component EqPage inherits VerticalLayout {
             width: 270px;
             spacing: 16px;
             alignment: start;
-            // Split lists, like the phone's: one card per row.
+            // One card per group, flat rows inside.
             if Eq.builtins.length > 0: VerticalLayout {
                 spacing: 8px;
                 SectionTitle { text: Tr.eq-recommended; font-size: 13px; font-weight: 400; }
-                for p in Eq.builtins: PresetRow {
-                    name: p.name; selected: Eq.current == p.id;
-                    clicked => { Eq.select-builtin(p.id); }
+                Card {
+                    VerticalLayout {
+                        padding: 6px;
+                        spacing: 2px;
+                        for p in Eq.builtins: PresetRow {
+                            name: p.name; selected: Eq.current == p.id;
+                            clicked => { Eq.select-builtin(p.id); }
+                        }
+                    }
                 }
             }
             if Eq.has-custom: VerticalLayout {
                 spacing: 8px;
                 SectionTitle { text: Tr.eq-custom; font-size: 13px; font-weight: 400; }
-                for p in Eq.customs: PresetRow {
-                    name: p.name; selected: Eq.current == p.id;
-                    clicked => { Eq.select-custom(p.id); }
+                if Eq.customs.length > 0 || Eq.can-add: Card {
+                    VerticalLayout {
+                        padding: 6px;
+                        spacing: 2px;
+                        for p in Eq.customs: PresetRow {
+                            name: p.name; selected: Eq.current == p.id;
+                            enabled: Buds.on && !p.pending; opacity: p.pending ? 0.5 : 1;
+                            clicked => { Eq.select-custom(p.id); }
+                        }
+                        if Eq.can-add: AddRow { text: Tr.eq-add; clicked => { Eq.add(); } }
+                    }
                 }
-                if Eq.can-add: AddRow { text: Tr.eq-add; clicked => { Eq.add(); } }
             }
         }
         // Editor and bass
@@ -1640,15 +1649,28 @@ component ModelsPage inherits Rectangle {
                 Chip { text: "‹"; width: 40px; clicked => { root.back(); } }
                 Text { text: Tr.model-title; color: Palette.text; font-size: 26px; font-weight: 700; vertical-alignment: center; horizontal-stretch: 1; }
             }
-            PresetRow { name: Tr.model-auto + "   ·   " + Models.detected; selected: Models.current == ""; enabled: true; clicked => { Models.pick(""); } }
+            Card {
+                live: true;
+                VerticalLayout {
+                    padding: 6px;
+                    PresetRow { name: Tr.model-auto + "   ·   " + Models.detected; selected: Models.current == ""; enabled: true; clicked => { Models.pick(""); } }
+                }
+            }
             for sec in Models.sections: VerticalLayout {
                 spacing: 8px;
                 padding-top: 8px;
                 SectionTitle { text: sec.title; font-size: 13px; font-weight: 400; }
-                for m in sec.rows: PresetRow {
-                    name: m.sub == "" ? m.name : m.name + "  (" + m.sub + ")";
-                    selected: Models.current == m.id; enabled: true;
-                    clicked => { Models.pick(m.id); }
+                Card {
+                    live: true;
+                    VerticalLayout {
+                        padding: 6px;
+                        spacing: 2px;
+                        for m in sec.rows: PresetRow {
+                            name: m.sub == "" ? m.name : m.name + "  (" + m.sub + ")";
+                            selected: Models.current == m.id; enabled: true;
+                            clicked => { Models.pick(m.id); }
+                        }
+                    }
                 }
             }
         }
@@ -1721,16 +1743,20 @@ component ControlsPage inherits Rectangle {
             alignment: start;
             Text { text: Tr.gesture-title; color: Palette.text; font-size: 26px; font-weight: 700; }
             if !Buds.on: Text { text: Tr.not-connected; color: Palette.text2; font-size: 13px; }
-            if !Controls.one-button: Rectangle {
-                height: 52px;
-                border-radius: self.height / 2;
-                background: Dots.on ? transparent : Palette.card;
-                if Dots.on: DotBox { width: 100%; height: 100%; radius: 22px; }
-                HorizontalLayout {
-                    padding: 4px;
-                    spacing: 4px;
-                    Segment { enabled: true; label: Tr.bud-left; selected: Controls.side == 0; clicked => { Controls.set-side(0); } }
-                    Segment { enabled: true; label: Tr.bud-right; selected: Controls.side == 1; clicked => { Controls.set-side(1); } }
+            if !Controls.one-button: HorizontalLayout {
+                alignment: start;
+                Rectangle {
+                    width: 320px;
+                    height: 44px;
+                    border-radius: self.height / 2;
+                    background: Dots.on ? transparent : Palette.card;
+                    if Dots.on: DotBox { width: 100%; height: 100%; radius: 20px; }
+                    HorizontalLayout {
+                        padding: 4px;
+                        spacing: 4px;
+                        Segment { enabled: true; label: Tr.bud-left; selected: Controls.side == 0; clicked => { Controls.set-side(0); } }
+                        Segment { enabled: true; label: Tr.bud-right; selected: Controls.side == 1; clicked => { Controls.set-side(1); } }
+                    }
                 }
             }
             if Controls.rows.length > 0: SectionTitle { text: Tr.gesture-not-in-call; font-size: 13px; font-weight: 400; }
@@ -1926,14 +1952,20 @@ component HearingPage inherits Rectangle {
             }
             SectionTitle { text: Tr.hearing-profiles; font-size: 13px; font-weight: 400; }
             if Hearing.profiles.length == 0: Text { text: Tr.hearing-none; color: Palette.text2; font-size: 13px; }
-            for p[i] in Hearing.profiles: HorizontalLayout {
-                spacing: 8px;
-                PresetRow {
-                    horizontal-stretch: 1;
-                    name: p.name; selected: Hearing.active == i;
-                    clicked => { Hearing.pick(i); }
+            if Hearing.profiles.length > 0: Card {
+                VerticalLayout {
+                    padding: 6px;
+                    spacing: 2px;
+                    for p[i] in Hearing.profiles: HorizontalLayout {
+                        spacing: 8px;
+                        PresetRow {
+                            horizontal-stretch: 1;
+                            name: p.name; selected: Hearing.active == i;
+                            clicked => { Hearing.pick(i); }
+                        }
+                        Chip { y: 3px; text: Tr.eq-delete; clicked => { ask-index = i; ask.show(); } }
+                    }
                 }
-                Chip { y: 7px; text: Tr.eq-delete; clicked => { ask-index = i; ask.show(); } }
             }
             if Hearing.has-test: Card {
                 border-radius: 24px;
@@ -2195,18 +2227,32 @@ component SettingsPage inherits Rectangle {
                     }
                 }
             }
-            SectionTitle { text: Tr.style-title; font-size: 13px; font-weight: 400; }
             // Classic / Dot matrix, like the phone's Theme screen: one switch for the window and the quick panel.
-            Rectangle {
-                height: 52px;
-                border-radius: self.height / 2;
-                background: Dots.on ? transparent : Palette.card;
-                if Dots.on: DotBox { width: 100%; height: 100%; radius: 22px; }
+            // A settings row like the others, the segments where their switch is.
+            Card {
+                live: true;
+                border-radius: 24px;
+                height: 64px;
                 HorizontalLayout {
-                    padding: 4px;
-                    spacing: 4px;
-                    Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
-                    Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
+                    padding-left: 20px;
+                    padding-right: 14px;
+                    spacing: 16px;
+                    Image { source: Buds.icon-palette; width: 24px; height: 24px; y: (parent.height - self.height) / 2; image-fit: contain; colorize: Palette.accent; }
+                    Text { text: Tr.style-title; color: Palette.text; font-size: 15px; vertical-alignment: center; horizontal-stretch: 1; }
+                    Rectangle {
+                        width: 260px;
+                        height: 40px;
+                        y: (parent.height - self.height) / 2;
+                        border-radius: self.height / 2;
+                        background: Dots.on ? transparent : Palette.bg;
+                        if Dots.on: DotBox { width: 100%; height: 100%; radius: 18px; }
+                        HorizontalLayout {
+                            padding: 4px;
+                            spacing: 4px;
+                            Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
+                            Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
+                        }
+                    }
                 }
             }
             SectionTitle { text: Tr.update-title; font-size: 13px; font-weight: 400; }
@@ -2271,8 +2317,9 @@ export component MainWindow inherits Window {
     icon: Buds.icon-app;
     min-width: 900px;
     min-height: 580px;
-    preferred-width: 960px;
-    preferred-height: 620px;
+    // Every page fits without a scroll; main.rs fit_screen shrinks it on a small screen.
+    preferred-width: 1040px;
+    preferred-height: 900px;
     background: Palette.bg;
     default-font-family: Dots.font;
     no-frame: true;
