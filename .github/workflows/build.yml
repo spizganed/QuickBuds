@@ -1,12 +1,10 @@
-# Checks the locales, builds the release APK and runs the desktop tests on each published release.
-# Run it by hand from the Actions tab (or `gh workflow run Build`) to build an APK without a release.
+# Checks the locales, builds the release APK and runs the desktop tests. Runs only by hand:
+# `gh workflow run Build`, before every release (CLAUDE.md, Release) or for a test APK.
 # The APK is signed when the repository has the RELEASE_KEYSTORE_B64 and RELEASE_KEY_PROPERTIES secrets,
 # so it installs over the release app. Download it from the run's Artifacts.
 name: Build
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
 
 concurrency:
