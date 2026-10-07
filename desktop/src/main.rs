@@ -295,6 +295,8 @@ fn set_texts(tr: &Tr, s: &[String]) {
     tr.set_game_sub(t(s, "row_game_sub").into());
     tr.set_eq_row_title(t(s, "row_eq_title").into());
     tr.set_eq_row_sub(t(s, "row_eq_sub").into());
+    tr.set_dual_row_sub(t(s, "row_dual_sub").into());
+    tr.set_earbuds_row_sub(t(s, "row_earbuds_sub").into());
     tr.set_eq_title(t(s, "eq_title").into());
     tr.set_eq_not_connected(t(s, "eq_not_connected").into());
     tr.set_eq_recommended(t(s, "eq_recommended").into());

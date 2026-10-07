@@ -130,6 +130,8 @@ export global Tr {
     in property <string> dev-tools-title;
     in property <string> eq-row-title;
     in property <string> eq-row-sub;
+    in property <string> dual-row-sub;
+    in property <string> earbuds-row-sub;
     in property <string> eq-title;
     in property <string> eq-not-connected;
     in property <string> eq-recommended;
@@ -2400,8 +2402,12 @@ export component MainWindow inherits Window {
         if root.page == 0: PageIn { ScrollView {
             VerticalLayout {
                 padding: 28px;
+                // Content stays at most 760px wide, centred in a wide window.
+                padding-left: max(28px, (parent.width - 760px) / 2);
+                padding-right: self.padding-left;
                 spacing: 16px;
                 alignment: start;
+                Text { text: root.nav[0].name; color: Palette.text; font-size: 26px; font-weight: 700; }
                 if Update.available != "": Card {
                     live: true;
                     border-radius: 24px;
@@ -2419,10 +2425,6 @@ export component MainWindow inherits Window {
                         padding: 20px;
                         spacing: 10px;
                         Batteries { size: 110px; }
-                        Text {
-                            text: Buds.name; horizontal-alignment: center;
-                            color: Palette.text2; font-size: 14px;
-                        }
                     }
                 }
                 if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
@@ -2467,6 +2469,34 @@ export component MainWindow inherits Window {
                             title: Tr.eq-row-title;
                             subtitle: Tr.eq-row-sub;
                             clicked => { root.page = 1; }
+                        }
+                    }
+                }
+                // The phone's rows that open a page: hearing profile, dual connection, earbud settings.
+                Card {
+                    border-radius: 24px;
+                    VerticalLayout {
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        // As on the phone: the row opens the page, the switch toggles the profile.
+                        if root.nav[3].ready: Rectangle {
+                            height: 64px;
+                            TouchArea { mouse-cursor: pointer; clicked => { root.page = 3; } }
+                            FeatureRow {
+                                width: 100%;
+                                icon: Buds.icon-hearing; title: Tr.hearing-title; subtitle: Tr.hearing-sub; checked: Hearing.on;
+                                toggled(on) => { Hearing.set-on(on); }
+                            }
+                        }
+                        if root.nav[3].ready && root.nav[4].ready: Divider {}
+                        if root.nav[4].ready: NavRow {
+                            icon: Buds.icon-devices; title: Tr.dual-title; subtitle: Tr.dual-row-sub;
+                            clicked => { root.page = 4; }
+                        }
+                        if root.nav[3].ready || root.nav[4].ready: Divider {}
+                        NavRow {
+                            icon: Buds.icon-earbud; title: Tr.earbuds-title; subtitle: Tr.earbuds-row-sub;
+                            clicked => { root.page = 5; }
                         }
                     }
                 }
