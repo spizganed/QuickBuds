@@ -3955,7 +3955,7 @@ dependencies = [
 
 [[package]]
 name = "quickbuds"
-version = "4.6.0"
+version = "4.7.0"
 dependencies = [
  "dbus",
  "gtk",
@@ -3964,6 +3964,7 @@ dependencies = [
  "serde_json",
  "slint",
  "slint-build",
+ "sys-locale",
  "tray-icon",
  "windows-sys 0.59.0",
 ]
