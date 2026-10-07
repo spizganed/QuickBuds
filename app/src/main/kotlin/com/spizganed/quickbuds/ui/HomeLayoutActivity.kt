@@ -163,6 +163,7 @@ class HomeLayoutActivity : Activity() {
     companion object {
         /** Row key -> (icon, title, subtitle), matching MainActivity.buildFeatureRows(), in default order. */
         private val ROWS = linkedMapOf(
+            "wind" to Triple(R.drawable.ic_anc, R.string.row_wind_noise_title, R.string.row_wind_noise_sub),
             "game" to Triple(R.drawable.ic_bolt, R.string.row_game_title, R.string.row_game_sub),
             "hires" to Triple(R.drawable.ic_hires, R.string.row_hires_title, R.string.row_hires_sub),
             "spatial" to Triple(R.drawable.ic_spatial, R.string.row_spatial_title, R.string.row_spatial_sub),

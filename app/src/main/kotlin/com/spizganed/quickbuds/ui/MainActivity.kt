@@ -89,6 +89,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private var hiresSwitch: Switch? = null
     private var hiresSubtitle: TextView? = null
     private var spatialSwitch: Switch? = null
+    private var windSwitch: Switch? = null
     private var spatialSubtitle: TextView? = null
     private var goldenSwitch: Switch? = null
 
@@ -212,7 +213,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         // The buds' real state is repainted on connect.
         syncingFeatures = true
         gameSwitch?.isChecked = connected && gameModeOn
-        if (!connected) { hiresSwitch?.isChecked = false; spatialSwitch?.isChecked = false; goldenSwitch?.isChecked = false }
+        if (!connected) { hiresSwitch?.isChecked = false; spatialSwitch?.isChecked = false; goldenSwitch?.isChecked = false; windSwitch?.isChecked = false }
         syncingFeatures = false
         if (connected && ::manager.isInitialized) onFeatureStates(manager.featureStates)
         renderAnc(activeAncMode)
@@ -828,6 +829,20 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         hiresSubtitle = null
         spatialSwitch = null
         goldenSwitch = null
+        windSwitch = null
+
+        // --- Wind noise reduction, feature 0x1A (realme Link data, PROTOCOL.md §9), under noise control ---
+        val wind = SettingRowFactory.buildSwitch(this, false)
+        windSwitch = wind
+        wind.setOnCheckedChangeListener { _, isChecked ->
+            if (syncingFeatures) return@setOnCheckedChangeListener
+            manager.setFeatures(OpoProtocol.FEATURE_WIND_NOISE to isChecked)
+        }
+        addRow("wind",
+            SettingRowFactory.build(
+                this, R.drawable.ic_anc, R.string.row_wind_noise_title, R.string.row_wind_noise_sub, wind
+            ) { wind.performClick() }
+        )
 
         // --- 1. Game mode / low latency ---
         val game = SettingRowFactory.buildSwitch(this, gameModeOn)
@@ -1066,6 +1081,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         states[OpoProtocol.FEATURE_GOLDEN_SOUND]?.let { v ->
             goldenSwitch?.let { setSwitchQuiet(it, v == 1) }
         }
+        states[OpoProtocol.FEATURE_WIND_NOISE]?.let { v ->
+            windSwitch?.let { setSwitchQuiet(it, v == 1) }
+        }
     }
 
     override fun onCapabilities() { showModelName(); relayoutIfSupportChanged() }
@@ -1083,6 +1101,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * yet = shown. Earbud settings gates its own rows.
      */
     private fun rowSupported(key: String): Boolean = when (key) {
+        "wind" -> Capabilities.offered(this, OpoProtocol.FEATURE_WIND_NOISE, "windNoise")
         "game" -> Capabilities.hasFeature(this, Capabilities.gameModeId(this))
         "hires" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_HIRES_CODEC) || codecPicker()
         "spatial" -> Capabilities.hasFeature(this, OpoProtocol.FEATURE_SPATIAL_SOUND) || spatialByType()
