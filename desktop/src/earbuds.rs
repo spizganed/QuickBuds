@@ -30,13 +30,21 @@ const ROWS: &[(u8, Option<&str>, &str, &str, &str, Option<&str>, bool)] = &[
 
 pub fn setup(main: &MainWindow) {
     let e = main.global::<Earbuds>();
-    e.on_set_feature(|id, on| with_app(|a| { let _ = a.tx.send(Cmd::Features(writes(&a.snap, id as u8, on))); }));
+    e.on_set_feature(|id, on| with_app(|a| for c in feature_cmds(&a.snap, id as u8, on) { let _ = a.tx.send(c); }));
     e.on_find(|on| with_app(|a| { let _ = a.tx.send(Cmd::Find(on)); }));
     e.on_opened(|| with_app(|a| { let _ = a.tx.send(Cmd::EarbudReads); }));
     e.on_alert_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::AlertVolume(l as u8)); }));
     e.on_tap_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::TapLevel(l as u8)); }));
+    // 1 game sound type, 2 head gesture mapping, 3 codec, 4 spatial type.
     e.on_choose(|kind, v| with_app(|a| {
-        let _ = a.tx.send(if kind == 1 { Cmd::GameSoundType(v as u8) } else { Cmd::HeadMotion(v as u8) });
+        let (s, v) = (&a.snap, v as u8);
+        let cmds = match kind {
+            1 => vec![Cmd::GameSoundType(v)],
+            3 => vec![Cmd::Codec(v, s.features.contains(&(FEATURE_HIRES, 1)))],
+            4 => spatial_cmds(s, v),
+            _ => vec![Cmd::HeadMotion(v)],
+        };
+        for c in cmds { let _ = a.tx.send(c); }
     }));
     e.on_fit(|on| with_app(|a| { let _ = a.tx.send(Cmd::FitTest(on)); }));
     e.on_pnc_query(|| with_app(|a| { let _ = a.tx.send(Cmd::PncQuery); }));
@@ -47,21 +55,61 @@ pub fn setup(main: &MainWindow) {
 /// Our `spatialSwitch` key (realme): Hi-Res and 3D audio are written alone, never together (§9).
 fn exclusive(s: &Snapshot) -> bool { !s.model.is_some_and(|m| m["spatialSwitch"] == 1) }
 
-/// The writes for one switch: Hi-Res and 3D audio turn each other off, in HeyMelody's order (§9).
-fn writes(s: &Snapshot, id: u8, on: bool) -> Vec<(u8, bool)> {
-    let is_on = |f: u8| s.features.contains(&(f, 1));
-    match id {
-        FEATURE_HIRES if on && exclusive(s) && is_on(FEATURE_SPATIAL) => vec![(FEATURE_SPATIAL, false), (FEATURE_HIRES, true)],
-        FEATURE_SPATIAL if on && exclusive(s) && is_on(FEATURE_HIRES) => vec![(FEATURE_SPATIAL, true), (FEATURE_HIRES, false)],
-        _ => vec![(id, on)],
+/// 3D audio as HeyMelody picks it (§9): buds whose bitmap has `0x012A` (or a hand-picked model with head
+/// tracking) take a type through `0x0422`, the rest feature `1B`.
+fn spatial_by_type(s: &Snapshot) -> bool {
+    exclusive(s) && (s.caps.supports(CMD_QUERY_SPATIAL_TYPE) || s.manual && head_tracking(s))
+}
+
+/// The model's `spatialTypes` has `2`: Off / Fixed / Head tracking instead of a plain switch.
+fn head_tracking(s: &Snapshot) -> bool {
+    s.model.is_some_and(|m| m["spatialTypes"].as_array().is_some_and(|t| t.iter().any(|v| *v == 2)))
+}
+
+/// The codec picker replaces the Hi-Res write on `highAudio` models with the `0x0123` read (§9).
+fn codec_picker(s: &Snapshot) -> bool { s.model.is_some_and(|m| m["highAudio"] == 1) && s.caps.supports(CMD_QUERY_CODEC_LIST) }
+
+fn spatial_on(s: &Snapshot) -> bool {
+    if spatial_by_type(s) { s.spatial_type.unwrap_or(0) != 0 } else { s.features.contains(&(FEATURE_SPATIAL, 1)) }
+}
+
+/// 3D audio to `t` (0 off): Hi-Res goes off after it where the two exclude each other, as HeyMelody sends them.
+fn spatial_cmds(s: &Snapshot, t: u8) -> Vec<Cmd> {
+    let drop_hires = t != 0 && exclusive(s) && s.features.contains(&(FEATURE_HIRES, 1));
+    let mut cmds = vec![];
+    if spatial_by_type(s) {
+        cmds.push(Cmd::SpatialType(t));
+        if drop_hires { cmds.push(Cmd::Features(vec![(FEATURE_HIRES, false)])); }
+    } else if drop_hires {
+        cmds.push(Cmd::Features(vec![(FEATURE_SPATIAL, true), (FEATURE_HIRES, false)]));
+    } else {
+        cmds.push(Cmd::Features(vec![(FEATURE_SPATIAL, t != 0)]));
     }
+    cmds
+}
+
+/// The writes for one switch. Hi-Res: the codec write on codec-picker models; else 3D audio goes off first
+/// where the two exclude each other.
+fn feature_cmds(s: &Snapshot, id: u8, on: bool) -> Vec<Cmd> {
+    match id {
+        FEATURE_SPATIAL => spatial_cmds(s, on as u8),
+        FEATURE_HIRES if codec_picker(s) => s.codec.map(|c| Cmd::Codec(c, on)).into_iter().collect(),
+        FEATURE_HIRES if on && exclusive(s) && spatial_on(s) => if spatial_by_type(s) {
+            vec![Cmd::SpatialType(0), Cmd::Features(vec![(FEATURE_HIRES, true)])]
+        } else {
+            vec![Cmd::Features(vec![(FEATURE_SPATIAL, false), (FEATURE_HIRES, true)])]
+        },
+        _ => vec![Cmd::Features(vec![(id, on)])],
+    }
+}
+
+fn spatial_label(a: &App, ty: u8) -> String {
+    t(&a.tr, match ty { 1 => "spatial_fixed", 2 => "spatial_head_tracking", _ => "anc_seg_off" }).into()
 }
 
 /// The Overview's switches, in the phone's order: wind noise reduction, low latency, Hi-Res, 3D audio.
 /// Low latency is id -1: it writes through `Buds.set-low-latency`. A codec write makes the buds
-/// reconnect, so Hi-Res asks both ways, and 3D audio asks when it turns Hi-Res off.
-// ponytail: no codec picker (`highAudio` models) and no spatial type (`0x012A` buds); those rows stay
-// hidden here until the desktop has them.
+/// reconnect, so Hi-Res and the codec picker ask first, and 3D audio asks when it turns Hi-Res off.
 pub fn home(a: &App) {
     let s = &a.snap;
     let listed = |id: u8| s.features.iter().find(|f| f.0 == id).map(|f| f.1);
@@ -77,17 +125,41 @@ pub fn home(a: &App) {
     if a.has.game {
         rows.push(item(-1, icons::LOW_LATENCY, "row_game_title", "row_game_sub", s.low_latency.unwrap_or(false), "", false));
     }
-    let (hires, spatial) = (listed(FEATURE_HIRES), listed(FEATURE_SPATIAL));
-    if let Some(v) = hires.filter(|_| !flag("highAudio")) {
-        let msg = if spatial == Some(1) && exclusive(s) { "codec_msg_hires_drops_spatial" } else { "codec_msg_reconnect" };
-        rows.push(item(FEATURE_HIRES as i32, icons::HIRES, "row_hires_title",
-            if v == 1 { "row_hires_sub" } else { "row_hires_sub_off" }, v == 1, msg, true));
+    let hires_on = listed(FEATURE_HIRES) == Some(1);
+    let picker = codec_picker(s);
+    if listed(FEATURE_HIRES).is_some() || picker {
+        let msg = if !picker && spatial_on(s) && exclusive(s) { "codec_msg_hires_drops_spatial" } else { "codec_msg_reconnect" };
+        let mut r = item(FEATURE_HIRES as i32, icons::HIRES, "row_hires_title",
+            if hires_on { "row_hires_sub" } else { "row_hires_sub_off" }, hires_on, msg, true);
+        if picker {
+            // HeyMelody's "High-quality audio" screen: pick the codec; Hi-Res only with LDAC or LHDC V5.
+            let name = s.codec.map(codec_name);
+            r.locked = !matches!(s.codec, Some(3 | 8));
+            r.choice_kind = 3;
+            r.choice_title = t(&a.tr, "row_hires_title").into();
+            r.choice = name.unwrap_or("—".into()).into();
+        }
+        rows.push(r);
     }
-    if let Some(v) = spatial.filter(|_| !exclusive(s) || !s.caps.supports(CMD_QUERY_SPATIAL_TYPE)) {
-        let msg = if hires == Some(1) && exclusive(s) { "codec_msg_spatial_drops_hires" } else { "" };
-        rows.push(item(FEATURE_SPATIAL as i32, icons::SPATIAL, "row_spatial_title", "row_spatial_sub", v == 1, msg, false));
+    if listed(FEATURE_SPATIAL).is_some() || spatial_by_type(s) {
+        let msg = if hires_on && exclusive(s) { "codec_msg_spatial_drops_hires" } else { "" };
+        let mut r = item(FEATURE_SPATIAL as i32, icons::SPATIAL, "row_spatial_title", "row_spatial_sub", spatial_on(s), msg, false);
+        if head_tracking(s) {
+            r.choice_kind = 4;
+            r.choice_title = t(&a.tr, "row_spatial_title").into();
+            r.choice = spatial_label(a, s.spatial_type.unwrap_or(0)).into();
+        }
+        rows.push(r);
     }
-    a.main.global::<Earbuds>().set_home(ModelRc::new(VecModel::from(rows)));
+    let e = a.main.global::<Earbuds>();
+    e.set_home(ModelRc::new(VecModel::from(rows)));
+    // HeyMelody's order: LHDC V5, LHDC, LDAC, aptX Adaptive, aptX HD, aptX, AAC, SBC.
+    let codecs: Vec<Choice> = [8, 7, 3, 6, 5, 4, 2, 1].into_iter().filter(|c| s.codecs.contains(c))
+        .map(|c| Choice { value: c as i32, label: codec_name(c).into() }).collect();
+    e.set_codec_choices(ModelRc::new(VecModel::from(codecs)));
+    e.set_codec_current(s.codec.map_or(-1, |c| c as i32));
+    e.set_spatial_choices(ModelRc::new(VecModel::from((0..3).map(|v| Choice { value: v, label: spatial_label(a, v as u8).into() }).collect::<Vec<_>>())));
+    e.set_spatial_current(s.spatial_type.map_or(0, |t| t as i32));
 }
 
 /// HeyMelody's names for the game sound types; a type without one is not offered.
@@ -126,7 +198,7 @@ pub fn apply(a: &App) {
             id: id as i32, icon: svg(icon), title: t(&a.tr, title).into(), sub: t(&a.tr, sub).into(), on: v == 1,
             confirm: confirm.map_or("", |k| t(&a.tr, k)).into(), confirm_off,
             choice_kind: kind, choice_title: if kind > 0 { t(&a.tr, choice_title).into() } else { "".into() },
-            choice: choice.unwrap_or("—".into()).into(), flow: false,
+            choice: choice.unwrap_or("—".into()).into(), flow: false, locked: false,
         })
     })).collect();
     let e = a.main.global::<Earbuds>();

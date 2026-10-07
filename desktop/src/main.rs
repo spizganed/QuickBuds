@@ -269,6 +269,7 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
 fn set_texts(tr: &Tr, s: &[String]) {
     tr.set_codec_dialog_title(t(s, "codec_dialog_title").into());
     tr.set_codec_dialog_accept(t(s, "codec_dialog_accept").into());
+    tr.set_codec_msg_reconnect(t(s, "codec_msg_reconnect").into());
     tr.set_language_title(t(s, "settings_language_title").into());
     tr.set_language_sub(t(s, "settings_language_sub").into());
     tr.set_app_settings_title(t(s, "desktop_nav_app_settings").into());

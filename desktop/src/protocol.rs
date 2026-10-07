@@ -101,8 +101,30 @@ pub const FEATURE_WIND_NOISE: u8 = 0x1A;
 /// High-quality audio (Hi-Res) and 3D audio: exclusive `0x0403` switches, §9 Spatial sound and Hi-Res.
 pub const FEATURE_HIRES: u8 = 0x18;
 pub const FEATURE_SPATIAL: u8 = 0x1B;
-/// Buds with this read take spatial as a type (`0x0422`), not feature `1B`.
+/// Spatial type `<type>` (0 off, 1 fixed, 2 head tracking) on buds with `0x012A` instead of feature `1B`:
+/// read `0x012A` -> `00 <type>`, pushed as `0x0510 <type>`. `[VENDOR]`
+pub const CMD_SET_SPATIAL_TYPE: u16 = 0x0422;
 pub const CMD_QUERY_SPATIAL_TYPE: u16 = 0x012A;
+pub const EVT_SPATIAL_TYPE: u16 = 0x0510;
+/// Codec picker (`highAudio` models): current codec `0x0114` -> `00 <codec>`, offered `0x0123` ->
+/// `00 <u16 LE mask>`, write `0x041A` ([codec_payload]); the buds restart after a write. `[VENDOR]`
+pub const CMD_QUERY_CODEC: u16 = 0x0114;
+pub const CMD_QUERY_CODEC_LIST: u16 = 0x0123;
+pub const CMD_SET_CODEC: u16 = 0x041A;
+
+/// The codecs in a `0x8123` mask (bit k = codec k+1); LHDC (7) is dropped when LHDC V5 (8) is offered too.
+pub fn codecs_of(mask: u16) -> Vec<u8> {
+    let all: Vec<u8> = (1..=8).filter(|c| mask & (1 << (c - 1)) != 0).collect();
+    if all.contains(&8) { all.into_iter().filter(|&c| c != 7).collect() } else { all }
+}
+
+/// `<codec> <hiRes> 00`: Hi-Res only with LDAC (3) or LHDC V5 (8), as HeyMelody sends it.
+pub fn codec_payload(codec: u8, hires: bool) -> [u8; 3] { [codec, (hires && (codec == 3 || codec == 8)) as u8, 0] }
+
+pub fn codec_name(codec: u8) -> String {
+    ["SBC", "AAC", "LDAC", "aptX", "aptX HD", "aptX Adaptive", "LHDC", "LHDC"].get(codec as usize - 1)
+        .map_or(format!("#{codec}"), |n| n.to_string())
+}
 
 /// `0x010D`: count, then the feature ids (`OpoProtocol.queryStatus`): the model's `statusQuery` (HeyMelody's
 /// per-model list, PROTOCOL.md §9), else the full list. The `windNoise` flag adds [FEATURE_WIND_NOISE].
@@ -648,6 +670,9 @@ pub enum Event {
     /// (selected, offered types)
     GameSound(u8, Vec<u8>),
     HeadMotion(u8),
+    SpatialType(u8),
+    Codec(u8),
+    Codecs(Vec<u8>),
     /// Fit test result, left and right status (§9: 1 good, 0 average, 6 poor, else an error; 0xFF missing).
     FitResult(u8, u8),
     PncStored(bool),
@@ -701,6 +726,10 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
         0x811A if sub == Some(0) && pl.len() >= 2 => Event::PncStored(pl[1] != 0),
         0x8412 if !pl.is_empty() => Event::PncAck(pl[0]),
+        0x812A if sub == Some(0) && pl.len() >= 2 => Event::SpatialType(pl[1]),
+        EVT_SPATIAL_TYPE if !pl.is_empty() => Event::SpatialType(pl[0]),
+        0x8114 if sub == Some(0) && pl.len() >= 2 => Event::Codec(pl[1]),
+        0x8123 if sub == Some(0) && pl.len() >= 3 => Event::Codecs(codecs_of(u16::from_le_bytes([pl[1], pl[2]]))),
         0x812B if sub == Some(0) && pl.len() >= 3 => Event::GameSound(pl[1], pl[3..pl.len().min(3 + pl[2] as usize)].to_vec()),
         // `00 <count>` + UTF-8 `deviceType,versionType,version` triples
         0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
@@ -754,6 +783,9 @@ pub fn describe(e: &Event) -> String {
         Event::GameMode(on) => format!("Low latency {}", if *on { "on" } else { "off" }),
         Event::AlertVolume(l) => format!("Alert volume {l}"),
         Event::GameSound(t, all) => format!("Game sound type {t} (offered {all:?})"),
+        Event::SpatialType(t) => format!("Spatial type {t}"),
+        Event::Codec(c) => format!("Codec {}", codec_name(*c)),
+        Event::Codecs(all) => format!("Codecs offered {:?}", all.iter().map(|&c| codec_name(c)).collect::<Vec<_>>()),
         Event::HeadMotion(t) => format!("Head gesture mapping {t}"),
         Event::FitResult(l, r) => format!("Fit test L={l} R={r}"),
         Event::PncStored(e) => format!("Personalized ANC stored result: {e}"),
@@ -834,6 +866,11 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_QUERY_GAME_SOUND => "Query game sound type",
         CMD_SET_HEAD_MOTION => "Set head gesture mapping",
         CMD_QUERY_HEAD_MOTION => "Query head gesture mapping",
+        CMD_SET_SPATIAL_TYPE => "Set spatial type",
+        CMD_QUERY_SPATIAL_TYPE => "Query spatial type",
+        CMD_QUERY_CODEC => "Query codec",
+        CMD_QUERY_CODEC_LIST => "Query codec list",
+        CMD_SET_CODEC => "Set codec",
         CMD_FIT_TEST => "Fit test",
         CMD_PERSONAL_NOISE => "Personalized ANC",
         CMD_QUERY_PERSONAL_NOISE => "Query personalized ANC",
@@ -1169,5 +1206,17 @@ mod tests {
         assert_eq!(got, vec![a.clone(), a]);
         assert_eq!(f.discarded.len(), 2);
         assert_eq!(battery(payload_of(&got[0])), [(1, 100, false), (2, 100, false), (3, 80, true)]);
+    }
+
+    #[test]
+    fn codecs() {
+        // Buds 4 `0x8123` = `00 46 01`: AAC, LDAC, LHDC (bit 8 is past the table); PROTOCOL.md trusts it only on `highAudio`.
+        assert_eq!(codecs_of(0x0146), [2, 3, 7]);
+        assert_eq!(codecs_of(0b1100_0000), [8]);
+        assert_eq!(codecs_of(0b0100_0001), [1, 7]);
+        assert_eq!(codec_payload(8, true), [8, 1, 0]);
+        assert_eq!(codec_payload(2, true), [2, 0, 0]);
+        assert_eq!(decode(&build_packet(0x8114, 1, &[0, 8])).map(|e| describe(&e)), Some("Codec LHDC".into()));
+        assert!(matches!(decode(&build_packet(EVT_SPATIAL_TYPE, 1, &[2])), Some(Event::SpatialType(2))));
     }
 }

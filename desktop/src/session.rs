@@ -28,6 +28,10 @@ pub enum Cmd {
     AlertVolume(u8),
     TapLevel(u8),
     GameSoundType(u8),
+    /// `0x0422`: 0 off, 1 fixed, 2 head tracking, then the read-back.
+    SpatialType(u8),
+    /// `0x041A` codec and Hi-Res; the buds restart and the link comes back by itself.
+    Codec(u8, bool),
     HeadMotion(u8),
     /// `0x0405` start / stop.
     FitTest(bool),
@@ -101,6 +105,11 @@ pub struct Snapshot {
     /// (selected, offered types) from `0x812B`.
     pub game_sound: Option<(u8, Vec<u8>)>,
     pub head_motion: Option<u8>,
+    /// `0x812A` / push `0x0510`: 0 off, 1 fixed, 2 head tracking.
+    pub spatial_type: Option<u8>,
+    /// The current codec (`0x8114`) and the offered ones (`0x8123`), §9 Codec picker.
+    pub codec: Option<u8>,
+    pub codecs: Vec<u8>,
     /// The last fit test result, and a count that changes with each one.
     pub fit: (u8, u8, u32),
     /// The last Personalized ANC event (1 stored, 2 ack, 3 result), its value, and a count that changes with each.
@@ -310,6 +319,9 @@ impl<'a> Conn<'a> {
             Event::TapLevel(l, d) => s.tap_level = Some((l, d)),
             Event::GameSound(t, all) => s.game_sound = Some((t, all)),
             Event::HeadMotion(t) => s.head_motion = Some(t),
+            Event::SpatialType(t) => s.spatial_type = Some(t),
+            Event::Codec(c) => s.codec = Some(c),
+            Event::Codecs(c) => s.codecs = c,
             Event::FitResult(l, r) => s.fit = (l, r, s.fit.2 + 1),
             Event::PncStored(e) => s.pnc = (1, e as u8, s.pnc.2 + 1),
             Event::PncAck(st) => s.pnc = (2, st, s.pnc.2 + 1),
@@ -371,10 +383,19 @@ impl<'a> Conn<'a> {
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;
         }
-        if !batch { return self.eq_reads(); }
-        reads.extend([CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE].into_iter()
-            .filter(|&c| self.s.caps.supports(c)).map(|c| (c, vec![])));
-        if !reads.is_empty() { self.send(CMD_BATCH, None, &batch_payload(&reads))?; self.pump(200)?; }
+        if batch {
+            reads.extend([CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE].into_iter()
+                .filter(|&c| self.s.caps.supports(c)).map(|c| (c, vec![])));
+            if !reads.is_empty() { self.send(CMD_BATCH, None, &batch_payload(&reads))?; self.pump(200)?; }
+        } else {
+            self.eq_reads()?;
+        }
+        // The Overview's 3D audio type and codec picker, as the phone reads them.
+        for cmd in [CMD_QUERY_SPATIAL_TYPE, CMD_QUERY_CODEC_LIST, CMD_QUERY_CODEC] {
+            if !self.s.caps.supports(cmd) { continue; }
+            self.send(cmd, None, &[])?;
+            self.pump(120)?;
+        }
         Ok(())
     }
 
@@ -500,6 +521,14 @@ impl<'a> Conn<'a> {
                         self.pump(400)?;
                         self.send(CMD_QUERY_GAME_SOUND, None, &[])?;
                     }
+                    Cmd::SpatialType(t) => {
+                        self.s.spatial_type = Some(t);
+                        (self.emit)(self.s.clone());
+                        self.send(CMD_SET_SPATIAL_TYPE, None, &[t])?;
+                        self.pump(400)?;
+                        self.send(CMD_QUERY_SPATIAL_TYPE, None, &[])?;
+                    }
+                    Cmd::Codec(c, hires) => self.send(CMD_SET_CODEC, None, &codec_payload(c, hires))?,
                     Cmd::HeadMotion(t) => {
                         self.s.head_motion = Some(t);
                         (self.emit)(self.s.clone());

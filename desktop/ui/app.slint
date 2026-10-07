@@ -116,6 +116,7 @@ export global Tr {
     in property <string> game-sub;
     in property <string> codec-dialog-title;
     in property <string> codec-dialog-accept;
+    in property <string> codec-msg-reconnect;
     in property <string> language-title;
     in property <string> language-sub;
     in property <string> app-settings-title;
@@ -522,6 +523,8 @@ component AncSegments inherits Rectangle {
 component Toggle inherits Rectangle {
     in property <bool> checked;
     in property <bool> live;
+    in property <bool> locked;
+    opacity: locked ? 0.4 : 1;
     callback toggled(bool);
     // The phone's switch: a thin track under a thumb as tall as the switch, light grey when off.
     width: 44px;
@@ -554,7 +557,7 @@ component Toggle inherits Rectangle {
         animate x { duration: 120ms; }
     }
     TouchArea {
-        enabled: Buds.on || root.live;
+        enabled: (Buds.on || root.live) && !root.locked;
         mouse-cursor: pointer;
         clicked => { root.toggled(!root.checked); }
     }
@@ -665,6 +668,7 @@ component FeatureRow inherits HorizontalLayout {
     in property <string> value;
     // Works while disconnected (an app setting).
     in property <bool> live;
+    in property <bool> locked;
     callback toggled(bool);
     spacing: 16px;
     height: 64px;
@@ -678,7 +682,7 @@ component FeatureRow inherits HorizontalLayout {
     }
     if !chevron: VerticalLayout {
         alignment: center;
-        Toggle { checked: root.checked; live: root.live; toggled(on) => { root.toggled(on); } }
+        Toggle { checked: root.checked; live: root.live; locked: root.locked; toggled(on) => { root.toggled(on); } }
     }
     if value != "": Text { text: value; color: Palette.text2; font-size: 13px; vertical-alignment: center; horizontal-alignment: right; overflow: elide; max-width: 260px; }
     if chevron && !no-end: Image {
@@ -1151,6 +1155,8 @@ export struct FeatureItem {
     choice: string,
     // Turning it on runs the Personalized ANC flow instead of a write.
     flow: bool,
+    // The switch shows its state but takes no click (Hi-Res with a codec other than LDAC or LHDC V5).
+    locked: bool,
 }
 
 // The Earbud settings page's state (`earbuds.rs`).
@@ -1158,6 +1164,10 @@ export global Earbuds {
     in property <[FeatureItem]> features;
     // The Overview's switches (`earbuds::home`); id -1 is low latency.
     in property <[FeatureItem]> home;
+    in property <[Choice]> codec-choices;
+    in property <int> codec-current;
+    in property <[Choice]> spatial-choices;
+    in property <int> spatial-current;
     in property <bool> has-firmware;
     in property <string> firmware;
     in property <bool> has-find;
@@ -2258,10 +2268,16 @@ export component MainWindow inherits Window {
     callback close-window();
     // 0 N, 1 S, 2 W, 3 E, 4 NW, 5 NE, 6 SW, 7 SE
     callback resize(int);
-    // The Overview switch waiting for its reconnect warning.
+    // The Overview write waiting for its reconnect warning: kind 0 a switch (id, on), 3 / 4 a pick (value).
+    property <int> ask-kind;
     property <int> ask-id;
     property <bool> ask-on;
+    property <int> ask-value;
     property <string> ask-body;
+    // The Overview picker open: 3 codec, 4 3D audio type; its warning when it turns Hi-Res off.
+    property <int> pick-kind;
+    property <string> pick-title;
+    property <string> pick-confirm;
 
     VerticalLayout {
     TitleBar {
@@ -2370,16 +2386,26 @@ export component MainWindow inherits Window {
                     for f[i] in Earbuds.home: VerticalLayout {
                         if i > 0: Divider {}
                         FeatureRow {
-                            icon: f.icon; title: f.title; subtitle: f.sub; checked: f.on;
+                            icon: f.icon; title: f.title; subtitle: f.sub; checked: f.on; locked: f.locked;
                             toggled(on) => {
                                 if f.id == -1 {
                                     Buds.set-low-latency(on);
                                 } else if f.confirm != "" && (on || f.confirm-off) {
-                                    root.ask-id = f.id; root.ask-on = on; root.ask-body = f.confirm;
+                                    root.ask-kind = 0; root.ask-id = f.id; root.ask-on = on; root.ask-body = f.confirm;
                                     home-ask.show();
                                 } else {
                                     Earbuds.set-feature(f.id, on);
                                 }
+                            }
+                        }
+                        // The codec (3) or the 3D audio type (4).
+                        if f.choice-kind > 0: Divider {}
+                        if f.choice-kind > 0: NavRow {
+                            icon: f.icon; title: f.choice-title; subtitle: f.choice;
+                            clicked => {
+                                if !Buds.on { return; }
+                                root.pick-kind = f.choice-kind; root.pick-title = f.choice-title; root.pick-confirm = f.confirm;
+                                home-pick.show();
                             }
                         }
                     }
@@ -2400,7 +2426,25 @@ export component MainWindow inherits Window {
     home-ask := Dialog {
         x: (root.width - self.width) / 2; y: (root.height - 180px) / 2;
         title: Tr.codec-dialog-title; body: root.ask-body; ok: Tr.codec-dialog-accept;
-        accepted => { Earbuds.set-feature(root.ask-id, root.ask-on); }
+        accepted => {
+            if root.ask-kind == 0 { Earbuds.set-feature(root.ask-id, root.ask-on); } else { Earbuds.choose(root.ask-kind, root.ask-value); }
+        }
+    }
+    // A codec change always reconnects; a 3D audio type asks only when it turns Hi-Res off.
+    home-pick := ChoiceDialog {
+        x: (root.width - self.width) / 2; y: 120px;
+        title: root.pick-title;
+        items: root.pick-kind == 3 ? Earbuds.codec-choices : Earbuds.spatial-choices;
+        current: root.pick-kind == 3 ? Earbuds.codec-current : Earbuds.spatial-current;
+        picked(v) => {
+            if root.pick-kind == 3 && v != Earbuds.codec-current {
+                root.ask-kind = 3; root.ask-value = v; root.ask-body = Tr.codec-msg-reconnect; home-ask.show();
+            } else if root.pick-kind == 4 && v != 0 && root.pick-confirm != "" {
+                root.ask-kind = 4; root.ask-value = v; root.ask-body = root.pick-confirm; home-ask.show();
+            } else if root.pick-kind == 4 {
+                Earbuds.choose(4, v);
+            }
+        }
     }
 
     // Resize edges (a frameless window has none of its own).
