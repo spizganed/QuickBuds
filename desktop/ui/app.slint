@@ -66,6 +66,11 @@ component DotBox inherits Rectangle {
 }
 
 // Strings from the phone app's strings.xml (set from Rust for the system language).
+export struct Choice {
+    value: int,
+    label: string,
+}
+
 export global Update {
     in property <string> installed;
     in property <string> status;
@@ -1146,11 +1151,6 @@ export struct FeatureItem {
     choice: string,
     // Turning it on runs the Personalized ANC flow instead of a write.
     flow: bool,
-}
-
-export struct Choice {
-    value: int,
-    label: string,
 }
 
 // The Earbud settings page's state (`earbuds.rs`).
