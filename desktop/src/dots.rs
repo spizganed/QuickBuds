@@ -26,8 +26,9 @@ fn cached(key: String, make: impl FnOnce() -> Option<Pixmap>) -> Image {
         SharedPixelBuffer::<Rgba8Pixel>::clone_from_slice(pm.data(), pm.width(), pm.height())));
     CACHE.with(|c| {
         let mut c = c.borrow_mut();
-        // ponytail: dropped whole when full (window resizes make new card sizes); an LRU if it ever shows.
-        if c.len() > 300 { c.clear(); }
+        // Window resizes make new card sizes: the boxes go when it is full, the icons and rings (slow to draw) stay.
+        // ponytail: an LRU if it ever shows.
+        if c.len() > 300 { c.retain(|k, _| !k.starts_with("box ")); }
         c.insert(key, img.clone());
     });
     img

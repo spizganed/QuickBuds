@@ -572,7 +572,7 @@ impl App {
 fn window_chrome(main: &MainWindow) {
     use winit::window::ResizeDirection as R;
     let w = main.as_weak();
-    main.on_drag(move || { w.upgrade().map(|m| m.window().with_winit_window(|w| w.drag_window())); });
+    main.on_drag(move || { w.upgrade().map(|m| { m.window().with_winit_window(|w| w.drag_window()); release(&m); }); });
     let w = main.as_weak();
     main.on_minimize(move || { w.upgrade().map(|m| m.window().set_minimized(true)); });
     let w = main.as_weak();
@@ -588,7 +588,17 @@ fn window_chrome(main: &MainWindow) {
     let w = main.as_weak();
     main.on_resize(move |dir| {
         let dir = [R::North, R::South, R::West, R::East, R::NorthWest, R::NorthEast, R::SouthWest, R::SouthEast][dir as usize];
-        w.upgrade().map(|m| m.window().with_winit_window(|w| w.drag_resize_window(dir)));
+        w.upgrade().map(|m| { m.window().with_winit_window(|w| w.drag_resize_window(dir)); release(&m); });
+    });
+}
+
+/// The compositor owns the pointer from here and Slint never sees the button go up: without an exit, the
+/// pressed edge or title bar keeps every mouse event after the drag. The exit goes after the press is handled:
+/// inside the handler, Slint puts the press state back over it.
+fn release(m: &MainWindow) {
+    let w = m.as_weak();
+    slint::Timer::single_shot(std::time::Duration::ZERO, move || {
+        w.upgrade().map(|m| m.window().dispatch_event(slint::platform::WindowEvent::PointerExited));
     });
 }
 
