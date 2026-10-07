@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Instrumente pentru dezvoltatori</string>
+    <string name="desktop_nav_overview">Prezentare generală</string>
+    <string name="desktop_nav_app_settings">Setările aplicației</string>
     <string name="action_settings">Setări</string>
     <string name="conn_on">Conectat</string>
     <string name="conn_off">Deconectat</string>

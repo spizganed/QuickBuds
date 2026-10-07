@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-26). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Alat developer</string>
+    <string name="desktop_nav_overview">Ringkasan</string>
+    <string name="desktop_nav_app_settings">Setelan aplikasi</string>
     <string name="action_settings">Pengaturan</string>
     <string name="conn_on">Terhubung</string>
     <string name="conn_off">Terputus</string>

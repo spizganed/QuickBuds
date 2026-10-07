@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Інструменти розробника</string>
+    <string name="desktop_nav_overview">Огляд</string>
+    <string name="desktop_nav_app_settings">Налаштування застосунку</string>
     <string name="action_settings">Налаштування</string>
     <string name="conn_on">Підключено</string>
     <string name="conn_off">Відключено</string>

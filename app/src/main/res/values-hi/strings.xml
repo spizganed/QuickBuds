@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-26). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">डेवलपर टूल</string>
+    <string name="desktop_nav_overview">अवलोकन</string>
+    <string name="desktop_nav_app_settings">ऐप सेटिंग्स</string>
     <string name="action_settings">सेटिंग्स</string>
     <string name="conn_on">कनेक्टेड</string>
     <string name="conn_off">डिस्कनेक्टेड</string>

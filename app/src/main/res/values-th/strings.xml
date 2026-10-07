@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-26). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">เครื่องมือนักพัฒนา</string>
+    <string name="desktop_nav_overview">ภาพรวม</string>
+    <string name="desktop_nav_app_settings">การตั้งค่าแอป</string>
     <string name="action_settings">การตั้งค่า</string>
     <string name="conn_on">เชื่อมต่อแล้ว</string>
     <string name="conn_off">ไม่ได้เชื่อมต่อ</string>

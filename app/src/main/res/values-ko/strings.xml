@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">개발자 도구</string>
+    <string name="desktop_nav_overview">개요</string>
+    <string name="desktop_nav_app_settings">앱 설정</string>
     <string name="action_settings">설정</string>
     <string name="conn_on">연결됨</string>
     <string name="conn_off">연결 끊김</string>

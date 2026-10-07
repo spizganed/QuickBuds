@@ -98,6 +98,11 @@ pub fn offered_events(pl: &[u8]) -> Option<Vec<u8>> {
 
 /// realme Link's wind noise switch; asked only for models with the `windNoise` flag.
 pub const FEATURE_WIND_NOISE: u8 = 0x1A;
+/// High-quality audio (Hi-Res) and 3D audio: exclusive `0x0403` switches, §9 Spatial sound and Hi-Res.
+pub const FEATURE_HIRES: u8 = 0x18;
+pub const FEATURE_SPATIAL: u8 = 0x1B;
+/// Buds with this read take spatial as a type (`0x0422`), not feature `1B`.
+pub const CMD_QUERY_SPATIAL_TYPE: u16 = 0x012A;
 
 /// `0x010D`: count, then the feature ids (`OpoProtocol.queryStatus`): the model's `statusQuery` (HeyMelody's
 /// per-model list, PROTOCOL.md §9), else the full list. The `windNoise` flag adds [FEATURE_WIND_NOISE].

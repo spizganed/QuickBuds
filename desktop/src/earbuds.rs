@@ -1,7 +1,7 @@
 //! The Earbud settings page (`EarbudSettingsActivity`): the feature switches the buds list, and the firmware.
 
 use crate::protocol::*;
-use crate::session::Cmd;
+use crate::session::{Cmd, Snapshot};
 use crate::{icons, svg, t, with_app, App, Choice, Earbuds, FeatureItem, MainWindow};
 use slint::{ComponentHandle, ModelRc, VecModel};
 
@@ -14,7 +14,6 @@ const ROWS: &[(u8, Option<&str>, &str, &str, &str, Option<&str>, bool)] = &[
     // Wear detection: the buds' own auto play/pause. The phone's smart auto-pause needs its media session.
     (0x04, None, icons::EARBUD, "wear_firmware_title", "wear_firmware_sub", None, false),
     (0x09, Some("vocalEnhance"), icons::EQUALIZER, "row_vocal_title", "row_vocal_sub", None, false),
-    (FEATURE_WIND_NOISE, Some("windNoise"), icons::ANC, "row_wind_noise_title", "row_wind_noise_sub", None, false),
     (0x27, Some("gameSound"), icons::LOW_LATENCY, "row_game_sound_title", "row_game_sound_sub", None, false),
     (0x1C, Some("controlAutoVolumeSupport"), icons::VOLUME, "row_smart_volume_title", "row_smart_volume_sub", None, false),
     (0x30, None, icons::VOLUME, "row_adaptive_volume_title", "row_adaptive_volume_sub", None, false),
@@ -31,7 +30,7 @@ const ROWS: &[(u8, Option<&str>, &str, &str, &str, Option<&str>, bool)] = &[
 
 pub fn setup(main: &MainWindow) {
     let e = main.global::<Earbuds>();
-    e.on_set_feature(|id, on| with_app(|a| { let _ = a.tx.send(Cmd::Feature(id as u8, on)); }));
+    e.on_set_feature(|id, on| with_app(|a| { let _ = a.tx.send(Cmd::Features(writes(&a.snap, id as u8, on))); }));
     e.on_find(|on| with_app(|a| { let _ = a.tx.send(Cmd::Find(on)); }));
     e.on_opened(|| with_app(|a| { let _ = a.tx.send(Cmd::EarbudReads); }));
     e.on_alert_released(|l| with_app(|a| { let _ = a.tx.send(Cmd::AlertVolume(l as u8)); }));
@@ -43,6 +42,52 @@ pub fn setup(main: &MainWindow) {
     e.on_pnc_query(|| with_app(|a| { let _ = a.tx.send(Cmd::PncQuery); }));
     e.on_pnc(|action| with_app(|a| { let _ = a.tx.send(Cmd::Pnc(action as u8)); }));
     e.on_status_read(|| with_app(|a| { let _ = a.tx.send(Cmd::StatusRead); }));
+}
+
+/// Our `spatialSwitch` key (realme): Hi-Res and 3D audio are written alone, never together (§9).
+fn exclusive(s: &Snapshot) -> bool { !s.model.is_some_and(|m| m["spatialSwitch"] == 1) }
+
+/// The writes for one switch: Hi-Res and 3D audio turn each other off, in HeyMelody's order (§9).
+fn writes(s: &Snapshot, id: u8, on: bool) -> Vec<(u8, bool)> {
+    let is_on = |f: u8| s.features.contains(&(f, 1));
+    match id {
+        FEATURE_HIRES if on && exclusive(s) && is_on(FEATURE_SPATIAL) => vec![(FEATURE_SPATIAL, false), (FEATURE_HIRES, true)],
+        FEATURE_SPATIAL if on && exclusive(s) && is_on(FEATURE_HIRES) => vec![(FEATURE_SPATIAL, true), (FEATURE_HIRES, false)],
+        _ => vec![(id, on)],
+    }
+}
+
+/// The Overview's switches, in the phone's order: wind noise reduction, low latency, Hi-Res, 3D audio.
+/// Low latency is id -1: it writes through `Buds.set-low-latency`. A codec write makes the buds
+/// reconnect, so Hi-Res asks both ways, and 3D audio asks when it turns Hi-Res off.
+// ponytail: no codec picker (`highAudio` models) and no spatial type (`0x012A` buds); those rows stay
+// hidden here until the desktop has them.
+pub fn home(a: &App) {
+    let s = &a.snap;
+    let listed = |id: u8| s.features.iter().find(|f| f.0 == id).map(|f| f.1);
+    let flag = |k: &str| s.model.is_some_and(|m| m[k] == 1);
+    let item = |id: i32, icon: &str, title: &str, sub: &str, on: bool, confirm: &str, confirm_off: bool| FeatureItem {
+        id, icon: svg(icon), title: t(&a.tr, title).into(), sub: t(&a.tr, sub).into(), on,
+        confirm: if confirm.is_empty() { "".into() } else { t(&a.tr, confirm).into() }, confirm_off, ..Default::default()
+    };
+    let mut rows = vec![];
+    if let Some(v) = listed(FEATURE_WIND_NOISE).or((s.manual && flag("windNoise")).then_some(0)) {
+        rows.push(item(FEATURE_WIND_NOISE as i32, icons::ANC, "row_wind_noise_title", "row_wind_noise_sub", v == 1, "", false));
+    }
+    if a.has.game {
+        rows.push(item(-1, icons::LOW_LATENCY, "row_game_title", "row_game_sub", s.low_latency.unwrap_or(false), "", false));
+    }
+    let (hires, spatial) = (listed(FEATURE_HIRES), listed(FEATURE_SPATIAL));
+    if let Some(v) = hires.filter(|_| !flag("highAudio")) {
+        let msg = if spatial == Some(1) && exclusive(s) { "codec_msg_hires_drops_spatial" } else { "codec_msg_reconnect" };
+        rows.push(item(FEATURE_HIRES as i32, icons::HIRES, "row_hires_title",
+            if v == 1 { "row_hires_sub" } else { "row_hires_sub_off" }, v == 1, msg, true));
+    }
+    if let Some(v) = spatial.filter(|_| !exclusive(s) || !s.caps.supports(CMD_QUERY_SPATIAL_TYPE)) {
+        let msg = if hires == Some(1) && exclusive(s) { "codec_msg_spatial_drops_hires" } else { "" };
+        rows.push(item(FEATURE_SPATIAL as i32, icons::SPATIAL, "row_spatial_title", "row_spatial_sub", v == 1, msg, false));
+    }
+    a.main.global::<Earbuds>().set_home(ModelRc::new(VecModel::from(rows)));
 }
 
 /// HeyMelody's names for the game sound types; a type without one is not offered.

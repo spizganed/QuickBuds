@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Fejlesztői eszközök</string>
+    <string name="desktop_nav_overview">Áttekintés</string>
+    <string name="desktop_nav_app_settings">Alkalmazásbeállítások</string>
     <string name="action_settings">Beállítások</string>
     <string name="conn_on">Csatlakoztatva</string>
     <string name="conn_off">Leválasztva</string>

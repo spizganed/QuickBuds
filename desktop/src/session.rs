@@ -17,8 +17,8 @@ pub enum Cmd {
     EqDelete(Preset),
     BassWave(bool),
     BassLevel(i8),
-    /// A `0x0403` switch (Earbud settings), then the status re-read.
-    Feature(u8, bool),
+    /// `0x0403` switches in this order, then the status re-read.
+    Features(Vec<(u8, bool)>),
     /// The locator tone on both buds.
     Find(bool),
     /// The model list's pick changed (`settings.json` "model_manual"): the model is looked up again.
@@ -442,11 +442,16 @@ impl<'a> Conn<'a> {
                     }
                     // As `setFeatures`: the write, then the status read that shows what the buds kept.
                     // Power saving restarts the buds: the link drops and the idle rescan reconnects.
-                    Cmd::Feature(id, on) => {
-                        if let Some(x) = self.s.features.iter_mut().find(|x| x.0 == id) { x.1 = on as u8; }
+                    Cmd::Features(changes) => {
+                        for &(id, on) in &changes {
+                            if let Some(x) = self.s.features.iter_mut().find(|x| x.0 == id) { x.1 = on as u8; }
+                        }
                         (self.emit)(self.s.clone());
-                        self.send(CMD_SET_FEATURE, None, &[id, on as u8])?;
-                        self.pump(400)?;
+                        for (id, on) in changes {
+                            self.send(CMD_SET_FEATURE, None, &[id, on as u8])?;
+                            self.pump(100)?;
+                        }
+                        self.pump(300)?;
                         self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?;
                     }
                     Cmd::Find(on) => self.send(CMD_FIND_BUDS, None, &[on as u8])?,

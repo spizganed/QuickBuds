@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-26). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">開發者工具</string>
+    <string name="desktop_nav_overview">總覽</string>
+    <string name="desktop_nav_app_settings">應用程式設定</string>
     <string name="action_settings">設定</string>
     <string name="conn_on">已連線</string>
     <string name="conn_off">未連線</string>

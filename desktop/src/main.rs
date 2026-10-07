@@ -165,26 +165,71 @@ impl Has {
     }
 }
 
-/// The sidebar's sections; a page the buds have no feature for is hidden.
-fn nav(h: Has) -> ModelRc<NavEntry> {
+/// The sidebar's sections, titled as their pages; a page the buds have no feature for is hidden.
+fn nav(h: Has, tr: &[String]) -> ModelRc<NavEntry> {
     let nav: Vec<NavEntry> = [
-        (icons::LAYOUT, "Overview", true),
-        (icons::EQUALIZER, "Equalizer", h.eq),
-        (icons::GESTURE, "Controls", h.controls),
-        (icons::HEARING, "Hearing profile", h.hearing),
-        (icons::DEVICES, "Dual connection", h.dual),
-        (icons::EARBUD, "Earbud settings", true),
-        (icons::SETTINGS_COG, "App settings", true),
-        (icons::DEV_TOOLS, "Dev tools", true),
-    ].into_iter().map(|(icon, name, ready)| NavEntry { icon: svg_at(icon, 20.0), name: name.into(), ready }).collect();
+        (icons::LAYOUT, "desktop_nav_overview", true),
+        (icons::EQUALIZER, "eq_title", h.eq),
+        (icons::GESTURE, "gesture_title", h.controls),
+        (icons::HEARING, "row_golden_title", h.hearing),
+        (icons::DEVICES, "dual_title", h.dual),
+        (icons::EARBUD, "earbuds_title", true),
+        (icons::SETTINGS_COG, "desktop_nav_app_settings", true),
+        (icons::DEV_TOOLS, "action_dev_tools", true),
+    ].into_iter().map(|(icon, key, ready)| NavEntry { icon: svg_at(icon, 20.0), name: t(tr, key).into(), ready }).collect();
     ModelRc::new(VecModel::from(nav))
 }
 
-/// English strings from `values/strings.xml`.
-// ponytail: English only for now; the other locales are already in `strings::LOCALES`.
-fn translations() -> Vec<String> {
-    let base = strings::LOCALES.iter().find(|l| l.0.is_empty()).unwrap().1;
-    base.iter().map(|s| s.unwrap_or("").to_string()).collect()
+/// Settings › Language, as on the phone: (tag in `strings::LOCALES`, native name); "" is the system default.
+const LANGUAGES: &[(&str, &str)] = &[
+    ("", ""), ("en", "English"), ("zh-CN", "简体中文"), ("zh-TW", "繁體中文"), ("ja", "日本語"), ("ko", "한국어"),
+    ("in", "Bahasa Indonesia"), ("ms", "Bahasa Melayu"), ("cs", "Čeština"), ("de", "Deutsch"), ("es", "Español"),
+    ("fil", "Filipino"), ("fr", "Français"), ("it", "Italiano"), ("hu", "Magyar"), ("nl", "Nederlands"),
+    ("pl", "Polski"), ("pt", "Português"), ("ro", "Română"), ("sv", "Svenska"), ("vi", "Tiếng Việt"),
+    ("tr", "Türkçe"), ("el", "Ελληνικά"), ("ru", "Русский"), ("uk", "Українська"), ("hi", "हिन्दी"),
+    ("bn", "বাংলা"), ("th", "ไทย"),
+];
+
+/// The locale table for a language tag ("de-AT" de, "zh-Hant-HK" zh-TW, "id" in); English without one.
+fn locale_for(tag: &str) -> &'static str {
+    let tag = tag.replace('_', "-");
+    let parts: Vec<&str> = tag.split(['-', '.']).collect();
+    let lang = match parts[0].to_lowercase().as_str() {
+        "zh" if parts.iter().any(|p| ["Hant", "TW", "HK", "MO"].contains(p)) => "zh-TW".to_string(),
+        "zh" => "zh-CN".into(),
+        "id" => "in".into(),
+        "tl" => "fil".into(),
+        l => l.into(),
+    };
+    strings::LOCALES.iter().find(|l| l.0 == lang).map_or("", |l| l.0)
+}
+
+/// The saved language (`settings.json` "language"), else the system's.
+fn chosen_locale() -> &'static str {
+    let saved = load_settings()["language"].as_str().unwrap_or("").to_string();
+    locale_for(&if saved.is_empty() { sys_locale::get_locale().unwrap_or_default() } else { saved })
+}
+
+/// The strings of one locale; a key it lacks falls back to English.
+fn translations(locale: &str) -> Vec<String> {
+    let table = |tag: &str| strings::LOCALES.iter().find(|l| l.0 == tag).map(|l| l.1);
+    let base = table("").unwrap();
+    let chosen = table(locale).unwrap_or(base);
+    chosen.iter().zip(base).map(|(c, b)| c.or(*b).unwrap_or("").to_string()).collect()
+}
+
+/// Settings › Language's list and current pick, and the report's categories, in the current strings.
+fn language_ui(main: &MainWindow, tr: &[String]) {
+    let saved = load_settings()["language"].as_str().unwrap_or("").to_string();
+    let current = LANGUAGES.iter().position(|l| l.0 == saved).unwrap_or(0);
+    let label = |i: usize| if i == 0 { t(tr, "language_system") } else { LANGUAGES[i].1 };
+    let u = main.global::<Update>();
+    u.set_languages(ModelRc::new(VecModel::from((0..LANGUAGES.len())
+        .map(|i| Choice { value: i as i32, label: label(i).into() }).collect::<Vec<_>>())));
+    u.set_language(current as i32);
+    u.set_language_name(label(current).into());
+    main.global::<Report>().set_categories(ModelRc::new(VecModel::from(
+        report::CATEGORY_KEYS.iter().map(|k| t(tr, k).into()).collect::<Vec<slint::SharedString>>())));
 }
 
 fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
@@ -212,11 +257,22 @@ fn set_icons(b: &Buds) {
     b.set_icon_volume_off(svg_at(icons::VOLUME_OFF, 22.0));
     b.set_icon_devices(svg(icons::DEVICES));
     b.set_icon_hearing(svg(icons::HEARING));
+    b.set_icon_language(svg(icons::LANGUAGE));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     set_icons(b);
+    set_texts(tr, s);
+    setup_callbacks(b);
+}
 
+fn set_texts(tr: &Tr, s: &[String]) {
+    tr.set_codec_dialog_title(t(s, "codec_dialog_title").into());
+    tr.set_codec_dialog_accept(t(s, "codec_dialog_accept").into());
+    tr.set_language_title(t(s, "settings_language_title").into());
+    tr.set_language_sub(t(s, "settings_language_sub").into());
+    tr.set_app_settings_title(t(s, "desktop_nav_app_settings").into());
+    tr.set_dev_tools_title(t(s, "action_dev_tools").into());
     tr.set_connected(t(s, "conn_on").into());
     tr.set_connect(t(s, "conn_action_connect").into());
     tr.set_disconnect(t(s, "conn_action_disconnect").into());
@@ -358,7 +414,9 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_dual_add_message(t(s, "dual_add_message").into());
     tr.set_dual_preferred(t(s, "dual_preferred").into());
     tr.set_dual_preferred_sub(t(s, "dual_preferred_sub").into());
+}
 
+fn setup_callbacks(b: &Buds) {
     b.on_set_anc(|mode| with_app(|a| {
         let mode = if mode == "ANC" {
             // The ANC segment picks the last level used, else Medium, else the first the buds have.
@@ -407,9 +465,20 @@ impl App {
             d.set_on(on);
             set_icons(&b);
         }
-        self.main.set_nav(nav(self.has));
+        self.main.set_nav(nav(self.has, &self.tr));
         self.apply(self.snap.clone());
         eq::redraw(self);
+    }
+
+    /// Settings › Language: saves the pick and redraws every string in place.
+    fn set_language(&mut self, i: usize) {
+        save_setting("language", LANGUAGES[i].0.into());
+        self.tr = translations(chosen_locale());
+        set_texts(&self.main.global::<Tr>(), &self.tr);
+        #[cfg(windows)]
+        set_texts(&self.panel.global::<Tr>(), &self.tr);
+        language_ui(&self.main, &self.tr);
+        self.set_style(STYLE.get().0, STYLE.get().1);
     }
 
     fn apply(&mut self, s: Snapshot) {
@@ -423,10 +492,11 @@ impl App {
         if s.status == Status::On { self.modes = s.modes.clone(); }
         if s.status == Status::On && Has::of(&s) != self.has {
             self.has = Has::of(&s);
-            self.main.set_nav(nav(self.has));
+            self.main.set_nav(nav(self.has, &self.tr));
             let h = self.has;
             if !match self.main.get_page() { 1 => h.eq, 2 => h.controls, 3 => h.hearing, 4 => h.dual, _ => true } { self.main.set_page(0); }
         }
+        earbuds::home(self);
         if let Some(a) = s.anc.as_deref().filter(|a| LEVELS.contains(a)) { self.last_level = Some(a.into()); }
         let level_names = ["anc_mode_low", "anc_mode_medium", "anc_mode_high", "anc_mode_smart"];
         let levels: Vec<Level> = self.modes.levels().into_iter().map(|id| {
@@ -592,7 +662,7 @@ fn main() {
     // Windows only: on Wayland even a never-shown window is a toplevel, and Plasma lists it in the taskbar.
     #[cfg(windows)]
     let panel = QuickPanel::new().expect("panel");
-    let tr = translations();
+    let tr = translations(chosen_locale());
     setup_ui(&main.global::<Buds>(), &main.global::<Tr>(), &tr);
     #[cfg(windows)]
     setup_ui(&panel.global::<Buds>(), &panel.global::<Tr>(), &tr);
@@ -616,8 +686,8 @@ fn main() {
     controls::setup(&main);
     devtools::setup(&main);
     report::setup(&main);
-    main.global::<Report>().set_categories(ModelRc::new(VecModel::from(
-        report::CATEGORY_KEYS.iter().map(|k| t(&tr, k).into()).collect::<Vec<slint::SharedString>>())));
+    language_ui(&main, &tr);
+    main.global::<Update>().on_set_language(|i| with_app(|a| a.set_language(i as usize)));
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
 

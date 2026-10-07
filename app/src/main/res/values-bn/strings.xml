@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">ডেভেলপার টুল</string>
+    <string name="desktop_nav_overview">সংক্ষিপ্ত বিবরণ</string>
+    <string name="desktop_nav_app_settings">অ্যাপ সেটিংস</string>
     <string name="action_settings">সেটিংস</string>
     <string name="conn_on">সংযুক্ত</string>
     <string name="conn_off">বিচ্ছিন্ন</string>

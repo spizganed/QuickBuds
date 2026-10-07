@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-27). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Utvecklarverktyg</string>
+    <string name="desktop_nav_overview">Översikt</string>
+    <string name="desktop_nav_app_settings">Appinställningar</string>
     <string name="action_settings">Inställningar</string>
     <string name="conn_on">Ansluten</string>
     <string name="conn_off">Frånkopplad</string>

@@ -2,6 +2,8 @@
 <!-- Machine-drafted translation (2026-09-26). Keys follow values/strings.xml. -->
 <resources>
     <string name="action_dev_tools">Công cụ nhà phát triển</string>
+    <string name="desktop_nav_overview">Tổng quan</string>
+    <string name="desktop_nav_app_settings">Cài đặt ứng dụng</string>
     <string name="action_settings">Cài đặt</string>
     <string name="conn_on">Đã kết nối</string>
     <string name="conn_off">Đã ngắt kết nối</string>

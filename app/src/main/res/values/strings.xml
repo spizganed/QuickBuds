@@ -11,6 +11,8 @@
 
     <!-- Main screen header actions (icon buttons) -->
     <string name="action_dev_tools">Dev tools</string>
+    <string name="desktop_nav_overview">Overview</string>
+    <string name="desktop_nav_app_settings">App settings</string>
     <string name="action_settings">Settings</string>
 
     <!-- Connection status pill in the header. Short by necessity: it sits beside the

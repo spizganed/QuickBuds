@@ -93,7 +93,7 @@ pub fn setup(main: &MainWindow) {
     let h = main.global::<Hearing>();
     // The record on the buds, so one made in HeyMelody or on the phone shows up too.
     h.on_opened(|| with_app(|a| send(a, vec![(CMD_HEARING_ACTIVE, vec![]), (CMD_HEARING_ACTIVE_SCAN, vec![])])));
-    h.on_set_on(|on| with_app(|a| { let _ = a.tx.send(Cmd::Feature(FEATURE_HEARING, on)); }));
+    h.on_set_on(|on| with_app(|a| { let _ = a.tx.send(Cmd::Features(vec![(FEATURE_HEARING, on)])); }));
     h.on_pick(|i| with_app(|a| if let Some(r) = records().get(i as usize).cloned() { apply_record(a, r); }));
     h.on_delete(|i| with_app(|a| {
         let mut list = records();

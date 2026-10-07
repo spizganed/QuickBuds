@@ -1,6 +1,7 @@
 //! Shares the phone app's resources instead of copying them:
 //! - icons: Android vector drawables -> SVG strings (`icons.rs`)
 //! - strings: `values*/strings.xml` for the keys below -> one table per locale (`strings.rs`)
+//! - Windows: the launcher icon as the exe's icon resource (Explorer, taskbar, Alt+Tab)
 
 use std::{env, fmt::Write, fs, path::Path};
 
@@ -12,10 +13,13 @@ const ICONS: &[&str] = &[
     "ic_mode_anc_low", "ic_mode_anc_high", "ic_mode_anc_smart",
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
     "ic_chevron_right", "ic_anc", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds", "ic_volume_off",
-    "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold", "ic_update",
+    "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold", "ic_update", "ic_hires", "ic_spatial", "ic_language",
 ];
 
 const STRINGS: &[&str] = &[
+    "desktop_nav_overview", "desktop_nav_app_settings", "action_dev_tools", "settings_language_title", "settings_language_sub", "language_system",
+    "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_spatial_title", "row_spatial_sub", "codec_dialog_title", "codec_dialog_accept",
+    "codec_msg_reconnect", "codec_msg_hires_drops_spatial", "codec_msg_spatial_drops_hires",
     "problem_title", "problem_sub", "problem_intro", "problem_model", "problem_category", "problem_description", "problem_description_hint", "problem_log_title", "problem_preview", "problem_send", "problem_sending", "problem_cat_ui", "problem_cat_lag", "problem_cat_connection", "problem_cat_feature", "problem_cat_battery", "problem_cat_other",
     "update_title", "update_installed", "update_latest", "update_check", "update_checking", "update_up_to_date",
     "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
@@ -121,6 +125,38 @@ fn android_string(xml: &str, key: &str) -> Option<String> {
         .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">"))
 }
 
+/// The launcher SVG as a PNG-in-ICO file, compiled by mingw's windres (`WINDRES` overrides) and linked in.
+fn exe_icon(svg: &str, out: &str) {
+    let tree = resvg::usvg::Tree::from_str(svg, &Default::default()).unwrap();
+    let sizes = [16u32, 24, 32, 48, 64, 256];
+    let pngs: Vec<Vec<u8>> = sizes.iter().map(|&n| {
+        let mut pm = resvg::tiny_skia::Pixmap::new(n, n).unwrap();
+        let s = n as f32 / tree.size().width();
+        resvg::render(&tree, resvg::tiny_skia::Transform::from_scale(s, s), &mut pm.as_mut());
+        pm.encode_png().unwrap()
+    }).collect();
+    // ICONDIR, one ICONDIRENTRY per size (0 = 256 px), then the PNGs.
+    let mut ico = vec![0, 0, 1, 0, sizes.len() as u8, 0];
+    let mut offset = 6 + 16 * sizes.len();
+    for (&n, png) in sizes.iter().zip(&pngs) {
+        let b = if n >= 256 { 0 } else { n as u8 };
+        ico.extend([b, b, 0, 0, 1, 0, 32, 0]);
+        ico.extend((png.len() as u32).to_le_bytes());
+        ico.extend((offset as u32).to_le_bytes());
+        offset += png.len();
+    }
+    for png in &pngs { ico.extend(png); }
+    let dir = Path::new(out);
+    fs::write(dir.join("quickbuds.ico"), ico).unwrap();
+    fs::write(dir.join("icon.rc"), "1 ICON \"quickbuds.ico\"\n").unwrap();
+    let windres = env::var("WINDRES").unwrap_or_else(|_| "x86_64-w64-mingw32-windres".into());
+    let ok = std::process::Command::new(&windres).current_dir(dir)
+        .args(["icon.rc", "-O", "coff", "-o", "icon.o"]).status().is_ok_and(|s| s.success());
+    assert!(ok, "{windres} failed: install mingw-w64 or set WINDRES");
+    println!("cargo:rerun-if-env-changed=WINDRES");
+    println!("cargo:rustc-link-arg-bins={}", dir.join("icon.o").display());
+}
+
 fn main() {
     let out = env::var("OUT_DIR").unwrap();
 
@@ -139,6 +175,7 @@ fn main() {
     let body = &fg[fg.find('>').unwrap() + 1..];
     let launcher = format!(r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="72" height="72"><rect x="18" y="18" width="72" height="72" rx="16" fill="#000000"/>{body}"##);
     writeln!(icons, "pub const LAUNCHER: &str = {launcher:?};").unwrap();
+    if env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") { exe_icon(&launcher, &out); }
     fs::write(Path::new(&out).join("icons.rs"), icons).unwrap();
 
     // (locale tag, values) per `values-*` folder; "" is the English default.
