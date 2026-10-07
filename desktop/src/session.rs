@@ -396,6 +396,11 @@ impl<'a> Conn<'a> {
             self.send(cmd, None, &[])?;
             self.pump(120)?;
         }
+        // realme Link hands 3D audio to the buds on every connect; else the `1B` switch can do nothing (issue #9).
+        if self.s.model.is_some_and(|m| m["spatialSwitch"] == 1) && self.s.caps.supports(CMD_SPATIAL_SOURCE) {
+            self.send(CMD_SPATIAL_SOURCE, None, &[0])?;
+            self.pump(120)?;
+        }
         Ok(())
     }
 

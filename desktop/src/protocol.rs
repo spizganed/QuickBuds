@@ -106,6 +106,8 @@ pub const FEATURE_SPATIAL: u8 = 0x1B;
 pub const CMD_SET_SPATIAL_TYPE: u16 = 0x0422;
 pub const CMD_QUERY_SPATIAL_TYPE: u16 = 0x012A;
 pub const EVT_SPATIAL_TYPE: u16 = 0x0510;
+/// Who renders 3D audio: `00` the buds, `01` the phone. realme Link sends `00` on connect. `[VENDOR]`
+pub const CMD_SPATIAL_SOURCE: u16 = 0x041E;
 /// Codec picker (`highAudio` models): current codec `0x0114` -> `00 <codec>`, offered `0x0123` ->
 /// `00 <u16 LE mask>`, write `0x041A` ([codec_payload]); the buds restart after a write. `[VENDOR]`
 pub const CMD_QUERY_CODEC: u16 = 0x0114;
@@ -868,6 +870,7 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_QUERY_HEAD_MOTION => "Query head gesture mapping",
         CMD_SET_SPATIAL_TYPE => "Set spatial type",
         CMD_QUERY_SPATIAL_TYPE => "Query spatial type",
+        CMD_SPATIAL_SOURCE => "3D audio on the buds",
         CMD_QUERY_CODEC => "Query codec",
         CMD_QUERY_CODEC_LIST => "Query codec list",
         CMD_SET_CODEC => "Set codec",

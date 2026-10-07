@@ -124,6 +124,8 @@ object OpoProtocol {
     const val CMD_SET_SPATIAL_TYPE = 0x0422
     const val CMD_QUERY_SPATIAL_TYPE = 0x012A
     const val CMD_SPATIAL_TYPE_PUSH = 0x0510
+    /** Who renders 3D audio: `0x041E 00` the buds, `01` the phone. realme Link sends `00` on connect. `[VENDOR]` (PROTOCOL.md §9). */
+    const val CMD_SPATIAL_SOURCE = 0x041E
     /**
      * Codec picker on `highAudio` models (PROTOCOL.md §9), `[VENDOR]`, unverified on buds: read the
      * current codec with `0x0114` -> `00 <codec>`, the offered ones with `0x0123` -> `00 <u16 LE mask>`
@@ -544,6 +546,7 @@ object OpoProtocol {
 
     fun setSpatialType(type: Int): ByteArray = buildPacket(CMD_SET_SPATIAL_TYPE, payload = byteArrayOf(type.toByte()))
     fun querySpatialType(): ByteArray = buildPacket(CMD_QUERY_SPATIAL_TYPE)
+    fun spatialOnBuds(): ByteArray = buildPacket(CMD_SPATIAL_SOURCE, payload = byteArrayOf(0))
     fun queryCodec(): ByteArray = buildPacket(CMD_QUERY_CODEC)
     fun queryCodecList(): ByteArray = buildPacket(CMD_QUERY_CODEC_LIST)
     /** HeyMelody sends Hi-Res only with LDAC (`3`) or LHDC V5 (`8`), else `0`; the last byte is always `0`. */

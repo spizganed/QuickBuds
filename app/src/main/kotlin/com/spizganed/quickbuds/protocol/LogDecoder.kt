@@ -188,6 +188,7 @@ object LogDecoder {
                 if (direction == Direction.TX) "Feature -> $featStr" else "Feature response"
             }
             OpoProtocol.CMD_SET_SPATIAL -> "Spatial sound set"
+            OpoProtocol.CMD_SPATIAL_SOURCE -> "3D audio on the buds"
             OpoProtocol.CMD_QUERY_EQ, OpoProtocol.CMD_QUERY_EQ_ALL -> "EQ query"
             OpoProtocol.CMD_ACTIVE_REPORT -> {
                 // 0x0204: subType in payload[0]

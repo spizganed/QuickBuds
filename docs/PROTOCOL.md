@@ -121,6 +121,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0418` | Custom EQ create / save / delete | see §9 | 9 |
 | `0x041A` | Set codec (`highAudio` models) | `<codec> <hiRes> 00` | 9 |
 | `0x041B` | BassWave level | `FB 05 <level>` | 9 |
+| `0x041E` | 3D audio source: `00` buds, `01` phone | `<source>` | 9 |
 | `0x0422` | Spatial type (bitmap `0x012A` models) | `<type>` | 9 |
 | `0x0423` | Game sound type | `<type> 01` | 9 |
 | `0x0427` | Alert-sound volume | `<level>` 1..10 | 9 |
@@ -611,6 +612,10 @@ the active record; the phone keeps the list. A record: 4-byte id (big-endian, ch
   alone, whatever the bitmap says; realme Link never writes one with the other (on some models it only
   warns). The Air7 Pro lists `0x012A` / `0x0422` but leaves `0x012A` unanswered. Our own key
   `"spatialSwitch":1` (realme models with 3D sound). Wired, unverified.
+- **3D audio source `0x041E`** `[VENDOR]` (bitmap bit 43, with `0xEF03`): `00` the buds render 3D audio,
+  `01` the phone does. HeyMelody sends only `01`, when the phone's own spatializer takes over. realme
+  Link sends `00` on every connect (no realme model prefers the phone). After a `01`, feature `1B` acks
+  but changes nothing (issue #9, unverified). The apps send `00` on connect to `spatialSwitch` models.
 - **realme Link's `0x0403` ids** `[VENDOR]`, not used yet: dynamic bass `1D`, vocal enhance `09`, `0C`
   "enhance voice" (ours: personalised ANC applied; do not assume they match), game mode `06`, wear `04`,
   dual `11`. It reports power saving as `05` (ours `17` from HeyMelody: unresolved).
