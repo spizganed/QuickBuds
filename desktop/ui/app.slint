@@ -2165,81 +2165,86 @@ component ReportPage inherits Rectangle {
     }
 }
 
-component SettingsPage inherits VerticalLayout {
+// Scrolls: the page is taller than the window's first size (issue #9).
+component SettingsPage inherits Rectangle {
     callback open-report();
-    padding: 28px;
-    spacing: 16px;
-    Text { text: Tr.app-settings-title; color: Palette.text; font-size: 26px; font-weight: 700; }
-    Card {
-        live: true;
-        border-radius: 24px;
+    ScrollView {
         VerticalLayout {
-            padding-left: 20px;
-            padding-right: 20px;
-            NavRow {
-                icon: Buds.icon-language; title: Tr.language-title; subtitle: Tr.language-sub; value: Update.language-name;
-                clicked => { lang.show(); }
-            }
-        }
-    }
-    SectionTitle { text: Tr.style-title; font-size: 13px; font-weight: 400; }
-    // Classic / Dot matrix, like the phone's Theme screen: one switch for the window and the quick panel.
-    Rectangle {
-        height: 52px;
-        border-radius: self.height / 2;
-        background: Dots.on ? transparent : Palette.card;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 22px; }
-        HorizontalLayout {
-            padding: 4px;
-            spacing: 4px;
-            Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
-            Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
-        }
-    }
-    SectionTitle { text: Tr.update-title; font-size: 13px; font-weight: 400; }
-    Card {
-        live: true;
-        border-radius: 24px;
-        VerticalLayout {
-            padding-left: 20px;
-            padding-right: 20px;
-            HorizontalLayout {
-                spacing: 8px;
-                FeatureRow {
-                    icon: Buds.icon-update; title: Tr.update-installed + " " + Update.installed; subtitle: Update.status;
-                    chevron: true; no-end: true;
-                }
-                if Update.available != "": VerticalLayout {
-                    alignment: center;
-                    Chip {
-                        text: Update.can-install ? Tr.update-install : "Open release page"; primary: true;
-                        clicked => { if !Update.busy { Update.install(); } }
+            padding: 28px;
+            spacing: 16px;
+            alignment: start;
+            Text { text: Tr.app-settings-title; color: Palette.text; font-size: 26px; font-weight: 700; }
+            Card {
+                live: true;
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    NavRow {
+                        icon: Buds.icon-language; title: Tr.language-title; subtitle: Tr.language-sub; value: Update.language-name;
+                        clicked => { lang.show(); }
                     }
                 }
-                VerticalLayout { alignment: center; Chip { text: Tr.update-check; clicked => { Update.check(); } } }
             }
-            Divider {}
-            FeatureRow {
-                icon: Buds.icon-update; title: Tr.update-auto-title; subtitle: Tr.update-auto-sub;
-                checked: Update.auto; live: true; toggled(on) => { Update.set-auto(on); }
+            SectionTitle { text: Tr.style-title; font-size: 13px; font-weight: 400; }
+            // Classic / Dot matrix, like the phone's Theme screen: one switch for the window and the quick panel.
+            Rectangle {
+                height: 52px;
+                border-radius: self.height / 2;
+                background: Dots.on ? transparent : Palette.card;
+                if Dots.on: DotBox { width: 100%; height: 100%; radius: 22px; }
+                HorizontalLayout {
+                    padding: 4px;
+                    spacing: 4px;
+                    Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
+                    Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
+                }
             }
-            Divider {}
-            FeatureRow {
-                icon: Buds.icon-case; title: Tr.clear-battery-title; subtitle: Tr.clear-battery-sub;
-                checked: Update.clear-battery; live: true; toggled(on) => { Update.set-clear-battery(on); }
+            SectionTitle { text: Tr.update-title; font-size: 13px; font-weight: 400; }
+            Card {
+                live: true;
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    HorizontalLayout {
+                        spacing: 8px;
+                        FeatureRow {
+                            icon: Buds.icon-update; title: Tr.update-installed + " " + Update.installed; subtitle: Update.status;
+                            chevron: true; no-end: true;
+                        }
+                        if Update.available != "": VerticalLayout {
+                            alignment: center;
+                            Chip {
+                                text: Update.can-install ? Tr.update-install : "Open release page"; primary: true;
+                                clicked => { if !Update.busy { Update.install(); } }
+                            }
+                        }
+                        VerticalLayout { alignment: center; Chip { text: Tr.update-check; clicked => { Update.check(); } } }
+                    }
+                    Divider {}
+                    FeatureRow {
+                        icon: Buds.icon-update; title: Tr.update-auto-title; subtitle: Tr.update-auto-sub;
+                        checked: Update.auto; live: true; toggled(on) => { Update.set-auto(on); }
+                    }
+                    Divider {}
+                    FeatureRow {
+                        icon: Buds.icon-case; title: Tr.clear-battery-title; subtitle: Tr.clear-battery-sub;
+                        checked: Update.clear-battery; live: true; toggled(on) => { Update.set-clear-battery(on); }
+                    }
+                }
+            }
+            Card {
+                live: true;
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    NavRow { icon: Buds.icon-info; title: Tr.problem-title; subtitle: Tr.problem-sub; clicked => { root.open-report(); } }
+                }
             }
         }
     }
-    Card {
-        live: true;
-        border-radius: 24px;
-        VerticalLayout {
-            padding-left: 20px;
-            padding-right: 20px;
-            NavRow { icon: Buds.icon-info; title: Tr.problem-title; subtitle: Tr.problem-sub; clicked => { root.open-report(); } }
-        }
-    }
-    Rectangle { vertical-stretch: 1; }
     lang := ChoiceDialog {
         x: (root.width - self.width) / 2; y: 60px;
         title: Tr.language-title; items: Update.languages; current: Update.language;
