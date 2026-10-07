@@ -453,6 +453,8 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
   only the bud outside (`01 01 5A`) and nothing is pushed `[CAPTURE]`. So case charging is not shown,
   by decision. A part left out keeps its last level unless the "Hide old battery levels" setting is on.
 - Pushes come every 1-6 min on the buds' own clock, not tied to `0x0500` `[CAPTURE]`.
+- Level `0` means "not known": the realme Buds Air7 Pro sends case `03 00` with the lid closed (issue
+  #9). The apps leave it out; HeyMelody hides a part at 0 `[VENDOR]`.
 
 ## 8. Wearing — `0x8109` and push `02`
 

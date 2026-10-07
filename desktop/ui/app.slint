@@ -2346,79 +2346,82 @@ export component MainWindow inherits Window {
         // Report a problem, opened from App settings (no sidebar entry; the sidebar shows App settings).
         if root.page == 9: ReportPage { horizontal-stretch: 1; back => { root.page = 6; } }
         if root.page == 7: DevPage { horizontal-stretch: 1; }
-        if root.page == 0: VerticalLayout {
+        // Scrolls: Hi-Res, 3D audio and the codec row make it taller than the window's first size (issue #9).
+        if root.page == 0: ScrollView {
             horizontal-stretch: 1;
-            padding: 28px;
-            spacing: 16px;
-            if Update.available != "": Card {
-                live: true;
-                border-radius: 24px;
-                NavRow {
-                    x: 20px; width: parent.width - 40px;
-                    icon: Buds.icon-update; title: Update.notice; subtitle: Tr.update-installed + " " + Update.installed;
-                    clicked => { root.page = 6; }
-                }
-            }
-            // The phone's home: status card, noise pill, feature list.
-            Card {
-                border-radius: 24px;
-                vertical-stretch: 0;
-                VerticalLayout {
-                    padding: 20px;
-                    spacing: 10px;
-                    Batteries { size: 110px; }
-                    Text {
-                        text: Buds.name; horizontal-alignment: center;
-                        color: Palette.text2; font-size: 14px;
+            VerticalLayout {
+                padding: 28px;
+                spacing: 16px;
+                alignment: start;
+                if Update.available != "": Card {
+                    live: true;
+                    border-radius: 24px;
+                    NavRow {
+                        x: 20px; width: parent.width - 40px;
+                        icon: Buds.icon-update; title: Update.notice; subtitle: Tr.update-installed + " " + Update.installed;
+                        clicked => { root.page = 6; }
                     }
                 }
-            }
-            if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
-                height: 72px;
-                border-radius: self.height / 2;
-                AncSegments { x: 4px; y: 4px; width: parent.width - 8px; height: parent.height - 8px; }
-            }
-            if Earbuds.home.length > 0 || Buds.has-eq: Card {
-                border-radius: 24px;
-                VerticalLayout {
-                    padding-left: 20px;
-                    padding-right: 20px;
-                    for f[i] in Earbuds.home: VerticalLayout {
-                        if i > 0: Divider {}
-                        FeatureRow {
-                            icon: f.icon; title: f.title; subtitle: f.sub; checked: f.on; locked: f.locked;
-                            toggled(on) => {
-                                if f.id == -1 {
-                                    Buds.set-low-latency(on);
-                                } else if f.confirm != "" && (on || f.confirm-off) {
-                                    root.ask-kind = 0; root.ask-id = f.id; root.ask-on = on; root.ask-body = f.confirm;
-                                    home-ask.show();
-                                } else {
-                                    Earbuds.set-feature(f.id, on);
+                // The phone's home: status card, noise pill, feature list.
+                Card {
+                    border-radius: 24px;
+                    vertical-stretch: 0;
+                    VerticalLayout {
+                        padding: 20px;
+                        spacing: 10px;
+                        Batteries { size: 110px; }
+                        Text {
+                            text: Buds.name; horizontal-alignment: center;
+                            color: Palette.text2; font-size: 14px;
+                        }
+                    }
+                }
+                if Buds.has-off || Buds.levels.length > 0 || Buds.has-adaptive || Buds.has-transparency: Card {
+                    height: 72px;
+                    border-radius: self.height / 2;
+                    AncSegments { x: 4px; y: 4px; width: parent.width - 8px; height: parent.height - 8px; }
+                }
+                if Earbuds.home.length > 0 || Buds.has-eq: Card {
+                    border-radius: 24px;
+                    VerticalLayout {
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        for f[i] in Earbuds.home: VerticalLayout {
+                            if i > 0: Divider {}
+                            FeatureRow {
+                                icon: f.icon; title: f.title; subtitle: f.sub; checked: f.on; locked: f.locked;
+                                toggled(on) => {
+                                    if f.id == -1 {
+                                        Buds.set-low-latency(on);
+                                    } else if f.confirm != "" && (on || f.confirm-off) {
+                                        root.ask-kind = 0; root.ask-id = f.id; root.ask-on = on; root.ask-body = f.confirm;
+                                        home-ask.show();
+                                    } else {
+                                        Earbuds.set-feature(f.id, on);
+                                    }
+                                }
+                            }
+                            // The codec (3) or the 3D audio type (4).
+                            if f.choice-kind > 0: Divider {}
+                            if f.choice-kind > 0: NavRow {
+                                icon: f.icon; title: f.choice-title; subtitle: f.choice;
+                                clicked => {
+                                    if !Buds.on { return; }
+                                    root.pick-kind = f.choice-kind; root.pick-title = f.choice-title; root.pick-confirm = f.confirm;
+                                    home-pick.show();
                                 }
                             }
                         }
-                        // The codec (3) or the 3D audio type (4).
-                        if f.choice-kind > 0: Divider {}
-                        if f.choice-kind > 0: NavRow {
-                            icon: f.icon; title: f.choice-title; subtitle: f.choice;
-                            clicked => {
-                                if !Buds.on { return; }
-                                root.pick-kind = f.choice-kind; root.pick-title = f.choice-title; root.pick-confirm = f.confirm;
-                                home-pick.show();
-                            }
+                        if Earbuds.home.length > 0 && Buds.has-eq: Divider {}
+                        if Buds.has-eq: NavRow {
+                            icon: Buds.icon-bass;
+                            title: Tr.eq-row-title;
+                            subtitle: Tr.eq-row-sub;
+                            clicked => { root.page = 1; }
                         }
-                    }
-                    if Earbuds.home.length > 0 && Buds.has-eq: Divider {}
-                    if Buds.has-eq: NavRow {
-                        icon: Buds.icon-bass;
-                        title: Tr.eq-row-title;
-                        subtitle: Tr.eq-row-sub;
-                        clicked => { root.page = 1; }
                     }
                 }
             }
-            Rectangle { vertical-stretch: 1; }
         }
     }
     }

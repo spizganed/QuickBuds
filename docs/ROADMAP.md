@@ -35,6 +35,11 @@ Finish each step before the next one starts.
 - **Issue #5, OPPO Enco Buds2 reconnect loop:** the full `0x010D` list dropped the link. v4.5.0 sends
   the per-model query and the `0x012F` batch (PROTOCOL.md §4, §9). Waiting for @Abhishek-banal's retest
   (closed PR #7). Credit them in the release notes.
+- **Issue #9, Air7 Pro 3D audio** (Android and desktop): the reporter says the switch does nothing. The
+  buds ack feature `1B` and read it back as set. realme Link's own 3D switch sets value `1` on / `2` off
+  and sends a "phone spatial first" flag at connect (`[VENDOR]`, neither traced to wire bytes). Waiting for the
+  reporter: does the switch stay on, and does 3D work from realme Link? Do not change the write before
+  a capture.
 - **Issue #8, realme models:** Buds Air7 Pro noise control, gestures and wind noise come from realme
   Link data. They are wired and unverified. The reporter is asked to read back the ANC mode, one
   gesture and the hold cycle. 27 more realme models use the same data, also unverified (5 neckbands

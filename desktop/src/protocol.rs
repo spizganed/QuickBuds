@@ -1030,12 +1030,18 @@ impl Framer {
 /// Battery (§7): `<count>` then `<index> <raw>` pairs, 1 left, 2 right, 3 case; level `raw & 7F`, charging `raw & 80`.
 pub fn battery(payload: &[u8]) -> Vec<(u8, u8, bool)> {
     let Some((&count, rest)) = payload.split_first() else { return Vec::new() };
-    rest.chunks_exact(2).take(count as usize).map(|c| (c[0], c[1] & 0x7F, c[1] & 0x80 != 0)).collect()
+    // Level 0 is "not known" (the Air7 Pro's closed case, issue #9): left out, as HeyMelody hides it.
+    rest.chunks_exact(2).take(count as usize).filter(|c| c[1] & 0x7F != 0).map(|c| (c[0], c[1] & 0x7F, c[1] & 0x80 != 0)).collect()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn battery_level_zero_is_left_out() {
+        assert_eq!(battery(&[3, 1, 0x46, 2, 0xC6, 3, 0]), [(1, 0x46, false), (2, 0x46, true)]);
+    }
 
     #[test]
     fn status_query_wind_noise() {

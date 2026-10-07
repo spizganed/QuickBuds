@@ -14,6 +14,7 @@ object BatteryParser {
      * it is not 1/2/3, so the pair loop ignores it naturally)
      * Index: 1=Left, 2=Right, 3=Case.
      * RawValue: level = val & 0x7F, charging = (val & 0x80) != 0
+     * Level 0 is "not known" (the Air7 Pro's closed case, issue #9): left out, as HeyMelody hides it.
      */
     fun parse(data: ByteArray): Result? {
         if (data.size < 9 || data[0] != 0xAA.toByte()) return null
@@ -29,7 +30,7 @@ object BatteryParser {
         while (i + 1 < 9 + payLen) {
             val idx = data[i].toInt() and 0xFF
             val raw = data[i + 1].toInt() and 0xFF
-            val info = Info(raw and 0x7F, (raw and 0x80) != 0)
+            val info = if ((raw and 0x7F) == 0) null else Info(raw and 0x7F, (raw and 0x80) != 0)
             when (idx) {
                 1 -> l = info
                 2 -> r = info
@@ -62,7 +63,7 @@ object BatteryParser {
             if (idx + 1 >= data.size) break
             val index = data[idx].toInt() and 0xFF
             val raw = data[idx + 1].toInt() and 0xFF
-            val info = Info(raw and 0x7F, (raw and 0x80) != 0)
+            val info = if ((raw and 0x7F) == 0) null else Info(raw and 0x7F, (raw and 0x80) != 0)
             when (index) {
                 1 -> l = info
                 2 -> r = info
