@@ -59,15 +59,15 @@ dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matr
 
 ### Desktop
 
-Windows and Linux (shown: KDE Plasma). The tray menu shows the battery; on Windows the tray opens quick controls.
+Windows and Linux (shown: Windows 11). On Windows the tray icon opens quick controls; on Linux its menu shows the battery.
 
 <img src="docs/screenshots/desktop/window.png" width="640">
 
-Every page, and the Dot matrix style, is in [docs/screenshots/desktop](docs/screenshots/desktop).
-
-| Tray icon | Tray menu |
+| Themes and custom colours | Tray quick controls (Windows) |
 | :---: | :---: |
-| <img src="docs/screenshots/desktop/tray.png" width="400"> | <img src="docs/screenshots/desktop/tray-menu.png" width="320"> |
+| <img src="docs/screenshots/desktop/theme.png" width="400"> | <img src="docs/screenshots/desktop/tray-panel.png" width="320"> |
+
+Every page, the Dot matrix style and the Linux tray menu are in [docs/screenshots/desktop](docs/screenshots/desktop).
 
 ## Features
 
