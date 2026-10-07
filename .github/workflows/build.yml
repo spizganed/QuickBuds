@@ -30,6 +30,8 @@ jobs:
           mkdir -p local/keys
           echo "$KEYSTORE" | base64 -d > local/keys/quickbuds-release.jks
           printf '%s\n' "$PROPS" > local/keys/keystore.properties
+      - name: Every string in all locales
+        run: python3 scripts/check-locales.py
       - run: ./gradlew assembleRelease
       - uses: actions/upload-artifact@v4
         with:
