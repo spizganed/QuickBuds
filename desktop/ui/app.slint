@@ -681,6 +681,22 @@ component PageIn inherits Rectangle {
     }
 }
 
+// A dialog's card: it fades in and grows from 96% when the popup opens (the popup builds it on each show).
+component DialogCard inherits Rectangle {
+    property <float> t;
+    init => { t = 1; }
+    animate t { duration: Motion.base; easing: ease-out; }
+    opacity: t;
+    transform-scale: 0.96 + 0.04 * t;
+    // Solid behind the dots: the page must not show through the gaps.
+    background: Dots.on ? Palette.bg : Palette.card;
+    border-radius: 14px;
+    border-width: Dots.on ? 0 : 1px;
+    border-color: Palette.outline;
+    if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    @children
+}
+
 component SectionTitle inherits Text {
     color: Palette.text2;
     font-size: 12px;
@@ -1101,11 +1117,7 @@ component EqPage inherits VerticalLayout {
         y: (root.height - 140px) / 2;
         width: 320px;
         height: 140px;
-        Rectangle {
-            background: Palette.card;
-            border-radius: 14px;
-            border-width: 1px;
-            border-color: Palette.outline;
+        DialogCard {
             VerticalLayout {
                 padding: 20px;
                 spacing: 16px;
@@ -1244,12 +1256,7 @@ component ChoiceDialog inherits PopupWindow {
     in property <string> message;
     callback picked(int);
     width: 340px;
-    Rectangle {
-        background: Dots.on ? Palette.bg : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 8px;
@@ -1287,12 +1294,7 @@ component FitDialog inherits PopupWindow {
         state = Earbuds.fit-left == 1 && Earbuds.fit-right == 1 ? 4 : 5;
     }
     Timer { interval: 15s; running: state == 2; triggered => { state = 3; } }
-    Rectangle {
-        background: Dots.on ? Palette.bg : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 12px;
@@ -1367,12 +1369,7 @@ component PncDialog inherits PopupWindow {
     // The popup's content is built on each show: each opening starts the flow.
     init => { start(); }
     Timer { interval: 15s; running: state == 3; triggered => { reason = 0; state = 4; } }
-    Rectangle {
-        background: Dots.on ? Palette.bg : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 12px;
@@ -1412,12 +1409,7 @@ component FindDialog inherits PopupWindow {
     property <bool> warn;
     close-policy: PopupClosePolicy.no-auto-close;
     width: 360px;
-    Rectangle {
-        background: Dots.on ? Palette.bg : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 12px;
@@ -1455,14 +1447,7 @@ component Dialog inherits PopupWindow {
     in property <string> cancel: Tr.cancel;
     callback accepted();
     width: 360px;
-    Rectangle {
-        background: Dots.on ? transparent : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        // Solid behind the dots: the page must not show through the gaps.
-        if Dots.on: Rectangle { background: Palette.bg; border-radius: 14px; }
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 12px;
@@ -1709,12 +1694,7 @@ export global Controls {
 component PickDialog inherits PopupWindow {
     close-policy: PopupClosePolicy.no-auto-close;
     width: 340px;
-    Rectangle {
-        background: Dots.on ? Palette.bg : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 8px;
@@ -1850,12 +1830,7 @@ component HearingTestDialog inherits PopupWindow {
     width: 400px;
     property <int> stop: Hearing.test-stop;
     changed stop => { Hearing.test-moved(stop); }
-    Rectangle {
-        background: Dots.on ? Palette.bg : Palette.card;
-        border-radius: 14px;
-        border-width: Dots.on ? 0 : 1px;
-        border-color: Palette.outline;
-        if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
+    DialogCard {
         VerticalLayout {
             padding: 20px;
             spacing: 12px;
