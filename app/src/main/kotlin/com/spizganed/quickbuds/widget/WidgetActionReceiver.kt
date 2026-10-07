@@ -34,12 +34,8 @@ class WidgetActionReceiver : BroadcastReceiver() {
         var shortAction: String? = null
         var sendAncMode: String = state.ancMode
 
-        // A pick from a widget's mode list closes that list and returns to the battery page.
-        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            if (action == WidgetActions.ACTION_ANC_SELECT && WidgetSettings.listOpen(context, widgetId))
-                WidgetSettings.setPage(context, widgetId, QuickBudsWidget.Kind.BATTERY)
-            WidgetSettings.setListOpenedAt(context, widgetId, 0L)
-        }
+        // A pick from a widget's mode list closes that list; the controls page stays, as after a T or A tap.
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) WidgetSettings.setListOpenedAt(context, widgetId, 0L)
 
         when (action) {
             WidgetActions.ACTION_OPEN_APP -> return
