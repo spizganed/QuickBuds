@@ -16,6 +16,7 @@ const ICONS: &[&str] = &[
 ];
 
 const STRINGS: &[&str] = &[
+    "problem_title", "problem_sub", "problem_intro", "problem_model", "problem_category", "problem_description", "problem_description_hint", "problem_log_title", "problem_preview", "problem_send", "problem_sending", "problem_cat_ui", "problem_cat_lag", "problem_cat_connection", "problem_cat_feature", "problem_cat_battery", "problem_cat_other",
     "update_title", "update_installed", "update_latest", "update_check", "update_checking", "update_up_to_date",
     "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
     "settings_clear_battery_sub", "update_found_title",

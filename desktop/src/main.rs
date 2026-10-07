@@ -11,6 +11,7 @@ mod eq;
 mod hearing;
 mod models;
 mod protocol;
+mod report;
 mod session;
 mod update;
 
@@ -258,6 +259,17 @@ fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
     tr.set_style_classic(t(s, "widget_style_classic").into());
     tr.set_style_dots(t(s, "widget_style_nothing").into());
     tr.set_earbuds_title(t(s, "earbuds_title").into());
+    tr.set_problem_title(t(s, "problem_title").into());
+    tr.set_problem_sub(t(s, "problem_sub").into());
+    tr.set_problem_intro(t(s, "problem_intro").into());
+    tr.set_problem_model(t(s, "problem_model").into());
+    tr.set_problem_category(t(s, "problem_category").into());
+    tr.set_problem_description(t(s, "problem_description").into());
+    tr.set_problem_description_hint(t(s, "problem_description_hint").into());
+    tr.set_problem_log_title(t(s, "problem_log_title").into());
+    tr.set_problem_preview(t(s, "problem_preview").into());
+    tr.set_problem_send(t(s, "problem_send").into());
+    tr.set_problem_sending(t(s, "problem_sending").into());
     tr.set_section_features(t(s, "earbuds_section_features").into());
     tr.set_section_about(t(s, "earbuds_section_about").into());
     tr.set_firmware_title(t(s, "row_firmware_title").into());
@@ -603,6 +615,9 @@ fn main() {
     hearing::setup(&main);
     controls::setup(&main);
     devtools::setup(&main);
+    report::setup(&main);
+    main.global::<Report>().set_categories(ModelRc::new(VecModel::from(
+        report::CATEGORY_KEYS.iter().map(|k| t(&tr, k).into()).collect::<Vec<slint::SharedString>>())));
     let gains = Rc::new(VecModel::default());
     main.global::<Eq>().set_gains(ModelRc::from(gains.clone()));
 

@@ -42,11 +42,27 @@ object ProblemReport {
 
     /** The log as sent: header, then the packet log without Bluetooth addresses or this phone's name. */
     fun log(c: Context): String {
-        var text = header(c) + "\n" + PacketLogger.getFileContent()
+        var text = header(c) + "\n" + PacketLogger.getFileContent().lines().joinToString("\n", transform = ::dropDeviceBytes)
         text = MAC.replace(text, "XX:XX:XX:XX:XX:XX")
         for (name in phoneNames(c)) text = text.replace(name, "[this phone]")
         return text
     }
+
+    /**
+     * A packet line whose bytes hold device addresses and names (PROTOCOL.md §9 device list and device manager:
+     * `0x8112`, `0x0429`, `0x8132`, push `0x0204` sub `06`) keeps only its 9-byte header.
+     */
+    private fun dropDeviceBytes(line: String): String {
+        val at = line.indexOf(": AA ")
+        if (at < 0) return line
+        val b = line.substring(at + 2).split(' ').mapNotNull { it.toIntOrNull(16) }
+        if (b.size < 10) return line
+        val cmd = b[4] or (b[5] shl 8)
+        if (cmd !in DEVICE_CMDS && !(cmd == 0x0204 && b[9] == 0x06)) return line
+        return line.substring(0, at + 2) + b.take(9).joinToString(" ") { "%02X".format(it) } + " [device data removed]"
+    }
+
+    private val DEVICE_CMDS = setOf(0x8112, 0x0429, 0x8132)
 
     private val MAC = Regex("(?i)\\b([0-9a-f]{2}[:-]){5}[0-9a-f]{2}\\b")
 

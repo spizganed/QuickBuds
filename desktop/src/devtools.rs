@@ -94,7 +94,7 @@ fn simple_rx(e: &Event) -> Option<String> {
 }
 
 /// The raw line, as Export saves it.
-fn raw(l: &Line) -> String {
+pub fn raw(l: &Line) -> String {
     match l.dir {
         "NOTE" => format!("{} {}", l.at, l.human.as_deref().unwrap_or("")),
         _ => format!("{} {} {}", l.at, l.dir, hex(&l.bytes)),
@@ -132,7 +132,7 @@ pub fn setup(main: &MainWindow) {
     d.on_clear(|| with_app(|a| { LOG.lock().unwrap().clear(); a.log_shown = 0; refresh(a); }));
     d.on_reconnect(|| with_app(|a| { let _ = a.tx.send(Cmd::Disconnect); let _ = a.tx.send(Cmd::Connect); }));
     d.on_export(|| with_app(|a| {
-        let text: String = LOG.lock().unwrap().iter().map(|l| raw(l) + "\n").collect();
+        let text: String = crate::report::header(a) + "\n" + &LOG.lock().unwrap().iter().map(|l| raw(l) + "\n").collect::<String>();
         #[cfg(windows)]
         let home = std::env::var_os("USERPROFILE");
         #[cfg(not(windows))]

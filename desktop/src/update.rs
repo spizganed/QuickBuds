@@ -13,7 +13,7 @@ const ASSET: &str = if cfg!(windows) { "-windows-x64.zip" } else { "-linux-x64.t
 
 pub struct Release { pub version: String, pub url: String }
 
-fn quiet(cmd: &str) -> Command {
+pub fn quiet(cmd: &str) -> Command {
     #[allow(unused_mut)]
     let mut c = Command::new(cmd);
     #[cfg(windows)]

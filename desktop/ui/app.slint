@@ -130,6 +130,17 @@ export global Tr {
     in property <string> style-classic: "Classic";
     in property <string> style-dots: "Dot matrix";
     in property <string> earbuds-title;
+    in property <string> problem-title;
+    in property <string> problem-sub;
+    in property <string> problem-intro;
+    in property <string> problem-model;
+    in property <string> problem-category;
+    in property <string> problem-description;
+    in property <string> problem-description-hint;
+    in property <string> problem-log-title;
+    in property <string> problem-preview;
+    in property <string> problem-send;
+    in property <string> problem-sending;
     in property <string> section-features;
     in property <string> section-about;
     in property <string> firmware-title;
@@ -2025,7 +2036,113 @@ component DualPage inherits Rectangle {
 }
 
 // App settings (the phone's Settings and Theme screens): for now the style.
+// App settings › Report a problem (`report.rs`).
+export global Report {
+    in-out property <string> model;
+    in-out property <string> description;
+    in property <[string]> categories;
+    in property <[bool]> picked;
+    in-out property <bool> with-log: true;
+    // The exact text Send posts, after See the report; "" hides it.
+    in property <string> preview;
+    in property <string> note;
+    in property <bool> busy;
+    callback open();
+    callback toggle(int);
+    callback show-preview();
+    callback send();
+}
+
+// A text field: one line, or [multi] lines that wrap.
+component Field inherits Rectangle {
+    in-out property <string> text;
+    in property <string> hint;
+    in property <bool> multi;
+    height: multi ? 120px : 40px;
+    border-radius: 10px;
+    background: Dots.on ? transparent : Palette.card;
+    border-width: Dots.on ? 0 : 1px;
+    border-color: input.has-focus ? Palette.accent : Palette.outline;
+    if Dots.on: DotBox {
+        width: 100%; height: 100%; radius: 10px; fill: Palette.card;
+        stroke: input.has-focus ? Palette.accent : Palette.outline;
+    }
+    if root.text == "": Text {
+        x: 12px; y: root.multi ? 10px : (parent.height - self.height) / 2;
+        text: root.hint; color: Palette.text2; font-size: 14px;
+    }
+    input := TextInput {
+        x: 12px; y: root.multi ? 10px : 0;
+        width: parent.width - 24px; height: root.multi ? parent.height - 20px : parent.height;
+        text <=> root.text;
+        color: Palette.text; font-size: 14px;
+        single-line: !root.multi;
+        wrap: root.multi ? word-wrap : no-wrap;
+        vertical-alignment: root.multi ? top : center;
+    }
+}
+
+component ReportPage inherits Rectangle {
+    callback back();
+    ScrollView {
+        VerticalLayout {
+            padding: 28px;
+            spacing: 10px;
+            alignment: start;
+            HorizontalLayout {
+                spacing: 12px;
+                Chip { text: "‹"; width: 40px; clicked => { root.back(); } }
+                Text { text: Tr.problem-title; color: Palette.text; font-size: 26px; font-weight: 700; vertical-alignment: center; horizontal-stretch: 1; }
+            }
+            Text { text: Tr.problem-intro; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+            SectionTitle { text: Tr.problem-model; font-size: 13px; font-weight: 400; }
+            Field { text <=> Report.model; }
+            SectionTitle { text: Tr.problem-category; font-size: 13px; font-weight: 400; }
+            Card {
+                live: true;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    for c[i] in Report.categories: FeatureRow {
+                        height: 48px; title: c; checked: Report.picked[i]; live: true;
+                        toggled => { Report.toggle(i); }
+                    }
+                }
+            }
+            SectionTitle { text: Tr.problem-description; font-size: 13px; font-weight: 400; }
+            Field { text <=> Report.description; hint: Tr.problem-description-hint; multi: true; }
+            Card {
+                live: true;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    FeatureRow {
+                        icon: Buds.icon-info; title: Tr.problem-log-title;
+                        subtitle: "Without Bluetooth addresses or this computer's name";
+                        checked: Report.with-log; live: true; toggled(on) => { Report.with-log = on; }
+                    }
+                }
+            }
+            HorizontalLayout {
+                spacing: 8px;
+                alignment: end;
+                Chip { text: Tr.problem-preview; clicked => { Report.show-preview(); } }
+                Chip { text: Report.busy ? Tr.problem-sending : Tr.problem-send; primary: true; clicked => { if !Report.busy { Report.send(); } } }
+            }
+            if Report.note != "": Text { text: Report.note; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+            if Report.preview != "": Card {
+                live: true;
+                VerticalLayout {
+                    padding: 16px;
+                    Text { text: Report.preview; color: Palette.text; font-family: DevLog.font; font-size: 12px; wrap: word-wrap; }
+                }
+            }
+        }
+    }
+}
+
 component SettingsPage inherits VerticalLayout {
+    callback open-report();
     padding: 28px;
     spacing: 16px;
     Text { text: "App settings"; color: Palette.text; font-size: 26px; font-weight: 700; }
@@ -2075,6 +2192,15 @@ component SettingsPage inherits VerticalLayout {
                 icon: Buds.icon-case; title: Tr.clear-battery-title; subtitle: Tr.clear-battery-sub;
                 checked: Update.clear-battery; live: true; toggled(on) => { Update.set-clear-battery(on); }
             }
+        }
+    }
+    Card {
+        live: true;
+        border-radius: 24px;
+        VerticalLayout {
+            padding-left: 20px;
+            padding-right: 20px;
+            NavRow { icon: Buds.icon-info; title: Tr.problem-title; subtitle: Tr.problem-sub; clicked => { root.open-report(); } }
         }
     }
     Rectangle { vertical-stretch: 1; }
@@ -2150,7 +2276,7 @@ export component MainWindow inherits Window {
                 Rectangle { height: 16px; }
                 for e[i] in root.nav: NavItem {
                     entry: e;
-                    active: root.page == i || (root.page == 8 && i == 5);
+                    active: root.page == i || (root.page == 8 && i == 5) || (root.page == 9 && i == 6);
                     clicked => { root.page = i; }
                 }
                 Rectangle { vertical-stretch: 1; }
@@ -2165,7 +2291,9 @@ export component MainWindow inherits Window {
         if root.page == 2: ControlsPage { horizontal-stretch: 1; }
         if root.page == 3: HearingPage { horizontal-stretch: 1; }
         if root.page == 4: DualPage { horizontal-stretch: 1; }
-        if root.page == 6: SettingsPage { horizontal-stretch: 1; }
+        if root.page == 6: SettingsPage { horizontal-stretch: 1; open-report => { Report.open(); root.page = 9; } }
+        // Report a problem, opened from App settings (no sidebar entry; the sidebar shows App settings).
+        if root.page == 9: ReportPage { horizontal-stretch: 1; back => { root.page = 6; } }
         if root.page == 7: DevPage { horizontal-stretch: 1; }
         if root.page == 0: VerticalLayout {
             horizontal-stretch: 1;

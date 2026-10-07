@@ -27,24 +27,6 @@ Finish each step before the next one starts.
 
 - **Buds 4 check of v4.5.0:** he checks the per-model `0x010D` query and the `0x012F` batch on the Buds 4.
 
-## Later
-
-- **In-app problem report** (Android and desktop, same form). The user needs no account and never
-  leaves the app.
-  - Settings › Report a problem: buds model (auto-filled, or a list with autocomplete), one or more
-    categories (UI, lag, connection, feature not working, battery, other), a short description, and
-    an optional log.
-  - The app posts the answers to a Google Form (`formResponse`, sign-in off). Android uses
-    `HttpURLConnection`; desktop uses `curl`, as the updater does. The log goes in a paragraph field.
-  - A "See the report" button shows the exact text before Send. Nothing goes out without Send.
-  - The sent and exported log starts with one header line: phone or PC maker and model, OS and
-    version, QuickBuds version, buds model and firmware.
-  - The sent log keeps the buds name (model lookup uses it). It drops Bluetooth addresses and the
-    phone's or PC's own name.
-  - First launch shows one notice: where the report screen is, and that nothing is sent without Send.
-  - **First step:** every `catch` that swallows an error writes one log line (exception class and
-    message). About 33 of the 55 Android `catch` blocks log nothing. Check the desktop too.
-
 ## Waiting on others
 
 - **Issue #2, Nord Buds 3 Pro reconnect loop** (Android and desktop): the buds reset the link 3-5 s
@@ -88,7 +70,7 @@ Finish each step before the next one starts.
 - From HeyMelody's device page (2026-09-29): Zen mode and Sound space / white noise (sound packs
   from OPPO's servers); the tap camera shutter (needs OPPO's camera app); realme's "More functions" (it
   only opens realme Link); AI translation, summary and clear call (ColorOS only); skins, guides,
-  tutorials and diagnostics. Our problem report is under Later.
+  tutorials and diagnostics.
 - Guessed protocol payloads before a capture.
 - Hardcoded gesture button groups: the write is table-driven.
 - A log on the main screen: Dev Tools owns logging.
