@@ -18,7 +18,7 @@ const ICONS: &[&str] = &[
 
 const STRINGS: &[&str] = &[
     "desktop_nav_overview", "desktop_nav_app_settings", "action_dev_tools", "settings_language_title", "settings_language_sub", "language_system",
-    "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_spatial_title", "row_spatial_sub", "codec_dialog_title", "codec_dialog_accept",
+    "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_spatial_title", "row_spatial_sub", "spatial_fixed", "spatial_head_tracking", "codec_dialog_title", "codec_dialog_accept",
     "codec_msg_reconnect", "codec_msg_hires_drops_spatial", "codec_msg_spatial_drops_hires",
     "problem_title", "problem_sub", "problem_intro", "problem_model", "problem_category", "problem_description", "problem_description_hint", "problem_log_title", "problem_preview", "problem_send", "problem_sending", "problem_cat_ui", "problem_cat_lag", "problem_cat_connection", "problem_cat_feature", "problem_cat_battery", "problem_cat_other",
     "update_title", "update_installed", "update_latest", "update_check", "update_checking", "update_up_to_date",
@@ -199,6 +199,18 @@ fn main() {
     }
     table += "];\n";
     fs::write(Path::new(&out).join("strings.rs"), table).unwrap();
+
+    // `t()` panics on a key missing here: fail the build on any Android key the source names but STRINGS lacks.
+    let base = fs::read_to_string(format!("{RES}/values/strings.xml")).unwrap();
+    for f in fs::read_dir("src").unwrap().flatten() {
+        println!("cargo:rerun-if-changed={}", f.path().display());
+        let src = fs::read_to_string(f.path()).unwrap();
+        for k in src.split('"').skip(1).step_by(2) {
+            let known = !k.is_empty() && k.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
+                && base.contains(&format!("<string name=\"{k}\""));
+            assert!(!known || STRINGS.contains(&k), "src uses string \"{k}\": add it to STRINGS");
+        }
+    }
 
     slint_build::compile("ui/app.slint").unwrap();
 }
