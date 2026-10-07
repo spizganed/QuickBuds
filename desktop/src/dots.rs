@@ -85,16 +85,41 @@ fn matrix(src: &Pixmap, cols: u32, rows: u32, ss: u32, pitch: f32, min: u32, cen
     }
     let on = |x: i64, y: i64| x >= 0 && y >= 0 && x < cols as i64 && y < rows as i64 && cells[(y * cols as i64 + x) as usize].is_some();
     let mut out = Pixmap::new((cols as f32 * pitch).round().max(1.0) as u32, (rows as f32 * pitch).round().max(1.0) as u32)?;
+    // A whole-px pitch: one dot per colour is drawn once and copied into each cell (a dot stays inside its
+    // cell, so nothing blends). A path per dot cost ~70 ms per card on each window resize.
+    let whole = pitch.fract() == 0.0;
+    let mut stamps: HashMap<[u8; 4], Pixmap> = HashMap::new();
     for y in 0..rows as i64 {
         for x in 0..cols as i64 {
             let Some(c) = cells[(y * cols as i64 + x) as usize] else { continue };
             if despeckle && !on(x - 1, y) && !on(x + 1, y) && !on(x, y - 1) && !on(x, y + 1) { continue; }
-            if let Some(dot) = PathBuilder::from_circle((x as f32 + 0.5) * pitch, (y as f32 + 0.5) * pitch, pitch * 0.42) {
-                out.fill_path(&dot, &paint(c, true), FillRule::Winding, Transform::identity(), None);
+            if whole {
+                let u = c.to_color_u8();
+                let p = pitch as u32;
+                let stamp = match stamps.entry([u.red(), u.green(), u.blue(), u.alpha()]) {
+                    std::collections::hash_map::Entry::Occupied(e) => e.into_mut(),
+                    std::collections::hash_map::Entry::Vacant(e) => e.insert(dot(c, pitch, 0.0, 0.0, Pixmap::new(p, p)?)),
+                };
+                let (w, ox, oy) = (out.width() as usize, x as usize * p as usize, y as usize * p as usize);
+                let (dst, src) = (out.data_mut(), stamp.data());
+                for r in 0..p as usize {
+                    let (d, s) = (((oy + r) * w + ox) * 4, r * p as usize * 4);
+                    dst[d..d + p as usize * 4].copy_from_slice(&src[s..s + p as usize * 4]);
+                }
+            } else {
+                out = dot(c, pitch, x as f32 * pitch, y as f32 * pitch, out);
             }
         }
     }
     Some(out)
+}
+
+/// One dot of colour `c` in the cell at `x`, `y` px.
+fn dot(c: sk::Color, pitch: f32, x: f32, y: f32, mut pm: Pixmap) -> Pixmap {
+    if let Some(d) = PathBuilder::from_circle(x + 0.5 * pitch, y + 0.5 * pitch, pitch * 0.42) {
+        pm.fill_path(&d, &paint(c, true), FillRule::Winding, Transform::identity(), None);
+    }
+    pm
 }
 
 /// A card, button or row (`DotArt.Box`): `w` x `h` physical px snapped down to whole cells, the outline one
@@ -254,5 +279,22 @@ mod tests {
         assert!(size(&icon(icons::EQUALIZER, 24.0, 1.0)).1 >= 20);
         assert_eq!(pitch_px(1.0, PITCH), 2.0);
         assert_eq!(pitch_px(2.0, PITCH), 4.0);
+    }
+
+    #[test]
+    fn copied_dots_match_drawn_dots() {
+        // Copied dots and one path per dot give the same pixels.
+        let mut src = Pixmap::new(30, 12).unwrap();
+        src.fill_rect(Rect::from_xywh(2.0, 2.0, 20.0, 8.0).unwrap(), &paint(sk::Color::from_rgba8(200, 30, 30, 255), false), Transform::identity(), None);
+        src.fill_rect(Rect::from_xywh(24.0, 0.0, 6.0, 12.0).unwrap(), &paint(sk::Color::from_rgba8(30, 30, 200, 120), false), Transform::identity(), None);
+        let fast = matrix(&src, 30, 12, 1, 4.0, 50, false, false).unwrap();
+        let mut slow = Pixmap::new(120, 48).unwrap();
+        for y in 0..12 {
+            for x in 0..30 {
+                let v = src.pixel(x, y).unwrap().demultiply();
+                if v.alpha() >= 50 { slow = dot(sk::Color::from_rgba8(v.red(), v.green(), v.blue(), v.alpha()), 4.0, x as f32 * 4.0, y as f32 * 4.0, slow); }
+            }
+        }
+        assert_eq!(fast.data(), slow.data());
     }
 }

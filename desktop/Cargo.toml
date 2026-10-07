@@ -36,3 +36,10 @@ opt-level = "s"
 lto = true
 strip = true
 panic = "abort"
+
+# The software renderer and the dot images redraw on every resize: unoptimized, the debug build lags.
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
