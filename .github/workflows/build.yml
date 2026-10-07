@@ -1,7 +1,7 @@
-# Checks the locales, builds the release APK and runs the desktop tests. Runs only by hand:
-# `gh workflow run Build`, before every release (CLAUDE.md, Release) or for a test APK.
-# The APK is signed when the repository has the RELEASE_KEYSTORE_B64 and RELEASE_KEY_PROPERTIES secrets,
-# so it installs over the release app. Download it from the run's Artifacts.
+# Checks the locales, builds the release APK and AAB, runs the desktop tests and builds the desktop archives
+# (scripts/desktop-dist.sh). Runs only by hand: `gh workflow run Build`, before every release (CLAUDE.md, Release)
+# or for a test APK. The APK is signed when the repository has the RELEASE_KEYSTORE_B64 and RELEASE_KEY_PROPERTIES
+# secrets, so it installs over the release app. The run's Artifacts hold every release file.
 name: Build
 
 on:
@@ -32,24 +32,47 @@ jobs:
           printf '%s\n' "$PROPS" > local/keys/keystore.properties
       - name: Every string in all locales
         run: python3 scripts/check-locales.py
-      - run: ./gradlew assembleRelease
+      - run: ./gradlew assembleRelease bundleRelease
+      - name: Release names
+        run: |
+          ver=$(sed -n 's/.*versionName = "\(.*\)"/\1/p' app/build.gradle.kts)
+          mkdir out
+          cp app/build/outputs/apk/release/app-release.apk "out/QuickBuds$ver.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "out/QuickBuds$ver.aab"
       - uses: actions/upload-artifact@v4
         with:
-          name: QuickBuds-${{ github.sha }}
-          path: app/build/outputs/apk/release/*.apk
+          name: android
+          path: out/*
           retention-days: 14
 
   desktop:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: desktop
+    runs-on: ubuntu-latest
+    # Ubuntu 22.04 (glibc 2.35), so the Linux binary runs on older distros too.
+    container: ubuntu:22.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
     steps:
+      - name: Packages
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq curl git zip python3 build-essential pkg-config gcc-mingw-w64-x86-64 \
+            libdbus-1-dev libgtk-3-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev
       - uses: actions/checkout@v4
-      - run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq libdbus-1-dev libgtk-3-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev
+      - name: Rust
+        run: |
+          curl -sSf https://sh.rustup.rs | sh -s -- -y -q --profile minimal --target x86_64-pc-windows-gnu
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: desktop
-      - run: cargo test
+          workspaces: desktop -> target
+      - name: Test
+        run: cd desktop && cargo test
+      - name: Archives
+        run: |
+          ver=$(sed -n 's/^version = "\(.*\)"/\1/p' desktop/Cargo.toml | head -1)
+          QB_NATIVE=1 scripts/desktop-dist.sh "$ver"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop
+          path: desktop/dist/*
+          retention-days: 14

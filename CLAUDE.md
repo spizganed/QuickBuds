@@ -30,8 +30,9 @@ the repo. A finished feature needs no doc: the code is the record.
 
 - Version: `app/build.gradle.kts` `defaultConfig` and `desktop/Cargo.toml`. The latest release is
   the newest `v*` git tag.
-- Test: `gh workflow run Build`, then `gh run watch`. Release only after it passes.
-- Build: `./gradlew assembleRelease bundleRelease` and `scripts/desktop-dist.sh <version>`.
+- Build and test: `gh workflow run Build`, then `gh run watch`, then `gh run download <run id>`. The
+  artifacts hold the APK, the AAB and both desktop archives. Release only after the run passes.
+- Local build, same files: `./gradlew assembleRelease bundleRelease` and `scripts/desktop-dist.sh <version>`.
 - Notes cover every user-visible change since the last tag (`git log v<previous>..HEAD`).
 - Publish: `gh release create v<version> QuickBuds<version>.apk QuickBuds<version>.aab <desktop
   archives> --target <full sha> --title "QuickBuds <version>"`. Both updaters look for these file

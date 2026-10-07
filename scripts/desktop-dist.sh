@@ -3,7 +3,7 @@
 #   QuickBuds<version>-windows-x64.zip   quickbuds.exe only (portable, system DLLs only)
 #   QuickBuds<version>-linux-x64.tar.gz  binary + .desktop + icon + README
 # Usage: scripts/desktop-dist.sh <version>   (e.g. 4.3.0)
-# Needs: rustup target x86_64-pc-windows-gnu, mingw-w64-gcc, podman, zip, python3.
+# Needs: rustup target x86_64-pc-windows-gnu, mingw-w64-gcc, podman (unless QB_NATIVE=1), zip, python3.
 # Linux builds in Ubuntu 22.04 (glibc 2.35) so the binary runs on older distros than the build PC.
 set -euo pipefail
 ver=${1:?version}
@@ -15,7 +15,11 @@ rm -rf "$dist" && mkdir -p "$dist"
 (cd "$root/desktop" && cargo build --release --target x86_64-pc-windows-gnu)
 (cd "$root/desktop/target/x86_64-pc-windows-gnu/release" && zip -q "$dist/QuickBuds$ver-windows-x64.zip" quickbuds.exe)
 
-# Linux, in a container; the cargo registry and target dir persist between runs.
+# Linux, in a container; the cargo registry and target dir persist between runs. QB_NATIVE=1 builds in place
+# instead, for CI, which already runs in Ubuntu 22.04 with the packages below.
+if [ -n "${QB_NATIVE:-}" ]; then
+  (cd "$root/desktop" && CARGO_TARGET_DIR="$root/desktop/target/ubuntu22" cargo build --release)
+else
 podman run --rm --userns=keep-id -v "$root:/repo" -v quickbuds-cargo:/cargo -w /repo/desktop \
   -e CARGO_HOME=/cargo -e RUSTUP_HOME=/cargo/rustup -e CARGO_TARGET_DIR=/repo/desktop/target/ubuntu22 \
   --user root docker.io/library/ubuntu:22.04 bash -c '
@@ -26,6 +30,7 @@ podman run --rm --userns=keep-id -v "$root:/repo" -v quickbuds-cargo:/cargo -w /
     command -v cargo >/dev/null || curl -sSf https://sh.rustup.rs | sh -s -- -y -q --profile minimal --no-modify-path
     cargo build --release
     chown -R '"$(id -u):$(id -g)"' /repo/desktop/target/ubuntu22'
+fi
 
 pkg=$dist/QuickBuds$ver-linux-x64
 mkdir -p "$pkg"
