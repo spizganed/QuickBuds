@@ -379,8 +379,8 @@ pub fn apply(a: &App) {
         value: call_on(s, *k).map_or("—", |on| t(&a.tr, if on { ON_CALL[*k].1 } else { "gesture_action_none" })).into(),
     }).collect();
     let c = a.main.global::<Controls>();
-    c.set_rows(ModelRc::new(VecModel::from(rows)));
-    c.set_calls(ModelRc::new(VecModel::from(calls)));
+    crate::update_rows(c.get_rows(), rows, |m| c.set_rows(m));
+    crate::update_rows(c.get_calls(), calls, |m| c.set_calls(m));
     c.set_side(side as i32 - 1);
     c.set_one_button(m.one_button);
 }

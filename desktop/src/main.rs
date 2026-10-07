@@ -249,6 +249,17 @@ fn fit_screen(win: &slint::Window) {
     if let Some(Some(fit)) = fit { win.set_size(fit); }
 }
 
+/// Puts `rows` into a repeater's model in place: a row that stays keeps its element, so its switch slides
+/// (a new model rebuilds every row, and nothing animates). A new row count refills the same model.
+fn update_rows<T: Clone + PartialEq + 'static>(current: ModelRc<T>, rows: Vec<T>, set: impl FnOnce(ModelRc<T>)) {
+    use slint::Model;
+    let Some(m) = current.as_any().downcast_ref::<VecModel<T>>() else { return set(ModelRc::new(VecModel::from(rows))) };
+    if m.row_count() != rows.len() { return m.set_vec(rows); }
+    for (i, r) in rows.into_iter().enumerate() {
+        if m.row_data(i).as_ref() != Some(&r) { m.set_row_data(i, r); }
+    }
+}
+
 fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
     &tr[strings::KEYS.iter().position(|k| *k == key).expect(key)]
 }

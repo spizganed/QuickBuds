@@ -152,7 +152,7 @@ pub fn home(a: &App) {
         rows.push(r);
     }
     let e = a.main.global::<Earbuds>();
-    e.set_home(ModelRc::new(VecModel::from(rows)));
+    crate::update_rows(e.get_home(), rows, |m| e.set_home(m));
     // HeyMelody's order: LHDC V5, LHDC, LDAC, aptX Adaptive, aptX HD, aptX, AAC, SBC.
     let codecs: Vec<Choice> = [8, 7, 3, 6, 5, 4, 2, 1].into_iter().filter(|c| s.codecs.contains(c))
         .map(|c| Choice { value: c as i32, label: codec_name(c).into() }).collect();
@@ -202,7 +202,7 @@ pub fn apply(a: &App) {
         })
     })).collect();
     let e = a.main.global::<Earbuds>();
-    e.set_features(ModelRc::new(VecModel::from(rows)));
+    crate::update_rows(e.get_features(), rows, |m| e.set_features(m));
     e.set_has_firmware(s.caps.supports(CMD_QUERY_FIRMWARE));
     e.set_has_find(s.caps.supports(CMD_FIND_BUDS));
     e.set_has_fit(s.caps.supports(CMD_FIT_TEST));

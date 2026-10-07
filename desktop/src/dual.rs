@@ -48,7 +48,7 @@ pub fn apply(a: &App) {
         .collect();
     let g = a.main.global::<Dual>();
     g.set_on(s.features.iter().any(|f| f.0 == FEATURE_DUAL && f.1 == 1));
-    g.set_devices(ModelRc::new(VecModel::from(rows)));
+    crate::update_rows(g.get_devices(), rows, |m| g.set_devices(m));
     g.set_manages(manages);
     g.set_has_preferred(has(s, "setPriorityDevice"));
     g.set_preferred_choices(ModelRc::new(VecModel::from(choices)));
