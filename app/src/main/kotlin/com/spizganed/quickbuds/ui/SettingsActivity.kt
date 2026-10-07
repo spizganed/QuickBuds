@@ -68,6 +68,9 @@ class SettingsActivity : Activity() {
         section(
             R.string.settings_app,
             updateRow,
+            link(R.drawable.ic_dev_tools, R.string.problem_title, R.string.problem_sub) {
+                startActivity(Intent(this, ReportActivity::class.java))
+            },
             link(R.drawable.ic_info, R.string.settings_about_title, R.string.settings_about_sub) {
                 startActivity(Intent(this, AboutActivity::class.java))
             }

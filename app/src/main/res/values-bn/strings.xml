@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">শুটিং গেম</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">আপনার ইয়ারবাড চালু রাখতে সাহায্য করুন</string>
-    <string name="report_body">QuickBuds শুধু OnePlus Buds 4-এ পরীক্ষা করা হয়েছে। অন্য মডেলে কিছু ফিচার হয়তো এখনও কাজ করবে না।\n\nআপনার ইয়ারবাডে কী কাজ করে আর কী করে না জানান, যাতে পরের রিলিজে ঠিক করা যায়: GitHub-এ মডেলের নাম দিয়ে একটি issue খুলুন।\n\nএকটি লগ যোগ করুন: Dev tools খুলুন (উপরের আইকন, সেটিংস › সাধারণ-এ চালু করা যায়), ফিচারটি চালিয়ে দেখুন, Export চাপুন এবং Download/QuickBuds-এর ফাইলটি যোগ করুন। Bluetooth HCI snoop লগ বা adb logcat-ও কাজে আসে।</string>
-    <string name="report_open">GitHub-এ রিপোর্ট করুন</string>
     <string name="report_later">বুঝেছি</string>
     <string name="row_smart_volume_title">স্মার্ট ভলিউম</string>
     <string name="row_smart_volume_sub">চারপাশের শব্দ অনুযায়ী ভলিউম</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds নিয়ন্ত্রণ</string>
     <string name="widget_setup_title">উইজেটের বোতাম</string>
     <string name="widget_setup_hint">সর্বোচ্চ ৪টি বোতাম বেছে নিন। উইজেট এগুলো এই ক্রমে দেখায়।</string>
+    <string name="problem_title">সমস্যা জানান</string>
+    <string name="problem_sub">ডেভেলপারকে একটি রিপোর্ট পাঠান</string>
+    <string name="problem_intro">কোনো অ্যাকাউন্ট লাগবে না। পাঠান ট্যাপ না করা পর্যন্ত কিছুই পাঠানো হয় না।</string>
+    <string name="problem_model">ইয়ারবাডের মডেল</string>
+    <string name="problem_category">কী সমস্যা</string>
+    <string name="problem_cat_ui">লেআউট বা চেহারা</string>
+    <string name="problem_cat_lag">ধীর বা আটকে যায়</string>
+    <string name="problem_cat_connection">সংযোগ</string>
+    <string name="problem_cat_feature">একটি ফিচার কাজ করে না</string>
+    <string name="problem_cat_battery">ব্যাটারি</string>
+    <string name="problem_cat_other">অন্য কিছু</string>
+    <string name="problem_description">বিবরণ</string>
+    <string name="problem_description_hint">আপনি কী করেছিলেন, আর কী হয়েছিল?</string>
+    <string name="problem_log_title">লগ যুক্ত করুন</string>
+    <string name="problem_log_sub">ব্লুটুথ ঠিকানা ও এই ফোনের নাম ছাড়া</string>
+    <string name="problem_preview">রিপোর্ট দেখুন</string>
+    <string name="problem_send">পাঠান</string>
+    <string name="problem_sending">পাঠানো হচ্ছে…</string>
+    <string name="problem_sent">রিপোর্ট পাঠানো হয়েছে। ধন্যবাদ!</string>
+    <string name="problem_failed">রিপোর্ট পাঠানো যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।</string>
+    <string name="problem_notice_body">QuickBuds শুধু OnePlus Buds 4-এ পরীক্ষিত। আপনার বাডে কিছু কাজ না করলে সেটিংস › সমস্যা জানান ব্যবহার করুন। পাঠান ট্যাপ না করা পর্যন্ত কিছুই পাঠানো হয় না।</string>
 </resources>

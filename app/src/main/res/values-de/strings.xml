@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Shooter-Spiele</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Hilf mit, deine Buds zu unterstützen</string>
-    <string name="report_body">QuickBuds ist nur mit den OnePlus Buds 4 getestet. Auf anderen Modellen funktionieren manche Funktionen vielleicht noch nicht.\n\nBitte sag uns, was bei deinen Buds funktioniert und was nicht, damit die nächste Version es beheben kann: Erstelle ein Issue auf GitHub mit deinem Modellnamen.\n\nFüge ein Log bei: Öffne Dev tools (Symbol oben, einschaltbar unter Einstellungen › Allgemein), probiere die Funktion aus, tippe auf Export und hänge die Datei aus Download/QuickBuds an. Ein Bluetooth-HCI-Snoop-Log oder adb logcat hilft auch.</string>
-    <string name="report_open">Auf GitHub melden</string>
     <string name="report_later">Verstanden</string>
     <string name="row_smart_volume_title">Intelligente Lautstärke</string>
     <string name="row_smart_volume_sub">Passt die Lautstärke an Umgebungslärm an</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds Steuerung</string>
     <string name="widget_setup_title">Widget-Tasten</string>
     <string name="widget_setup_hint">Wähle bis zu 4 Tasten. Das Widget zeigt sie in dieser Reihenfolge.</string>
+    <string name="problem_title">Problem melden</string>
+    <string name="problem_sub">Sende dem Entwickler einen Bericht</string>
+    <string name="problem_intro">Kein Konto nötig. Nichts wird gesendet, bevor du auf Senden tippst.</string>
+    <string name="problem_model">Kopfhörermodell</string>
+    <string name="problem_category">Was ist falsch</string>
+    <string name="problem_cat_ui">Layout oder Aussehen</string>
+    <string name="problem_cat_lag">Langsam oder ruckelt</string>
+    <string name="problem_cat_connection">Verbindung</string>
+    <string name="problem_cat_feature">Eine Funktion geht nicht</string>
+    <string name="problem_cat_battery">Akku</string>
+    <string name="problem_cat_other">Etwas anderes</string>
+    <string name="problem_description">Beschreibung</string>
+    <string name="problem_description_hint">Was hast du getan, und was ist passiert?</string>
+    <string name="problem_log_title">Protokoll anhängen</string>
+    <string name="problem_log_sub">Ohne Bluetooth-Adressen und den Namen dieses Telefons</string>
+    <string name="problem_preview">Bericht ansehen</string>
+    <string name="problem_send">Senden</string>
+    <string name="problem_sending">Wird gesendet…</string>
+    <string name="problem_sent">Bericht gesendet. Danke!</string>
+    <string name="problem_failed">Der Bericht konnte nicht gesendet werden. Prüfe die Internetverbindung und versuche es erneut.</string>
+    <string name="problem_notice_body">QuickBuds ist nur mit den OnePlus Buds 4 getestet. Wenn auf deinen Kopfhörern etwas nicht geht, nutze Einstellungen › Problem melden. Nichts wird gesendet, bevor du auf Senden tippst.</string>
 </resources>

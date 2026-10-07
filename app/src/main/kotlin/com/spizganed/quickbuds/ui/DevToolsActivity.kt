@@ -315,7 +315,7 @@ class DevToolsActivity : Activity() {
                 return
             }
             val name = "packets_export_${stamp()}.log"
-            val where = writeToDownloads(name, content)
+            val where = writeToDownloads(name, ProblemReport.header(this) + "\n" + content)
             Toast.makeText(this, "Exported to\n$where", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             PacketLogger.error("log export", e)

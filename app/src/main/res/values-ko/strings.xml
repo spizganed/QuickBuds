@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">슈팅 게임</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">이어버드 지원에 도움을 주세요</string>
-    <string name="report_body">QuickBuds는 OnePlus Buds 4에서만 테스트되었습니다. 다른 모델에서는 일부 기능이 아직 작동하지 않을 수 있습니다.\n\n다음 버전에서 고칠 수 있도록 이어버드에서 무엇이 되고 무엇이 안 되는지 알려 주세요. GitHub에 모델명과 함께 issue를 열어 주세요.\n\n로그 첨부: Dev tools를 열고(상단 아이콘, 설정 › 일반에서 켤 수 있음) 기능을 사용해 본 뒤 Export를 누르고 Download/QuickBuds의 파일을 첨부하세요. Bluetooth HCI 스누프 로그나 adb logcat도 도움이 됩니다.</string>
-    <string name="report_open">GitHub에 보고</string>
     <string name="report_later">확인</string>
     <string name="row_smart_volume_title">스마트 볼륨</string>
     <string name="row_smart_volume_sub">주변 소음에 맞춰 볼륨 조절</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds 컨트롤</string>
     <string name="widget_setup_title">위젯 버튼</string>
     <string name="widget_setup_hint">버튼을 최대 4개 고르세요. 위젯에 이 순서로 표시됩니다.</string>
+    <string name="problem_title">문제 신고</string>
+    <string name="problem_sub">개발자에게 보고서 보내기</string>
+    <string name="problem_intro">계정이 필요 없습니다. 보내기를 탭하기 전에는 아무것도 전송되지 않습니다.</string>
+    <string name="problem_model">이어버드 모델</string>
+    <string name="problem_category">무엇이 문제인가요</string>
+    <string name="problem_cat_ui">레이아웃 또는 모양</string>
+    <string name="problem_cat_lag">느리거나 끊김</string>
+    <string name="problem_cat_connection">연결</string>
+    <string name="problem_cat_feature">기능이 작동하지 않음</string>
+    <string name="problem_cat_battery">배터리</string>
+    <string name="problem_cat_other">기타</string>
+    <string name="problem_description">설명</string>
+    <string name="problem_description_hint">무엇을 했고, 어떤 일이 일어났나요?</string>
+    <string name="problem_log_title">로그 첨부</string>
+    <string name="problem_log_sub">블루투스 주소와 이 휴대폰 이름은 빼고 보냅니다</string>
+    <string name="problem_preview">보고서 보기</string>
+    <string name="problem_send">보내기</string>
+    <string name="problem_sending">보내는 중…</string>
+    <string name="problem_sent">보고서를 보냈습니다. 감사합니다!</string>
+    <string name="problem_failed">보고서를 보내지 못했습니다. 인터넷 연결을 확인하고 다시 시도하세요.</string>
+    <string name="problem_notice_body">QuickBuds는 OnePlus Buds 4에서만 테스트되었습니다. 이어버드에서 작동하지 않는 것이 있으면 설정 › 문제 신고를 이용하세요. 보내기를 탭하기 전에는 아무것도 전송되지 않습니다.</string>
 </resources>

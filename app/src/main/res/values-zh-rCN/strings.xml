@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">射击游戏</string>
     <string name="game_sound_type_peace">和平精英</string>
     <string name="report_title">帮助完善对你的耳机的支持</string>
-    <string name="report_body">QuickBuds 目前只在 OnePlus Buds 4 上测试过。在其他型号上，部分功能可能暂时无法使用。\n\n请告诉我们你的耳机上哪些功能可用、哪些不可用，以便在下个版本中修复：在 GitHub 上提交 issue 并注明型号。\n\n请附上日志：打开 Dev tools（顶部图标，可在 设置 › 通用 中开启），试用该功能，点按 Export，然后附上 Download/QuickBuds 中的文件。蓝牙 HCI snoop 日志或 adb logcat 也有帮助。</string>
-    <string name="report_open">在 GitHub 上反馈</string>
     <string name="report_later">知道了</string>
     <string name="row_smart_volume_title">智能音量</string>
     <string name="row_smart_volume_sub">根据环境噪声调节音量</string>
@@ -405,4 +403,25 @@
     <string name="widget_controls_name">QuickBuds 控制</string>
     <string name="widget_setup_title">小组件按钮</string>
     <string name="widget_setup_hint">最多选择 4 个按钮。小组件按此顺序显示。</string>
+    <string name="problem_title">报告问题</string>
+    <string name="problem_sub">向开发者发送报告</string>
+    <string name="problem_intro">无需账号。点按“发送”之前不会发送任何内容。</string>
+    <string name="problem_model">耳机型号</string>
+    <string name="problem_category">出了什么问题</string>
+    <string name="problem_cat_ui">布局或外观</string>
+    <string name="problem_cat_lag">缓慢或卡顿</string>
+    <string name="problem_cat_connection">连接</string>
+    <string name="problem_cat_feature">某个功能不起作用</string>
+    <string name="problem_cat_battery">电池</string>
+    <string name="problem_cat_other">其他</string>
+    <string name="problem_description">描述</string>
+    <string name="problem_description_hint">你做了什么，发生了什么？</string>
+    <string name="problem_log_title">附加日志</string>
+    <string name="problem_log_sub">不含蓝牙地址和此手机的名称</string>
+    <string name="problem_preview">查看报告</string>
+    <string name="problem_send">发送</string>
+    <string name="problem_sending">正在发送…</string>
+    <string name="problem_sent">报告已发送。谢谢！</string>
+    <string name="problem_failed">无法发送报告。请检查网络连接后重试。</string>
+    <string name="problem_notice_body">QuickBuds 仅在 OnePlus Buds 4 上测试过。如果你的耳机有功能不起作用，请使用 设置 › 报告问题。点按“发送”之前不会发送任何内容。</string>
 </resources>

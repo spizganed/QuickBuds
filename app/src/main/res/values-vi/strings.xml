@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Game bắn súng</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Giúp tai nghe của bạn hoạt động tốt</string>
-    <string name="report_body">QuickBuds mới chỉ được thử trên OnePlus Buds 4. Trên các mẫu khác, một số tính năng có thể chưa hoạt động.\n\nHãy cho chúng tôi biết tính năng nào chạy và không chạy trên tai nghe của bạn để bản sau sửa: mở một issue trên GitHub kèm tên mẫu.\n\nĐính kèm nhật ký: mở Dev tools (biểu tượng ở trên, bật trong Cài đặt › Chung), thử tính năng, chạm Export và đính kèm tệp trong Download/QuickBuds. Nhật ký Bluetooth HCI snoop hoặc adb logcat cũng hữu ích.</string>
-    <string name="report_open">Báo cáo trên GitHub</string>
     <string name="report_later">Đã hiểu</string>
     <string name="row_smart_volume_title">Âm lượng thông minh</string>
     <string name="row_smart_volume_sub">Điều chỉnh âm lượng theo tiếng ồn</string>
@@ -405,4 +403,25 @@
     <string name="widget_controls_name">QuickBuds điều khiển</string>
     <string name="widget_setup_title">Nút tiện ích</string>
     <string name="widget_setup_hint">Chọn tối đa 4 nút. Tiện ích hiển thị chúng theo thứ tự này.</string>
+    <string name="problem_title">Báo cáo sự cố</string>
+    <string name="problem_sub">Gửi báo cáo cho nhà phát triển</string>
+    <string name="problem_intro">Không cần tài khoản. Không có gì được gửi cho đến khi bạn chạm Gửi.</string>
+    <string name="problem_model">Mẫu tai nghe</string>
+    <string name="problem_category">Có vấn đề gì</string>
+    <string name="problem_cat_ui">Bố cục hoặc giao diện</string>
+    <string name="problem_cat_lag">Chậm hoặc giật</string>
+    <string name="problem_cat_connection">Kết nối</string>
+    <string name="problem_cat_feature">Một tính năng không hoạt động</string>
+    <string name="problem_cat_battery">Pin</string>
+    <string name="problem_cat_other">Vấn đề khác</string>
+    <string name="problem_description">Mô tả</string>
+    <string name="problem_description_hint">Bạn đã làm gì, và chuyện gì đã xảy ra?</string>
+    <string name="problem_log_title">Đính kèm nhật ký</string>
+    <string name="problem_log_sub">Không có địa chỉ Bluetooth hay tên điện thoại này</string>
+    <string name="problem_preview">Xem báo cáo</string>
+    <string name="problem_send">Gửi</string>
+    <string name="problem_sending">Đang gửi…</string>
+    <string name="problem_sent">Đã gửi báo cáo. Cảm ơn bạn!</string>
+    <string name="problem_failed">Không gửi được báo cáo. Hãy kiểm tra kết nối internet rồi thử lại.</string>
+    <string name="problem_notice_body">QuickBuds chỉ được thử trên OnePlus Buds 4. Nếu có gì không hoạt động trên tai nghe của bạn, hãy dùng Cài đặt › Báo cáo sự cố. Không có gì được gửi cho đến khi bạn chạm Gửi.</string>
 </resources>

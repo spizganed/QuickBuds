@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">シューティングゲーム</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">イヤホン対応へのご協力のお願い</string>
-    <string name="report_body">QuickBuds は OnePlus Buds 4 でのみテストしています。他のモデルでは一部の機能がまだ動かない場合があります。\n\n次のリリースで修正できるよう、お使いのイヤホンで何が動いて何が動かないかをお知らせください。GitHub でモデル名を添えて issue を作成してください。\n\nログを添付してください：Dev tools を開き（上部のアイコン。設定 › 全般 で表示できます）、機能を試してから Export をタップし、Download/QuickBuds のファイルを添付します。Bluetooth HCI スヌープログや adb logcat も役立ちます。</string>
-    <string name="report_open">GitHub で報告</string>
     <string name="report_later">OK</string>
     <string name="row_smart_volume_title">スマート音量</string>
     <string name="row_smart_volume_sub">周囲の騒音に合わせて音量を調整</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds 操作</string>
     <string name="widget_setup_title">ウィジェットのボタン</string>
     <string name="widget_setup_hint">ボタンを4つまで選べます。ウィジェットにはこの順で表示されます。</string>
+    <string name="problem_title">問題を報告</string>
+    <string name="problem_sub">開発者にレポートを送信</string>
+    <string name="problem_intro">アカウントは不要です。送信をタップするまで何も送られません。</string>
+    <string name="problem_model">イヤホンのモデル</string>
+    <string name="problem_category">どんな問題か</string>
+    <string name="problem_cat_ui">レイアウトや見た目</string>
+    <string name="problem_cat_lag">遅い・カクつく</string>
+    <string name="problem_cat_connection">接続</string>
+    <string name="problem_cat_feature">機能が動かない</string>
+    <string name="problem_cat_battery">バッテリー</string>
+    <string name="problem_cat_other">その他</string>
+    <string name="problem_description">説明</string>
+    <string name="problem_description_hint">何をして、何が起きましたか？</string>
+    <string name="problem_log_title">ログを添付</string>
+    <string name="problem_log_sub">Bluetooth アドレスとこのスマホの名前は除きます</string>
+    <string name="problem_preview">レポートを確認</string>
+    <string name="problem_send">送信</string>
+    <string name="problem_sending">送信中…</string>
+    <string name="problem_sent">レポートを送信しました。ありがとうございます！</string>
+    <string name="problem_failed">レポートを送信できませんでした。インターネット接続を確認して、もう一度お試しください。</string>
+    <string name="problem_notice_body">QuickBuds は OnePlus Buds 4 でのみテストされています。お使いのイヤホンで動かない機能があれば、設定 › 問題を報告 をご利用ください。送信をタップするまで何も送られません。</string>
 </resources>

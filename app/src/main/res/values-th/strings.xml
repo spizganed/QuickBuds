@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">เกมยิงปืน</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">ช่วยให้หูฟังของคุณใช้งานได้</string>
-    <string name="report_body">QuickBuds ทดสอบกับ OnePlus Buds 4 เท่านั้น ในรุ่นอื่นบางฟีเจอร์อาจยังใช้ไม่ได้\n\nบอกเราว่าอะไรใช้ได้และอะไรใช้ไม่ได้กับหูฟังของคุณ เพื่อแก้ไขในรุ่นถัดไป: เปิด issue บน GitHub พร้อมชื่อรุ่น\n\nแนบบันทึก: เปิด Dev tools (ไอคอนด้านบน เปิดได้ใน การตั้งค่า › ทั่วไป) ลองใช้ฟีเจอร์ แตะ Export แล้วแนบไฟล์จาก Download/QuickBuds บันทึก Bluetooth HCI snoop หรือ adb logcat ก็ช่วยได้</string>
-    <string name="report_open">รายงานบน GitHub</string>
     <string name="report_later">เข้าใจแล้ว</string>
     <string name="row_smart_volume_title">ระดับเสียงอัจฉริยะ</string>
     <string name="row_smart_volume_sub">ปรับระดับเสียงตามเสียงรบกวนรอบข้าง</string>
@@ -405,4 +403,25 @@
     <string name="widget_controls_name">QuickBuds การควบคุม</string>
     <string name="widget_setup_title">ปุ่มวิดเจ็ต</string>
     <string name="widget_setup_hint">เลือกได้สูงสุด 4 ปุ่ม วิดเจ็ตจะแสดงตามลำดับนี้</string>
+    <string name="problem_title">รายงานปัญหา</string>
+    <string name="problem_sub">ส่งรายงานถึงผู้พัฒนา</string>
+    <string name="problem_intro">ไม่ต้องใช้บัญชี จะไม่มีอะไรถูกส่งจนกว่าคุณจะแตะส่ง</string>
+    <string name="problem_model">รุ่นหูฟัง</string>
+    <string name="problem_category">เกิดปัญหาอะไร</string>
+    <string name="problem_cat_ui">เลย์เอาต์หรือหน้าตา</string>
+    <string name="problem_cat_lag">ช้าหรือกระตุก</string>
+    <string name="problem_cat_connection">การเชื่อมต่อ</string>
+    <string name="problem_cat_feature">ฟีเจอร์ใช้งานไม่ได้</string>
+    <string name="problem_cat_battery">แบตเตอรี่</string>
+    <string name="problem_cat_other">อื่น ๆ</string>
+    <string name="problem_description">คำอธิบาย</string>
+    <string name="problem_description_hint">คุณทำอะไร และเกิดอะไรขึ้น</string>
+    <string name="problem_log_title">แนบบันทึก</string>
+    <string name="problem_log_sub">ไม่รวมที่อยู่บลูทูธหรือชื่อโทรศัพท์เครื่องนี้</string>
+    <string name="problem_preview">ดูรายงาน</string>
+    <string name="problem_send">ส่ง</string>
+    <string name="problem_sending">กำลังส่ง…</string>
+    <string name="problem_sent">ส่งรายงานแล้ว ขอบคุณ!</string>
+    <string name="problem_failed">ส่งรายงานไม่ได้ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</string>
+    <string name="problem_notice_body">QuickBuds ทดสอบกับ OnePlus Buds 4 เท่านั้น หากมีสิ่งใดใช้ไม่ได้กับหูฟังของคุณ ให้ใช้ การตั้งค่า › รายงานปัญหา จะไม่มีอะไรถูกส่งจนกว่าคุณจะแตะส่ง</string>
 </resources>

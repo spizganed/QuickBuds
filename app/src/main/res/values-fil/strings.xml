@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Mga shooting game</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Tumulong para gumana ang iyong earbuds</string>
-    <string name="report_body">Sa OnePlus Buds 4 lang nasubukan ang QuickBuds. Sa ibang modelo, maaaring hindi pa gumagana ang ilang feature.\n\nSabihin sa amin kung ano ang gumagana at hindi sa iyong earbuds para maayos sa susunod na release: magbukas ng issue sa GitHub kasama ang pangalan ng modelo.\n\nMaglakip ng log: buksan ang Dev tools (icon sa itaas, mabubuksan sa Settings › General), subukan ang feature, i-tap ang Export at ilakip ang file mula sa Download/QuickBuds. Nakakatulong din ang Bluetooth HCI snoop log o adb logcat.</string>
-    <string name="report_open">I-report sa GitHub</string>
     <string name="report_later">Sige</string>
     <string name="row_smart_volume_title">Smart volume</string>
     <string name="row_smart_volume_sub">Iniaangkop ang volume sa ingay sa paligid</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds kontrol</string>
     <string name="widget_setup_title">Mga button ng widget</string>
     <string name="widget_setup_hint">Pumili ng hanggang 4 na button. Ipinapakita ng widget ang mga ito sa ganitong ayos.</string>
+    <string name="problem_title">Mag-ulat ng problema</string>
+    <string name="problem_sub">Magpadala ng ulat sa developer</string>
+    <string name="problem_intro">Walang kailangang account. Walang ipapadala hangga\'t hindi mo tina-tap ang Ipadala.</string>
+    <string name="problem_model">Modelo ng earbuds</string>
+    <string name="problem_category">Ano ang mali</string>
+    <string name="problem_cat_ui">Layout o itsura</string>
+    <string name="problem_cat_lag">Mabagal o naghahang</string>
+    <string name="problem_cat_connection">Koneksyon</string>
+    <string name="problem_cat_feature">May feature na hindi gumagana</string>
+    <string name="problem_cat_battery">Baterya</string>
+    <string name="problem_cat_other">Iba pa</string>
+    <string name="problem_description">Paglalarawan</string>
+    <string name="problem_description_hint">Ano ang ginawa mo, at ano ang nangyari?</string>
+    <string name="problem_log_title">Ilakip ang log</string>
+    <string name="problem_log_sub">Walang Bluetooth address o pangalan ng teleponong ito</string>
+    <string name="problem_preview">Tingnan ang ulat</string>
+    <string name="problem_send">Ipadala</string>
+    <string name="problem_sending">Ipinapadala…</string>
+    <string name="problem_sent">Naipadala ang ulat. Salamat!</string>
+    <string name="problem_failed">Hindi naipadala ang ulat. Tingnan ang koneksyon sa internet at subukan ulit.</string>
+    <string name="problem_notice_body">Sa OnePlus Buds 4 lang nasubukan ang QuickBuds. Kung may hindi gumagana sa iyong buds, gamitin ang Mga Setting › Mag-ulat ng problema. Walang ipapadala hangga\'t hindi mo tina-tap ang Ipadala.</string>
 </resources>

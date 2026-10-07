@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Střílečky</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Pomozte zprovoznit vaše sluchátka</string>
-    <string name="report_body">QuickBuds je testovaný jen na OnePlus Buds 4. Na jiných modelech nemusí některé funkce zatím fungovat.\n\nDejte nám vědět, co na vašich sluchátkách funguje a co ne, aby to další verze opravila: založte issue na GitHubu s názvem modelu.\n\nPřiložte log: otevřete Dev tools (ikona nahoře, zapnete ji v Nastavení › Obecné), vyzkoušejte funkci, klepněte na Export a přiložte soubor z Download/QuickBuds. Pomůže i Bluetooth HCI snoop log nebo adb logcat.</string>
-    <string name="report_open">Nahlásit na GitHubu</string>
     <string name="report_later">Rozumím</string>
     <string name="row_smart_volume_title">Chytrá hlasitost</string>
     <string name="row_smart_volume_sub">Přizpůsobí hlasitost okolnímu hluku</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds ovládání</string>
     <string name="widget_setup_title">Tlačítka widgetu</string>
     <string name="widget_setup_hint">Vyberte až 4 tlačítka. Widget je zobrazí v tomto pořadí.</string>
+    <string name="problem_title">Nahlásit problém</string>
+    <string name="problem_sub">Pošlete zprávu vývojáři</string>
+    <string name="problem_intro">Účet není potřeba. Nic se neodešle, dokud neklepnete na Odeslat.</string>
+    <string name="problem_model">Model sluchátek</string>
+    <string name="problem_category">Co je špatně</string>
+    <string name="problem_cat_ui">Rozložení nebo vzhled</string>
+    <string name="problem_cat_lag">Pomalé nebo se seká</string>
+    <string name="problem_cat_connection">Připojení</string>
+    <string name="problem_cat_feature">Funkce nefunguje</string>
+    <string name="problem_cat_battery">Baterie</string>
+    <string name="problem_cat_other">Něco jiného</string>
+    <string name="problem_description">Popis</string>
+    <string name="problem_description_hint">Co jste udělali a co se stalo?</string>
+    <string name="problem_log_title">Přiložit záznam</string>
+    <string name="problem_log_sub">Bez adres Bluetooth a názvu tohoto telefonu</string>
+    <string name="problem_preview">Zobrazit zprávu</string>
+    <string name="problem_send">Odeslat</string>
+    <string name="problem_sending">Odesílání…</string>
+    <string name="problem_sent">Zpráva odeslána. Děkujeme!</string>
+    <string name="problem_failed">Zprávu se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.</string>
+    <string name="problem_notice_body">QuickBuds je testován jen na OnePlus Buds 4. Pokud na vašich sluchátkách něco nefunguje, použijte Nastavení › Nahlásit problém. Nic se neodešle, dokud neklepnete na Odeslat.</string>
 </resources>

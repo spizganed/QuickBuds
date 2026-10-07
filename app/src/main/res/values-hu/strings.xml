@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Lövöldözős játékok</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Segíts, hogy a fülhallgatód működjön</string>
-    <string name="report_body">A QuickBuds csak OnePlus Buds 4-en van tesztelve. Más modelleken egyes funkciók még nem biztos, hogy működnek.\n\nÍrd meg, mi működik és mi nem a fülhallgatódon, hogy a következő verzió javíthassa: nyiss egy issue-t a GitHubon a modell nevével.\n\nCsatolj naplót: nyisd meg a Dev tools-t (ikon fent, a Beállítások › Általános alatt kapcsolható be), próbáld ki a funkciót, koppints az Exportra, és csatold a fájlt a Download/QuickBuds mappából. Bluetooth HCI snoop napló vagy adb logcat is segít.</string>
-    <string name="report_open">Jelentés a GitHubon</string>
     <string name="report_later">Értem</string>
     <string name="row_smart_volume_title">Intelligens hangerő</string>
     <string name="row_smart_volume_sub">A hangerőt a környezeti zajhoz igazítja</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds vezérlők</string>
     <string name="widget_setup_title">Widget gombjai</string>
     <string name="widget_setup_hint">Válasszon legfeljebb 4 gombot. A widget ebben a sorrendben mutatja őket.</string>
+    <string name="problem_title">Probléma jelentése</string>
+    <string name="problem_sub">Jelentés küldése a fejlesztőnek</string>
+    <string name="problem_intro">Nem kell fiók. Semmi sem megy el, amíg nem koppint a Küldésre.</string>
+    <string name="problem_model">Fülhallgató típusa</string>
+    <string name="problem_category">Mi a hiba</string>
+    <string name="problem_cat_ui">Elrendezés vagy megjelenés</string>
+    <string name="problem_cat_lag">Lassú vagy akad</string>
+    <string name="problem_cat_connection">Kapcsolat</string>
+    <string name="problem_cat_feature">Egy funkció nem működik</string>
+    <string name="problem_cat_battery">Akkumulátor</string>
+    <string name="problem_cat_other">Más</string>
+    <string name="problem_description">Leírás</string>
+    <string name="problem_description_hint">Mit csinált, és mi történt?</string>
+    <string name="problem_log_title">Napló csatolása</string>
+    <string name="problem_log_sub">Bluetooth-címek és a telefon neve nélkül</string>
+    <string name="problem_preview">Jelentés megtekintése</string>
+    <string name="problem_send">Küldés</string>
+    <string name="problem_sending">Küldés…</string>
+    <string name="problem_sent">Jelentés elküldve. Köszönjük!</string>
+    <string name="problem_failed">A jelentést nem sikerült elküldeni. Ellenőrizze az internetkapcsolatot, és próbálja újra.</string>
+    <string name="problem_notice_body">A QuickBuds csak OnePlus Buds 4-en tesztelt. Ha valami nem működik a fülhallgatóján, használja a Beállítások › Probléma jelentése menüt. Semmi sem megy el, amíg nem koppint a Küldésre.</string>
 </resources>

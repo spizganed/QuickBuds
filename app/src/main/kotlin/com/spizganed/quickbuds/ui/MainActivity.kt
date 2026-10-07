@@ -376,17 +376,17 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     /**
-     * Once per install (and once for users updating into it): only Buds 4 is tested, so ask owners of
-     * other models to report what works and what does not, where, and with which log.
+     * Once per install (and once for users updating into it): only Buds 4 is tested, so point owners of
+     * other models to Settings › Report a problem, and say that nothing is sent without Send.
      */
     private fun showReportNoteOnce() {
         val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
         if (prefs.getBoolean(KEY_REPORT_NOTE, false)) return
         prefs.edit().putBoolean(KEY_REPORT_NOTE, true).apply()
         ConfirmDialog.show(
-            this, getString(R.string.report_title), getString(R.string.report_body),
-            getString(R.string.report_open), R.string.report_later
-        ) { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AboutActivity.GITHUB_URL + "/issues"))) }
+            this, getString(R.string.report_title), getString(R.string.problem_notice_body),
+            getString(R.string.problem_title), R.string.report_later
+        ) { startActivity(Intent(this, ReportActivity::class.java)) }
     }
 
     /** Sends the Connect / Disconnect service action for the header chip. */
@@ -1295,7 +1295,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         )
 
         private const val KEY_ANC_LEVEL = "homeAncLevel"
-        private const val KEY_REPORT_NOTE = "reportNoteShown"
+        private const val KEY_REPORT_NOTE = "problemReportNoteShown"
         /** Home screen sound-settings rows: order and hidden set, by row key (Settings › Home layout). */
         const val KEY_ROW_ORDER = "homeRowOrder"
         const val KEY_ROW_HIDDEN = "homeRowHidden"

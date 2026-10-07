@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Permainan menembak</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Bantu jadikan earbud anda berfungsi</string>
-    <string name="report_body">QuickBuds hanya diuji pada OnePlus Buds 4. Pada model lain, sesetengah ciri mungkin belum berfungsi.\n\nBeritahu kami apa yang berfungsi dan tidak pada earbud anda supaya keluaran seterusnya dapat membetulkannya: buka issue di GitHub dengan nama model anda.\n\nLampirkan log: buka Dev tools (ikon di atas, boleh dihidupkan dalam Tetapan › Umum), cuba ciri itu, ketik Export dan lampirkan fail dari Download/QuickBuds. Log Bluetooth HCI snoop atau adb logcat juga membantu.</string>
-    <string name="report_open">Lapor di GitHub</string>
     <string name="report_later">Faham</string>
     <string name="row_smart_volume_title">Kelantangan pintar</string>
     <string name="row_smart_volume_sub">Melaraskan kelantangan mengikut bunyi bising</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">Kawalan QuickBuds</string>
     <string name="widget_setup_title">Butang widget</string>
     <string name="widget_setup_hint">Pilih hingga 4 butang. Widget menunjukkannya dalam susunan ini.</string>
+    <string name="problem_title">Laporkan masalah</string>
+    <string name="problem_sub">Hantar laporan kepada pembangun</string>
+    <string name="problem_intro">Tiada akaun diperlukan. Tiada apa-apa dihantar sehingga anda mengetik Hantar.</string>
+    <string name="problem_model">Model fon telinga</string>
+    <string name="problem_category">Apa yang salah</string>
+    <string name="problem_cat_ui">Susun atur atau rupa</string>
+    <string name="problem_cat_lag">Perlahan atau tersekat</string>
+    <string name="problem_cat_connection">Sambungan</string>
+    <string name="problem_cat_feature">Satu ciri tidak berfungsi</string>
+    <string name="problem_cat_battery">Bateri</string>
+    <string name="problem_cat_other">Perkara lain</string>
+    <string name="problem_description">Penerangan</string>
+    <string name="problem_description_hint">Apa yang anda lakukan, dan apa yang berlaku?</string>
+    <string name="problem_log_title">Lampirkan log</string>
+    <string name="problem_log_sub">Tanpa alamat Bluetooth atau nama telefon ini</string>
+    <string name="problem_preview">Lihat laporan</string>
+    <string name="problem_send">Hantar</string>
+    <string name="problem_sending">Menghantar…</string>
+    <string name="problem_sent">Laporan dihantar. Terima kasih!</string>
+    <string name="problem_failed">Laporan tidak dapat dihantar. Semak sambungan internet dan cuba lagi.</string>
+    <string name="problem_notice_body">QuickBuds hanya diuji pada OnePlus Buds 4. Jika sesuatu tidak berfungsi pada fon telinga anda, gunakan Tetapan › Laporkan masalah. Tiada apa-apa dihantar sehingga anda mengetik Hantar.</string>
 </resources>

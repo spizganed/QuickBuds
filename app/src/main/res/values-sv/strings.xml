@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">Skjutspel</string>
     <string name="game_sound_type_peace">Peacekeeper Elite</string>
     <string name="report_title">Hjälp till att få dina lurar att fungera</string>
-    <string name="report_body">QuickBuds är bara testat på OnePlus Buds 4. På andra modeller kanske vissa funktioner inte fungerar än.\n\nBerätta vad som fungerar och inte på dina lurar, så kan nästa version rätta det: öppna ett issue på GitHub med modellnamnet.\n\nBifoga en logg: öppna Dev tools (ikonen överst, slås på under Inställningar › Allmänt), testa funktionen, tryck på Export och bifoga filen från Download/QuickBuds. En Bluetooth HCI snoop-logg eller adb logcat hjälper också.</string>
-    <string name="report_open">Rapportera på GitHub</string>
     <string name="report_later">Uppfattat</string>
     <string name="row_smart_volume_title">Smart volym</string>
     <string name="row_smart_volume_sub">Anpassar volymen efter omgivningsljud</string>
@@ -403,4 +401,25 @@
     <string name="widget_controls_name">QuickBuds kontroller</string>
     <string name="widget_setup_title">Widgetknappar</string>
     <string name="widget_setup_hint">Välj upp till 4 knappar. Widgeten visar dem i den här ordningen.</string>
+    <string name="problem_title">Rapportera ett problem</string>
+    <string name="problem_sub">Skicka en rapport till utvecklaren</string>
+    <string name="problem_intro">Inget konto behövs. Inget skickas förrän du trycker på Skicka.</string>
+    <string name="problem_model">Hörlursmodell</string>
+    <string name="problem_category">Vad är fel</string>
+    <string name="problem_cat_ui">Layout eller utseende</string>
+    <string name="problem_cat_lag">Långsamt eller hackar</string>
+    <string name="problem_cat_connection">Anslutning</string>
+    <string name="problem_cat_feature">En funktion fungerar inte</string>
+    <string name="problem_cat_battery">Batteri</string>
+    <string name="problem_cat_other">Något annat</string>
+    <string name="problem_description">Beskrivning</string>
+    <string name="problem_description_hint">Vad gjorde du, och vad hände?</string>
+    <string name="problem_log_title">Bifoga loggen</string>
+    <string name="problem_log_sub">Utan Bluetooth-adresser eller den här telefonens namn</string>
+    <string name="problem_preview">Visa rapporten</string>
+    <string name="problem_send">Skicka</string>
+    <string name="problem_sending">Skickar…</string>
+    <string name="problem_sent">Rapporten skickades. Tack!</string>
+    <string name="problem_failed">Rapporten kunde inte skickas. Kontrollera internetanslutningen och försök igen.</string>
+    <string name="problem_notice_body">QuickBuds är bara testat med OnePlus Buds 4. Om något inte fungerar på dina hörlurar, använd Inställningar › Rapportera ett problem. Inget skickas förrän du trycker på Skicka.</string>
 </resources>

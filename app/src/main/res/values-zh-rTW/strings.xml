@@ -81,8 +81,6 @@
     <string name="game_sound_type_shooter">射擊遊戲</string>
     <string name="game_sound_type_peace">和平精英</string>
     <string name="report_title">協助完善對你的耳機的支援</string>
-    <string name="report_body">QuickBuds 目前只在 OnePlus Buds 4 上測試過。在其他型號上，部分功能可能暫時無法使用。\n\n請告訴我們你的耳機上哪些功能可用、哪些不可用，以便在下個版本中修正：在 GitHub 上提交 issue 並註明型號。\n\n請附上記錄檔：開啟 Dev tools（頂部圖示，可在 設定 › 一般 中開啟），試用該功能，點按 Export，然後附上 Download/QuickBuds 中的檔案。藍牙 HCI snoop 記錄或 adb logcat 也有幫助。</string>
-    <string name="report_open">在 GitHub 上回報</string>
     <string name="report_later">知道了</string>
     <string name="row_smart_volume_title">智慧音量</string>
     <string name="row_smart_volume_sub">依環境噪音調整音量</string>
@@ -405,4 +403,25 @@
     <string name="widget_controls_name">QuickBuds 控制</string>
     <string name="widget_setup_title">小工具按鈕</string>
     <string name="widget_setup_hint">最多選擇 4 個按鈕。小工具依此順序顯示。</string>
+    <string name="problem_title">回報問題</string>
+    <string name="problem_sub">傳送報告給開發者</string>
+    <string name="problem_intro">不需要帳號。輕觸「傳送」之前不會傳送任何內容。</string>
+    <string name="problem_model">耳機型號</string>
+    <string name="problem_category">出了什麼問題</string>
+    <string name="problem_cat_ui">版面或外觀</string>
+    <string name="problem_cat_lag">緩慢或卡頓</string>
+    <string name="problem_cat_connection">連線</string>
+    <string name="problem_cat_feature">某項功能無法使用</string>
+    <string name="problem_cat_battery">電池</string>
+    <string name="problem_cat_other">其他</string>
+    <string name="problem_description">說明</string>
+    <string name="problem_description_hint">你做了什麼，發生了什麼？</string>
+    <string name="problem_log_title">附加記錄</string>
+    <string name="problem_log_sub">不含藍牙位址和這支手機的名稱</string>
+    <string name="problem_preview">查看報告</string>
+    <string name="problem_send">傳送</string>
+    <string name="problem_sending">傳送中…</string>
+    <string name="problem_sent">報告已傳送。謝謝！</string>
+    <string name="problem_failed">無法傳送報告。請檢查網路連線後再試一次。</string>
+    <string name="problem_notice_body">QuickBuds 只在 OnePlus Buds 4 上測試過。如果你的耳機有功能無法使用，請使用 設定 › 回報問題。輕觸「傳送」之前不會傳送任何內容。</string>
 </resources>
