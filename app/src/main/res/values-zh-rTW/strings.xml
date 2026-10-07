@@ -401,4 +401,8 @@
     <string name="dual_preferred">優先裝置</string>
     <string name="dual_preferred_auto">自動</string>
     <string name="dual_preferred_sub">在範圍內時，耳機會優先連線此裝置。</string>
+    <string name="widget_pages_name">QuickBuds 電量和控制</string>
+    <string name="widget_controls_name">QuickBuds 控制</string>
+    <string name="widget_setup_title">小工具按鈕</string>
+    <string name="widget_setup_hint">最多選擇 4 個按鈕。小工具依此順序顯示。</string>
 </resources>

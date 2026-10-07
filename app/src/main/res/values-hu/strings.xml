@@ -399,4 +399,8 @@
     <string name="dual_preferred">Előnyben részesített eszköz</string>
     <string name="dual_preferred_auto">Automatikus</string>
     <string name="dual_preferred_sub">Ha hatótávon belül van, a fülhallgató először ehhez csatlakozik.</string>
+    <string name="widget_pages_name">QuickBuds akkumulátor és vezérlők</string>
+    <string name="widget_controls_name">QuickBuds vezérlők</string>
+    <string name="widget_setup_title">Widget gombjai</string>
+    <string name="widget_setup_hint">Válasszon legfeljebb 4 gombot. A widget ebben a sorrendben mutatja őket.</string>
 </resources>

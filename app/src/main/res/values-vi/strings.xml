@@ -401,4 +401,8 @@
     <string name="dual_preferred">Thiết bị ưu tiên</string>
     <string name="dual_preferred_auto">Tự động</string>
     <string name="dual_preferred_sub">Khi ở trong phạm vi, tai nghe sẽ kết nối với thiết bị này trước.</string>
+    <string name="widget_pages_name">QuickBuds pin và điều khiển</string>
+    <string name="widget_controls_name">QuickBuds điều khiển</string>
+    <string name="widget_setup_title">Nút tiện ích</string>
+    <string name="widget_setup_hint">Chọn tối đa 4 nút. Tiện ích hiển thị chúng theo thứ tự này.</string>
 </resources>

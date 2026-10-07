@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 2x2 widget (BatteryWidgetProvider, battery and controls pages). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
+<!-- 2x2 widget (BatteryOnlyWidgetProvider, battery page only). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
      Fixed size (2026-09-30): resizing gave broken 3x2 / 2x3 shapes. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="110dp"
@@ -9,6 +9,4 @@
     android:resizeMode="none"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_pages"
-    android:configure="com.spizganed.quickbuds.widget.WidgetSetupActivity"
-    android:widgetFeatures="reconfigurable|configuration_optional"
     android:widgetCategory="home_screen" />

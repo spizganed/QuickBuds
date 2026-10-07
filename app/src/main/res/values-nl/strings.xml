@@ -399,4 +399,8 @@
     <string name="dual_preferred">Voorkeursapparaat</string>
     <string name="dual_preferred_auto">Automatisch</string>
     <string name="dual_preferred_sub">Als het binnen bereik is, verbinden de oordopjes er eerst mee.</string>
+    <string name="widget_pages_name">QuickBuds batterij en bediening</string>
+    <string name="widget_controls_name">QuickBuds bediening</string>
+    <string name="widget_setup_title">Widgetknoppen</string>
+    <string name="widget_setup_hint">Kies maximaal 4 knoppen. De widget toont ze in deze volgorde.</string>
 </resources>

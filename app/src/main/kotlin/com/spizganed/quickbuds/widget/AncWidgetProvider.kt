@@ -31,37 +31,39 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * The home-screen widgets. One provider per size, so each
  * has its own picker entry and cell size, and the old class names keep placed widgets alive:
  *
- *  - [BatteryWidgetProvider] 2x2
- *    (fixed size)
- *  - [AncWidgetProvider]     4x2 (was 3x2), three battery panels in a row
+ *  - [BatteryWidgetProvider]     2x2, battery and controls pages
+ *  - [BatteryOnlyWidgetProvider] 2x2, battery page only
+ *  - [ControlsWidgetProvider]    2x2, controls page only
+ *  - [AncWidgetProvider]         4x2, three battery panels in a row, and controls
  *
- * The 2x2 resizes and just gets bigger (no separate 3x3); the 4x2 is fixed. The 2x2 controls widget (SmallWidgetProvider) is gone.
+ * Every size is fixed. A widget with a controls page has a setup screen ([WidgetSetupActivity]) for its buttons.
  *
  * Drawn in the ACTIVE palette at update time: white shapes tinted with ImageView.setColorFilter
  * (every API level) and ring bitmaps drawn here. Disconnected, every size shows only the main
  * screen's Connect chip. The mode list is a ViewFlipper child, opened and closed by
  * [WidgetActionReceiver] (stamp in [WidgetSettings]); it never opens an Activity.
  *
- * Every size is one widget with two pages (battery, controls), stored per
- * widget id and swapped by a double tap. The
+ * The two-page widgets keep their page per widget id and swap it on a double tap. The
  * pages slide (`w_slide0` battery on the left, `w_slide1` controls on the right); the level picker slides over them (`w_pages`).
  */
 open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
     /**
-     * The provider (size). BATTERY and CONTROLS double as the page names ([WidgetSettings.page]);
-     * CONTROLS is a page name only since its 2x2 widget was removed.
+     * The provider. BATTERY and CONTROLS double as the page names ([WidgetSettings.page]).
+     * [fixed]: the one page a single-page widget shows; null for the two-page widgets.
      */
-    enum class Kind(private val classic: Int, private val nothing: Int) {
+    enum class Kind(private val classic: Int, private val nothing: Int, val fixed: Kind? = null) {
         BATTERY(R.layout.widget_pages, R.layout.widget_pages_n),
         CONTROLS(R.layout.widget_pages, R.layout.widget_pages_n),
-        COMBINED(R.layout.widget_pages_m, R.layout.widget_pages_m_n);
+        COMBINED(R.layout.widget_pages_m, R.layout.widget_pages_m_n),
+        BATTERY_ONLY(R.layout.widget_pages, R.layout.widget_pages_n, BATTERY);
 
         /** The layout for the chosen style ([WidgetSettings.nothingStyle]). */
         fun layout(c: Context) = if (WidgetSettings.nothingStyle(c)) nothing else classic
-        val small get() = this == BATTERY || this == CONTROLS
         /** The 2x2 (as opposed to the 4x2). */
         val square get() = this != COMBINED
+        /** The page shown; CONTROLS is a single-page widget too (its own [fixed] would be a forward reference). */
+        val page get() = if (this == CONTROLS) CONTROLS else fixed
     }
 
     override fun onUpdate(context: Context, mgr: AppWidgetManager, ids: IntArray) {
@@ -84,6 +86,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
 
         private val providers = listOf(
             BatteryWidgetProvider::class.java to Kind.BATTERY,
+            BatteryOnlyWidgetProvider::class.java to Kind.BATTERY_ONLY,
+            ControlsWidgetProvider::class.java to Kind.CONTROLS,
             AncWidgetProvider::class.java to Kind.COMBINED
         )
 
@@ -161,7 +165,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val p = ThemeRes.palette(context)
             if (!state.connected) return disconnected(context, p, provider) to -1
 
-            val page = WidgetSettings.page(context, id, Kind.BATTERY)
+            val page = provider.page ?: WidgetSettings.page(context, id, Kind.BATTERY)
             val list = page == Kind.CONTROLS && WidgetSettings.listOpen(context, id)
             val v = RemoteViews(context.packageName, provider.layout(context))
             // The host reapplies an update with the same layout onto the views it has, so switching
@@ -170,9 +174,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val child = if (list) 2 else if (page == Kind.BATTERY) 0 else 1
             v.setImageViewResource(R.id.w_bg, bgRes(context))
             v.setInt(R.id.w_bg, "setColorFilter", boxColor(p))
-            // Every tap on a page carries the other page, so a second tap swaps.
+            // Every tap on a two-page widget carries the other page, so a second tap swaps.
             val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
-            val swap = if (!list) other else null
+            val swap = if (!list && provider.page == null) other else null
             v.setOnClickPendingIntent(R.id.w_root, swap?.let { receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = it) })
 
             // Both pages and the list are filled every time, so the one sliding or fading out still
@@ -354,36 +358,44 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /**
-         * The controls page (Classic too since then, the cycle mode is gone): ANC, T, A, LL. ANC opens the level picker (the mode
-         * list with [WidgetSettings.ancPicker]) and shows the current level's icon, Medium's while not in ANC;
-         * T and A select their mode, or Off when lit; LL toggles low latency. A button the buds (or the Low
-         * latency setting) do not have stays as an empty cell. Everything set both ways, see [build].
+         * The controls page: up to four buttons, as widget [id]'s setup screen picked them ([WidgetSettings.buttons]).
+         * ANC opens the level picker (the mode list with [WidgetSettings.ancPicker]) and shows the current level's
+         * icon, Medium's while not in ANC; T, A and Off select their mode, or Off when lit; LL toggles low latency;
+         * a feature button toggles its `0x0403` switch. A button the buds do not have stays as an empty cell.
+         * Everything set both ways, see [build].
          */
         private fun controls(context: Context, v: RemoteViews, p: Palette, state: WidgetStateStore.State, kind: Kind, id: Int, swap: Kind?) {
-            val anc = AncModes.of(context)
             val current = WidgetSettings.modeOf(state.ancMode)
             val levels = WidgetSettings.ancPicker(context)
             val inAnc = levels.any { it.key == current.key }
             fun mode(key: String) = WidgetSettings.MODES.first { it.key == key }
             /** First letters of the words, capitals: "Low latency" -> "LL" (translated names too). */
             fun initials(res: Int) = context.getString(res).split(' ').filter { it.isNotEmpty() }.joinToString("") { it.take(1) }.uppercase()
-            class Q(val shown: Boolean, val lit: Boolean, val icon: Int, val label: String, val desc: String, val pi: PendingIntent)
-            val qs = listOf(
-                Q(levels.isNotEmpty(), inAnc, if (inAnc) current.icon else R.drawable.ic_mode_anc_medium,
+            class Q(val lit: Boolean, val icon: Int, val label: String, val desc: String, val pi: PendingIntent)
+            fun quick(target: String) = receiverPI(context, WidgetActions.ACTION_QUICK, id, target, swap)
+            fun q(key: String): Q = when (key) {
+                "anc" -> Q(inAnc, if (inAnc) current.icon else R.drawable.ic_mode_anc_medium,
                     if (inAnc) "ANC " + context.getString(current.short).take(1).uppercase() else "ANC",
-                    context.getString(if (inAnc) current.name else R.string.anc_section),
-                    receiverPI(context, WidgetActions.ACTION_QUICK, id, "anc", swap)),
-                Q(anc.supports(mode("trans").store), current.key == "trans", mode("trans").icon, initials(R.string.anc_seg_trans),
-                    context.getString(R.string.anc_seg_trans), receiverPI(context, WidgetActions.ACTION_QUICK, id, "trans", swap)),
-                Q(anc.supports(mode("adapt").store), current.key == "adapt", mode("adapt").icon, initials(R.string.anc_seg_adapt),
-                    context.getString(R.string.anc_seg_adapt), receiverPI(context, WidgetActions.ACTION_QUICK, id, "adapt", swap)),
-                Q(true, state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
+                    context.getString(if (inAnc) current.name else R.string.anc_section), quick("anc"))
+                "trans", "adapt" -> Q(current.key == key, mode(key).icon, initials(mode(key).name),
+                    context.getString(mode(key).name), quick(key))
+                "off" -> Q(current.key == "off", mode("off").icon, context.getString(R.string.anc_seg_off),
+                    context.getString(R.string.anc_seg_off), quick("off"))
+                "ll" -> Q(state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
                     context.getString(R.string.row_game_title), receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap))
-            )
-            qs.forEachIndexed { i, q ->
-                val b = QUICK[i]
-                v.setViewVisibility(b.root, if (q.shown) View.VISIBLE else View.INVISIBLE)
-                if (!q.shown) return@forEachIndexed
+                else -> {
+                    val f = WidgetSettings.FEATURE_BUTTONS.getValue(key)
+                    Q(WidgetSettings.featureOn(context, f), R.drawable.ic_anc, initials(R.string.row_wind_noise_title),
+                        context.getString(R.string.row_wind_noise_title),
+                        receiverPI(context, WidgetActions.ACTION_FEATURE_TOGGLE, id, key, swap, f))
+                }
+            }
+            val keys = WidgetSettings.buttons(context, id)
+            QUICK.forEachIndexed { i, b ->
+                val key = keys.getOrNull(i)?.takeIf { WidgetSettings.available(context, it) }
+                v.setViewVisibility(b.root, if (key != null) View.VISIBLE else View.INVISIBLE)
+                if (key == null) return@forEachIndexed
+                val q = q(key)
                 paint(context, v, b, p, q.lit)
                 // Nothing: the bolt on 25 rows keeps its 2-dot lines close to the mode icons' weight; mode icons have their own grid.
                 content(context, v, b, p, q.lit, q.icon, q.label, 25f, 1f)
@@ -870,13 +882,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * A tap for [WidgetActionReceiver]. The data URI makes each (widget, action, target) its own
          * PendingIntent. [swap] is the 2x2 page to switch to ([WidgetActions.EXTRA_PAGE]).
          */
-        private fun receiverPI(context: Context, action: String, id: Int, target: String? = null, swap: Kind? = null): PendingIntent {
+        private fun receiverPI(context: Context, action: String, id: Int, target: String? = null, swap: Kind? = null, feature: Int = -1): PendingIntent {
             val intent = Intent(context, WidgetActionReceiver::class.java).apply {
                 this.action = action
                 data = Uri.parse("quickbuds-widget://$id/$action/${target.orEmpty()}")
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
                 if (target != null) putExtra(WidgetActions.EXTRA_ANC_TARGET, target)
                 if (swap != null) putExtra(WidgetActions.EXTRA_PAGE, swap.name)
+                if (feature >= 0) putExtra(WidgetActions.EXTRA_FEATURE, feature)
             }
             return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
@@ -890,5 +903,11 @@ class AncWidgetProvider : QuickBudsWidget(Kind.COMBINED) {
     }
 }
 
-/** 2x2 battery, resizable. */
+/** 2x2, battery and controls pages. */
 class BatteryWidgetProvider : QuickBudsWidget(Kind.BATTERY)
+
+/** 2x2, battery page only. */
+class BatteryOnlyWidgetProvider : QuickBudsWidget(Kind.BATTERY_ONLY)
+
+/** 2x2, controls page only. */
+class ControlsWidgetProvider : QuickBudsWidget(Kind.CONTROLS)

@@ -399,4 +399,8 @@
     <string name="dual_preferred">우선 기기</string>
     <string name="dual_preferred_auto">자동</string>
     <string name="dual_preferred_sub">범위 안에 있으면 이어버드가 이 기기에 먼저 연결됩니다.</string>
+    <string name="widget_pages_name">QuickBuds 배터리 및 컨트롤</string>
+    <string name="widget_controls_name">QuickBuds 컨트롤</string>
+    <string name="widget_setup_title">위젯 버튼</string>
+    <string name="widget_setup_hint">버튼을 최대 4개 고르세요. 위젯에 이 순서로 표시됩니다.</string>
 </resources>

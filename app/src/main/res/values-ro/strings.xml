@@ -399,4 +399,8 @@
     <string name="dual_preferred">Dispozitiv preferat</string>
     <string name="dual_preferred_auto">Automat</string>
     <string name="dual_preferred_sub">Când este în raza de acțiune, căștile se conectează mai întâi la el.</string>
+    <string name="widget_pages_name">QuickBuds baterie și comenzi</string>
+    <string name="widget_controls_name">QuickBuds comenzi</string>
+    <string name="widget_setup_title">Butoanele widgetului</string>
+    <string name="widget_setup_hint">Alege până la 4 butoane. Widgetul le arată în această ordine.</string>
 </resources>

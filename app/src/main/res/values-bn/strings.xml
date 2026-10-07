@@ -399,4 +399,8 @@
     <string name="dual_preferred">পছন্দের ডিভাইস</string>
     <string name="dual_preferred_auto">স্বয়ংক্রিয়</string>
     <string name="dual_preferred_sub">কাছাকাছি থাকলে ইয়ারবাড আগে এটির সাথে সংযুক্ত হয়।</string>
+    <string name="widget_pages_name">QuickBuds ব্যাটারি ও নিয়ন্ত্রণ</string>
+    <string name="widget_controls_name">QuickBuds নিয়ন্ত্রণ</string>
+    <string name="widget_setup_title">উইজেটের বোতাম</string>
+    <string name="widget_setup_hint">সর্বোচ্চ ৪টি বোতাম বেছে নিন। উইজেট এগুলো এই ক্রমে দেখায়।</string>
 </resources>

@@ -401,4 +401,8 @@
     <string name="dual_preferred">อุปกรณ์ที่ต้องการ</string>
     <string name="dual_preferred_auto">อัตโนมัติ</string>
     <string name="dual_preferred_sub">เมื่ออยู่ในระยะ หูฟังจะเชื่อมต่อกับอุปกรณ์นี้ก่อน</string>
+    <string name="widget_pages_name">QuickBuds แบตเตอรี่และการควบคุม</string>
+    <string name="widget_controls_name">QuickBuds การควบคุม</string>
+    <string name="widget_setup_title">ปุ่มวิดเจ็ต</string>
+    <string name="widget_setup_hint">เลือกได้สูงสุด 4 ปุ่ม วิดเจ็ตจะแสดงตามลำดับนี้</string>
 </resources>

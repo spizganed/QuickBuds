@@ -201,7 +201,7 @@
         <receiver
             android:name=".widget.BatteryWidgetProvider"
             android:exported="true"
-            android:label="@string/widget_battery_name">
+            android:label="@string/widget_pages_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -209,6 +209,42 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_battery_info" />
         </receiver>
+
+        <receiver
+            android:name=".widget.BatteryOnlyWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_battery_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_only_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.ControlsWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_controls_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_controls_info" />
+        </receiver>
+
+        <!-- Exported: the launcher opens it when a widget is placed or reconfigured. -->
+        <activity
+            android:name=".widget.WidgetSetupActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".widget.WidgetActionReceiver"

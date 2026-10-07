@@ -9,4 +9,6 @@
     android:resizeMode="none"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_pages_m"
+    android:configure="com.spizganed.quickbuds.widget.WidgetSetupActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
     android:widgetCategory="home_screen" />

@@ -399,4 +399,8 @@
     <string name="dual_preferred">Preferované zařízení</string>
     <string name="dual_preferred_auto">Automaticky</string>
     <string name="dual_preferred_sub">Když je v dosahu, sluchátka se připojí nejdřív k němu.</string>
+    <string name="widget_pages_name">QuickBuds baterie a ovládání</string>
+    <string name="widget_controls_name">QuickBuds ovládání</string>
+    <string name="widget_setup_title">Tlačítka widgetu</string>
+    <string name="widget_setup_hint">Vyberte až 4 tlačítka. Widget je zobrazí v tomto pořadí.</string>
 </resources>

@@ -399,4 +399,8 @@
     <string name="dual_preferred">Προτιμώμενη συσκευή</string>
     <string name="dual_preferred_auto">Αυτόματα</string>
     <string name="dual_preferred_sub">Όταν είναι εντός εμβέλειας, τα ακουστικά συνδέονται πρώτα σε αυτήν.</string>
+    <string name="widget_pages_name">QuickBuds μπαταρία και χειριστήρια</string>
+    <string name="widget_controls_name">QuickBuds χειριστήρια</string>
+    <string name="widget_setup_title">Κουμπιά widget</string>
+    <string name="widget_setup_hint">Επιλέξτε έως 4 κουμπιά. Το widget τα δείχνει με αυτή τη σειρά.</string>
 </resources>

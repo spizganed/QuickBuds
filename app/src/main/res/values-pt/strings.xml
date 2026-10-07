@@ -399,4 +399,8 @@
     <string name="dual_preferred">Dispositivo preferido</string>
     <string name="dual_preferred_auto">Automático</string>
     <string name="dual_preferred_sub">Quando estiver ao alcance, os fones se conectam a ele primeiro.</string>
+    <string name="widget_pages_name">QuickBuds bateria e controlos</string>
+    <string name="widget_controls_name">QuickBuds controlos</string>
+    <string name="widget_setup_title">Botões do widget</string>
+    <string name="widget_setup_hint">Escolha até 4 botões. O widget mostra-os por esta ordem.</string>
 </resources>

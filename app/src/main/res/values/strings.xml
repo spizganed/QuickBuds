@@ -485,4 +485,8 @@
     <string name="dual_preferred">Preferred device</string>
     <string name="dual_preferred_auto">Automatic</string>
     <string name="dual_preferred_sub">When it is in range, the earbuds connect to it first.</string>
+    <string name="widget_pages_name">QuickBuds battery and controls</string>
+    <string name="widget_controls_name">QuickBuds controls</string>
+    <string name="widget_setup_title">Widget buttons</string>
+    <string name="widget_setup_hint">Pick up to 4 buttons. The widget shows them in this order.</string>
 </resources>

@@ -401,4 +401,8 @@
     <string name="dual_preferred">Perangkat pilihan</string>
     <string name="dual_preferred_auto">Otomatis</string>
     <string name="dual_preferred_sub">Saat dalam jangkauan, earbud terhubung ke perangkat ini lebih dulu.</string>
+    <string name="widget_pages_name">QuickBuds baterai dan kontrol</string>
+    <string name="widget_controls_name">QuickBuds kontrol</string>
+    <string name="widget_setup_title">Tombol widget</string>
+    <string name="widget_setup_hint">Pilih hingga 4 tombol. Widget menampilkannya dalam urutan ini.</string>
 </resources>

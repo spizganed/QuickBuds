@@ -401,4 +401,8 @@
     <string name="dual_preferred">पसंदीदा डिवाइस</string>
     <string name="dual_preferred_auto">अपने आप</string>
     <string name="dual_preferred_sub">रेंज में होने पर ईयरबड पहले इससे कनेक्ट होते हैं।</string>
+    <string name="widget_pages_name">QuickBuds बैटरी और नियंत्रण</string>
+    <string name="widget_controls_name">QuickBuds नियंत्रण</string>
+    <string name="widget_setup_title">विजेट बटन</string>
+    <string name="widget_setup_hint">अधिकतम 4 बटन चुनें। विजेट उन्हें इसी क्रम में दिखाता है।</string>
 </resources>

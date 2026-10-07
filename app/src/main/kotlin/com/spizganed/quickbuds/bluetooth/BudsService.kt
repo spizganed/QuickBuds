@@ -22,6 +22,7 @@ import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.ui.OnCallGesture
 import com.spizganed.quickbuds.ui.ThemeRes
 import com.spizganed.quickbuds.widget.AncWidgetProvider
+import com.spizganed.quickbuds.widget.WidgetSettings
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
 class BudsService : Service(), BudsConnectionManager.Listener {
@@ -55,11 +56,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     private val widgetCommandReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action != ACTION_WIDGET_COMMAND) return
-            val widgetAction = intent.getStringExtra(EXTRA_WIDGET_ACTION)
-            val ancMode = intent.getStringExtra(EXTRA_WIDGET_ANC_MODE)
-            val gameMode = intent.getBooleanExtra(EXTRA_WIDGET_GAME_MODE, false)
-            statusLog("<< WIDGET broadcast: action=$widgetAction (anc=$ancMode, game=$gameMode)")
-            executeWidgetCommand(widgetAction, ancMode, gameMode)
+            statusLog("<< WIDGET broadcast")
+            executeWidgetCommand(intent)
         }
     }
 
@@ -105,17 +103,12 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             }
             ACTION_TOGGLE_BRIDGE -> manager?.setBridge(!RfcommBridge.running)
             ACTION_WIDGET_COMMAND -> {
-                val widgetAction = intent.getStringExtra(EXTRA_WIDGET_ACTION)
-                val ancMode = intent.getStringExtra(EXTRA_WIDGET_ANC_MODE)
-                val gameMode = intent.getBooleanExtra(EXTRA_WIDGET_GAME_MODE, false)
-                statusLog("<< startService WIDGET_COMMAND: action=$widgetAction (anc=$ancMode, game=$gameMode)")
+                statusLog("<< startService WIDGET_COMMAND")
                 if (manager?.isConnected() == true) {
-                    executeWidgetCommand(widgetAction, ancMode, gameMode)
+                    executeWidgetCommand(intent)
                 } else {
                     statusLog("<< not connected yet — will retry in 800ms")
-                    handler.postDelayed({
-                        executeWidgetCommand(widgetAction, ancMode, gameMode)
-                    }, 800)
+                    handler.postDelayed({ executeWidgetCommand(intent) }, 800)
                 }
             }
             ACTION_SET_GESTURE -> {
@@ -191,9 +184,14 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
     }
 
-    private fun executeWidgetCommand(widgetAction: String?, ancMode: String?, gameMode: Boolean) {
+    private fun executeWidgetCommand(intent: Intent) {
+        val widgetAction = intent.getStringExtra(EXTRA_WIDGET_ACTION)
+        val ancMode = intent.getStringExtra(EXTRA_WIDGET_ANC_MODE)
+        val gameMode = intent.getBooleanExtra(EXTRA_WIDGET_GAME_MODE, false)
+        val feature = intent.getIntExtra(EXTRA_WIDGET_FEATURE, -1)
+        val featureOn = intent.getBooleanExtra(EXTRA_WIDGET_FEATURE_ON, false)
         val connected = manager?.isConnected() == true
-        statusLog("<< executeWidgetCommand: action=$widgetAction (anc=$ancMode, game=$gameMode, connected=$connected)")
+        statusLog("<< executeWidgetCommand: action=$widgetAction (anc=$ancMode, game=$gameMode, feature=$feature $featureOn, connected=$connected)")
 
         if (!connected) {
             statusLog("<< SKIPPED — not connected")
@@ -206,6 +204,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             "TRANS" -> { statusLog("<< sending Transparency"); manager?.sendAnc(AncModes.TRANSPARENCY) }
             "OFF" -> { statusLog("<< sending ANC Off"); manager?.sendAnc(AncModes.OFF) }
             "GAME_TOGGLE" -> { statusLog("<< sending Game $gameMode"); manager?.setGameMode(gameMode) }
+            "FEATURE" -> if (feature >= 0) manager?.setFeatures(feature to featureOn)
             else -> statusLog("<< UNKNOWN widget action: '$widgetAction'")
         }
     }
@@ -373,6 +372,16 @@ class BudsService : Service(), BudsConnectionManager.Listener {
      * The equality check is what makes OUR OWN command's echo a no-op, so a gesture
      * and a tap cannot fight each other over the last write.
      */
+    /** The widget buttons' feature values last drawn; a `0x810D` reply repaints only when one changed. */
+    private var widgetFeatures: List<Int?>? = null
+
+    override fun onFeatureStates(states: Map<Int, Int>) {
+        val now = WidgetSettings.FEATURE_BUTTONS.values.map { states[it] }
+        if (now == widgetFeatures) return
+        widgetFeatures = now
+        AncWidgetProvider.refreshAll(this)
+    }
+
     override fun onAncModeState(mode: String) {
         val st = WidgetStateStore.read(this)
         if (st.ancMode == mode) return
@@ -393,6 +402,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         const val EXTRA_WIDGET_ACTION = "widget_action"
         const val EXTRA_WIDGET_ANC_MODE = "widget_anc_mode"
         const val EXTRA_WIDGET_GAME_MODE = "widget_game_mode"
+        /** FEATURE: the `0x0403` switch id and the value to write. */
+        const val EXTRA_WIDGET_FEATURE = "widget_feature"
+        const val EXTRA_WIDGET_FEATURE_ON = "widget_feature_on"
 
         /** Earbud controls: change one gesture binding. See GestureActivity.writeToBuds(). */
         const val ACTION_SET_GESTURE = "com.spizganed.quickbuds.SET_GESTURE"

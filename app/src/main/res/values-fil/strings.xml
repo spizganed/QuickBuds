@@ -399,4 +399,8 @@
     <string name="dual_preferred">Paboritong device</string>
     <string name="dual_preferred_auto">Awtomatiko</string>
     <string name="dual_preferred_sub">Kapag abot-kaya, dito unang kumokonekta ang earbuds.</string>
+    <string name="widget_pages_name">QuickBuds baterya at kontrol</string>
+    <string name="widget_controls_name">QuickBuds kontrol</string>
+    <string name="widget_setup_title">Mga button ng widget</string>
+    <string name="widget_setup_hint">Pumili ng hanggang 4 na button. Ipinapakita ng widget ang mga ito sa ganitong ayos.</string>
 </resources>

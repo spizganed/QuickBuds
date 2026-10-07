@@ -399,4 +399,8 @@
     <string name="dual_preferred">Preferowane urządzenie</string>
     <string name="dual_preferred_auto">Automatycznie</string>
     <string name="dual_preferred_sub">Gdy jest w zasięgu, słuchawki łączą się z nim najpierw.</string>
+    <string name="widget_pages_name">QuickBuds bateria i sterowanie</string>
+    <string name="widget_controls_name">QuickBuds sterowanie</string>
+    <string name="widget_setup_title">Przyciski widżetu</string>
+    <string name="widget_setup_hint">Wybierz do 4 przycisków. Widżet pokazuje je w tej kolejności.</string>
 </resources>

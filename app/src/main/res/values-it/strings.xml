@@ -399,4 +399,8 @@
     <string name="dual_preferred">Dispositivo preferito</string>
     <string name="dual_preferred_auto">Automatico</string>
     <string name="dual_preferred_sub">Quando è nel raggio d\'azione, gli auricolari si connettono prima a questo.</string>
+    <string name="widget_pages_name">QuickBuds batteria e controlli</string>
+    <string name="widget_controls_name">QuickBuds controlli</string>
+    <string name="widget_setup_title">Pulsanti del widget</string>
+    <string name="widget_setup_hint">Scegli fino a 4 pulsanti. Il widget li mostra in questo ordine.</string>
 </resources>

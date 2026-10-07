@@ -399,4 +399,8 @@
     <string name="dual_preferred">Föredragen enhet</string>
     <string name="dual_preferred_auto">Automatiskt</string>
     <string name="dual_preferred_sub">När den är inom räckhåll ansluter hörlurarna till den först.</string>
+    <string name="widget_pages_name">QuickBuds batteri och kontroller</string>
+    <string name="widget_controls_name">QuickBuds kontroller</string>
+    <string name="widget_setup_title">Widgetknappar</string>
+    <string name="widget_setup_hint">Välj upp till 4 knappar. Widgeten visar dem i den här ordningen.</string>
 </resources>

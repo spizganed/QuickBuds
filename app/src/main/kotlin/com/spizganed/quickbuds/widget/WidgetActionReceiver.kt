@@ -33,6 +33,9 @@ class WidgetActionReceiver : BroadcastReceiver() {
         val state = WidgetStateStore.read(context)
         var shortAction: String? = null
         var sendAncMode: String = state.ancMode
+        val feature = intent.getIntExtra(WidgetActions.EXTRA_FEATURE, -1)
+        // The tap flips what the buds last reported; their 0x810D answer repaints the button.
+        val featureOn = !WidgetSettings.featureOn(context, feature)
 
         // A pick from a widget's mode list closes that list; the controls page stays, as after a T or A tap.
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) WidgetSettings.setListOpenedAt(context, widgetId, 0L)
@@ -70,6 +73,10 @@ class WidgetActionReceiver : BroadcastReceiver() {
                 state.gameMode = !state.gameMode
                 shortAction = "GAME_TOGGLE"
             }
+            WidgetActions.ACTION_FEATURE_TOGGLE -> {
+                if (feature < 0) return
+                shortAction = "FEATURE"
+            }
             else -> {
                 Log.d("BudsWidget", "[RX] Unknown action, ignoring")
                 return
@@ -85,6 +92,8 @@ class WidgetActionReceiver : BroadcastReceiver() {
             putExtra(BudsService.EXTRA_WIDGET_ACTION, finalShort)
             putExtra(BudsService.EXTRA_WIDGET_ANC_MODE, sendAncMode)
             putExtra(BudsService.EXTRA_WIDGET_GAME_MODE, state.gameMode)
+            putExtra(BudsService.EXTRA_WIDGET_FEATURE, feature)
+            putExtra(BudsService.EXTRA_WIDGET_FEATURE_ON, featureOn)
         }
         context.sendBroadcast(localIntent)
 
@@ -97,6 +106,8 @@ class WidgetActionReceiver : BroadcastReceiver() {
                 putExtra(BudsService.EXTRA_WIDGET_ACTION, finalShort)
                 putExtra(BudsService.EXTRA_WIDGET_ANC_MODE, sendAncMode)
                 putExtra(BudsService.EXTRA_WIDGET_GAME_MODE, state.gameMode)
+                putExtra(BudsService.EXTRA_WIDGET_FEATURE, feature)
+                putExtra(BudsService.EXTRA_WIDGET_FEATURE_ON, featureOn)
             }
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 context.startForegroundService(serviceIntent)

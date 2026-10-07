@@ -399,4 +399,8 @@
     <string name="dual_preferred">優先デバイス</string>
     <string name="dual_preferred_auto">自動</string>
     <string name="dual_preferred_sub">範囲内にあるとき、イヤホンはまずこのデバイスに接続します。</string>
+    <string name="widget_pages_name">QuickBuds バッテリーと操作</string>
+    <string name="widget_controls_name">QuickBuds 操作</string>
+    <string name="widget_setup_title">ウィジェットのボタン</string>
+    <string name="widget_setup_hint">ボタンを4つまで選べます。ウィジェットにはこの順で表示されます。</string>
 </resources>

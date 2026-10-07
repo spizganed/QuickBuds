@@ -399,4 +399,8 @@
     <string name="dual_preferred">Бажаний пристрій</string>
     <string name="dual_preferred_auto">Автоматично</string>
     <string name="dual_preferred_sub">Коли він поруч, навушники підключаються до нього насамперед.</string>
+    <string name="widget_pages_name">QuickBuds батарея та керування</string>
+    <string name="widget_controls_name">QuickBuds керування</string>
+    <string name="widget_setup_title">Кнопки віджета</string>
+    <string name="widget_setup_hint">Виберіть до 4 кнопок. Віджет показує їх у цьому порядку.</string>
 </resources>

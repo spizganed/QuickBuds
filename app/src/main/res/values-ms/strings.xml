@@ -399,4 +399,8 @@
     <string name="dual_preferred">Peranti pilihan</string>
     <string name="dual_preferred_auto">Automatik</string>
     <string name="dual_preferred_sub">Apabila dalam julat, fon telinga menyambung kepadanya dahulu.</string>
+    <string name="widget_pages_name">Bateri dan kawalan QuickBuds</string>
+    <string name="widget_controls_name">Kawalan QuickBuds</string>
+    <string name="widget_setup_title">Butang widget</string>
+    <string name="widget_setup_hint">Pilih hingga 4 butang. Widget menunjukkannya dalam susunan ini.</string>
 </resources>

@@ -399,4 +399,8 @@
     <string name="dual_preferred">Tercih edilen cihaz</string>
     <string name="dual_preferred_auto">Otomatik</string>
     <string name="dual_preferred_sub">Menzildeyken kulaklıklar önce bu cihaza bağlanır.</string>
+    <string name="widget_pages_name">QuickBuds pil ve kontroller</string>
+    <string name="widget_controls_name">QuickBuds kontroller</string>
+    <string name="widget_setup_title">Widget düğmeleri</string>
+    <string name="widget_setup_hint">En fazla 4 düğme seçin. Widget bunları bu sırayla gösterir.</string>
 </resources>

@@ -399,4 +399,8 @@
     <string name="dual_preferred">Bevorzugtes Gerät</string>
     <string name="dual_preferred_auto">Automatisch</string>
     <string name="dual_preferred_sub">Wenn es in Reichweite ist, verbinden sich die Ohrhörer zuerst damit.</string>
+    <string name="widget_pages_name">QuickBuds Akku und Steuerung</string>
+    <string name="widget_controls_name">QuickBuds Steuerung</string>
+    <string name="widget_setup_title">Widget-Tasten</string>
+    <string name="widget_setup_hint">Wähle bis zu 4 Tasten. Das Widget zeigt sie in dieser Reihenfolge.</string>
 </resources>
