@@ -1,6 +1,6 @@
-// QuickBuds desktop UI: the main window and the tray's quick panel. Classic or Dot matrix style, Graphite palette.
+// QuickBuds desktop UI: the main window and the tray's quick panel. Classic or Dot matrix style, the phone's presets.
 
-import { ListView, ScrollView } from "std-widgets.slint";
+import { ListView, ScrollView, Palette as SysPalette } from "std-widgets.slint";
 // The phone's bundled Doto, for the Dot matrix style.
 import "../../app/src/main/res/font/doto.ttf";
 
@@ -11,7 +11,17 @@ export global Palette {
     in-out property <color> text: #FFFFFF;
     in-out property <color> text2: #A0A0A5;
     in-out property <color> outline: #34343A;
+    // Derived in Rust (`theme.rs`): the label on an accent fill, a light theme, the switch track.
+    in-out property <color> on-accent: #FFFFFF;
+    in-out property <bool> light;
+    in-out property <color> track: #3D3D43;
     out property <color> sidebar: card.mix(bg, 0.5);
+    // Switch thumb when off: the text on a dark theme, the card on a light one (a dark thumb looked like a hole).
+    out property <color> thumb-off: light ? card : text.mix(card, 0.9);
+    // Background of an expanded row.
+    out property <color> expanded: card.mix(text, 0.95);
+    // An outline that stands out a little more: lighter on a dark theme, darker on a light one.
+    out property <color> outline-strong: light ? outline.darker(0.15) : outline.brighter(0.3);
 
     // Wear shade: in ear full, out of ear secondary, in case faint (like the phone's rings).
     public pure function wear-tint(wear: int) -> color {
@@ -44,7 +54,10 @@ export global Dots {
     pure callback box-px(float, float, color, color, float) -> image;
     pure callback ring-px(float, int, int, color, color, color) -> image;
     pure callback knob-px(color, color) -> image;
-    pure callback disc-px(int, color) -> image;
+    // A disc of n cells: colour, outer cells.
+    pure callback disc-px(int, color, color) -> image;
+    // A colour slider's track: width in px, channel (hue, saturation, brightness), and the colour as h, s, v.
+    pure callback slider-px(float, int, float, float, float) -> image;
     out property <string> font: on ? "Doto" : "Segoe UI";
     // The largest whole number of cells inside `l`.
     public pure function snap(l: length) -> length { return floor(l / 1px * scale / pitch) * pitch / scale * 1px; }
@@ -145,6 +158,26 @@ export global Tr {
     in property <string> open: "Open QuickBuds";
     in property <string> quit: "Quit";
     in property <string> style-title: "Style";
+    in property <string> theme-title: "Themes, colors & styles";
+    in property <string> theme-builtin: "Built-in";
+    in property <string> theme-auto: "Match system";
+    in property <string> theme-accent: "Accent color";
+    in property <string> theme-new: "New preset";
+    in property <string> theme-footer;
+    in property <string> theme-edit: "Edit preset";
+    in property <string> preset-title: "Edit preset";
+    in property <string> preset-name: "Name";
+    in property <string> preset-preview: "Preview";
+    in property <string> preset-colors: "Colors";
+    in property <string> preset-duplicate: "Duplicate";
+    in property <string> preset-delete: "Delete";
+    in property <string> preset-hue: "Hue";
+    in property <string> preset-saturation: "Saturation";
+    in property <string> preset-brightness: "Brightness";
+    in property <string> preset-recent: "Recent";
+    in property <string> preset-hex: "Hex colour";
+    in property <string> hires-title;
+    in property <string> hires-sub;
     in property <string> update-title: "App update";
     in property <string> update-installed: "Installed";
     in property <string> update-check: "Check again";
@@ -307,6 +340,12 @@ export global Buds {
     in property <image> icon-devices;
     in property <image> icon-hearing;
     in property <image> icon-language;
+    in property <image> icon-pencil;
+    in property <image> icon-copy;
+    in property <image> icon-delete;
+    in property <image> icon-warning;
+    in property <image> icon-chevron-down;
+    in property <image> icon-hires;
     // The ANC segment's label: "ANC", or "ANC M" while a level is on (the phone's and the widget's button).
     in property <string> anc-label: Tr.anc;
 
@@ -325,6 +364,8 @@ component Card inherits Rectangle {
     // App settings, not the buds': never dimmed.
     in property <bool> live;
     background: Dots.on ? transparent : Palette.card;
+    border-width: Dots.on ? 0 : 1px;
+    border-color: Palette.outline;
     border-radius: 16px;
     opacity: Buds.on || live ? 1 : 0.35;
     animate opacity { duration: Motion.base; easing: ease-out; }
@@ -447,7 +488,7 @@ component Segment inherits Rectangle {
     horizontal-stretch: 1;
     border-radius: min(self.height, self.width) / 2;
     // Dot matrix: the selected segment is an accent outline, the track inside (not a fill).
-    property <color> lit: Dots.on ? Palette.accent : #FFFFFF;
+    property <color> lit: Dots.on ? Palette.accent : Palette.on-accent;
     background: Dots.on ? transparent : selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
     animate background { duration: Motion.fast; }
     if Dots.on && (selected || ta.has-hover): DotBox {
@@ -545,12 +586,12 @@ component Toggle inherits Rectangle {
     height: 24px;
     if !Dots.on: Rectangle {
         x: 6px; y: 6px; width: parent.width - 12px; height: 12px; border-radius: 6px;
-        background: Palette.outline;
+        background: Palette.track;
     }
     // Dot matrix: a dot track and a round dot thumb.
     if Dots.on: DotBox {
         x: 4px; y: 6px; width: parent.width - 8px; height: 12px;
-        fill: Palette.outline; stroke: Palette.outline; radius: 5px;
+        fill: Palette.track; stroke: Palette.track; radius: 5px;
     }
     property <int> thumb-cells: floor(22px / 1px * Dots.scale / Dots.pitch);
     if Dots.on: Image {
@@ -558,13 +599,16 @@ component Toggle inherits Rectangle {
         y: (root.height - self.height) / 2;
         x: root.checked ? root.width - self.width : 0;
         animate x { duration: Motion.fast; }
-        source: Dots.disc-px(thumb-cells, root.checked ? Palette.accent : #E4E4E6);
+        source: Dots.disc-px(thumb-cells, root.checked ? Palette.accent : Palette.thumb-off, root.checked ? Palette.accent : Palette.thumb-off);
         image-fit: ImageFit.fill;
         image-rendering: pixelated;
     }
     if !Dots.on: Rectangle {
         width: 22px; height: 22px; border-radius: 11px;
-        background: root.checked ? Palette.accent : #E4E4E6;
+        background: root.checked ? Palette.accent : Palette.thumb-off;
+        // A light theme's thumb is the card's own colour: the track's shade outlines it.
+        border-width: Palette.light && !root.checked ? 1px : 0;
+        border-color: Palette.track;
         animate background { duration: Motion.fast; }
         y: 1px;
         x: root.checked ? root.width - 23px : 1px;
@@ -606,17 +650,17 @@ component Chip inherits Rectangle {
     border-radius: 17px;
     background: Dots.on ? transparent : primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
     border-width: primary || Dots.on ? 0 : 1px;
-    border-color: Palette.outline.brighter(0.3);
+    border-color: Palette.outline-strong;
     animate background { duration: Motion.fast; }
     // Dot matrix: an outline, accent for the primary chip.
     if Dots.on: DotBox {
         width: 100%; height: 100%; radius: 14px;
         fill: ta.has-hover ? Palette.outline : Palette.card;
-        stroke: root.primary ? Palette.accent : Palette.outline.brighter(0.3);
+        stroke: root.primary ? Palette.accent : Palette.outline-strong;
     }
     label := Text {
         text: root.text;
-        color: root.primary ? (Dots.on ? Palette.accent : #FFFFFF) : Palette.text;
+        color: root.primary ? (Dots.on ? Palette.accent : Palette.on-accent) : Palette.text;
         font-size: 13px;
         font-weight: 600;
     }
@@ -721,7 +765,7 @@ component FeatureRow inherits HorizontalLayout {
     callback toggled(bool);
     spacing: 16px;
     height: 64px;
-    Image { source: icon; width: 24px; height: 24px; y: (parent.height - self.height) / 2; image-fit: contain; colorize: Palette.accent; }
+    if icon.width > 0: Image { source: icon; width: 24px; height: 24px; y: (parent.height - self.height) / 2; image-fit: contain; colorize: Palette.accent; }
     VerticalLayout {
         alignment: center;
         horizontal-stretch: 1;
@@ -953,7 +997,7 @@ component EqEditor inherits Rectangle {
     // The +6 / 0 / -6 guides
     for f in [0, 0.5, 1]: Rectangle {
         y: knob / 2 + f * (plot-h - knob); height: 1px;
-        background: f == 0.5 ? Palette.outline.brighter(0.2) : Palette.outline;
+        background: f == 0.5 ? Palette.outline-strong : Palette.outline;
     }
     changed width => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
     changed height => { Eq.plot-resized(root.width / 1px, (plot-h - knob) / 1px); }
@@ -1181,6 +1225,8 @@ component DevPage inherits VerticalLayout {
         vertical-stretch: 1;
         background: Palette.card;
         border-radius: 16px;
+        border-width: 1px;
+        border-color: Palette.outline;
         VerticalLayout { padding: 8px; ListView {
             for r in DevLog.rows: Text {
                 text: r.text;
@@ -1492,6 +1538,8 @@ component EarbudsPage inherits Rectangle {
                 height: 64px;
                 border-radius: 24px;
                 background: Dots.on ? transparent : Palette.card;
+                border-width: Dots.on ? 0 : 1px;
+                border-color: Palette.outline;
                 if Dots.on: DotBox { width: 100%; height: 100%; radius: 24px; }
                 NavRow {
                     x: 20px; width: parent.width - 40px;
@@ -1750,6 +1798,8 @@ component ControlsPage inherits Rectangle {
                     height: 44px;
                     border-radius: self.height / 2;
                     background: Dots.on ? transparent : Palette.card;
+                    border-width: Dots.on ? 0 : 1px;
+                    border-color: Palette.outline;
                     if Dots.on: DotBox { width: 100%; height: 100%; radius: 20px; }
                     HorizontalLayout {
                         padding: 4px;
@@ -2123,6 +2173,9 @@ component Field inherits Rectangle {
     in-out property <string> text;
     in property <string> hint;
     in property <bool> multi;
+    // Enter, and the field losing focus (one line only).
+    callback accepted();
+    callback focus-lost();
     height: multi ? 120px : 40px;
     border-radius: 10px;
     background: Dots.on ? transparent : Palette.card;
@@ -2144,6 +2197,8 @@ component Field inherits Rectangle {
         single-line: !root.multi;
         wrap: root.multi ? word-wrap : no-wrap;
         vertical-alignment: root.multi ? top : center;
+        accepted => { root.accepted(); }
+        changed has-focus => { if !self.has-focus { root.focus-lost(); } }
     }
 }
 
@@ -2206,9 +2261,609 @@ component ReportPage inherits Rectangle {
     }
 }
 
+// One preset's six colours (`theme.rs`, the phone's `Palette`).
+export struct Pal {
+    id: string,
+    name: string,
+    bg: color,
+    card: color,
+    accent: color,
+    text: color,
+    text2: color,
+    outline: color,
+}
+
+// Themes, colors & styles and Edit preset (`theme.rs`; the phone's ThemeActivity and PresetEditActivity).
+export global Theme {
+    in property <[Pal]> builtins;
+    in property <[Pal]> custom;
+    in property <Pal> active;
+    in property <bool> active-builtin;
+    in property <bool> auto;
+    in property <string> auto-sub;
+    in property <string> custom-title;
+    in property <string> new-sub;
+    in property <bool> full;
+    in property <[color]> swatches;
+    in property <[color]> recent;
+    in property <[string]> token-names;
+    // The preset in Edit preset, as saved, and its contrast warnings ("" none).
+    in-out property <Pal> edit;
+    in property <[string]> warnings;
+    in property <bool> can-duplicate;
+    in property <string> delete-title;
+    in property <string> delete-body;
+    // The system's light or dark mode, for Match system.
+    out property <bool> system-light: SysPalette.color-scheme != ColorScheme.dark;
+    callback system-changed();
+    callback pick(string);
+    callback set-auto(bool);
+    callback set-accent(color);
+    callback remember(string, color);
+    callback new-preset() -> bool;
+    callback open(string);
+    callback set-token(int, color);
+    callback rename(string);
+    callback duplicate();
+    callback delete();
+    pure callback hex(color) -> string;
+    // Transparent for an entry that is not a colour.
+    pure callback parse-hex(string) -> color;
+    pure callback track(Pal) -> color;
+    // A swatch dot's outer cells: the ring colour only where the colour would vanish into the background.
+    pure callback edge(color, color, color) -> color;
+    pure callback with-token(Pal, int, color) -> Pal;
+    public pure function token(p: Pal, i: int) -> color {
+        return i == 0 ? p.bg : i == 1 ? p.card : i == 2 ? p.accent : i == 3 ? p.text : i == 4 ? p.text2 : p.outline;
+    }
+}
+
+// A preview shape in a preset's colours: a rounded box with an outline (none when transparent), or its dots.
+component PBox inherits Rectangle {
+    in property <color> fill;
+    in property <color> stroke;
+    in property <length> r;
+    border-radius: Dots.on ? 0 : r;
+    background: Dots.on ? transparent : fill;
+    border-width: Dots.on || stroke == transparent ? 0 : 1px;
+    border-color: stroke;
+    if Dots.on: DotBox { width: 100%; height: 100%; radius: root.r; fill: root.fill; stroke: root.stroke == transparent ? root.fill : root.stroke; }
+}
+
+// A round dot: a circle, or a disc of `cells` dots on whole pixels.
+component PDisc inherits Rectangle {
+    in property <color> fill;
+    in property <color> ring: fill;
+    in property <length> ring-w;
+    in property <int> cells: 7;
+    border-radius: Dots.on ? 0 : self.width / 2;
+    background: Dots.on ? transparent : fill;
+    border-width: Dots.on ? 0 : ring-w;
+    border-color: ring;
+    if Dots.on: Image {
+        width: root.cells * Dots.pitch / Dots.scale * 1px;
+        height: self.width;
+        x: round((root.width - self.width) / 2 * Dots.scale / 1px) / Dots.scale * 1px;
+        y: round((root.height - self.height) / 2 * Dots.scale / 1px) / Dots.scale * 1px;
+        source: Dots.disc-px(root.cells, root.fill, root.ring);
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
+    }
+}
+
+// A preset tile (`PalettePreviewView`, not detailed): a card with three rings, a segment pill, a row.
+component PalTile inherits Rectangle {
+    in property <Pal> p;
+    height: 150px;
+    property <length> pad: 10px;
+    property <length> w: self.width - 2 * pad;
+    PBox { width: 100%; height: 100%; r: 18px; fill: p.bg; stroke: p.outline; }
+    PBox { x: pad; y: pad; width: w; height: 46px; r: 10px; fill: p.card; stroke: p.outline; }
+    for _[i] in 3: PDisc {
+        width: Dots.on ? 13 * Dots.pitch / Dots.scale * 1px : 2 * min(w / 6 - 6px, 10px) + 3px;
+        height: self.width;
+        x: pad + w * (i * 2 + 1) / 6 - self.width / 2;
+        y: pad + 23px - self.height / 2;
+        fill: Dots.on ? p.accent : transparent; ring: p.accent; ring-w: 3px; cells: 13;
+    }
+    PBox { x: pad; y: pad + 54px; width: w; height: 22px; r: 11px; fill: p.card; stroke: p.outline; }
+    PBox { x: pad + 3px; y: pad + 57px; width: w * 0.3 - 3px; height: 16px; r: 8px; fill: p.accent; stroke: transparent; }
+    PBox { x: pad; y: pad + 84px; width: w; height: root.height - 2 * pad - 84px; r: 10px; fill: p.card; stroke: p.outline; }
+    PBox { x: pad + 8px; y: pad + 101px; width: w * 0.55 - 8px; height: 4px; r: 2px; fill: p.text; stroke: transparent; }
+    PBox { x: pad + 8px; y: pad + 109px; width: w * 0.38 - 8px; height: 3px; r: 2px; fill: p.text2; stroke: transparent; }
+    PDisc { x: pad + w - 17px; y: pad + 102px; width: 10px; height: 10px; fill: p.accent; }
+}
+
+// Edit preset's preview (`PalettePreviewView`, detailed): the battery card and one switch row.
+component PalPreview inherits Rectangle {
+    in property <Pal> p;
+    height: 200px;
+    property <length> pad: 14px;
+    property <length> w: self.width - 2 * pad;
+    PBox { width: 100%; height: 100%; r: 24px; fill: p.bg; stroke: p.outline; }
+    PBox { x: pad; y: pad; width: w; height: 100px; r: 18px; fill: p.card; stroke: p.outline; }
+    for lv[i] in [100, 80, 100]: Rectangle {
+        x: pad + w * (i * 2 + 1) / 6 - 40px;
+        y: pad;
+        width: 80px;
+        height: 100px;
+        property <float> frac: min(lv / 100, 0.999);
+        if !Dots.on: Path {
+            x: 20px; y: 10px; width: 40px; height: 40px;
+            viewbox-width: 100; viewbox-height: 100;
+            stroke: root.p.outline;
+            stroke-width: 4px;
+            MoveTo { x: 50; y: 5; }
+            ArcTo { x: 49.99; y: 5; radius-x: 45; radius-y: 45; large-arc: true; sweep: true; }
+        }
+        if !Dots.on: Path {
+            x: 20px; y: 10px; width: 40px; height: 40px;
+            viewbox-width: 100; viewbox-height: 100;
+            stroke: root.p.accent;
+            stroke-width: 4px;
+            MoveTo { x: 50; y: 5; }
+            ArcTo {
+                x: 50 + 45 * sin(frac * 360deg); y: 50 - 45 * cos(frac * 360deg);
+                radius-x: 45; radius-y: 45; large-arc: frac > 0.5; sweep: true;
+            }
+        }
+        if Dots.on: Image {
+            x: 20px; y: 10px; width: 40px; height: 40px;
+            source: Dots.ring-px(round(40 * Dots.scale), lv, -1, root.p.card, root.p.accent, root.p.outline);
+            image-fit: ImageFit.fill;
+            image-rendering: pixelated;
+        }
+        Text {
+            y: 56px; width: 100%; horizontal-alignment: center;
+            text: lv + (Dots.on ? "" : "%");
+            color: root.p.text; font-size: 13px; font-weight: 600;
+        }
+        Text {
+            y: 74px; width: 100%; horizontal-alignment: center;
+            text: i == 0 ? Tr.left : i == 1 ? Tr.case : Tr.right;
+            color: root.p.text2; font-size: 11px;
+        }
+    }
+    PBox { x: pad; y: pad + 110px; width: w; height: root.height - 2 * pad - 110px; r: 18px; fill: p.card; stroke: p.outline; }
+    property <length> mid: (pad + 110px + root.height - pad) / 2;
+    Image { x: pad + 14px; y: mid - 10px; width: 20px; height: 20px; source: Buds.icon-hires; colorize: p.accent; }
+    VerticalLayout {
+        x: pad + 46px; y: mid - 18px; width: w - 46px - 64px; height: 36px;
+        alignment: center;
+        spacing: 2px;
+        Text { text: Tr.hires-title; color: root.p.text; font-size: 13px; font-weight: 600; overflow: elide; }
+        Text { text: Tr.hires-sub; color: root.p.text2; font-size: 11px; overflow: elide; }
+    }
+    PBox { x: pad + w - 52px; y: mid - 7px; width: 34px; height: 14px; r: 7px; fill: Theme.track(p); stroke: transparent; }
+    PDisc { x: pad + w - 36px; y: mid - 10px; width: 20px; height: 20px; fill: p.accent; cells: 9; }
+}
+
+// A colour swatch: a ringed circle, or a 13-dot disc whose outer dots are the ring.
+component ColorSwatch inherits PDisc {
+    in property <bool> clickable;
+    callback clicked;
+    width: Dots.on ? 13 * Dots.pitch / Dots.scale * 1px : 30px;
+    height: self.width;
+    ring: Palette.outline;
+    ring-w: 1px;
+    cells: 13;
+    TouchArea { enabled: root.clickable; mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+
+// A preset's six colours, 3 by 2 (the phone's SwatchGrid).
+component SwatchGrid inherits Rectangle {
+    in property <Pal> p;
+    property <length> cell: Dots.on ? 8 * Dots.pitch / Dots.scale * 1px : 14px;
+    width: Dots.on ? 23 * Dots.pitch / Dots.scale * 1px : 42px;
+    height: Dots.on ? 15 * Dots.pitch / Dots.scale * 1px : 28px;
+    for _[i] in 6: PDisc {
+        property <color> c: Theme.token(root.p, i);
+        x: mod(i, 3) * root.cell + (Dots.on ? 0 : 1.5px);
+        y: floor(i / 3) * root.cell + (Dots.on ? 0 : 1.5px);
+        width: Dots.on ? 7 * Dots.pitch / Dots.scale * 1px : 11px;
+        height: self.width;
+        fill: c;
+        ring: Dots.on ? Theme.edge(c, Palette.bg, Palette.outline) : Palette.outline;
+        ring-w: 1px;
+    }
+}
+
+// One HSV channel of the colour picker (`ColorSliderView`): the track shows what the channel does to the
+// colour, the knob is filled with it. `moved` while it drags, `released` on the button going up.
+component ColorSlider inherits Rectangle {
+    in property <int> channel;
+    in property <float> h;
+    in property <float> s;
+    in property <float> v;
+    callback moved(float);
+    callback released();
+    height: 40px;
+    property <float> max: channel == 0 ? 360 : 1;
+    property <float> value: channel == 0 ? h : channel == 1 ? s : v;
+    property <length> knob-x: 16px + (self.width - 32px) * value / max;
+    // The renderer draws a gradient with square corners: the rounded clip makes the pill.
+    if !Dots.on: Rectangle {
+        y: (parent.height - self.height) / 2;
+        height: 26px;
+        border-radius: 13px;
+        clip: true;
+        Rectangle {
+            background: root.channel == 0
+                ? @linear-gradient(90deg, hsv(0, 0.85, 0.95) 0%, hsv(60, 0.85, 0.95) 16.67%, hsv(120, 0.85, 0.95) 33.33%,
+                    hsv(180, 0.85, 0.95) 50%, hsv(240, 0.85, 0.95) 66.67%, hsv(300, 0.85, 0.95) 83.33%, hsv(360, 0.85, 0.95) 100%)
+                : root.channel == 1 ? @linear-gradient(90deg, hsv(root.h, 0, root.v) 0%, hsv(root.h, 1, root.v) 100%)
+                : @linear-gradient(90deg, hsv(root.h, root.s, 0) 0%, hsv(root.h, root.s, 1) 100%);
+        }
+    }
+    // Dot matrix: five rows of dots; only the channels the track shows go to the renderer.
+    if Dots.on: Image {
+        width: Dots.snap(parent.width);
+        height: 5 * Dots.pitch / Dots.scale * 1px;
+        y: round((parent.height - self.height) / 2 * Dots.scale / 1px) / Dots.scale * 1px;
+        source: Dots.slider-px(parent.width / 1px * Dots.scale, root.channel, root.channel == 0 ? 0 : root.h,
+            root.channel == 2 ? root.s : 0, root.channel == 1 ? root.v : 0);
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
+    }
+    if !Dots.on: Rectangle {
+        x: root.knob-x - 15px; y: (parent.height - self.height) / 2;
+        width: 30px; height: 30px; border-radius: 15px;
+        background: hsv(root.h, root.s, root.v);
+        border-width: 3px; border-color: Palette.text;
+    }
+    if Dots.on: Image {
+        x: root.knob-x - Dots.knob-size / 2; y: (parent.height - self.height) / 2;
+        width: Dots.knob-size; height: Dots.knob-size;
+        source: Dots.knob(Palette.text, hsv(root.h, root.s, root.v));
+        image-fit: ImageFit.fill;
+        image-rendering: pixelated;
+    }
+    function set-from(x: length) { root.moved(clamp((x - 16px) / (root.width - 32px) * max, 0, max)); }
+    TouchArea {
+        mouse-cursor: pointer;
+        pointer-event(ev) => {
+            if ev.kind == PointerEventKind.down { set-from(self.mouse-x); }
+            if ev.kind == PointerEventKind.up { root.released(); }
+        }
+        moved => { if self.pressed { set-from(self.mouse-x); } }
+    }
+}
+
+// The inline colour picker (`ColorPickerView`): hue, saturation and brightness, a hex field, five swatches and
+// the recent colours. `change` while a slider drags; `commit` on release, Enter in the hex field or a swatch.
+// `target` names what it edits: the recent list keeps one colour per drag series on the same target.
+component ColorPicker inherits VerticalLayout {
+    in property <color> initial;
+    in property <string> target;
+    callback change(color);
+    callback commit(color);
+    property <float> h;
+    property <float> s;
+    property <float> v;
+    property <color> now: hsv(h, s, v);
+    function load() {
+        h = initial.to-hsv().hue;
+        s = initial.to-hsv().saturation;
+        v = initial.to-hsv().value;
+        hex.text = Theme.hex(initial);
+    }
+    init => { load(); }
+    // A commit comes back as the new initial colour: the sliders keep their place when it is the same colour.
+    changed initial => { if initial != now { load(); } }
+    function done(c: color) { Theme.remember(target, c); root.commit(c); }
+    function dragged() { hex.text = Theme.hex(now); root.change(now); }
+    function typed() {
+        if Theme.parse-hex(hex.text) == transparent { hex.text = Theme.hex(now); }
+        else if Theme.parse-hex(hex.text) != now { done(Theme.parse-hex(hex.text)); }
+    }
+    spacing: 6px;
+    ColorSlider { channel: 0; h: root.h; s: root.s; v: root.v; moved(x) => { root.h = x; dragged(); } released => { done(now); } }
+    ColorSlider { channel: 1; h: root.h; s: root.s; v: root.v; moved(x) => { root.s = x; dragged(); } released => { done(now); } }
+    ColorSlider { channel: 2; h: root.h; s: root.s; v: root.v; moved(x) => { root.v = x; dragged(); } released => { done(now); } }
+    HorizontalLayout {
+        padding-top: 6px;
+        spacing: 8px;
+        hex := Field { width: 112px; height: 44px; accepted => { typed(); } focus-lost => { typed(); } }
+        Rectangle { horizontal-stretch: 1; }
+        for c in Theme.swatches: VerticalLayout {
+            alignment: center;
+            ColorSwatch {
+                fill: c; ring: c == root.initial ? Palette.text : Palette.outline; ring-w: c == root.initial ? 2px : 1px;
+                clickable: true; clicked => { done(c); }
+            }
+        }
+    }
+    if Theme.recent.length > 0: HorizontalLayout {
+        padding-top: 4px;
+        spacing: 8px;
+        Text { text: Tr.preset-recent; color: Palette.text2; font-size: 13px; vertical-alignment: center; }
+        Rectangle { horizontal-stretch: 1; }
+        for c in Theme.recent: VerticalLayout {
+            alignment: center;
+            ColorSwatch {
+                fill: c; ring: c == root.initial ? Palette.text : Palette.outline; ring-w: c == root.initial ? 2px : 1px;
+                clickable: true; clicked => { done(c); }
+            }
+        }
+    }
+}
+
+component IconButton inherits Rectangle {
+    in property <image> icon;
+    in property <bool> enabled: true;
+    callback clicked;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    opacity: enabled ? 1 : 0.35;
+    background: ta.has-hover && enabled ? Palette.outline : transparent;
+    animate background { duration: Motion.fast; }
+    Image { source: root.icon; width: 22px; height: 22px; x: 9px; y: 9px; colorize: Palette.accent; }
+    ta := TouchArea { enabled: root.enabled; mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+
+// The selected tile or preset row: an accent outline that fades in.
+component Selected inherits Rectangle {
+    in property <bool> on;
+    in property <length> r;
+    opacity: on ? 1 : 0;
+    animate opacity { duration: Motion.base; }
+    border-radius: r;
+    border-width: Dots.on ? 0 : 2px;
+    border-color: Palette.accent;
+    if Dots.on: DotBox { width: 100%; height: 100%; radius: root.r; fill: transparent; stroke: Palette.accent; }
+}
+
+// Themes, colors & styles (`ThemeActivity`): the style, the three built-in presets as tiles, Match system,
+// the built-in's accent, then the custom presets (at most 3). A tile or a row applies its preset at once.
+component ThemePage inherits Rectangle {
+    callback back();
+    callback edit();
+    property <bool> accent-open;
+    // The accent while its picker drags: the active tile and the swatch follow it.
+    property <bool> dragging;
+    property <color> drag-color;
+    property <color> accent: dragging ? drag-color : Theme.active.accent;
+    ScrollView {
+        VerticalLayout {
+            padding: 28px;
+            spacing: 10px;
+            alignment: start;
+            HorizontalLayout {
+                spacing: 12px;
+                Chip { text: "‹"; width: 40px; clicked => { root.back(); } }
+                Text { text: Tr.theme-title; color: Palette.text; font-size: 26px; font-weight: 700; vertical-alignment: center; horizontal-stretch: 1; }
+            }
+            SectionTitle { text: Tr.style-title; font-size: 13px; font-weight: 400; }
+            Rectangle {
+                height: 48px;
+                border-radius: self.height / 2;
+                background: Dots.on ? transparent : Palette.card;
+                border-width: Dots.on ? 0 : 1px;
+                border-color: Palette.outline;
+                if Dots.on: DotBox { width: 100%; height: 100%; radius: 20px; }
+                HorizontalLayout {
+                    padding: 4px;
+                    spacing: 4px;
+                    Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
+                    Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
+                }
+            }
+            SectionTitle { text: Tr.theme-builtin; font-size: 13px; font-weight: 400; }
+            HorizontalLayout {
+                spacing: 12px;
+                for b in Theme.builtins: VerticalLayout {
+                    property <bool> on: b.id == Theme.active.id;
+                    horizontal-stretch: 1;
+                    spacing: 8px;
+                    Rectangle {
+                        height: 150px;
+                        PalTile { width: 100%; height: 100%; p: on ? Theme.with-token(b, 2, root.accent) : b; }
+                        Selected { x: -4px; y: -4px; width: parent.width + 8px; height: parent.height + 8px; r: 22px; on: on; }
+                        TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(b.id); } }
+                    }
+                    Text {
+                        text: b.name; horizontal-alignment: center; font-size: 13px;
+                        color: on ? Palette.text : Palette.text2; font-weight: on ? 600 : 400;
+                    }
+                }
+            }
+            Card {
+                live: true;
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    FeatureRow {
+                        title: Tr.theme-auto; subtitle: Theme.auto-sub; checked: Theme.auto; live: true;
+                        toggled(on) => { Theme.set-auto(on); }
+                    }
+                }
+            }
+            // The applied built-in's accent: the row unfolds the picker.
+            if Theme.active-builtin: Card {
+                live: true;
+                border-radius: 24px;
+                background: Dots.on ? transparent : root.accent-open ? Palette.expanded : Palette.card;
+                VerticalLayout {
+                    Rectangle {
+                        height: 64px;
+                        HorizontalLayout {
+                            padding-left: 20px;
+                            padding-right: 20px;
+                            spacing: 16px;
+                            VerticalLayout { alignment: center; ColorSwatch { fill: root.accent; } }
+                            VerticalLayout {
+                                alignment: center;
+                                horizontal-stretch: 1;
+                                spacing: 2px;
+                                Text { text: Tr.theme-accent; color: Palette.text; font-size: 15px; }
+                                Text { text: Theme.active.name + " · " + Theme.hex(root.accent); color: Palette.text2; font-size: 12px; }
+                            }
+                            Image {
+                                source: root.accent-open ? Buds.icon-chevron-down : Buds.icon-chevron;
+                                width: 20px; height: 20px; y: (parent.height - self.height) / 2; colorize: Palette.accent;
+                            }
+                        }
+                        TouchArea { mouse-cursor: pointer; clicked => { root.accent-open = !root.accent-open; } }
+                    }
+                    if root.accent-open: ColorPicker {
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        padding-bottom: 16px;
+                        initial: Theme.active.accent;
+                        target: "accent:" + Theme.active.id;
+                        change(c) => { root.dragging = true; root.drag-color = c; }
+                        commit(c) => { root.dragging = false; Theme.set-accent(c); }
+                    }
+                }
+            }
+            SectionTitle { text: Theme.custom-title; font-size: 13px; font-weight: 400; }
+            Card {
+                live: true;
+                border-radius: 24px;
+                VerticalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    for c in Theme.custom: VerticalLayout {
+                        property <bool> on: c.id == Theme.active.id;
+                        Rectangle {
+                            height: 64px;
+                            Selected { x: -12px; y: 4px; width: parent.width + 24px; height: parent.height - 8px; r: 14px; on: on; }
+                            TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(c.id); } }
+                            HorizontalLayout {
+                                spacing: 16px;
+                                VerticalLayout { alignment: center; SwatchGrid { p: c; } }
+                                Text {
+                                    text: c.name; color: Palette.text; font-size: 15px; font-weight: on ? 600 : 400;
+                                    vertical-alignment: center; horizontal-stretch: 1; overflow: elide;
+                                }
+                                VerticalLayout {
+                                    alignment: center;
+                                    IconButton { icon: Buds.icon-pencil; clicked => { Theme.open(c.id); root.edit(); } }
+                                }
+                            }
+                        }
+                        Divider {}
+                    }
+                    Rectangle {
+                        height: 64px;
+                        opacity: Theme.full ? 0.35 : 1;
+                        FeatureRow { width: 100%; icon: Buds.icon-plus; title: Tr.theme-new; subtitle: Theme.new-sub; chevron: true; no-end: true; }
+                        TouchArea { enabled: !Theme.full; mouse-cursor: pointer; clicked => { if Theme.new-preset() { root.edit(); } } }
+                    }
+                }
+            }
+            Text { text: Tr.theme-footer; color: Palette.text2; font-size: 13px; wrap: word-wrap; }
+        }
+    }
+}
+
+// Edit preset (`PresetEditActivity`): drawn in the active theme, only the preview in the preset's colours. A change
+// shows in the preview at once and saves on commit (slider release, Enter, a swatch, the name field's Enter or focus loss).
+component PresetPage inherits Rectangle {
+    callback back();
+    // The colour row whose picker is open, -1 none.
+    property <int> expanded: -1;
+    // The token a picker drags, and its colour.
+    property <int> drag-i: -1;
+    property <color> drag-c;
+    property <Pal> live: drag-i < 0 ? Theme.edit : Theme.with-token(Theme.edit, drag-i, drag-c);
+    property <string> edit-id: Theme.edit.id;
+    property <string> edit-name: Theme.edit.name;
+    changed edit-id => { expanded = -1; }
+    changed edit-name => { name-field.text = edit-name; }
+    init => { name-field.text = edit-name; }
+    ScrollView {
+        VerticalLayout {
+            padding: 28px;
+            spacing: 10px;
+            alignment: start;
+            HorizontalLayout {
+                spacing: 12px;
+                Chip { text: "‹"; width: 40px; clicked => { root.back(); } }
+                Text { text: Tr.preset-title; color: Palette.text; font-size: 26px; font-weight: 700; vertical-alignment: center; horizontal-stretch: 1; }
+                IconButton { icon: Buds.icon-copy; enabled: Theme.can-duplicate; clicked => { Theme.duplicate(); } }
+                IconButton { icon: Buds.icon-delete; clicked => { del.show(); } }
+            }
+            SectionTitle { text: Tr.preset-name; font-size: 13px; font-weight: 400; }
+            name-field := Field { accepted => { Theme.rename(self.text); } focus-lost => { Theme.rename(self.text); } }
+            SectionTitle { text: Tr.preset-preview; font-size: 13px; font-weight: 400; }
+            PalPreview { p: root.live; }
+            SectionTitle { text: Tr.preset-colors; font-size: 13px; font-weight: 400; }
+            Card {
+                live: true;
+                border-radius: 24px;
+                VerticalLayout {
+                    for tn[i] in Theme.token-names: VerticalLayout {
+                        property <color> c: Theme.token(root.live, i);
+                        Rectangle {
+                            background: i == root.expanded && !Dots.on ? Palette.expanded : transparent;
+                            // The card's own corners on the first and last row.
+                            border-top-left-radius: i == 0 ? 24px : 0;
+                            border-top-right-radius: i == 0 ? 24px : 0;
+                            border-bottom-left-radius: i == 5 ? 24px : 0;
+                            border-bottom-right-radius: i == 5 ? 24px : 0;
+                            VerticalLayout {
+                                Rectangle {
+                                    min-height: 64px;
+                                    TouchArea { mouse-cursor: pointer; clicked => { root.expanded = root.expanded == i ? -1 : i; } }
+                                    HorizontalLayout {
+                                        padding-left: 20px;
+                                        padding-right: 20px;
+                                        padding-top: 10px;
+                                        padding-bottom: 10px;
+                                        spacing: 16px;
+                                        VerticalLayout { alignment: center; ColorSwatch { fill: c; } }
+                                        VerticalLayout {
+                                            alignment: center;
+                                            horizontal-stretch: 1;
+                                            spacing: 2px;
+                                            Text { text: tn; color: Palette.text; font-size: 15px; }
+                                            if Theme.warnings[i] != "": HorizontalLayout {
+                                                spacing: 6px;
+                                                VerticalLayout { alignment: center; Image { source: Buds.icon-warning; width: 14px; height: 14px; colorize: Palette.accent; } }
+                                                Text { text: Theme.warnings[i]; color: Palette.text2; font-size: 12px; overflow: elide; horizontal-stretch: 1; }
+                                            }
+                                        }
+                                        Text { text: Theme.hex(c); color: Palette.text2; font-size: 14px; vertical-alignment: center; }
+                                        VerticalLayout {
+                                            alignment: center;
+                                            Image {
+                                                source: root.expanded == i ? Buds.icon-chevron-down : Buds.icon-chevron;
+                                                width: 20px; height: 20px; colorize: Palette.accent;
+                                            }
+                                        }
+                                    }
+                                }
+                                if root.expanded == i: ColorPicker {
+                                    padding-left: 20px;
+                                    padding-right: 20px;
+                                    padding-bottom: 16px;
+                                    initial: Theme.token(Theme.edit, i);
+                                    target: Theme.edit.id + ":" + i;
+                                    change(col) => { root.drag-i = i; root.drag-c = col; }
+                                    commit(col) => { root.drag-i = -1; Theme.set-token(i, col); }
+                                }
+                            }
+                        }
+                        if i < 5: HorizontalLayout { padding-left: 20px; padding-right: 20px; Divider {} }
+                    }
+                }
+            }
+        }
+    }
+    del := Dialog {
+        x: (root.width - self.width) / 2; y: 60px;
+        title: Theme.delete-title; body: Theme.delete-body; ok: Tr.preset-delete;
+        accepted => { Theme.delete(); root.back(); }
+    }
+}
+
 // Scrolls: the page is taller than the window's first size (issue #9).
 component SettingsPage inherits Rectangle {
     callback open-report();
+    callback open-theme();
     ScrollView {
         VerticalLayout {
             padding: 28px;
@@ -2227,31 +2882,17 @@ component SettingsPage inherits Rectangle {
                     }
                 }
             }
-            // Classic / Dot matrix, like the phone's Theme screen: one switch for the window and the quick panel.
-            // A settings row like the others, the segments where their switch is.
+            // Themes, colors & styles: the style, the presets and their colours.
             Card {
                 live: true;
                 border-radius: 24px;
-                height: 64px;
-                HorizontalLayout {
+                VerticalLayout {
                     padding-left: 20px;
-                    padding-right: 14px;
-                    spacing: 16px;
-                    Image { source: Buds.icon-palette; width: 24px; height: 24px; y: (parent.height - self.height) / 2; image-fit: contain; colorize: Palette.accent; }
-                    Text { text: Tr.style-title; color: Palette.text; font-size: 15px; vertical-alignment: center; horizontal-stretch: 1; }
-                    Rectangle {
-                        width: 260px;
-                        height: 40px;
-                        y: (parent.height - self.height) / 2;
-                        border-radius: self.height / 2;
-                        background: Dots.on ? transparent : Palette.bg;
-                        if Dots.on: DotBox { width: 100%; height: 100%; radius: 18px; }
-                        HorizontalLayout {
-                            padding: 4px;
-                            spacing: 4px;
-                            Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
-                            Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
-                        }
+                    padding-right: 20px;
+                    NavRow {
+                        icon: Buds.icon-palette; title: Tr.theme-title;
+                        subtitle: Theme.active.name + " · " + (Dots.on ? Tr.style-dots : Tr.style-classic);
+                        clicked => { root.open-theme(); }
                     }
                 }
             }
@@ -2313,6 +2954,9 @@ export component MainWindow inherits Window {
     // The page the model list goes back to.
     property <int> models-from: 5;
     changed page => { Earbuds.stop-find(); Hearing.test-closed(); }
+    // Match system follows the system's light or dark mode.
+    property <bool> system-light: Theme.system-light;
+    changed system-light => { Theme.system-changed(); }
     title: "QuickBuds";
     icon: Buds.icon-app;
     min-width: 900px;
@@ -2373,6 +3017,8 @@ export component MainWindow inherits Window {
                 // Device card
                 Rectangle {
                     background: Dots.on ? transparent : Palette.card;
+                    border-width: Dots.on ? 0 : 1px;
+                    border-color: Palette.outline;
                     border-radius: 14px;
                     if Dots.on: DotBox { width: 100%; height: 100%; radius: 14px; }
                     VerticalLayout {
@@ -2419,7 +3065,7 @@ export component MainWindow inherits Window {
                 Rectangle { height: 16px; }
                 for e[i] in root.nav: NavItem {
                     entry: e;
-                    active: root.page == i || (root.page == 8 && i == root.models-from) || (root.page == 9 && i == 6);
+                    active: root.page == i || (root.page == 8 && i == root.models-from) || (root.page >= 9 && root.page <= 11 && i == 6);
                     clicked => { root.page = i; }
                     at(y) => { side.nav-y = y; side.placed = true; }
                 }
@@ -2435,7 +3081,10 @@ export component MainWindow inherits Window {
         if root.page == 2: PageIn { ControlsPage { } }
         if root.page == 3: PageIn { HearingPage { } }
         if root.page == 4: PageIn { DualPage { } }
-        if root.page == 6: PageIn { SettingsPage { open-report => { Report.open(); root.page = 9; } } }
+        if root.page == 6: PageIn { SettingsPage { open-report => { Report.open(); root.page = 9; } open-theme => { root.page = 10; } } }
+        // Themes, colors & styles and Edit preset, opened from App settings (the sidebar shows App settings).
+        if root.page == 10: PageIn { ThemePage { back => { root.page = 6; } edit => { root.page = 11; } } }
+        if root.page == 11: PageIn { PresetPage { back => { root.page = 10; } } }
         // Report a problem, opened from App settings (no sidebar entry; the sidebar shows App settings).
         if root.page == 9: PageIn { ReportPage { back => { root.page = 6; } } }
         if root.page == 7: PageIn { DevPage { } }

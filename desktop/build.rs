@@ -14,9 +14,16 @@ const ICONS: &[&str] = &[
     "ic_layout", "ic_equalizer", "ic_gesture", "ic_hearing", "ic_devices", "ic_settings_cog", "ic_dev_tools",
     "ic_chevron_right", "ic_anc", "ic_plus", "ic_volume", "ic_power", "ic_transparency", "ic_info", "ic_find_buds", "ic_volume_off",
     "ic_tap_single", "ic_tap_double", "ic_tap_triple", "ic_hold", "ic_update", "ic_hires", "ic_spatial", "ic_language", "ic_palette",
+    "ic_pencil", "ic_copy", "ic_delete", "ic_warning", "ic_chevron_down",
 ];
 
 const STRINGS: &[&str] = &[
+    "theme_title", "theme_builtin", "theme_auto", "theme_auto_sub", "theme_oled_black", "theme_classic_dark", "theme_white",
+    "theme_accent", "theme_custom", "theme_new", "theme_new_sub", "theme_new_sub_one", "theme_new_full", "theme_footer",
+    "theme_new_name", "theme_copy_name", "theme_edit", "preset_title", "preset_name", "preset_preview", "preset_colors",
+    "preset_duplicate", "preset_delete", "preset_delete_title", "preset_delete_active", "token_background", "token_card",
+    "token_accent", "token_text", "token_text_secondary", "token_outline", "contrast_warning", "preset_hue",
+    "preset_saturation", "preset_brightness", "preset_recent", "preset_hex",
     "desktop_nav_overview", "desktop_nav_app_settings", "action_dev_tools", "settings_language_title", "settings_language_sub", "language_system",
     "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_spatial_title", "row_spatial_sub", "spatial_fixed", "spatial_head_tracking", "codec_dialog_title", "codec_dialog_accept",
     "codec_msg_reconnect", "codec_msg_hires_drops_spatial", "codec_msg_spatial_drops_hires",

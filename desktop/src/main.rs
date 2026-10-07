@@ -13,6 +13,7 @@ mod models;
 mod protocol;
 mod report;
 mod session;
+mod theme;
 mod update;
 
 mod icons { include!(concat!(env!("OUT_DIR"), "/icons.rs")); }
@@ -142,7 +143,8 @@ fn setup_dots(d: &Dots) {
     d.on_box_px(move |w, h, fill, stroke, r| dots::dot_box(w, h, fill, stroke, r, pitch()));
     d.on_ring_px(|size, level, slot, tint, accent, track| dots::ring(size, level, slot, tint, accent, track));
     d.on_knob_px(move |ring, fill| dots::knob(ring, fill, pitch()));
-    d.on_disc_px(move |n, c| dots::disc(n.max(1) as u32, c, pitch()));
+    d.on_disc_px(move |n, c, edge| dots::disc(n.max(1) as u32, c, edge, pitch()));
+    d.on_slider_px(move |w, ch, h, s, v| dots::slider(w, ch, h, s, v, pitch()));
     d.on_set_on(|on| {
         save_setting("dot_matrix", on.into());
         with_app(|a| a.set_style(on, STYLE.get().1));
@@ -274,6 +276,12 @@ fn set_icons(b: &Buds) {
     b.set_icon_hearing(svg(icons::HEARING));
     b.set_icon_language(svg(icons::LANGUAGE));
     b.set_icon_palette(svg(icons::PALETTE));
+    b.set_icon_pencil(svg_at(icons::PENCIL, 22.0));
+    b.set_icon_copy(svg_at(icons::COPY, 22.0));
+    b.set_icon_delete(svg_at(icons::DELETE, 22.0));
+    b.set_icon_warning(svg_at(icons::WARNING, 14.0));
+    b.set_icon_chevron_down(svg_at(icons::CHEVRON_DOWN, 20.0));
+    b.set_icon_hires(svg_at(icons::HIRES, 20.0));
 }
 
 fn setup_ui(b: &Buds, tr: &Tr, s: &[String]) {
@@ -323,6 +331,26 @@ fn set_texts(tr: &Tr, s: &[String]) {
     tr.set_eq_add(t(s, "eq_add").into());
     tr.set_eq_save(t(s, "eq_save").into());
     tr.set_style_title(t(s, "widget_style_title").into());
+    tr.set_theme_title(t(s, "theme_title").into());
+    tr.set_theme_builtin(t(s, "theme_builtin").into());
+    tr.set_theme_auto(t(s, "theme_auto").into());
+    tr.set_theme_accent(t(s, "theme_accent").into());
+    tr.set_theme_new(t(s, "theme_new").into());
+    tr.set_theme_footer(t(s, "theme_footer").into());
+    tr.set_theme_edit(t(s, "theme_edit").into());
+    tr.set_preset_title(t(s, "preset_title").into());
+    tr.set_preset_name(t(s, "preset_name").into());
+    tr.set_preset_preview(t(s, "preset_preview").into());
+    tr.set_preset_colors(t(s, "preset_colors").into());
+    tr.set_preset_duplicate(t(s, "preset_duplicate").into());
+    tr.set_preset_delete(t(s, "preset_delete").into());
+    tr.set_preset_hue(t(s, "preset_hue").into());
+    tr.set_preset_saturation(t(s, "preset_saturation").into());
+    tr.set_preset_brightness(t(s, "preset_brightness").into());
+    tr.set_preset_recent(t(s, "preset_recent").into());
+    tr.set_preset_hex(t(s, "preset_hex").into());
+    tr.set_hires_title(t(s, "row_hires_title").into());
+    tr.set_hires_sub(t(s, "row_hires_sub").into());
     tr.set_update_title(t(s, "update_title").into());
     tr.set_update_installed(t(s, "update_installed").into());
     tr.set_update_check(t(s, "update_check").into());
@@ -721,6 +749,7 @@ fn main() {
     controls::setup(&main);
     devtools::setup(&main);
     report::setup(&main);
+    theme::setup(&main);
     language_ui(&main, &tr);
     main.global::<Update>().on_set_language(|i| with_app(|a| a.set_language(i as usize)));
     let gains = Rc::new(VecModel::default());
@@ -750,6 +779,7 @@ fn main() {
         snap: Snapshot::default(), gains, eq_pending: Default::default(), edit_key: None, plot: (0.0, 0.0), log_shown: 0, has: Has::ALL,
     }));
     main.show().expect("show");
+    with_app(|a| theme::apply(a));
     let dot_matrix = load_settings()["dot_matrix"].as_bool().unwrap_or(false);
     let scale = main.window().scale_factor();
     with_app(|a| a.set_style(dot_matrix, scale));

@@ -17,7 +17,7 @@ donate on [Ko-fi](https://ko-fi.com/spizganed).
 
 > **Desktop app for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
 > no drivers and no background services: battery, noise control, low latency, the equalizer, gestures,
-> hearing profile, dual connection, earbud settings and a packet log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
+> hearing profile, dual connection, earbud settings, the phone's themes and colour presets, and a packet log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
 > `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3 and
 > libayatana-appindicator; see its README). Pair the buds in your system's Bluetooth settings first. With
 > Dual connection on, the phone app and the desktop app work at the same time. It updates itself from

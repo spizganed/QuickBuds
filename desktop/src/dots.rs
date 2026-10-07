@@ -171,7 +171,7 @@ pub fn icon(svg: &str, size: f32, scale: f32) -> Image {
 }
 
 /// A battery ring (the widget's `dotRing`): track, accent arc from 12 o'clock, and the glyph of `slot`
-/// (0 left, 1 case, 2 right) in `tint`, `size` physical px square.
+/// (0 left, 1 case, 2 right; -1 none) in `tint`, `size` physical px square.
 pub fn ring(size: f32, level: i32, slot: i32, tint: Color, accent: Color, track: Color) -> Image {
     cached(format!("ring {size} {level} {slot} {tint:?} {accent:?} {track:?}"), || {
         let (n, ss) = (RING_CELLS, 8);
@@ -192,8 +192,9 @@ pub fn ring(size: f32, level: i32, slot: i32, tint: Color, accent: Color, track:
             }
             pm.stroke_path(&arc.finish()?, &paint(sk_color(accent), true), &stroke, Transform::identity(), None);
         }
-        // The glyph's box: the largest whose corners clear the ring, a little bigger for the thin dot ring.
         let case = slot == 1;
+        if slot < 0 { return matrix(&pm, n, n, ss, size / n as f32, 128, true, true); }
+        // The glyph's box: the largest whose corners clear the ring, a little bigger for the thin dot ring.
         let (svg, ratio, fill) = match slot {
             0 => (icons::BUD_LEFT, 176.0 / 272.0, 1.18),
             1 => (icons::CASE, 496.0 / 400.0, 1.22),
@@ -248,20 +249,53 @@ pub fn knob(ring: Color, fill: Color, pitch: f32) -> Image {
     })
 }
 
-/// A round disc of `n` x `n` cells in one colour (the switch's thumb).
-pub fn disc(n: u32, color: Color, pitch: f32) -> Image {
-    cached(format!("disc {n} {color:?} {pitch}"), || {
+/// A round disc of `n` x `n` cells (the switch's thumb, a colour swatch): `color`, its outer cells `edge`.
+pub fn disc(n: u32, color: Color, edge: Color, pitch: f32) -> Image {
+    cached(format!("disc {n} {color:?} {edge:?} {pitch}"), || {
         let mut pm = Pixmap::new(n.max(1), n.max(1))?;
         let m = (n as f32 - 1.0) / 2.0;
-        for y in 0..n {
-            for x in 0..n {
-                let (dx, dy) = (x as f32 - m, y as f32 - m);
-                if dx * dx + dy * dy <= (n * n) as f32 / 4.0 {
-                    pm.fill_rect(Rect::from_xywh(x as f32, y as f32, 1.0, 1.0)?, &paint(sk_color(color), false), Transform::identity(), None);
-                }
+        let inside = |x: i64, y: i64| {
+            let (dx, dy) = (x as f32 - m, y as f32 - m);
+            x >= 0 && y >= 0 && dx * dx + dy * dy <= (n * n) as f32 / 4.0
+        };
+        for y in 0..n as i64 {
+            for x in 0..n as i64 {
+                if !inside(x, y) { continue; }
+                let rim = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
+                let c = if rim { edge } else { color };
+                pm.fill_rect(Rect::from_xywh(x as f32, y as f32, 1.0, 1.0)?, &paint(sk_color(c), false), Transform::identity(), None);
             }
         }
         matrix(&pm, n, n, 1, pitch, 50, false, false)
+    })
+}
+
+/// A colour slider's track (`ColorSliderView`): a pill five cells tall, `w` physical px wide, that shows what
+/// `channel` (0 hue, 1 saturation, 2 brightness) does to the colour `hue`, `sat`, `val`.
+pub fn slider(w: f32, channel: i32, hue: f32, sat: f32, val: f32, pitch: f32) -> Image {
+    let (cols, rows) = ((w / pitch) as u32, 5u32);
+    // "box": a resize or a drag makes many; the cache drops these first.
+    cached(format!("box slider {cols} {channel} {hue} {sat} {val} {pitch}"), || {
+        let mut pm = Pixmap::new(cols.max(1), rows)?;
+        let lerp = |a: Color, b: Color, t: f32| {
+            let m = |x: u8, y: u8| (x as f32 + (y as f32 - x as f32) * t).round() as u8;
+            sk::ColorU8::from_rgba(m(a.red(), b.red()), m(a.green(), b.green()), m(a.blue(), b.blue()), 255)
+        };
+        let r = rows as f32 / 2.0;
+        for x in 0..cols {
+            let t = x as f32 / (cols.max(2) - 1) as f32;
+            let c = match channel {
+                0 => lerp(Color::from_hsva(t * 360.0, 0.85, 0.95, 1.0), Color::default(), 0.0),
+                1 => lerp(Color::from_hsva(hue, 0.0, val, 1.0), Color::from_hsva(hue, 1.0, val, 1.0), t),
+                _ => lerp(Color::from_hsva(hue, sat, 0.0, 1.0), Color::from_hsva(hue, sat, 1.0, 1.0), t),
+            };
+            let cx = (x as f32 + 0.5).clamp(r, cols as f32 - r);
+            for y in 0..rows {
+                let (dx, dy) = (x as f32 + 0.5 - cx, y as f32 + 0.5 - r);
+                if dx * dx + dy * dy <= r * r { pm.pixels_mut()[(y * cols + x) as usize] = c.premultiply(); }
+            }
+        }
+        matrix(&pm, cols, rows, 1, pitch, 50, false, false)
     })
 }
 
