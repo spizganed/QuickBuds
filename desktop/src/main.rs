@@ -672,6 +672,8 @@ fn main() {
         slint::BackendSelector::new().backend_name("winit".into()).renderer_name("software".into())
             .select().expect("backend");
     }
+    // Wayland app_id = the .desktop file name: Plasma takes the task switcher icon from that file.
+    slint::set_xdg_app_id("quickbuds").ok();
     let main = MainWindow::new().expect("window");
     // Windows only: on Wayland even a never-shown window is a toplevel, and Plasma lists it in the taskbar.
     #[cfg(windows)]

@@ -720,7 +720,7 @@ component FeatureRow inherits HorizontalLayout {
     callback toggled(bool);
     spacing: 16px;
     height: 64px;
-    Image { source: icon; width: 24px; height: 24px; y: (parent.height - self.height) / 2; colorize: Palette.accent; }
+    Image { source: icon; width: 24px; height: 24px; y: (parent.height - self.height) / 2; image-fit: contain; colorize: Palette.accent; }
     VerticalLayout {
         alignment: center;
         horizontal-stretch: 1;
