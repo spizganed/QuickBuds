@@ -27,6 +27,13 @@ export global Palette {
     }
 }
 
+// Shared animation timings: hover, state change, page and value change.
+export global Motion {
+    out property <duration> fast: 120ms;
+    out property <duration> base: 200ms;
+    out property <duration> slow: 320ms;
+}
+
 // The Dot matrix style (`dots.rs`). Shapes come from Rust as images at physical pixels, snapped to whole cells.
 export global Dots {
     in property <bool> on;
@@ -317,6 +324,7 @@ component Card inherits Rectangle {
     background: Dots.on ? transparent : Palette.card;
     border-radius: 16px;
     opacity: Buds.on || live ? 1 : 0.35;
+    animate opacity { duration: Motion.base; easing: ease-out; }
     if Dots.on: DotBox { width: 100%; height: 100%; radius: root.border-radius; }
 }
 
@@ -333,7 +341,10 @@ component Ring {
     // 0 left, 1 case, 2 right; the Dot matrix ring draws its own glyph.
     in property <int> slot;
     in property <int> wear;
-    property <float> frac: max(0, min(level, 99.9)) / 100;
+    // The drawn level slides to the reported one (from 0 at connect).
+    property <float> shown: max(0, min(level, 99.9));
+    animate shown { duration: Motion.slow; easing: ease-out; }
+    property <float> frac: shown / 100;
     property <float> r: 45;
     // Dot matrix: no label line (the glyph's shade shows wear, as on the phone).
     property <bool> show-label: label != "" && !Dots.on;
@@ -342,7 +353,7 @@ component Ring {
 
     if Dots.on: Image {
         x: 0; y: 0; width: size; height: size;
-        source: Dots.ring-px(round(size / 1px * Dots.scale), Buds.on ? level : -1, slot,
+        source: Dots.ring-px(round(size / 1px * Dots.scale), Buds.on && level > 0 ? round(shown) : Buds.on ? level : -1, slot,
             !Buds.on ? Palette.outline : slot == 1 ? Palette.text : Palette.dot-tint(wear),
             Palette.accent, Palette.card.mix(Palette.text2, 0.5));
         image-fit: ImageFit.fill;
@@ -435,7 +446,7 @@ component Segment inherits Rectangle {
     // Dot matrix: the selected segment is an accent outline, the track inside (not a fill).
     property <color> lit: Dots.on ? Palette.accent : #FFFFFF;
     background: Dots.on ? transparent : selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
-    animate background { duration: 120ms; }
+    animate background { duration: Motion.fast; }
     if Dots.on && (selected || ta.has-hover): DotBox {
         width: 100%; height: 100%;
         radius: min(root.height / 2 * 0.85, 22px);
@@ -481,7 +492,7 @@ component AncSegments inherits Rectangle {
         x: picking ? root.width : 0;
         width: root.width;
         height: root.height;
-        animate x { duration: 280ms; easing: ease-in-out; }
+        animate x { duration: Motion.slow; easing: ease-in-out; }
         spacing: 4px;
         if Buds.has-off: Segment {
             compact: root.compact; icon: Buds.icon-off; label: Tr.off;
@@ -505,7 +516,7 @@ component AncSegments inherits Rectangle {
         x: picking ? 0 : -root.width;
         width: root.width;
         height: root.height;
-        animate x { duration: 280ms; easing: ease-in-out; }
+        animate x { duration: Motion.slow; easing: ease-in-out; }
         spacing: 4px;
         for l in Buds.levels: Segment {
             compact: root.compact; icon: l.icon; label: l.name;
@@ -543,7 +554,7 @@ component Toggle inherits Rectangle {
         width: thumb-cells * Dots.pitch / Dots.scale * 1px; height: self.width;
         y: (root.height - self.height) / 2;
         x: root.checked ? root.width - self.width : 0;
-        animate x { duration: 120ms; }
+        animate x { duration: Motion.fast; }
         source: Dots.disc-px(thumb-cells, root.checked ? Palette.accent : #E4E4E6);
         image-fit: ImageFit.fill;
         image-rendering: pixelated;
@@ -551,10 +562,10 @@ component Toggle inherits Rectangle {
     if !Dots.on: Rectangle {
         width: 22px; height: 22px; border-radius: 11px;
         background: root.checked ? Palette.accent : #E4E4E6;
-        animate background { duration: 120ms; }
+        animate background { duration: Motion.fast; }
         y: 1px;
         x: root.checked ? root.width - 23px : 1px;
-        animate x { duration: 120ms; }
+        animate x { duration: Motion.fast; }
     }
     TouchArea {
         enabled: (Buds.on || root.live) && !root.locked;
@@ -593,6 +604,7 @@ component Chip inherits Rectangle {
     background: Dots.on ? transparent : primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
     border-width: primary || Dots.on ? 0 : 1px;
     border-color: Palette.outline.brighter(0.3);
+    animate background { duration: Motion.fast; }
     // Dot matrix: an outline, accent for the primary chip.
     if Dots.on: DotBox {
         width: 100%; height: 100%; radius: 14px;
@@ -624,7 +636,13 @@ component NavItem inherits Rectangle {
     height: entry.ready ? 40px : 0px;
     visible: entry.ready;
     border-radius: 10px;
-    background: Dots.on ? transparent : active ? Palette.accent.transparentize(0.85) : ta.has-hover && entry.ready ? Palette.outline : transparent;
+    // Classic: the active highlight is the sidebar's sliding indicator, so it reports where it is.
+    callback at(length);
+    init => { if active { at(self.y); } }
+    changed active => { if active { at(self.y); } }
+    changed y => { if active { at(self.y); } }
+    background: Dots.on || active ? transparent : ta.has-hover && entry.ready ? Palette.outline : transparent;
+    animate background { duration: Motion.fast; }
     if Dots.on && (active || (ta.has-hover && entry.ready)): DotBox {
         width: 100%; height: 100%; radius: 10px;
         fill: Palette.sidebar; stroke: active ? Palette.accent : Palette.outline;
@@ -646,6 +664,18 @@ component NavItem inherits Rectangle {
         enabled: entry.ready;
         mouse-cursor: pointer;
         clicked => { root.clicked(); }
+    }
+}
+
+// A page fades in and lifts 8px when it opens. Slint has no exit animation for `if`, so only the entry moves.
+component PageIn inherits Rectangle {
+    property <float> t;
+    init => { t = 1; }
+    animate t { duration: Motion.slow; easing: ease-out; }
+    horizontal-stretch: 1;
+    Rectangle {
+        y: (1 - root.t) * 8px; height: root.height; opacity: root.t;
+        @children
     }
 }
 
@@ -810,6 +840,7 @@ component PresetRow inherits Rectangle {
     border-width: Dots.on ? 0 : selected ? 2px : 1px;
     border-color: selected ? Palette.accent : Palette.outline;
     background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    animate background { duration: Motion.fast; }
     opacity: enabled ? 1 : 0.35;
     if Dots.on: DotBox {
         width: 100%; height: 100%;
@@ -832,6 +863,7 @@ component AddRow inherits Rectangle {
     border-width: Dots.on ? 0 : 1px;
     border-color: Palette.outline;
     background: Dots.on ? transparent : ta.has-hover ? Palette.card.mix(Palette.outline, 0.5) : Palette.card;
+    animate background { duration: Motion.fast; }
     opacity: Buds.on ? 1 : 0.35;
     if Dots.on: DotBox {
         width: 100%; height: 100%;
@@ -2295,9 +2327,19 @@ export component MainWindow inherits Window {
     HorizontalLayout {
         vertical-stretch: 1;
         // --- Sidebar: the device and the sections ---
-        Rectangle {
+        side := Rectangle {
             width: 250px;
             background: Palette.sidebar;
+            // Classic: one highlight slides to the active section (no slide to its first place).
+            property <length> nav-y;
+            property <bool> placed;
+            nav-light := Rectangle {
+                x: 16px; y: parent.nav-y; width: parent.width - 32px; height: 40px;
+                visible: !Dots.on && parent.placed;
+                border-radius: 10px;
+                background: Palette.accent.transparentize(0.85);
+                animate y { duration: side.placed ? Motion.base : 0ms; easing: ease-out; }
+            }
             VerticalLayout {
                 padding: 16px;
                 padding-top: 8px;
@@ -2319,6 +2361,8 @@ export component MainWindow inherits Window {
                             Rectangle {
                                 width: 8px; height: 8px; border-radius: 4px; y: (parent.height - self.height) / 2;
                                 background: Buds.on ? #3DDC84 : Buds.status == 1 ? #E8A33D : Palette.text2;
+                                // Pulses while connecting; the tick is read only then, so it redraws only then.
+                                opacity: Buds.status == 1 ? 0.6 + 0.4 * cos(animation-tick() / 900ms * 360deg) : 1;
                             }
                             Text { text: Buds.status-text; color: Palette.text2; font-size: 12px; }
                         }
@@ -2334,26 +2378,26 @@ export component MainWindow inherits Window {
                     entry: e;
                     active: root.page == i || (root.page == 8 && i == 5) || (root.page == 9 && i == 6);
                     clicked => { root.page = i; }
+                    at(y) => { side.nav-y = y; side.placed = true; }
                 }
                 Rectangle { vertical-stretch: 1; }
             }
         }
 
         // --- Content ---
-        if root.page == 1: EqPage { horizontal-stretch: 1; }
-        if root.page == 5: EarbudsPage { horizontal-stretch: 1; open-models => { root.page = 8; } }
+        if root.page == 1: PageIn { EqPage { } }
+        if root.page == 5: PageIn { EarbudsPage { open-models => { root.page = 8; } } }
         // The model list, opened from Earbud settings (no sidebar entry; the sidebar shows Earbud settings).
-        if root.page == 8: ModelsPage { horizontal-stretch: 1; back => { root.page = 5; } }
-        if root.page == 2: ControlsPage { horizontal-stretch: 1; }
-        if root.page == 3: HearingPage { horizontal-stretch: 1; }
-        if root.page == 4: DualPage { horizontal-stretch: 1; }
-        if root.page == 6: SettingsPage { horizontal-stretch: 1; open-report => { Report.open(); root.page = 9; } }
+        if root.page == 8: PageIn { ModelsPage { back => { root.page = 5; } } }
+        if root.page == 2: PageIn { ControlsPage { } }
+        if root.page == 3: PageIn { HearingPage { } }
+        if root.page == 4: PageIn { DualPage { } }
+        if root.page == 6: PageIn { SettingsPage { open-report => { Report.open(); root.page = 9; } } }
         // Report a problem, opened from App settings (no sidebar entry; the sidebar shows App settings).
-        if root.page == 9: ReportPage { horizontal-stretch: 1; back => { root.page = 6; } }
-        if root.page == 7: DevPage { horizontal-stretch: 1; }
+        if root.page == 9: PageIn { ReportPage { back => { root.page = 6; } } }
+        if root.page == 7: PageIn { DevPage { } }
         // Scrolls: Hi-Res, 3D audio and the codec row make it taller than the window's first size (issue #9).
-        if root.page == 0: ScrollView {
-            horizontal-stretch: 1;
+        if root.page == 0: PageIn { ScrollView {
             VerticalLayout {
                 padding: 28px;
                 spacing: 16px;
@@ -2427,7 +2471,7 @@ export component MainWindow inherits Window {
                     }
                 }
             }
-        }
+        } }
     }
     }
 
