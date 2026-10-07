@@ -1,0 +1,53 @@
+# Builds the release APK and runs the desktop tests on every push.
+# The APK is signed when the repository has the RELEASE_KEYSTORE_B64 and RELEASE_KEY_PROPERTIES secrets,
+# so it installs over the release app. Download it from the run's Artifacts.
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Release key
+        env:
+          KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_B64 }}
+          PROPS: ${{ secrets.RELEASE_KEY_PROPERTIES }}
+        if: env.KEYSTORE != ''
+        run: |
+          mkdir -p local/keys
+          echo "$KEYSTORE" | base64 -d > local/keys/quickbuds-release.jks
+          printf '%s\n' "$PROPS" > local/keys/keystore.properties
+      - run: ./gradlew assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: QuickBuds-${{ github.sha }}
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 14
+
+  desktop:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libdbus-1-dev libgtk-3-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop
+      - run: cargo test
