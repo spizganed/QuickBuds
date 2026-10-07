@@ -35,22 +35,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     private fun statusLog(msg: String) {
         Log.d("BudsConn", msg)
-        manager?.let { m ->
-            handler.post {
-                try {
-                    val listenerField = m.javaClass.getDeclaredField("listeners")
-                    listenerField.isAccessible = true
-                    val listeners = listenerField.get(m) as? java.util.concurrent.CopyOnWriteArrayList<*>
-                    listeners?.forEach { l ->
-                        if (l === this@BudsService) return@forEach
-                        try {
-                            val onStatusMethod = l?.javaClass?.getMethod("onStatus", String::class.java)
-                            onStatusMethod?.invoke(l, msg)
-                        } catch (e: Exception) { PacketLogger.error("service status forward", e) }
-                    }
-                } catch (e: Exception) { PacketLogger.error("service status listeners", e) }
-            }
-        }
     }
 
     private val widgetCommandReceiver = object : BroadcastReceiver() {
