@@ -212,7 +212,8 @@ object PaletteStore {
         return try {
             val arr = JSONArray(raw)
             (0 until arr.length()).map { Palette.fromJson(arr.getJSONObject(it)) }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            com.spizganed.quickbuds.bluetooth.PacketLogger.error("custom palettes", e)
             emptyList()
         }
     }

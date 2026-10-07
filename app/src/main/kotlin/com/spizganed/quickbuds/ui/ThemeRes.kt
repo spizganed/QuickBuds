@@ -246,7 +246,8 @@ object ThemeRes {
             } else {
                 context.getColor(resId)
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            com.spizganed.quickbuds.bluetooth.PacketLogger.error("theme colour", e)
             palette(context).textSecondary
         }
     }

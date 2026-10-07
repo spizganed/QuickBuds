@@ -72,6 +72,9 @@ object PacketLogger {
         }
     }
 
+    /** One line for an error a `catch` handles: where, the exception class and its message. */
+    fun error(where: String, t: Throwable) = log("ERROR $where: ${t.javaClass.simpleName}: ${t.message}")
+
     /** Returns a snapshot of the in-memory log buffer (oldest-first). */
     @Synchronized
     fun getLines(): List<String> = buffer.toList()
@@ -95,6 +98,7 @@ object PacketLogger {
         return try {
             f.readText()
         } catch (e: Exception) {
+            Log.w(TAG, "file read failed: ${e.message}")
             ""
         }
     }

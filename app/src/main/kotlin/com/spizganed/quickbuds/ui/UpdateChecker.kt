@@ -27,7 +27,8 @@ object UpdateChecker {
 
     fun installed(c: Context): String = try {
         c.packageManager.getPackageInfo(c.packageName, 0).versionName ?: "0"
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        com.spizganed.quickbuds.bluetooth.PacketLogger.error("installed version", e)
         "0"
     }
 

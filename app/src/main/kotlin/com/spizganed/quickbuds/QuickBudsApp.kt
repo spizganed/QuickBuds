@@ -197,7 +197,8 @@ class QuickBudsApp : Application() {
 
     private fun installVersion(context: Context): String = try {
         context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "?"
-    } catch (_: Throwable) {
+    } catch (t: Throwable) {
+        com.spizganed.quickbuds.bluetooth.PacketLogger.error("installed version", t)
         "?"
     }
 
@@ -243,7 +244,8 @@ object CrashLogger {
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                 QuickBudsApp.PUBLIC_DIR
             )
-        } catch (_: Throwable) {
+        } catch (t: Throwable) {
+            com.spizganed.quickbuds.bluetooth.PacketLogger.error("crash report folder", t)
             return emptyList()
         }
         val files = dir.listFiles { f -> f.isFile && f.name.startsWith("crash-") } ?: return emptyList()
@@ -266,14 +268,16 @@ object CrashLogger {
         for (f in candidates) {
             try {
                 if (f.exists() && f.length() > 0) return f.readText()
-            } catch (_: Throwable) {
+            } catch (t: Throwable) {
+                com.spizganed.quickbuds.bluetooth.PacketLogger.error("crash report read", t)
                 // Try the next candidate.
             }
         }
         for (f in publicReports(context).take(1)) {
             try {
                 return f.readText()
-            } catch (_: Throwable) {
+            } catch (t: Throwable) {
+                com.spizganed.quickbuds.bluetooth.PacketLogger.error("crash report read", t)
             }
         }
         return null

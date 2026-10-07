@@ -110,6 +110,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
     private fun ownName(): String? = try {
         getSystemService(BluetoothManager::class.java)?.adapter?.name
     } catch (e: SecurityException) {
+        com.spizganed.quickbuds.bluetooth.PacketLogger.error("phone Bluetooth name", e)
         null
     }
 

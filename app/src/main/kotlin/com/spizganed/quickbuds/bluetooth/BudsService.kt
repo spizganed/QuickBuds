@@ -45,9 +45,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                         try {
                             val onStatusMethod = l?.javaClass?.getMethod("onStatus", String::class.java)
                             onStatusMethod?.invoke(l, msg)
-                        } catch (_: Exception) {}
+                        } catch (e: Exception) { PacketLogger.error("service status forward", e) }
                     }
-                } catch (_: Exception) {}
+                } catch (e: Exception) { PacketLogger.error("service status listeners", e) }
             }
         }
     }
@@ -258,7 +258,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         handler.removeCallbacksAndMessages(null)
         // Close the RFCOMM link with the service: with the background service switched off,
         // leaving the app stops the service, and a live socket must not outlive it.
-        try { manager?.disconnect() } catch (_: Exception) {}
+        try { manager?.disconnect() } catch (e: Exception) { PacketLogger.error("service stop disconnect", e) }
         try { manager?.setBridge(false) } catch (_: Exception) {}
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}

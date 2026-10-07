@@ -60,6 +60,7 @@ object SimpleLog {
             msg.startsWith("CODEC:") -> got("Audio codec read")
             msg.startsWith("PERSONAL ANC result") -> got("Personalised noise cancelling test finished")
             msg.startsWith("GOLDEN STATUS") -> got("Hearing test update")
+            msg.startsWith("ERROR ") -> problem("Error: " + msg.removePrefix("ERROR "))
             msg.startsWith("UNATTR") || msg.startsWith("DISCARDED") ->
                 problem("The buds sent something QuickBuds does not understand (see Detailed)")
             "failed" in msg || "error" in msg || "refused" in msg || "nothing sent" in msg || "not sent" in msg ||

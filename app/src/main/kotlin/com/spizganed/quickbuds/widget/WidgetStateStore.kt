@@ -63,7 +63,7 @@ object WidgetStateStore {
     private fun notifyListeners(state: State) {
         mainHandler.post {
             for (l in listeners) {
-                try { l(state) } catch (_: Exception) {}
+                try { l(state) } catch (e: Exception) { com.spizganed.quickbuds.bluetooth.PacketLogger.error("widget state listener", e) }
             }
         }
     }

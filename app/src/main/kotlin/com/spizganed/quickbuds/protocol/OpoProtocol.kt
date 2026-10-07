@@ -234,6 +234,7 @@ object OpoProtocol {
             val cmd = org.json.JSONObject(text).opt("cmd")
             head + org.json.JSONObject().apply { if (cmd is String) put("cmd", cmd) }.toString().toByteArray()
         } catch (e: org.json.JSONException) {
+            com.spizganed.quickbuds.bluetooth.PacketLogger.error("JSON push", e)
             byteArrayOf(1, 0xF4.toByte())
         }
     }

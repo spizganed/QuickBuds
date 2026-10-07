@@ -318,6 +318,7 @@ class DevToolsActivity : Activity() {
             val where = writeToDownloads(name, content)
             Toast.makeText(this, "Exported to\n$where", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
+            PacketLogger.error("log export", e)
             Toast.makeText(this, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
