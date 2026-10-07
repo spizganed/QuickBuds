@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Batal</string>
     <string name="crash_title">QuickBuds mogok terakhir kali</string>
     <string name="crash_saved_to">Disimpan ke:\nDownload/QuickBuds/\n\nPesan ini hanya muncul sekali. Salin atau bagikan jika ingin menyimpannya.</string>
-    <string name="crash_copy">Salin</string>
-    <string name="crash_copied">Laporan mogok disalin</string>
     <string name="crash_share">Bagikan</string>
     <string name="crash_share_title">Bagikan laporan mogok</string>
-    <string name="crash_dismiss">Tutup</string>
     <string name="perm_title">Izin Bluetooth diperlukan</string>
     <string name="perm_body">QuickBuds memerlukan izin Perangkat di sekitar untuk berkomunikasi dengan earbud. Izinkan di Pengaturan, lalu buka kembali aplikasi.</string>
     <string name="perm_action">Buka pengaturan</string>

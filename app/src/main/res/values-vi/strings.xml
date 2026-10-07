@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Hủy</string>
     <string name="crash_title">QuickBuds đã gặp sự cố lần trước</string>
     <string name="crash_saved_to">Đã lưu vào:\nDownload/QuickBuds/\n\nThông báo này chỉ hiện một lần. Hãy sao chép hoặc chia sẻ nếu muốn giữ lại.</string>
-    <string name="crash_copy">Sao chép</string>
-    <string name="crash_copied">Đã sao chép báo cáo sự cố</string>
     <string name="crash_share">Chia sẻ</string>
     <string name="crash_share_title">Chia sẻ báo cáo sự cố</string>
-    <string name="crash_dismiss">Bỏ qua</string>
     <string name="perm_title">Cần quyền Bluetooth</string>
     <string name="perm_body">QuickBuds cần quyền Thiết bị ở gần để giao tiếp với tai nghe. Hãy cho phép trong Cài đặt rồi mở lại ứng dụng.</string>
     <string name="perm_action">Mở cài đặt</string>

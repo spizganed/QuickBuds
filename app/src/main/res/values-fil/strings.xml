@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Kanselahin</string>
     <string name="crash_title">Nag-crash ang QuickBuds noong nakaraan</string>
     <string name="crash_saved_to">Na-save sa:\nDownload/QuickBuds/\n\nIsang beses lang lalabas ang mensaheng ito. Kopyahin o ibahagi ito kung gusto mo itong itago.</string>
-    <string name="crash_copy">Kopyahin</string>
-    <string name="crash_copied">Nakopya ang crash report</string>
     <string name="crash_share">Ibahagi</string>
     <string name="crash_share_title">Ibahagi ang crash report</string>
-    <string name="crash_dismiss">I-dismiss</string>
     <string name="perm_title">Kailangan ang pahintulot sa Bluetooth</string>
     <string name="perm_body">Kailangan ng QuickBuds ang pahintulot na Mga kalapit na device para makipag-usap sa iyong earbuds. Payagan ito sa Mga Setting, pagkatapos ay buksan muli ang app.</string>
     <string name="perm_action">Buksan ang mga setting</string>

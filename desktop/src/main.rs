@@ -654,6 +654,7 @@ fn linux_tray() -> std::sync::mpsc::Sender<String> {
 }
 
 fn main() {
+    report::catch_panics();
     // Software rendering: ~25 MB instead of ~130 MB with the GPU renderer, and fast enough for this UI.
     if std::env::var_os("SLINT_BACKEND").is_none() {
         slint::BackendSelector::new().backend_name("winit".into()).renderer_name("software".into())
@@ -720,6 +721,7 @@ fn main() {
     let scale = main.window().scale_factor();
     with_app(|a| a.set_style(dot_matrix, scale));
     update::setup(&main);
+    with_app(report::show_crash);
     // Closing the window hides it; the app lives in the tray until Quit.
     slint::run_event_loop_until_quit().expect("event loop");
 }

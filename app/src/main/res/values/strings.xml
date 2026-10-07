@@ -304,11 +304,8 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="crash_title">QuickBuds crashed last time</string>
     <string name="crash_saved_to">Saved to:\nDownload/QuickBuds/\n\nThis message appears once. Copy or share it if you want to keep it.</string>
-    <string name="crash_copy">Copy</string>
-    <string name="crash_copied">Crash report copied</string>
     <string name="crash_share">Share</string>
     <string name="crash_share_title">Share crash report</string>
-    <string name="crash_dismiss">Dismiss</string>
     <string name="perm_title">Bluetooth permission needed</string>
     <string name="perm_body">QuickBuds needs the Nearby devices permission to talk to your earbuds. Allow it in Settings, then reopen the app.</string>
     <string name="perm_action">Open settings</string>

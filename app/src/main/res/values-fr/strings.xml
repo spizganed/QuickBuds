@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Annuler</string>
     <string name="crash_title">QuickBuds a planté la dernière fois</string>
     <string name="crash_saved_to">Enregistré dans :\nDownload/QuickBuds/\n\nCe message ne s\'affiche qu\'une fois. Copiez-le ou partagez-le si vous voulez le garder.</string>
-    <string name="crash_copy">Copier</string>
-    <string name="crash_copied">Rapport de plantage copié</string>
     <string name="crash_share">Partager</string>
     <string name="crash_share_title">Partager le rapport de plantage</string>
-    <string name="crash_dismiss">Ignorer</string>
     <string name="perm_title">Autorisation Bluetooth requise</string>
     <string name="perm_body">QuickBuds a besoin de l\'autorisation « Appareils à proximité » pour communiquer avec vos écouteurs. Accordez-la dans les Paramètres, puis rouvrez l\'app.</string>
     <string name="perm_action">Ouvrir les paramètres</string>

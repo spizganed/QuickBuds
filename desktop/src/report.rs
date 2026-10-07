@@ -7,6 +7,7 @@ use crate::{with_app, App, MainWindow, Report};
 use slint::{ComponentHandle, Model, VecModel};
 use std::io::Write;
 use std::process::Stdio;
+use std::sync::Mutex;
 
 const FORM: &str = "https://docs.google.com/forms/d/e/1FAIpQLScPNdmogyip2EDWZayNUSW3ElYz674GAC7t7BZuFNHgvxGP_Q/formResponse";
 const ENTRY_MODEL: &str = "entry.849813820";
@@ -76,21 +77,69 @@ fn device_bytes(l: &Line) -> bool {
     matches!(cmd_of(&l.bytes), 0x8112 | 0x0429 | 0x8132) || (cmd_of(&l.bytes) == EVT_PUSH && pl.first() == Some(&0x06))
 }
 
-/// The log as sent: header, then every line without Bluetooth addresses, device data or this computer's name.
+/// The log as sent: header, then every line, then the last crash report; without Bluetooth addresses, device data
+/// or this computer's name.
 fn log_text(a: &App) -> String {
-    let mut text = header(a) + "\n";
-    for l in LOG.lock().unwrap().iter() {
-        let line = if device_bytes(l) {
-            format!("{} {} {} [device data removed]", l.at, l.dir, hex(&l.bytes[..l.bytes.len() - payload_of(&l.bytes).len()]))
-        } else {
-            crate::devtools::raw(l)
-        };
-        text += &line;
-        text.push('\n');
-    }
-    let mut text = scrub_macs(&text);
-    if let Some(h) = host() { text = text.replace(&h, "[this computer]"); }
-    text
+    scrub(header(a) + "\n" + &lines(&LOG.lock().unwrap()) + CRASH.lock().unwrap().as_str())
+}
+
+fn lines(log: &[Line]) -> String {
+    log.iter().map(|l| if device_bytes(l) {
+        format!("{} {} {} [device data removed]\n", l.at, l.dir, hex(&l.bytes[..l.bytes.len() - payload_of(&l.bytes).len()]))
+    } else {
+        crate::devtools::raw(l) + "\n"
+    }).collect()
+}
+
+fn scrub(text: String) -> String {
+    let text = scrub_macs(&text);
+    match host() { Some(h) => text.replace(&h, "[this computer]"), None => text }
+}
+
+/// Downloads/QuickBuds: exported logs and crash reports, as on the phone.
+pub fn folder() -> std::path::PathBuf {
+    #[cfg(windows)]
+    let home = std::env::var_os("USERPROFILE");
+    #[cfg(not(windows))]
+    let home = std::env::var_os("HOME");
+    std::path::PathBuf::from(home.unwrap_or_default()).join("Downloads").join("QuickBuds")
+}
+
+/// The crash report the Report page sends after a crash; "" otherwise.
+static CRASH: Mutex<String> = Mutex::new(String::new());
+
+/// First thing in `main`: a panic writes `crash-<seconds>.txt` to [folder], with the newest log lines. The release
+/// build aborts on a panic and Windows shows no console, so this file is the only record.
+pub fn catch_panics() {
+    let previous = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        // A panic while the log is locked skips the log rather than deadlock.
+        let log = LOG.try_lock().map(|l| lines(&l[l.len().saturating_sub(300)..])).unwrap_or_default();
+        let text = format!("QuickBuds crash report\nversion: {}\ncomputer: {}\nsystem: {}\nthread: {}\n\n{info}\n\n{log}",
+            env!("CARGO_PKG_VERSION"), computer(), system(), std::thread::current().name().unwrap_or("?"));
+        let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs());
+        let _ = std::fs::create_dir_all(folder()).and_then(|_| std::fs::write(folder().join(format!("crash-{secs}.txt")), scrub(text)));
+        previous(info);
+    }));
+}
+
+/// A crash report newer than the last one shown opens the Report page, filled in with it. Once per report.
+pub fn show_crash(a: &mut App) {
+    let newest = std::fs::read_dir(folder()).into_iter().flatten().flatten()
+        .map(|e| e.file_name().to_string_lossy().into_owned())
+        .filter(|n| n.starts_with("crash-") && n.ends_with(".txt"))
+        .max_by_key(|n| n[6..n.len() - 4].parse::<u64>().unwrap_or(0));
+    let Some(name) = newest else { return };
+    if crate::load_settings()["crash_shown"].as_str() == Some(name.as_str()) { return; }
+    crate::save_setting("crash_shown", name.clone().into());
+    let Ok(text) = std::fs::read_to_string(folder().join(&name)) else { return };
+    *CRASH.lock().unwrap() = format!("\n{text}");
+    open(a);
+    let r = a.main.global::<Report>();
+    r.get_picked().set_row_data(5, true);
+    r.set_description("App crash".into());
+    r.set_note(crate::t(&a.tr, "crash_title").into());
+    a.main.set_page(9);
 }
 
 /// `AA:BB:CC:DD:EE:FF` (or with `-`) -> `XX:XX:XX:XX:XX:XX`.
@@ -189,17 +238,19 @@ fn current(a: &App) -> Option<String> {
     Some(body(r.get_model().trim(), &picked, &description, log.as_deref()))
 }
 
+fn open(a: &mut App) {
+    let r = a.main.global::<Report>();
+    if r.get_model().is_empty() {
+        r.set_model(a.snap.model.and_then(|m| m["name"].as_str()).unwrap_or(a.snap.name.as_str()).into());
+    }
+    r.set_note("".into());
+    r.set_preview("".into());
+}
+
 pub fn setup(main: &MainWindow) {
     let r = main.global::<Report>();
     r.set_picked(VecModel::from_slice(&[false; 6]));
-    r.on_open(|| with_app(|a| {
-        let r = a.main.global::<Report>();
-        if r.get_model().is_empty() {
-            r.set_model(a.snap.model.and_then(|m| m["name"].as_str()).unwrap_or(a.snap.name.as_str()).into());
-        }
-        r.set_note("".into());
-        r.set_preview("".into());
-    }));
+    r.on_open(|| with_app(open));
     r.on_toggle(|i| with_app(|a| {
         let p = a.main.global::<Report>().get_picked();
         let i = i as usize;
@@ -228,6 +279,7 @@ pub fn setup(main: &MainWindow) {
                     r.set_description("".into());
                     r.set_preview("".into());
                     r.set_picked(VecModel::from_slice(&[false; 6]));
+                    CRASH.lock().unwrap().clear();
                 } else {
                     r.set_note("Could not send the report. Check the internet connection and try again.".into());
                 }

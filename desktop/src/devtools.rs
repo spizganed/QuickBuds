@@ -133,11 +133,7 @@ pub fn setup(main: &MainWindow) {
     d.on_reconnect(|| with_app(|a| { let _ = a.tx.send(Cmd::Disconnect); let _ = a.tx.send(Cmd::Connect); }));
     d.on_export(|| with_app(|a| {
         let text: String = crate::report::header(a) + "\n" + &LOG.lock().unwrap().iter().map(|l| raw(l) + "\n").collect::<String>();
-        #[cfg(windows)]
-        let home = std::env::var_os("USERPROFILE");
-        #[cfg(not(windows))]
-        let home = std::env::var_os("HOME");
-        let dir = std::path::PathBuf::from(home.unwrap_or_default()).join("Downloads").join("QuickBuds");
+        let dir = crate::report::folder();
         let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs());
         let path = dir.join(format!("quickbuds-log-{secs}.txt"));
         let note = match std::fs::create_dir_all(&dir).and_then(|_| std::fs::write(&path, text)) {

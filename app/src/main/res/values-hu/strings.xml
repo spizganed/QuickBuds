@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Mégse</string>
     <string name="crash_title">A QuickBuds legutóbb összeomlott</string>
     <string name="crash_saved_to">Mentve ide:\nDownload/QuickBuds/\n\nEz az üzenet csak egyszer jelenik meg. Ha meg szeretné tartani, másolja vagy ossza meg.</string>
-    <string name="crash_copy">Másolás</string>
-    <string name="crash_copied">Összeomlási jelentés másolva</string>
     <string name="crash_share">Megosztás</string>
     <string name="crash_share_title">Összeomlási jelentés megosztása</string>
-    <string name="crash_dismiss">Elvetés</string>
     <string name="perm_title">Bluetooth-engedély szükséges</string>
     <string name="perm_body">A QuickBudsnak a Közeli eszközök engedélyre van szüksége a fülhallgatóval való kommunikációhoz. Engedélyezze a Beállításokban, majd nyissa meg újra az alkalmazást.</string>
     <string name="perm_action">Beállítások megnyitása</string>

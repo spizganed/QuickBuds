@@ -4,8 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothManager
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.*
 import android.os.Build
 import android.os.Bundle
@@ -503,10 +501,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         sheet.title(getString(R.string.crash_title))
             .message(getString(R.string.crash_saved_to))
             .content(scroll)
-            .confirm(getString(R.string.crash_copy)) {
-                getSystemService(ClipboardManager::class.java)
-                    ?.setPrimaryClip(ClipData.newPlainText("QuickBuds crash", report))
-                Toast.makeText(this, R.string.crash_copied, Toast.LENGTH_SHORT).show()
+            .confirm(getString(R.string.problem_send)) {
+                sheet.close()
+                startActivity(Intent(this, ReportActivity::class.java).putExtra(ReportActivity.EXTRA_CRASH, report))
             }
             .cancel(getString(R.string.crash_share)) {
                 startActivity(Intent.createChooser(CrashLogger.shareIntent(this, report), getString(R.string.crash_share_title)))

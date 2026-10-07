@@ -228,11 +228,8 @@
     <string name="dialog_cancel">İptal</string>
     <string name="crash_title">QuickBuds geçen sefer çöktü</string>
     <string name="crash_saved_to">Kaydedildiği yer:\nDownload/QuickBuds/\n\nBu mesaj bir kez görünür. Saklamak istiyorsanız kopyalayın veya paylaşın.</string>
-    <string name="crash_copy">Kopyala</string>
-    <string name="crash_copied">Çökme raporu kopyalandı</string>
     <string name="crash_share">Paylaş</string>
     <string name="crash_share_title">Çökme raporunu paylaş</string>
-    <string name="crash_dismiss">Kapat</string>
     <string name="perm_title">Bluetooth izni gerekli</string>
     <string name="perm_body">QuickBuds\'ın kulaklıklarınızla iletişim kurması için Yakındaki cihazlar izni gerekir. Ayarlar\'da izin verin, ardından uygulamayı yeniden açın.</string>
     <string name="perm_action">Ayarları aç</string>

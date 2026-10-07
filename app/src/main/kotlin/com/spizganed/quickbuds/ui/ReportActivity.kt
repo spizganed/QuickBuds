@@ -21,7 +21,7 @@ import com.spizganed.quickbuds.protocol.ModelCatalog
 /**
  * Settings › Report a problem ([ProblemReport]): buds model (filled in, with the model list as suggestions),
  * categories, a description and the log. See the report shows exactly what Send posts. Nothing goes out
- * without Send.
+ * without Send. From the crash dialog, [EXTRA_CRASH] fills it in: category Other, and the crash report after the log.
  */
 class ReportActivity : Activity() {
 
@@ -73,10 +73,13 @@ class ReportActivity : Activity() {
             SettingRowFactory.addRow(card, SettingRowFactory.build(this, 0, label, 0, sw) { sw.performClick() })
         }
         root.addView(card)
+        val crash = intent.getStringExtra(EXTRA_CRASH)
+        if (crash != null) categories.getValue("Other").isChecked = true
 
         root.addView(SettingRowFactory.sectionLabel(this, R.string.problem_description))
         description = field(EditText(this), true)
         description.setHint(R.string.problem_description_hint)
+        if (crash != null) description.setText("App crash")
         description.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -129,7 +132,7 @@ class ReportActivity : Activity() {
         model.text.toString().trim(),
         categories.filterValues { it.isChecked }.keys.toList(),
         description.text.toString().trim(),
-        if (withLog.isChecked) ProblemReport.log(this) else null
+        if (withLog.isChecked) ProblemReport.log(this) + intent.getStringExtra(EXTRA_CRASH)?.let { "\n\n$it" }.orEmpty() else null
     )
 
     private fun preview() {
@@ -159,9 +162,12 @@ class ReportActivity : Activity() {
         }.start()
     }
 
-    private companion object {
+    companion object {
+        /** The crash report text, from MainActivity's crash dialog. */
+        const val EXTRA_CRASH = "crash"
+
         /** Labels for [ProblemReport.CATEGORIES], same order. */
-        val CATEGORY_LABELS = listOf(R.string.problem_cat_ui, R.string.problem_cat_lag, R.string.problem_cat_connection,
+        private val CATEGORY_LABELS = listOf(R.string.problem_cat_ui, R.string.problem_cat_lag, R.string.problem_cat_connection,
             R.string.problem_cat_feature, R.string.problem_cat_battery, R.string.problem_cat_other)
     }
 }

@@ -228,11 +228,8 @@
     <string name="dialog_cancel">취소</string>
     <string name="crash_title">지난번에 QuickBuds가 비정상 종료되었습니다</string>
     <string name="crash_saved_to">저장 위치:\nDownload/QuickBuds/\n\n이 메시지는 한 번만 표시됩니다. 보관하려면 복사하거나 공유하세요.</string>
-    <string name="crash_copy">복사</string>
-    <string name="crash_copied">오류 보고서를 복사했습니다</string>
     <string name="crash_share">공유</string>
     <string name="crash_share_title">오류 보고서 공유</string>
-    <string name="crash_dismiss">닫기</string>
     <string name="perm_title">Bluetooth 권한 필요</string>
     <string name="perm_body">QuickBuds가 이어버드와 통신하려면 근처 기기 권한이 필요합니다. 설정에서 허용한 뒤 앱을 다시 여세요.</string>
     <string name="perm_action">설정 열기</string>

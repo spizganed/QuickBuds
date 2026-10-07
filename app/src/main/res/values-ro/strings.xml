@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Anulează</string>
     <string name="crash_title">QuickBuds s-a blocat data trecută</string>
     <string name="crash_saved_to">Salvat în:\nDownload/QuickBuds/\n\nAcest mesaj apare o singură dată. Copiază-l sau distribuie-l dacă vrei să-l păstrezi.</string>
-    <string name="crash_copy">Copiază</string>
-    <string name="crash_copied">Raportul de blocare a fost copiat</string>
     <string name="crash_share">Distribuie</string>
     <string name="crash_share_title">Distribuie raportul de blocare</string>
-    <string name="crash_dismiss">Închide</string>
     <string name="perm_title">Este necesară permisiunea Bluetooth</string>
     <string name="perm_body">QuickBuds are nevoie de permisiunea „Dispozitive din apropiere” pentru a comunica cu căștile. Permite-o în Setări, apoi redeschide aplicația.</string>
     <string name="perm_action">Deschide setările</string>

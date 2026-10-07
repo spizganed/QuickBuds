@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Annulla</string>
     <string name="crash_title">QuickBuds si è chiuso in modo anomalo l\'ultima volta</string>
     <string name="crash_saved_to">Salvato in:\nDownload/QuickBuds/\n\nQuesto messaggio appare una sola volta. Copialo o condividilo se vuoi conservarlo.</string>
-    <string name="crash_copy">Copia</string>
-    <string name="crash_copied">Rapporto sull\'arresto copiato</string>
     <string name="crash_share">Condividi</string>
     <string name="crash_share_title">Condividi rapporto sull\'arresto</string>
-    <string name="crash_dismiss">Ignora</string>
     <string name="perm_title">Serve l\'autorizzazione Bluetooth</string>
     <string name="perm_body">QuickBuds ha bisogno dell\'autorizzazione «Dispositivi nelle vicinanze» per comunicare con i tuoi auricolari. Concedila nelle Impostazioni, poi riapri l\'app.</string>
     <string name="perm_action">Apri impostazioni</string>

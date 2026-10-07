@@ -228,11 +228,8 @@
     <string name="dialog_cancel">रद्द करें</string>
     <string name="crash_title">QuickBuds पिछली बार क्रैश हुआ</string>
     <string name="crash_saved_to">यहां सहेजा गया:\nDownload/QuickBuds/\n\nयह संदेश एक बार दिखता है। रखना हो तो कॉपी या शेयर करें।</string>
-    <string name="crash_copy">कॉपी करें</string>
-    <string name="crash_copied">क्रैश रिपोर्ट कॉपी हुई</string>
     <string name="crash_share">शेयर करें</string>
     <string name="crash_share_title">क्रैश रिपोर्ट शेयर करें</string>
-    <string name="crash_dismiss">खारिज करें</string>
     <string name="perm_title">ब्लूटूथ अनुमति आवश्यक</string>
     <string name="perm_body">ईयरबड्स से बात करने के लिए QuickBuds को आस-पास के डिवाइस की अनुमति चाहिए। इसे सेटिंग्स में दें, फिर ऐप दोबारा खोलें।</string>
     <string name="perm_action">सेटिंग्स खोलें</string>

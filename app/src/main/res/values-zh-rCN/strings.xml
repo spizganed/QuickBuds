@@ -228,11 +228,8 @@
     <string name="dialog_cancel">取消</string>
     <string name="crash_title">QuickBuds 上次崩溃了</string>
     <string name="crash_saved_to">已保存到：\nDownload/QuickBuds/\n\n此消息只显示一次。如需保留，请复制或分享。</string>
-    <string name="crash_copy">复制</string>
-    <string name="crash_copied">已复制崩溃报告</string>
     <string name="crash_share">分享</string>
     <string name="crash_share_title">分享崩溃报告</string>
-    <string name="crash_dismiss">关闭</string>
     <string name="perm_title">需要蓝牙权限</string>
     <string name="perm_body">QuickBuds 需要“附近设备”权限才能与耳机通信。请在设置中允许，然后重新打开应用。</string>
     <string name="perm_action">打开设置</string>

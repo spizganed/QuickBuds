@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Batal</string>
     <string name="crash_title">QuickBuds ranap kali terakhir</string>
     <string name="crash_saved_to">Disimpan ke:\nDownload/QuickBuds/\n\nMesej ini muncul sekali sahaja. Salin atau kongsi jika anda mahu menyimpannya.</string>
-    <string name="crash_copy">Salin</string>
-    <string name="crash_copied">Laporan ranap disalin</string>
     <string name="crash_share">Kongsi</string>
     <string name="crash_share_title">Kongsi laporan ranap</string>
-    <string name="crash_dismiss">Tolak</string>
     <string name="perm_title">Kebenaran Bluetooth diperlukan</string>
     <string name="perm_body">QuickBuds memerlukan kebenaran Peranti berdekatan untuk berhubung dengan fon telinga anda. Benarkannya dalam Tetapan, kemudian buka semula aplikasi.</string>
     <string name="perm_action">Buka tetapan</string>

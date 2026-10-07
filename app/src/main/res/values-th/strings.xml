@@ -228,11 +228,8 @@
     <string name="dialog_cancel">ยกเลิก</string>
     <string name="crash_title">QuickBuds ขัดข้องครั้งที่แล้ว</string>
     <string name="crash_saved_to">บันทึกไว้ที่:\nDownload/QuickBuds/\n\nข้อความนี้จะแสดงเพียงครั้งเดียว คัดลอกหรือแชร์หากต้องการเก็บไว้</string>
-    <string name="crash_copy">คัดลอก</string>
-    <string name="crash_copied">คัดลอกรายงานข้อขัดข้องแล้ว</string>
     <string name="crash_share">แชร์</string>
     <string name="crash_share_title">แชร์รายงานข้อขัดข้อง</string>
-    <string name="crash_dismiss">ปิด</string>
     <string name="perm_title">ต้องใช้สิทธิ์บลูทูธ</string>
     <string name="perm_body">QuickBuds ต้องใช้สิทธิ์อุปกรณ์ใกล้เคียงเพื่อสื่อสารกับหูฟัง อนุญาตในการตั้งค่า แล้วเปิดแอปอีกครั้ง</string>
     <string name="perm_action">เปิดการตั้งค่า</string>

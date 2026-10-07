@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Anuluj</string>
     <string name="crash_title">QuickBuds ostatnio uległ awarii</string>
     <string name="crash_saved_to">Zapisano w:\nDownload/QuickBuds/\n\nTen komunikat pojawia się tylko raz. Skopiuj go lub udostępnij, jeśli chcesz go zachować.</string>
-    <string name="crash_copy">Kopiuj</string>
-    <string name="crash_copied">Skopiowano raport o awarii</string>
     <string name="crash_share">Udostępnij</string>
     <string name="crash_share_title">Udostępnij raport o awarii</string>
-    <string name="crash_dismiss">Zamknij</string>
     <string name="perm_title">Wymagane uprawnienie Bluetooth</string>
     <string name="perm_body">QuickBuds potrzebuje uprawnienia „Urządzenia w pobliżu”, aby komunikować się ze słuchawkami. Zezwól na nie w Ustawieniach, a następnie otwórz aplikację ponownie.</string>
     <string name="perm_action">Otwórz ustawienia</string>

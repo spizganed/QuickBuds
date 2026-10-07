@@ -228,11 +228,8 @@
     <string name="dialog_cancel">বাতিল</string>
     <string name="crash_title">গতবার QuickBuds ক্র্যাশ করেছিল</string>
     <string name="crash_saved_to">সংরক্ষিত হয়েছে:\nDownload/QuickBuds/\n\nএই বার্তাটি একবারই দেখানো হয়। রাখতে চাইলে কপি বা শেয়ার করুন।</string>
-    <string name="crash_copy">কপি</string>
-    <string name="crash_copied">ক্র্যাশ রিপোর্ট কপি হয়েছে</string>
     <string name="crash_share">শেয়ার</string>
     <string name="crash_share_title">ক্র্যাশ রিপোর্ট শেয়ার করুন</string>
-    <string name="crash_dismiss">বাতিল</string>
     <string name="perm_title">Bluetooth অনুমতি প্রয়োজন</string>
     <string name="perm_body">আপনার ইয়ারবাডের সাথে যোগাযোগ করতে QuickBuds-এর কাছাকাছি ডিভাইসের অনুমতি প্রয়োজন। সেটিংসে অনুমতি দিন, তারপর অ্যাপটি আবার খুলুন।</string>
     <string name="perm_action">সেটিংস খুলুন</string>

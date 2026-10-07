@@ -20,7 +20,7 @@ const STRINGS: &[&str] = &[
     "desktop_nav_overview", "desktop_nav_app_settings", "action_dev_tools", "settings_language_title", "settings_language_sub", "language_system",
     "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_spatial_title", "row_spatial_sub", "spatial_fixed", "spatial_head_tracking", "codec_dialog_title", "codec_dialog_accept",
     "codec_msg_reconnect", "codec_msg_hires_drops_spatial", "codec_msg_spatial_drops_hires",
-    "problem_title", "problem_sub", "problem_intro", "problem_model", "problem_category", "problem_description", "problem_description_hint", "problem_log_title", "problem_preview", "problem_send", "problem_sending", "problem_cat_ui", "problem_cat_lag", "problem_cat_connection", "problem_cat_feature", "problem_cat_battery", "problem_cat_other",
+    "problem_title", "problem_sub", "problem_intro", "problem_model", "problem_category", "problem_description", "problem_description_hint", "problem_log_title", "problem_preview", "problem_send", "problem_sending", "problem_cat_ui", "problem_cat_lag", "problem_cat_connection", "problem_cat_feature", "problem_cat_battery", "problem_cat_other", "crash_title",
     "update_title", "update_installed", "update_latest", "update_check", "update_checking", "update_up_to_date",
     "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
     "settings_clear_battery_sub", "update_found_title",

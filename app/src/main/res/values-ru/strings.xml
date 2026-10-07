@@ -228,11 +228,8 @@
     <string name="dialog_cancel">Отмена</string>
     <string name="crash_title">QuickBuds аварийно завершилось в прошлый раз</string>
     <string name="crash_saved_to">Сохранено в:\nDownload/QuickBuds/\n\nЭто сообщение показывается один раз. Скопируйте или отправьте его, если хотите сохранить.</string>
-    <string name="crash_copy">Копировать</string>
-    <string name="crash_copied">Отчёт о сбое скопирован</string>
     <string name="crash_share">Поделиться</string>
     <string name="crash_share_title">Поделиться отчётом о сбое</string>
-    <string name="crash_dismiss">Закрыть</string>
     <string name="perm_title">Нужно разрешение Bluetooth</string>
     <string name="perm_body">QuickBuds нужно разрешение «Устройства поблизости», чтобы связываться с наушниками. Разрешите его в настройках и снова откройте приложение.</string>
     <string name="perm_action">Открыть настройки</string>
