@@ -309,8 +309,8 @@ one level down (Buds 4's Off has a child at 3, Transparency one at 8).
   the display stuck on a false mode).
 - **Smart** `[CAPTURE]`: SET bit 7 is acked and pushed as `0x0080`. Right after, the buds pushed
   `03 04 01 20 00` and `03 04 01 40 00`.
-- **The level Smart chose** `[VENDOR]`: push `03 04 01 <mask LE>`, read `0x010C 04 01` →
-  `00 04 01 <mask LE>`. The lowest set bit is a SET bit: `0x20` Medium, `0x40` Light on Buds 4. The
+- **The level Smart chose** `[VENDOR]`+`[CAPTURE]`: push `03 04 01 <mask LE>`, read `0x010C 04 01` →
+  `00 04 01 <mask LE>`. Buds 4 answers the read with ANC Off too, and pushes right after a Smart SET. The lowest set bit is a SET bit: `0x20` Medium, `0x40` Light on Buds 4. The
   ANC label shows it ("ANC S·M"). Read on connect for models with Smart.
 
 ### The hold's ANC cycle — `setSupportNoiseReduction`
