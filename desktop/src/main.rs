@@ -267,6 +267,7 @@ fn t<'a>(tr: &'a [String], key: &str) -> &'a str {
 fn set_icons(b: &Buds) {
     b.set_icon_left(svg(icons::BUD_LEFT));
     b.set_icon_update(svg(icons::UPDATE));
+    b.set_icon_battery(svg(icons::BATTERY));
     b.set_icon_right(svg(icons::BUD_RIGHT));
     b.set_icon_case(svg(icons::CASE));
     b.set_icon_off(svg(icons::MODE_OFF));

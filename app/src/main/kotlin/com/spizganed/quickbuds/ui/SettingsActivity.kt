@@ -51,7 +51,7 @@ class SettingsActivity : Activity() {
         val general = mutableListOf<android.view.View>(
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
             backgroundRow(prefs),
-            toggle(R.drawable.ic_case, R.string.settings_clear_battery_title, R.string.settings_clear_battery_sub,
+            toggle(R.drawable.ic_battery, R.string.settings_clear_battery_title, R.string.settings_clear_battery_sub,
                 BudsService.PREF_CLEAR_BATTERY, false),
             toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true)
         )

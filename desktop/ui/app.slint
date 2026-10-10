@@ -336,6 +336,7 @@ export global Buds {
     in property <image> icon-bass;
     in property <image> icon-chevron;
     in property <image> icon-update;
+    in property <image> icon-battery;
     in property <image> icon-plus;
     in property <image> icon-info;
     in property <image> icon-find;
@@ -3065,7 +3066,7 @@ component SettingsPage inherits Rectangle {
                     }
                     Divider {}
                     FeatureRow {
-                        icon: Buds.icon-case; title: Tr.clear-battery-title; subtitle: Tr.clear-battery-sub;
+                        icon: Buds.icon-battery; title: Tr.clear-battery-title; subtitle: Tr.clear-battery-sub;
                         checked: Update.clear-battery; live: true; toggled(on) => { Update.set-clear-battery(on); }
                     }
                 }
