@@ -621,6 +621,8 @@ the active record; the phone keeps the list. A record: 4-byte id (big-endian, ch
 - **Spatial and Hi-Res are mutually exclusive.** HeyMelody warns, then: spatial on = `1B 01` then
   `18 00`; Hi-Res on = `1B 00` then `18 01`.
 - **Any `18` change drops the link**; the buds reconnect ~4 s later.
+- **`18` and `0x8114` are per link** `[CAPTURE]`: with dual connection, each host reads its own value.
+  Buds 4: phone `18=1`, LHDC V5; PC `18=0`, AAC, at the same time.
 - **realme models** `[VENDOR]` (realme Link, issue #8): 3D sound is feature `1B` alone and Hi-Res `18`
   alone, whatever the bitmap says; realme Link never writes one with the other (on some models it only
   warns). The Air7 Pro lists `0x012A` / `0x0422` but leaves `0x012A` unanswered. Our own key
