@@ -73,11 +73,6 @@ does not pair them. Every file is in the [latest release](https://github.com/spi
   git clone https://github.com/spizganed/QuickBuds && cd QuickBuds/desktop/aur && makepkg -si
   ```
 
-> **"App blocked" or "Unknown developer" from Play Protect?** Tap **Install anyway**. QuickBuds is a new,
-> small app that Google has not seen much yet, so the warning is normal for it. It goes away in time.
-
-> **Coming from v1.1.0?** Uninstall it first: v2.0.0 and later are signed with a new key.
-
 > **Got the APK somewhere else?** The only official downloads are the GitHub releases. A copy from
 > another site is genuine only if it is signed with this certificate (SHA-256), which
 > `apksigner verify --print-certs <apk>` shows:
