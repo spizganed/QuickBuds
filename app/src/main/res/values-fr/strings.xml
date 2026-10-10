@@ -21,6 +21,7 @@
     <string name="anc_section">Contrôle du bruit</string>
     <string name="anc_seg_off">Désactivé</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Placez un écouteur pour changer le contrôle du bruit</string>
     <string name="anc_seg_adapt">Adaptatif</string>
     <string name="anc_seg_trans">Transparence</string>
     <string name="anc_mode_low">Faible</string>

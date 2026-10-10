@@ -21,6 +21,7 @@
     <string name="anc_section">Шумоподавление</string>
     <string name="anc_seg_off">Выкл.</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Вставьте наушник в ухо, чтобы изменить шумоподавление</string>
     <string name="anc_seg_adapt">Адаптивный</string>
     <string name="anc_seg_trans">Прозрачность</string>
     <string name="anc_mode_low">Низкий</string>

@@ -32,7 +32,7 @@ const STRINGS: &[&str] = &[
     "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
     "settings_clear_battery_sub", "update_found_title",
     "conn_on", "conn_action_connect", "conn_action_disconnect", "conn_connecting", "dual_not_connected",
-    "status_left", "status_right", "status_case", "anc_section", "anc_seg_off", "anc_seg_anc",
+    "status_left", "status_right", "status_case", "anc_section", "anc_seg_off", "anc_seg_anc", "anc_need_ear",
     "anc_seg_adapt", "anc_seg_trans", "anc_mode_low", "anc_mode_medium", "anc_mode_high",
     "anc_mode_smart", "widget_low_latency",
     "status_in_ear", "status_in_case", "status_out", "row_game_title", "row_game_sub", "row_eq_title", "row_eq_sub", "row_dual_sub", "row_earbuds_sub",

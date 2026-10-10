@@ -21,6 +21,7 @@
     <string name="anc_section">Controlo de ruído</string>
     <string name="anc_seg_off">Desativado</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Coloque um auricular para mudar o controlo de ruído</string>
     <string name="anc_seg_adapt">Adaptativo</string>
     <string name="anc_seg_trans">Transparência</string>
     <string name="anc_mode_low">Baixo</string>

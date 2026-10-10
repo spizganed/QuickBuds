@@ -21,6 +21,7 @@
     <string name="anc_section">Geräuschsteuerung</string>
     <string name="anc_seg_off">Aus</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Setze einen Earbud ein, um die Geräuschsteuerung zu ändern</string>
     <string name="anc_seg_adapt">Adaptiv</string>
     <string name="anc_seg_trans">Transparenz</string>
     <string name="anc_mode_low">Niedrig</string>

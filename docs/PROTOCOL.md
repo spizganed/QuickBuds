@@ -301,8 +301,8 @@ one level down (Buds 4's Off has a child at 3, Transparency one at 8).
 | `0x0200` | Transparency, voice enhance |
 | `0x0800` | Adaptive |
 
-- With no bud in an ear, a SET is refused: ack `0E` (status 14) `[CAPTURE]`. Both apps then re-read
-  `0x010C 01 01`, so the display shows the real mode.
+- With no bud in an ear, a SET is refused: ack `0E` (status 14) `[CAPTURE]`. One bud in an ear is enough.
+  Both apps then re-read `0x010C 01 01`, so the display shows the real mode, and say to put a bud in.
 - The ANC stop reports **whichever level is active**; it is a bitmask, not an enum.
 - Query: `0x010C 01 01` → `00 01 01 <LO> <HI>` (status, echo, value). Read on every connect, so a
   reconnect corrects the display.

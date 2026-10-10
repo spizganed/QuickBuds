@@ -42,6 +42,7 @@
     <string name="anc_section">Noise control</string>
     <string name="anc_seg_off">Off</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Put an earbud in to change noise control</string>
     <string name="anc_seg_adapt">Adaptive</string>
     <string name="anc_seg_trans">Transparency</string>
 

@@ -21,6 +21,7 @@
     <string name="anc_section">नॉइज़ कंट्रोल</string>
     <string name="anc_seg_off">बंद</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">नॉइज़ कंट्रोल बदलने के लिए एक ईयरबड कान में लगाएँ</string>
     <string name="anc_seg_adapt">अनुकूल</string>
     <string name="anc_seg_trans">पारदर्शिता</string>
     <string name="anc_mode_low">कम</string>

@@ -21,6 +21,7 @@
     <string name="anc_section">소음 제어</string>
     <string name="anc_seg_off">끄기</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">소음 제어를 변경하려면 이어버드를 착용하세요</string>
     <string name="anc_seg_adapt">적응형</string>
     <string name="anc_seg_trans">주변음 허용</string>
     <string name="anc_mode_low">낮음</string>

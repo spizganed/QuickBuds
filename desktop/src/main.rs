@@ -320,6 +320,7 @@ fn set_texts(tr: &Tr, s: &[String]) {
     tr.set_noise_control(t(s, "anc_section").into());
     tr.set_off(t(s, "anc_seg_off").into());
     tr.set_anc(t(s, "anc_seg_anc").into());
+    tr.set_anc_need_ear(t(s, "anc_need_ear").into());
     tr.set_adaptive(t(s, "anc_seg_adapt").into());
     tr.set_transparency(t(s, "anc_seg_trans").into());
     tr.set_low_latency(t(s, "widget_low_latency").into());
@@ -595,6 +596,7 @@ impl App {
             b.set_right_wear(wear(1));
             b.set_anc(anc.as_str().into());
             b.set_anc_is_level(is_level);
+            b.set_anc_refused(s.anc_refused as i32);
             b.set_icon_anc(svg(anc_icon));
             b.set_anc_label(anc_label.as_str().into());
             b.set_has_off(self.modes.supports(protocol::OFF));

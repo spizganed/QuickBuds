@@ -9,6 +9,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncEventParser
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.BatteryParser
@@ -1362,6 +1364,10 @@ class BudsConnectionManager(private val context: Context) {
         if (cmd == OpoProtocol.CMD_SET_ANC or 0x8000 && payload.isNotEmpty() && payload[0].toInt() != 0) {
             log("ANC write refused (status ${payload[0].toInt() and 0xFF}), re-reading")
             sendRaw(OpoProtocol.queryAncMode(), "query anc")
+            // From the app, the widget or the tile alike: say why the mode did not change.
+            if (payload[0].toInt() == 0x0E) handler.post {
+                Toast.makeText(context, R.string.anc_need_ear, Toast.LENGTH_SHORT).show()
+            }
         }
 
         // 0x8418 ack: `00 <id>` — the id the preset now has (a created one's id comes from here).

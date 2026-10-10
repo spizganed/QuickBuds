@@ -21,6 +21,7 @@
     <string name="anc_section">噪音控制</string>
     <string name="anc_seg_off">關閉</string>
     <string name="anc_seg_anc">降噪</string>
+    <string name="anc_need_ear">請先配戴一只耳機，再變更噪音控制</string>
     <string name="anc_seg_adapt">自適應</string>
     <string name="anc_seg_trans">通透</string>
     <string name="anc_mode_low">輕度</string>

@@ -21,6 +21,7 @@
     <string name="anc_section">Brusreglering</string>
     <string name="anc_seg_off">Av</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Sätt i en hörlur för att ändra brusreglering</string>
     <string name="anc_seg_adapt">Adaptiv</string>
     <string name="anc_seg_trans">Transparens</string>
     <string name="anc_mode_low">Låg</string>

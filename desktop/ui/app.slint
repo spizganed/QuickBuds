@@ -117,6 +117,7 @@ export global Update {
 }
 
 export global Tr {
+    in property <string> anc-need-ear: "Put an earbud in to change noise control";
     in property <string> connected: "Connected";
     in property <string> connect: "Connect";
     in property <string> disconnect: "Disconnect";
@@ -311,6 +312,8 @@ export global Buds {
     in property <int> left-wear;
     in property <int> right-wear;
     in property <string> anc;
+    // Counts ANC writes the buds refused with no bud in an ear.
+    in property <int> anc-refused;
     in property <bool> anc-is-level;
     in property <bool> has-off;
     in property <bool> has-adaptive;
@@ -614,6 +617,24 @@ component AncSegments inherits Rectangle {
         interval: 2280ms;
         running: picking;
         triggered => { picking = false; }
+    }
+    // The buds refuse a mode with no bud in an ear: say so over the segments for 3 s (the phone's toast).
+    property <int> refused: Buds.anc-refused;
+    property <bool> hint;
+    changed refused => { hint = true; }
+    Timer { interval: 3s; running: hint; triggered => { hint = false; } }
+    Rectangle {
+        opacity: hint ? 1 : 0;
+        animate opacity { duration: Motion.base; }
+        visible: self.opacity > 0;
+        border-radius: min(self.height, self.width) / 2;
+        background: Palette.card;
+        Text {
+            x: 12px; width: parent.width - 24px;
+            text: Tr.anc-need-ear; color: Palette.text; font-size: 13px; wrap: word-wrap;
+            horizontal-alignment: center; vertical-alignment: center;
+        }
+        TouchArea { clicked => { hint = false; } }
     }
 }
 

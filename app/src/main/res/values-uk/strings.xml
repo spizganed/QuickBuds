@@ -21,6 +21,7 @@
     <string name="anc_section">Шумозаглушення</string>
     <string name="anc_seg_off">Вимк.</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Вставте навушник у вухо, щоб змінити шумозаглушення</string>
     <string name="anc_seg_adapt">Адаптивний</string>
     <string name="anc_seg_trans">Прозорість</string>
     <string name="anc_mode_low">Низький</string>

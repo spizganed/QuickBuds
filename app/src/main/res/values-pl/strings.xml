@@ -21,6 +21,7 @@
     <string name="anc_section">Kontrola hałasu</string>
     <string name="anc_seg_off">Wył.</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Włóż słuchawkę do ucha, aby zmienić kontrolę hałasu</string>
     <string name="anc_seg_adapt">Adaptacyjny</string>
     <string name="anc_seg_trans">Przezroczystość</string>
     <string name="anc_mode_low">Niski</string>

@@ -107,6 +107,8 @@ pub struct Snapshot {
     pub head_motion: Option<u8>,
     /// The level Smart chose (`ANC-Light` ...), §5.
     pub smart_level: Option<String>,
+    /// Counts ANC writes refused with no bud in an ear (status 14, §5): each one shows the hint.
+    pub anc_refused: u32,
     /// `0x812A` / push `0x0510`: 0 off, 1 fixed, 2 head tracking.
     pub spatial_type: Option<u8>,
     /// The current codec (`0x8114`) and the offered ones (`0x8123`), §9 Codec picker.
@@ -271,9 +273,11 @@ impl<'a> Conn<'a> {
                 let answer = answer_for(&p, now).map(|a| (a, seq_of(&p)));
                 // A refused ANC write (status 14 with no bud in an ear): read the real mode back (§5).
                 let refused = cmd_of(&p) == CMD_SET_ANC | 0x8000 && payload_of(&p).first().is_some_and(|&st| st != 0);
+                let need_ear = refused && payload_of(&p).first() == Some(&0x0E);
                 log("RX", p, human);
                 if let Some(((cmd, pl), seq)) = answer { self.send(cmd, Some(seq), &pl)?; }
                 if refused { self.send(CMD_QUERY_ANC, None, &[1, 1])?; }
+                if need_ear { self.s.anc_refused += 1; changed = true; }
                 if let Some(e) = e { changed |= self.apply(e); }
             }
             if !self.framer.discarded.is_empty() { log("DISCARDED RX", std::mem::take(&mut self.framer.discarded), None); }

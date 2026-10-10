@@ -21,6 +21,7 @@
     <string name="anc_section">Zajszabályozás</string>
     <string name="anc_seg_off">Ki</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">A zajszabályozás módosításához tegyél be egy fülhallgatót</string>
     <string name="anc_seg_adapt">Adaptív</string>
     <string name="anc_seg_trans">Átengedés</string>
     <string name="anc_mode_low">Alacsony</string>

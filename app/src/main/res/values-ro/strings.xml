@@ -21,6 +21,7 @@
     <string name="anc_section">Control zgomot</string>
     <string name="anc_seg_off">Oprit</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Pune o cască în ureche pentru a schimba controlul zgomotului</string>
     <string name="anc_seg_adapt">Adaptiv</string>
     <string name="anc_seg_trans">Transparență</string>
     <string name="anc_mode_low">Scăzut</string>

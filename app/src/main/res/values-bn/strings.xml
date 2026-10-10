@@ -21,6 +21,7 @@
     <string name="anc_section">নয়েজ নিয়ন্ত্রণ</string>
     <string name="anc_seg_off">বন্ধ</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">নয়েজ নিয়ন্ত্রণ বদলাতে একটি ইয়ারবাড কানে পরুন</string>
     <string name="anc_seg_adapt">অভিযোজিত</string>
     <string name="anc_seg_trans">স্বচ্ছতা</string>
     <string name="anc_mode_low">কম</string>

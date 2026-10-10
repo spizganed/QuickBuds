@@ -21,6 +21,7 @@
     <string name="anc_section">Kontrol bising</string>
     <string name="anc_seg_off">Mati</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Pasang satu earbud untuk mengubah kontrol bising</string>
     <string name="anc_seg_adapt">Adaptif</string>
     <string name="anc_seg_trans">Transparan</string>
     <string name="anc_mode_low">Rendah</string>

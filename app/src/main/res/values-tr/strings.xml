@@ -21,6 +21,7 @@
     <string name="anc_section">Gürültü kontrolü</string>
     <string name="anc_seg_off">Kapalı</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Gürültü kontrolünü değiştirmek için bir kulaklığı takın</string>
     <string name="anc_seg_adapt">Uyarlanabilir</string>
     <string name="anc_seg_trans">Şeffaflık</string>
     <string name="anc_mode_low">Düşük</string>

@@ -21,6 +21,7 @@
     <string name="anc_section">Ruisbeheer</string>
     <string name="anc_seg_off">Uit</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Doe een oordopje in om het ruisbeheer te wijzigen</string>
     <string name="anc_seg_adapt">Adaptief</string>
     <string name="anc_seg_trans">Transparantie</string>
     <string name="anc_mode_low">Laag</string>

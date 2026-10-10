@@ -21,6 +21,7 @@
     <string name="anc_section">Kontrol ng ingay</string>
     <string name="anc_seg_off">Naka-off</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Isuot ang isang earbud para baguhin ang kontrol ng ingay</string>
     <string name="anc_seg_adapt">Adaptive</string>
     <string name="anc_seg_trans">Transparency</string>
     <string name="anc_mode_low">Mahina</string>

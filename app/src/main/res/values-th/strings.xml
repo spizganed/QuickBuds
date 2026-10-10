@@ -21,6 +21,7 @@
     <string name="anc_section">ควบคุมเสียงรบกวน</string>
     <string name="anc_seg_off">ปิด</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">ใส่หูฟังหนึ่งข้างเพื่อเปลี่ยนการควบคุมเสียงรบกวน</string>
     <string name="anc_seg_adapt">ปรับอัตโนมัติ</string>
     <string name="anc_seg_trans">โปร่งใส</string>
     <string name="anc_mode_low">ต่ำ</string>

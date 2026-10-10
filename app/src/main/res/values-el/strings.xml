@@ -21,6 +21,7 @@
     <string name="anc_section">Έλεγχος θορύβου</string>
     <string name="anc_seg_off">Ανενεργό</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Βάλτε ένα ακουστικό στο αυτί για να αλλάξετε τον έλεγχο θορύβου</string>
     <string name="anc_seg_adapt">Προσαρμοστικό</string>
     <string name="anc_seg_trans">Διαφάνεια</string>
     <string name="anc_mode_low">Χαμηλό</string>

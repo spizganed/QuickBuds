@@ -21,6 +21,7 @@
     <string name="anc_section">Ovládání hluku</string>
     <string name="anc_seg_off">Vyp.</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">Pro změnu ovládání hluku si nasaďte sluchátko</string>
     <string name="anc_seg_adapt">Adaptivní</string>
     <string name="anc_seg_trans">Propustnost</string>
     <string name="anc_mode_low">Nízké</string>

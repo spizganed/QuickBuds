@@ -21,6 +21,7 @@
     <string name="anc_section">ノイズコントロール</string>
     <string name="anc_seg_off">オフ</string>
     <string name="anc_seg_anc">ANC</string>
+    <string name="anc_need_ear">ノイズコントロールを変更するにはイヤホンを装着してください</string>
     <string name="anc_seg_adapt">適応</string>
     <string name="anc_seg_trans">外音取り込み</string>
     <string name="anc_mode_low">弱</string>
