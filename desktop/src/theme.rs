@@ -4,6 +4,7 @@
 use crate::{load_settings, save_setting, t, with_app, App, Pal, Palette, Theme};
 use serde_json::{json, Value};
 use slint::{Color, ComponentHandle, ModelRc, SharedString, VecModel};
+use std::time::{Duration, Instant};
 
 const THEMES: &str = include_str!("../../app/src/main/res/values/themes.xml");
 const COLORS: &str = include_str!("../../app/src/main/res/values/colors.xml");
@@ -210,20 +211,7 @@ pub fn apply(a: &App) {
     let light = th.get_system_light();
     let tr = &a.tr;
     let p = active(light, tr);
-    let set = |g: Palette| {
-        g.set_bg(p.bg);
-        g.set_card(p.card);
-        g.set_accent(p.accent);
-        g.set_text(p.text);
-        g.set_text2(p.text2);
-        g.set_outline(p.outline);
-        g.set_on_accent(on_accent(&p));
-        g.set_light(is_light(&p));
-        g.set_track(track(&p));
-    };
-    set(a.main.global::<Palette>());
-    #[cfg(windows)]
-    set(a.panel.global::<Palette>());
+    show(a, &p);
 
     let list = custom();
     th.set_builtins(model(BUILT_IN.iter().map(|id| built_in(id, tr)).collect()));
@@ -255,6 +243,52 @@ pub fn apply(a: &App) {
     }
     th.set_can_duplicate(left > 0);
     th.set_custom(model(list));
+}
+
+thread_local! {
+    static FADE: slint::Timer = slint::Timer::default();
+    /// False until the first theme is on screen: the launch shows it at once.
+    static SHOWN: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// The colours [paint] sets, in its order.
+fn colors(p: &Pal) -> [Color; 8] { [p.bg, p.card, p.accent, p.text, p.text2, p.outline, on_accent(p), track(p)] }
+
+fn paint(a: &App, c: &[Color; 8], light: bool) {
+    let set = |g: Palette| {
+        g.set_bg(c[0]);
+        g.set_card(c[1]);
+        g.set_accent(c[2]);
+        g.set_text(c[3]);
+        g.set_text2(c[4]);
+        g.set_outline(c[5]);
+        g.set_on_accent(c[6]);
+        g.set_track(c[7]);
+        g.set_light(light);
+    };
+    set(a.main.global::<Palette>());
+    #[cfg(windows)]
+    set(a.panel.global::<Palette>());
+}
+
+/// The phone's theme crossfade: every colour steps from the shown theme to [p] in 240 ms. The Dot matrix style
+/// bakes colours into its images, and the launch has nothing to fade from: both switch at once.
+fn show(a: &App, p: &Pal) {
+    let to = colors(p);
+    let light = is_light(p);
+    let g = a.main.global::<Palette>();
+    let from = [g.get_bg(), g.get_card(), g.get_accent(), g.get_text(), g.get_text2(), g.get_outline(), g.get_on_accent(), g.get_track()];
+    FADE.with(|t| t.stop());
+    if crate::STYLE.get().0 || !SHOWN.replace(true) || from == to { paint(a, &to, light); return; }
+    let start = Instant::now();
+    FADE.with(|t| t.start(slint::TimerMode::Repeated, Duration::from_millis(16), move || with_app(|a| {
+        let k = (start.elapsed().as_secs_f32() / 0.24).min(1.0);
+        let e = 1.0 - (1.0 - k) * (1.0 - k);
+        let now: [Color; 8] = std::array::from_fn(|i| blend(from[i], to[i], e));
+        // The light flag (a few borders) switches at the end, with the last step.
+        paint(a, &now, if k < 1.0 { a.main.global::<Palette>().get_light() } else { light });
+        if k >= 1.0 { FADE.with(|t| t.stop()); }
+    })));
 }
 
 /// [apply], then every drawing that bakes a colour in (dot images, the EQ curve, the hearing chart).
