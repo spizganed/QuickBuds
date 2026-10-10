@@ -1,78 +1,35 @@
 # QuickBuds
 
-> Open-source HeyMelody alternative for Android. Control OnePlus / OPPO / realme earbuds over
-> Bluetooth, no root: battery, noise cancellation (ANC), equalizer, hearing profile, gestures, wear
-> detection, fit test, find my earbuds, dual connection, low latency mode and home screen widgets.
+> Open-source HeyMelody alternative for Android, Windows and Linux. Control OnePlus / OPPO / realme
+> earbuds over Bluetooth, no root: battery, noise cancellation (ANC), equalizer, hearing profile,
+> gestures, wear detection, fit test, find my earbuds, dual connection, low latency mode, home screen
+> widgets and a tray icon.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android%208%2B-3DDC84.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Android%208%2B%20%7C%20Windows%20%7C%20Linux-3DDC84.svg)]()
 [![Release](https://img.shields.io/github/v/release/spizganed/QuickBuds)](https://github.com/spizganed/QuickBuds/releases/latest)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/spizganed)
 
-QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app with a real
-home-screen widget.
+QuickBuds does everything the vendor app does for your earbuds, in a fast, clean app: on the phone,
+with real home screen widgets, and on the PC, with a tray icon. One release has both.
 
 QuickBuds is purely a passion and hobby project. If you like it and want to help out, feel free to
 donate on [Ko-fi](https://ko-fi.com/spizganed).
 
-> **Desktop app for Windows and Linux.** A small native app in [`desktop/`](./desktop) with a tray icon,
-> no drivers and no background services: battery, noise control, low latency, the equalizer, gestures,
-> hearing profile, dual connection, earbud settings, the phone's themes and colour presets, and a packet log. Download it from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
-> `windows-x64.zip` (portable, just unzip and run) or `linux-x64.tar.gz` (needs BlueZ, GTK 3 and
-> libayatana-appindicator; see its README). Pair the buds in your system's Bluetooth settings first. With
-> Dual connection on, the phone app and the desktop app work at the same time. It updates itself from
-> App settings (a packaged install shows the release page instead). Progress is in
-> [ROADMAP.md](./docs/ROADMAP.md).
->
-> **Arch Linux:** build the package from the repo (it goes to the AUR as `quickbuds-bin` when AUR sign-ups open again):
->
-> ```bash
-> git clone https://github.com/spizganed/QuickBuds && cd QuickBuds/desktop/aur && makepkg -si
-> ```
-
 ## Screenshots
 
-<!-- Taken with scripts/readme-screenshots.sh classic, then dot-matrix. -->
+| Phone | PC |
+| :---: | :---: |
+| <img src="docs/images/phone.png" width="220"> | <img src="docs/images/desktop.png" width="560"> |
 
-| Main screen | Earbud settings | Equalizer | Hearing profile |
+| Widget: battery | Widget: noise control | Tray: Windows | Tray: Linux |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/main.png" width="200"> | <img src="docs/screenshots/earbuds.png" width="200"> | <img src="docs/screenshots/eq.png" width="200"> | <img src="docs/screenshots/hearing-profile.png" width="200"> |
-
-Every other screen (gestures, themes, fit test, settings and more) is in [docs/screenshots](docs/screenshots).
-
-### Widgets
-
-Every size has a battery page and a controls page; switch with a double tap. 
-
-| 2x2 | 4x2 |
-| :---: | :---: |
-| <img src="docs/screenshots/widget-2x2-battery.png" width="180"> | <img src="docs/screenshots/widget-4x2-battery.png" width="300"> |
-
-### Dot matrix style
-
-An optional style for the app and the widgets (Themes, colors & styles > Style): a dot font, no cards,
-dot-matrix graphics. Every screen in this style is in [docs/screenshots/dot-matrix](docs/screenshots/dot-matrix).
-
-| Main screen | 2x2 widget |
-| :---: | :---: |
-| <img src="docs/screenshots/dot-matrix/main.png" width="200"> | <img src="docs/screenshots/dot-matrix/widget-2x2-battery.png" width="220"> |
-
-### Desktop
-
-Windows and Linux (shown: Windows 11). On Windows the tray icon opens quick controls; on Linux its menu shows the battery.
-
-<img src="docs/screenshots/desktop/window.png" width="640">
-
-| Themes and custom colours | Tray quick controls (Windows) |
-| :---: | :---: |
-| <img src="docs/screenshots/desktop/theme.png" width="400"> | <img src="docs/screenshots/desktop/tray-panel.png" width="320"> |
-
-Every page, the Dot matrix style and the Linux tray menu are in [docs/screenshots/desktop](docs/screenshots/desktop).
+| <img src="docs/images/widget-battery.png" width="180"> | <img src="docs/images/widget-controls.png" width="180"> | <img src="docs/images/tray-windows.png" width="300"> | <img src="docs/images/tray-linux.png" width="240"> |
 
 ## Features
 
-- **Knows your earbuds:** reads the model from the earbuds and matches it against HeyMelody's own
-  list of OnePlus, OPPO and realme models, then shows only what that model supports. You can also
+- **Knows your earbuds:** reads the model from the earbuds and matches it against HeyMelody's and realme
+  Link's lists of OnePlus, OPPO and realme models, then shows only what that model supports. You can also
   pick the model yourself.
 - **Battery and wear status** for each bud and the case, live.
 - **Noise control:** Off, Noise cancelling (Low / Medium / High / Smart), Adaptive and Transparency. Changes
@@ -81,7 +38,7 @@ Every page, the Dot matrix style and the Linux tray menu are in [docs/screenshot
   Saved on the earbuds.
 - **High-quality audio (LHDC), 3D audio and Low latency mode.**
 - **Hearing profile:** a hearing test (ear scan, then 6 tones per ear) that tunes the sound to your
-  ears, run in the app. Profiles are kept on the phone, one tap applies one, and a graph per ear shows
+  ears, run in the app. Profiles are kept in the app, one tap applies one, and a graph per ear shows
   what it does. Profiles made in HeyMelody show up too.
 - **Earbud fit test:** checks that the ear tips seal well.
 - **Gestures** per bud: taps, slide and hold, plus the on-call gestures.
@@ -89,21 +46,32 @@ Every page, the Dot matrix style and the Linux tray menu are in [docs/screenshot
   firmware version.
 - **Whatever else your model has:** 3D audio with head tracking, game sound effects, vocal enhancement,
   smart / adaptive volume, power saving and more, each shown only where the earbuds support it.
-- **Home-screen widgets** in two sizes (2×2, 4×2). Each has a battery page and a noise
-  control + Low latency page, in your theme's colours.
-- **Two styles:** Classic, or a dot-matrix look for the app and the widgets.
+- **Home screen widgets** (Android) in two sizes (2×2, 4×2). Each has a battery page and a noise
+  control + Low latency page, in your theme's colours. A double tap switches the page.
+- **Tray icon** (PC): on Windows it opens quick controls, on Linux its menu shows the battery.
+- **Two styles:** Classic, or a dot-matrix look (a dot font, no cards, dot-matrix graphics).
 - **Themes:** OLED Black, Classic Dark and White, or match the system's light / dark setting. Your own
   accent colour and up to 3 custom colour presets. Reorder or hide the home screen rows.
 - **27 languages**, switchable inside the app.
-- **Update check** from inside the app, straight from GitHub releases.
+- **Updates** from inside the app, straight from GitHub releases. The PC app updates itself.
+- **With Dual connection on**, the phone app and the PC app work at the same time.
 
 ## Install
 
-1. Pair your earbuds in Android's Bluetooth settings first. QuickBuds connects to paired earbuds; it
-   does not pair them.
-2. Download `QuickBuds<version>.apk` from the
-   [latest release](https://github.com/spizganed/QuickBuds/releases/latest) and install it.
-3. Allow the Bluetooth permission when asked.
+Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds; it
+does not pair them. Every file is in the [latest release](https://github.com/spizganed/QuickBuds/releases/latest).
+
+- **Android 8+:** install `QuickBuds<version>.apk` and allow the Bluetooth permission when asked.
+- **Windows 10 / 11:** unzip `QuickBuds<version>-windows-x64.zip` and run `quickbuds.exe`. It is portable:
+  no installer, no drivers, no background services.
+- **Linux:** unpack `QuickBuds<version>-linux-x64.tar.gz`. It needs BlueZ, GTK 3 and
+  libayatana-appindicator; its README has the rest.
+- **Arch Linux:** build the package from the repo (it goes to the AUR as `quickbuds-bin` when AUR
+  sign-ups open again):
+
+  ```bash
+  git clone https://github.com/spizganed/QuickBuds && cd QuickBuds/desktop/aur && makepkg -si
+  ```
 
 > **"App blocked" or "Unknown developer" from Play Protect?** Tap **Install anyway**. QuickBuds is a new,
 > small app that Google has not seen much yet, so the warning is normal for it. It goes away in time.

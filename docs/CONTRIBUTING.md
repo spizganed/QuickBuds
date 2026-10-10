@@ -11,10 +11,10 @@ The quickest way is in the app: Settings › **Report a problem** (desktop: App 
 log with your description, without Bluetooth addresses. For a longer exchange, open an
 [issue](https://github.com/spizganed/QuickBuds/issues) with:
 
-1. The earbuds' model and the phone (model, Android version).
+1. The earbuds' model, and the phone or PC it runs on (model, Android / Windows / Linux version).
 2. What works and what does not. "The switch flips but nothing changes on the buds" is useful.
 3. A log: in the app, Dev tools › **Clear**, try the features, then Dev tools › **Export**. The file
-   lands in `Download/QuickBuds/`. Attach it as is.
+   lands in `Download/QuickBuds/` (PC: `Downloads/QuickBuds`). Attach it as is.
 
 For anything the app's log does not explain, [PACKET-CAPTURE.md](/docs/PACKET-CAPTURE.md) shows how to
 capture the Bluetooth traffic itself, including what HeyMelody sends.
