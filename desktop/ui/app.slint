@@ -42,6 +42,8 @@ export global Motion {
     out property <duration> fast: 120ms;
     out property <duration> base: 200ms;
     out property <duration> slow: 320ms;
+    // A selection moving to another segment or row, as the phone's.
+    out property <duration> slide: 240ms;
 }
 
 // The Dot matrix style (`dots.rs`). Shapes come from Rust as images at physical pixels, snapped to whole cells.
@@ -487,15 +489,19 @@ component Segment inherits Rectangle {
     preferred-width: 0;
     horizontal-stretch: 1;
     border-radius: min(self.height, self.width) / 2;
-    // Dot matrix: the selected segment is an accent outline, the track inside (not a fill).
+    // The selection is the track's sliding pill (SegmentTrack); a segment shows only its hover.
+    callback marked(bool);
+    // Also on creation: Rust rebuilds the rows, and a new unpicked row must clear its card's bar.
+    init => { marked(selected); }
+    changed selected => { marked(selected); }
     property <color> lit: Dots.on ? Palette.accent : Palette.on-accent;
-    background: Dots.on ? transparent : selected ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
+    background: Dots.on || selected ? transparent : ta.has-hover ? Palette.outline : transparent;
     animate background { duration: Motion.fast; }
-    if Dots.on && (selected || ta.has-hover): DotBox {
+    if Dots.on && !selected && ta.has-hover: DotBox {
         width: 100%; height: 100%;
         radius: min(root.height / 2 * 0.85, 22px);
         fill: Palette.card;
-        stroke: selected ? Palette.accent : Palette.outline;
+        stroke: Palette.outline;
     }
     VerticalLayout {
         alignment: center;
@@ -507,6 +513,7 @@ component Segment inherits Rectangle {
             Image {
                 source: icon; width: 24px; height: 24px;
                 colorize: selected ? lit : Palette.text2;
+                animate colorize { duration: Motion.slide; }
             }
         }
         if !compact: Text {
@@ -514,6 +521,7 @@ component Segment inherits Rectangle {
             horizontal-alignment: center;
             font-size: 12px;
             color: selected ? lit : Palette.text2;
+            animate color { duration: Motion.slide; }
             overflow: elide;
         }
     }
@@ -524,6 +532,32 @@ component Segment inherits Rectangle {
     }
 }
 
+// The phone's segmented control: one accent pill (Dot matrix: an accent outline) slides to the picked segment.
+// [count] segments of equal width; [index] -1 shows none.
+component SegmentTrack inherits Rectangle {
+    in property <int> count;
+    in property <int> index;
+    in property <length> pad;
+    in property <length> gap: 4px;
+    property <length> seg: (self.width - 2 * pad - (count - 1) * gap) / max(count, 1);
+    // The last picked place: a pick from none appears there instead of sliding in from the left.
+    property <int> at: max(index, 0);
+    changed index => { if index >= 0 { at = index; } }
+    property <length> pill-x: pad + at * (seg + gap);
+    animate pill-x { duration: Motion.slide; easing: ease-out; }
+    if index >= 0 && !Dots.on: Rectangle {
+        x: pill-x; y: pad; width: seg; height: root.height - 2 * pad;
+        border-radius: min(self.height, self.width) / 2;
+        background: Palette.accent;
+    }
+    if index >= 0 && Dots.on: DotBox {
+        x: pill-x; y: pad; width: seg; height: root.height - 2 * pad;
+        radius: min(self.height / 2 * 0.85, 22px);
+        fill: Palette.card; stroke: Palette.accent;
+    }
+    HorizontalLayout { padding: pad; spacing: gap; @children }
+}
+
 // Off / ANC / Adaptive / Transparency. ANC slides the modes out and the buds' levels in (the phone's
 // and the widget's picker): a pick sends it, the lit level sends Off, 2 s without a pick slides back.
 component AncSegments inherits Rectangle {
@@ -532,12 +566,18 @@ component AncSegments inherits Rectangle {
     property <bool> on: Buds.on;
     changed on => { if !on { picking = false; } }
     clip: true;
-    HorizontalLayout {
+    property <int> n-off: Buds.has-off ? 1 : 0;
+    property <int> n-anc: Buds.levels.length > 0 ? 1 : 0;
+    property <int> n-adaptive: Buds.has-adaptive ? 1 : 0;
+    property <int> level-at: -1;
+    SegmentTrack {
         x: picking ? root.width : 0;
         width: root.width;
         height: root.height;
         animate x { duration: Motion.slow; easing: ease-in-out; }
-        spacing: 4px;
+        count: n-off + n-anc + n-adaptive + (Buds.has-transparency ? 1 : 0);
+        index: Buds.anc == "Off" && Buds.has-off ? 0 : Buds.anc-is-level ? n-off : Buds.anc == "Adaptive" ? n-off + n-anc
+            : Buds.anc == "Transparency" ? n-off + n-anc + n-adaptive : -1;
         if Buds.has-off: Segment {
             compact: root.compact; icon: Buds.icon-off; label: Tr.off;
             selected: Buds.anc == "Off"; clicked => { Buds.set-anc("Off"); }
@@ -556,15 +596,17 @@ component AncSegments inherits Rectangle {
             selected: Buds.anc == "Transparency"; clicked => { Buds.set-anc("Transparency"); }
         }
     }
-    HorizontalLayout {
+    SegmentTrack {
         x: picking ? 0 : -root.width;
         width: root.width;
         height: root.height;
         animate x { duration: Motion.slow; easing: ease-in-out; }
-        spacing: 4px;
-        for l in Buds.levels: Segment {
+        count: Buds.levels.length;
+        index: level-at;
+        for l[i] in Buds.levels: Segment {
             compact: root.compact; icon: l.icon; label: l.name;
             selected: Buds.anc == l.id;
+            marked(on) => { if on { level-at = i; } else if level-at == i { level-at = -1; } }
             clicked => { picking = false; Buds.set-anc(Buds.anc == l.id ? "Off" : l.id); }
         }
     }
@@ -899,14 +941,20 @@ component PresetRow inherits Rectangle {
     in property <string> name;
     in property <bool> selected;
     in property <bool> enabled: Buds.on;
+    // False in a RowCard: its one bar slides between the rows.
+    in property <bool> bar: true;
     callback clicked;
+    callback marked(bool);
+    // Also on creation: Rust rebuilds the rows, and a new unpicked row must clear its card's bar.
+    init => { marked(selected); }
+    changed selected => { marked(selected); }
     height: 40px;
     border-radius: 10px;
     background: ta.has-hover ? Palette.outline : transparent;
     animate background { duration: Motion.fast; }
     Rectangle {
         x: 6px; y: (parent.height - self.height) / 2;
-        width: 3px; height: selected ? 18px : 0;
+        width: 3px; height: bar && selected ? 18px : 0;
         border-radius: 1.5px;
         background: Palette.accent;
         animate height { duration: Motion.fast; easing: ease-out; }
@@ -915,9 +963,28 @@ component PresetRow inherits Rectangle {
         x: 18px; width: parent.width - 36px;
         text: name; overflow: elide; vertical-alignment: center;
         color: selected ? Palette.accent : Palette.text; font-size: 14px;
+        animate color { duration: Motion.slide; }
         font-weight: selected ? 600 : 400;
     }
     ta := TouchArea { enabled: root.enabled; mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+
+// A card of PresetRows (`bar: false`, 6px padding, 2px apart): one accent bar slides to the picked row, as the
+// phone's selection outline does. [sel] -1 shows none.
+component RowCard inherits Card {
+    in-out property <int> sel: -1;
+    property <int> at: max(sel, 0);
+    changed sel => { if sel >= 0 { at = sel; } }
+    @children
+    Rectangle {
+        x: 12px; width: 3px;
+        height: sel >= 0 ? 18px : 0;
+        y: 6px + at * 42px + (40px - self.height) / 2;
+        border-radius: 1.5px;
+        background: Palette.accent;
+        animate y { duration: Motion.slide; easing: ease-out; }
+        animate height { duration: Motion.fast; easing: ease-out; }
+    }
 }
 
 component AddRow inherits Rectangle {
@@ -1071,12 +1138,13 @@ component EqPage inherits VerticalLayout {
             if Eq.builtins.length > 0: VerticalLayout {
                 spacing: 8px;
                 SectionTitle { text: Tr.eq-recommended; font-size: 13px; font-weight: 400; }
-                Card {
+                builtin-card := RowCard {
                     VerticalLayout {
                         padding: 6px;
                         spacing: 2px;
-                        for p in Eq.builtins: PresetRow {
-                            name: p.name; selected: Eq.current == p.id;
+                        for p[i] in Eq.builtins: PresetRow {
+                            name: p.name; selected: Eq.current == p.id; bar: false;
+                            marked(on) => { if on { builtin-card.sel = i; } else if builtin-card.sel == i { builtin-card.sel = -1; } }
                             clicked => { Eq.select-builtin(p.id); }
                         }
                     }
@@ -1085,12 +1153,13 @@ component EqPage inherits VerticalLayout {
             if Eq.has-custom: VerticalLayout {
                 spacing: 8px;
                 SectionTitle { text: Tr.eq-custom; font-size: 13px; font-weight: 400; }
-                if Eq.customs.length > 0 || Eq.can-add: Card {
+                if Eq.customs.length > 0 || Eq.can-add: custom-card := RowCard {
                     VerticalLayout {
                         padding: 6px;
                         spacing: 2px;
-                        for p in Eq.customs: PresetRow {
-                            name: p.name; selected: Eq.current == p.id;
+                        for p[i] in Eq.customs: PresetRow {
+                            name: p.name; selected: Eq.current == p.id; bar: false;
+                            marked(on) => { if on { custom-card.sel = i; } else if custom-card.sel == i { custom-card.sel = -1; } }
                             enabled: Buds.on && !p.pending; opacity: p.pending ? 0.5 : 1;
                             clicked => { Eq.select-custom(p.id); }
                         }
@@ -1155,7 +1224,12 @@ component EqPage inherits VerticalLayout {
                         checked: Eq.bass-on;
                         toggled(on) => { Eq.bass-toggled(on); }
                     }
-                    if Eq.bass-on: HSlider {
+                    // Grows open and shuts, as the phone's (Motion.slide there).
+                    HSlider {
+                        height: Eq.bass-on ? 48px : 0;
+                        opacity: Eq.bass-on ? 1 : 0;
+                        animate height, opacity { duration: Eq.bass-on ? 280ms : 220ms; easing: ease-out; }
+                        clip: true;
                         minimum: -5; maximum: 5;
                         value <=> Eq.bass-level;
                         released(v) => { Eq.bass-released(v); }
@@ -1708,14 +1782,15 @@ component ModelsPage inherits Rectangle {
                 spacing: 8px;
                 padding-top: 8px;
                 SectionTitle { text: sec.title; font-size: 13px; font-weight: 400; }
-                Card {
+                model-card := RowCard {
                     live: true;
                     VerticalLayout {
                         padding: 6px;
                         spacing: 2px;
-                        for m in sec.rows: PresetRow {
+                        for m[i] in sec.rows: PresetRow {
                             name: m.sub == "" ? m.name : m.name + "  (" + m.sub + ")";
-                            selected: Models.current == m.id; enabled: true;
+                            selected: Models.current == m.id; enabled: true; bar: false;
+                            marked(on) => { if on { model-card.sel = i; } else if model-card.sel == i { model-card.sel = -1; } }
                             clicked => { Models.pick(m.id); }
                         }
                     }
@@ -1801,9 +1876,9 @@ component ControlsPage inherits Rectangle {
                     border-width: Dots.on ? 0 : 1px;
                     border-color: Palette.outline;
                     if Dots.on: DotBox { width: 100%; height: 100%; radius: 20px; }
-                    HorizontalLayout {
-                        padding: 4px;
-                        spacing: 4px;
+                    SegmentTrack {
+                        width: 100%; height: 100%;
+                        pad: 4px; count: 2; index: Controls.side;
                         Segment { enabled: true; label: Tr.bud-left; selected: Controls.side == 0; clicked => { Controls.set-side(0); } }
                         Segment { enabled: true; label: Tr.bud-right; selected: Controls.side == 1; clicked => { Controls.set-side(1); } }
                     }
@@ -1957,8 +2032,9 @@ component HearingPage inherits Rectangle {
                     spacing: 8px;
                     Rectangle {
                         height: 44px;
-                        HorizontalLayout {
-                            spacing: 4px;
+                        SegmentTrack {
+                            width: 100%; height: 100%;
+                            count: 2; index: Hearing.ear;
                             Segment { enabled: true; label: Tr.hearing-left; selected: Hearing.ear == 0; clicked => { Hearing.set-ear(0); } }
                             Segment { enabled: true; label: Tr.hearing-right; selected: Hearing.ear == 1; clicked => { Hearing.set-ear(1); } }
                         }
@@ -2002,14 +2078,15 @@ component HearingPage inherits Rectangle {
             }
             SectionTitle { text: Tr.hearing-profiles; font-size: 13px; font-weight: 400; }
             if Hearing.profiles.length == 0: Text { text: Tr.hearing-none; color: Palette.text2; font-size: 13px; }
-            if Hearing.profiles.length > 0: Card {
+            if Hearing.profiles.length > 0: RowCard {
+                sel: Hearing.active;
                 VerticalLayout {
                     padding: 6px;
                     spacing: 2px;
                     for p[i] in Hearing.profiles: HorizontalLayout {
                         spacing: 8px;
                         PresetRow {
-                            horizontal-stretch: 1;
+                            horizontal-stretch: 1; bar: false;
                             name: p.name; selected: Hearing.active == i;
                             clicked => { Hearing.pick(i); }
                         }
@@ -2608,6 +2685,8 @@ component Selected inherits Rectangle {
     in property <length> r;
     opacity: on ? 1 : 0;
     animate opacity { duration: Motion.base; }
+    // One outline per group slides to the picked tile or row (the phone's SelectionSlider).
+    animate x, y, width { duration: Motion.slide; easing: ease-out; }
     border-radius: r;
     border-width: Dots.on ? 0 : 2px;
     border-color: Palette.accent;
@@ -2642,31 +2721,43 @@ component ThemePage inherits Rectangle {
                 border-width: Dots.on ? 0 : 1px;
                 border-color: Palette.outline;
                 if Dots.on: DotBox { width: 100%; height: 100%; radius: 20px; }
-                HorizontalLayout {
-                    padding: 4px;
-                    spacing: 4px;
+                SegmentTrack {
+                    width: 100%; height: 100%;
+                    pad: 4px; count: 2; index: Dots.on ? 1 : 0;
                     Segment { compact: false; enabled: true; label: Tr.style-classic; selected: !Dots.on; clicked => { Dots.set-on(false); } }
                     Segment { compact: false; enabled: true; label: Tr.style-dots; selected: Dots.on; clicked => { Dots.set-on(true); } }
                 }
             }
             SectionTitle { text: Tr.theme-builtin; font-size: 13px; font-weight: 400; }
-            HorizontalLayout {
-                spacing: 12px;
-                for b in Theme.builtins: VerticalLayout {
-                    property <bool> on: b.id == Theme.active.id;
-                    horizontal-stretch: 1;
-                    spacing: 8px;
-                    Rectangle {
-                        height: 150px;
-                        PalTile { width: 100%; height: 100%; p: on ? Theme.with-token(b, 2, root.accent) : b; }
-                        Selected { x: -4px; y: -4px; width: parent.width + 8px; height: parent.height + 8px; r: 22px; on: on; }
-                        TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(b.id); } }
-                    }
-                    Text {
-                        text: b.name; horizontal-alignment: center; font-size: 13px;
-                        color: on ? Palette.text : Palette.text2; font-weight: on ? 600 : 400;
+            tiles := Rectangle {
+                property <int> sel: -1;
+                // The picked tile's place, which it reports (the tiles' widths differ a little).
+                property <length> at-x;
+                property <length> at-w;
+                height: tile-row.preferred-height;
+                tile-row := HorizontalLayout {
+                    spacing: 12px;
+                    for b[i] in Theme.builtins: VerticalLayout {
+                        property <bool> on: b.id == Theme.active.id;
+                        function report() { tiles.sel = i; tiles.at-x = self.x; tiles.at-w = self.width; }
+                        init => { if on { report(); } }
+                        changed on => { if on { report(); } else if tiles.sel == i { tiles.sel = -1; } }
+                        changed x => { if on { report(); } }
+                        changed width => { if on { report(); } }
+                        horizontal-stretch: 1;
+                        spacing: 8px;
+                        Rectangle {
+                            height: 150px;
+                            PalTile { width: 100%; height: 100%; p: on ? Theme.with-token(b, 2, root.accent) : b; }
+                            TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(b.id); } }
+                        }
+                        Text {
+                            text: b.name; horizontal-alignment: center; font-size: 13px;
+                            color: on ? Palette.text : Palette.text2; font-weight: on ? 600 : 400;
+                        }
                     }
                 }
+                Selected { x: tiles.at-x - 4px; y: -4px; width: tiles.at-w + 8px; height: 158px; r: 22px; on: tiles.sel >= 0; }
             }
             Card {
                 live: true;
@@ -2707,29 +2798,43 @@ component ThemePage inherits Rectangle {
                         }
                         TouchArea { mouse-cursor: pointer; clicked => { root.accent-open = !root.accent-open; } }
                     }
-                    if root.accent-open: ColorPicker {
-                        padding-left: 20px;
-                        padding-right: 20px;
-                        padding-bottom: 16px;
-                        initial: Theme.active.accent;
-                        target: "accent:" + Theme.active.id;
-                        change(c) => { root.dragging = true; root.drag-color = c; }
-                        commit(c) => { root.dragging = false; Theme.set-accent(c); }
+                    Rectangle {
+                        height: root.accent-open ? picker.preferred-height : 0;
+                        opacity: root.accent-open ? 1 : 0;
+                        animate height, opacity { duration: root.accent-open ? 280ms : 220ms; easing: ease-out; }
+                        clip: true;
+                        picker := ColorPicker {
+                            y: 0; width: parent.width;
+                            padding-left: 20px;
+                            padding-right: 20px;
+                            padding-bottom: 16px;
+                            initial: Theme.active.accent;
+                            target: "accent:" + Theme.active.id;
+                            change(c) => { root.dragging = true; root.drag-color = c; }
+                            commit(c) => { root.dragging = false; Theme.set-accent(c); }
+                        }
                     }
                 }
             }
             SectionTitle { text: Theme.custom-title; font-size: 13px; font-weight: 400; }
-            Card {
+            customs := Card {
                 live: true;
                 border-radius: 24px;
+                property <int> sel: -1;
+                property <int> at: max(sel, 0);
+                changed sel => { if sel >= 0 { at = sel; } }
+                // A row and its divider.
+                property <length> step: 64px + (Dots.on ? Dots.pitch / Dots.scale * 1px : 1px);
+                Selected { x: 8px; y: 4px + customs.at * customs.step; width: parent.width - 16px; height: 56px; r: 14px; on: customs.sel >= 0; }
                 VerticalLayout {
                     padding-left: 20px;
                     padding-right: 20px;
-                    for c in Theme.custom: VerticalLayout {
+                    for c[i] in Theme.custom: VerticalLayout {
                         property <bool> on: c.id == Theme.active.id;
+                        init => { if on { customs.sel = i; } }
+                        changed on => { if on { customs.sel = i; } else if customs.sel == i { customs.sel = -1; } }
                         Rectangle {
                             height: 64px;
-                            Selected { x: -12px; y: 4px; width: parent.width + 24px; height: parent.height - 8px; r: 14px; on: on; }
                             TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(c.id); } }
                             HorizontalLayout {
                                 spacing: 16px;
