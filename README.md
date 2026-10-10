@@ -118,37 +118,50 @@ Every page, the Dot matrix style and the Linux tray menu are in [docs/screenshot
 ## Supported earbuds
 
 QuickBuds works on **any Android 8+ phone** (Samsung, Google Pixel, Xiaomi, Nothing, Motorola, OnePlus…),
-not only on OnePlus / OPPO phones. It knows every model in HeyMelody's own list, 127 earbuds in all,
-and shows only the features each one has.
+not only on OnePlus / OPPO phones. It knows every earbud in HeyMelody's and realme Link's lists, 127 in
+all, and shows only the features each one has.
 
-| | Status |
-| --- | --- |
-| **OnePlus Buds 4** | **Fully working, confirmed**: every feature tested on a Nothing Phone (3a), Android 16. |
-| realme Buds Air7 Pro | **Confirmed by its owner**: Android and Windows. |
-| OPPO Enco Buds2 | **Confirmed by its owner** on Windows: connection, equalizer, battery. |
-| Every other model | Detected, and its features are built from HeyMelody's own data, but **not confirmed yet**: some may not work. |
+<details open><summary><b>Confirmed</b> (3 models)</summary>
 
-**Own other buds? Please tell us what works.** Open an [issue](https://github.com/spizganed/QuickBuds/issues)
-with your model, what works and what does not, and a log: Dev tools › Export (the file lands in
-`Download/QuickBuds/`), or a Bluetooth HCI snoop log / `adb logcat`. Settings › Report a problem sends
-the same without a GitHub account. Each report lets the next release fix
-that model. The app asks the same once, on first launch.
+<details><summary><b>OnePlus</b> (1)</summary>
 
-<details><summary><b>OnePlus</b> (29 models)</summary>
-
-OnePlus Bullets Wireless Z2, OnePlus Bullets Wireless Z2 ANC, OnePlus Bullets Wireless Z3, OnePlus Buds, OnePlus Buds Z, OnePlus Buds Pro, OnePlus Buds Z2, OnePlus Nord Buds, OnePlus Buds N, OnePlus Nord Buds CE, OnePlus Buds Pro 2, OnePlus Nord Buds 2, OnePlus Buds Ace, OnePlus Nord Buds 2r, OnePlus Buds Pro 2R, OnePlus Buds 3, OnePlus Buds Pro 3, OnePlus Nord Buds 3 Pro, OnePlus Buds V, OnePlus Buds Ace 2, OnePlus Nord Buds 3, OnePlus Buds 4, OnePlus Nord Buds 3r, OnePlus Open Buds, OnePlus Buds 3V, OnePlus Buds Ace 3, OnePlus Nord Buds 4 Pro, OnePlus Nord Buds 4, OnePlus Flow Buds.
+- **OnePlus Buds 4**: fully working. Every feature tested on a Nothing Phone (3a), Android 16, and on Windows and Linux.
 
 </details>
 
-<details><summary><b>OPPO</b> (52 models)</summary>
+<details><summary><b>OPPO</b> (1)</summary>
 
-OPPO Enco Quiet, OPPO Enco M31, OPPO Enco M32, OPPO Enco M33, OPPO Enco Free, OPPO O-Free, OPPO Enco W31, OPPO Enco W51, OPPO Enco W11, OPPO Enco X, OPPO Enco Air, OPPO Enco Play, OPPO Enco Free2, OPPO Enco Buds, OPPO Enco Air Lite, OPPO Enco W31 Lite, OPPO Enco R, OPPO Enco Air2, OPPO Enco Air2 Pro, OPPO Enco X2, OPPO Enco Free2i, OPPO Enco Air2i, OPPO Enco Buds2, OPPO Enco Air3, OPPO Enco R Pro, OPPO Enco R2, OPPO Enco Air3 Pro, OPPO Enco Free3, OPPO Enco X3i, OPPO Enco Air3i, OPPO Enco X3, OPPO Enco Air3s, OPPO Enco Air4 Pro, OPPO Enco Buds2 Pro, OPPO Enco R3, OPPO Enco Air 3i, OPPO Enco Free4, OPPO Enco Air4, OPPO Enco Air4i, OPPO Enco R3 Pro, OPPO Enco Buds3 Pro+, OPPO Enco Buds3, OPPO Enco Buds3 Pro, OPPO Enco R4, OPPO Enco R5, OPPO Enco Clip, OPPO Enco X3s, OPPO Enco Air5 Pro, OPPO Enco Air5s, OPPO Enco Air5, OPPO Enco Clip2, OPPO Enco Air4s.
+- **OPPO Enco Buds2**: confirmed by its owner on Windows: connection, equalizer, battery.
 
 </details>
 
-<details><summary><b>realme</b> (43 models)</summary>
+<details><summary><b>realme</b> (1)</summary>
 
-realme Buds Wireless 2S, realme Buds Wireless 3, realme Buds Wireless 3 Neo, realme Buds Wireless 5 ANC, realme Buds Wireless 6 Neo, realme Buds Wireless 6, realme Buds Wireless 6 ANC, realme Buds Air 3, realme Buds Q2s, realme Buds Air 3S, realme Buds T100, realme Buds Air 3 Neo, realme Buds Air 5 Pro, realme Buds Air 5, realme Buds T300, realme Buds T110, realme Buds Air6 Pro, realme Buds Air6, realme Buds N1 Pro, realme Buds T310, realme Buds N1, realme Buds T01, realme Buds Air7, realme Buds Air7 Pro, realme Buds T200 Lite, realme Buds T200, realme Buds T200x, realme Buds Clip, realme TechLife Buds, realme Buds T500 Pro, realme Buds Air8, realme Buds Air8 Pro, realme Buds T500, realme Buds T500 Pro Harry Potter Edition, realme Buds Air 2 Neo, realme Buds Air, realme Buds Q2, realme Buds Air Pro, realme Buds Air 2, realme Buds Wireless 2, realme Buds Wireless 2 Neo, realme Buds Wireless Pro, realme Buds Air Neo.
+- **realme Buds Air7 Pro**: confirmed by its owner on Android and Windows: noise control, gestures, 3D audio.
+
+</details>
+
+</details>
+
+<details><summary><b>Not confirmed yet</b> (124 models)</summary>
+
+Detected, with features built from HeyMelody's and realme Link's data. Some may not work.
+
+<details><summary><b>OnePlus</b> (28 models)</summary>
+
+OnePlus Bullets Wireless Z2, OnePlus Bullets Wireless Z2 ANC, OnePlus Bullets Wireless Z3, OnePlus Buds, OnePlus Buds Z, OnePlus Buds Pro, OnePlus Buds Z2, OnePlus Nord Buds, OnePlus Buds N, OnePlus Nord Buds CE, OnePlus Buds Pro 2, OnePlus Nord Buds 2, OnePlus Buds Ace, OnePlus Nord Buds 2r, OnePlus Buds Pro 2R, OnePlus Buds 3, OnePlus Buds Pro 3, OnePlus Nord Buds 3 Pro, OnePlus Buds V, OnePlus Buds Ace 2, OnePlus Nord Buds 3, OnePlus Nord Buds 3r, OnePlus Open Buds, OnePlus Buds 3V, OnePlus Buds Ace 3, OnePlus Nord Buds 4 Pro, OnePlus Nord Buds 4, OnePlus Flow Buds.
+
+</details>
+
+<details><summary><b>OPPO</b> (51 models)</summary>
+
+OPPO Enco Quiet, OPPO Enco M31, OPPO Enco M32, OPPO Enco M33, OPPO Enco Free, OPPO O-Free, OPPO Enco W31, OPPO Enco W51, OPPO Enco W11, OPPO Enco X, OPPO Enco Air, OPPO Enco Play, OPPO Enco Free2, OPPO Enco Buds, OPPO Enco Air Lite, OPPO Enco W31 Lite, OPPO Enco R, OPPO Enco Air2, OPPO Enco Air2 Pro, OPPO Enco X2, OPPO Enco Free2i, OPPO Enco Air2i, OPPO Enco Air3, OPPO Enco R Pro, OPPO Enco R2, OPPO Enco Air3 Pro, OPPO Enco Free3, OPPO Enco X3i, OPPO Enco Air3i, OPPO Enco X3, OPPO Enco Air3s, OPPO Enco Air4 Pro, OPPO Enco Buds2 Pro, OPPO Enco R3, OPPO Enco Air 3i, OPPO Enco Free4, OPPO Enco Air4, OPPO Enco Air4i, OPPO Enco R3 Pro, OPPO Enco Buds3 Pro+, OPPO Enco Buds3, OPPO Enco Buds3 Pro, OPPO Enco R4, OPPO Enco R5, OPPO Enco Clip, OPPO Enco X3s, OPPO Enco Air5 Pro, OPPO Enco Air5s, OPPO Enco Air5, OPPO Enco Clip2, OPPO Enco Air4s.
+
+</details>
+
+<details><summary><b>realme</b> (42 models)</summary>
+
+realme Buds Wireless 2S, realme Buds Wireless 3, realme Buds Wireless 3 Neo, realme Buds Wireless 5 ANC, realme Buds Wireless 6 Neo, realme Buds Wireless 6, realme Buds Wireless 6 ANC, realme Buds Air 3, realme Buds Q2s, realme Buds Air 3S, realme Buds T100, realme Buds Air 3 Neo, realme Buds Air 5 Pro, realme Buds Air 5, realme Buds T300, realme Buds T110, realme Buds Air6 Pro, realme Buds Air6, realme Buds N1 Pro, realme Buds T310, realme Buds N1, realme Buds T01, realme Buds Air7, realme Buds T200 Lite, realme Buds T200, realme Buds T200x, realme Buds Clip, realme TechLife Buds, realme Buds T500 Pro, realme Buds Air8, realme Buds Air8 Pro, realme Buds T500, realme Buds T500 Pro Harry Potter Edition, realme Buds Air 2 Neo, realme Buds Air, realme Buds Q2, realme Buds Air Pro, realme Buds Air 2, realme Buds Wireless 2, realme Buds Wireless 2 Neo, realme Buds Wireless Pro, realme Buds Air Neo.
 
 </details>
 
@@ -157,6 +170,14 @@ realme Buds Wireless 2S, realme Buds Wireless 3, realme Buds Wireless 3 Neo, rea
 DIZO Wireless, DIZO GoPods D, DIZO GoPods.
 
 </details>
+
+</details>
+
+**Own other buds? Please tell us what works.** Open an [issue](https://github.com/spizganed/QuickBuds/issues)
+with your model, what works and what does not, and a log: Dev tools › Export (the file lands in
+`Download/QuickBuds/`), or a Bluetooth HCI snoop log / `adb logcat`. Settings › Report a problem sends
+the same without a GitHub account. Each report lets the next release fix
+that model. The app asks the same once, on first launch.
 
 ## For developers
 
