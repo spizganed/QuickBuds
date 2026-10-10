@@ -18,6 +18,7 @@ windows-sys = { version = "0.59", features = [
     "Win32_Networking_WinSock",
     "Win32_Devices_Bluetooth",
     "Win32_System_SystemInformation",
+    "Win32_System_Console",
 ] }
 
 # Linux tray icons need GTK running on their own thread (already a dependency of tray-icon there).

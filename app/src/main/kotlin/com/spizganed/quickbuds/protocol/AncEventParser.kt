@@ -83,6 +83,6 @@ object AncEventParser {
     fun describe(payload: ByteArray): String {
         val raw = rawValue(payload)
         if (raw <= 0) return "ANC event (no value)"
-        return "raw=0x%04X (bit %d)".format(raw, Integer.numberOfTrailingZeros(raw))
+        return "raw=0x%04X (bit %d)".format(java.util.Locale.ROOT, raw, Integer.numberOfTrailingZeros(raw))
     }
 }

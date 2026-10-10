@@ -726,6 +726,7 @@ fn linux_tray() -> std::sync::mpsc::Sender<String> {
 
 fn main() {
     report::catch_panics();
+    report::capture_stderr();
     // Software rendering: ~25 MB instead of ~130 MB with the GPU renderer, and fast enough for this UI.
     if std::env::var_os("SLINT_BACKEND").is_none() {
         slint::BackendSelector::new().backend_name("winit".into()).renderer_name("software".into())

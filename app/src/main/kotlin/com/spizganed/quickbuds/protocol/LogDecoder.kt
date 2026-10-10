@@ -135,7 +135,7 @@ object LogDecoder {
         val payload = data.copyOfRange(9, minOf(data.size, 9 + payLen))
         val shown = OpoProtocol.bytesToHex(payload.copyOfRange(0, minOf(payload.size, DETAIL_BYTES)))
         val more = if (payload.size > DETAIL_BYTES) " …+${payload.size - DETAIL_BYTES}" else ""
-        return "0x%04X  seq %d  %d B%s".format(OpoProtocol.u16(data, 4), data[6].toInt() and 0xFF, payload.size,
+        return "0x%04X  seq %d  %d B%s".format(java.util.Locale.ROOT, OpoProtocol.u16(data, 4), data[6].toInt() and 0xFF, payload.size,
             if (payload.isEmpty()) "" else "  $shown$more")
     }
 

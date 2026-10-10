@@ -25,6 +25,8 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.text.PrecomputedTextCompat
+import androidx.core.widget.TextViewCompat
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
@@ -35,6 +37,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executors
 
 /**
  * Dev Tools screen.
@@ -63,8 +66,14 @@ class DevToolsActivity : Activity() {
     /** 0 simple, 1 detailed. */
     private var mode = 0
 
-    /** Line count at the last paint — lets refreshLog() skip no-op rebuilds. */
-    private var lastLineCount = -1
+    /** [PacketLogger.version] at the last paint — lets refreshLog() skip no-op rebuilds. */
+    private var lastVersion = -1L
+
+    /** Builds and measures the log text off the main thread; 2000 decoded lines take too long for a tap. */
+    private val worker = Executors.newSingleThreadExecutor()
+
+    /** Bumped per rebuild, so a slow older build never paints over a newer one. */
+    private var generation = 0
 
     /** Polling task that refreshes the log every 500ms. */
     private val refreshTask = object : Runnable {
@@ -97,7 +106,8 @@ class DevToolsActivity : Activity() {
         actions.addView(action(R.drawable.ic_delete, "Clear") {
             PacketLogger.clear()
             logText.text = ""
-            lastLineCount = 0
+            lastVersion = PacketLogger.version
+            generation++
         })
         // Connection controls go through the service actions the rest of the app already uses:
         // this screen does not bind BudsService.
@@ -212,9 +222,14 @@ class DevToolsActivity : Activity() {
         handler.removeCallbacks(refreshTask)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        worker.shutdownNow()
+    }
+
     private fun switchTo(m: Int) {
         mode = m
-        lastLineCount = -1
+        lastVersion = -1
         tabs.selected = m
         refreshLog()
     }
@@ -231,21 +246,34 @@ class DevToolsActivity : Activity() {
      */
     private fun showInLog(message: String) {
         logText.append("\n[dev] $message\n")
-        lastLineCount = PacketLogger.getLines().size
+        lastVersion = PacketLogger.version
         scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
     }
 
     private fun refreshLog() {
-        val lines = PacketLogger.getLines()
         // Nothing new since the last paint — don't rebuild or move the scroll.
-        if (lines.size == lastLineCount) return
-        lastLineCount = lines.size
-
-        // Follow only if the user is already at the bottom.
-        val wasAtBottom = !scroll.canScrollVertically(1)
-
-        val sb = android.text.SpannableStringBuilder()
+        val version = PacketLogger.version
+        if (version == lastVersion) return
+        lastVersion = version
+        val lines = PacketLogger.getLines()
+        val m = mode
+        val gen = ++generation
         val p = ThemeRes.palette(this)
+        val params = TextViewCompat.getTextMetricsParams(logText)
+        worker.execute {
+            val text = PrecomputedTextCompat.create(buildLog(lines, m, p), params)
+            handler.post {
+                if (gen != generation || isDestroyed) return@post
+                // Follow only if the user is already at the bottom.
+                val wasAtBottom = !scroll.canScrollVertically(1)
+                TextViewCompat.setPrecomputedText(logText, text)
+                if (wasAtBottom) scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
+            }
+        }
+    }
+
+    private fun buildLog(lines: List<String>, mode: Int, p: Palette): CharSequence {
+        val sb = android.text.SpannableStringBuilder()
         val amber = 0xFFE8A93A.toInt()
         val green = 0xFF3FB950.toInt()
         fun color(k: SimpleLog.Kind) = when (k) {
@@ -288,10 +316,7 @@ class DevToolsActivity : Activity() {
             sb.append("\n")
             if (d.detail != null) add("           ${d.detail}\n", if (d.unknown) amber else p.textSecondary)
         }
-        logText.text = sb
-        if (wasAtBottom) {
-            scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
-        }
+        return sb
     }
 
     private fun checkStoragePermission(): Boolean {

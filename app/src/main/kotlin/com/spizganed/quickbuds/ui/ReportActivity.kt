@@ -121,7 +121,8 @@ class ReportActivity : Activity() {
     }
 
     /** Send needs a description or a category. */
-    private fun ready() = !sending && (description.text.isNotBlank() || categories.values.any { it.isChecked })
+    // A description is required: a person who cannot connect at all has no log, only words to reproduce it from.
+    private fun ready() = !sending && description.text.isNotBlank()
 
     private fun paintSend() {
         send.isEnabled = ready()
@@ -132,7 +133,7 @@ class ReportActivity : Activity() {
         model.text.toString().trim(),
         categories.filterValues { it.isChecked }.keys.toList(),
         description.text.toString().trim(),
-        if (withLog.isChecked) ProblemReport.log(this) + intent.getStringExtra(EXTRA_CRASH)?.let { "\n\n$it" }.orEmpty() else null
+        if (withLog.isChecked) ProblemReport.log(this, intent.getStringExtra(EXTRA_CRASH)?.let { "\n\n$it" }.orEmpty()) else null
     )
 
     private fun preview() {

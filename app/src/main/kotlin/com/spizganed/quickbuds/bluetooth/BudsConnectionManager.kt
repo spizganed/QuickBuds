@@ -245,8 +245,8 @@ class BudsConnectionManager(private val context: Context) {
                     log("Connected via UUID: $uuidStr")
                     break
                 } catch (e: IOException) {
-                    log("Failed UUID $uuidStr: ${e.message}")
-                    lastError = e.message
+                    lastError = e.message ?: e.javaClass.simpleName
+                    log("Failed UUID $uuidStr: $lastError")
                     try { socket?.close() } catch (_: Exception) {}
                     socket = null
                 }
@@ -260,8 +260,8 @@ class BudsConnectionManager(private val context: Context) {
                     socket.connect()
                     log("Connected via raw channel 15")
                 } catch (e: Exception) {
-                    log("Channel 15 failed: ${e.message}")
-                    lastError = e.message
+                    lastError = e.message ?: e.javaClass.simpleName
+                    log("Channel 15 failed: $lastError")
                     socket = null
                 }
             }
@@ -895,7 +895,7 @@ class BudsConnectionManager(private val context: Context) {
         }
 
         log("KEYFN WRITE: dev=0x%02X btn=%s act=0x%02X -> 0x%02X (%d slot(s), full table %d entries)"
-            .format(
+            .format(java.util.Locale.ROOT,
                 side, buttons.joinToString(",") { "0x%02X".format(it) },
                 keyFnAction, functionByte, matched, updated.size
             ))
@@ -1382,7 +1382,7 @@ class BudsConnectionManager(private val context: Context) {
                 else null
             }.toMap()
             featureStates = states
-            log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(it.key, it.value) })
+            log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(java.util.Locale.ROOT, it.key, it.value) })
             // Game mode has its own push (0x0204 subType 0x05) but none at connect time; this is
             // the connect-time read, fed through the same path so the widget follows too.
             val game = states[Capabilities.gameModeId(context)]

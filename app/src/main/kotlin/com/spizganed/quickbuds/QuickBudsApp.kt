@@ -13,6 +13,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.ui.PaletteStore
+import com.spizganed.quickbuds.ui.ProblemReport
 import com.spizganed.quickbuds.ui.ThemeRes
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import java.io.File
@@ -147,6 +148,7 @@ class QuickBudsApp : Application() {
             }
             appendLine()
             appendLine(sw.toString())
+            runCatching { append(ProblemReport.scrub(context, ProblemReport.appLog())) }
         }
 
         // 1. Public, user-reachable copy.

@@ -44,6 +44,11 @@ object PacketLogger {
     /** In-memory ring buffer for the Dev Tools screen. */
     private val buffer = CopyOnWriteArrayList<String>()
 
+    /** Changes on every log and clear. The buffer size stops changing at the cap, so readers compare this. */
+    @Volatile
+    var version = 0L
+        private set
+
     fun init(context: Context) {
         if (logFile == null) {
             logFile = File(context.getExternalFilesDir(null), "packets.log")
@@ -59,6 +64,7 @@ object PacketLogger {
         while (buffer.size > MAX_BUFFER_LINES) {
             buffer.removeAt(0)
         }
+        version++
         val f = logFile ?: return
         try {
             if (f.length() > MAX_BYTES) {
@@ -83,6 +89,7 @@ object PacketLogger {
     @Synchronized
     fun clear() {
         buffer.clear()
+        version++
         val f = logFile ?: return
         try {
             f.writeText("")

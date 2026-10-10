@@ -77,10 +77,44 @@ fn device_bytes(l: &Line) -> bool {
     matches!(cmd_of(&l.bytes), 0x8112 | 0x0429 | 0x8132) || (cmd_of(&l.bytes) == EVT_PUSH && pl.first() == Some(&0x06))
 }
 
-/// The log as sent: header, then every line, then the last crash report; without Bluetooth addresses, device data
-/// or this computer's name.
+/// The log as sent: header, every line, the newest stderr, then the last crash report; without Bluetooth addresses,
+/// device data or this computer's name.
 fn log_text(a: &App) -> String {
-    scrub(header(a) + "\n" + &lines(&LOG.lock().unwrap()) + CRASH.lock().unwrap().as_str())
+    scrub(header(a) + "\n" + &lines(&LOG.lock().unwrap()) + &stderr_tail() + CRASH.lock().unwrap().as_str())
+}
+
+/// `stderr.log` next to `settings.json`.
+fn stderr_path() -> Option<std::path::PathBuf> {
+    crate::settings_path().map(|p| p.with_file_name("stderr.log"))
+}
+
+/// Second thing in `main`: stderr goes to [stderr_path], emptied per launch. GTK, Slint, BlueZ and Rust warnings land
+/// there; Windows shows no console and a launcher drops them. From a terminal stderr stays on the terminal.
+pub fn capture_stderr() {
+    use std::io::IsTerminal;
+    if std::io::stderr().is_terminal() { return; }
+    let Some(path) = stderr_path() else { return };
+    let _ = std::fs::create_dir_all(path.parent().unwrap());
+    let Ok(file) = std::fs::File::create(&path) else { return };
+    #[cfg(not(windows))]
+    unsafe {
+        use std::os::fd::IntoRawFd;
+        libc::dup2(file.into_raw_fd(), 2);
+    }
+    #[cfg(windows)]
+    unsafe {
+        use std::os::windows::io::IntoRawHandle;
+        windows_sys::Win32::System::Console::SetStdHandle(windows_sys::Win32::System::Console::STD_ERROR_HANDLE,
+            file.into_raw_handle() as _);
+    }
+}
+
+/// The last 100 stderr lines, or "" when there are none. The tray library's deprecation notice comes every launch.
+fn stderr_tail() -> String {
+    let text = stderr_path().and_then(|p| std::fs::read_to_string(p).ok()).unwrap_or_default();
+    let lines: Vec<&str> = text.lines().filter(|l| !l.trim().is_empty() && !l.contains("libayatana-appindicator is deprecated")).collect();
+    if lines.is_empty() { return String::new(); }
+    format!("\nSTDERR (warnings and errors):\n{}\n", lines[lines.len().saturating_sub(100)..].join("\n"))
 }
 
 fn lines(log: &[Line]) -> String {
@@ -115,8 +149,8 @@ pub fn catch_panics() {
     std::panic::set_hook(Box::new(move |info| {
         // A panic while the log is locked skips the log rather than deadlock.
         let log = LOG.try_lock().map(|l| lines(&l[l.len().saturating_sub(300)..])).unwrap_or_default();
-        let text = format!("QuickBuds crash report\nversion: {}\ncomputer: {}\nsystem: {}\nthread: {}\n\n{info}\n\n{log}",
-            env!("CARGO_PKG_VERSION"), computer(), system(), std::thread::current().name().unwrap_or("?"));
+        let text = format!("QuickBuds crash report\nversion: {}\ncomputer: {}\nsystem: {}\nthread: {}\n\n{info}\n\n{log}{}",
+            env!("CARGO_PKG_VERSION"), computer(), system(), std::thread::current().name().unwrap_or("?"), stderr_tail());
         let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs());
         let _ = std::fs::create_dir_all(folder()).and_then(|_| std::fs::write(folder().join(format!("crash-{secs}.txt")), scrub(text)));
         previous(info);
@@ -225,13 +259,14 @@ fn send(body: String) -> bool {
     child.wait().is_ok_and(|s| s.success())
 }
 
-/// The current form as a body; None (with a note) while it has neither a category nor a description.
+/// The current form as a body; None (with a note) without a description. A person who cannot connect at all has no
+/// log, only words to reproduce it from.
 fn current(a: &App) -> Option<String> {
     let r = a.main.global::<Report>();
     let picked: Vec<&str> = (0..6).filter(|&i| r.get_picked().row_data(i).unwrap_or(false)).map(|i| CATEGORIES[i]).collect();
     let description = r.get_description().trim().to_string();
-    if picked.is_empty() && description.is_empty() {
-        r.set_note("Pick a category or describe the problem.".into());
+    if description.is_empty() {
+        r.set_note("Describe the problem: what you did and what happened.".into());
         return None;
     }
     let log = r.get_with_log().then(|| log_text(a));

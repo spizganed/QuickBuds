@@ -40,12 +40,32 @@ object ProblemReport {
             "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}) | $model ($id) firmware $fw"
     }
 
-    /** The log as sent: header, then the packet log without Bluetooth addresses or this phone's name. */
-    fun log(c: Context): String {
-        var text = header(c) + "\n" + PacketLogger.getFileContent().lines().joinToString("\n", transform = ::dropDeviceBytes)
-        text = MAC.replace(text, "XX:XX:XX:XX:XX:XX")
-        for (name in phoneNames(c)) text = text.replace(name, "[this phone]")
-        return text
+    /**
+     * The log as sent: header, the packet log, this app's logcat warnings and errors, then [crash] (a crash report,
+     * or ""). Logcat shows misbehaviour the packet log misses, crash or not.
+     */
+    fun log(c: Context, crash: String = ""): String = scrub(c,
+        header(c) + "\n" + PacketLogger.getFileContent().lines().joinToString("\n", transform = ::dropDeviceBytes) +
+            appLog() + crash)
+
+    /** [text] without Bluetooth addresses or this phone's name. */
+    fun scrub(c: Context, text: String): String {
+        var t = MAC.replace(text, "XX:XX:XX:XX:XX:XX")
+        for (name in phoneNames(c)) t = t.replace(name, "[this phone]")
+        return t
+    }
+
+    /**
+     * The last 100 warnings and errors of this process, without the renderer's noise. An app reads its own logcat
+     * without a permission. The crash handler calls it too: the next launch is a new process with a new log.
+     */
+    fun appLog(): String {
+        val out = runCatching {
+            ProcessBuilder("logcat", "-d", "-t", "100", "--pid=${android.os.Process.myPid()}", "HWUI:S", "*:W")
+                .redirectErrorStream(true).start().inputStream.bufferedReader().readLines()
+                .filterNot { it.startsWith("---------") }.joinToString("\n").trim()
+        }.getOrDefault("")
+        return if (out.isEmpty()) "" else "\n\nLOGCAT (warnings and errors):\n$out"
     }
 
     /**
