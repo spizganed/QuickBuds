@@ -579,6 +579,8 @@ component AncSegments inherits Rectangle {
         width: root.width;
         height: root.height;
         animate x { duration: Motion.slow; easing: ease-in-out; }
+        opacity: hint ? 0 : 1;
+        animate opacity { duration: Motion.base; }
         count: n-off + n-anc + n-adaptive + (Buds.has-transparency ? 1 : 0);
         index: Buds.anc == "Off" && Buds.has-off ? 0 : Buds.anc-is-level ? n-off : Buds.anc == "Adaptive" ? n-off + n-anc
             : Buds.anc == "Transparency" ? n-off + n-anc + n-adaptive : -1;
@@ -605,6 +607,8 @@ component AncSegments inherits Rectangle {
         width: root.width;
         height: root.height;
         animate x { duration: Motion.slow; easing: ease-in-out; }
+        opacity: hint ? 0 : 1;
+        animate opacity { duration: Motion.base; }
         count: Buds.levels.length;
         index: level-at;
         for l[i] in Buds.levels: Segment {
@@ -619,7 +623,7 @@ component AncSegments inherits Rectangle {
         running: picking;
         triggered => { picking = false; }
     }
-    // The buds refuse a mode with no bud in an ear: say so over the segments for 3 s (the phone's toast).
+    // The buds refuse a mode with no bud in an ear: say so in place of the segments for 3 s (the phone's toast).
     property <int> refused: Buds.anc-refused;
     property <bool> hint;
     changed refused => { hint = true; }
