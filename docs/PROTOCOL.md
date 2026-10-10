@@ -95,7 +95,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0130` | Alert-sound volume | — → `00 <level>` | 9 |
 | `0x0132` | Preferred device | `02` | 9 |
 | `0x0133` | Tap sensitivity | — → `00 <level> <default>` | 9 |
-| `0x0134` | Head gesture mapping | — (reply logged raw) | 9 |
+| `0x0134` | Head gesture mapping | — → `00 <type>` | 9 |
 
 ### Subscriptions and pushes (`0x02xx`)
 
@@ -117,7 +117,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0406` | Select built-in EQ | `<id>` | 9 |
 | `0x040D` / `0x040E` / `0x0411` / `0x0415` | Golden Sound | see §9 | 9 |
 | `0x0412` | Personalised ANC test | `01` / `02` / `03` | 9 |
-| `0x0413` | After a dual connection toggle | `08 00 <xx>` | 9 |
+| `0x0413` | Phone state for device switching | `<flags> 00 <values>` | 9 |
 | `0x0418` | Custom EQ create / save / delete | see §9 | 9 |
 | `0x041A` | Set codec (`highAudio` models) | `<codec> <hiRes> 00` | 9 |
 | `0x041B` | BassWave level | `FB 05 <level>` | 9 |
@@ -133,7 +133,8 @@ Details in the sections cited. `—` = empty payload.
 
 | Cmd | Name |
 |---|---|
-| `0x0500` / `0x0501` | Time request (§9, answered) / bud state |
+| `0x0500` | Time request (§9, answered) |
+| `0x0501` / `0x0502` | Camera state request / shutter request (tap to take a photo) `[VENDOR]`. Not answered |
 | `0x0504` | EQ mode changed: `<id>` (§9) |
 | `0x0510` | Spatial type changed: `<type>` (§9) |
 
@@ -175,8 +176,8 @@ keep-alive poll. Is: none; no stale link seen `[TESTED]`.
   id (issue #5) `[CAPTURE]`; a renamed device matches no name and falls back to its id.
 - **`0x8105` firmware** `[CAPTURE]`: `00 <count>` then UTF-8 `deviceType,versionType,version` triples.
   Buds 4: `00 04` + `1,2,138,2,2,138,3,1,01,3,2,105`. HeyMelody shows `138.138.105`: the `versionType` 2
-  versions in reply order, joined by dots (`OpoProtocol.firmwareVersion()`). Device types 1 / 2 / 3 are
-  probably left / right / case `[GUESS]`.
+  versions in reply order, joined by dots (`OpoProtocol.firmwareVersion()`). Device types: 1 left, 2 right,
+  3 case `[VENDOR]`.
 - **`0x810D` lists only the switches the firmware has** (§9). A missing id = no such switch
   `[CAPTURE]`+`[OSS]`.
 
@@ -210,16 +211,16 @@ one `0x012F`. A later status read goes alone.
 |---|---|---|
 | `01` | Battery (§7) | always |
 | `02` | Wearing (§8) | always |
-| `03` | ANC mode (§5) | always |
+| `03` | ANC: `01 01` mode, `02 01` hold cycle, `04 01` Smart's level (§5) | always |
 | `04` | Fit test result (§9) | when the bitmap has `0x0405` |
-| `05` | Game mode (`GAME EVT`) `[CAPTURE]` | — |
+| `05` | Game mode (`GAME EVT`) `[CAPTURE]`: `05 <state>`; `05 xx xx <state>` on `062410` `062810` `063010` `063410` `[VENDOR]` | — |
 | `06` | Dual connection device list (§9) `[CAPTURE]` | — |
 | `08` | Golden Sound test status (§9) | when the bitmap has `0x040D` |
 | `0B` | Personalised ANC result (§9) | when the bitmap has `0x0412` |
 | `0E` | Golden Sound ear scan result (§9) | pushed, not in the list |
 | `F1` | Gesture fired (§6) | `[OSS]` debug channel |
-| `F2` | Connected-devices info `[VENDOR]`, acked (§9) | no |
-| `F3` | `[OSS]` debug channel | no |
+| `F2` | Connected-devices info `[VENDOR]`, acked (§9): `<count>`, then per device the MAC (6 bytes, reversed), connect count (u16 LE), name length, name | no |
+| `F3` | `[OSS]` debug channel. HeyMelody ignores it `[VENDOR]` | no |
 | `F4` | Diagnostic JSON `[VENDOR]`, acked (§9) | pushed, not in the list |
 | `F5` | Head gesture type `[VENDOR]` | — |
 
@@ -239,6 +240,7 @@ ANC), plus `04` / `08` / `0B` as above, **kept to the ids the buds offer in `0x8
   It sends no `0x8205`. The cause of its link drop was the long `0x010D` list, not the subscription (§9).
 - The `0x8205` ack: `01 02 01 00 02 00` and, for five ids, `01 05 01 00 02 00 03 00 04 00 08 00`
   (Buds 4): `01 <count>`, then `<id> 00` per id `[GUESS]`. Fewer ids than asked = part rejected.
+  HeyMelody reads none of these bytes; the ack only ends its connect setup `[VENDOR]`.
 
 ---
 
@@ -303,9 +305,13 @@ one level down (Buds 4's Off has a child at 3, Transparency one at 8).
 - Query: `0x010C 01 01` → `00 01 01 <LO> <HI>` (status, echo, value). Read on every connect, so a
   reconnect corrects the display.
 - `AncEventParser` accepts a push only when bytes 1-2 are `01 01`. A hold-cycle write also raises a
-  push `03 02 01 <mask>`. It is not a mode (Was: decoded as one, the display stuck on a false mode).
+  push `03 02 01 <mask>`: the hold cycle's new mask `[VENDOR]`. It is not a mode (Was: decoded as one,
+  the display stuck on a false mode).
 - **Smart** `[CAPTURE]`: SET bit 7 is acked and pushed as `0x0080`. Right after, the buds pushed
-  `03 04 01 20 00` and `03 04 01 40 00`: probably the level Smart chose `[GUESS]`. Not parsed.
+  `03 04 01 20 00` and `03 04 01 40 00`.
+- **The level Smart chose** `[VENDOR]`: push `03 04 01 <mask LE>`, read `0x010C 04 01` →
+  `00 04 01 <mask LE>`. The lowest set bit is a SET bit: `0x20` Medium, `0x40` Light on Buds 4. The
+  ANC label shows it ("ANC S·M"). Read on connect for models with Smart.
 
 ### The hold's ANC cycle — `setSupportNoiseReduction`
 
@@ -439,7 +445,8 @@ Example, right hold: `AA 0D 00 00 04 02 FF 06 00 F1 02 01 04 08 03`.
 - `act` and `fn` are the gesture table's pair; `fn` is the **effective** function (a slide reports
   `0B`/`0C` or `05`/`06`; a hold with `fn` cleared still reports `08`). The `[OSS]` "modifier bits"
   reading is wrong.
-- `act 00` frames (seen on a single tap) are some other event, not a binding `[GUESS]`.
+- `act 00` frames (seen on a single tap) are some other event, not a binding `[GUESS]`. HeyMelody
+  stores the frame and reads no field of it `[VENDOR]`.
 - **Diagnostic only, never a control signal.** Read the effect from the ANC / game / wear pushes. One
   double tap can report twice; the app follows faithfully, do not "fix" it.
 
@@ -461,12 +468,15 @@ Level = `raw & 0x7F`, charging = `raw & 0x80`. Example: `03 01 64 02 64 03 50`.
 
 `[OSS]` Payload `<count>` then `<component> <status>` pairs; component `1` left, `2` right, `3` case.
 
+The status is bits `[VENDOR]`: bit 0 out of the case, bit 1 in ear, bit 2 lid open, bit 3 a flag
+HeyMelody calls "safe remind". Both apps clear bit 3, so only the codes below remain.
+
 | Status | Meaning |
 |---|---|
-| `0` | disconnected |
-| `1`, `5` | out of ear |
-| `3`, `7` | **in ear** |
-| `4` | **in case** |
+| `0` | in case, lid closed |
+| `1`, `5` | out of ear (lid closed / open) |
+| `3`, `7` | **in ear** (lid closed / open) |
+| `4` | **in case**, lid open |
 
 - Query replies sometimes prepend a status byte; `WearingStatusParser` tries offsets 0 and 1
   `[CAPTURE]`.
@@ -509,7 +519,7 @@ speechPerception, `34` meetingAssistant, `35` longPressVolume, `37` swiftPair, `
 | Id | Switch | Notes |
 |---|---|---|
 | `04` | Auto play/pause (wear detection) | `[CAPTURE]` |
-| `05` | ? | Buds 4 lists it, unassigned |
+| `05` | ? | HeyMelody asks it first for every model, ignores the value and never writes it `[VENDOR]` |
 | `06` | Game mode / low latency | `[VENDOR]` all models, **except** `28` where the bitmap has `0x0423` (`gameModeId()`) |
 | `09` | Vocal enhancement | flag `vocalEnhance` |
 | `0B` | Golden Sound (hearing profile) | see below `[CAPTURE]` |
@@ -542,7 +552,8 @@ Ids `09`-`3B` without a `[CAPTURE]` are `[VENDOR]`, wired, unverified on buds. A
   parameters do not change. The buds do not bring phone audio back; the app asks for it. HeyMelody
   does not show this row (China-market feature `[VENDOR]`).
 - **Head gesture mapping** `[VENDOR]`: `0x0431 00` = nod answers / shake declines, `01` = the reverse.
-  Read `0x0134`; HeyMelody parses the type only from push `F5 <type>`. Bitmap bit 63.
+  Read `0x0134` → `00 <type>`, pushed as `F5 <type>`. Bitmap bit 63. Was: "HeyMelody parses only the
+  push". Is: it parses both.
 - **Game sound type** `[VENDOR]`: `0x0423 <type> 01`, Off (`0`) included. Read `0x012B` →
   `00 <selected> <count> <types>`. Types: `0` Off, `1` a Chinese game, `3` shooting games. Offered:
   the model's `gameSoundList` types the buds also list.
@@ -687,7 +698,10 @@ entry: <MAC, 6 bytes reversed> <len> <state> <flags> <nameLen> <name UTF-8>
 - `len` counts state, flags, nameLen and name. State `02` connected, `00` not (a dropped device stays
   listed). Flags: bit 0 this phone, bit 1 main audio device, bit 2 playing, bits 3-5 device type.
 - Toggle: `0x0403 11 00/01`, then `0x0413 08 00 01` after off / `08 00 00` after on (also sent when the
-  screen opens). Meaning unknown; replayed verbatim.
+  screen opens). Replayed verbatim.
+- `0x0413` `[VENDOR]`: the phone's state for switching between devices. `<flags> 00`, then one byte per set
+  flag in bit order: `01` protocol version, `02` screen on, `04` held by hand, `08` auto switch on, `10`
+  music playing. So `08 00 01` = auto switch on.
 - **Device manager** `[VENDOR]`, wired, unverified: models whose `multiConnect` lists it (11;
   bitmap bit 59 `0x0429` / `0x0132`, Buds 4 lacks it). `0x0429 01 <MAC>` connect, `02 <MAC>`
   disconnect (MAC in written order, the reverse of the list); `03 <MAC>` unpair (unused). Preferred
@@ -758,12 +772,11 @@ sends `0x0500` empty and works either way. Both apps answer from one function (`
 ## 12. Open questions
 
 - Hold cycle mask: bit 1 alone has never been cleared (§5).
-- Pushes `F1` `act 00`, `F3`; the `F2` layout; the Smart level pushes `03 04 01 …` (§5).
+- Push `F1` `act 00`; `F3` (HeyMelody ignores both).
 - The recurring `F1` family `AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`, and `02 01 08 0C 02` /
   `02 01 07 0B 02` (non-multiples of ten; maybe a fine battery field). **Do not guess these from a
   few samples.**
-- The `0x8205` ack layout (§4): the meaning of its bytes.
 - `0x0404` with a level form `01 02 <level>` (`[OSS]` mentions it). Unverified.
-- `0x8134` head gesture reply layout; `0x0413 08 00 xx`; switch `05`; `0x0501`.
+- Switch `05`: HeyMelody never uses its value.
 - Other models' ANC bits, gesture writes and `[VENDOR]` features: unverified until an owner reads a
   write back.

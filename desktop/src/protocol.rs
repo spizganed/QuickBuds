@@ -286,6 +286,8 @@ impl AncModes {
     pub fn supports(&self, mode: &str) -> bool { self.set.iter().any(|(n, _)| n == mode) }
     pub fn bit(&self, mode: &str) -> Option<u8> { self.set.iter().find(|(n, _)| n == mode).map(|x| x.1) }
     pub fn levels(&self) -> Vec<&'static str> { LEVELS.into_iter().filter(|l| self.supports(l)).collect() }
+    /// The level (not Smart) whose SET bit this is.
+    pub fn level_for_bit(&self, bit: u8) -> Option<&'static str> { LEVELS[..3].iter().copied().find(|l| self.bit(l) == Some(bit)) }
 
     /// The mode a `0x810C` / `0x0204` value reports. A plain "noise cancelling" bit names no level:
     /// `current_level` if these buds have it, else their first.
@@ -665,7 +667,10 @@ pub enum Event {
     /// (component 1 left / 2 right / 3 case, status), §8
     Wear(Vec<(u8, u8)>),
     AncRaw(u32),
-    GameMode(bool),
+    /// The level Smart chose, as a SET bit mask: `0x810C` `00 04 01 <mask>`, push `03 04 01 <mask>`.
+    SmartLevel(u32),
+    /// Push `05 ...`, the whole payload: read it with [game_on].
+    GameMode(Vec<u8>),
     /// `0x810D`: feature id -> value
     Features(Vec<(u8, u8)>),
     AlertVolume(u8),
@@ -700,6 +705,21 @@ fn pairs(b: &[u8]) -> Option<Vec<(u8, u8)>> {
     (rest.len() >= count as usize * 2).then(|| rest.chunks_exact(2).take(count as usize).map(|c| (c[0], c[1])).collect())
 }
 
+/// These models put the game state at payload[3], not payload[1] (§3 push `05`) `[VENDOR]`, unverified.
+const GAME_STATE_AT_3: [&str; 4] = ["062410", "062810", "063010", "063410"];
+
+/// Push `05 <state>`, or `05 .. .. <state>` on [GAME_STATE_AT_3]. Non-zero = on.
+pub fn game_on(pl: &[u8], product: Option<&str>) -> Option<bool> {
+    let at = if product.is_some_and(|p| GAME_STATE_AT_3.iter().any(|x| x.eq_ignore_ascii_case(p))) { 3 } else { 1 };
+    pl.get(at).map(|&b| b != 0)
+}
+
+/// 1-4 bytes little-endian (`NoiseReductionInfo`).
+fn le(b: &[u8]) -> u32 { b[..b.len().min(4)].iter().rev().fold(0, |v, &x| v << 8 | x as u32) }
+
+/// §8: status bits 0 out of the case, 1 in ear, 2 lid open; bit 3 is a flag we drop.
+fn wear_bits(v: Vec<(u8, u8)>) -> Vec<(u8, u8)> { v.into_iter().map(|(i, st)| (i, st & 7)).collect() }
+
 pub fn decode(p: &[u8]) -> Option<Event> {
     let pl = payload_of(p);
     let sub = pl.first().copied();
@@ -712,12 +732,13 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x8109 => {
             // `[count][pairs]`, or `[status][count][pairs]` (WearingStatusParser tries both).
             let valid = |v: &Vec<(u8, u8)>| !v.is_empty() && v.iter().all(|x| (1..=3).contains(&x.0));
-            Event::Wear(pairs(pl).filter(valid).or_else(|| pairs(pl.get(1..)?).filter(valid))?)
+            Event::Wear(wear_bits(pairs(pl).filter(valid).or_else(|| pairs(pl.get(1..)?).filter(valid))?))
         }
         // `[status][01 01][value LE, 1-4 bytes]`
         0x810C if pl.len() >= 4 && pl[1] == 1 && pl[2] == 1 => {
             Event::AncRaw(pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
         }
+        0x810C if pl.len() >= 4 && pl[1] == 4 && pl[2] == 1 => Event::SmartLevel(le(&pl[3..])),
         0x810C if pl.len() >= 4 && pl[1] == 2 => {
             Event::HoldMask(pl[2], pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
         }
@@ -728,6 +749,7 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
         0x811A if sub == Some(0) && pl.len() >= 2 => Event::PncStored(pl[1] != 0),
         0x8412 if !pl.is_empty() => Event::PncAck(pl[0]),
+        0x8134 if sub == Some(0) && pl.len() >= 2 => Event::HeadMotion(pl[1]),
         0x812A if sub == Some(0) && pl.len() >= 2 => Event::SpatialType(pl[1]),
         EVT_SPATIAL_TYPE if !pl.is_empty() => Event::SpatialType(pl[0]),
         0x8114 if sub == Some(0) && pl.len() >= 2 => Event::Codec(pl[1]),
@@ -748,9 +770,10 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x8124 if sub == Some(0) && pl.len() >= 4 => Event::BassLevel(pl[3] as i8),
         EVT_PUSH => match sub? {
             0x01 => Event::Battery(battery(&pl[1..])),
-            0x02 => Event::Wear(pairs(&pl[1..])?),
+            0x02 => Event::Wear(wear_bits(pairs(&pl[1..])?)),
             0x03 if pl.len() >= 5 && pl[1] == 1 && pl[2] == 1 => Event::AncRaw(u16::from_le_bytes([pl[3], pl[4]]) as u32),
-            0x05 if pl.len() >= 2 => Event::GameMode(pl[1] != 0),
+            0x03 if pl.len() >= 4 && pl[1] == 4 && pl[2] == 1 => Event::SmartLevel(le(&pl[3..])),
+            0x05 if pl.len() >= 2 => Event::GameMode(pl.to_vec()),
             // `04 <dev> <s> <dev> <s>`, dev 01 left / 02 right
             0x04 => {
                 let r = pairs_n(&pl[1..]);
@@ -782,7 +805,8 @@ pub fn describe(e: &Event) -> String {
         Event::Battery(v) => format!("Battery {}", v.iter().map(|(i, l, c)| format!("{}={l}%{}", side(*i), if *c { "+" } else { "" })).collect::<Vec<_>>().join(" ")),
         Event::Wear(v) => format!("Wear {}", v.iter().map(|(i, st)| format!("{}={}", side(*i), match st { 3 | 7 => "EAR", 4 => "CASE", 1 | 5 => "OUT", _ => "?" })).collect::<Vec<_>>().join(" ")),
         Event::AncRaw(raw) => format!("ANC report 0x{raw:X}"),
-        Event::GameMode(on) => format!("Low latency {}", if *on { "on" } else { "off" }),
+        Event::SmartLevel(m) => format!("Smart level mask 0x{m:X}"),
+        Event::GameMode(pl) => format!("Low latency push {}", hex(pl)),
         Event::AlertVolume(l) => format!("Alert volume {l}"),
         Event::GameSound(t, all) => format!("Game sound type {t} (offered {all:?})"),
         Event::SpatialType(t) => format!("Spatial type {t}"),
@@ -1137,6 +1161,13 @@ mod tests {
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[4, 1, 1, 2, 1])), Some(Event::FitResult(1, 1))));
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[4, 2, 6])), Some(Event::FitResult(0xFF, 6))));
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0xF5, 1])), Some(Event::HeadMotion(1))));
+        assert!(matches!(decode(&build_packet(0x8134, 1, &[0, 1])), Some(Event::HeadMotion(1))));
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[3, 4, 1, 0x20, 0])), Some(Event::SmartLevel(0x20))));
+        assert!(matches!(decode(&build_packet(0x810C, 1, &[0, 4, 1, 0x40])), Some(Event::SmartLevel(0x40))));
+        assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[2, 2, 1, 0x0F, 2, 4])), Some(Event::Wear(w)) if w == [(1, 7), (2, 4)]));
+        assert_eq!(game_on(&[5, 1], None), Some(true));
+        assert_eq!(game_on(&[5, 1, 0, 0], Some("062410")), Some(false));
+        assert_eq!(game_on(&[5, 0, 0, 1], Some("062410")), Some(true));
         assert!(matches!(decode(&build_packet(EVT_PUSH, 1, &[0x0B, 2])), Some(Event::PncResult(2))));
         assert!(matches!(decode(&build_packet(0x811A, 1, &[0, 1])), Some(Event::PncStored(true))));
         assert!(matches!(decode(&build_packet(0x8412, 1, &[15])), Some(Event::PncAck(15))));

@@ -150,7 +150,7 @@ object OpoProtocol {
     const val FEATURE_HEAD_MOTION = 0x3B
     /** Head gestures' mapping: `0x0431 <type>`, `0` nod answers / shake declines, `1` the reverse. `[VENDOR]` */
     const val CMD_SET_HEAD_MOTION_TYPE = 0x0431
-    /** Read with `0x0134` (empty); the type comes back as the `0x0204` push [EVT_HEAD_MOTION_TYPE]. `[VENDOR]` */
+    /** Read with `0x0134` (empty) → `00 <type>`; a change also comes as the `0x0204` push [EVT_HEAD_MOTION_TYPE]. `[VENDOR]` */
     const val CMD_QUERY_HEAD_MOTION_TYPE = 0x0134
     const val EVT_HEAD_MOTION_TYPE = 0xF5
     /**
@@ -411,6 +411,9 @@ object OpoProtocol {
         .ifEmpty { null }
     fun queryBattery(): ByteArray = buildPacket(CMD_QUERY_BATTERY, seq = 0xF0)
     fun queryAncMode(): ByteArray = buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x01, 0x01))
+
+    /** The level Smart chose: `00 04 01 <SET bit mask LE>`, also pushed as `03 04 01 <mask>` `[VENDOR]`. */
+    fun querySmartLevel(): ByteArray = buildPacket(CMD_QUERY_ANC, payload = byteArrayOf(0x04, 0x01))
 
     /**
      * getNoiseReductionSwitchMode — WHICH ANC modes the hold cycles through.

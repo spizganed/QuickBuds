@@ -52,7 +52,7 @@ class BudsConnectionManager(private val context: Context) {
 
         /**
          * Full wear state (raw status codes from 0x0109 / 0x0204):
-         * 4 = in case, 1/5 = out idle, 3/7 = wearing, 0 = disconnected, -1 = side not reported.
+         * 4 = in case, 1/5 = out idle, 3/7 = wearing, 0 = in case with the lid closed, -1 = side not reported.
          * caseSt is the raw code reported by the case component (comp 3), -1 if absent.
          */
         fun onWearState(left: Int, right: Int, caseSt: Int) {}
@@ -68,6 +68,9 @@ class BudsConnectionManager(private val context: Context) {
          * NOTE: ANC has its own event, subType 0x03 — see onAncModeState.
          */
         fun onGameModeState(on: Boolean) {}
+
+        /** Smart noise cancelling picked a level ([BudsConnectionManager.smartLevel]). */
+        fun onSmartLevel() {}
 
         /**
          * Fit test result (`0x0204` subType `0x04`), per bud: 1 good, 0 average, 6 poor, anything
@@ -323,6 +326,8 @@ class BudsConnectionManager(private val context: Context) {
                 }
                 query(OpoProtocol.CMD_QUERY_STATUS, statusQuery(), "query status")
                 query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.queryAncMode(), "query anc")
+                if (AncModes.of(context).supports(AncModes.SMART))
+                    query(OpoProtocol.CMD_QUERY_ANC, OpoProtocol.querySmartLevel(), "query smart level")
                 query(OpoProtocol.CMD_QUERY_ALERT_VOLUME, OpoProtocol.queryAlertVolume(), "query alert volume")
                 query(OpoProtocol.CMD_QUERY_BATTERY, OpoProtocol.queryBattery(), "query battery")
                 query(OpoProtocol.CMD_QUERY_WEARING, OpoProtocol.queryWearingStatus(), "query wearing")
@@ -633,7 +638,17 @@ class BudsConnectionManager(private val context: Context) {
     @Volatile var gameSoundTypes: List<Int> = emptyList()
         private set
 
-    /** Head gestures' mapping (0 nod answers, 1 shake answers), null until the `0x0204 F5` push. */
+    /** The level Smart chose (`ANC-Light` ...), from `0x810C 04 01` or the push `03 04 01`. */
+    @Volatile var smartLevel: String? = null
+        private set
+
+    private fun onSmartMask(mask: Int) {
+        smartLevel = if (mask == 0) null else AncModes.of(context).levelForBit(Integer.numberOfTrailingZeros(mask))
+        log("SMART LEVEL: mask=0x%04X -> %s".format(mask, smartLevel))
+        handler.post { listeners.forEach { it.onSmartLevel() } }
+    }
+
+    /** Head gestures' mapping (0 nod answers, 1 shake answers), null until the `0x8134` reply or the `F5` push. */
     @Volatile var headMotionType: Int? = null
         private set
 
@@ -1255,6 +1270,8 @@ class BudsConnectionManager(private val context: Context) {
                 }
             }
 
+            if (echo1 == 0x04 && echo2 == 0x01) onSmartMask(value)
+
             // Hold's switch-list answer, echo `02 01`/`02 03`/`02 04` — see OpoProtocol.setHoldAncModes().
             if (echo1 == 0x02) {
                 lastHoldAncMasks[echo2] = value
@@ -1398,6 +1415,14 @@ class BudsConnectionManager(private val context: Context) {
             handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
             return
         }
+        // The level Smart chose: push `03 04 01 <mask LE>`.
+        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 4 &&
+            payload[0].toInt() == 0x03 && payload[1].toInt() == 0x04 && payload[2].toInt() == 0x01) {
+            var mask = 0
+            for (i in minOf(payload.size, 7) - 1 downTo 3) mask = (mask shl 8) or (payload[i].toInt() and 0xFF)
+            onSmartMask(mask)
+            return
+        }
         if (cmd == 0x812B && payload.size >= 3 && payload[0].toInt() == 0) {
             val count = payload[2].toInt() and 0xFF
             gameSoundType = payload[1].toInt() and 0xFF
@@ -1407,8 +1432,9 @@ class BudsConnectionManager(private val context: Context) {
             return
         }
 
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 2 &&
-            payload[0].toInt() and 0xFF == OpoProtocol.EVT_HEAD_MOTION_TYPE) {
+        // The push `F5 <type>` and the `0x8134` reply `00 <type>`.
+        if (payload.size >= 2 && (cmd == OpoProtocol.CMD_QUERY_HEAD_MOTION_TYPE or 0x8000 && payload[0].toInt() == 0 ||
+            cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload[0].toInt() and 0xFF == OpoProtocol.EVT_HEAD_MOTION_TYPE)) {
             headMotionType = payload[1].toInt() and 0xFF
             log("HEAD MOTION TYPE: $headMotionType RAW=[${OpoProtocol.bytesToHex(payload)}]")
             handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
@@ -1507,7 +1533,7 @@ class BudsConnectionManager(private val context: Context) {
         // Payload is only 2 bytes, so this must come before any length assumption.
         if (cmd == OpoProtocol.CMD_ACTIVE_REPORT &&
             GameModeParser.isGameModeEvent(payload)) {
-            val on = GameModeParser.parseActive(payload)
+            val on = GameModeParser.parseActive(payload, featurePrefs().getString(Capabilities.KEY_PRODUCT_ID, null))
             if (on != null) {
                 log("GAME EVT: ${if (on) "ON" else "OFF"}")
                 handler.post { listeners.forEach { it.onGameModeState(on) } }

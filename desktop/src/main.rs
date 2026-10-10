@@ -568,6 +568,10 @@ impl App {
         let mut anc_label = t(&self.tr, "anc_seg_anc").to_string();
         if is_level {
             if let Some(c) = t(&self.tr, level_names[li]).chars().next() { anc_label = format!("{anc_label} {}", c.to_uppercase()); }
+            // Smart adds the level it chose: "ANC S·M".
+            if let Some(c) = s.smart_level.as_deref().filter(|_| anc == "ANC-Smart").and_then(|l| t(&self.tr, level_names[level_info(l).1]).chars().next()) {
+                anc_label = format!("{anc_label}·{}", c.to_uppercase());
+            }
         }
 
         #[cfg(windows)]

@@ -12,7 +12,9 @@ package com.spizganed.quickbuds.protocol
  *
  * Payload: [count][comp, st] x N
  *   comp: 1 = Left bud, 2 = Right bud, 3 = Case
- *   st:   0 = disconnected, 1/5 = off-ear (idle), 3/7 = wearing, 4 = IN CASE
+ *   st:   bits `[VENDOR]`: 0 out of the case, 1 in ear, 2 lid open, 3 a flag the app ignores.
+ *         So 4 = in case, 1/5 = out, 3/7 = in ear, 0 = in case with the lid closed.
+ *         The flag bit is cleared here, so the codes above stay the only ones.
  *
  * Buds 4 query responses sometimes prepend a status byte, so parsing tolerantly
  * tries both offsets and keeps the first layout that yields valid pairs.
@@ -29,7 +31,7 @@ object WearingStatusParser {
         val caseStatus: Int = -1     // raw st for case (comp 3), -1 = not reported
     )
 
-    private fun isPlausibleSt(st: Int) = st == 0 || st == 1 || st == 3 || st == 4 || st == 5 || st == 7
+    private fun isPlausibleSt(st: Int) = st in 0..15
     private fun isPlausibleComp(c: Int) = c == 1 || c == 2 || c == 3
 
     private fun tryParse(p: ByteArray, off: Int): Result? {
@@ -48,8 +50,9 @@ object WearingStatusParser {
         var i = 0
         while (i < count && pos + 1 < p.size) {
             val comp = p[pos].toInt() and 0xFF
-            val st = p[pos + 1].toInt() and 0xFF
-            if (!isPlausibleComp(comp) || !isPlausibleSt(st)) return null
+            val raw = p[pos + 1].toInt() and 0xFF
+            if (!isPlausibleComp(comp) || !isPlausibleSt(raw)) return null
+            val st = raw and 0x07
             when (comp) {
                 1 -> { leftValid = true; leftStatus = st }
                 2 -> { rightValid = true; rightStatus = st }

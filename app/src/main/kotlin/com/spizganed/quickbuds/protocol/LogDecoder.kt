@@ -19,7 +19,7 @@ object LogDecoder {
         0x8116 to "Hearing profile", 0x811A to "Personalised ANC", 0x811E to "Hearing profile",
         0x811F to "Hearing profile", 0x8123 to "Codec list", 0x8124 to "Bass level", 0x812A to "Spatial type",
         0x812B to "Game sound", 0x812F to "Batch reply (answers follow as RX[batch])", 0x8132 to "Preferred device",
-        0x8133 to "Tap sensitivity", 0x8200 to "Offered events", 0x8205 to "Notifications registered",
+        0x8133 to "Tap sensitivity", 0x8134 to "Head gestures", 0x8200 to "Offered events", 0x8205 to "Notifications registered",
         0x8427 to "Alert volume ack"
     )
 

@@ -105,6 +105,8 @@ pub struct Snapshot {
     /// (selected, offered types) from `0x812B`.
     pub game_sound: Option<(u8, Vec<u8>)>,
     pub head_motion: Option<u8>,
+    /// The level Smart chose (`ANC-Light` ...), §5.
+    pub smart_level: Option<String>,
     /// `0x812A` / push `0x0510`: 0 off, 1 fixed, 2 head tracking.
     pub spatial_type: Option<u8>,
     /// The current codec (`0x8114`) and the offered ones (`0x8123`), §9 Codec picker.
@@ -314,11 +316,15 @@ impl<'a> Conn<'a> {
                 Some(m) => s.anc = Some(m),
                 None => return false,
             },
-            Event::GameMode(on) => s.low_latency = Some(on),
+            Event::GameMode(pl) => match game_on(&pl, crate::load_settings()["product_id"].as_str()) {
+                Some(on) => s.low_latency = Some(on),
+                None => return false,
+            },
             Event::AlertVolume(l) => s.alert_volume = Some(l),
             Event::TapLevel(l, d) => s.tap_level = Some((l, d)),
             Event::GameSound(t, all) => s.game_sound = Some((t, all)),
             Event::HeadMotion(t) => s.head_motion = Some(t),
+            Event::SmartLevel(m) => s.smart_level = (m != 0).then(|| s.modes.level_for_bit(m.trailing_zeros() as u8)).flatten().map(Into::into),
             Event::SpatialType(t) => s.spatial_type = Some(t),
             Event::Codec(c) => s.codec = Some(c),
             Event::Codecs(c) => s.codecs = c,
@@ -366,10 +372,13 @@ impl<'a> Conn<'a> {
             for &id in &ids { self.send(CMD_REGISTER_ONE, None, &[id])?; }
             self.pump(200)?;
         }
-        let queries: [(u16, Option<u8>, Vec<u8>); 6] = [
+        let smart = self.s.modes.supports("ANC-Smart");
+        let queries: [(u16, Option<u8>, Vec<u8>); 7] = [
             (CMD_REGISTER_NOTIFY, None, register_payload(&ids)),
             (CMD_QUERY_STATUS, Some(0x00), status_query(self.s.model)),
             (CMD_QUERY_ANC, None, vec![1, 1]),
+            // The level Smart chose, §5.
+            (CMD_QUERY_ANC, None, if smart { vec![4, 1] } else { vec![] }),
             (CMD_QUERY_BATTERY, Some(0xF0), vec![]),
             (CMD_QUERY_WEARING, Some(0xF2), vec![]),
             (CMD_QUERY_FIRMWARE, None, vec![]),
@@ -378,7 +387,7 @@ impl<'a> Conn<'a> {
         let batch = self.s.caps.supports(CMD_BATCH);
         let mut reads = Vec::new();
         for (cmd, seq, payload) in queries {
-            if !self.s.caps.supports(cmd) || cmd == CMD_REGISTER_NOTIFY && ids.is_empty() { continue; }
+            if !self.s.caps.supports(cmd) || cmd == CMD_REGISTER_NOTIFY && ids.is_empty() || cmd == CMD_QUERY_ANC && payload.is_empty() { continue; }
             if batch && cmd != CMD_REGISTER_NOTIFY { reads.push((cmd, payload)); continue; }
             self.send(cmd, seq, &payload)?;
             self.pump(200)?;

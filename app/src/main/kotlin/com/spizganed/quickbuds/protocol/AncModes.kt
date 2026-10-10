@@ -26,6 +26,8 @@ class AncModes private constructor(
     /** The ANC levels these buds have, low to high. */
     val levels: List<String> = LEVELS.filter { it in set }
     val isEmpty get() = set.isEmpty()
+    /** The level (not Smart) whose SET bit this is. */
+    fun levelForBit(bit: Int): String? = LEVELS.firstOrNull { it != SMART && set[it] == bit }
 
     /**
      * The mode a `0x810C` / `0x0204` value reports, or null if the model has no such bit. A plain

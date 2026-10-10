@@ -42,15 +42,19 @@ object GameModeParser {
         return payload[0].toInt() and 0xFF == OpoProtocol.EVT_GAME_MODE
     }
 
+    /** These models put the state in payload[3], not payload[1] `[VENDOR]`, unverified. */
+    val STATE_AT_3 = setOf("062410", "062810", "063010", "063410")
+
     /**
      * Reads the game-mode state from a 0x0204 subType 0x05 payload.
      * Returns null when the payload is too short to contain a state byte.
      */
-    fun parseActive(payload: ByteArray): Boolean? {
+    fun parseActive(payload: ByteArray, productId: String? = null): Boolean? {
         if (!isGameModeEvent(payload)) return null
-        // payload[1]: 0x01 = ON, 0x00 = OFF.
+        val at = if (productId?.uppercase() in STATE_AT_3) 3 else 1
+        // 0x01 = ON, 0x00 = OFF.
         // Read as "non-zero means ON" rather than "== 1" so an unexpected value
         // still produces a sane state instead of decoding as OFF.
-        return (payload[1].toInt() and 0xFF) != 0
+        return payload.getOrNull(at)?.let { (it.toInt() and 0xFF) != 0 }
     }
 }

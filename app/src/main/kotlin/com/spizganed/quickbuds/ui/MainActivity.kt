@@ -650,11 +650,20 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             val m = WidgetSettings.MODES.firstOrNull { it.store == mode && level >= 0 }
             ancView.setSegment(
                 seg,
-                if (m == null) getString(ancSegments[seg].second) else getString(ancSegments[seg].second) + " " + getString(m.short).take(1).uppercase(),
+                if (m == null) getString(ancSegments[seg].second) else getString(ancSegments[seg].second) + " " + getString(m.short).take(1).uppercase() + smartSuffix(mode),
                 m?.icon ?: ancSegments[seg].third
             )
         }
     }
+
+    /** Smart adds the level it chose: "ANC S·M". */
+    private fun smartSuffix(mode: String): String {
+        val level = if (mode == AncModes.SMART && ::manager.isInitialized) manager.smartLevel else null
+        val m = WidgetSettings.MODES.firstOrNull { it.store == level } ?: return ""
+        return "·" + getString(m.short).take(1).uppercase()
+    }
+
+    override fun onSmartLevel() = renderAnc(activeAncMode)
 
     /** The ANC strength the ANC segment applies; the last one seen, else the buds' middle one. */
     private var lastAncLevel: String

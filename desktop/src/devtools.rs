@@ -69,7 +69,8 @@ fn simple_rx(e: &Event) -> Option<String> {
             parts.join(", ")
         }
         Event::AncRaw(_) => "Noise control mode reported".into(),
-        Event::GameMode(on) => format!("Low latency mode {}", on_off(*on as u8)),
+        Event::SmartLevel(_) => "Smart noise cancelling picked a level".into(),
+        Event::GameMode(pl) => format!("Low latency mode {}", on_off(game_on(pl, crate::load_settings()["product_id"].as_str())? as u8)),
         Event::AlertVolume(l) => format!("Alert sound volume {l}"),
         Event::TapLevel(l, _) => format!("Tap sensitivity {l}"),
         Event::BassLevel(l) => format!("Bass boost level {l}"),
