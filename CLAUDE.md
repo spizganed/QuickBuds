@@ -21,7 +21,8 @@ the repo. A finished feature needs no doc: the code is the record.
 - Never guess a payload or a command number: a wrong write fails silently. Read every write back.
 - HeyMelody is studied for interoperability only. Commit commands, payloads and per-model facts,
   never vendor class, method or file names or code.
-- A new user-visible string needs all 26 locales. Lint does not catch a missing one.
+- A new user-visible string needs all 26 locales. Lint does not catch a missing one;
+  `scripts/check-locales.py` does.
 - Device tests use `./gradlew assembleRelease`. A debug build cannot install over it.
 - adb tests: launch with `am start -n`, never `monkey`. Turn auto-rotate off after each test.
 - Desktop UI tests run on the invisible screen (`scripts/desktop-vscreen.sh`), never on his desktop.

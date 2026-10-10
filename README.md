@@ -124,11 +124,14 @@ and shows only the features each one has.
 | | Status |
 | --- | --- |
 | **OnePlus Buds 4** | **Fully working, confirmed**: every feature tested on a Nothing Phone (3a), Android 16. |
+| realme Buds Air7 Pro | **Confirmed by its owner**: Android and Windows. |
+| OPPO Enco Buds2 | **Confirmed by its owner** on Windows: connection, equalizer, battery. |
 | Every other model | Detected, and its features are built from HeyMelody's own data, but **not confirmed yet**: some may not work. |
 
 **Own other buds? Please tell us what works.** Open an [issue](https://github.com/spizganed/QuickBuds/issues)
 with your model, what works and what does not, and a log: Dev tools › Export (the file lands in
-`Download/QuickBuds/`), or a Bluetooth HCI snoop log / `adb logcat`. Each report lets the next release fix
+`Download/QuickBuds/`), or a Bluetooth HCI snoop log / `adb logcat`. Settings › Report a problem sends
+the same without a GitHub account. Each report lets the next release fix
 that model. The app asks the same once, on first launch.
 
 <details><summary><b>OnePlus</b> (29 models)</summary>

@@ -1,13 +1,15 @@
 # Contributing to QuickBuds
 
 Thanks for helping. The most useful contribution is **a report from an owner of earbuds other than
-the OnePlus Buds 4**. The writes for every other model come from HeyMelody's data, but no real buds
-confirm them yet. Code contributions are welcome too. This page takes you from a clone to a running
+the OnePlus Buds 4**. The writes for every other model come from HeyMelody's data. Owners have
+confirmed only the realme Buds Air7 Pro and the OPPO Enco Buds2. Code contributions are welcome too. This page takes you from a clone to a running
 build.
 
 ## Reporting a model
 
-Open an [issue](https://github.com/spizganed/QuickBuds/issues) with:
+The quickest way is in the app: Settings › **Report a problem** (desktop: App settings). It sends the
+log with your description, without Bluetooth addresses. For a longer exchange, open an
+[issue](https://github.com/spizganed/QuickBuds/issues) with:
 
 1. The earbuds' model and the phone (model, Android version).
 2. What works and what does not. "The switch flips but nothing changes on the buds" is useful.
@@ -83,7 +85,7 @@ Read before changing anything:
   what HeyMelody sends first ([PACKET-CAPTURE.md](/docs/PACKET-CAPTURE.md)), then read the result back.
 - **Docs change with the code.** A protocol change comes with its PROTOCOL.md entry in the same commit.
 - **A new user-visible string needs all 26 translations** (`app/src/main/res/values-*`). Machine
-  drafts are fine; lint does not catch a missing one.
+  drafts are fine. Lint does not catch a missing one; `scripts/check-locales.py` does, and CI runs it.
 - No new dependencies, no Material Components. Every activity is portrait-locked by hand.
 - Widget layouts are generated: edit `scripts/widget-layouts.py` and rerun it, never the XML.
 - Test on real buds and say which model and firmware in the pull request.

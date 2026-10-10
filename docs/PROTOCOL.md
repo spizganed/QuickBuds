@@ -266,7 +266,8 @@ Each model's `noiseReductionMode` in `assets/models.json` (`protocol/AncModes.kt
   Transparency `02`, Light `04`, Deep (and plain ANC) `08`, Medium `10`, Smart `20`. As a tree: Off 0,
   Transparency 1, ANC 3 with children Light 2, Deep 3, Medium 4, Smart 5 (only the levels a model
   has; T200 / T300 / T500 / T200x / Wireless 3 have plain ANC, N1 / T310 no Smart). In `models.json`
-  for 23 realme models, wired, unverified (issue #8; Air7 Pro first). The Air7 Pro log's
+  for 23 realme models, wired. The Air7 Pro's owner confirms it works (issue #8); the others are
+  unverified. The Air7 Pro log's
   `0x810C 01 01` value `02` = Transparency.
 
 ### SET — `0x0404 01 01 <mask>` `[OSS]`+`[CAPTURE]`
@@ -417,7 +418,8 @@ Buds 4: `1:516 2:8807 3:3154531 5:3584`, hold `27` — matches HeyMelody's menus
   none (512) has one fixed option and writes nothing. Buds 4 `[CAPTURE]`: double tap
   `0401 01 04 06 02 1D` / `…02 00`, long hold `0401 01 04 06 06 1C` / `…06 00`; one write lands on both
   buds, labels confirmed on a real call `[TESTED]`.
-- **realme models** `[VENDOR]` (realme Link, issue #8), wired, unverified: per-bud double tap, triple
+- **realme models** `[VENDOR]` (realme Link, issue #8), wired; the Air7 Pro's owner confirms them, the
+  others are unverified: per-bud double tap, triple
   tap and hold, same `fn` bytes as above, `dev` 1 / 2, `btn 01`. A hold with the noise cycle is
   `longPressType` 8833; its cycle is **one mask for both buds** (`0x0404 02 01 <mask>`, read
   `0x010C 02 01`; the Air7 Pro log's `0A` = ANC + Transparency), so our own key `"sharedHoldMask":1`
@@ -626,11 +628,13 @@ the active record; the phone keeps the list. A record: 4-byte id (big-endian, ch
 - **realme models** `[VENDOR]` (realme Link, issue #8): 3D sound is feature `1B` alone and Hi-Res `18`
   alone, whatever the bitmap says; realme Link never writes one with the other (on some models it only
   warns). The Air7 Pro lists `0x012A` / `0x0422` but leaves `0x012A` unanswered. Our own key
-  `"spatialSwitch":1` (realme models with 3D sound). Wired, unverified.
+  `"spatialSwitch":1` (realme models with 3D sound). Wired; works on the Air7 Pro (its owner, issue #9),
+  unverified on the others.
 - **3D audio source `0x041E`** `[VENDOR]` (bitmap bit 43, with `0xEF03`): `00` the buds render 3D audio,
   `01` the phone does. HeyMelody sends only `01`, when the phone's own spatializer takes over. realme
-  Link sends `00` on every connect (no realme model prefers the phone). After a `01`, feature `1B` acks
-  but changes nothing (issue #9, unverified). The apps send `00` on connect to `spatialSwitch` models.
+  Link sends `00` on every connect (no realme model prefers the phone). The apps do the same for
+  `spatialSwitch` models. Issue #9's "`1B` changes nothing" was a false alarm: the buds play no sound
+  on the switch.
 - **realme Link's `0x0403` ids** `[VENDOR]`, not used yet: dynamic bass `1D`, vocal enhance `09`, `0C`
   "enhance voice" (ours: personalised ANC applied; do not assume they match), game mode `06`, wear `04`,
   dual `11`. It reports power saving as `05` (ours `17` from HeyMelody: unresolved).

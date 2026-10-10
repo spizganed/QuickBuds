@@ -22,7 +22,7 @@ never shows up in the app's log.
 4. Repeat the round once, so a one-off frame gets a chance to show again.
 5. Dev tools › **Export**. The file lands in `Download/QuickBuds/`.
 
-The Dev tools log has Simple, Detailed and Raw views. Packets the app cannot decode show in amber with
+The Dev tools log has Simple and Detailed views. Packets the app cannot decode show in amber with
 their whole payload. Bytes it cannot frame show as `DISCARDED RX`.
 
 With adb, skip the export. The app writes the same lines to a file (a 2 x 512 KB ring) and to logcat:

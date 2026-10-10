@@ -13,8 +13,6 @@ Status words: **Next**, **Open**, **Question** (needs an answer before work star
 Finish each step before the next one starts.
 
 1. **PC version** (Windows and Linux, Rust + Slint in `desktop/`). The pages are done. Open:
-   - **Next — Windows test:** he runs the cross-built zip (Winsock connect, tray left click / quick
-     panel, EQ, ANC). The zip has never run on Windows.
    - **Question — Dot matrix font on PC:** Doto at 12-15 px on a 1x screen smears into thin grey
      strokes (a dot is under 2 px). The rest of the style works. He picks one:
      Doto only for text of 20 px and up (system font for the rest), all Dot matrix text at 20 px and
@@ -23,26 +21,11 @@ Finish each step before the next one starts.
      test them. Treat them as working until an issue says otherwise (2026-10-06).
    - **Parked — AUR** `quickbuds-bin` (`desktop/aur/`): publish when AUR registration opens again.
 
-## Open
+## Unverified
 
-- **Buds 4 check of v4.5.0:** he checks the per-model `0x010D` query and the `0x012F` batch on the Buds 4.
-
-## Waiting on others
-
-- **Issue #2, Nord Buds 3 Pro reconnect loop** (Android and desktop): the buds reset the link 3-5 s
-  after connect. Since 4.3.0 the apps answer their requests (PROTOCOL.md §9) and subscribe only to
-  offered events (§4). Waiting for an owner to test. Read their logs before changing anything.
-- **Issue #5, OPPO Enco Buds2 reconnect loop:** the full `0x010D` list dropped the link. v4.5.0 sends
-  the per-model query and the `0x012F` batch (PROTOCOL.md §4, §9). Waiting for @Abhishek-banal's retest
-  (closed PR #7). Credit them in the release notes.
-- **Issue #9, Air7 Pro 3D audio** (Android and desktop): the switch did nothing, though the buds ack
-  feature `1B` and read it back as set. The apps now send `0x041E 00` on connect, as realme Link does
-  (PROTOCOL.md §9). Waiting for the reporter's retest.
-- **Issue #8, realme models:** Buds Air7 Pro noise control, gestures and wind noise come from realme
-  Link data. They are wired and unverified. The reporter is asked to read back the ANC mode, one
-  gesture and the hold cycle. 27 more realme models use the same data, also unverified (5 neckbands
-  with `oneButton`, 5 with `bothHold`). The generator and its steps are in agent memory
-  `realme-link-decompile`.
+- **realme models:** 27 realme models besides the Air7 Pro use realme Link data (noise control,
+  gestures, wind noise). Only the Air7 Pro's owner has confirmed it (5 neckbands with `oneButton`,
+  5 with `bothHold`).
 
 ## Decided against — do not suggest again
 
