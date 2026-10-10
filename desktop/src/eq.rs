@@ -15,6 +15,15 @@ const HOLD: Duration = Duration::from_secs(4);
 pub struct Pending {
     added: Vec<(String, Instant)>,
     deleted: Vec<(u8, Instant)>,
+    /// The preset last clicked. It shows until the buds report it: reads of earlier clicks land first.
+    picked: Option<(u8, Instant)>,
+}
+
+/// Shows a click at once; the session sends it when the write before it is done.
+fn pick(a: &mut App, id: u8, c: Cmd) {
+    send(a, c);
+    a.eq_pending.picked = Some((id, Instant::now()));
+    held(a);
 }
 
 fn send(a: &App, c: Cmd) { let _ = a.tx.send(c); }
@@ -49,9 +58,9 @@ pub fn curve(gains: &[i32], (w, h): (f32, f32)) -> String {
 
 pub fn setup(main: &MainWindow) {
     let eq = main.global::<Eq>();
-    eq.on_select_builtin(|id| with_app(|a| send(a, Cmd::EqBuiltIn(id as u8))));
+    eq.on_select_builtin(|id| with_app(|a| pick(a, id as u8, Cmd::EqBuiltIn(id as u8))));
     eq.on_select_custom(|id| with_app(|a| {
-        if let Some(p) = a.snap.eq_custom.iter().find(|p| p.id == id as u8) { send(a, Cmd::EqSave(p.clone())); }
+        if let Some(p) = a.snap.eq_custom.iter().find(|p| p.id == id as u8).cloned() { pick(a, p.id, Cmd::EqSave(p)); }
     }));
     eq.on_add(|| with_app(|a| {
         // A name sent in the last seconds is taken too: two quick clicks must not make two of one name.
@@ -119,6 +128,7 @@ pub fn apply(a: &mut App) {
     let pend = &mut a.eq_pending;
     pend.added.retain(|(n, t)| t.elapsed() < HOLD && s.eq_custom.iter().all(|p| &p.name != n));
     pend.deleted.retain(|(id, t)| t.elapsed() < HOLD && s.eq_custom.iter().any(|p| p.id == *id));
+    pend.picked = pend.picked.filter(|(id, t)| t.elapsed() < HOLD && s.eq_current != Some(*id));
     let gone = |id: u8| pend.deleted.iter().any(|(d, _)| *d == id);
     let eq = a.main.global::<Eq>();
     let has_custom = eq_has_custom(s.model, &s.caps);
@@ -130,7 +140,7 @@ pub fn apply(a: &mut App) {
     let mut customs: Vec<EqRow> = s.eq_custom.iter().filter(|p| !gone(p.id))
         .map(|p| EqRow { id: p.id as i32, name: p.name.as_str().into(), pending: false }).collect();
     customs.extend(pend.added.iter().map(|(n, _)| EqRow { id: -1, name: n.as_str().into(), pending: true }));
-    let current = s.eq_current.filter(|&c| !gone(c));
+    let current = pend.picked.map(|(id, _)| id).or(s.eq_current).filter(|&c| !gone(c));
     eq.set_builtins(ModelRc::new(VecModel::from(builtins)));
     eq.set_can_add(s.status == Status::On && has_custom && customs.len() < eq_max_custom(s.model));
     eq.set_customs(ModelRc::new(VecModel::from(customs)));

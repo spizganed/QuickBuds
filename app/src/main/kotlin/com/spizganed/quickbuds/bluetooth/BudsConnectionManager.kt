@@ -506,14 +506,41 @@ class BudsConnectionManager(private val context: Context) {
     // by one and each repaints; without this, the replies that arrive before the new values snapped
     // the UI back to the old ones for a moment.
 
-    fun selectBuiltInEq(id: Int) {
+    /** The preset last picked, and when. Reads of earlier picks land after it: they must not move the selection back. */
+    @Volatile private var eqPicked: Int? = null
+    @Volatile private var eqPickedAt = 0L
+
+    private fun picked(id: Int) {
         eqCurrent = id
-        sendThenRead(OpoProtocol.setBuiltInEq(id) to "EQ built-in $id")
+        eqPicked = id
+        eqPickedAt = System.currentTimeMillis()
+    }
+
+    /** The buds report [id] as current: kept unless an unconfirmed pick of another preset is under 4 s old. */
+    private fun reportedEq(id: Int) {
+        val want = eqPicked
+        if (want != null && want != id && System.currentTimeMillis() - eqPickedAt < 4000) return
+        eqPicked = null
+        eqCurrent = id
+    }
+
+    /** Counts picks: a queued pick that a newer one replaced is not sent. */
+    @Volatile private var eqPickSeq = 0
+
+    fun selectBuiltInEq(id: Int) {
+        picked(id)
+        sendThenRead(OpoProtocol.setBuiltInEq(id) to "EQ built-in $id", ++eqPickSeq)
+    }
+
+    /** Selects a custom preset unchanged: the same frame as a save, but a newer pick may replace it. */
+    fun selectCustomEq(p: EqCodec.Preset) {
+        picked(p.id)
+        sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_SAVE, p) to "EQ custom ${p.id} '${p.name}'", ++eqPickSeq)
     }
 
     /** Selects AND saves a custom preset — `0x0418` is both (a band edit or rename is the same frame). */
     fun saveCustomEq(p: EqCodec.Preset) {
-        eqCurrent = p.id
+        picked(p.id)
         eqCustom = eqCustom.map { if (it.id == p.id) p else it }
         sendThenRead(OpoProtocol.customEq(EqCodec.ACTION_SAVE, p) to "EQ custom ${p.id} '${p.name}'")
     }
@@ -531,8 +558,13 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /** Optional write, then the EQ reads these buds list (see Capabilities), in order on one thread. */
-    private fun sendThenRead(write: Pair<ByteArray, String>? = null) {
-        Thread {
+    /** EQ writes go out one at a time, in order: a thread each let a quick second pick overtake the first. */
+    private val eqQueue = java.util.concurrent.Executors.newSingleThreadExecutor()
+
+    /** [pick]: the pick's number; the write is skipped when a newer pick is queued. */
+    private fun sendThenRead(write: Pair<ByteArray, String>? = null, pick: Int? = null) {
+        eqQueue.execute {
+            if (pick != null && pick != eqPickSeq) return@execute
             try {
                 if (write != null) { sendRawBlocking(write.first, write.second); Thread.sleep(250) }
                 for ((cmd, read) in listOf(
@@ -546,7 +578,7 @@ class BudsConnectionManager(private val context: Context) {
             } catch (e: Exception) {
                 log("EQ: ${e.message}")
             }
-        }.start()
+        }
     }
 
     /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §9. */
@@ -1320,11 +1352,11 @@ class BudsConnectionManager(private val context: Context) {
 
         // --- Equalizer replies and push, [CAPTURE] 2026-09-23 ---
         when (cmd) {
-            0x810F -> if (payload.size >= 2 && payload[0].toInt() == 0) eqCurrent = payload[1].toInt() and 0xFF
+            0x810F -> if (payload.size >= 2 && payload[0].toInt() == 0) reportedEq(payload[1].toInt() and 0xFF)
             0x8122 -> EqCodec.parseList(payload)?.let { eqCustom = it }
                 ?: log("EQ: could not parse custom list RAW=[${OpoProtocol.bytesToHex(payload)}]")
             0x8124 -> if (payload.size >= 4 && payload[0].toInt() == 0) bassWaveLevel = payload[3].toInt()
-            OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) eqCurrent = payload[0].toInt() and 0xFF
+            OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) reportedEq(payload[0].toInt() and 0xFF)
         }
         // A refused ANC write (status 14 with no bud in an ear): read the real mode back (§5).
         if (cmd == OpoProtocol.CMD_SET_ANC or 0x8000 && payload.isNotEmpty() && payload[0].toInt() != 0) {

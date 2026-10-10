@@ -350,7 +350,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                     }
             }
             c.preset = p
-            c.onClick = { manager?.saveCustomEq(p); render() }
+            c.onClick = { manager?.selectCustomEq(p); render() }
             c.setName(p.name)
             c.setSelected(current == p.id, animate)
             if (current == p.id) selectedRow = c.card

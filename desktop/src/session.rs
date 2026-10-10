@@ -428,6 +428,15 @@ impl<'a> Conn<'a> {
     }
 
     /// A write, then the EQ re-read.
+    /// A preset selection only: a built-in, or a custom preset saved unchanged.
+    fn eq_pick(&self, c: &Cmd) -> bool {
+        match c {
+            Cmd::EqBuiltIn(_) => true,
+            Cmd::EqSave(p) => self.s.eq_custom.contains(p),
+            _ => false,
+        }
+    }
+
     fn eq_write(&mut self, cmd: u16, payload: &[u8]) -> Result<(), String> {
         (self.emit)(self.s.clone());
         self.send(cmd, None, payload)?;
@@ -438,12 +447,19 @@ impl<'a> Conn<'a> {
     fn run(&mut self, rx: &Receiver<Cmd>) -> Result<End, String> {
         loop {
             self.pump(0)?;
+            let mut cmds = Vec::new();
             loop {
-                let cmd = match rx.try_recv() {
-                    Ok(c) => c,
+                match rx.try_recv() {
+                    Ok(c) => cmds.push(c),
                     Err(std::sync::mpsc::TryRecvError::Empty) => break,
                     Err(_) => return Ok(End::Quit),
-                };
+                }
+            }
+            // Quick EQ clicks queue behind a write: only the last pick is sent. A save with changes is kept.
+            let picks: Vec<bool> = cmds.iter().map(|c| self.eq_pick(c)).collect();
+            let last_pick = picks.iter().rposition(|&p| p);
+            for (i, cmd) in cmds.into_iter().enumerate() {
+                if picks[i] && Some(i) != last_pick { continue; }
                 match cmd {
                     Cmd::Anc(mode) => {
                         // A mode this model does not list is never sent: its bit would be another mode's.
