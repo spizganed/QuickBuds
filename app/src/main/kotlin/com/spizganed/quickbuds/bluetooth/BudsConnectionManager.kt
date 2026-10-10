@@ -1326,6 +1326,12 @@ class BudsConnectionManager(private val context: Context) {
             0x8124 -> if (payload.size >= 4 && payload[0].toInt() == 0) bassWaveLevel = payload[3].toInt()
             OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) eqCurrent = payload[0].toInt() and 0xFF
         }
+        // A refused ANC write (status 14 with no bud in an ear): read the real mode back (§5).
+        if (cmd == OpoProtocol.CMD_SET_ANC or 0x8000 && payload.isNotEmpty() && payload[0].toInt() != 0) {
+            log("ANC write refused (status ${payload[0].toInt() and 0xFF}), re-reading")
+            sendRaw(OpoProtocol.queryAncMode(), "query anc")
+        }
+
         // 0x8418 ack: `00 <id>` — the id the preset now has (a created one's id comes from here).
         if (cmd == 0x8418) log("EQ ack: RAW=[${OpoProtocol.bytesToHex(payload)}]")
         if (cmd == 0x810F || cmd == 0x8122 || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED) {
