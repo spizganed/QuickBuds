@@ -689,16 +689,24 @@ component Chip inherits Rectangle {
     callback clicked;
     height: 34px;
     min-width: label.preferred-width + 28px;
-    border-radius: 17px;
-    background: Dots.on ? transparent : primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
-    border-width: primary || Dots.on ? 0 : 1px;
-    border-color: Palette.outline-strong;
-    animate background { duration: Motion.fast; }
-    // Dot matrix: an outline, accent for the primary chip.
-    if Dots.on: DotBox {
-        width: 100%; height: 100%; radius: 14px;
-        fill: ta.has-hover ? Palette.outline : Palette.card;
-        stroke: root.primary ? Palette.accent : Palette.outline-strong;
+    // Sinks under the pointer and springs back, as the phone's buttons. The box shrinks: the software
+    // renderer draws no transform-scale.
+    property <float> sink: ta.pressed ? 0.92 : 1;
+    animate sink { duration: ta.pressed ? 90ms : 260ms; easing: ta.pressed ? ease-out : ease-out-back; }
+    Rectangle {
+        width: root.width * sink; height: root.height * sink;
+        x: (root.width - self.width) / 2; y: (root.height - self.height) / 2;
+        border-radius: self.height / 2;
+        background: Dots.on ? transparent : primary ? Palette.accent : ta.has-hover ? Palette.outline : transparent;
+        border-width: primary || Dots.on ? 0 : 1px;
+        border-color: Palette.outline-strong;
+        animate background { duration: Motion.fast; }
+        // Dot matrix: an outline, accent for the primary chip.
+        if Dots.on: DotBox {
+            width: 100%; height: 100%; radius: 14px;
+            fill: ta.has-hover ? Palette.outline : Palette.card;
+            stroke: root.primary ? Palette.accent : Palette.outline-strong;
+        }
     }
     label := Text {
         text: root.text;
@@ -2748,8 +2756,14 @@ component ThemePage inherits Rectangle {
                         spacing: 8px;
                         Rectangle {
                             height: 150px;
-                            PalTile { width: 100%; height: 100%; p: on ? Theme.with-token(b, 2, root.accent) : b; }
-                            TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(b.id); } }
+                            property <float> sink: tile-ta.pressed ? 0.95 : 1;
+                            animate sink { duration: tile-ta.pressed ? 90ms : 260ms; easing: tile-ta.pressed ? ease-out : ease-out-back; }
+                            PalTile {
+                                width: parent.width * parent.sink; height: parent.height * parent.sink;
+                                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                                p: on ? Theme.with-token(b, 2, root.accent) : b;
+                            }
+                            tile-ta := TouchArea { mouse-cursor: pointer; clicked => { Theme.pick(b.id); } }
                         }
                         Text {
                             text: b.name; horizontal-alignment: center; font-size: 13px;
@@ -3150,19 +3164,36 @@ export component MainWindow inherits Window {
                                 clicked => { if root.page != 8 { root.models-from = root.page; root.page = 8; } }
                             }
                         }
-                        HorizontalLayout {
+                        // A new connection state fades out and in (the phone's pill), not a snap.
+                        conn := HorizontalLayout {
+                            property <int> shown;
+                            property <bool> fading;
+                            property <int> live: Buds.status;
+                            init => { shown = live; }
+                            changed live => { if live != shown { fading = true; } }
                             spacing: 8px;
+                            opacity: fading ? 0 : 1;
+                            animate opacity { duration: 120ms; easing: ease-in-out; }
                             Rectangle {
                                 width: 8px; height: 8px; border-radius: 4px; y: (parent.height - self.height) / 2;
-                                background: Buds.on ? #3DDC84 : Buds.status == 1 ? #E8A33D : Palette.text2;
+                                background: conn.shown == 2 ? #3DDC84 : conn.shown == 1 ? #E8A33D : Palette.text2;
                                 // Pulses while connecting; the tick is read only then, so it redraws only then.
-                                opacity: Buds.status == 1 ? 0.6 + 0.4 * cos(animation-tick() / 900ms * 360deg) : 1;
+                                opacity: conn.shown == 1 ? 0.6 + 0.4 * cos(animation-tick() / 900ms * 360deg) : 1;
                             }
-                            Text { text: Buds.status-text; color: Palette.text2; font-size: 12px; }
+                            Text {
+                                text: conn.shown == 2 ? Tr.connected : conn.shown == 1 ? Tr.connecting : Tr.not-connected;
+                                color: Palette.text2; font-size: 12px;
+                            }
+                        }
+                        Timer {
+                            interval: 120ms;
+                            running: conn.fading;
+                            triggered => { conn.shown = Buds.status; conn.fading = false; }
                         }
                         Chip {
-                            text: Buds.status == 0 ? Tr.connect : Tr.disconnect;
-                            primary: Buds.status == 0;
+                            opacity: conn.opacity;
+                            text: conn.shown == 0 ? Tr.connect : Tr.disconnect;
+                            primary: conn.shown == 0;
                             clicked => { if Buds.status == 0 { Buds.connect(); } else { Buds.disconnect(); } }
                         }
                     }
