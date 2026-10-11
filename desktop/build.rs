@@ -133,6 +133,7 @@ fn android_string(xml: &str, key: &str) -> Option<String> {
 }
 
 /// The launcher SVG as a PNG-in-ICO file, compiled by mingw's windres (`WINDRES` overrides) and linked in.
+/// Without windres the exe builds with no icon and a warning: a native Windows build needs only Rust.
 fn exe_icon(svg: &str, out: &str) {
     let tree = resvg::usvg::Tree::from_str(svg, &Default::default()).unwrap();
     let sizes = [16u32, 24, 32, 48, 64, 256];
@@ -159,8 +160,11 @@ fn exe_icon(svg: &str, out: &str) {
     let windres = env::var("WINDRES").unwrap_or_else(|_| "x86_64-w64-mingw32-windres".into());
     let ok = std::process::Command::new(&windres).current_dir(dir)
         .args(["icon.rc", "-O", "coff", "-o", "icon.o"]).status().is_ok_and(|s| s.success());
-    assert!(ok, "{windres} failed: install mingw-w64 or set WINDRES");
     println!("cargo:rerun-if-env-changed=WINDRES");
+    if !ok {
+        println!("cargo:warning={windres} failed: the exe has no icon. Install mingw-w64 or set WINDRES.");
+        return;
+    }
     println!("cargo:rustc-link-arg-bins={}", dir.join("icon.o").display());
 }
 

@@ -57,7 +57,7 @@ cat > "$pkg/README.txt" <<'EOF'
 QuickBuds for Linux
 
 Needs BlueZ and, from your distro: GTK 3, libayatana-appindicator3, D-Bus
-(Debian/Ubuntu: libgtk-3-0 libayatana-appindicator3-1; Arch: makepkg -si in desktop/aur/ of the repo).
+(Debian/Ubuntu: libgtk-3-0 libayatana-appindicator3-1; Arch: gtk3 libayatana-appindicator).
 Pair the buds in your system's Bluetooth settings first.
 
 Run in place: ./quickbuds

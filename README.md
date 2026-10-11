@@ -66,12 +66,6 @@ does not pair them. Every file is in the [latest release](https://github.com/spi
   no installer, no drivers, no background services.
 - **Linux:** unpack `QuickBuds<version>-linux-x64.tar.gz`. It needs BlueZ, GTK 3 and
   libayatana-appindicator; its README has the rest.
-- **Arch Linux:** build the package from the repo (it goes to the AUR as `quickbuds-bin` when AUR
-  sign-ups open again):
-
-  ```bash
-  git clone https://github.com/spizganed/QuickBuds && cd QuickBuds/desktop/aur && makepkg -si
-  ```
 
 > **Got the APK somewhere else?** The only official downloads are the GitHub releases. A copy from
 > another site is genuine only if it is signed with this certificate (SHA-256), which
