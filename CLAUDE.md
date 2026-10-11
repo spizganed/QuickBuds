@@ -29,7 +29,7 @@ the repo. A finished feature needs no doc: the code is the record.
 
 ## Release
 
-- Version: `app/build.gradle.kts` `defaultConfig` and `desktop/Cargo.toml`. The latest release is
+- Version: `versionName` and `versionCode` in `app/build.gradle.kts`, and `desktop/Cargo.toml`. The latest release is
   the newest `v*` git tag.
 - Build and test: `scripts/release-build.sh`. It runs the Build workflow's checks and tests on this PC and puts
   the APK, the AAB and both desktop archives in `local/release/<version>/`. Release only after it passes.
@@ -38,5 +38,7 @@ the repo. A finished feature needs no doc: the code is the record.
 - Publish: `gh release create v<version> QuickBuds<version>.apk QuickBuds<version>.aab <desktop
   archives> --target <full sha> --title "QuickBuds <version>"`. Both updaters look for these file
   names. A `desktop-v*` tag is a desktop-only fix.
+- The report Worker reads `models.json`. After a change to it, run `npx wrangler deploy` in
+  `report-worker/`, or the Worker rejects reports for the new model.
 - Never commit the release key or print its password.
 - AUR package: `desktop/aur/` (not published yet).

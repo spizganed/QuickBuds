@@ -1,5 +1,5 @@
 // The problem-report Worker. The apps POST /report as JSON; the developer reads GET /?key=<READ_KEY>.
-// It stores only reports the apps would send: a known model, and a log with frames from the buds.
+// It stores only reports the apps would send: a known model, a description and, when a log is on, frames from the buds.
 import catalog from "../../app/src/main/assets/models.json";
 
 const MODELS = new Set(catalog.whiteList.map((m) => m.name.toLowerCase()));

@@ -25,10 +25,14 @@ never shows up in the app's log.
 The Dev tools log has Simple and Detailed views. Packets the app cannot decode show in amber with
 their whole payload. Bytes it cannot frame show as `DISCARDED RX`.
 
+On Windows and Linux, Dev tools works the same. Export saves to `Downloads/QuickBuds/`. The file has
+raw `TX` and `RX` lines and connection notes, without the named lines below.
+
 With adb, skip the export. The app writes the same lines to a file (a 2 x 512 KB ring) and to logcat:
 
 ```bash
 adb pull /sdcard/Android/data/com.spizganed.quickbuds/files/packets.log
+adb pull /sdcard/Android/data/com.spizganed.quickbuds/files/packets.old.log   # the older half
 adb logcat -d -s QuickBuds-Packets:D   # instant, but other apps can rotate it out in minutes
 ```
 
@@ -37,7 +41,7 @@ adb logcat -d -s QuickBuds-Packets:D   # instant, but other apps can rotate it o
 | Line | What it is |
 |---|---|
 | `TX[...]: AA ..` | A command the app sent. |
-| `RX: ...` | A frame the buds sent, decoded where the app knows it. |
+| `RX: AA ..` | A frame the buds sent. The Detailed view decodes it. `RX[batch]` is one answer from a batch reply. |
 | `UNATTR RX:` | A frame the app does not decode, with its payload head. **Usually the point of a capture.** |
 | `BTN EVT:` | A gesture on the buds (the `0xF1` family): side, button, action. |
 | `KEYFN DIFF:` | What changed in the gesture table between two reads. |

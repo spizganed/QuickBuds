@@ -26,4 +26,6 @@ body:
     id: log
     attributes:
       label: Log
-      description: Dev tools › Clear, repeat the problem, then Dev tools › Export. Attach the file.
+      description: >-
+        Dev tools › Clear, repeat the problem, then Dev tools › Export. The file lands in
+        Download/QuickBuds/ (PC: Downloads/QuickBuds). Attach it here.
