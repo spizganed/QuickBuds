@@ -25,8 +25,11 @@ the repo. A finished feature needs no doc: the code is the record.
   `scripts/check-locales.py` does.
 - Device tests use `./gradlew assembleRelease`. A debug build cannot install over it.
 - adb tests: launch with `am start -n`, never `monkey`. Turn auto-rotate off after each test.
-- Keep a capture's filtered, decoded transcript in `local/logs/` with a dated name
-  (`heymelody_hold_oncall_20260922.log.txt`). Delete the bugreport and the raw btsnoop file.
+- Never commit logs or debug documents. Keep a capture's filtered, decoded transcript in
+  `local/logs/` with a dated name (`heymelody_hold_oncall_20260922.log.txt`). Delete the bugreport
+  and the raw btsnoop file.
+- Gesture button groups come from a data table. Never hardcode them.
+- Roadmap items carry no release version.
 - Desktop UI tests run on the invisible screen (`scripts/desktop-vscreen.sh`), never on his desktop.
 
 ## Release
