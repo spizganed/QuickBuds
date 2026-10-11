@@ -119,10 +119,6 @@ tshark on the phone (Termux): `pkg install x11-repo && pkg install wireshark-qt`
 The tshark output (or the lines for your actions), plus your notes: which setting, old and new value,
 and the time. That is enough to add a command to PROTOCOL.md.
 
-For the maintainer: keep the filtered, decoded transcript in `local/logs/` with a descriptive, dated
-name (for example `heymelody_hold_oncall_20260922.log.txt`). Delete the bugreport and the raw
-btsnoop file.
-
 ## Still open, and capturable
 
 - `act 0x03` in the on-call group (`btn 0x06`): a third slot HeyMelody's UI has never used.
