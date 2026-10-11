@@ -1,8 +1,9 @@
 # Contributing to QuickBuds
 
 Thanks for helping. The most useful contribution is **a report from an owner of earbuds other than
-the OnePlus Buds 4**. The writes for every other model come from HeyMelody's data. Owners have
-confirmed only the realme Buds Air7 Pro and the OPPO Enco Buds2. Code contributions are welcome too. This page links the build guides and the rules.
+the OnePlus Buds 4**. The writes for every other model come from HeyMelody's and realme Link's data.
+Owners have confirmed only the realme Buds Air7 Pro and the OPPO Enco Buds2. Code contributions are
+welcome too.
 
 ## Reporting a model
 
@@ -15,14 +16,13 @@ log with your description, without Bluetooth addresses. For a longer exchange, o
 3. A log: in the app, Dev tools › **Clear**, try the features, then Dev tools › **Export**. The file
    lands in `Download/QuickBuds/` (PC: `Downloads/QuickBuds`). Attach it as is.
 
-For anything the app's log does not explain, [PACKET-CAPTURE.md](/docs/PACKET-CAPTURE.md) shows how to
+For anything the app's log does not explain, [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) shows how to
 capture the Bluetooth traffic itself, including what HeyMelody sends.
 
 ## Build
 
 - [Android app](./build-android.md)
-- [Desktop app on Linux](./build-linux.md)
-- [Desktop app on Windows](./build-windows.md)
+- [Desktop app, Linux and Windows](./build-desktop.md)
 
 ## Tests
 
@@ -59,18 +59,18 @@ Per-model data (features, noise control modes, EQ presets, gestures) is in
 
 Read before changing anything:
 
-- [PROTOCOL.md](/docs/PROTOCOL.md): the wire format. Every claim is tagged with its source.
-- [ROADMAP.md](/docs/ROADMAP.md): the plan, and the list of features decided against. Please check that
+- [PROTOCOL.md](./PROTOCOL.md): the wire format. Every claim is tagged with its source.
+- [ROADMAP.md](./ROADMAP.md): the plan, and the list of features decided against. Please check that
   list before proposing a feature.
 
 ## Rules that matter
 
 - **Never guess a payload or a command number.** A wrong write to the buds fails silently. Capture
-  what HeyMelody sends first ([PACKET-CAPTURE.md](/docs/PACKET-CAPTURE.md)), then read the result back.
+  what HeyMelody sends first ([PACKET-CAPTURE.md](./PACKET-CAPTURE.md)), then read the result back.
 - **Docs change with the code.** A protocol change comes with its PROTOCOL.md entry in the same commit.
 - **A new user-visible string needs all 26 translations** (`app/src/main/res/values-*`). Machine
-  drafts are fine. Lint does not catch a missing one; `scripts/check-locales.py` does, and CI runs it.
-- No new dependencies, no Material Components. Every activity is portrait-locked by hand.
+  drafts are fine. Lint does not catch a missing one; `scripts/check-locales.py` does, and the Build workflow runs it.
+- No new dependencies in the Android app, no Material Components. Every activity is portrait-locked by hand.
 - Widget layouts are generated: edit `scripts/widget-layouts.py` and rerun it, never the XML.
 - Test on real buds and say which model and firmware in the pull request.
 - No vendor code, class names or file names in the repo, only the bytes on the wire.

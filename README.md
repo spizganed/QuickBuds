@@ -6,7 +6,7 @@
 > widgets and a tray icon.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android%208%2B%20%7C%20Windows%20%7C%20Linux-3DDC84.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Android%208%2B%20%7C%20Windows%20%7C%20Linux-3DDC84.svg)](#install)
 [![Release](https://img.shields.io/github/v/release/spizganed/QuickBuds)](https://github.com/spizganed/QuickBuds/releases/latest)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/spizganed)
 
@@ -46,8 +46,9 @@ donate on [Ko-fi](https://ko-fi.com/spizganed).
   firmware version.
 - **Whatever else your model has:** 3D audio with head tracking, game sound effects, vocal enhancement,
   smart / adaptive volume, power saving and more, each shown only where the earbuds support it.
-- **Home screen widgets** (Android) in two sizes (2×2, 4×2). Each has a battery page and a noise
-  control + Low latency page, in your theme's colours. A double tap switches the page.
+- **Home screen widgets** (Android), in your theme's colours: battery, controls, or both on two pages
+  (2×2 or 4×2; a double tap switches the page). You pick up to 4 controls: noise modes, Low latency,
+  wind noise.
 - **Tray icon** (PC): on Windows it opens quick controls, on Linux its menu shows the battery.
 - **Two styles:** Classic, or a dot-matrix look (a dot font, no cards, dot-matrix graphics).
 - **Themes:** OLED Black, Classic Dark and White, or match the system's light / dark setting. Your own
@@ -130,19 +131,14 @@ DIZO Wireless, DIZO GoPods D, DIZO GoPods.
 
 </details>
 
-**Own other buds? Please tell us what works.** Open an [issue](https://github.com/spizganed/QuickBuds/issues)
-with your model, what works and what does not, and a log: Dev tools › Export (the file lands in
-`Download/QuickBuds/`), or a Bluetooth HCI snoop log / `adb logcat`. Settings › Report a problem sends
-the same without a GitHub account. Each report lets the next release fix
-that model. The app asks the same once, on first launch.
+**Own other buds? Please tell us what works.** In the app, Settings › Report a problem sends your
+model, a description and the log, without a GitHub account. Or open an
+[issue](https://github.com/spizganed/QuickBuds/issues); [CONTRIBUTING.md](./docs/CONTRIBUTING.md#reporting-a-model)
+says what to include. Each report lets the next release fix that model.
 
 ## For developers
 
-- **Build:** [Android](./docs/build-android.md), [desktop on Linux](./docs/build-linux.md),
-  [desktop on Windows](./docs/build-windows.md).
-- **Tests:** `python3 scripts/check-locales.py`, then `cargo test` in `desktop/`.
-- **Translations:** fix a string in `app/src/main/res/values-<code>/strings.xml` and open a pull request.
-- [CONTRIBUTING.md](./docs/CONTRIBUTING.md): where things are, and the rules that matter.
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md): build, tests, translations, where things are, and the rules.
 - [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md): capturing the earbuds' traffic, HeyMelody's included.
 - [PROTOCOL.md](./docs/PROTOCOL.md): the wire format, every claim tagged with its source.
 - [ROADMAP.md](./docs/ROADMAP.md): the plan, and the features decided against.
