@@ -70,14 +70,38 @@ Other features hidden on realme for the same reason (flag missing in models.json
 - In-call gestures: no data.
 Switch rows (3D, dual connection, game mode) follow the buds' status list and work.
 
-Vendor data: realme Link 5.5.514 (34 model configs) and HeyMelody 116.9.0 are in Termux storage.
-A phone session dumped them to `~/projects/QuickBuds/local/vendor-eq-dump/`
-(`realme.json`, `heymelody.json`, `keys.txt`). Check that these files exist and are complete.
-It found 202 distinct keys across HeyMelody model entries.
+Vendor data, read-only dump made on 2026-10-11 from Termux storage:
+- Sources: `~/realmelink-decompile/x/` (realme Link 5.5.514.11421, configs in `assets/headsetRusConfig/`)
+  and `~/heymelody-decompile/opm/DeviceModels.json` (HeyMelody 116.9.0 server list cache).
+- Dump: `~/projects/QuickBuds/local/vendor-eq-dump/`: `realme.json` (34 configs keyed by model id,
+  plus `_common` wire facts), `heymelody.json` (21 entries), `keys.txt` (202 key paths, use counts).
+
+**realme findings (all 34 configs):**
+- Built-in EQ: `0x0406 <id>`. Four presets: Pure Raw `00`, Deep Bass `01`, Pure Voice `02`, Pure Bass `03`.
+- Custom EQ: `0x0418 <action> <min> <max> <eqId> <nameLen> <name> <bands> [freq u16 LE, gain s8]...`.
+  Action `01` add, `02` modify, `03` delete. Six bands: 62, 250, 1000, 4000, 8000, 16000 Hz.
+  Gain -6 to +6 dB. At most 3 custom presets.
+- 061C12 (Air 5 Pro) and 063012 (Air6 Pro) use other bands: 100, 170, 400, 4300, 9500, 12000 Hz.
+- Bass engine: `0x041B <min> <max> <value> [type 1-3]`. No config names a BassWave item.
+- Multi-connect: `0x040B 01 <MAC> <action>`. No action values and no preferred-device option in the data.
+- Personalized ANC: `0x0412 <value>`. Ear scan: `0x0415`.
+- No config has an in-call gesture option or a codec picker list.
+- Air8 (066812) and Air8 Pro (066C12): EQ page, bass row, 3-device connect, fit test, Hi-Res. No
+  personalized ANC. Air8 adds Dolby Atmos. Air8 Pro adds Golden Hearing.
+- Conflict: the `<min> <max>` bytes in `0x0418` and `0x041B` differ from PROTOCOL.md §9 (`FA 06`,
+  `FB 05`). Probably the same fields. Confirm with a capture before any write.
+- Still to do: a per-model table from `realme.json` (which of the 34 have the bass row, multi-connect,
+  ear scan, personalized ANC). Map the 34 config ids to the realme entries below.
+
+**OPPO / OnePlus / DIZO findings:** none of the 21 HeyMelody entries has `equalizer`, `equalizerMode`,
+`customEqualizer` or `bassEngineSupport`. Our missing EQ on them matches HeyMelody: no fix needed.
+The 9 id-and-name-only entries carry only battery, fast discovery and Dolby Atmos flags in HeyMelody,
+no gestures. Our `control` data on the other 12 matches. The only keys we drop are vendor metadata
+(`brand`, `uuid`, `rssi`, `minVersion`, `podsVersion`, `supportSpp`, `type`, `defaultColor`).
 
 Gap list from `main` (`models.json`, 137 entries):
 
-**realme, no EQ data (39 with partial data):** 050812 Wireless 3, 050C12 Wireless 3 Neo, 051412
+**realme, no EQ data:** 050812 Wireless 3, 050C12 Wireless 3 Neo, 051412
 Wireless 5 ANC, 051812 Wireless 6 Neo, 051C52 Wireless 6, 052052 Wireless 6 ANC, 061012 Air 3S,
 061C12 Air 5 Pro, 062012 Air 5, 062412 T300, 062812 T110, 063012 Air6 Pro, 063412 Air6, 063812 N1 Pro,
 063C12 T310, 064012 N1, 064412 T01, 064812 Air7, 064C12 Air7 Pro (confirmed), 065052 T200 Lite,
@@ -89,21 +113,21 @@ Neo, 1B5374 Air 2 Neo, 3D59CF Air, 693878 Q2, 8CD10F Air Pro, BA5D56 Air 2, C1E2
 C70A6D Wireless 2 Neo, E3009F Wireless Pro, F85450 Air Neo. Speakers (49074B Cobble, A5FD66 Brick,
 C70A75 Pocket) stay without data.
 
-**OPPO / OnePlus, no EQ (12):** 050410 Enco M31, 060410 Enco Free, 060414 OnePlus Buds, 060810 Enco
-W31, 060814 OnePlus Buds Z, 060C10 Enco W51, 061810 Enco Air, 061C10 Enco Play, 062410 Enco Buds,
-062810 Enco Air Lite, 068414 OnePlus Buds, 068814 OnePlus Buds Z. Unverified claim: HeyMelody shows no
-EQ for them either. Check it against `heymelody.json`.
+**OPPO / OnePlus, no EQ (matches HeyMelody):** 050410 Enco M31, 060410 Enco Free, 060414 OnePlus
+Buds, 060810 Enco W31, 060814 OnePlus Buds Z, 060C10 Enco W51, 061810 Enco Air, 061C10 Enco Play,
+062410 Enco Buds, 062810 Enco Air Lite, 068414 OnePlus Buds, 068814 OnePlus Buds Z.
 
-**OPPO / OnePlus / DIZO, id and name only (9):** 050010 Enco Quiet, 050414 OnePlus Bullets Wireless
-Z2, 050810 Enco M32, 060412 O-Free, 061010 Enco W11, 062C10 Enco W31 Lite, C70A6E DIZO Wireless,
-C70A6F DIZO GoPods D, C70A70 DIZO GoPods. (OnePlus Open Buds has full data.)
+**OPPO / OnePlus / DIZO, id and name only (matches HeyMelody):** 050010 Enco Quiet, 050414 OnePlus
+Bullets Wireless Z2, 050810 Enco M32, 060412 O-Free, 061010 Enco W11, 062C10 Enco W31 Lite,
+C70A6E DIZO Wireless, C70A6F DIZO GoPods D, C70A70 DIZO GoPods.
 
-Next steps:
-1. Read the three dump files. Copy only values present in them. Never guess a `0406` id.
-2. Fill `models.json` on a new branch: EQ presets (ids, names), custom EQ bands, BassWave, device
-   manager, personalized ANC, codec picker. Commit facts only, never vendor class or file names.
-3. If a new key appears, update `OpoProtocol`, `protocol.rs` and PROTOCOL.md in the same commit.
-4. Run `./gradlew assembleRelease` and the checks. Ask the developer for an Air8 device test.
+Next steps (realme only):
+1. Build the per-model table from `realme.json`. Copy only values present in it. Never guess an id.
+2. Fill `models.json` on a new branch: `equalizerMode` presets 00-03, custom EQ bands, the bass row,
+   multi-connect, ear scan where the config has them. Facts only, never vendor class or file names.
+3. If a new key or command appears, update `OpoProtocol`, `protocol.rs` and PROTOCOL.md in the same commit.
+4. Run `./gradlew assembleRelease` and the checks. Ask the developer for an Air8 test, and for a
+   capture that settles the `0x0418` / `0x041B` min-max bytes.
 5. After the merge, redeploy the Worker (section 3). It reads `models.json`.
 
 ### 2.3 Parked and open (docs/ROADMAP.md)
