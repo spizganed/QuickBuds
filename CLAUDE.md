@@ -37,12 +37,14 @@ the repo. A finished feature needs no doc: the code is the record.
 - Version: `versionName` and `versionCode` in `app/build.gradle.kts`, and `desktop/Cargo.toml`. The latest release is
   the newest `v*` git tag.
 - Build and test: `scripts/release-build.sh`. It runs the Build workflow's checks and tests on this PC and puts
-  the APK, the AAB and both desktop archives in `local/release/<version>/`. Release only after it passes.
+  the APK, the AAB and the desktop files (zip, tarball, AppImage) in `local/release/<version>/`. Release only
+  after it passes.
 - From the phone: `gh workflow run Build`, then `gh run watch`, then `gh run download <run id>`. Same files.
 - Notes cover every user-visible change since the last tag (`git log v<previous>..HEAD`).
 - Publish: `gh release create v<version> QuickBuds<version>.apk QuickBuds<version>.aab <desktop
-  archives> --target <full sha> --title "QuickBuds <version>"`. Both updaters look for these file
-  names. A `desktop-v*` tag is a desktop-only fix.
+  files> --target <full sha> --title "QuickBuds <version>"`. Both updaters look for these file
+  names. The AppImage name has no version, so the README's install link always works. A `desktop-v*` tag
+  is a desktop-only fix.
 - The report Worker reads `models.json`. After a change to it, run `npx wrangler deploy` in
   `report-worker/`, or the Worker rejects reports for the new model.
 - Never commit the release key or print its password.

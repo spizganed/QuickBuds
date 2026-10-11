@@ -65,8 +65,14 @@ does not pair them. Every file is in the [latest release](https://github.com/spi
 - **Android 8+:** install `QuickBuds<version>.apk` and allow the Bluetooth permission when asked.
 - **Windows 10 / 11:** unzip `QuickBuds<version>-windows-x64.zip` and run `quickbuds.exe`. It is portable:
   no installer, no drivers, no background services.
-- **Linux:** unpack `QuickBuds<version>-linux-x64.tar.gz`. It needs BlueZ, GTK 3 and
-  libayatana-appindicator; its README has the rest.
+- **Linux:** run this command. It downloads the AppImage to your home folder and starts it. The AppImage
+  holds every library it needs, so it runs on any distro with BlueZ. It updates itself.
+  ```sh
+  curl -fLo ~/QuickBuds.AppImage https://github.com/spizganed/QuickBuds/releases/latest/download/QuickBuds-linux-x64.AppImage && chmod +x ~/QuickBuds.AppImage && ~/QuickBuds.AppImage
+  ```
+  If it says FUSE is missing, install `fuse3` from your distro. The tarball
+  `QuickBuds<version>-linux-x64.tar.gz` is the alternative: it needs BlueZ, GTK 3 and libayatana-appindicator,
+  and its README has the rest.
 
 > **Got the APK somewhere else?** The only official downloads are the GitHub releases. A copy from
 > another site is genuine only if it is signed with this certificate (SHA-256), which

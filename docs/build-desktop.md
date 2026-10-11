@@ -25,7 +25,12 @@ hold separate copies.
 
 ## Release archives
 
-`scripts/desktop-dist.sh <version>` builds the Windows zip and the Linux tarball into `desktop/dist/`, on
-Linux. The Windows exe is cross-built. It needs `rustup target add x86_64-pc-windows-gnu`, mingw-w64,
-`zip`, `python3` and podman. With `QB_NATIVE=1` it builds the Linux binary without podman, on the current
-system.
+`scripts/desktop-dist.sh <version>` builds the Windows zip, the Linux tarball and the Linux AppImage into
+`desktop/dist/`, on Linux. The Windows exe is cross-built. It needs `rustup target add x86_64-pc-windows-gnu`,
+mingw-w64, `zip`, `python3` and podman. With `QB_NATIVE=1` it builds the Linux files without podman, on the
+current system. With `QB_APPIMAGE_ONLY=1` it builds the AppImage only.
+
+`scripts/desktop-appimage.sh` makes the AppImage with linuxdeploy and its GTK plugin. It downloads both into
+`desktop/target/appimage-tools/`. It adds GTK, libayatana-appindicator and libxkbcommon-x11, so the AppImage
+needs no distro packages. The AppImage updates itself: the updater replaces the file in `$APPIMAGE`.
+From the phone, `gh workflow run Build -f appimage_only=true` builds the AppImage only.

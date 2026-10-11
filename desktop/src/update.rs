@@ -1,7 +1,7 @@
 //! App update from GitHub releases, like the phone's: check on start, then replace the binary in place.
 //! `curl` and `tar` do the work (both ship with Windows 10+ and practically every Linux), so no HTTP or
-//! archive crate. A binary in a folder we cannot write (a package, `/usr/bin`) is never touched: the
-//! release page is offered instead.
+//! archive crate. An AppImage swaps the AppImage file itself (`$APPIMAGE`), as it is the whole app. A binary in a
+//! folder we cannot write (a package, `/usr/bin`) is never touched: the release page is offered instead.
 
 use serde_json::Value;
 use std::path::{Path, PathBuf};
@@ -9,7 +9,14 @@ use std::process::Command;
 
 const API: &str = "https://api.github.com/repos/spizganed/QuickBuds/releases?per_page=30";
 pub const PAGE: &str = "https://github.com/spizganed/QuickBuds/releases/latest";
-const ASSET: &str = if cfg!(windows) { "-windows-x64.zip" } else { "-linux-x64.tar.gz" };
+
+/// The AppImage this process runs from: its runtime sets `APPIMAGE` to the file's path.
+fn appimage() -> Option<PathBuf> { if cfg!(windows) { None } else { std::env::var_os("APPIMAGE").map(PathBuf::from) } }
+
+/// The release file this build updates from.
+fn asset() -> &'static str {
+    if cfg!(windows) { "-windows-x64.zip" } else if appimage().is_some() { "-linux-x64.AppImage" } else { "-linux-x64.tar.gz" }
+}
 
 pub struct Release { pub version: String, pub url: String }
 
@@ -41,23 +48,24 @@ pub fn newer(remote: &str, local: &str) -> bool { parts(remote) > parts(local) }
 pub fn latest() -> Result<Release, String> {
     let list: Value = serde_json::from_slice(&curl(&["-H", "Accept: application/vnd.github+json", API])?)
         .map_err(|e| e.to_string())?;
-    pick(&list).ok_or_else(|| "no release found".into())
+    pick(&list, asset()).ok_or_else(|| "no release found".into())
 }
 
-fn pick(list: &Value) -> Option<Release> {
+fn pick(list: &Value, asset: &str) -> Option<Release> {
     list.as_array()?.iter()
         .filter(|r| r["draft"] != true && r["prerelease"] != true)
         .filter_map(|r| {
             let version = version_of(r["tag_name"].as_str()?)?.to_string();
             let url = r["assets"].as_array()?.iter()
                 .filter_map(|a| a["browser_download_url"].as_str())
-                .find(|u| u.ends_with(ASSET))?.to_string();
+                .find(|u| u.ends_with(asset))?.to_string();
             Some(Release { version, url })
         })
         .max_by(|a, b| parts(&a.version).cmp(&parts(&b.version)))
 }
 
-fn exe() -> Option<PathBuf> { std::env::current_exe().ok()?.canonicalize().ok() }
+/// The file an update replaces: the AppImage, else the running binary.
+fn exe() -> Option<PathBuf> { appimage().or_else(|| std::env::current_exe().ok())?.canonicalize().ok() }
 
 fn old(exe: &Path) -> PathBuf { exe.with_extension("old") }
 
@@ -94,18 +102,26 @@ pub fn install(r: &Release) -> Result<(), String> {
     let tmp = dir.join(".quickbuds-update");
     let _ = std::fs::remove_dir_all(&tmp);
     std::fs::create_dir_all(&tmp).map_err(|e| e.to_string())?;
-    let archive = tmp.join(if cfg!(windows) { "update.zip" } else { "update.tar.gz" });
-    curl(&["-o", archive.to_str().ok_or("path")?, &r.url])?;
-    let ok = quiet("tar").arg("-xf").arg(&archive).arg("-C").arg(&tmp).status().map_err(|e| format!("tar: {e}"))?;
-    if !ok.success() { return Err("could not unpack the download".into()); }
-    let new = find(&tmp, exe.file_name().ok_or("name")?).ok_or("the download has no QuickBuds binary")?;
+    let new = if appimage().is_some() {
+        let new = tmp.join("QuickBuds.AppImage");
+        curl(&["-o", new.to_str().ok_or("path")?, &r.url])?;
+        #[cfg(unix)]
+        std::fs::set_permissions(&new, std::os::unix::fs::PermissionsExt::from_mode(0o755)).map_err(|e| e.to_string())?;
+        new
+    } else {
+        let archive = tmp.join(if cfg!(windows) { "update.zip" } else { "update.tar.gz" });
+        curl(&["-o", archive.to_str().ok_or("path")?, &r.url])?;
+        let ok = quiet("tar").arg("-xf").arg(&archive).arg("-C").arg(&tmp).status().map_err(|e| format!("tar: {e}"))?;
+        if !ok.success() { return Err("could not unpack the download".into()); }
+        find(&tmp, exe.file_name().ok_or("name")?).ok_or("the download has no QuickBuds binary")?
+    };
     let _ = std::fs::remove_file(old(&exe));
     std::fs::rename(&exe, old(&exe)).map_err(|e| e.to_string())?;
     if let Err(e) = std::fs::rename(&new, &exe) {
         let _ = std::fs::rename(old(&exe), &exe);
         return Err(e.to_string());
     }
-    let mut start = quiet(exe.to_str().ok_or("path")?);
+    let mut start = host(exe.to_str().ok_or("path")?);
     // Its own process group: it outlives whatever started the old one (a terminal, a launcher).
     #[cfg(unix)]
     std::os::unix::process::CommandExt::process_group(&mut start, 0);
@@ -115,7 +131,22 @@ pub fn install(r: &Release) -> Result<(), String> {
 
 /// Opens the release page in the browser.
 pub fn open_page() {
-    let _ = if cfg!(windows) { quiet("explorer").arg(PAGE).spawn() } else { Command::new("xdg-open").arg(PAGE).spawn() };
+    let _ = if cfg!(windows) { quiet("explorer").arg(PAGE).spawn() } else { host("xdg-open").arg(PAGE).spawn() };
+}
+
+/// A command for a program outside the AppImage: without the GTK paths its AppRun sets for the bundled GTK
+/// (linuxdeploy-plugin-gtk), which break the host's GTK programs, a browser for one.
+fn host(cmd: &str) -> Command {
+    let mut c = quiet(cmd);
+    if let Some(dir) = std::env::var_os("APPDIR").filter(|_| appimage().is_some()) {
+        for v in ["GTK_DATA_PREFIX", "GTK_THEME", "GDK_BACKEND", "GSETTINGS_SCHEMA_DIR", "GI_TYPELIB_PATH",
+            "GTK_EXE_PREFIX", "GTK_PATH", "GTK_IM_MODULE_FILE", "GDK_PIXBUF_MODULE_FILE"] {
+            c.env_remove(v);
+        }
+        let ours = format!("{}/usr/share:", dir.to_string_lossy());
+        if let Ok(dirs) = std::env::var("XDG_DATA_DIRS") { c.env("XDG_DATA_DIRS", dirs.replacen(&ours, "", 1)); }
+    }
+    c
 }
 
 // --- The App settings section and the overview notice ---
@@ -190,13 +221,15 @@ mod tests {
 
     #[test]
     fn picks_newest_with_our_archive() {
+        const ASSET: &str = "-linux-x64.tar.gz";
         let list = serde_json::json!([
             { "tag_name": "v4.4.0", "prerelease": true, "assets": [{ "browser_download_url": format!("x/a{ASSET}") }] },
             { "tag_name": "desktop-v4.3.2", "assets": [{ "browser_download_url": format!("x/b{ASSET}") }] },
             { "tag_name": "v4.3.1", "assets": [{ "browser_download_url": format!("x/c{ASSET}") }] },
             { "tag_name": "v9.0.0", "assets": [{ "browser_download_url": "x/QuickBuds9.0.0.apk" }] },
         ]);
-        let r = pick(&list).unwrap();
+        let r = pick(&list, ASSET).unwrap();
+        assert!(pick(&list, "-linux-x64.AppImage").is_none());
         assert_eq!((r.version.as_str(), r.url.as_str()), ("4.3.2", format!("x/b{ASSET}").as_str()));
         assert!(newer("4.3.1", "4.3.0") && newer("4.10.0", "4.9.9") && !newer("4.3.0", "4.3.0-beta") && !newer("4.3.0", "4.3.1"));
     }

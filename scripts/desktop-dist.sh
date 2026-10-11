@@ -2,7 +2,9 @@
 # Builds the desktop release archives into desktop/dist/:
 #   QuickBuds<version>-windows-x64.zip   quickbuds.exe only (portable, system DLLs only)
 #   QuickBuds<version>-linux-x64.tar.gz  binary + .desktop + icon + README
-# Usage: scripts/desktop-dist.sh <version>   (e.g. 4.3.0)
+#   QuickBuds-linux-x64.AppImage         the same binary with its GTK libraries inside (scripts/desktop-appimage.sh).
+#                                        No version in the name: releases/latest/download/ always finds it.
+# Usage: scripts/desktop-dist.sh <version>   (e.g. 4.3.0). QB_APPIMAGE_ONLY=1 builds the AppImage only.
 # Needs: rustup target x86_64-pc-windows-gnu, mingw-w64-gcc, podman (unless QB_NATIVE=1), zip, python3.
 # Linux builds in Ubuntu 22.04 (glibc 2.35) so the binary runs on older distros than the build PC.
 set -euo pipefail
@@ -12,8 +14,10 @@ dist=$root/desktop/dist
 rm -rf "$dist" && mkdir -p "$dist"
 
 # Windows
-(cd "$root/desktop" && cargo build --release --target x86_64-pc-windows-gnu)
-(cd "$root/desktop/target/x86_64-pc-windows-gnu/release" && zip -q "$dist/QuickBuds$ver-windows-x64.zip" quickbuds.exe)
+if [ -z "${QB_APPIMAGE_ONLY:-}" ]; then
+  (cd "$root/desktop" && cargo build --release --target x86_64-pc-windows-gnu)
+  (cd "$root/desktop/target/x86_64-pc-windows-gnu/release" && zip -q "$dist/QuickBuds$ver-windows-x64.zip" quickbuds.exe)
+fi
 
 # Linux, in a container; the cargo registry and target dir persist between runs. QB_NATIVE=1 builds in place
 # instead, for CI, which already runs in Ubuntu 22.04 with the packages below.
@@ -66,6 +70,20 @@ Install for your user:
   install -Dm644 quickbuds.desktop ~/.local/share/applications/quickbuds.desktop
   install -Dm644 quickbuds.svg ~/.local/share/icons/hicolor/scalable/apps/quickbuds.svg
 EOF
-tar -C "$dist" -czf "$pkg.tar.gz" "$(basename "$pkg")"
+[ -n "${QB_APPIMAGE_ONLY:-}" ] || tar -C "$dist" -czf "$pkg.tar.gz" "$(basename "$pkg")"
+
+# The AppImage takes its libraries from the system that built the binary: Ubuntu 22.04 again.
+appimage=QuickBuds-linux-x64.AppImage
+if [ -n "${QB_NATIVE:-}" ]; then
+  "$root/scripts/desktop-appimage.sh" "$pkg" "$dist/$appimage"
+else
+podman run --rm --userns=keep-id -v "$root:/repo" -w /repo --user root docker.io/library/ubuntu:22.04 bash -c '
+    set -e
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -qq && apt-get install -y -qq curl ca-certificates file pkg-config libgtk-3-dev \
+      libayatana-appindicator3-dev libxkbcommon-x11-0 >/dev/null
+    scripts/desktop-appimage.sh "desktop/dist/'"$(basename "$pkg")"'" "desktop/dist/'"$appimage"'"
+    chown -R '"$(id -u):$(id -g)"' desktop/dist desktop/target/appimage-tools'
+fi
 rm -rf "$pkg"
 ls -la "$dist"
