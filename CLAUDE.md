@@ -43,4 +43,3 @@ the repo. A finished feature needs no doc: the code is the record.
 - The report Worker reads `models.json`. After a change to it, run `npx wrangler deploy` in
   `report-worker/`, or the Worker rejects reports for the new model.
 - Never commit the release key or print its password.
-- AUR package: `desktop/aur/` (not published yet). Each release updates its `_ver`, `_tag` and `sha256sums`.
