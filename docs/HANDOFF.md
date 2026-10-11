@@ -121,6 +121,50 @@ Buds, 060810 Enco W31, 060814 OnePlus Buds Z, 060C10 Enco W51, 061810 Enco Air, 
 Bullets Wireless Z2, 050810 Enco M32, 060412 O-Free, 061010 Enco W11, 062C10 Enco W31 Lite,
 C70A6E DIZO Wireless, C70A6F DIZO GoPods D, C70A70 DIZO GoPods.
 
+**realme per model** (from the phone's `realme-summary`, derived from `realme.json`). "TL4" is the fixed
+4-preset page above. "Own list" and "D/B/B" are other preset lists (see below). Dual = devices.
+
+| id | model | EQ presets | custom EQ item | bass row | dual | pers. ANC | fit test | ANC levels |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 050812 | Wireless 3 | TL4 | no | yes | 2 | no | no | no |
+| 050C12, 051812 | Wireless 3 Neo, 6 Neo | TL4 | no | yes | 2 | no | no | no |
+| 051412 | Wireless 5 ANC | TL4 | no | yes | 2 | no | yes | yes |
+| 051C52 | Wireless 6 | TL4 | no | yes | 2 | no | no | no |
+| 052052 | Wireless 6 ANC | TL4 | no | yes | 2 | no | yes | yes |
+| 061012 | Air 3S | own list | yes | yes | 2 | no | no | no |
+| 061C12 | Air 5 Pro | TL4 | yes | yes | 2 | yes | yes | yes |
+| 062012 | Air 5 | TL4 | no | yes | no | no | yes | yes |
+| 062412 | T300 | TL4 | no | no | no | no | no | no |
+| 062812, 064412 | T110, T01 | D/B/B | no | yes | no | no | no | no |
+| 063012 | Air6 Pro | TL4 | yes | yes | 2 | yes | yes | yes |
+| 063412 | Air6 | TL4 | no | yes | no | no | yes | yes |
+| 063812 | N1 Pro | TL4 | no | yes | no | no | yes | yes |
+| 063C12, 064012 | T310, N1 | TL4 | no | yes | 2 | no | yes | yes |
+| 064812 | Air7 | TL4 | no | yes | 2 | no | yes | yes |
+| 064C12 | Air7 Pro | TL4 | no | yes | 2 | no | yes | yes |
+| 065052 | T200 Lite | TL4 | no | no | 2 | no | no | no |
+| 065452 | T200 | TL4 | no | yes | 2 | no | no | no |
+| 065852 | T200x | TL4 | no | no | 2 | no | no | no |
+| 065C12 | Clip | TL4 | no | yes | 2 | no | no | no |
+| 066012 | TechLife Buds | TL4 | no | yes | 2 | no | no | no |
+| 066452, 067452 | T500 Pro, T500 Pro HP | TL4 | no | yes | 3 | no | yes | yes |
+| 066812 | Air8 | TL4 | no | yes | 3 | no | yes | yes |
+| 066C12 | Air8 Pro | TL4 | no | yes | 3 | no | yes | yes |
+| 067052 | T500 | TL4 | no | yes | 3 | no | no | no |
+| 067852 | not in models.json | TL4 | no | yes | 3 | no | yes | yes |
+| 067C52 | not in models.json | TL4 | no | no | 2 | no | no | no |
+
+- TL4 UI values 1/2/4/8 map to wire ids 1/0/2/3 (Pure Raw `00`, Deep Bass `01`, Pure Voice `02`, Pure Bass `03`).
+- 061012 own list: Pure Voice, Pure Raw, Pure Bass, Deep Bass, plus a custom EQ item.
+- D/B/B list (062812, 064412, one config with no model id): Dynamic, Balanced, Bright (UI values
+  1/2/4). Wire ids unknown. Do not map them by the TL4 rule without a capture.
+- Conflict to check: the first pass said all 34 configs have custom EQ; this table shows a custom EQ
+  item only on 061012, 061C12, 063012. Check `realme.json` before adding `customEqualizer`.
+- Other queries: all custom EQ `0x0122`, personalized ANC result `0x011A`, ear scan `0x011E`, `0x011F`.
+  `0x0418` action `05` sends 5 zero bytes. The data does not show how a custom preset is selected.
+- 067852 and 067C52 are new realme ids. Adding them needs names from realme Link and `models.json` entries.
+- Gesture slots and noise modes per model are in `realme.json` too. Compare them with `models.json`.
+
 Model flags that gate a row (the app hides the row without them): `equalizer` / `equalizerMode` /
 `customEqualizer` (EQ, also desktop `protocol.rs:376-389`), `bassEngineSupport` (BassWave),
 `multiConnect` (device manager, preferred device), `personalNoise`, `highAudio` (codec picker),
