@@ -121,6 +121,15 @@ Buds, 060810 Enco W31, 060814 OnePlus Buds Z, 060C10 Enco W51, 061810 Enco Air, 
 Bullets Wireless Z2, 050810 Enco M32, 060412 O-Free, 061010 Enco W11, 062C10 Enco W31 Lite,
 C70A6E DIZO Wireless, C70A6F DIZO GoPods D, C70A70 DIZO GoPods.
 
+Model flags that gate a row (the app hides the row without them): `equalizer` / `equalizerMode` /
+`customEqualizer` (EQ, also desktop `protocol.rs:376-389`), `bassEngineSupport` (BassWave),
+`multiConnect` (device manager, preferred device), `personalNoise`, `highAudio` (codec picker),
+`earScan`, `callControl` (in-call gestures), `spatialTypes`, `tapLevelSetting`. The realme entries carry
+none of them.
+
+Design idea for the developer (not decided): when a model has no EQ data but its command bitmap lists
+`0x0122` / `0x0418`, read the custom presets from the buds instead of hiding EQ.
+
 Next steps (realme only):
 1. Build the per-model table from `realme.json`. Copy only values present in it. Never guess an id.
 2. Fill `models.json` on a new branch: `equalizerMode` presets 00-03, custom EQ bands, the bass row,
