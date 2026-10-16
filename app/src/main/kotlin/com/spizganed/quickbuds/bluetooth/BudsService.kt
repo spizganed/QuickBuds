@@ -229,7 +229,13 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 .setShowWhen(false)
                 .build()
         }
-        startForeground(1, notification)
+        // Android 12+ refuses this when the app is in the background (report: realme RMX3890, Android 15). Stop instead of crashing.
+        try {
+            startForeground(1, notification)
+        } catch (e: IllegalStateException) {
+            statusLog("[SVC] startForeground refused: ${e.javaClass.simpleName}")
+            stopSelf()
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder {
