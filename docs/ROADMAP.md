@@ -67,5 +67,7 @@ These work in code but no owner has confirmed them. They count as working until 
   (`spyTap`) and fall detection (`deviceLostRemind`, Enco Clip2 only).
 - **HeyMelody pages with no value here:** Earphones Lab, Connection info (the status chip shows it),
   realme's "More functions", skins, guides, tutorials and diagnostics.
+- **3D buds view** (the Aman-Kumar-Yadava fork's flat-drawn buds and case) and its Samsung / OnePlus
+  look-alike styles: judged a poor prototype. Do not suggest it again.
 - **Custom UI styles as a file** (import / export): built-in styles only.
 - **A log on the main screen:** Dev tools owns logging.
