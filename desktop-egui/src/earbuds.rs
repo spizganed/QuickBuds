@@ -59,6 +59,13 @@ fn wear_offered(s: &Snapshot) -> bool {
         || s.model.is_some_and(|m| m["confirmed"].as_array().is_some_and(|c| c.iter().any(|x| x.as_str() == Some("wear"))))
 }
 
+/// The Game equalizer row and its switch: the buds list feature `0x21` and accept `0x0420` (`EarbudSettingsActivity`).
+/// The Usage access row that goes with the switch on the phone has no meaning on the desktop.
+fn game_eq_row(s: &Snapshot) -> Option<bool> {
+    let v = s.features.iter().find(|f| f.0 == FEATURE_GAME_EQ)?.1;
+    s.caps.supports(CMD_GAME_EQ_STATE).then_some(v == 1)
+}
+
 pub fn show(app: &mut App, ui: &mut Ui, body: Rect) -> f32 {
     let s = app.snap.clone();
     let tr = app.tr.clone();
@@ -157,6 +164,14 @@ pub fn show(app: &mut App, ui: &mut Ui, body: Rect) -> f32 {
             _ => (0, None),
         };
         items.push(Item { id, icon, title, sub, on: v == 1, confirm, confirm_off, kind, choice });
+    }
+    // Game equalizer, right after game sound in the phone's order (`EarbudSettingsActivity`), else before
+    // the row that follows it there.
+    if let Some(ge_on) = game_eq_row(&s) {
+        let at = items.iter().position(|i| i.id == 0x27 || i.id == 0x1C)
+            .map_or(items.len(), |p| p + (items[p].id == 0x27) as usize);
+        items.insert(at, Item { id: FEATURE_GAME_EQ, icon: icons::LOW_LATENCY, title: "row_game_eq_title", sub: "row_game_eq_sub",
+            on: ge_on, confirm: None, confirm_off: false, kind: 0, choice: None });
     }
     let pnc_listed = s.features.iter().find(|f| f.0 == FEATURE_PERSONAL_NOISE).map(|f| f.1);
     let pnc = s.model.map_or(true, |m| m["personalAnc"] == 1)
@@ -465,5 +480,27 @@ mod tests {
         let s = Snapshot { model: buds, ..Default::default() };
         assert!(wear_offered(&s));
         assert!(!wear_offered(&Snapshot::default()));
+    }
+
+    /// Game equalizer: the row needs the buds' feature `21` and their `0x0420` accept; the switch shows its value.
+    #[test]
+    fn game_eq_needs_the_feature_and_the_command() {
+        let listed = crate::types::Caps(Some(vec![CMD_SET_FEATURE, CMD_GAME_EQ_STATE]));
+        let s = Snapshot { caps: listed, features: vec![(FEATURE_GAME_EQ, 1)], ..Default::default() };
+        assert_eq!(game_eq_row(&s), Some(true));
+        // The buds do not accept `0x0420`: no row, as on the phone.
+        let s = Snapshot { caps: crate::types::Caps(Some(vec![CMD_SET_FEATURE])), features: vec![(FEATURE_GAME_EQ, 1)], ..Default::default() };
+        assert_eq!(game_eq_row(&s), None);
+        // The buds do not list the feature: no row.
+        let s = Snapshot { caps: crate::types::Caps(Some(vec![CMD_GAME_EQ_STATE])), ..Default::default() };
+        assert_eq!(game_eq_row(&s), None);
+    }
+
+    /// The row's switch writes the feature and the game state, as the phone's switch and watcher do.
+    #[test]
+    fn game_eq_switch_writes_its_state() {
+        let s = Snapshot { features: vec![(FEATURE_GAME_EQ, 0)], ..Default::default() };
+        assert!(matches!(home_logic::feature_cmds(&s, FEATURE_GAME_EQ, true).as_slice(), [Cmd::GameEq(true)]));
+        assert!(matches!(home_logic::feature_cmds(&s, FEATURE_GAME_EQ, false).as_slice(), [Cmd::GameEq(false)]));
     }
 }

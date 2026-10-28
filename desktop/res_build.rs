@@ -57,6 +57,7 @@ const STRINGS: &[&str] = &[
     "firmware_dialog_body", "dialog_close", "dialog_cancel", "dual_add_ok",
     "row_vocal_title", "row_vocal_sub", "row_wind_noise_title", "row_wind_noise_sub", "row_game_sound_title", "row_game_sound_sub", "row_smart_volume_title",
     "row_smart_volume_sub", "row_adaptive_volume_title", "row_adaptive_volume_sub", "row_adaptive_ear_title",
+    "row_game_eq_title", "row_game_eq_sub",
     "row_adaptive_ear_sub", "row_sleep_title", "row_sleep_sub", "row_lost_title", "row_lost_sub", "row_speech_title", "row_speech_sub",
     "row_hearing_optimize_title", "row_hearing_optimize_sub", "hearing_optimize_confirm", "row_long_press_volume_title",
     "row_long_press_volume_sub", "row_head_motion_title", "row_head_motion_sub", "row_swift_pair_title",

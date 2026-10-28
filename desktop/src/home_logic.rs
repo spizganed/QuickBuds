@@ -68,6 +68,8 @@ pub(crate) fn spatial_cmds(s: &Snapshot, t: u8) -> Vec<Cmd> {
 pub(crate) fn feature_cmds(s: &Snapshot, id: u8, on: bool) -> Vec<Cmd> {
     match id {
         FEATURE_SPATIAL => spatial_cmds(s, on as u8),
+        // The game equalizer writes its switch and the game state together (`Cmd::GameEq`).
+        FEATURE_GAME_EQ => vec![Cmd::GameEq(on)],
         FEATURE_HIRES if codec_picker(s) => s.codec.map(|c| Cmd::Codec(c, on)).into_iter().collect(),
         FEATURE_HIRES if on && exclusive(s) && spatial_on(s) => if spatial_by_type(s) {
             vec![Cmd::SpatialType(0), Cmd::Hires { on: true, drop_spatial: false }]
