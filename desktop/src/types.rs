@@ -165,6 +165,20 @@ pub fn codec_name(codec: u8) -> String {
         .map_or(format!("#{codec}"), |n| n.to_string())
 }
 
+/// The high-quality codecs of `models.json`, best first, with the names the UI shows
+/// (`ModelCatalog.HIRES_CODECS`).
+pub const HIRES_NAMES: [(&str, &str); 6] = [
+    ("lhdc5", "LHDC 5.0"), ("lhdc", "LHDC"), ("ldac", "LDAC"),
+    ("aptx-adaptive", "aptX Adaptive"), ("aptx-hd", "aptX HD"), ("aptx", "aptX"),
+];
+
+/// The model's own best high-quality codec (`ModelCatalog.bestHiResCodec`). None when the model has no
+/// `codecs` key or lists none of them.
+pub fn best_hires_codec(model: Option<&Value>) -> Option<&'static str> {
+    let tokens = model?.get("codecs")?.as_array()?;
+    HIRES_NAMES.iter().find(|(token, _)| tokens.iter().any(|v| v.as_str() == Some(token))).map(|(_, name)| *name)
+}
+
 /// `0x010D`: count, then the feature ids (`OpoProtocol.queryStatus`): the model's `statusQuery` (HeyMelody's
 /// per-model list, PROTOCOL.md section 16), else the full list. The `windMode` flag adds [FEATURE_WIND_NOISE].
 pub fn status_query(model: Option<&serde_json::Value>) -> Vec<u8> {

@@ -27,7 +27,7 @@ const STRINGS: &[&str] = &[
     "token_accent", "token_text", "token_text_secondary", "token_outline", "contrast_warning", "preset_hue",
     "preset_saturation", "preset_brightness", "preset_recent", "preset_hex",
     "desktop_nav_overview", "desktop_nav_app_settings", "action_dev_tools", "settings_language_title", "settings_language_sub", "language_system",
-    "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_spatial_title", "row_spatial_sub", "spatial_fixed", "spatial_head_tracking", "codec_dialog_title", "codec_dialog_accept",
+    "row_hires_title", "row_hires_sub", "row_hires_sub_off", "row_hires_sub_codec", "row_spatial_title", "row_spatial_sub", "spatial_fixed", "spatial_head_tracking", "codec_dialog_title", "codec_dialog_accept",
     "codec_msg_reconnect", "codec_msg_hires_drops_spatial", "codec_msg_spatial_drops_hires",
     "settings_issues_title", "settings_issues_sub", "issues_none", "issue_spatial_silent_title", "issue_spatial_silent_body",
     "issue_hires_spatial_title", "issue_hires_spatial_body", "issue_hires_no_codec_title", "issue_hires_no_codec_body", "about_discord_desc", "reply_title",

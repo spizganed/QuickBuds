@@ -244,6 +244,8 @@ pub struct App {
     pub toast: notice::State,
     /// The disconnect pill asked; Cancel keeps the link.
     pub disconnect_ask: bool,
+    /// The codec picker of a `hiRes` model is open.
+    pub codec_pick: bool,
 }
 
 /// A write that waits for the user's accept: the buds reconnect, or it makes a sound in the ears.
@@ -270,7 +272,7 @@ impl App {
             snap: Snapshot::default(), tx, tr: translations(chosen_locale()), inbox, page: Page::Overview, has: Has::ALL,
             modes: AncModes::default(), last_level: None, levels_open: false, glow, demo, confirm: None, scroll: 0.0, shown_page: Page::Overview, page_seq: 0, page_since: std::time::Instant::now(), eq: Default::default(), dual: Default::default(), earbuds: Default::default(), dev: Default::default(), gestures: Default::default(), settings: Default::default(), appearance: Default::default(), hearing: Default::default(), setup: Default::default(), layout: Default::default(), preset: Default::default(),
             test: Default::default(), feedback: Default::default(), update: Default::default(), sheets: Default::default(), toast: Default::default(),
-            disconnect_ask: false, style: glass::style::Style::Glass, style_for: false,
+            disconnect_ask: false, codec_pick: false, style: glass::style::Style::Glass, style_for: false,
         };
         app.reload_style(&cc.egui_ctx);
         // First start: the guide runs before Home, as on the phone.

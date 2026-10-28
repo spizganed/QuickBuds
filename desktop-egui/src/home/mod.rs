@@ -5,7 +5,7 @@
 use crate::glass::{self, white, Trailing};
 use crate::home_logic;
 use crate::icons;
-use crate::session::{Cmd, Status};
+use crate::session::{Cmd, Snapshot, Status};
 use crate::types::{self, FEATURE_HEARING, FEATURE_HIRES, FEATURE_SPATIAL, FEATURE_WIND_NOISE};
 use crate::{t, App, Page};
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, Ui, Vec2};
@@ -143,6 +143,7 @@ pub fn header(app: &mut App, ui: &mut Ui, content: Rect) {
 /// The Home page under the header. Returns the bottom of the last row.
 pub fn show(app: &mut App, ui: &mut Ui, body: Rect) -> f32 {
     disconnect_sheet(app, ui);
+    codec_sheet(app, ui);
     let c = column(body);
     let mut y = c.top();
     let battery = Rect::from_min_size(Pos2::new(c.left(), y), Vec2::new(c.width(), BATTERY));
@@ -174,6 +175,27 @@ fn disconnect_sheet(app: &mut App, ui: &mut Ui) {
         Some(false) => app.disconnect_ask = false,
         None if !open => app.disconnect_ask = false,
         None => {}
+    }
+}
+
+/// The codec picker (`codecSheet`): the offered codecs, the current one marked. A different codec
+/// restarts the buds, so the write asks first.
+fn codec_sheet(app: &mut App, ui: &mut Ui) {
+    if !app.codec_pick { return; }
+    let s = app.snap.clone();
+    let list = codec_list(&s);
+    let options: Vec<String> = list.iter().map(|c| types::codec_name(*c)).collect();
+    let cur = list.iter().position(|c| Some(*c) == s.codec).unwrap_or(usize::MAX);
+    match glass::choice_dialog(ui.ctx(), "codec-pick", t(&app.tr, "row_hires_title"), &options, cur) {
+        glass::Choice::Pick(i) => {
+            if Some(list[i]) != s.codec {
+                let hires = s.features.contains(&(FEATURE_HIRES, 1));
+                app.confirm = Some(crate::Confirm { cmds: vec![Cmd::Codec(list[i], hires)], title: "codec_dialog_title", msg: "codec_msg_reconnect", accept: "codec_dialog_accept" });
+            }
+            app.codec_pick = false;
+        }
+        glass::Choice::Close => app.codec_pick = false,
+        glass::Choice::Open => {}
     }
 }
 
@@ -342,11 +364,11 @@ pub(crate) fn row_list(app: &App) -> Vec<Row> {
     let picker = home_logic::codec_picker(s);
     if listed(FEATURE_HIRES).is_some() || picker {
         let msg = if !picker && home_logic::spatial_on(s) && home_logic::exclusive(s) { "codec_msg_hires_drops_spatial" } else { "codec_msg_reconnect" };
-        // HeyMelody's codec picker: Hi-Res only with LDAC or LHDC V5.
-        let locked = picker && !matches!(s.codec, Some(3 | 8));
         rows.push(Row { id: "hires", icon: icons::HIRES, title: t(tr, "row_hires_title").into(),
-            sub: sub(if hires_on { "row_hires_sub" } else { "row_hires_sub_off" }, FEATURE_HIRES),
-            trail: Trailing::Switch(hires_on), enabled: on && !locked && !busy(FEATURE_HIRES), page: None, confirm: Some(msg) });
+            sub: hires_sub(s, tr, busy(FEATURE_HIRES)),
+            // HeyMelody's codec picker: a list of the codecs, not a switch (PROTOCOL.md section 18).
+            trail: if picker { Trailing::Chevron } else { Trailing::Switch(hires_on) },
+            enabled: on && !busy(FEATURE_HIRES), page: None, confirm: if picker { None } else { Some(msg) } });
     }
     if listed(FEATURE_SPATIAL).is_some() || home_logic::spatial_by_type(s) {
         let msg = if hires_on && home_logic::exclusive(s) { Some("codec_msg_spatial_drops_hires") } else { None };
@@ -367,6 +389,36 @@ pub(crate) fn row_list(app: &App) -> Vec<Row> {
     }
     rows.push(nav("earbuds", icons::SETTINGS_COG, t(tr, "earbuds_title"), t(tr, "row_earbuds_sub").into(), Page::Earbuds));
     rows
+}
+
+/// The Hi-Res row's subtitle (the phone's `paintHires`): the codec on a picker row, the hint when the
+/// phone plays a lower codec, else the feature's own text.
+fn hires_sub(s: &Snapshot, tr: &[String], busy: bool) -> String {
+    if busy { return t(tr, "feature_applying").into(); }
+    let on = s.features.contains(&(FEATURE_HIRES, 1));
+    let key = if on { "row_hires_sub" } else { "row_hires_sub_off" };
+    if home_logic::codec_picker(s) {
+        return s.codec.map_or_else(|| t(tr, key).into(), types::codec_name);
+    }
+    // Quality on, but the phone plays another codec than LHDC: name the model's best codec (report #17).
+    match (on, s.codec, hires_best_codec(s)) {
+        (true, Some(played), Some(best)) if played != 7 && played != 8 => {
+            t(tr, "row_hires_sub_codec").replace("%1$s", &types::codec_name(played)).replace("%2$s", best)
+        }
+        _ => t(tr, key).into(),
+    }
+}
+
+/// The best codec to name in the hint (`ModelCatalog.hiresBestCodec`): the model's own list, else the
+/// buds' offered list.
+fn hires_best_codec(s: &Snapshot) -> Option<&'static str> {
+    if s.model.is_some_and(|m| m.get("codecs").is_some()) { return types::best_hires_codec(s.model); }
+    if s.codecs.contains(&8) { Some("LHDC 5.0") } else if s.codecs.contains(&3) { Some("LDAC") } else if s.codecs.contains(&7) { Some("LHDC") } else { None }
+}
+
+/// The codecs the sheet offers, best first: LHDC V5, LHDC, LDAC, aptX Adaptive, aptX HD, aptX, AAC, SBC.
+fn codec_list(s: &Snapshot) -> Vec<u8> {
+    [8, 7, 3, 6, 5, 4, 2, 1].into_iter().filter(|c| s.codecs.contains(c)).collect()
 }
 
 /// The saved order (`home_rows`) and hidden set (`home_hidden`) applied to the supported rows.
@@ -408,10 +460,79 @@ fn rows(app: &mut App, ui: &mut Ui, c: &Rect, mut y: f32) -> f32 {
         }
         if clicked {
             if let Some(p) = r.page { app.page = p; }
+            // A tap on the Hi-Res row of a model with a codec list opens the picker.
+            else if r.id == "hires" && home_logic::codec_picker(&app.snap) { app.codec_pick = true; }
         }
         y += h + ROW_GAP;
     }
     y - ROW_GAP
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::translations;
+
+    fn model(name: &str) -> Option<&'static serde_json::Value> {
+        types::models().iter().find(|m| m["name"].as_str() == Some(name))
+    }
+
+    /// The picker row shows the codec the buds play, as the phone does (`paintHires`).
+    #[test]
+    fn picker_row_shows_the_codec() {
+        let tr = translations("");
+        let s = Snapshot { model: model("OPPO Enco X2"), codec: Some(3), features: vec![(FEATURE_HIRES, 1)], ..Default::default() };
+        assert!(home_logic::codec_picker(&s));
+        assert_eq!(hires_sub(&s, &tr, false), "LDAC");
+        let s = Snapshot { codec: Some(2), ..s };
+        assert_eq!(hires_sub(&s, &tr, false), "AAC");
+    }
+
+    /// Before the buds report a codec, the picker row keeps the feature's own text.
+    #[test]
+    fn picker_row_without_a_codec_keeps_the_feature_text() {
+        let tr = translations("");
+        let s = Snapshot { model: model("OPPO Enco X2"), features: vec![(FEATURE_HIRES, 1)], ..Default::default() };
+        assert_eq!(hires_sub(&s, &tr, false), t(&tr, "row_hires_sub"));
+    }
+
+    /// Hi-Res on a lower codec names that codec and the best one, from the model's list or the offer.
+    #[test]
+    fn lower_codec_shows_the_hint() {
+        let tr = translations("");
+        let s = Snapshot { model: model("OnePlus Buds 4"), features: vec![(FEATURE_HIRES, 1)], codec: Some(2), codecs: vec![2, 3], ..Default::default() };
+        let hint = hires_sub(&s, &tr, false);
+        assert!(hint.contains("AAC") && hint.contains("LHDC 5.0"), "{hint}");
+        // Without a model list, the buds' offered codecs answer.
+        let s = Snapshot { model: None, features: vec![(FEATURE_HIRES, 1)], codec: Some(2), codecs: vec![2, 3], ..Default::default() };
+        let hint = hires_sub(&s, &tr, false);
+        assert!(hint.contains("AAC") && hint.contains("LDAC"), "{hint}");
+    }
+
+    /// LHDC and LDAC play Hi-Res: the row keeps its own text, and so does a Hi-Res row that is off.
+    #[test]
+    fn hires_codec_and_hires_off_keep_the_feature_text() {
+        let tr = translations("");
+        let on = Snapshot { model: model("OnePlus Buds 4"), features: vec![(FEATURE_HIRES, 1)], codec: Some(8), codecs: vec![8, 2], ..Default::default() };
+        assert_eq!(hires_sub(&on, &tr, false), t(&tr, "row_hires_sub"));
+        let off = Snapshot { features: vec![(FEATURE_HIRES, 0)], codec: Some(2), ..on };
+        assert_eq!(hires_sub(&off, &tr, false), t(&tr, "row_hires_sub_off"));
+    }
+
+    /// A write in progress wins over every other text, and the row takes no tap.
+    #[test]
+    fn a_busy_row_says_applying() {
+        let tr = translations("");
+        let s = Snapshot { model: model("OPPO Enco X2"), codec: Some(3), ..Default::default() };
+        assert_eq!(hires_sub(&s, &tr, true), t(&tr, "feature_applying"));
+    }
+
+    /// HeyMelody's order: LHDC V5, LHDC, LDAC, aptX Adaptive, aptX HD, aptX, AAC, SBC, offered only.
+    #[test]
+    fn the_sheet_lists_the_offered_codecs_best_first() {
+        let s = Snapshot { codecs: vec![2, 3, 8, 6], ..Default::default() };
+        assert_eq!(codec_list(&s), [8, 3, 6, 2]);
+    }
 }
 
 /// A 59.8 dp row: a 24 dp icon, a 16 sp title, a 13 sp subtitle that wraps, and a switch or a chevron.
