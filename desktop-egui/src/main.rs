@@ -361,6 +361,8 @@ impl eframe::App for App {
                     let ppp = ctx.pixels_per_point();
                     let screen = ctx.input(|i| i.viewport().monitor_size).map(|m| (m.x * ppp, m.y * ppp));
                     self.panel.click(panel::place((x as f32, y as f32), screen, ppp), std::time::Instant::now());
+                    // The window is often hidden in the tray: a painted pass makes the panel's own window.
+                    if self.panel.open { ctx.send_viewport_cmd(egui::ViewportCommand::RequestPaintWhileHidden); }
                 }
             }
         }
