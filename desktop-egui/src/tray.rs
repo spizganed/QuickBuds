@@ -228,6 +228,8 @@ struct MenuItems {
     battery: tray_icon::menu::MenuItem,
     modes: Vec<(&'static str, tray_icon::menu::CheckMenuItem)>,
     low: Option<tray_icon::menu::CheckMenuItem>,
+    open: tray_icon::menu::MenuItem,
+    quit: tray_icon::menu::MenuItem,
     ids: Vec<(tray_icon::menu::MenuId, Action)>,
 }
 
@@ -253,7 +255,7 @@ impl MenuItems {
         let mut ids = vec![(open.id().clone(), Action::Open), (quit.id().clone(), Action::Quit)];
         ids.extend(modes.iter().map(|(mode, item)| (item.id().clone(), Action::Mode(mode))));
         if let Some(item) = &low { ids.push((item.id().clone(), Action::LowLatency)); }
-        MenuItems { battery, modes, low, ids }
+        MenuItems { battery, modes, low, open, quit, ids }
     }
 
     /// The same rows in the same order: a text change only.
@@ -265,6 +267,8 @@ impl MenuItems {
 
     fn set_texts(&self, u: &MenuUpdate) {
         self.battery.set_text(&u.battery);
+        self.open.set_text(&u.open);
+        self.quit.set_text(&u.quit);
         for ((_, item), row) in self.modes.iter().zip(&u.modes) {
             item.set_text(&row.label);
             item.set_checked(row.checked);
