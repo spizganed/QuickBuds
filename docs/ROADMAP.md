@@ -23,8 +23,9 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
     belongs to the device manager. `0x0131` reads the AI translation setting (`0x0428`). Needs the
     realme Link command.
 - **Desktop UI rewrite (egui).** The code is in desktop-egui/ on main: layout with a sidebar, the four styles
-  including Glass with real blur, a frameless rounded window. Missing there: the Feedback, Model test and Update pages, the
-  quick panel on Windows, and a bundled UI font. The released desktop stays on Slint until then.
+  including Glass with real blur, a frameless rounded window, the tray icon with the Linux menu and the Windows
+  quick panel. Missing there: the Feedback, Model test and Update pages, and a bundled UI font. The released
+  desktop stays on Slint until then.
 - **Desktop setup guide and Known issues page.** The phone has a ten-page guide. The desktop has the Known issues dialog and
   the reply dialog only.
 - **Captures wanted.** Buds push `0x050E` and answer `0x012C` (realme Air6, Air7 Pro and Air8 owners): the layouts are
