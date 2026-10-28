@@ -1,5 +1,5 @@
-//! About (`AboutActivity`, DESIGN §7.19): the app mark, the name, the version, the tagline, the three links as text,
-//! the licence and the independence sentence. No new dependency: the links are shown, not opened.
+//! About (`AboutActivity`, DESIGN §7.19): the app mark, the name, the version, the tagline, the three links,
+//! the licence and the independence sentence. A link opens in the browser.
 
 use crate::glass;
 use crate::phone;
@@ -44,7 +44,10 @@ pub fn show(app: &App, ui: &mut Ui, body: Rect) -> f32 {
     ];
     for (label, url, icon) in links {
         let card = Rect::from_min_size(Pos2::new(x0, y), Vec2::new(w, 60.0));
-        glass::flat_at(ui, card, 18.0, 1.0);
+        let hit = ui.interact(card, ui.scope_id().with(("about-link", url)), egui::Sense::click());
+        if hit.hovered() { ui.ctx().set_cursor_icon(egui::CursorIcon::PointingHand); }
+        if hit.clicked() { ui.ctx().open_url(egui::OpenUrl::new_tab(url)); }
+        glass::flat_at(ui, card, 18.0, if hit.hovered() { 1.4 } else { 1.0 });
         glass::icon_at(ui, icon, Rect::from_center_size(Pos2::new(x0 + 27.0, card.center().y), Vec2::splat(22.0)), glass::white(0.9));
         glass::text(ui, Pos2::new(x0 + 50.0, card.center().y - 9.0), Align2::LEFT_CENTER, label, 15.0, 1.0);
         glass::text(ui, Pos2::new(x0 + 50.0, card.center().y + 11.0), Align2::LEFT_CENTER, url, 12.0, 0.6);
