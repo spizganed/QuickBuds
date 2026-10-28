@@ -121,6 +121,12 @@ pub fn show(app: &mut App, ui: &mut Ui) {
     } else {
         placeholder(ui, body);
     }
+    // A refused write, or an ANC write with no bud in an ear, shows a short toast over the page.
+    let now = std::time::Instant::now();
+    if let Some(text) = app.toast.text(&app.tr, &app.snap, now) {
+        crate::notice::draw(ui, &text, content);
+        if let Some(d) = app.toast.repaint_after(now) { ui.ctx().request_repaint_after(d); }
+    }
 }
 
 fn header(app: &mut App, ui: &mut Ui, c: Rect) {

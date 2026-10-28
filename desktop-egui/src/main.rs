@@ -36,6 +36,7 @@ mod glass;
 mod hearing;
 mod models;
 mod motion;
+mod notice;
 mod overview;
 mod settings;
 mod palette;
@@ -239,6 +240,8 @@ pub struct App {
     pub feedback: feedback::State,
     pub update: update::State,
     pub sheets: sheets::State,
+    /// The short hints for a refused write and for an ANC write with no bud in an ear.
+    pub toast: notice::State,
     /// The disconnect pill asked; Cancel keeps the link.
     pub disconnect_ask: bool,
 }
@@ -266,7 +269,7 @@ impl App {
         let mut app = Self {
             snap: Snapshot::default(), tx, tr: translations(chosen_locale()), inbox, page: Page::Overview, has: Has::ALL,
             modes: AncModes::default(), last_level: None, levels_open: false, glow, demo, confirm: None, scroll: 0.0, shown_page: Page::Overview, page_seq: 0, page_since: std::time::Instant::now(), eq: Default::default(), dual: Default::default(), earbuds: Default::default(), dev: Default::default(), gestures: Default::default(), settings: Default::default(), appearance: Default::default(), hearing: Default::default(), setup: Default::default(), layout: Default::default(), preset: Default::default(),
-            test: Default::default(), feedback: Default::default(), update: Default::default(), sheets: Default::default(),
+            test: Default::default(), feedback: Default::default(), update: Default::default(), sheets: Default::default(), toast: Default::default(),
             disconnect_ask: false, style: glass::style::Style::Glass, style_for: false,
         };
         app.reload_style(&cc.egui_ctx);
@@ -306,6 +309,7 @@ impl App {
             if Has::of(&s) != self.has { self.has = Has::of(&s); }
         }
         if let Some(a) = s.anc.as_deref().filter(|a| types::LEVELS.contains(a)) { self.last_level = Some(a.into()); }
+        self.toast.update(&s, std::time::Instant::now());
         self.snap = s;
     }
 
