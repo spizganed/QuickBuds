@@ -613,7 +613,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 val (bgId, ringId, pct, label, strokeId) = PANELS[slot].toList()
                 panelBg(context, v, bgId, p)
                 panelOutline(context, v, strokeId, p)
-                v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp, k).let { if (ghost) soften(context, it) else it })
+                v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp, k).let { if (ghost && GHOST_BLUR) soften(context, it) else it })
                 pctText(context, v, pct, p, levels[slot], if (paged) null else fit.font)
                 v.setViewVisibility(pct, if (ghost) View.INVISIBLE else View.VISIBLE)
                 val inEar = statuses[slot] == 3 || statuses[slot] == 7
@@ -630,7 +630,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 // The case icon takes all the height the rings leave ([caseRowDp]); TALL's case row is 32dp. Nothing: at the
                 // rings' dot pitch, so the big icon keeps the app's case details (lid cut, LED).
                 val caseDp = if (paged) caseRowDp(context, id) else 32f - 2 * geo(context).row
-                if (ghost) {
+                if (ghost && GHOST_BLUR) {
                     // Disconnected: the case glyph is blurred like the rings, in every style.
                     val hpx = ThemeRes.dp(context, caseDp).coerceAtLeast(1)
                     val wpx = Math.round(hpx * 496f / 400f)
@@ -652,9 +652,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                     icon(context, v, R.id.w_case_icon, R.drawable.ic_case, caseDp, if (paged) ringCellDp(context, id) else fit.ring / RING_CELLS)
                 }
                 // A colour filter keeps its alpha as a lightening of the glyph, so the fading ghost colour is laid on the panel first.
-                if (!p.glass && !ghost) v.setInt(R.id.w_case_icon, "setColorFilter",
+                if (!p.glass && !(ghost && GHOST_BLUR)) v.setInt(R.id.w_case_icon, "setColorFilter",
                     androidx.core.graphics.ColorUtils.compositeColors(glyphTint(context, p, 1, -1, k), p.card))
-                v.setImageViewBitmap(R.id.w_case_bar, bar(context, p, levels[1], id, caseDp).let { if (ghost) soften(context, it) else it })
+                v.setImageViewBitmap(R.id.w_case_bar, bar(context, p, levels[1], id, caseDp).let { if (ghost && GHOST_BLUR) soften(context, it) else it })
                 // The level is drawn into the bar ([bar]); the bar reads it out.
                 v.setViewVisibility(R.id.w_pct_case, View.GONE)
                 v.setContentDescription(R.id.w_case_bar, context.getString(R.string.status_case) + ", " + pctLabel(context, levels[1]))
@@ -857,7 +857,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         }
 
         /** How visible the empty battery page is behind the Connect chip. */
-        private const val GHOST_ALPHA = 0.55f
+        private const val GHOST_ALPHA = 0.42f
+
+        /** Blur the empty page behind the Connect chip. Off: the 2026-10-28 blur never looked good enough on the phone, so the rings stay crisp and faint. */
+        private const val GHOST_BLUR = false
 
         /**
          * A blurred copy of [src]: three box passes on the premultiplied channels, which closely match a Gaussian. The radius
