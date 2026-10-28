@@ -205,6 +205,17 @@ class BudsConnectionManager(private val context: Context) {
     /** Wire sequence byte -> the engine's own number, for the writes and reads the engine sent. */
     private val wireToEngine = java.util.concurrent.ConcurrentHashMap<Int, Int>()
 
+    /**
+     * The engine number for a reply with wire seq [seq]. A model with `"seqless":1` (realme Buds T100, report #100)
+     * answers with its own counter, so the newest outstanding engine request is the one that the reply answers.
+     */
+    private fun takeEngineSeq(seq: Int): Int? {
+        wireToEngine.remove(seq)?.let { return it }
+        if (ModelCatalog.current(context)?.json?.optInt("seqless") != 1) return null
+        val wire = wireToEngine.entries.maxByOrNull { it.value }?.key ?: return null
+        return wireToEngine.remove(wire)
+    }
+
     /** The only timer of the feature sync: asks the engine to give up on a silent buds. */
     private val tickRunnable = Runnable { execute(sync.tick(SystemClock.elapsedRealtime())) }
 
@@ -1860,7 +1871,7 @@ class BudsConnectionManager(private val context: Context) {
         // (high-quality audio needs an LDAC or LHDC link on buds that offer a codec list; reports #33, #42, #44).
         if (cmd == OpoProtocol.CMD_SET_FEATURE or 0x8000) {
             val status = payload.firstOrNull()?.toInt()?.and(0xFF) ?: 0
-            val engineSeq = wireToEngine.remove(seq)
+            val engineSeq = takeEngineSeq(seq)
             if (engineSeq != null) {
                 // Sent by the feature-sync engine: it decides what the refusal means and what to toast.
                 featureWrites.remove(seq)
@@ -1945,7 +1956,7 @@ class BudsConnectionManager(private val context: Context) {
                 }
             }
             // A reply to our own read carries the engine's number back to it (null for any other read).
-            val engineSeq = wireToEngine.remove(seq)
+            val engineSeq = takeEngineSeq(seq)
             syncHandler.post {
                 // The first reply of a connection primes the engine silently: a report with equal
                 // values emits nothing, so the old-path switches keep their own paint.

@@ -22,7 +22,7 @@ tray icon. It is a hobby project. You can support it on [Ko-fi](https://ko-fi.co
 
 ## Install
 
-The current release is 5.3.4. Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds. It does not pair them.
+The current release is 5.4.0. Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds. It does not pair them.
 
 | Platform | How |
 | --- | --- |
