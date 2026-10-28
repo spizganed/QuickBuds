@@ -31,6 +31,8 @@ Tick the box in the pull request template. You keep your copyright.
 Do not copy code or text from HeyMelody, realme Link or other vendor apps. Write your own code from the
 protocol facts in [PROTOCOL.md](./PROTOCOL.md).
 
+See [ADD-A-MODEL.md](./ADD-A-MODEL.md) for a new or wrong model entry.
+
 ## Build
 
 - [Android app](./build-android.md)
