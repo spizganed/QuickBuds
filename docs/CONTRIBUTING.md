@@ -2,7 +2,7 @@
 
 Thanks for helping. The most useful contribution is **a report from an owner of earbuds other than
 the OnePlus Buds 4**. The writes for every other model come from HeyMelody's and realme Link's data.
-Owners have confirmed 32 models. models.json lists the confirmed features of each. Code
+Owners have confirmed 36 models. models.json lists the confirmed features of each. Code
 contributions are welcome too.
 
 ## Reporting a model
