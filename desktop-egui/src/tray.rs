@@ -18,6 +18,8 @@ pub enum TrayEvent {
     Open,
     /// End the process.
     Quit,
+    /// A right click on the Windows tray icon, at physical pixel (x, y): open or close the quick panel.
+    Panel(f64, f64),
     /// A menu item that sends a `Cmd`, as the pages do.
     Cmd(Cmd),
 }
@@ -123,10 +125,10 @@ impl Tray {
         {
             let (events, ctx) = (events, ctx.clone());
             tray_icon::TrayIconEvent::set_event_handler(Some(move |e| {
-                let tray_icon::TrayIconEvent::Click { button, button_state: tray_icon::MouseButtonState::Up, .. } = e else { return };
+                let tray_icon::TrayIconEvent::Click { button, button_state: tray_icon::MouseButtonState::Up, position, .. } = e else { return };
                 let event = match button {
                     tray_icon::MouseButton::Left => Some(TrayEvent::Open),
-                    tray_icon::MouseButton::Right => on_tray_right_click(),
+                    tray_icon::MouseButton::Right => on_tray_right_click(position.x, position.y),
                     _ => None,
                 };
                 if let Some(event) = event { let _ = events.send(event); }
@@ -180,9 +182,10 @@ fn tray_icon() -> tray_icon::Icon {
     tray_icon::Icon::from_rgba(pm.take_demultiplied(), size, size).expect("tray icon")
 }
 
-/// Part 2 opens the quick panel here. Until then a right click does nothing.
+/// A right click on the Windows tray icon opens the quick panel next to the click point. Linux keeps the menu:
+/// AppIndicator shows a menu and no window of its own.
 #[cfg(windows)]
-fn on_tray_right_click() -> Option<TrayEvent> { None }
+fn on_tray_right_click(x: f64, y: f64) -> Option<TrayEvent> { Some(TrayEvent::Panel(x, y)) }
 
 /// The Linux menu, on its own GTK thread: AppIndicator shows a menu and no window of its own.
 /// The texts arrive over one channel; a click goes back over the other one.

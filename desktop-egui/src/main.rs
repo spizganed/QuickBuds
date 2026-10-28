@@ -357,6 +357,11 @@ impl eframe::App for App {
                     ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                 }
                 tray::TrayEvent::Cmd(c) => self.send(c),
+                tray::TrayEvent::Panel(x, y) => {
+                    let ppp = ctx.pixels_per_point();
+                    let screen = ctx.input(|i| i.viewport().monitor_size).map(|m| (m.x * ppp, m.y * ppp));
+                    self.panel.click(panel::place((x as f32, y as f32), screen, ppp), std::time::Instant::now());
+                }
             }
         }
         // The quick panel follows the snapshot while it is open. It has its own screen, so it draws the
@@ -372,7 +377,7 @@ impl eframe::App for App {
                     ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
                     ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
                 }
-                panel::Action::Close => self.panel.open = false,
+                panel::Action::Close { focus } => self.panel.closed(focus, std::time::Instant::now()),
                 panel::Action::Cmd(c) => self.send(c),
             }
         }

@@ -10,6 +10,7 @@ use crate::types::{self, AncModes};
 use crate::{icons, palette, t};
 use eframe::egui::{self, Align2, Color32, FontId, Id, Pos2, Rect, Sense, Ui, Vec2};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::{Duration, Instant};
 use std::sync::mpsc::{Receiver, Sender};
 use std::sync::Arc;
 
@@ -25,12 +26,21 @@ pub fn pos(click: (f32, f32), size: (f32, f32), screen: (f32, f32)) -> (f32, f32
     (place(click.0, size.0, screen.0), place(click.1, size.1, screen.1))
 }
 
+/// The place of the panel for a right click at `click` in physical pixels, on a screen of `screen` in
+/// physical pixels (`None` when the size is not known), at `ppp` physical pixels per point.
+pub fn place(click: (f32, f32), screen: Option<(f32, f32)>, ppp: f32) -> (f32, f32) {
+    let size = (SIZE[0] * ppp, SIZE[1] * ppp);
+    // With no screen size, the panel goes above and left of the click point.
+    pos(click, size, screen.unwrap_or((click.0 + size.0, click.1 + size.1)))
+}
+
 /// What the panel asks of the app.
 pub enum Action {
     /// Show and focus the main window.
     Open,
-    /// Close the panel.
-    Close,
+    /// Close the panel. `focus` is true when it lost the focus: the click that took the focus must not
+    /// open it again.
+    Close { focus: bool },
     /// A control that sends a `Cmd`, as the pages do.
     Cmd(Cmd),
 }
@@ -100,18 +110,47 @@ pub struct Panel {
     pub rx: Receiver<Action>,
     /// True once the panel window had focus: a later focus loss closes it.
     pub focused: Arc<AtomicBool>,
+    /// When the panel last closed because it lost the focus.
+    closed_at: Option<Instant>,
 }
+
+/// A right click on the tray that takes the focus from the panel closes it. A click this soon after that
+/// close is the same click, not a new one: it does not open the panel again.
+const GUARD: Duration = Duration::from_millis(300);
 
 impl Default for Panel {
     fn default() -> Self {
         let (tx, rx) = std::sync::mpsc::channel();
-        Panel { open: false, pos: (0.0, 0.0), tx, rx, focused: Arc::new(AtomicBool::new(false)) }
+        Panel { open: false, pos: (0.0, 0.0), tx, rx, focused: Arc::new(AtomicBool::new(false)), closed_at: None }
     }
 }
 
 impl Panel {
     /// The panel's own viewport.
     pub fn viewport() -> egui::ViewportId { egui::ViewportId::from_hash_of("quick-panel") }
+
+    /// A right click at `place` at `now`: open the panel there, or close it when it is already open.
+    pub fn click(&mut self, place: (f32, f32), now: Instant) {
+        if self.open {
+            self.open = false;
+            return;
+        }
+        if self.closed_at.is_some_and(|t| now.duration_since(t) < GUARD) {
+            return;
+        }
+        self.pos = place;
+        // A new window must get focus before a focus loss can close it.
+        self.focused.store(false, Ordering::Relaxed);
+        self.open = true;
+    }
+
+    /// The panel closed. A focus loss is remembered, so the click that caused it cannot open the panel again.
+    pub fn closed(&mut self, focus: bool, now: Instant) {
+        self.open = false;
+        if focus {
+            self.closed_at = Some(now);
+        }
+    }
 }
 
 /// Shows the panel at `pos` in physical pixels, or updates the open one with the state of this pass.
@@ -137,9 +176,9 @@ fn send(ctx: &egui::Context, tx: &Sender<Action>, action: Action) {
 }
 
 /// Closes the panel: the app stops showing its viewport, and the window goes away.
-fn close(ctx: &egui::Context, tx: &Sender<Action>) {
+fn close(ctx: &egui::Context, tx: &Sender<Action>, focus: bool) {
     ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-    send(ctx, tx, Action::Close);
+    send(ctx, tx, Action::Close { focus });
 }
 
 /// The panel's content. It has its own screen, so the glass blur of the main window is not there: the
@@ -150,11 +189,11 @@ pub fn show(v: &View, ui: &mut Ui, tx: &Sender<Action>, focused: &AtomicBool) {
     if ctx.input(|i| i.viewport().focused) == Some(true) {
         focused.store(true, Ordering::Relaxed);
     } else if focused.load(Ordering::Relaxed) {
-        close(&ctx, tx);
+        close(&ctx, tx, true);
         return;
     }
     if ctx.input(|i| i.key_pressed(egui::Key::Escape)) {
-        close(&ctx, tx);
+        close(&ctx, tx, false);
         return;
     }
     crate::appearance::window(ui);
@@ -262,6 +301,48 @@ mod tests {
     #[test]
     fn a_screen_smaller_than_the_panel_gives_the_origin() {
         assert_eq!(pos((100.0, 100.0), PANEL, (200.0, 200.0)), (0.0, 0.0));
+    }
+
+    #[test]
+    fn the_panel_of_a_click_scales_with_the_screen() {
+        // A 4K screen at 200 percent: the panel is 600 x 500 physical pixels.
+        assert_eq!(place((3000.0, 1600.0), Some((3840.0, 2160.0)), 2.0), (2400.0, 1100.0));
+        // With no screen size the panel goes above and left of the click point.
+        assert_eq!(place((1500.0, 800.0), None, 1.0), (1200.0, 550.0));
+    }
+
+    #[test]
+    fn a_second_right_click_closes_the_panel() {
+        let mut p = Panel::default();
+        let t = Instant::now();
+        p.click((1200.0, 550.0), t);
+        assert!(p.open);
+        assert_eq!(p.pos, (1200.0, 550.0));
+        p.click((1200.0, 550.0), t);
+        assert!(!p.open);
+    }
+
+    #[test]
+    fn the_click_that_took_the_focus_does_not_open_the_panel_again() {
+        let mut p = Panel::default();
+        let t = Instant::now();
+        p.open = true;
+        p.closed(true, t);
+        p.click((1200.0, 550.0), t + Duration::from_millis(100));
+        assert!(!p.open);
+        // A later click is a new click: it opens the panel.
+        p.click((1200.0, 550.0), t + Duration::from_millis(400));
+        assert!(p.open);
+    }
+
+    #[test]
+    fn escape_lets_the_next_click_open_the_panel() {
+        let mut p = Panel::default();
+        let t = Instant::now();
+        p.open = true;
+        p.closed(false, t);
+        p.click((1200.0, 550.0), t + Duration::from_millis(10));
+        assert!(p.open);
     }
 
     fn buds() -> Snapshot {
