@@ -213,6 +213,7 @@ class BudsConnectionManager(private val context: Context) {
         wireToEngine.remove(seq)?.let { return it }
         if (ModelCatalog.current(context)?.json?.optInt("seqless") != 1) return null
         val wire = wireToEngine.entries.maxByOrNull { it.value }?.key ?: return null
+        log("SYNC: reply seq=0x%02X pairs with request seq=0x%02X (seqless model)".format(seq, wire))
         return wireToEngine.remove(wire)
     }
 
@@ -1036,6 +1037,8 @@ class BudsConnectionManager(private val context: Context) {
             setFeatures(*writes.map { it.first to (it.second == 1) }.toTypedArray())
             return
         }
+        log("SYNC: tap key=0x%02X writes=%s confirm=%s restarts=%s".format(
+            key, writes.joinToString { "0x%02X=%d".format(it.first, it.second) }, confirm, restarts))
         syncHandler.post {
             if (restarts) audioAfterRestart = true
             execute(sync.tap(FeatureSync.Operation(key, writes, confirm, restarts), SystemClock.elapsedRealtime()))
@@ -1063,6 +1066,7 @@ class BudsConnectionManager(private val context: Context) {
                 sendRawBlocking(statusQuery(wire), "verify features")
             }
             is FeatureSync.Out.Changed -> {
+                log("SYNC: value 0x%02X -> %d".format(out.id, out.value))
                 featureStates = featureStates + (out.id to out.value)
                 handler.post {
                     listeners.forEach {
@@ -1071,7 +1075,10 @@ class BudsConnectionManager(private val context: Context) {
                     }
                 }
             }
-            is FeatureSync.Out.Busy -> handler.post { listeners.forEach { it.onSettingBusy(out.key, out.on) } }
+            is FeatureSync.Out.Busy -> {
+                log("SYNC: key 0x%02X busy=%s".format(out.key, out.on))
+                handler.post { listeners.forEach { it.onSettingBusy(out.key, out.on) } }
+            }
             is FeatureSync.Out.Toast -> {
                 log("FEATURE %s: key=0x%02X kind=%s codec=%s".format(
                     java.util.Locale.ROOT, toastLogName(out.kind), out.key, toastKindName(out.kind), codec
@@ -1872,6 +1879,7 @@ class BudsConnectionManager(private val context: Context) {
         if (cmd == OpoProtocol.CMD_SET_FEATURE or 0x8000) {
             val status = payload.firstOrNull()?.toInt()?.and(0xFF) ?: 0
             val engineSeq = takeEngineSeq(seq)
+            log("SYNC: write ack seq=0x%02X status=%d %s".format(seq, status, if (engineSeq != null) "engine request" else "no engine request"))
             if (engineSeq != null) {
                 // Sent by the feature-sync engine: it decides what the refusal means and what to toast.
                 featureWrites.remove(seq)
@@ -1957,6 +1965,7 @@ class BudsConnectionManager(private val context: Context) {
             }
             // A reply to our own read carries the engine's number back to it (null for any other read).
             val engineSeq = takeEngineSeq(seq)
+            if (engineSeq != null) log("SYNC: status reply seq=0x%02X answers engine read".format(seq))
             syncHandler.post {
                 // The first reply of a connection primes the engine silently: a report with equal
                 // values emits nothing, so the old-path switches keep their own paint.
@@ -2183,7 +2192,17 @@ class BudsConnectionManager(private val context: Context) {
         val anc = AncModes.of(context)
         log("PRODUCT ID: $id, model: ${ModelCatalog.current(context)?.name ?: "unknown"} (${if (ModelCatalog.manual(context) != null) "picked by hand" else ModelCatalog.rule(context)}), ANC: " + (listOf(AncModes.OFF, AncModes.TRANSPARENCY, AncModes.ADAPTIVE) +
             AncModes.LEVELS).filter { anc.supports(it) }.joinToString { "$it=${anc.bit(it)}" }.ifEmpty { "none" })
+        ModelCatalog.current(context)?.json?.let { log("MODEL DATA: ${modelFlags(it)}") }
         handler.post { listeners.forEach { it.onCapabilities() } }
+    }
+
+    /** The model entry in one line: scalar values in full, lists and objects by size. It shows which data rules apply. */
+    private fun modelFlags(json: org.json.JSONObject): String = json.keys().asSequence().joinToString(" ") { k ->
+        when (val v = json.get(k)) {
+            is org.json.JSONArray -> "$k[${v.length()}]"
+            is org.json.JSONObject -> "$k{${v.length()}}"
+            else -> "$k=$v"
+        }
     }
 
     /** A gesture table read: only a reply with entries replaces the stored table (a write is built from it). */
