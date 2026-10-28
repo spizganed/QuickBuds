@@ -64,6 +64,12 @@ pub const CMD_GAME_SOUND: u16 = 0x0423;
 
 pub const CMD_QUERY_GAME_SOUND: u16 = 0x012B;
 
+/// Game equalizer (PROTOCOL.md section 18): switch feature `21`, and `0x0420 01 <state>` tells the buds that a
+/// game app is open. The state applies only while the switch is on.
+pub const CMD_GAME_EQ_STATE: u16 = 0x0420;
+
+pub const FEATURE_GAME_EQ: u8 = 0x21;
+
 /// Head gesture mapping `<type>` (0 nod answers, 1 shake answers); read `0x0134`, the type comes as push `F5`.
 pub const CMD_SET_HEAD_MOTION: u16 = 0x0431;
 

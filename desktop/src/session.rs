@@ -104,6 +104,9 @@ pub enum Cmd {
     AlertVolume(u8),
     TapLevel(u8),
     GameSoundType(u8),
+    /// Game equalizer (feature `21`): the switch, then the state the phone's app watcher sends. The desktop
+    /// has no app detection, so a switch that is on means a game app is open.
+    GameEq(bool),
     /// `0x0422`: 0 off, 1 fixed, 2 head tracking, then the read-back.
     SpatialType(u8),
     /// `0x041A` codec and Hi-Res; the buds restart and the link comes back by itself.
@@ -802,6 +805,17 @@ impl<'a> Conn<'a> {
                         self.tx(cmd::game_sound(t))?;
                         self.pump(400, sync)?;
                         self.tx(cmd::game_sound_read())?;
+                    }
+                    // The switch, then the state the phone's watcher would send: the desktop has no app detection.
+                    Cmd::GameEq(on) => {
+                        self.hold(FEATURE_GAME_EQ, on);
+                        if let Some(x) = self.s.features.iter_mut().find(|x| x.0 == FEATURE_GAME_EQ) { x.1 = on as u8; }
+                        (self.emit)(self.s.clone());
+                        self.tx(cmd::feature(FEATURE_GAME_EQ, on))?;
+                        self.pump(150, sync)?;
+                        self.tx(cmd::game_eq(on))?;
+                        self.pump(300, sync)?;
+                        self.send(CMD_QUERY_STATUS, Some(0x00), &status_query(self.s.model))?;
                     }
                     Cmd::SpatialType(t) => {
                         self.s.spatial_type = Some(t);

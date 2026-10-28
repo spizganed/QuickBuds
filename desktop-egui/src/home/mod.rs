@@ -143,6 +143,7 @@ pub fn header(app: &mut App, ui: &mut Ui, content: Rect) {
 /// The Home page under the header. Returns the bottom of the last row.
 pub fn show(app: &mut App, ui: &mut Ui, body: Rect) -> f32 {
     disconnect_sheet(app, ui);
+    spatial_sheet(app, ui);
     codec_sheet(app, ui);
     let c = column(body);
     let mut y = c.top();
@@ -175,6 +176,30 @@ fn disconnect_sheet(app: &mut App, ui: &mut Ui) {
         Some(false) => app.disconnect_ask = false,
         None if !open => app.disconnect_ask = false,
         None => {}
+    }
+}
+
+/// The 3D audio type picker (`spatialSheet`): Off, Fixed, Head tracking. A type that turns Hi-Res off
+/// asks first, as the switch does; the buds restart the link.
+fn spatial_sheet(app: &mut App, ui: &mut Ui) {
+    if !app.spatial_pick { return; }
+    let s = app.snap.clone();
+    let list = [0u8, 1, 2];
+    let options: Vec<String> = list.iter().map(|t| spatial_label(&app.tr, *t)).collect();
+    let cur = list.iter().position(|t| Some(*t) == s.spatial_type).unwrap_or(0);
+    match glass::choice_dialog(ui.ctx(), "spatial-pick", t(&app.tr, "row_spatial_title"), &options, cur) {
+        glass::Choice::Pick(i) => {
+            let cmds = home_logic::spatial_cmds(&s, list[i]);
+            let drops_hires = list[i] != 0 && s.features.contains(&(FEATURE_HIRES, 1)) && home_logic::exclusive(&s);
+            if drops_hires {
+                app.confirm = Some(crate::Confirm { cmds, title: "codec_dialog_title", msg: "codec_msg_spatial_drops_hires", accept: "codec_dialog_accept" });
+            } else {
+                for c in cmds { app.send(c); }
+            }
+            app.spatial_pick = false;
+        }
+        glass::Choice::Close => app.spatial_pick = false,
+        glass::Choice::Open => {}
     }
 }
 
@@ -374,7 +399,8 @@ pub(crate) fn row_list(app: &App) -> Vec<Row> {
     }
     if listed(FEATURE_SPATIAL).is_some() || home_logic::spatial_by_type(s) {
         let msg = if hires_on && home_logic::exclusive(s) { Some("codec_msg_spatial_drops_hires") } else { None };
-        rows.push(Row { id: "spatial", icon: icons::SPATIAL, title: t(tr, "row_spatial_title").into(), sub: sub("row_spatial_sub", FEATURE_SPATIAL),
+        rows.push(Row { id: "spatial", icon: icons::SPATIAL, title: t(tr, "row_spatial_title").into(),
+            sub: spatial_sub(s, tr, busy(FEATURE_SPATIAL)),
             trail: Trailing::Switch(home_logic::spatial_on(s)), enabled: on && !busy(FEATURE_SPATIAL), page: None, confirm: msg });
     }
     if app.has.hearing {
@@ -416,6 +442,24 @@ fn hires_sub(s: &Snapshot, tr: &[String], busy: bool) -> String {
 fn hires_best_codec(s: &Snapshot) -> Option<&'static str> {
     if s.model.is_some_and(|m| m.get("codecs").is_some()) { return types::best_hires_codec(s.model); }
     if s.codecs.contains(&8) { Some("LHDC 5.0") } else if s.codecs.contains(&3) { Some("LDAC") } else if s.codecs.contains(&7) { Some("LHDC") } else { None }
+}
+
+/// The 3D audio type picker (`spatialSheet`): head tracking on the model, on buds that take a type through
+/// `0x0422`. Every other model keeps the plain switch.
+fn spatial_picker(s: &Snapshot) -> bool {
+    home_logic::spatial_by_type(s) && home_logic::head_tracking(s)
+}
+
+/// The type names of the picker (`spatialLabel`): Off, Fixed, Head tracking.
+fn spatial_label(tr: &[String], ty: u8) -> String {
+    t(tr, match ty { 1 => "spatial_fixed", 2 => "spatial_head_tracking", _ => "anc_seg_off" }).into()
+}
+
+/// The 3D audio row's subtitle: the type the buds play on a picker model, else the feature's own text.
+fn spatial_sub(s: &Snapshot, tr: &[String], busy: bool) -> String {
+    if busy { return t(tr, "feature_applying").into(); }
+    if spatial_picker(s) { return spatial_label(tr, s.spatial_type.unwrap_or(0)); }
+    t(tr, "row_spatial_sub").into()
 }
 
 /// The codecs the sheet offers, best first: LHDC V5, LHDC, LDAC, aptX Adaptive, aptX HD, aptX, AAC, SBC.
@@ -462,8 +506,10 @@ fn rows(app: &mut App, ui: &mut Ui, c: &Rect, mut y: f32) -> f32 {
         }
         if clicked {
             if let Some(p) = r.page { app.page = p; }
-            // A tap on the Hi-Res row of a model with a codec list opens the picker.
+            // A tap on the Hi-Res row of a model with a codec list opens the picker, and one on a 3D audio row
+            // of a head tracking model opens its types (the phone's `spatialSheet`).
             else if r.id == "hires" && home_logic::codec_picker(&app.snap) { app.codec_pick = true; }
+            else if r.id == "spatial" && spatial_picker(&app.snap) { app.spatial_pick = true; }
         }
         y += h + ROW_GAP;
     }
@@ -534,6 +580,47 @@ mod tests {
     fn the_sheet_lists_the_offered_codecs_best_first() {
         let s = Snapshot { codecs: vec![2, 3, 8, 6], ..Default::default() };
         assert_eq!(codec_list(&s), [8, 3, 6, 2]);
+    }
+
+    /// The type picker is for a model with head tracking on buds that take a type; every other model keeps
+    /// the plain switch (`RowRules.spatialByType` and `spatialModes` on the phone).
+    #[test]
+    fn the_picker_follows_the_model_and_the_buds() {
+        assert!(spatial_picker(&Snapshot { model: model("OnePlus Buds Pro 2"), ..Default::default() }));
+        // realme: 3D audio is feature `1B`, written alone, so a plain switch.
+        assert!(!spatial_picker(&Snapshot { model: model("realme Buds Air 5 Pro"), ..Default::default() }));
+        // Buds without the `0x012A` read keep the switch, even on a model that offers head tracking.
+        let caps = types::Caps(Some(vec![types::CMD_SET_FEATURE]));
+        assert!(!spatial_picker(&Snapshot { model: model("OnePlus Buds Pro 2"), caps, ..Default::default() }));
+    }
+
+    /// Each choice of the picker writes its own type: 0 off, 1 fixed, 2 head tracking.
+    #[test]
+    fn each_choice_writes_its_type() {
+        let s = Snapshot { model: model("OnePlus Buds Pro 2"), spatial_type: Some(1), ..Default::default() };
+        for t in [0u8, 1, 2] {
+            let cmds = home_logic::spatial_cmds(&s, t);
+            assert!(matches!(cmds.as_slice(), [Cmd::SpatialType(v)] if *v == t), "type {t}");
+        }
+    }
+
+    /// A type that turns 3D audio on writes Hi-Res off after it, as HeyMelody sends them.
+    #[test]
+    fn a_type_that_turns_it_on_drops_hires() {
+        let s = Snapshot { model: model("OnePlus Buds Pro 2"), features: vec![(FEATURE_HIRES, 1)], ..Default::default() };
+        let cmds = home_logic::spatial_cmds(&s, 2);
+        assert!(matches!(cmds.as_slice(), [Cmd::SpatialType(2), Cmd::Features(v)] if v.as_slice() == [(FEATURE_HIRES, false)]));
+    }
+
+    /// The row names the type the buds play on a head tracking model, and its own text otherwise.
+    #[test]
+    fn the_row_names_the_type() {
+        let tr = translations("");
+        let buds = Snapshot { model: model("OnePlus Buds Pro 2"), spatial_type: Some(2), ..Default::default() };
+        assert_eq!(spatial_sub(&buds, &tr, false), t(&tr, "spatial_head_tracking"));
+        let realme = Snapshot { model: model("realme Buds Air 5 Pro"), ..Default::default() };
+        assert_eq!(spatial_sub(&realme, &tr, false), t(&tr, "row_spatial_sub"));
+        assert_eq!(spatial_sub(&buds, &tr, true), t(&tr, "feature_applying"));
     }
 }
 
