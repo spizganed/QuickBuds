@@ -59,9 +59,9 @@ The script needs no administrator rights, adds a menu entry, and the app updates
 
 <div align="center">
 
-| Widget: battery | Widget: noise control | Tray: Windows | Tray: Linux |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/images/widget-battery.png" width="170"> | <img src="docs/images/widget-controls.png" width="170"> | <img src="docs/images/tray-windows.png" width="280"> | <img src="docs/images/tray-linux.png" width="220"> |
+| Widget: battery | Widget: noise control | Tray: Linux |
+| :---: | :---: | :---: |
+| <img src="docs/images/widget-battery.png" width="170"> | <img src="docs/images/widget-controls.png" width="170"> | <img src="docs/images/tray-linux.png" width="220"> |
 
 </div>
 
