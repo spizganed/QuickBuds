@@ -40,6 +40,7 @@ mod notice;
 mod overview;
 mod settings;
 mod palette;
+mod panel;
 mod phone;
 mod preset_edit;
 mod report;
