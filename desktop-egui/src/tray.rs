@@ -4,7 +4,7 @@
 //! Closing the window hides it and the process keeps running here. The tray sends its events over a
 //! channel and wakes the egui loop, so a click acts while the window is hidden.
 
-use crate::session::{Snapshot, Status};
+use crate::session::{Cmd, Snapshot, Status};
 use crate::t;
 use crate::types::{self, AncModes};
 use eframe::egui;
@@ -17,7 +17,7 @@ pub enum TrayEvent {
     /// End the process.
     Quit,
     /// A menu item that sends a `Cmd`, as the pages do.
-    Cmd(crate::session::Cmd),
+    Cmd(Cmd),
 }
 
 /// The model name, else the app name while no buds named themselves.
@@ -63,17 +63,32 @@ pub fn low_latency_item(s: &Snapshot) -> Option<(&'static str, bool)> {
         .then_some(("widget_low_latency", s.low_latency.unwrap_or(false)))
 }
 
+/// One menu row of a noise mode: the mode name, its label and its check.
+#[derive(Clone, PartialEq)]
+pub struct ModeRow {
+    pub mode: &'static str,
+    pub label: String,
+    pub checked: bool,
+}
+
 /// What the Linux menu shows. The app builds it from a snapshot and sends it to the GTK thread.
 #[derive(Clone, PartialEq)]
 pub struct MenuUpdate {
     pub battery: String,
+    pub modes: Vec<ModeRow>,
+    pub low: Option<(String, bool)>,
     pub open: String,
     pub quit: String,
 }
 
-pub fn menu_update(s: &Snapshot, tr: &[String]) -> MenuUpdate {
+/// The menu for this snapshot: the last battery line, and the modes of the last buds seen. The controls stay
+/// in place (dimmed) while disconnected, as on the pages.
+pub fn menu_update(s: &Snapshot, modes: &AncModes, tr: &[String]) -> MenuUpdate {
     MenuUpdate {
         battery: battery_line(s, tr),
+        modes: mode_items(modes, s.anc.as_deref()).into_iter()
+            .map(|(mode, key, checked)| ModeRow { mode, label: t(tr, key).to_string(), checked }).collect(),
+        low: low_latency_item(s).map(|(key, on)| (t(tr, key).to_string(), on)),
         open: t(tr, "tray_open").to_string(),
         quit: t(tr, "tray_quit").to_string(),
     }
@@ -127,9 +142,10 @@ impl Tray {
     pub fn next_event(&self) -> Option<TrayEvent> { self.events.try_recv().ok() }
 
     /// Shows the new snapshot in the tray: the tooltip on Windows, the menu on Linux.
-    pub fn update(&mut self, s: &Snapshot, tr: &[String]) {
+    pub fn update(&mut self, s: &Snapshot, modes: &AncModes, tr: &[String]) {
         #[cfg(windows)]
         {
+            let _ = modes;
             let tip = tooltip(s, tr);
             if tip != self.tip {
                 let _ = self.icon.set_tooltip(Some(tip.clone()));
@@ -138,14 +154,12 @@ impl Tray {
         }
         #[cfg(not(windows))]
         {
-            let update = menu_update(s, tr);
+            let update = menu_update(s, modes, tr);
             if self.shown.as_ref() != Some(&update) {
                 let _ = self.menu.send(update.clone());
                 self.shown = Some(update);
             }
         }
-        #[cfg(windows)]
-        let _ = (s, tr);
     }
 }
 
@@ -164,32 +178,106 @@ fn tray_icon() -> tray_icon::Icon {
 fn on_tray_right_click() -> Option<TrayEvent> { None }
 
 /// The Linux menu, on its own GTK thread: AppIndicator shows a menu and no window of its own.
-/// The battery line and the labels arrive over the channel; a click goes back over the other one.
+/// The texts arrive over one channel; a click goes back over the other one.
 #[cfg(not(windows))]
 fn linux_tray(updates: Receiver<MenuUpdate>, events: Sender<TrayEvent>, ctx: egui::Context, open: String, quit: String) {
-    use tray_icon::menu::{Menu, MenuEvent, MenuItem};
+    use tray_icon::menu::MenuEvent;
     gtk::init().expect("gtk");
-    let battery = MenuItem::new("QuickBuds", false, None);
-    let open = MenuItem::new(open, true, None);
-    let quit = MenuItem::new(quit, true, None);
-    let menu = Menu::with_items(&[&battery, &open, &quit]).expect("tray menu");
-    let _tray = tray_icon::TrayIconBuilder::new().with_icon(tray_icon()).with_menu(Box::new(menu)).build().expect("tray");
-    let (open_id, quit_id) = (open.id().clone(), quit.id().clone());
-    // ponytail: polls 4 times a second; a menu click waits at most 250 ms and the battery changes slowly.
+    let tray = tray_icon::TrayIconBuilder::new().with_icon(tray_icon()).build().expect("tray");
+    let mut shown = MenuItems::build(&tray, &MenuUpdate {
+        battery: t(&crate::translations(""), "app_name").to_string(), modes: Vec::new(), low: None, open, quit,
+    });
+    // ponytail: polls 4 times a second; a click waits at most 250 ms and the battery changes slowly.
     gtk::glib::timeout_add_local(std::time::Duration::from_millis(250), move || {
         if let Some(u) = updates.try_iter().last() {
-            battery.set_text(&u.battery);
-            open.set_text(&u.open);
-            quit.set_text(&u.quit);
+            if shown.same_shape(&u) { shown.set_texts(&u); } else { shown = MenuItems::build(&tray, &u); }
         }
         for e in MenuEvent::receiver().try_iter() {
-            let event = if e.id == open_id { TrayEvent::Open } else if e.id == quit_id { TrayEvent::Quit } else { continue };
+            let event = match shown.action(&e.id) {
+                Some(Action::Open) => TrayEvent::Open,
+                Some(Action::Quit) => TrayEvent::Quit,
+                Some(Action::Mode(mode)) => TrayEvent::Cmd(Cmd::Anc(mode.to_string())),
+                // The check item flips itself: send the state it shows now.
+                Some(Action::LowLatency) => TrayEvent::Cmd(Cmd::LowLatency(shown.low_on())),
+                None => continue,
+            };
             let _ = events.send(event);
             ctx.request_repaint();
         }
         gtk::glib::ControlFlow::Continue
     });
     gtk::main();
+}
+
+/// What a menu row does when the user clicks it.
+#[cfg(not(windows))]
+#[derive(Clone, Copy)]
+enum Action {
+    Open,
+    Quit,
+    Mode(&'static str),
+    LowLatency,
+}
+
+/// The menu items of the moment. A new snapshot changes their texts and checks; a new set of modes builds
+/// the menu again, because a menu item cannot appear or go away after the menu is built.
+#[cfg(not(windows))]
+struct MenuItems {
+    battery: tray_icon::menu::MenuItem,
+    modes: Vec<(&'static str, tray_icon::menu::CheckMenuItem)>,
+    low: Option<tray_icon::menu::CheckMenuItem>,
+    ids: Vec<(tray_icon::menu::MenuId, Action)>,
+}
+
+#[cfg(not(windows))]
+impl MenuItems {
+    fn build(tray: &tray_icon::TrayIcon, u: &MenuUpdate) -> MenuItems {
+        use tray_icon::menu::{CheckMenuItem, IsMenuItem, Menu, MenuItem, PredefinedMenuItem};
+        let battery = MenuItem::new(&u.battery, false, None);
+        let modes: Vec<(&'static str, CheckMenuItem)> =
+            u.modes.iter().map(|m| (m.mode, CheckMenuItem::new(&m.label, true, m.checked, None))).collect();
+        let low = u.low.as_ref().map(|(label, on)| CheckMenuItem::new(label, true, *on, None));
+        let open = MenuItem::new(&u.open, true, None);
+        let quit = MenuItem::new(&u.quit, true, None);
+        let (top, bottom) = (PredefinedMenuItem::separator(), PredefinedMenuItem::separator());
+        let mut rows: Vec<&dyn IsMenuItem> = vec![&battery];
+        if !modes.is_empty() || low.is_some() { rows.push(&top); }
+        for (_, item) in &modes { rows.push(item); }
+        if let Some(item) = &low { rows.push(item); }
+        rows.push(&bottom);
+        rows.push(&open);
+        rows.push(&quit);
+        tray.set_menu(Some(Box::new(Menu::with_items(&rows).expect("tray menu"))));
+        let mut ids = vec![(open.id().clone(), Action::Open), (quit.id().clone(), Action::Quit)];
+        ids.extend(modes.iter().map(|(mode, item)| (item.id().clone(), Action::Mode(mode))));
+        if let Some(item) = &low { ids.push((item.id().clone(), Action::LowLatency)); }
+        MenuItems { battery, modes, low, ids }
+    }
+
+    /// The same rows in the same order: a text change only.
+    fn same_shape(&self, u: &MenuUpdate) -> bool {
+        self.modes.len() == u.modes.len()
+            && self.modes.iter().zip(&u.modes).all(|((mode, _), row)| *mode == row.mode)
+            && self.low.is_some() == u.low.is_some()
+    }
+
+    fn set_texts(&self, u: &MenuUpdate) {
+        self.battery.set_text(&u.battery);
+        for ((_, item), row) in self.modes.iter().zip(&u.modes) {
+            item.set_text(&row.label);
+            item.set_checked(row.checked);
+        }
+        if let (Some(item), Some((label, on))) = (&self.low, &u.low) {
+            item.set_text(label);
+            item.set_checked(*on);
+        }
+    }
+
+    fn low_on(&self) -> bool { self.low.as_ref().is_some_and(|l| l.is_checked()) }
+
+    fn action(&self, id: &tray_icon::menu::MenuId) -> Option<Action> {
+        self.ids.iter().find(|(own, _)| own == id).map(|(_, action)| *action)
+    }
 }
 
 #[cfg(test)]

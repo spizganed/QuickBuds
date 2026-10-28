@@ -335,7 +335,7 @@ impl eframe::App for App {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         let new = self.inbox.lock().unwrap().take();
         if let Some(s) = new { self.apply(s); }
-        self.tray.update(&self.snap, &self.tr);
+        self.tray.update(&self.snap, &self.modes, &self.tr);
         while let Some(e) = self.tray.next_event() {
             match e {
                 tray::TrayEvent::Open => {
