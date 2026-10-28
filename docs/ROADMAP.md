@@ -24,7 +24,7 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
     realme Link command.
 - **Desktop UI rewrite (egui).** The code is in desktop-egui/ on main: layout with a sidebar, the four styles
   including Glass with real blur, a frameless rounded window. Missing there: the Feedback, Model test and Update pages, the
-  tray and quick panel, and a bundled UI font. The released desktop stays on Slint until then.
+  quick panel on Windows, and a bundled UI font. The released desktop stays on Slint until then.
 - **Desktop setup guide and Known issues page.** The phone has a ten-page guide. The desktop has the Known issues dialog and
   the reply dialog only.
 - **Captures wanted.** Buds push `0x050E` and answer `0x012C` (realme Air6, Air7 Pro and Air8 owners): the layouts are
