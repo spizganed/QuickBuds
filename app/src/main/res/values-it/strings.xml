@@ -566,4 +566,5 @@
     <string name="oneplus_hint">Sui telefoni OnePlus, OPPO e realme, le impostazioni degli auricolari del sistema possono trattenere il collegamento degli auricolari e bloccare QuickBuds. Se QuickBuds non si connette, usa le impostazioni degli auricolari in Impostazioni › Bluetooth › i tuoi auricolari.</string>
     <string name="connect_try_failed">Connessione non riuscita (tentativo %1$d di %2$d)</string>
     <string name="connect_gave_up">Connessione non riuscita dopo %1$d tentativi. Tocca Connetti per riprovare.</string>
+    <string name="connect_held_by_other">Un altro dispositivo o un\'altra app sta usando gli auricolari. Disconnettili lì o chiudi l\'app, poi tocca Connetti.</string>
 </resources>

@@ -23,6 +23,16 @@ object ConnectDiagnostics {
         reconnectAttempts == 0 && !refreshPending
 
     /**
+     * Whether another device or app holds the earbuds. Every socket try failed fast with `read ret: -1`.
+     * A down link times out after about 14 s instead, and a busy channel fails fast with another text
+     * (reports #22, #34, #90). Each pair is the error text and the time of that try in ms.
+     */
+    fun heldByOther(tries: List<Pair<String?, Long>>): Boolean =
+        tries.size >= 2 && tries.all { (text, ms) -> text?.contains("read ret: -1") == true && ms < FAST_FAIL_MS }
+
+    private const val FAST_FAIL_MS = 1500L
+
+    /**
      * `android.bluetooth.BluetoothSocketException` constant names, by error code.
      * Codes 0..20 are API 34 (android-14.0.0_r1). Code 21 is in later Android 14 builds
      * (android-14.0.0_r75) and in main.

@@ -566,4 +566,5 @@
     <string name="oneplus_hint">OnePlus, OPPO এবং realme ফোনে, সিস্টেমের নিজস্ব ইয়ারবাড সেটিংস ইয়ারবাডের লিংক ধরে রাখতে এবং QuickBuds-কে ব্লক করতে পারে। QuickBuds সংযোগ না করলে, সেটিংস › Bluetooth › আপনার ইয়ারবাড-এ ইয়ারবাড সেটিংস ব্যবহার করুন।</string>
     <string name="connect_try_failed">সংযোগ হয়নি (চেষ্টা %1$d/%2$d)</string>
     <string name="connect_gave_up">%1$d বার চেষ্টার পরও সংযোগ হয়নি। আবার চেষ্টা করতে Connect ট্যাপ করুন।</string>
+    <string name="connect_held_by_other">অন্য একটি ডিভাইস বা অ্যাপ ইয়ারবাড ব্যবহার করছে। সেখানে সংযোগ বিচ্ছিন্ন করুন বা সেই অ্যাপ বন্ধ করুন, তারপর Connect ট্যাপ করুন।</string>
 </resources>

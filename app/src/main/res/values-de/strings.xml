@@ -566,4 +566,5 @@
     <string name="oneplus_hint">Auf OnePlus-, OPPO- und realme-Telefonen können die Earbud-Einstellungen des Systems die Verbindung der Earbuds halten und QuickBuds blockieren. Wenn QuickBuds keine Verbindung herstellt, verwenden Sie die Earbud-Einstellungen in Einstellungen › Bluetooth › Ihre Earbuds.</string>
     <string name="connect_try_failed">Verbindung fehlgeschlagen (Versuch %1$d von %2$d)</string>
     <string name="connect_gave_up">Keine Verbindung nach %1$d Versuchen. Tippe auf Verbinden, um es erneut zu versuchen.</string>
+    <string name="connect_held_by_other">Ein anderes Gerät oder eine andere App hält die Ohrhörer. Trenne sie dort oder schließe die App und tippe dann auf Verbinden.</string>
 </resources>

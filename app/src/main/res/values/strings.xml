@@ -656,4 +656,5 @@
     <string name="about_privacy_reply">The ID also lets the developer answer a report you sent. The answer comes with the daily count.</string>
     <string name="connect_try_failed">Could not connect (try %1$d of %2$d)</string>
     <string name="connect_gave_up">Could not connect after %1$d tries. Tap Connect to try again.</string>
+    <string name="connect_held_by_other">Another device or app holds the earbuds. Disconnect them there or close that app, then tap Connect.</string>
 </resources>

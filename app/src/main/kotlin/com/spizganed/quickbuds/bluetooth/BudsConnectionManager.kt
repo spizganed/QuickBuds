@@ -385,6 +385,7 @@ class BudsConnectionManager(private val context: Context) {
                 // Every socket try counts: the 4 UUID tries and channel 15, 5 in total, then the app stops.
                 val totalTries = tries.size + 1
                 var failedTries = 0
+                val failures = mutableListOf<Pair<String?, Long>>()
                 fun tryFailed() {
                     failedTries++
                     if (generation == connectGeneration && ConnectPolicy.showTryToast(user))
@@ -408,6 +409,7 @@ class BudsConnectionManager(private val context: Context) {
                         break
                     } catch (e: Exception) {
                         lastError = e.message ?: e.javaClass.simpleName
+                        failures += lastError to (SystemClock.elapsedRealtime() - tryStart)
                         log("Failed UUID $uuidStr ($kind): $lastError (${SystemClock.elapsedRealtime() - tryStart} ms)")
                         log("Connect error: ${e.javaClass.simpleName}: ${e.message}")
                         logSocketError(e)
@@ -430,6 +432,7 @@ class BudsConnectionManager(private val context: Context) {
                         log("Connected via raw channel 15 (${SystemClock.elapsedRealtime() - tryStart} ms)")
                     } catch (e: Exception) {
                         lastError = e.message ?: e.javaClass.simpleName
+                        failures += lastError to (SystemClock.elapsedRealtime() - tryStart)
                         log("Channel 15 failed: $lastError (${SystemClock.elapsedRealtime() - tryStart} ms)")
                         logSocketError(e)
                         tryFailed()
@@ -457,8 +460,10 @@ class BudsConnectionManager(private val context: Context) {
                     // Disconnect or a new connect raised the generation, so that attempt ends quietly.
                     if (generation == connectGeneration) {
                         log("Giving up after $totalTries connect tries. Tap CONNECT to retry manually.")
+                        val held = ConnectDiagnostics.heldByOther(failures)
+                        if (held) log("Every try failed fast with read ret -1: another device or app probably holds the earbuds.")
                         if (ConnectPolicy.showTryToast(user))
-                            toast(context.getString(R.string.connect_gave_up, totalTries))
+                            toast(if (held) context.getString(R.string.connect_held_by_other) else context.getString(R.string.connect_gave_up, totalTries))
                     }
                     reconnectAttempts = 0
                     return@Thread

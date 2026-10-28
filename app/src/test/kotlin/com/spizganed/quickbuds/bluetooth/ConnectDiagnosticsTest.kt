@@ -54,4 +54,15 @@ class ConnectDiagnosticsTest {
         assertEquals("Socket error code: 2 (L2CAP_ACL_FAILURE)", ConnectDiagnostics.socketErrorLine(2))
         assertEquals("Socket error code: 22", ConnectDiagnostics.socketErrorLine(22))
     }
+
+    @Test
+    fun detectsAnotherHolderOfTheEarbuds() {
+        val fast = "read failed, socket might closed or timeout, read ret: -1" to 300L
+        assertTrue(ConnectDiagnostics.heldByOther(listOf(fast, fast, fast)))
+        // One try is not enough, a slow try is a down link, and another error text is another fault.
+        assertFalse(ConnectDiagnostics.heldByOther(listOf(fast)))
+        assertFalse(ConnectDiagnostics.heldByOther(listOf(fast, fast.first to 14_000L)))
+        assertFalse(ConnectDiagnostics.heldByOther(listOf(fast, "Connection refused" to 200L)))
+        assertFalse(ConnectDiagnostics.heldByOther(listOf(fast, null to 200L)))
+    }
 }

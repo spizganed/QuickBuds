@@ -566,4 +566,5 @@
     <string name="oneplus_hint">OnePlus, OPPO ve realme telefonlarda sistemin kulaklık ayarları kulaklıkların bağlantısını tutabilir ve QuickBuds uygulamasını engelleyebilir. QuickBuds bağlanmazsa Ayarlar › Bluetooth › kulaklığınız bölümünde kulaklık ayarlarını kullanın.</string>
     <string name="connect_try_failed">Bağlanılamadı (deneme %1$d/%2$d)</string>
     <string name="connect_gave_up">%1$d denemeden sonra bağlanılamadı. Tekrar denemek için Bağlan düğmesine dokunun.</string>
+    <string name="connect_held_by_other">Kulaklıkları başka bir cihaz veya uygulama kullanıyor. Orada bağlantıyı kesin veya uygulamayı kapatın, sonra Bağlan düğmesine dokunun.</string>
 </resources>

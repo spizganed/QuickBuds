@@ -568,4 +568,5 @@
     <string name="oneplus_hint">OnePlus, OPPO और realme फ़ोन पर, सिस्टम की ईयरबड सेटिंग्स ईयरबड का लिंक पकड़ सकती हैं और QuickBuds को ब्लॉक कर सकती हैं। अगर QuickBuds कनेक्ट नहीं होता, तो सेटिंग्स › Bluetooth › आपके ईयरबड में ईयरबड सेटिंग्स का उपयोग करें।</string>
     <string name="connect_try_failed">कनेक्ट नहीं हो सका (प्रयास %1$d/%2$d)</string>
     <string name="connect_gave_up">%1$d प्रयासों के बाद भी कनेक्ट नहीं हो सका। फिर से कोशिश करने के लिए Connect पर टैप करें।</string>
+    <string name="connect_held_by_other">कोई दूसरा डिवाइस या ऐप इयरबड्स का उपयोग कर रहा है। वहाँ उन्हें डिस्कनेक्ट करें या वह ऐप बंद करें, फिर Connect पर टैप करें।</string>
 </resources>

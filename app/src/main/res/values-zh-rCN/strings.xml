@@ -568,4 +568,5 @@
     <string name="oneplus_hint">在 OnePlus、OPPO 和 realme 手机上，系统的耳机设置可能会占用耳机连接并阻止 QuickBuds 连接。如果 QuickBuds 无法连接，请使用设置 › 蓝牙 › 您的耳机中的耳机设置。</string>
     <string name="connect_try_failed">无法连接（第 %1$d/%2$d 次）</string>
     <string name="connect_gave_up">尝试 %1$d 次后仍无法连接。点按“连接”重试。</string>
+    <string name="connect_held_by_other">另一台设备或应用正占用耳机。请在那边断开连接或关闭该应用，然后点按“连接”。</string>
 </resources>

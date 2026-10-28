@@ -566,4 +566,5 @@
     <string name="oneplus_hint">På OnePlus-, OPPO- och realme-telefoner kan systemets öronsnäckeinställningar hålla öronsnäckornas länk och blockera QuickBuds. Om QuickBuds inte ansluter, använd öronsnäckeinställningarna i Inställningar › Bluetooth › dina öronsnäckor.</string>
     <string name="connect_try_failed">Det gick inte att ansluta (försök %1$d av %2$d)</string>
     <string name="connect_gave_up">Det gick inte att ansluta efter %1$d försök. Tryck på Anslut för att försöka igen.</string>
+    <string name="connect_held_by_other">En annan enhet eller app använder hörlurarna. Koppla från dem där eller stäng appen och tryck sedan på Anslut.</string>
 </resources>

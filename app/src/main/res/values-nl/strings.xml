@@ -566,4 +566,5 @@
     <string name="oneplus_hint">Op OnePlus-, OPPO- en realme-telefoons kunnen de oordopjesinstellingen van het systeem de verbinding van de oordopjes vasthouden en QuickBuds blokkeren. Als QuickBuds geen verbinding maakt, gebruik de oordopjesinstellingen in Instellingen › Bluetooth › je oordopjes.</string>
     <string name="connect_try_failed">Verbinden mislukt (poging %1$d van %2$d)</string>
     <string name="connect_gave_up">Verbinden mislukt na %1$d pogingen. Tik op Verbinden om het opnieuw te proberen.</string>
+    <string name="connect_held_by_other">Een ander apparaat of een andere app gebruikt de oordopjes. Verbreek de verbinding daar of sluit die app en tik dan op Verbinden.</string>
 </resources>

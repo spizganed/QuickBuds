@@ -568,4 +568,5 @@
     <string name="oneplus_hint">Trên điện thoại OnePlus, OPPO và realme, cài đặt tai nghe của hệ thống có thể giữ liên kết tai nghe và chặn QuickBuds. Nếu QuickBuds không kết nối, hãy dùng cài đặt tai nghe trong Cài đặt › Bluetooth › tai nghe của bạn.</string>
     <string name="connect_try_failed">Không thể kết nối (lần %1$d/%2$d)</string>
     <string name="connect_gave_up">Không thể kết nối sau %1$d lần thử. Nhấn Kết nối để thử lại.</string>
+    <string name="connect_held_by_other">Thiết bị hoặc ứng dụng khác đang dùng tai nghe. Hãy ngắt kết nối ở đó hoặc đóng ứng dụng, rồi nhấn Kết nối.</string>
 </resources>

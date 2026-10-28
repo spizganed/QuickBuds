@@ -566,4 +566,5 @@
     <string name="oneplus_hint">Na telefonech OnePlus, OPPO a realme mohou systémová nastavení sluchátek držet spojení sluchátek a blokovat QuickBuds. Pokud se QuickBuds nepřipojí, použijte nastavení sluchátek v Nastavení › Bluetooth › vaše sluchátka.</string>
     <string name="connect_try_failed">Nelze připojit (pokus %1$d z %2$d)</string>
     <string name="connect_gave_up">Nelze připojit ani po %1$d pokusech. Klepnutím na Připojit to zkuste znovu.</string>
+    <string name="connect_held_by_other">Sluchátka drží jiné zařízení nebo aplikace. Odpojte je tam nebo aplikaci zavřete a pak klepněte na Připojit.</string>
 </resources>
