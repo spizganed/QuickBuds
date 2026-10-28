@@ -96,6 +96,11 @@ pub fn menu_update(s: &Snapshot, modes: &AncModes, tr: &[String]) -> MenuUpdate 
     }
 }
 
+/// True once a tray icon exists. Closing the window hides it only then: with no tray there is no way back, so a close quits.
+/// (A Linux desktop without an indicator host, or a failed GTK start, never sets it.)
+pub fn up() -> bool { UP.load(std::sync::atomic::Ordering::Relaxed) }
+static UP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(cfg!(windows));
+
 /// The tray of this run: the icon on Windows, the sender of the menu on Linux.
 pub struct Tray {
     #[cfg(windows)]
@@ -186,6 +191,7 @@ fn linux_tray(updates: Receiver<MenuUpdate>, events: Sender<TrayEvent>, ctx: egu
     use tray_icon::menu::MenuEvent;
     gtk::init().expect("gtk");
     let tray = tray_icon::TrayIconBuilder::new().with_icon(tray_icon()).build().expect("tray");
+    UP.store(true, std::sync::atomic::Ordering::Relaxed);
     let mut shown = MenuItems::build(&tray, &MenuUpdate {
         battery: t(&crate::translations(""), "app_name").to_string(), modes: Vec::new(), low: None, open, quit,
     });

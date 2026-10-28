@@ -351,7 +351,7 @@ impl eframe::App for App {
             }
         }
         // Closing the window hides it; the app lives in the tray until Quit.
-        if !self.quitting && ctx.input(|i| i.viewport().close_requested()) {
+        if !self.quitting && tray::up() && ctx.input(|i| i.viewport().close_requested()) {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
             ctx.send_viewport_cmd(egui::ViewportCommand::Visible(false));
         }
