@@ -48,6 +48,7 @@ mod sheets;
 mod test;
 mod token_sheet;
 mod tokens;
+mod tray;
 mod update;
 mod update_core;
 
