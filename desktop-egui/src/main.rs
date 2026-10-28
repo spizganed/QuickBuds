@@ -244,6 +244,8 @@ pub struct App {
     pub sheets: sheets::State,
     /// The tray icon and the events it sends.
     pub tray: tray::Tray,
+    /// The quick panel of the tray (Windows).
+    pub panel: panel::Panel,
     /// Quit was asked: the close that follows must not hide the window.
     quitting: bool,
     /// The short hints for a refused write and for an ANC write with no bud in an ear.
@@ -282,6 +284,7 @@ impl App {
             snap: Snapshot::default(), tx, tr, inbox, page: Page::Overview, has: Has::ALL,
             modes: AncModes::default(), last_level: None, levels_open: false, glow, demo, confirm: None, scroll: 0.0, shown_page: Page::Overview, page_seq: 0, page_since: std::time::Instant::now(), eq: Default::default(), dual: Default::default(), earbuds: Default::default(), dev: Default::default(), gestures: Default::default(), settings: Default::default(), appearance: Default::default(), hearing: Default::default(), setup: Default::default(), layout: Default::default(), preset: Default::default(),
             test: Default::default(), feedback: Default::default(), update: Default::default(), sheets: Default::default(), tray, toast: Default::default(),
+            panel: Default::default(),
             quitting: false, disconnect_ask: false, codec_pick: false, spatial_pick: false, style: glass::style::Style::Glass, style_for: false,
         };
         app.reload_style(&cc.egui_ctx);
@@ -298,6 +301,11 @@ impl App {
         if let Ok(n) = std::env::var("QB_SETUP") { if let Ok(i) = n.parse::<usize>() { app.setup.page = i.min(9); } }
         if let Ok(key) = std::env::var("QB_SHEET") {
             sheets::debug_open(&mut app, &key);
+        }
+        // The quick panel at start, for a screenshot on the invisible screen.
+        if std::env::var_os("QB_PANEL").is_some() {
+            app.panel.pos = (640.0, 260.0);
+            app.panel.open = true;
         }
         app
     }
@@ -349,6 +357,23 @@ impl eframe::App for App {
                     ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                 }
                 tray::TrayEvent::Cmd(c) => self.send(c),
+            }
+        }
+        // The quick panel follows the snapshot while it is open. It has its own screen, so it draws the
+        // flat glass; the app closes it when the panel asks.
+        if self.panel.open {
+            let view = panel::view(&self.snap, &self.modes, &self.tr);
+            panel::open(ctx, view, self.panel.pos, self.panel.tx.clone(), self.panel.focused.clone());
+        }
+        while let Some(a) = self.panel.rx.try_recv().ok() {
+            match a {
+                panel::Action::Open => {
+                    self.panel.open = false;
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+                }
+                panel::Action::Close => self.panel.open = false,
+                panel::Action::Cmd(c) => self.send(c),
             }
         }
         // Closing the window hides it; the app lives in the tray until Quit.
