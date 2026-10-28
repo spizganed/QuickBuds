@@ -22,6 +22,15 @@ longer exchange, open an [issue](https://github.com/spizganed/QuickBuds/issues) 
 If the app's log does not explain the problem, [PACKET-CAPTURE.md](./PACKET-CAPTURE.md) shows how to
 capture the Bluetooth traffic. It also shows what HeyMelody sends.
 
+## Licence of your contribution
+
+QuickBuds is under the GPL-3.0-or-later. The owner can also offer it under a commercial licence. Before
+the owner merges your pull request, you must agree to the [Contributor License Agreement](./CLA.md).
+Tick the box in the pull request template. You keep your copyright.
+
+Do not copy code or text from HeyMelody, realme Link or other vendor apps. Write your own code from the
+protocol facts in [PROTOCOL.md](./PROTOCOL.md).
+
 ## Build
 
 - [Android app](./build-android.md)
