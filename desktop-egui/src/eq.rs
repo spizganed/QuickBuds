@@ -23,6 +23,8 @@ pub struct State {
     /// The band gains under a finger (and until the buds echo them).
     drag: Option<Vec<f32>>,
     bass: Option<f32>,
+    /// The BassWave band levels under a finger (low, medium, high).
+    band_drag: [Option<f32>; 3],
     name: String,
     name_key: Option<(u8, String)>,
     confirm_delete: bool,
@@ -87,19 +89,35 @@ pub fn show(app: &mut App, ui: &mut Ui, body: Rect) -> f32 {
     // BassWave
     if types::eq_has_bass(s.model, &s.caps) {
         let on = s.bass_on.unwrap_or(false);
-        let h = ROW + 16.0 + if on { 60.0 } else { 0.0 };
+        // realme dynamic sound: a label over each slider; the band byte is 1 low, 2 medium, 3 high.
+        let bands = types::eq_bass_bands(s.model);
+        let panel = if on { if bands { 64.0 * 3.0 + 12.0 } else { 60.0 } } else { 0.0 };
+        let h = ROW + 16.0 + panel;
         let card = Rect::from_min_size(Pos2::new(x0, y), Vec2::new(w, h));
         glass::flat_at(ui, card, 28.0, 1.0);
         let row = Rect::from_min_size(card.min, Vec2::new(w, ROW + 16.0));
         let (_, toggled) = glass::row_at(ui, "bass", row, icons::EQUALIZER, t(&tr, "eq_basswave"), t(&tr, "eq_basswave_sub"), glass::Trailing::Switch(on), true);
         if toggled { sends.push(Cmd::BassWave(!on)); }
         if on {
-            let mut v = st.bass.unwrap_or(s.bass_level.unwrap_or(0) as f32);
-            let sr = Rect::from_min_size(Pos2::new(x0 + 24.0, row.bottom() - 4.0), Vec2::new(w - 90.0, 44.0));
-            let sl = glass::slider_at(ui, "bassl", sr, &mut v, -5.0, 5.0, true);
-            glass::text(ui, Pos2::new(sr.right() + 16.0, sr.center().y), Align2::LEFT_CENTER, &format!("{:+}", v as i32), 15.0, 1.0);
-            if sl.changed { st.bass = Some(v); }
-            if sl.released { sends.push(Cmd::BassLevel(v as i8, 0)); st.bass = None; }
+            if bands {
+                for (i, key) in ["eq_bass_low", "eq_bass_mid", "eq_bass_high"].iter().enumerate() {
+                    let top = row.bottom() - 4.0 + 64.0 * i as f32;
+                    glass::text(ui, Pos2::new(x0 + 24.0, top + 10.0), Align2::LEFT_CENTER, t(&tr, key), 12.5, 0.74);
+                    let sr = Rect::from_min_size(Pos2::new(x0 + 24.0, top + 20.0), Vec2::new(w - 90.0, 44.0));
+                    let mut v = st.band_drag[i].unwrap_or(s.bass_bands[i].unwrap_or(0) as f32);
+                    let sl = glass::slider_at(ui, ("bassb", i), sr, &mut v, -5.0, 5.0, true);
+                    glass::text(ui, Pos2::new(sr.right() + 16.0, sr.center().y), Align2::LEFT_CENTER, &format!("{:+}", v as i32), 15.0, 1.0);
+                    if sl.changed { st.band_drag[i] = Some(v); }
+                    if sl.released { sends.push(Cmd::BassLevel(v as i8, i as u8 + 1)); st.band_drag[i] = None; }
+                }
+            } else {
+                let mut v = st.bass.unwrap_or(s.bass_level.unwrap_or(0) as f32);
+                let sr = Rect::from_min_size(Pos2::new(x0 + 24.0, row.bottom() - 4.0), Vec2::new(w - 90.0, 44.0));
+                let sl = glass::slider_at(ui, "bassl", sr, &mut v, -5.0, 5.0, true);
+                glass::text(ui, Pos2::new(sr.right() + 16.0, sr.center().y), Align2::LEFT_CENTER, &format!("{:+}", v as i32), 15.0, 1.0);
+                if sl.changed { st.bass = Some(v); }
+                if sl.released { sends.push(Cmd::BassLevel(v as i8, 0)); st.bass = None; }
+            }
         }
         y += h + 18.0;
     }
@@ -244,4 +262,18 @@ fn smooth_line(ui: &Ui, p: &[Pos2]) {
     }
     out.push(*p.last().unwrap());
     ui.painter().add(Shape::line(out, Stroke::new(2.5, white(0.55))));
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    /// The page shows three sliders only for `bassBands` 3. Other models keep one slider.
+    #[test]
+    fn three_bass_sliders_only_for_bass_bands_3() {
+        assert!(crate::types::eq_bass_bands(Some(&json!({ "bassBands": 3 }))));
+        assert!(!crate::types::eq_bass_bands(Some(&json!({ "bassBands": 1 }))));
+        assert!(!crate::types::eq_bass_bands(Some(&json!({}))));
+        assert!(!crate::types::eq_bass_bands(None));
+    }
 }
