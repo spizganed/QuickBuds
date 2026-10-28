@@ -1,4 +1,5 @@
-//! The short hint under the page for a refused setting write. It stays for about four seconds.
+//! The two short hints under the page: a refused setting write, and an ANC write refused
+//! because no bud is in an ear. Each one stays for about four seconds.
 
 use crate::glass;
 use crate::session::Snapshot;
@@ -15,23 +16,33 @@ pub const SHOW: Duration = Duration::from_secs(4);
 pub struct State {
     /// The notice last shown, and when it arrived.
     notice: Option<(u32, Instant)>,
+    /// The count of refused ANC writes last shown, and when it changed.
+    anc: Option<(u32, Instant)>,
 }
 
 impl State {
-    /// Records a new failure notice and the time it arrived.
+    /// Records a new failure notice, or a new refused ANC write, and the time it arrived.
     pub fn update(&mut self, s: &Snapshot, now: Instant) {
         if let Some(n) = &s.notice {
             if self.notice.map_or(true, |(seq, _)| seq != n.seq) {
                 self.notice = Some((n.seq, now));
             }
         }
+        if s.anc_refused > 0 && self.anc.map_or(true, |(count, _)| count != s.anc_refused) {
+            self.anc = Some((s.anc_refused, now));
+        }
     }
 
-    /// The text to show now. None when the notice is old.
+    /// The text to show now: a refused write first, else the ANC ear hint. None when both are old.
     pub fn text(&self, tr: &[String], s: &Snapshot, now: Instant) -> Option<String> {
         if let Some((seq, at)) = self.notice {
             if s.notice.is_some_and(|n| n.seq == seq) && now.saturating_duration_since(at) < SHOW {
                 return Some(notice_text(tr, s));
+            }
+        }
+        if let Some((count, at)) = self.anc {
+            if count == s.anc_refused && now.saturating_duration_since(at) < SHOW {
+                return Some(t(tr, "anc_need_ear").to_string());
             }
         }
         None
@@ -39,9 +50,10 @@ impl State {
 
     /// How long until the shown hint hides, for the repaint that hides it.
     pub fn repaint_after(&self, now: Instant) -> Option<Duration> {
-        self.notice
+        [self.notice, self.anc].into_iter().flatten()
             .map(|(_, at)| SHOW.saturating_sub(now.saturating_duration_since(at)))
             .filter(|d| *d > Duration::ZERO)
+            .min()
     }
 }
 
@@ -127,5 +139,17 @@ mod tests {
         st.update(&second, t0 + Duration::from_secs(3));
         assert!(st.text(&tr, &second, t0 + Duration::from_secs(6)).is_some());
         assert!(st.text(&tr, &second, t0 + Duration::from_secs(7)).is_none());
+    }
+
+    #[test]
+    fn the_anc_hint_lasts_four_seconds() {
+        let tr = translations("");
+        let s = Snapshot { anc_refused: 1, ..Default::default() };
+        let t0 = Instant::now();
+        let mut st = State::default();
+        st.update(&s, t0);
+        assert_eq!(st.text(&tr, &s, t0).as_deref(), Some("Put an earbud in to change noise control"));
+        assert!(st.text(&tr, &s, t0 + Duration::from_millis(3999)).is_some());
+        assert!(st.text(&tr, &s, t0 + SHOW).is_none());
     }
 }
