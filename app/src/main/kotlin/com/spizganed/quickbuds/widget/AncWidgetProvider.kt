@@ -862,14 +862,17 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         /**
          * A blurred copy of [src]: three box passes on the premultiplied channels, which closely match a Gaussian. The radius
          * is the same 2.5dp for every part (rings, bar, case), so they look alike. [src] is drawn a little smaller first, so
-         * the blur has room and is not cut at the bitmap's edge. (A scale-down and scale-up blurs into visible blocks.)
+         * the blur has room (3 x the radius) and is not cut flat at the bitmap's edge. (A scale-down and scale-up blurs into visible blocks.)
          */
         private fun soften(context: Context, src: Bitmap): Bitmap {
             val r = ThemeRes.dp(context, 2.5f).coerceAtLeast(3)
             val w = src.width
             val h = src.height
             val framed = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-            Canvas(framed).drawBitmap(src, null, RectF(r.toFloat(), r.toFloat(), (w - r).toFloat(), (h - r).toFloat()), Paint(Paint.FILTER_BITMAP_FLAG))
+            // Three box passes reach about 3r from the edge of the drawing, so that is the room (at most a quarter of the size).
+            val ix = (3f * r).coerceAtMost(w / 4f)
+            val iy = (3f * r).coerceAtMost(h / 4f)
+            Canvas(framed).drawBitmap(src, null, RectF(ix, iy, w - ix, h - iy), Paint(Paint.FILTER_BITMAP_FLAG))
             val px = IntArray(w * h)
             framed.getPixels(px, 0, w, 0, 0, w, h)
             val ch = Array(4) { IntArray(w * h) }
