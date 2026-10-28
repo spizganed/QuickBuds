@@ -184,6 +184,8 @@ fn codec_sheet(app: &mut App, ui: &mut Ui) {
     if !app.codec_pick { return; }
     let s = app.snap.clone();
     let list = codec_list(&s);
+    // The buds answer the list after the handshake: until then the picker has nothing to show.
+    if list.is_empty() { app.codec_pick = false; return; }
     let options: Vec<String> = list.iter().map(|c| types::codec_name(*c)).collect();
     let cur = list.iter().position(|c| Some(*c) == s.codec).unwrap_or(usize::MAX);
     match glass::choice_dialog(ui.ctx(), "codec-pick", t(&app.tr, "row_hires_title"), &options, cur) {
