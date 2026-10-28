@@ -567,4 +567,6 @@
     <string name="connect_try_failed">Connexion impossible (essai %1$d sur %2$d)</string>
     <string name="connect_gave_up">Connexion impossible après %1$d essais. Touchez Connecter pour réessayer.</string>
     <string name="connect_held_by_other">Un autre appareil ou une autre appli utilise les écouteurs. Déconnectez-les là-bas ou fermez l\'appli, puis touchez Connecter.</string>
+    <string name="tray_open">Ouvrir QuickBuds</string>
+    <string name="tray_quit">Quitter</string>
 </resources>

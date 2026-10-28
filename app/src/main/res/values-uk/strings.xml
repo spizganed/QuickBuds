@@ -567,4 +567,6 @@
     <string name="connect_try_failed">Не вдалося підключитися (спроба %1$d з %2$d)</string>
     <string name="connect_gave_up">Не вдалося підключитися після %1$d спроб. Натисніть «Підключити», щоб спробувати знову.</string>
     <string name="connect_held_by_other">Навушники використовує інший пристрій або застосунок. Відключіть їх там або закрийте застосунок, потім натисніть «Підключити».</string>
+    <string name="tray_open">Відкрити QuickBuds</string>
+    <string name="tray_quit">Вихід</string>
 </resources>

@@ -567,4 +567,6 @@
     <string name="connect_try_failed">Nem sikerült csatlakozni (%1$d./%2$d próbálkozás)</string>
     <string name="connect_gave_up">%1$d próbálkozás után sem sikerült csatlakozni. Koppints a Csatlakozás gombra az újrapróbáláshoz.</string>
     <string name="connect_held_by_other">Egy másik eszköz vagy alkalmazás használja a fülhallgatót. Válassza le ott, vagy zárja be az alkalmazást, majd koppintson a Csatlakozás gombra.</string>
+    <string name="tray_open">QuickBuds megnyitása</string>
+    <string name="tray_quit">Kilépés</string>
 </resources>

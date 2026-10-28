@@ -567,4 +567,6 @@
     <string name="connect_try_failed">Tidak dapat bersambung (cubaan %1$d daripada %2$d)</string>
     <string name="connect_gave_up">Tidak dapat bersambung selepas %1$d cubaan. Ketik Sambung untuk mencuba lagi.</string>
     <string name="connect_held_by_other">Peranti atau apl lain sedang menggunakan earbud. Putuskan sambungan di sana atau tutup apl itu, kemudian ketik Sambung.</string>
+    <string name="tray_open">Buka QuickBuds</string>
+    <string name="tray_quit">Keluar</string>
 </resources>

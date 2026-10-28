@@ -241,6 +241,10 @@ pub struct App {
     pub feedback: feedback::State,
     pub update: update::State,
     pub sheets: sheets::State,
+    /// The tray icon and the events it sends.
+    pub tray: tray::Tray,
+    /// Quit was asked: the close that follows must not hide the window.
+    quitting: bool,
     /// The short hints for a refused write and for an ANC write with no bud in an ear.
     pub toast: notice::State,
     /// The disconnect pill asked; Cancel keeps the link.
@@ -271,11 +275,13 @@ impl App {
             session::spawn(move |s| { *inbox.lock().unwrap() = Some(s); ctx.request_repaint(); })
         };
         let glow = load_settings()["glass_gradient"].as_bool().unwrap_or(true);
+        let tr = translations(chosen_locale());
+        let tray = tray::Tray::new(&cc.egui_ctx, &tr);
         let mut app = Self {
-            snap: Snapshot::default(), tx, tr: translations(chosen_locale()), inbox, page: Page::Overview, has: Has::ALL,
+            snap: Snapshot::default(), tx, tr, inbox, page: Page::Overview, has: Has::ALL,
             modes: AncModes::default(), last_level: None, levels_open: false, glow, demo, confirm: None, scroll: 0.0, shown_page: Page::Overview, page_seq: 0, page_since: std::time::Instant::now(), eq: Default::default(), dual: Default::default(), earbuds: Default::default(), dev: Default::default(), gestures: Default::default(), settings: Default::default(), appearance: Default::default(), hearing: Default::default(), setup: Default::default(), layout: Default::default(), preset: Default::default(),
-            test: Default::default(), feedback: Default::default(), update: Default::default(), sheets: Default::default(), toast: Default::default(),
-            disconnect_ask: false, codec_pick: false, spatial_pick: false, style: glass::style::Style::Glass, style_for: false,
+            test: Default::default(), feedback: Default::default(), update: Default::default(), sheets: Default::default(), tray, toast: Default::default(),
+            quitting: false, disconnect_ask: false, codec_pick: false, spatial_pick: false, style: glass::style::Style::Glass, style_for: false,
         };
         app.reload_style(&cc.egui_ctx);
         // First start: the guide runs before Home, as on the phone.
@@ -325,9 +331,33 @@ impl eframe::App for App {
     /// The window is transparent outside its rounded pane.
     fn clear_color(&self, _visuals: &egui::Visuals) -> [f32; 4] { [0.0, 0.0, 0.0, 0.0] }
 
-    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+    /// Runs before each frame and also while the window is hidden: the link and the tray stay live there.
+    fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         let new = self.inbox.lock().unwrap().take();
         if let Some(s) = new { self.apply(s); }
+        self.tray.update(&self.snap, &self.tr);
+        while let Some(e) = self.tray.next_event() {
+            match e {
+                tray::TrayEvent::Open => {
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+                }
+                tray::TrayEvent::Quit => {
+                    // The close still comes through `close_requested`: it must not hide the window again.
+                    self.quitting = true;
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                }
+                tray::TrayEvent::Cmd(c) => self.send(c),
+            }
+        }
+        // Closing the window hides it; the app lives in the tray until Quit.
+        if !self.quitting && ctx.input(|i| i.viewport().close_requested()) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+            ctx.send_viewport_cmd(egui::ViewportCommand::Visible(false));
+        }
+    }
+
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         if palette::is_light_system(ui.ctx()) != self.style_for && palette::auto() { let ctx = ui.ctx().clone(); self.reload_style(&ctx); }
         glass::set_glow(ui.ctx(), if self.glow { 1.0 } else { 0.0 });
         glass::backdrop(ui);

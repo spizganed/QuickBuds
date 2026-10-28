@@ -567,4 +567,6 @@
     <string name="connect_try_failed">Αποτυχία σύνδεσης (προσπάθεια %1$d από %2$d)</string>
     <string name="connect_gave_up">Αποτυχία σύνδεσης μετά από %1$d προσπάθειες. Πατήστε Σύνδεση για νέα προσπάθεια.</string>
     <string name="connect_held_by_other">Μια άλλη συσκευή ή εφαρμογή κρατά τα ακουστικά. Αποσυνδέστε τα εκεί ή κλείστε την εφαρμογή και μετά πατήστε Σύνδεση.</string>
+    <string name="tray_open">Άνοιγμα QuickBuds</string>
+    <string name="tray_quit">Έξοδος</string>
 </resources>

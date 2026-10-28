@@ -569,4 +569,6 @@
     <string name="connect_try_failed">Không thể kết nối (lần %1$d/%2$d)</string>
     <string name="connect_gave_up">Không thể kết nối sau %1$d lần thử. Nhấn Kết nối để thử lại.</string>
     <string name="connect_held_by_other">Thiết bị hoặc ứng dụng khác đang dùng tai nghe. Hãy ngắt kết nối ở đó hoặc đóng ứng dụng, rồi nhấn Kết nối.</string>
+    <string name="tray_open">Mở QuickBuds</string>
+    <string name="tray_quit">Thoát</string>
 </resources>

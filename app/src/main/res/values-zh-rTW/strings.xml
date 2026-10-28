@@ -569,4 +569,6 @@
     <string name="connect_try_failed">無法連線（第 %1$d/%2$d 次）</string>
     <string name="connect_gave_up">嘗試 %1$d 次後仍無法連線。輕觸「連線」重試。</string>
     <string name="connect_held_by_other">另一台裝置或應用程式正佔用耳機。請在該處中斷連線或關閉該應用程式，然後輕觸「連線」。</string>
+    <string name="tray_open">開啟 QuickBuds</string>
+    <string name="tray_quit">結束</string>
 </resources>

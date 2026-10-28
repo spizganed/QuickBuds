@@ -567,4 +567,6 @@
     <string name="connect_try_failed">Nelze připojit (pokus %1$d z %2$d)</string>
     <string name="connect_gave_up">Nelze připojit ani po %1$d pokusech. Klepnutím na Připojit to zkuste znovu.</string>
     <string name="connect_held_by_other">Sluchátka drží jiné zařízení nebo aplikace. Odpojte je tam nebo aplikaci zavřete a pak klepněte na Připojit.</string>
+    <string name="tray_open">Otevřít QuickBuds</string>
+    <string name="tray_quit">Ukončit</string>
 </resources>

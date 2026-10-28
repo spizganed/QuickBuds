@@ -567,4 +567,6 @@
     <string name="connect_try_failed">연결하지 못했습니다(%1$d/%2$d회)</string>
     <string name="connect_gave_up">%1$d회 시도 후에도 연결하지 못했습니다. 다시 시도하려면 연결을 탭하세요.</string>
     <string name="connect_held_by_other">다른 기기나 앱이 이어버드를 사용 중입니다. 그쪽에서 연결을 끊거나 앱을 닫은 다음 연결을 탭하세요.</string>
+    <string name="tray_open">QuickBuds 열기</string>
+    <string name="tray_quit">종료</string>
 </resources>

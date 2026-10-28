@@ -112,6 +112,8 @@ const STRINGS: &[&str] = &[
     "disconnect_title", "disconnect_body", "codec_dialog_deny",
     "crash_saved_to", "crash_share", "crash_share_title", "perm_title", "perm_body", "perm_action",
     "about_privacy_reply", "issues_dialog_body", "issues_dialog_action",
+    // The desktop tray menu.
+    "tray_open", "tray_quit",
 ];
 
 fn attr<'a>(tag: &'a str, name: &str) -> Option<&'a str> {
