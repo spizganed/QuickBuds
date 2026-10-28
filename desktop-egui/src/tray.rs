@@ -8,7 +8,9 @@ use crate::session::{Cmd, Snapshot, Status};
 use crate::t;
 use crate::types::{self, AncModes};
 use eframe::egui;
-use std::sync::mpsc::{Receiver, Sender};
+use std::sync::mpsc::Receiver;
+#[cfg(not(windows))]
+use std::sync::mpsc::Sender;
 
 /// What a click in the tray asks of the app.
 pub enum TrayEvent {
