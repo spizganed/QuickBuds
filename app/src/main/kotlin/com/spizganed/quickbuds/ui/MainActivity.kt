@@ -860,6 +860,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * different bits (0x0800 vs 0x0080) and report them differently too.
      */
     private fun selectAnc(mode: String) {
+        if (!::manager.isInitialized) return
         ancAwaitingPick = false
         manager.sendAnc(mode)
         activeAncMode = mode
@@ -868,6 +869,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     private fun toggleGameMode(next: Boolean) {
+        if (!::manager.isInitialized) return
         val gameId = Capabilities.gameModeId(this)
         manager.requestSetting(
             gameId,
@@ -877,24 +879,31 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     }
 
     /** A tap on the Golden Sound switch asks for [wantOn]; the buds' own report moves it. */
-    private fun requestGolden(wantOn: Boolean) = manager.requestSetting(
-        Feature.GOLDEN_SOUND,
-        listOf(Feature.GOLDEN_SOUND to (if (wantOn) 1 else 0)),
-        FeatureSync.Confirm.READ
-    )
+    private fun requestGolden(wantOn: Boolean) {
+        if (!::manager.isInitialized) return
+        manager.requestSetting(
+            Feature.GOLDEN_SOUND,
+            listOf(Feature.GOLDEN_SOUND to (if (wantOn) 1 else 0)),
+            FeatureSync.Confirm.READ
+        )
+    }
 
     /** A tap on the wind noise switch asks for [wantOn]; the buds' own report moves it. */
-    private fun requestWind(wantOn: Boolean) = manager.requestSetting(
-        Feature.WIND_NOISE,
-        listOf(Feature.WIND_NOISE to (if (wantOn) 1 else 0)),
-        FeatureSync.Confirm.READ
-    )
+    private fun requestWind(wantOn: Boolean) {
+        if (!::manager.isInitialized) return
+        manager.requestSetting(
+            Feature.WIND_NOISE,
+            listOf(Feature.WIND_NOISE to (if (wantOn) 1 else 0)),
+            FeatureSync.Confirm.READ
+        )
+    }
 
     /**
      * A tap on the plain 3D audio switch. On with Hi-Res on is ONE operation: spatial first, then
      * Hi-Res off, and the link restarts (HeyMelody's order). Models with a spatial type stay old.
      */
     private fun requestSpatial(wantOn: Boolean) {
+        if (!::manager.isInitialized) return
         if (spatialByType()) return setSpatial(if (wantOn) 1 else 0)
         if (wantOn == spatialOn()) return
         val dropHires = wantOn && featureOn(Feature.HIRES_CODEC) && !spatialSwitchOnly()
@@ -916,6 +925,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * codec refresh are as before.
      */
     private fun requestHires(wantOn: Boolean) {
+        if (!::manager.isInitialized) return
         val hires = hiresSwitch ?: return
         if (codecPicker()) {
             val codec = manager.codec ?: return

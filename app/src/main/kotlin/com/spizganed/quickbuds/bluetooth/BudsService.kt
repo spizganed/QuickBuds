@@ -103,6 +103,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     override fun onCreate() {
         super.onCreate()
         statusLog("[SVC] onCreate")
+        // First: Android kills the app when startForeground() comes later than 5 s after startForegroundService() (report 115).
+        startForegroundService()
 
         manager = BudsConnectionManager(this).also { it.addListener(this) }
 
@@ -120,8 +122,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         registerReceiver(screenReceiver, screen)
         // Started by a Bluetooth event while locked: stay asleep until the unlock.
         if (backgroundAllowed(this) && shouldSleep()) asleep = true
-
-        startForegroundService()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
