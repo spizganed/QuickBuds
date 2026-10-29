@@ -1,6 +1,6 @@
 [package]
 name = "quickbuds-egui"
-version = "5.4.2"
+version = "5.4.3"
 edition = "2021"
 license = "GPL-3.0-or-later"
 description = "QuickBuds for Windows and Linux, egui port"
