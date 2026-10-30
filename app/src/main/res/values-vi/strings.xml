@@ -575,4 +575,6 @@
     <string name="eq_bright">Sáng</string>
     <string name="row_volume_enhancer_title">Tăng cường âm lượng</string>
     <string name="row_volume_enhancer_sub">Tăng âm lượng của tai nghe</string>
+    <string name="widget_tap_opens_title">Chạm để mở QuickBuds</string>
+    <string name="widget_tap_opens_sub">Chạm vào tiện ích để mở ứng dụng</string>
 </resources>

@@ -573,4 +573,6 @@
     <string name="eq_bright">Fényes</string>
     <string name="row_volume_enhancer_title">Hangerő-növelő</string>
     <string name="row_volume_enhancer_sub">Növeli a fülhallgató hangerejét</string>
+    <string name="widget_tap_opens_title">Koppintásra megnyílik a QuickBuds</string>
+    <string name="widget_tap_opens_sub">A widget megérintése megnyitja az alkalmazást</string>
 </resources>

@@ -573,4 +573,6 @@
     <string name="eq_bright">Brilhante</string>
     <string name="row_volume_enhancer_title">Potenciador de volume</string>
     <string name="row_volume_enhancer_sub">Aumenta o volume dos fones</string>
+    <string name="widget_tap_opens_title">Tocar abre o QuickBuds</string>
+    <string name="widget_tap_opens_sub">Tocar no widget abre o aplicativo</string>
 </resources>

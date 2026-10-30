@@ -573,4 +573,6 @@
     <string name="eq_bright">Maliwanag</string>
     <string name="row_volume_enhancer_title">Pampalakas ng volume</string>
     <string name="row_volume_enhancer_sub">Nagpapalakas ng tunog ng earbuds</string>
+    <string name="widget_tap_opens_title">Pagtap ay magbubukas ng QuickBuds</string>
+    <string name="widget_tap_opens_sub">Ang pagtap sa widget ay magbubukas ng app</string>
 </resources>

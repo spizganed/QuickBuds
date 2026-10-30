@@ -575,4 +575,6 @@
     <string name="eq_bright">Cerah</string>
     <string name="row_volume_enhancer_title">Penguat volume</string>
     <string name="row_volume_enhancer_sub">Menaikkan volume earbud</string>
+    <string name="widget_tap_opens_title">Ketuk untuk membuka QuickBuds</string>
+    <string name="widget_tap_opens_sub">Mengetuk widget membuka aplikasi</string>
 </resources>

@@ -36,12 +36,13 @@ object WidgetSettings {
     private const val KEY_PAGE = "widgetPage_"
     private const val KEY_CHILD = "widgetChild_"
     private const val KEY_BUTTONS = "widgetButtons_"
+    private const val KEY_TAP_OPENS = "widgetTapOpens_"
 
     /**
      * The controls page's buttons, in setup screen order: "anc" opens the level list, "trans" / "adapt" / "off"
      * select a mode, "ll" toggles low latency, a [FEATURE_BUTTONS] key toggles that `0x0403` switch.
      */
-    val BUTTONS = listOf("anc", "trans", "adapt", "off", "ll", "wind")
+    val BUTTONS = listOf("anc", "trans", "adapt", "off", "ll", "wind", "app")
     /** Feature buttons: key -> `0x0403` id. */
     val FEATURE_BUTTONS = mapOf("wind" to Feature.WIND_NOISE)
     /** Buttons a widget shows before its setup screen saves a choice. */
@@ -139,6 +140,13 @@ object WidgetSettings {
         prefs(c).edit().putString(KEY_BUTTONS + id, keys.joinToString(",")).apply()
     }
 
+    /** A tap on a one-page widget opens the app (off by default; two-page widgets use the "app" button). */
+    fun tapOpens(c: Context, id: Int) = prefs(c).getBoolean(KEY_TAP_OPENS + id, false)
+
+    fun setTapOpens(c: Context, id: Int, on: Boolean) {
+        prefs(c).edit().putBoolean(KEY_TAP_OPENS + id, on).apply()
+    }
+
     /** The connected buds have button [key]. */
     fun available(c: Context, key: String): Boolean {
         val anc = AncModes.of(c)
@@ -149,6 +157,7 @@ object WidgetSettings {
             "off" -> ancCmd && !anc.isEmpty
             "ll" -> Capabilities.hasFeature(c, Capabilities.gameModeId(c))
             "wind" -> Capabilities.offered(c, Feature.WIND_NOISE, "windMode")
+            "app" -> true
             else -> false
         }
     }
@@ -160,7 +169,7 @@ object WidgetSettings {
     /** Drops everything stored for widget [id] (removed from the home screen). */
     fun forget(c: Context, id: Int) {
         prefs(c).edit().apply {
-            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_BUTTONS, KEY_BACKGROUND)) remove(k + id)
+            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_BUTTONS, KEY_BACKGROUND, KEY_TAP_OPENS)) remove(k + id)
         }.apply()
     }
 

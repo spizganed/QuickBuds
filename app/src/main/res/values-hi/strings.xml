@@ -575,4 +575,6 @@
     <string name="eq_bright">ब्राइट</string>
     <string name="row_volume_enhancer_title">वॉल्यूम एन्हांसर</string>
     <string name="row_volume_enhancer_sub">ईयरबड्स की आवाज़ बढ़ाता है</string>
+    <string name="widget_tap_opens_title">टैप से QuickBuds खुलता है</string>
+    <string name="widget_tap_opens_sub">विजेट पर टैप करने से ऐप खुलता है</string>
 </resources>

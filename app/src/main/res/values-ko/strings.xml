@@ -573,4 +573,6 @@
     <string name="eq_bright">브라이트</string>
     <string name="row_volume_enhancer_title">볼륨 강화</string>
     <string name="row_volume_enhancer_sub">이어버드 음량을 높입니다</string>
+    <string name="widget_tap_opens_title">탭하면 QuickBuds 열기</string>
+    <string name="widget_tap_opens_sub">위젯을 탭하면 앱이 열립니다</string>
 </resources>

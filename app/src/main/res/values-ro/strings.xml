@@ -573,4 +573,6 @@
     <string name="eq_bright">Strălucitor</string>
     <string name="row_volume_enhancer_title">Amplificator de volum</string>
     <string name="row_volume_enhancer_sub">Crește volumul căștilor</string>
+    <string name="widget_tap_opens_title">Atingerea deschide QuickBuds</string>
+    <string name="widget_tap_opens_sub">Atingerea widgetului deschide aplicația</string>
 </resources>

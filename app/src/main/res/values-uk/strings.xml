@@ -573,4 +573,6 @@
     <string name="eq_bright">Яскравий</string>
     <string name="row_volume_enhancer_title">Підсилювач гучності</string>
     <string name="row_volume_enhancer_sub">Підвищує гучність навушників</string>
+    <string name="widget_tap_opens_title">Дотик відкриває QuickBuds</string>
+    <string name="widget_tap_opens_sub">Дотик до віджета відкриває застосунок</string>
 </resources>

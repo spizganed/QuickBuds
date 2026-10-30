@@ -573,4 +573,6 @@
     <string name="eq_bright">Яркий</string>
     <string name="row_volume_enhancer_title">Усилитель громкости</string>
     <string name="row_volume_enhancer_sub">Повышает громкость наушников</string>
+    <string name="widget_tap_opens_title">Касание открывает QuickBuds</string>
+    <string name="widget_tap_opens_sub">Касание виджета открывает приложение</string>
 </resources>

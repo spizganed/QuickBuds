@@ -573,4 +573,6 @@
     <string name="eq_bright">Jasný</string>
     <string name="row_volume_enhancer_title">Zesilovač hlasitosti</string>
     <string name="row_volume_enhancer_sub">Zvýší hlasitost sluchátek</string>
+    <string name="widget_tap_opens_title">Klepnutí otevře QuickBuds</string>
+    <string name="widget_tap_opens_sub">Klepnutí na widget otevře aplikaci</string>
 </resources>

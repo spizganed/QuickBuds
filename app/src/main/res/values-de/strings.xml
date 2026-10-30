@@ -573,4 +573,6 @@
     <string name="eq_bright">Hell</string>
     <string name="row_volume_enhancer_title">Lautstärkeverstärker</string>
     <string name="row_volume_enhancer_sub">Erhöht die Lautstärke der Ohrhörer</string>
+    <string name="widget_tap_opens_title">Tippen öffnet QuickBuds</string>
+    <string name="widget_tap_opens_sub">Ein Tipp auf das Widget öffnet die App</string>
 </resources>

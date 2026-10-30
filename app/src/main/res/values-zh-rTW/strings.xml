@@ -575,4 +575,6 @@
     <string name="eq_bright">明亮</string>
     <string name="row_volume_enhancer_title">音量增強</string>
     <string name="row_volume_enhancer_sub">提高耳機的音量</string>
+    <string name="widget_tap_opens_title">點按開啟 QuickBuds</string>
+    <string name="widget_tap_opens_sub">點按小工具即可開啟應用程式</string>
 </resources>

@@ -573,4 +573,6 @@
     <string name="eq_bright">Parlak</string>
     <string name="row_volume_enhancer_title">Ses yükseltici</string>
     <string name="row_volume_enhancer_sub">Kulaklıkların sesini artırır</string>
+    <string name="widget_tap_opens_title">Dokunmak QuickBuds\'ı açar</string>
+    <string name="widget_tap_opens_sub">Widget\'a dokunmak uygulamayı açar</string>
 </resources>

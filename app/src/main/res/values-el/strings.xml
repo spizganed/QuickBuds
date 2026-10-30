@@ -573,4 +573,6 @@
     <string name="eq_bright">Φωτεινό</string>
     <string name="row_volume_enhancer_title">Ενίσχυση έντασης</string>
     <string name="row_volume_enhancer_sub">Αυξάνει την ένταση των ακουστικών</string>
+    <string name="widget_tap_opens_title">Το πάτημα ανοίγει το QuickBuds</string>
+    <string name="widget_tap_opens_sub">Πατώντας το widget ανοίγει η εφαρμογή</string>
 </resources>

@@ -573,4 +573,6 @@
     <string name="eq_bright">Helder</string>
     <string name="row_volume_enhancer_title">Volumeversterker</string>
     <string name="row_volume_enhancer_sub">Verhoogt het volume van de oordopjes</string>
+    <string name="widget_tap_opens_title">Tikken opent QuickBuds</string>
+    <string name="widget_tap_opens_sub">Een tik op de widget opent de app</string>
 </resources>

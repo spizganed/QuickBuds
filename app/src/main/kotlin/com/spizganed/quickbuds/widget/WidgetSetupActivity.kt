@@ -40,6 +40,14 @@ class WidgetSetupActivity : Activity() {
             SettingRowFactory.subtitle(this, bgRow).setText(R.string.widget_background_sub)
             root.addView(SettingRowFactory.card(this).apply { addView(bgRow) })
         }
+        // One-page widgets: a tap on the box opens the app. The two-page one swaps pages on a tap; it has the "app" button.
+        if (QuickBudsWidget.kindOf(this, id) != QuickBudsWidget.Kind.COMBINED) {
+            val tapSwitch = SettingRowFactory.buildSwitch(this, WidgetSettings.tapOpens(this, id))
+            tapSwitch.setOnCheckedChangeListener { v, on -> WidgetSettings.setTapOpens(this, id, on); QuickBudsWidget.refreshAll(this); Haptics.commit(v) }
+            val tapRow = SettingRowFactory.build(this, 0, R.string.widget_tap_opens_title, 0, tapSwitch) { tapSwitch.performClick() }
+            SettingRowFactory.subtitle(this, tapRow).setText(R.string.widget_tap_opens_sub)
+            root.addView(SettingRowFactory.card(this).apply { addView(tapRow) })
+        }
         // The buttons, for widgets with a controls page.
         if (QuickBudsWidget.kindOf(this, id) == QuickBudsWidget.Kind.BATTERY_ONLY) {
             if (root.childCount == 1) return finish()
@@ -91,7 +99,8 @@ class WidgetSetupActivity : Activity() {
             "adapt" to (R.drawable.ic_mode_adaptive to R.string.anc_seg_adapt),
             "off" to (R.drawable.ic_mode_off to R.string.anc_seg_off),
             "ll" to (R.drawable.ic_low_latency to R.string.row_game_title),
-            "wind" to (R.drawable.ic_anc to R.string.row_wind_noise_title)
+            "wind" to (R.drawable.ic_anc to R.string.row_wind_noise_title),
+            "app" to (R.drawable.ic_earbud to R.string.app_name)
         )
     }
 }

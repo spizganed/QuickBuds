@@ -264,7 +264,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             // Every tap on a two-page widget carries the other page, so a second tap swaps.
             val other = if (page == Kind.BATTERY) Kind.CONTROLS else Kind.BATTERY
             val swap = if (live && !list && provider.page == null) other else null
-            v.setOnClickPendingIntent(R.id.w_root, swap?.let { receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = it) })
+            v.setOnClickPendingIntent(R.id.w_root, swap?.let { receiverPI(context, WidgetActions.ACTION_OPEN_APP, id, swap = it) }
+                ?: if (!list && WidgetSettings.tapOpens(context, id)) openAppPI(context) else null)
             // The two-page widgets' dots: the shown page in the accent.
             v.setViewVisibility(R.id.w_dots, if (live && provider.page == null) View.VISIBLE else View.GONE)
             v.setInt(R.id.w_dot0, "setColorFilter", if (page == Kind.BATTERY) p.accent else dim(p))
@@ -766,6 +767,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 "ll" -> Q(state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
                     context.getString(R.string.row_game_title), receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap),
                     context.getString(R.string.widget_low_latency))
+                "app" -> Q(false, R.drawable.ic_earbud, "QB", context.getString(R.string.app_name), openAppPI(context))
                 else -> {
                     val f = WidgetSettings.FEATURE_BUTTONS.getValue(key)
                     Q(WidgetSettings.featureOn(context, f), R.drawable.ic_anc, initials(R.string.row_wind_noise_title),

@@ -575,4 +575,6 @@
     <string name="eq_bright">明亮</string>
     <string name="row_volume_enhancer_title">音量增强</string>
     <string name="row_volume_enhancer_sub">提高耳机的音量</string>
+    <string name="widget_tap_opens_title">点按打开 QuickBuds</string>
+    <string name="widget_tap_opens_sub">点按小组件即可打开应用</string>
 </resources>
