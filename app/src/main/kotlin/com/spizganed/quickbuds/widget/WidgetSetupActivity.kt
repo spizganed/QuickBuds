@@ -41,7 +41,7 @@ class WidgetSetupActivity : Activity() {
             root.addView(SettingRowFactory.card(this).apply { addView(bgRow) })
         }
         // One-page widgets: a tap on the box opens the app. The two-page one swaps pages on a tap; it has the "app" button.
-        if (QuickBudsWidget.kindOf(this, id) != QuickBudsWidget.Kind.COMBINED) {
+        if (QuickBudsWidget.kindOf(this, id)?.page != null) {
             val tapSwitch = SettingRowFactory.buildSwitch(this, WidgetSettings.tapOpens(this, id))
             tapSwitch.setOnCheckedChangeListener { v, on -> WidgetSettings.setTapOpens(this, id, on); QuickBudsWidget.refreshAll(this); Haptics.commit(v) }
             val tapRow = SettingRowFactory.build(this, 0, R.string.widget_tap_opens_title, 0, tapSwitch) { tapSwitch.performClick() }
