@@ -571,4 +571,8 @@
     <string name="connect_held_by_other">कोई दूसरा डिवाइस या ऐप इयरबड्स का उपयोग कर रहा है। वहाँ उन्हें डिस्कनेक्ट करें या वह ऐप बंद करें, फिर Connect पर टैप करें।</string>
     <string name="tray_open">QuickBuds खोलें</string>
     <string name="tray_quit">बाहर निकलें</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">ब्राइट</string>
+    <string name="row_volume_enhancer_title">वॉल्यूम एन्हांसर</string>
+    <string name="row_volume_enhancer_sub">ईयरबड्स की आवाज़ बढ़ाता है</string>
 </resources>

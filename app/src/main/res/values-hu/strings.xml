@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">Egy másik eszköz vagy alkalmazás használja a fülhallgatót. Válassza le ott, vagy zárja be az alkalmazást, majd koppintson a Csatlakozás gombra.</string>
     <string name="tray_open">QuickBuds megnyitása</string>
     <string name="tray_quit">Kilépés</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Fényes</string>
+    <string name="row_volume_enhancer_title">Hangerő-növelő</string>
+    <string name="row_volume_enhancer_sub">Növeli a fülhallgató hangerejét</string>
 </resources>

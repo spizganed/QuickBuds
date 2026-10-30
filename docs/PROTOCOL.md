@@ -1,6 +1,6 @@
 # PROTOCOL.md — the earbud wire format
 
-Matches QuickBuds 5.4.3 (version code 50).
+Matches QuickBuds 5.4.4 (version code 51).
 
 This is the wire format of the OPPO / OnePlus / realme earbud RFCOMM link. One protocol layer
 implements it in Kotlin: `protocol/`, which the Android app runs. Each section names its code file.
@@ -364,7 +364,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0404` | ANC mode / hold cycle | `01 01 <mask>` / `02 <kind> <mask>` | 14 |
 | `0x0405` | Fit test | `01` / `00` | 20 |
 | `0x0406` | Select built-in EQ | `<id>` | 17 |
-| `0x0407` | Unused | — | 22 |
+| `0x0407` | Volume enhancer (realme Buds T01) | `<01 on, 00 off>` | 22 |
 | `0x0408` | Related-device list | `<hostType> <host MAC 6> <count>`, then `<type> <MAC 6> <state>` per device; at most 6 | 22 |
 | `0x0409` | Unused | — | 22 |
 | `0x040B` | Unused | — | 22 |

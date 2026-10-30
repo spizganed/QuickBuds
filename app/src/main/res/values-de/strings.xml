@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">Ein anderes Gerät oder eine andere App hält die Ohrhörer. Trenne sie dort oder schließe die App und tippe dann auf Verbinden.</string>
     <string name="tray_open">QuickBuds öffnen</string>
     <string name="tray_quit">Beenden</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Hell</string>
+    <string name="row_volume_enhancer_title">Lautstärkeverstärker</string>
+    <string name="row_volume_enhancer_sub">Erhöht die Lautstärke der Ohrhörer</string>
 </resources>

@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">Peranti atau apl lain sedang menggunakan earbud. Putuskan sambungan di sana atau tutup apl itu, kemudian ketik Sambung.</string>
     <string name="tray_open">Buka QuickBuds</string>
     <string name="tray_quit">Keluar</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Cerah</string>
+    <string name="row_volume_enhancer_title">Penguat kelantangan</string>
+    <string name="row_volume_enhancer_sub">Menaikkan kelantangan fon telinga</string>
 </resources>

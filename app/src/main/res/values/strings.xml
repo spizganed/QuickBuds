@@ -117,6 +117,8 @@
     <string name="report_title">Help make your buds work</string>
     <string name="row_smart_volume_title">Smart volume</string>
     <string name="row_smart_volume_sub">Adjusts volume to ambient noise</string>
+    <string name="row_volume_enhancer_title">Volume enhancer</string>
+    <string name="row_volume_enhancer_sub">Raises the loudness of the earbuds</string>
     <string name="row_adaptive_volume_title">Adaptive volume</string>
     <string name="row_adaptive_volume_sub">Follows changes in ambient noise</string>
     <string name="row_adaptive_ear_title">Adaptive left and right</string>
@@ -164,6 +166,8 @@
     <string name="eq_nature_balance">Nature Balance</string>
     <string name="eq_dynamic_bass">Dynamic bass</string>
     <string name="eq_bass_boost">Bass boost</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Bright</string>
     <string name="eq_clear">Clear</string>
     <string name="eq_gentle">Gentle</string>
     <string name="eq_default">Default</string>

@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">Sluchátka drží jiné zařízení nebo aplikace. Odpojte je tam nebo aplikaci zavřete a pak klepněte na Připojit.</string>
     <string name="tray_open">Otevřít QuickBuds</string>
     <string name="tray_quit">Ukončit</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Jasný</string>
+    <string name="row_volume_enhancer_title">Zesilovač hlasitosti</string>
+    <string name="row_volume_enhancer_sub">Zvýší hlasitost sluchátek</string>
 </resources>

@@ -571,4 +571,8 @@
     <string name="connect_held_by_other">Thiết bị hoặc ứng dụng khác đang dùng tai nghe. Hãy ngắt kết nối ở đó hoặc đóng ứng dụng, rồi nhấn Kết nối.</string>
     <string name="tray_open">Mở QuickBuds</string>
     <string name="tray_quit">Thoát</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Sáng</string>
+    <string name="row_volume_enhancer_title">Tăng cường âm lượng</string>
+    <string name="row_volume_enhancer_sub">Tăng âm lượng của tai nghe</string>
 </resources>

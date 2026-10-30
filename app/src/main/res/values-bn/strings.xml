@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">অন্য একটি ডিভাইস বা অ্যাপ ইয়ারবাড ব্যবহার করছে। সেখানে সংযোগ বিচ্ছিন্ন করুন বা সেই অ্যাপ বন্ধ করুন, তারপর Connect ট্যাপ করুন।</string>
     <string name="tray_open">QuickBuds খুলুন</string>
     <string name="tray_quit">প্রস্থান</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">উজ্জ্বল</string>
+    <string name="row_volume_enhancer_title">ভলিউম বর্ধক</string>
+    <string name="row_volume_enhancer_sub">ইয়ারবাডের জোর বাড়ায়</string>
 </resources>

@@ -286,6 +286,10 @@ internal object Commands {
     fun setBuiltInEq(id: Int): ByteArray =
         OpoProtocol.buildPacket(OpoProtocol.CMD_SET_EQ, payload = builtInEqPayload(id))
 
+    /** realme Buds T01 volume enhancer: `0x0407 <01 on, 00 off>`, acked, no state read ([CAPTURE] report 25). */
+    fun volumeEnhancer(on: Boolean): ByteArray =
+        OpoProtocol.buildPacket(0x0407, payload = byteArrayOf(if (on) 1 else 0))
+
     internal fun builtInEqPayload(id: Int): ByteArray = byteArrayOf(id.toByte())
 
     /** `0x0418 <action> <tag> <id> <name> <bands>`. [EqCodec.encode] builds the payload; the tag bytes are the source. */

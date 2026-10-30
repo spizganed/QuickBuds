@@ -261,6 +261,7 @@ class UpdateActivity : Activity() {
     }
 
     private fun install() {
+        if (isFinishing || isDestroyed) return
         val apk = downloadedApk ?: return
         if (!apk.exists() || apk.length() == 0L) {
             statusText.text = getString(R.string.update_failed, "downloaded file is missing")

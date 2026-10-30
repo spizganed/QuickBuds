@@ -1015,6 +1015,8 @@ class BudsConnectionManager(private val context: Context) {
      * reports what the buds actually took. A codec change drops the link, in which case the
      * connect sequence's own status query does that instead.
      */
+    fun setVolumeEnhancer(on: Boolean) = sendRaw(Commands.volumeEnhancer(on), "Volume enhancer -> $on")
+
     fun setFeatures(vararg changes: Pair<Int, Boolean>) {
         Thread {
             try {

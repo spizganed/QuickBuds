@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">Наушники использует другое устройство или приложение. Отключите их там или закройте приложение, затем нажмите «Подключить».</string>
     <string name="tray_open">Открыть QuickBuds</string>
     <string name="tray_quit">Выход</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Яркий</string>
+    <string name="row_volume_enhancer_title">Усилитель громкости</string>
+    <string name="row_volume_enhancer_sub">Повышает громкость наушников</string>
 </resources>

@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">Een ander apparaat of een andere app gebruikt de oordopjes. Verbreek de verbinding daar of sluit die app en tik dan op Verbinden.</string>
     <string name="tray_open">QuickBuds openen</string>
     <string name="tray_quit">Afsluiten</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Helder</string>
+    <string name="row_volume_enhancer_title">Volumeversterker</string>
+    <string name="row_volume_enhancer_sub">Verhoogt het volume van de oordopjes</string>
 </resources>

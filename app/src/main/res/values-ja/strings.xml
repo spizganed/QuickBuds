@@ -569,4 +569,8 @@
     <string name="connect_held_by_other">別のデバイスまたはアプリがイヤホンを使用中です。そちらで切断するかアプリを閉じてから、「接続」をタップしてください。</string>
     <string name="tray_open">QuickBudsを開く</string>
     <string name="tray_quit">終了</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">ブライト</string>
+    <string name="row_volume_enhancer_title">音量エンハンサー</string>
+    <string name="row_volume_enhancer_sub">イヤホンの音量を上げます</string>
 </resources>

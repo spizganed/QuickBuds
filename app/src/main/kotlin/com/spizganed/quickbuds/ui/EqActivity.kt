@@ -158,6 +158,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 102 -> R.string.eq_deep_bass
                 103 -> R.string.eq_pure_vocals
                 104 -> R.string.eq_pure_bass
+                // realme Buds T01 (report 25): 0x0406 ids 0, 1, 2 are Bass Boost+, Balanced, Bright.
+                105 -> R.string.eq_bass_boost_plus
+                106 -> R.string.eq_bright
                 else -> null  // unnamed in HeyMelody too
             } ?: return@mapNotNull null
             mode.getInt("slot") to name
