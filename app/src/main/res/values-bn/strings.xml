@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">ইয়ারবাডের জোর বাড়ায়</string>
     <string name="widget_tap_opens_title">টাপ করলে QuickBuds খোলে</string>
     <string name="widget_tap_opens_sub">উইজেটে টাপ করলে অ্যাপ খোলে</string>
+    <string name="widget_open_app">QuickBuds খুলুন</string>
 </resources>

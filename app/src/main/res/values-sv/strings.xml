@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Höjer volymen i hörlurarna</string>
     <string name="widget_tap_opens_title">Tryck öppnar QuickBuds</string>
     <string name="widget_tap_opens_sub">Ett tryck på widgeten öppnar appen</string>
+    <string name="widget_open_app">Öppna QuickBuds</string>
 </resources>

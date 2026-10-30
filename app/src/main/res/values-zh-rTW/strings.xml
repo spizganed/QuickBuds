@@ -577,4 +577,5 @@
     <string name="row_volume_enhancer_sub">提高耳機的音量</string>
     <string name="widget_tap_opens_title">點按開啟 QuickBuds</string>
     <string name="widget_tap_opens_sub">點按小工具即可開啟應用程式</string>
+    <string name="widget_open_app">開啟 QuickBuds</string>
 </resources>

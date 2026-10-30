@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Növeli a fülhallgató hangerejét</string>
     <string name="widget_tap_opens_title">Koppintásra megnyílik a QuickBuds</string>
     <string name="widget_tap_opens_sub">A widget megérintése megnyitja az alkalmazást</string>
+    <string name="widget_open_app">QuickBuds megnyitása</string>
 </resources>

@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Повышает громкость наушников</string>
     <string name="widget_tap_opens_title">Касание открывает QuickBuds</string>
     <string name="widget_tap_opens_sub">Касание виджета открывает приложение</string>
+    <string name="widget_open_app">Открыть QuickBuds</string>
 </resources>

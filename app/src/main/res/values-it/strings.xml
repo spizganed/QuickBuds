@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Aumenta il volume degli auricolari</string>
     <string name="widget_tap_opens_title">Tocca per aprire QuickBuds</string>
     <string name="widget_tap_opens_sub">Toccare il widget apre l\'app</string>
+    <string name="widget_open_app">Apri QuickBuds</string>
 </resources>

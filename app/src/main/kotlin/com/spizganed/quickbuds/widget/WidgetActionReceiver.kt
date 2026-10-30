@@ -42,6 +42,11 @@ class WidgetActionReceiver : BroadcastReceiver() {
 
         when (action) {
             WidgetActions.ACTION_OPEN_APP -> return
+            WidgetActions.ACTION_LAUNCH_APP -> {
+                Log.d("BudsWidget", "[RX] launching the app")
+                context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                return
+            }
             WidgetActions.ACTION_QUICK -> {
                 val target = intent.getStringExtra(WidgetActions.EXTRA_ANC_TARGET) ?: return
                 if (target == "anc") return openList(context, widgetId)

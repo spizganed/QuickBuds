@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Nagpapalakas ng tunog ng earbuds</string>
     <string name="widget_tap_opens_title">Pagtap ay magbubukas ng QuickBuds</string>
     <string name="widget_tap_opens_sub">Ang pagtap sa widget ay magbubukas ng app</string>
+    <string name="widget_open_app">Buksan ang QuickBuds</string>
 </resources>

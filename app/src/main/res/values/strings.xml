@@ -426,6 +426,7 @@
     <string name="widget_style_title">Style</string>
     <string name="widget_background_title">Widget background</string>
     <string name="widget_background_sub">Off: the widget sits on your wallpaper</string>
+    <string name="widget_open_app">Open QuickBuds</string>
     <string name="widget_tap_opens_title">Tap opens QuickBuds</string>
     <string name="widget_tap_opens_sub">A tap on the widget opens the app</string>
     <string name="widget_style_classic" translatable="false">QuickBuds</string>

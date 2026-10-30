@@ -16,6 +16,8 @@ object WidgetActions {
 
     /** Widget background tap: carries the page a double tap switches to; a single tap does nothing. */
     const val ACTION_OPEN_APP   = "com.spizganed.quickbuds.action.OPEN_APP"
+    /** The widget's "Open QuickBuds" button: opens the app once the double tap wait ends. */
+    const val ACTION_LAUNCH_APP = "com.spizganed.quickbuds.action.LAUNCH_APP"
 
     const val EXTRA_ANC_TARGET = "anc_target"
     /**

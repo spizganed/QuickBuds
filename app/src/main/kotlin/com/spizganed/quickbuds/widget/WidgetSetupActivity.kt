@@ -100,7 +100,7 @@ class WidgetSetupActivity : Activity() {
             "off" to (R.drawable.ic_mode_off to R.string.anc_seg_off),
             "ll" to (R.drawable.ic_low_latency to R.string.row_game_title),
             "wind" to (R.drawable.ic_anc to R.string.row_wind_noise_title),
-            "app" to (R.drawable.ic_earbud to R.string.app_name)
+            "app" to (R.drawable.ic_earbud to R.string.widget_open_app)
         )
     }
 }

@@ -577,4 +577,5 @@
     <string name="row_volume_enhancer_sub">Menaikkan volume earbud</string>
     <string name="widget_tap_opens_title">Ketuk untuk membuka QuickBuds</string>
     <string name="widget_tap_opens_sub">Mengetuk widget membuka aplikasi</string>
+    <string name="widget_open_app">Buka QuickBuds</string>
 </resources>

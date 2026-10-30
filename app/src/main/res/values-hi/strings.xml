@@ -577,4 +577,5 @@
     <string name="row_volume_enhancer_sub">ईयरबड्स की आवाज़ बढ़ाता है</string>
     <string name="widget_tap_opens_title">टैप से QuickBuds खुलता है</string>
     <string name="widget_tap_opens_sub">विजेट पर टैप करने से ऐप खुलता है</string>
+    <string name="widget_open_app">QuickBuds खोलें</string>
 </resources>

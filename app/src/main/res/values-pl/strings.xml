@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Zwiększa głośność słuchawek</string>
     <string name="widget_tap_opens_title">Dotknięcie otwiera QuickBuds</string>
     <string name="widget_tap_opens_sub">Dotknięcie widżetu otwiera aplikację</string>
+    <string name="widget_open_app">Otwórz QuickBuds</string>
 </resources>

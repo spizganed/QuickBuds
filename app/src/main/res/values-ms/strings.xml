@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Menaikkan kelantangan fon telinga</string>
     <string name="widget_tap_opens_title">Ketik untuk buka QuickBuds</string>
     <string name="widget_tap_opens_sub">Mengetik widget membuka aplikasi</string>
+    <string name="widget_open_app">Buka QuickBuds</string>
 </resources>

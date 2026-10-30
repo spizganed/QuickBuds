@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Kulaklıkların sesini artırır</string>
     <string name="widget_tap_opens_title">Dokunmak QuickBuds\'ı açar</string>
     <string name="widget_tap_opens_sub">Widget\'a dokunmak uygulamayı açar</string>
+    <string name="widget_open_app">QuickBuds\'ı aç</string>
 </resources>

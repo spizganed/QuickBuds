@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Crește volumul căștilor</string>
     <string name="widget_tap_opens_title">Atingerea deschide QuickBuds</string>
     <string name="widget_tap_opens_sub">Atingerea widgetului deschide aplicația</string>
+    <string name="widget_open_app">Deschide QuickBuds</string>
 </resources>

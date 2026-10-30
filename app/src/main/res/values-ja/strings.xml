@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">イヤホンの音量を上げます</string>
     <string name="widget_tap_opens_title">タップで QuickBuds を開く</string>
     <string name="widget_tap_opens_sub">ウィジェットをタップするとアプリが開きます</string>
+    <string name="widget_open_app">QuickBuds を開く</string>
 </resources>

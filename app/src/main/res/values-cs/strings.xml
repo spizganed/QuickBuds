@@ -575,4 +575,5 @@
     <string name="row_volume_enhancer_sub">Zvýší hlasitost sluchátek</string>
     <string name="widget_tap_opens_title">Klepnutí otevře QuickBuds</string>
     <string name="widget_tap_opens_sub">Klepnutí na widget otevře aplikaci</string>
+    <string name="widget_open_app">Otevřít QuickBuds</string>
 </resources>

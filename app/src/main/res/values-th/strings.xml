@@ -577,4 +577,5 @@
     <string name="row_volume_enhancer_sub">เพิ่มความดังของหูฟัง</string>
     <string name="widget_tap_opens_title">แตะเพื่อเปิด QuickBuds</string>
     <string name="widget_tap_opens_sub">แตะวิดเจ็ตเพื่อเปิดแอป</string>
+    <string name="widget_open_app">เปิด QuickBuds</string>
 </resources>
