@@ -1,6 +1,6 @@
 # PROTOCOL.md — the earbud wire format
 
-Matches QuickBuds 5.4.4 (version code 51).
+Matches QuickBuds 5.4.5 (version code 52).
 
 This is the wire format of the OPPO / OnePlus / realme earbud RFCOMM link. One protocol layer
 implements it in Kotlin: `protocol/`, which the Android app runs. Each section names its code file.
