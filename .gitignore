@@ -17,7 +17,7 @@ module.toml
 .DS_Store
 Thumbs.db
 
-# Logs, and local working files (keys, captures, source SVGs)
+# Logs and local working files
 *.log
 local/
 
@@ -30,20 +30,5 @@ desktop/dist/
 scripts/readme-screenshots.sh
 docs/screenshots/
 
-# Vendor firmware dumps / unpacking work
-firmware/
-
 # Wrangler cache (holds the Cloudflare account)
 .wrangler/
-
-# Vendor-app oracle: local tooling only. Names a vendor package; never published.
-/tools/heymelody-oracle/
-
-# Local test tooling: fake earbuds server, emulator automation, vendor research.
-/tools/fake-buds/
-/scripts/emulator-run.sh
-/scripts/uiauto.py
-/research/
-
-# Local experiment folder. Its own README says: never push it.
-/EXPERIMENT.md
