@@ -148,7 +148,7 @@ All steps: [Send a snoop log for a missing feature](./docs/PACKET-CAPTURE.md#sen
 
 ## Install
 
-The current release is 5.4.5. Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds. It does not pair them.
+The current release is 5.5.0. Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds. It does not pair them.
 
 | Platform | How |
 | --- | --- |
