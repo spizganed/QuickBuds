@@ -60,7 +60,7 @@ the earbud settings in Settings › Bluetooth › your earbuds, or report the ca
 - **OPPO Enco Air5 Pro**: confirmed by its owner on Windows: battery, noise control, 3D audio, dual connection, gestures, find my earbuds.
 - **OPPO Enco Buds2**: confirmed by its owner on Windows and Linux: battery, low latency, equalizer, gestures.
 - **OPPO Enco Buds2 Pro**: confirmed by its owner on Android: battery, equalizer, gestures, find my earbuds.
-- **OPPO Enco Buds3 Pro**: confirmed by its owner on Windows and Android: battery, equalizer, dual connection, gestures, find my earbuds.
+- **OPPO Enco Buds3 Pro**: confirmed by its owner on Windows and Android: battery, low latency, equalizer, dual connection, gestures, find my earbuds.
 - **OPPO Enco X**: confirmed by its owner on Android: battery, noise control, high-quality audio, hearing profile, equalizer, gestures, wear detection, find my earbuds.
 
 </details>
