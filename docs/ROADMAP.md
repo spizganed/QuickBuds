@@ -56,7 +56,9 @@ These work in code but no owner has confirmed them. They count as working until 
 - **Right-to-left languages:** they need a mirrored layout and a check of every custom-drawn view.
 - **Widgets:** a lock-screen widget; a widget on/off switch; a widget larger than the launcher's padding
   (the host clips it).
-- **Removed controls:** the Quick Settings tile and the fixed-level hold.
+- **Removed controls:** the fixed-level hold.
+- **Smartspacer and other launcher plugins:** the notification, the widgets and the Quick Settings tiles cover
+  quick access. A finished, tested pull request from a fork is welcome.
 - **Removing the foreground-service notification:** Android 15 requires it for a `connectedDevice` service.
 - **Slide up vs slide down:** the firmware maps the direction itself, as with HeyMelody.
 - **Hearing profile:** the before / after preview (`0x040E 01` / `02`) and renaming (the date labels it).
