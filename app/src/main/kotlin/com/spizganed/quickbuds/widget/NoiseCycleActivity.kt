@@ -23,7 +23,7 @@ class NoiseCycleActivity : Activity() {
         super.onCreate(savedInstanceState)
         val p = ThemeRes.palette(this)
         val root = SettingRowFactory.screen(this)
-        root.addView(SettingRowFactory.title(this, R.string.widget_cycle))
+        root.addView(SettingRowFactory.title(this, R.string.settings_tile_title))
         root.addView(TextView(this).apply {
             setText(R.string.cycle_intro)
             setTextColor(p.textSecondary)

@@ -590,5 +590,6 @@
     <string name="tile_off">关</string>
     <string name="cycle_intro">至少选择 2 种模式。点按磁贴或降噪切换按钮会按此顺序切换到下一种模式。</string>
     <string name="settings_cycle_sub">磁贴和小部件按钮的模式</string>
+    <string name="settings_tile_title">快捷设置磁贴</string>
     <string name="widget_cycle_name">QuickBuds 降噪切换</string>
 </resources>

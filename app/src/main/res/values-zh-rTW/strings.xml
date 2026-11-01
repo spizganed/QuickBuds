@@ -590,5 +590,6 @@
     <string name="tile_off">關</string>
     <string name="cycle_intro">至少選擇 2 種模式。輕觸圖塊或降噪切換按鈕，會依此順序切換到下一種模式。</string>
     <string name="settings_cycle_sub">圖塊和小工具按鈕的模式</string>
+    <string name="settings_tile_title">快速設定圖塊</string>
     <string name="widget_cycle_name">QuickBuds 降噪切換</string>
 </resources>

@@ -588,5 +588,6 @@
     <string name="tile_off">Вимк.</string>
     <string name="cycle_intro">Виберіть щонайменше 2 режими. Дотик до плитки або кнопки зміни режиму перемикає на наступний режим у цьому порядку.</string>
     <string name="settings_cycle_sub">Режими для плитки й кнопки віджета</string>
+    <string name="settings_tile_title">Плитка швидких налаштувань</string>
     <string name="widget_cycle_name">QuickBuds зміна шумозаглушення</string>
 </resources>

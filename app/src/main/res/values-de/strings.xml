@@ -588,5 +588,6 @@
     <string name="tile_off">Aus</string>
     <string name="cycle_intro">Wähle mindestens 2 Modi. Ein Tipp auf die Kachel Geräuschsteuerung oder die Taste Geräuschmodus wechseln springt zum nächsten Modus, in dieser Reihenfolge.</string>
     <string name="settings_cycle_sub">Modi für die Kachel und die Widget-Taste</string>
+    <string name="settings_tile_title">Schnelleinstellungs-Kachel</string>
     <string name="widget_cycle_name">QuickBuds Geräuschmodus</string>
 </resources>

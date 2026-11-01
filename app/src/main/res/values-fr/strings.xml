@@ -588,5 +588,6 @@
     <string name="tile_off">Désactivé</string>
     <string name="cycle_intro">Choisissez au moins 2 modes. Un appui sur la vignette ou sur le bouton Cycle du bruit passe au mode suivant, dans cet ordre.</string>
     <string name="settings_cycle_sub">Modes de la vignette et du bouton du widget</string>
+    <string name="settings_tile_title">Vignette Réglages rapides</string>
     <string name="widget_cycle_name">QuickBuds cycle du bruit</string>
 </resources>

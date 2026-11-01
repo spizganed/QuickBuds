@@ -588,5 +588,6 @@
     <string name="tile_off">Oprit</string>
     <string name="cycle_intro">Alege cel puțin 2 moduri. O atingere pe dală sau pe butonul Ciclu zgomot trece la modul următor, în această ordine.</string>
     <string name="settings_cycle_sub">Modurile pentru dală și butonul widgetului</string>
+    <string name="settings_tile_title">Dală Setări rapide</string>
     <string name="widget_cycle_name">QuickBuds ciclu zgomot</string>
 </resources>

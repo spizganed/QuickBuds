@@ -590,5 +590,6 @@
     <string name="tile_off">ปิด</string>
     <string name="cycle_intro">เลือกอย่างน้อย 2 โหมด การแตะไทล์หรือปุ่มสลับโหมดเสียงจะไปยังโหมดถัดไปตามลำดับนี้</string>
     <string name="settings_cycle_sub">โหมดของไทล์และปุ่มวิดเจ็ต</string>
+    <string name="settings_tile_title">ไทล์การตั้งค่าด่วน</string>
     <string name="widget_cycle_name">QuickBuds สลับโหมดเสียง</string>
 </resources>

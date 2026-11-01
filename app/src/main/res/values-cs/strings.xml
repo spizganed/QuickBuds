@@ -588,5 +588,6 @@
     <string name="tile_off">Vyp.</string>
     <string name="cycle_intro">Vyberte alespoň 2 režimy. Klepnutí na dlaždici Ovládání hluku nebo na tlačítko Cyklus hluku přepne na další režim v tomto pořadí.</string>
     <string name="settings_cycle_sub">Režimy pro dlaždici a tlačítko widgetu</string>
+    <string name="settings_tile_title">Dlaždice Rychlého nastavení</string>
     <string name="widget_cycle_name">QuickBuds cyklus hluku</string>
 </resources>

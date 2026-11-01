@@ -590,5 +590,6 @@
     <string name="tile_off">बंद</string>
     <string name="cycle_intro">कम से कम 2 मोड चुनें। टाइल या नॉइज़ चक्र बटन पर टैप करने से इसी क्रम में अगला मोड आता है।</string>
     <string name="settings_cycle_sub">टाइल और विजेट बटन के मोड</string>
+    <string name="settings_tile_title">क्विक सेटिंग्स टाइल</string>
     <string name="widget_cycle_name">QuickBuds नॉइज़ चक्र</string>
 </resources>

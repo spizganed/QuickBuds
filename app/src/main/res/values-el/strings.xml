@@ -588,5 +588,6 @@
     <string name="tile_off">Ανενεργό</string>
     <string name="cycle_intro">Επιλέξτε τουλάχιστον 2 λειτουργίες. Ένα πάτημα στο πλακίδιο ή στο κουμπί εναλλαγής περνά στην επόμενη λειτουργία, με αυτή τη σειρά.</string>
     <string name="settings_cycle_sub">Λειτουργίες για το πλακίδιο και το κουμπί του widget</string>
+    <string name="settings_tile_title">Πλακίδιο Γρήγορων ρυθμίσεων</string>
     <string name="widget_cycle_name">QuickBuds εναλλαγή θορύβου</string>
 </resources>

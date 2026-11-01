@@ -588,5 +588,6 @@
     <string name="tile_off">বন্ধ</string>
     <string name="cycle_intro">কমপক্ষে ২টি মোড বাছুন। নয়েজ কন্ট্রোল টাইল বা নয়েজ চক্র বোতামে ট্যাপ করলে এই ক্রমে পরের মোড আসে।</string>
     <string name="settings_cycle_sub">টাইল ও উইজেট বোতামের মোড</string>
+    <string name="settings_tile_title">কুইক সেটিংস টাইল</string>
     <string name="widget_cycle_name">QuickBuds নয়েজ চক্র</string>
 </resources>

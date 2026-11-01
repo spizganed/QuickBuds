@@ -588,5 +588,6 @@
     <string name="tile_off">オフ</string>
     <string name="cycle_intro">2つ以上のモードを選んでください。タイルまたはノイズ切替ボタンをタップすると、この順で次のモードに切り替わります。</string>
     <string name="settings_cycle_sub">タイルとウィジェットボタンのモード</string>
+    <string name="settings_tile_title">クイック設定タイル</string>
     <string name="widget_cycle_name">QuickBuds ノイズ切替</string>
 </resources>

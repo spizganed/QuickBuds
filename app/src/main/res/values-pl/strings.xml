@@ -588,5 +588,6 @@
     <string name="tile_off">Wył.</string>
     <string name="cycle_intro">Wybierz co najmniej 2 tryby. Dotknięcie kafelka lub przycisku Cykl szumów przełącza na następny tryb, w tej kolejności.</string>
     <string name="settings_cycle_sub">Tryby kafelka i przycisku widżetu</string>
+    <string name="settings_tile_title">Kafelek Szybkich ustawień</string>
     <string name="widget_cycle_name">QuickBuds cykl szumów</string>
 </resources>
