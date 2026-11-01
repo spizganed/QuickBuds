@@ -462,8 +462,11 @@
     <string name="problem_unsupported">QuickBuds поддерживает только наушники OnePlus, OPPO и realme. Выберите свою модель из списка.</string>
     <string name="problem_supported_list">Все поддерживаемые наушники</string>
     <string name="problem_log_empty">Журнал пуст: наушники ещё не подключались. Сначала подключите их, затем отправьте отзыв.</string>
-    <string name="problem_capture_hint">Нет нужной настройки или переключатель ничего не делает? Отправьте Bluetooth snoop-лог из HeyMelody или realme Link. В нём видна точная команда. Без него разработчику приходится угадывать.</string>
+    <string name="problem_capture_hint">Функция не работает или её нет? Лога приложения недостаточно. Создайте issue на GitHub с Bluetooth snoop-логом из HeyMelody или realme Link и записью экрана.</string>
     <string name="problem_capture_link">Как сделать snoop-лог</string>
+    <string name="capture_ask_title">Помогите исправить эту функцию</string>
+    <string name="capture_ask_body">Лога приложения недостаточно, чтобы исправить неработающую или отсутствующую функцию. Создайте issue на GitHub с Bluetooth snoop-логом из HeyMelody или realme Link и записью экрана этого приложения. В форме есть шаги.</string>
+    <string name="capture_ask_open">Создать issue на GitHub</string>
     <string name="test_title">Проверить наушники</string>
     <string name="test_sub">Попробуйте каждую функцию и отправьте результат</string>
     <string name="test_ask_body">Работа QuickBuds с этими наушниками ещё не подтверждена. Короткая проверка покажет, что работает. Ничего не отправляется, пока вы не нажмёте «Отправить».</string>

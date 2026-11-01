@@ -462,8 +462,11 @@
     <string name="problem_unsupported">Το QuickBuds υποστηρίζει μόνο ακουστικά OnePlus, OPPO και realme. Επιλέξτε το μοντέλο σας από τη λίστα.</string>
     <string name="problem_supported_list">Δείτε όλα τα υποστηριζόμενα ακουστικά</string>
     <string name="problem_log_empty">Το αρχείο καταγραφής είναι κενό: τα ακουστικά δεν συνδέθηκαν ακόμη. Σύνδεσέ τα πρώτα και μετά στείλε τα σχόλιά σου.</string>
-    <string name="problem_capture_hint">Λείπει μια ρύθμιση ή ένας διακόπτης δεν κάνει τίποτα; Στείλτε ένα Bluetooth snoop log από το HeyMelody ή το realme Link. Δείχνει την ακριβή εντολή. Χωρίς αυτό, ο προγραμματιστής πρέπει να μαντέψει.</string>
+    <string name="problem_capture_hint">Μια λειτουργία δεν δουλεύει ή λείπει; Το αρχείο καταγραφής της εφαρμογής δεν αρκεί. Ανοίξτε ένα issue στο GitHub με Bluetooth snoop log από το HeyMelody ή το realme Link και μια εγγραφή οθόνης.</string>
     <string name="problem_capture_link">Πώς φτιάχνετε ένα snoop log</string>
+    <string name="capture_ask_title">Βοηθήστε να διορθωθεί αυτή η λειτουργία</string>
+    <string name="capture_ask_body">Το αρχείο καταγραφής της εφαρμογής δεν αρκεί για να διορθωθεί μια λειτουργία που δεν δουλεύει ή λείπει. Ανοίξτε ένα issue στο GitHub με Bluetooth snoop log από το HeyMelody ή το realme Link και μια εγγραφή οθόνης αυτής της εφαρμογής. Η φόρμα δείχνει τα βήματα.</string>
+    <string name="capture_ask_open">Άνοιγμα issue στο GitHub</string>
     <string name="test_title">Δοκιμή ακουστικών</string>
     <string name="test_sub">Δοκιμάστε κάθε λειτουργία και στείλτε το αποτέλεσμα</string>
     <string name="test_ask_body">Το QuickBuds δεν έχει επιβεβαιωθεί ακόμη σε αυτά τα ακουστικά. Μια σύντομη δοκιμή δείχνει τι λειτουργεί. Τίποτα δεν αποστέλλεται πριν πατήσετε Αποστολή.</string>

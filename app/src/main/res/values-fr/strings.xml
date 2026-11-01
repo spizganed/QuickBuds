@@ -462,8 +462,11 @@
     <string name="problem_unsupported">QuickBuds prend en charge uniquement les écouteurs OnePlus, OPPO et realme. Choisissez votre modèle dans la liste.</string>
     <string name="problem_supported_list">Voir tous les écouteurs pris en charge</string>
     <string name="problem_log_empty">Le journal est vide : vos écouteurs ne se sont pas encore connectés. Connectez-les d’abord, puis envoyez vos commentaires.</string>
-    <string name="problem_capture_hint">Un réglage manque, ou un interrupteur ne fait rien ? Envoyez un journal snoop Bluetooth de HeyMelody ou realme Link. Il montre la commande exacte. Sans lui, le développeur doit deviner.</string>
+    <string name="problem_capture_hint">Une fonction ne marche pas ou manque ? Le journal de l\'app ne suffit pas. Ouvrez une issue GitHub avec un journal snoop Bluetooth de HeyMelody ou realme Link et un enregistrement d\'écran.</string>
     <string name="problem_capture_link">Comment créer un journal snoop</string>
+    <string name="capture_ask_title">Aidez à corriger cette fonction</string>
+    <string name="capture_ask_body">Le journal de l\'app ne suffit pas pour corriger une fonction qui ne marche pas ou qui manque. Ouvrez une issue GitHub avec un journal snoop Bluetooth de HeyMelody ou realme Link et un enregistrement d\'écran de cette app. Le formulaire montre les étapes.</string>
+    <string name="capture_ask_open">Ouvrir une issue GitHub</string>
     <string name="test_title">Tester mes écouteurs</string>
     <string name="test_sub">Essayez chaque fonction et envoyez le résultat</string>
     <string name="test_ask_body">QuickBuds n\'est pas encore confirmé sur ces écouteurs. Un court test montre ce qui fonctionne. Rien n\'est envoyé avant que vous touchiez Envoyer.</string>

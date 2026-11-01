@@ -462,8 +462,11 @@
     <string name="problem_unsupported">QuickBuds が対応するのは OnePlus、OPPO、realme のイヤホンのみです。リストからモデルを選んでください。</string>
     <string name="problem_supported_list">対応イヤホンの一覧を見る</string>
     <string name="problem_log_empty">ログが空です。イヤホンがまだ接続されていません。先にイヤホンを接続してから、フィードバックを送ってください。</string>
-    <string name="problem_capture_hint">設定がない、またはスイッチが効かない場合は、HeyMelody または realme Link の Bluetooth スヌープログを送ってください。正確なコマンドがわかります。ログがないと、開発者は推測するしかありません。</string>
+    <string name="problem_capture_hint">機能が動かない、または無い場合は、アプリのログだけでは足りません。HeyMelody または realme Link の Bluetooth スヌープログと画面録画を添えて GitHub に issue を作成してください。</string>
     <string name="problem_capture_link">スヌープログの作り方</string>
+    <string name="capture_ask_title">この機能の修正に協力してください</string>
+    <string name="capture_ask_body">動かない機能や無い機能を直すには、アプリのログだけでは足りません。HeyMelody または realme Link の Bluetooth スヌープログと、そのアプリの画面録画を添えて GitHub に issue を作成してください。手順は issue フォームにあります。</string>
+    <string name="capture_ask_open">GitHub で issue を作成</string>
     <string name="test_title">イヤホンをテスト</string>
     <string name="test_sub">各機能を試して結果を送信</string>
     <string name="test_ask_body">QuickBuds はこのイヤホンでまだ確認されていません。短いテストで動く機能がわかります。「送信」をタップするまで何も送信されません。</string>

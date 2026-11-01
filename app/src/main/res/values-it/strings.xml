@@ -462,8 +462,11 @@
     <string name="problem_unsupported">QuickBuds supporta solo auricolari OnePlus, OPPO e realme. Scegli il tuo modello dall\'elenco.</string>
     <string name="problem_supported_list">Vedi tutti gli auricolari supportati</string>
     <string name="problem_log_empty">Il registro è vuoto: i tuoi auricolari non si sono ancora connessi. Connettili prima, poi invia il feedback.</string>
-    <string name="problem_capture_hint">Manca un\'impostazione o un interruttore non fa nulla? Invia un log snoop Bluetooth di HeyMelody o realme Link. Mostra il comando esatto. Senza, lo sviluppatore deve tirare a indovinare.</string>
+    <string name="problem_capture_hint">Una funzione non va o manca? Il log dell\'app non basta. Apri una issue su GitHub con un log snoop Bluetooth di HeyMelody o realme Link e una registrazione dello schermo.</string>
     <string name="problem_capture_link">Come creare un log snoop</string>
+    <string name="capture_ask_title">Aiuta a sistemare questa funzione</string>
+    <string name="capture_ask_body">Il log dell\'app non basta per sistemare una funzione che non va o che manca. Apri una issue su GitHub con un log snoop Bluetooth di HeyMelody o realme Link e una registrazione dello schermo di quell\'app. Il modulo mostra i passaggi.</string>
+    <string name="capture_ask_open">Apri una issue su GitHub</string>
     <string name="test_title">Testa i miei auricolari</string>
     <string name="test_sub">Prova ogni funzione e invia il risultato</string>
     <string name="test_ask_body">QuickBuds non è ancora confermato su questi auricolari. Un breve test mostra cosa funziona. Non viene inviato nulla finché non tocchi Invia.</string>

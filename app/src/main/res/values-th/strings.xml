@@ -464,8 +464,11 @@
     <string name="problem_unsupported">QuickBuds รองรับเฉพาะหูฟัง OnePlus, OPPO และ realme เลือกรุ่นของคุณจากรายการ</string>
     <string name="problem_supported_list">ดูหูฟังที่รองรับทั้งหมด</string>
     <string name="problem_log_empty">บันทึกว่างเปล่า: หูฟังยังไม่เชื่อมต่อ เชื่อมต่อหูฟังก่อน แล้วค่อยส่งความคิดเห็น</string>
-    <string name="problem_capture_hint">ไม่มีการตั้งค่า หรือสวิตช์ไม่ทำงาน? ส่ง Bluetooth snoop log ของ HeyMelody หรือ realme Link มา บันทึกนี้แสดงคำสั่งที่ถูกต้อง หากไม่มี ผู้พัฒนาต้องเดา</string>
+    <string name="problem_capture_hint">ฟีเจอร์ไม่ทำงานหรือไม่มี? บันทึกของแอปไม่เพียงพอ เปิด issue ใน GitHub พร้อม Bluetooth snoop log ของ HeyMelody หรือ realme Link และวิดีโอบันทึกหน้าจอ</string>
     <string name="problem_capture_link">วิธีสร้าง snoop log</string>
+    <string name="capture_ask_title">ช่วยแก้ไขฟีเจอร์นี้</string>
+    <string name="capture_ask_body">บันทึกของแอปไม่เพียงพอสำหรับแก้ไขฟีเจอร์ที่ไม่ทำงานหรือไม่มี เปิด issue ใน GitHub พร้อม Bluetooth snoop log ของ HeyMelody หรือ realme Link และวิดีโอบันทึกหน้าจอของแอปนั้น แบบฟอร์มแสดงขั้นตอน</string>
+    <string name="capture_ask_open">เปิด issue ใน GitHub</string>
     <string name="test_title">ทดสอบหูฟัง</string>
     <string name="test_sub">ลองใช้ทุกฟีเจอร์แล้วส่งผลลัพธ์</string>
     <string name="test_ask_body">QuickBuds ยังไม่ได้รับการยืนยันกับหูฟังนี้ การทดสอบสั้น ๆ จะแสดงว่าอะไรใช้งานได้ ไม่มีสิ่งใดถูกส่งจนกว่าคุณจะแตะส่ง</string>

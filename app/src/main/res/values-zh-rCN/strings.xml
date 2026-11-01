@@ -464,8 +464,11 @@
     <string name="problem_unsupported">QuickBuds 仅支持 OnePlus、OPPO 和 realme 耳机。请从列表中选择你的型号。</string>
     <string name="problem_supported_list">查看所有支持的耳机</string>
     <string name="problem_log_empty">日志为空：你的耳机还没有连接。请先连接耳机，再发送反馈。</string>
-    <string name="problem_capture_hint">缺少某项设置，或开关没有作用？请发送 HeyMelody 或 realme Link 的蓝牙 HCI snoop 日志。日志会显示确切的命令。没有日志，开发者只能猜测。</string>
+    <string name="problem_capture_hint">功能无效或缺失？仅靠应用日志不够。请在 GitHub 提交 issue，附上 HeyMelody 或 realme Link 的蓝牙 HCI snoop 日志和屏幕录像。</string>
     <string name="problem_capture_link">如何生成 snoop 日志</string>
+    <string name="capture_ask_title">帮助修复此功能</string>
+    <string name="capture_ask_body">仅靠应用日志无法修复无效或缺失的功能。请在 GitHub 提交 issue，附上 HeyMelody 或 realme Link 的蓝牙 snoop 日志，以及该应用的屏幕录像。issue 表单中有步骤。</string>
+    <string name="capture_ask_open">在 GitHub 提交 issue</string>
     <string name="test_title">测试我的耳机</string>
     <string name="test_sub">逐一试用各项功能并发送结果</string>
     <string name="test_ask_body">QuickBuds 尚未在这款耳机上得到确认。简短的测试可以显示哪些功能可用。在您点按“发送”之前，不会发送任何内容。</string>

@@ -464,8 +464,11 @@
     <string name="problem_unsupported">QuickBuds chỉ hỗ trợ tai nghe OnePlus, OPPO và realme. Hãy chọn mẫu của bạn trong danh sách.</string>
     <string name="problem_supported_list">Xem tất cả tai nghe được hỗ trợ</string>
     <string name="problem_log_empty">Nhật ký trống: tai nghe của bạn chưa kết nối. Hãy kết nối tai nghe trước, rồi gửi phản hồi.</string>
-    <string name="problem_capture_hint">Thiếu một cài đặt, hoặc một công tắc không có tác dụng? Hãy gửi nhật ký snoop Bluetooth của HeyMelody hoặc realme Link. Nhật ký cho thấy lệnh chính xác. Không có nó, nhà phát triển phải đoán.</string>
+    <string name="problem_capture_hint">Một tính năng không chạy hoặc bị thiếu? Nhật ký ứng dụng là chưa đủ. Hãy mở issue trên GitHub kèm nhật ký snoop Bluetooth của HeyMelody hoặc realme Link và một video quay màn hình.</string>
     <string name="problem_capture_link">Cách tạo nhật ký snoop</string>
+    <string name="capture_ask_title">Giúp sửa tính năng này</string>
+    <string name="capture_ask_body">Nhật ký ứng dụng là chưa đủ để sửa một tính năng không chạy hoặc bị thiếu. Hãy mở issue trên GitHub kèm nhật ký snoop Bluetooth của HeyMelody hoặc realme Link và video quay màn hình của ứng dụng đó. Biểu mẫu có các bước.</string>
+    <string name="capture_ask_open">Mở issue trên GitHub</string>
     <string name="test_title">Kiểm tra tai nghe</string>
     <string name="test_sub">Thử từng tính năng và gửi kết quả</string>
     <string name="test_ask_body">QuickBuds chưa được xác nhận trên tai nghe này. Một bài kiểm tra ngắn cho thấy tính năng nào hoạt động. Không có gì được gửi cho đến khi bạn nhấn Gửi.</string>

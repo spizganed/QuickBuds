@@ -378,8 +378,10 @@ class ModelTestActivity : Activity(), BudsConnectionManager.Listener {
                 val text = if (ok) getString(R.string.problem_sent) else refused ?: getString(R.string.problem_failed)
                 Toast.makeText(this, text, Toast.LENGTH_LONG).show()
                 if (ok) {
+                    // A feature marked broken needs a snoop log in a GitHub issue.
+                    val broken = s.marks.values.any { it == ModelTest.BROKEN }
                     ModelTest.clear(this)
-                    finish()
+                    if (broken) CaptureAsk.show(this) { finish() } else finish()
                 }
             }
         }.start()

@@ -462,8 +462,11 @@
     <string name="problem_unsupported">A QuickBuds csak OnePlus, OPPO és realme fülhallgatókat támogat. Válaszd ki a modelledet a listából.</string>
     <string name="problem_supported_list">Az összes támogatott fülhallgató</string>
     <string name="problem_log_empty">A napló üres: a fülhallgatód még nem csatlakozott. Előbb csatlakoztasd, utána küldd el a visszajelzést.</string>
-    <string name="problem_capture_hint">Hiányzik egy beállítás, vagy egy kapcsoló nem csinál semmit? Küldj Bluetooth snoop logot a HeyMelody vagy a realme Link használatáról. Ez megmutatja a pontos parancsot. Enélkül a fejlesztőnek találgatnia kell.</string>
+    <string name="problem_capture_hint">Egy funkció nem működik vagy hiányzik? Az alkalmazás naplója nem elég. Nyiss egy GitHub issue-t a HeyMelody vagy a realme Link Bluetooth snoop naplójával és egy képernyőfelvétellel.</string>
     <string name="problem_capture_link">Hogyan készíts snoop logot</string>
+    <string name="capture_ask_title">Segíts javítani ezt a funkciót</string>
+    <string name="capture_ask_body">Az alkalmazás naplója nem elég egy hibás vagy hiányzó funkció javításához. Nyiss egy GitHub issue-t a HeyMelody vagy a realme Link Bluetooth snoop naplójával és az alkalmazás képernyőfelvételével. Az űrlap mutatja a lépéseket.</string>
+    <string name="capture_ask_open">GitHub issue nyitása</string>
     <string name="test_title">Fülhallgató tesztelése</string>
     <string name="test_sub">Próbálj ki minden funkciót, és küldd el az eredményt</string>
     <string name="test_ask_body">A QuickBuds még nincs megerősítve ezen a fülhallgatón. Egy rövid teszt megmutatja, mi működik. Semmi nem megy el, amíg nem koppintasz a Küldés gombra.</string>

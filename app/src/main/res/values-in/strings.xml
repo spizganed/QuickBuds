@@ -464,8 +464,11 @@
     <string name="problem_unsupported">QuickBuds hanya mendukung earbud OnePlus, OPPO, dan realme. Pilih model Anda dari daftar.</string>
     <string name="problem_supported_list">Lihat semua earbud yang didukung</string>
     <string name="problem_log_empty">Log kosong: earbud kamu belum terhubung. Hubungkan earbud dulu, lalu kirim masukan.</string>
-    <string name="problem_capture_hint">Ada pengaturan yang tidak ada, atau sakelar tidak berfungsi? Kirim log snoop Bluetooth dari HeyMelody atau realme Link. Log ini menunjukkan perintah yang tepat. Tanpa log ini, developer harus menebak.</string>
+    <string name="problem_capture_hint">Fitur tidak berfungsi atau tidak ada? Log aplikasi tidak cukup. Buka issue GitHub dengan log snoop Bluetooth dari HeyMelody atau realme Link dan rekaman layar.</string>
     <string name="problem_capture_link">Cara membuat log snoop</string>
+    <string name="capture_ask_title">Bantu perbaiki fitur ini</string>
+    <string name="capture_ask_body">Log aplikasi tidak cukup untuk memperbaiki fitur yang tidak berfungsi atau tidak ada. Buka issue GitHub dengan log snoop Bluetooth dari HeyMelody atau realme Link dan rekaman layar aplikasi itu. Formulir issue menunjukkan langkahnya.</string>
+    <string name="capture_ask_open">Buka issue GitHub</string>
     <string name="test_title">Uji earbud saya</string>
     <string name="test_sub">Coba setiap fitur dan kirim hasilnya</string>
     <string name="test_ask_body">QuickBuds belum dikonfirmasi pada earbud ini. Tes singkat menunjukkan apa yang berfungsi. Tidak ada yang dikirim sampai Anda mengetuk Kirim.</string>

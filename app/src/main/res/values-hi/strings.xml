@@ -464,8 +464,11 @@
     <string name="problem_unsupported">QuickBuds केवल OnePlus, OPPO और realme ईयरबड्स को सपोर्ट करता है। सूची से अपना मॉडल चुनें।</string>
     <string name="problem_supported_list">सभी सपोर्टेड ईयरबड्स देखें</string>
     <string name="problem_log_empty">लॉग खाली है: आपके बड्स अभी जुड़े नहीं। पहले बड्स जोड़ें, फिर अपना फ़ीडबैक भेजें।</string>
-    <string name="problem_capture_hint">कोई सेटिंग नहीं है, या कोई स्विच कुछ नहीं करता? HeyMelody या realme Link का Bluetooth snoop log भेजें। इसमें सही कमांड दिखता है। इसके बिना डेवलपर को अनुमान लगाना पड़ता है।</string>
+    <string name="problem_capture_hint">कोई फ़ीचर काम नहीं करता या नहीं है? ऐप का लॉग काफ़ी नहीं है। HeyMelody या realme Link के Bluetooth snoop log और स्क्रीन रिकॉर्डिंग के साथ GitHub issue खोलें।</string>
     <string name="problem_capture_link">snoop log कैसे बनाएँ</string>
+    <string name="capture_ask_title">इस फ़ीचर को ठीक करने में मदद करें</string>
+    <string name="capture_ask_body">काम न करने वाले या न होने वाले फ़ीचर को ठीक करने के लिए ऐप का लॉग काफ़ी नहीं है। HeyMelody या realme Link के Bluetooth snoop log और उस ऐप की स्क्रीन रिकॉर्डिंग के साथ GitHub issue खोलें। issue फ़ॉर्म में चरण दिए हैं।</string>
+    <string name="capture_ask_open">GitHub issue खोलें</string>
     <string name="test_title">मेरे ईयरबड्स जांचें</string>
     <string name="test_sub">हर फ़ीचर आज़माएँ और नतीजा भेजें</string>
     <string name="test_ask_body">इन ईयरबड्स पर QuickBuds अभी पुष्ट नहीं है। एक छोटा टेस्ट दिखाता है कि क्या काम करता है। भेजें टैप करने तक कुछ नहीं भेजा जाता।</string>

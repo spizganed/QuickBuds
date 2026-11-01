@@ -462,8 +462,11 @@
     <string name="problem_unsupported">QuickBuds yalnızca OnePlus, OPPO ve realme kulaklıkları destekler. Listeden modelinizi seçin.</string>
     <string name="problem_supported_list">Desteklenen tüm kulaklıkları gör</string>
     <string name="problem_log_empty">Kayıt boş: kulaklıkların henüz bağlanmadı. Önce kulaklıkları bağla, sonra geri bildirimini gönder.</string>
-    <string name="problem_capture_hint">Bir ayar eksik mi, ya da bir anahtar hiçbir şey yapmıyor mu? HeyMelody veya realme Link\'in Bluetooth snoop günlüğünü gönderin. Günlük tam komutu gösterir. Günlük olmadan geliştirici tahmin etmek zorunda kalır.</string>
+    <string name="problem_capture_hint">Bir özellik çalışmıyor ya da eksik mi? Uygulama günlüğü yetmez. HeyMelody veya realme Link\'in Bluetooth snoop günlüğü ve bir ekran kaydıyla GitHub\'da bir issue açın.</string>
     <string name="problem_capture_link">Snoop günlüğü nasıl oluşturulur</string>
+    <string name="capture_ask_title">Bu özelliği düzeltmeye yardım edin</string>
+    <string name="capture_ask_body">Çalışmayan ya da eksik bir özelliği düzeltmek için uygulama günlüğü yetmez. HeyMelody veya realme Link\'in Bluetooth snoop günlüğü ve o uygulamanın ekran kaydıyla GitHub\'da bir issue açın. Form adımları gösterir.</string>
+    <string name="capture_ask_open">GitHub\'da issue aç</string>
     <string name="test_title">Kulaklıklarımı test et</string>
     <string name="test_sub">Her özelliği deneyin ve sonucu gönderin</string>
     <string name="test_ask_body">QuickBuds bu kulaklıklarda henüz doğrulanmadı. Kısa bir test neyin çalıştığını gösterir. Gönder\'e dokunana kadar hiçbir şey gönderilmez.</string>

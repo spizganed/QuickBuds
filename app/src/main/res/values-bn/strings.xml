@@ -462,8 +462,11 @@
     <string name="problem_unsupported">QuickBuds শুধু OnePlus, OPPO ও realme ইয়ারবাড সমর্থন করে। তালিকা থেকে আপনার মডেল বেছে নিন।</string>
     <string name="problem_supported_list">সব সমর্থিত ইয়ারবাড দেখুন</string>
     <string name="problem_log_empty">লগ খালি: আপনার বাড এখনও সংযুক্ত হয়নি। আগে বাড সংযুক্ত করুন, তারপর মতামত পাঠান।</string>
-    <string name="problem_capture_hint">কোনো সেটিং নেই, বা কোনো সুইচ কাজ করে না? HeyMelody বা realme Link-এর একটি Bluetooth snoop log পাঠান। এতে সঠিক কমান্ড দেখা যায়। এটি ছাড়া ডেভেলপারকে অনুমান করতে হয়।</string>
+    <string name="problem_capture_hint">কোনো ফিচার কাজ করে না বা নেই? অ্যাপের লগ যথেষ্ট নয়। HeyMelody বা realme Link-এর Bluetooth snoop log ও একটি স্ক্রিন রেকর্ডিং সহ GitHub-এ একটি issue খুলুন।</string>
     <string name="problem_capture_link">কীভাবে snoop log তৈরি করবেন</string>
+    <string name="capture_ask_title">এই ফিচার ঠিক করতে সাহায্য করুন</string>
+    <string name="capture_ask_body">কাজ না করা বা না থাকা ফিচার ঠিক করতে অ্যাপের লগ যথেষ্ট নয়। HeyMelody বা realme Link-এর Bluetooth snoop log এবং সেই অ্যাপের একটি স্ক্রিন রেকর্ডিং সহ GitHub-এ একটি issue খুলুন। issue ফর্মে ধাপগুলো আছে।</string>
+    <string name="capture_ask_open">GitHub-এ issue খুলুন</string>
     <string name="test_title">আমার ইয়ারবাড পরীক্ষা করুন</string>
     <string name="test_sub">প্রতিটি ফিচার চেষ্টা করে ফলাফল পাঠান</string>
     <string name="test_ask_body">এই ইয়ারবাডে QuickBuds এখনও নিশ্চিত নয়। একটি ছোট পরীক্ষা দেখায় কী কাজ করে। পাঠান চাপার আগে কিছুই পাঠানো হয় না।</string>
