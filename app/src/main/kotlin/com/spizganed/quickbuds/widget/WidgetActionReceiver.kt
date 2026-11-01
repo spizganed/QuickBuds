@@ -46,7 +46,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
                 if (target == "anc") return openList(context, widgetId)
                 val current = WidgetSettings.modeOf(state.ancMode)
                 // The lit mode's button turns noise control off; the send is a list pick's.
-                val pick = if (target == "cycle") WidgetSettings.cycleNext(context, current)
+                val pick = if (target == "cycle") WidgetSettings.cycleNext(context, current, widgetId)
                     else if (current.key == target) "off" else target
                 return handle(context, Intent(context, WidgetActionReceiver::class.java)
                     .setAction(WidgetActions.ACTION_ANC_SELECT)

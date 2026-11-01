@@ -79,6 +79,15 @@ class WidgetSetupActivity : Activity() {
             card.addView(SettingRowFactory.build(this, icon, title, 0, sw) { if (sw.isEnabled) sw.performClick() })
         }
         root.addView(card)
+        // This widget's own Noise cycle modes.
+        if ("cycle" in keys) {
+            root.addView(android.view.View(this), android.widget.LinearLayout.LayoutParams(1, ThemeRes.dp(this, 16f)))
+            val row = SettingRowFactory.build(this, R.drawable.ic_mode_transparency, R.string.widget_cycle, R.string.settings_cycle_sub,
+                SettingRowFactory.buildChevron(this)) {
+                startActivity(Intent(this, NoiseCycleActivity::class.java).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id))
+            }
+            root.addView(SettingRowFactory.card(this).apply { addView(row) })
+        }
         limit(picked.size)
         setContentView(ScrollView(this).apply {
             setBackgroundColor(p.background)

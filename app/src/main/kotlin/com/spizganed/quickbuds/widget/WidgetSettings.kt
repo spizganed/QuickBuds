@@ -78,31 +78,40 @@ object WidgetSettings {
     fun cycleOffered(c: Context): List<String> =
         CYCLE_ORDER.filter { k -> if (k == "off") available(c, "off") else AncModes.of(c).supports(MODES.first { it.key == k }.store) }
 
-    /** The modes the person picked on the Noise cycle screen. Default: Off and Medium. */
-    fun cyclePicked(c: Context): Set<String> =
-        prefs(c).getString(KEY_CYCLE, null)?.split(',')?.filter { it in CYCLE_ORDER }?.toSet() ?: setOf("off", "med")
+    /**
+     * The modes picked on the Noise cycle screen: widget [id]'s own list, else the tile's list (Settings).
+     * Default: Off and Medium.
+     */
+    fun cyclePicked(c: Context, id: Int = NO_ID): Set<String> {
+        val own = if (id != NO_ID) prefs(c).getString(KEY_CYCLE + id, null) else null
+        return (own ?: prefs(c).getString(KEY_CYCLE, null))?.split(',')?.filter { it in CYCLE_ORDER }?.toSet() ?: setOf("off", "med")
+    }
 
-    fun setCyclePicked(c: Context, keys: Collection<String>) {
-        prefs(c).edit().putString(KEY_CYCLE, CYCLE_ORDER.filter { it in keys }.joinToString(",")).apply()
+    /** Saves the list of widget [id], or the tile's list when [id] is [NO_ID]. */
+    fun setCyclePicked(c: Context, keys: Collection<String>, id: Int = NO_ID) {
+        prefs(c).edit().putString(if (id != NO_ID) KEY_CYCLE + id else KEY_CYCLE, CYCLE_ORDER.filter { it in keys }.joinToString(",")).apply()
     }
 
     /**
      * The modes a tap steps through, in [CYCLE_ORDER]: the picked modes these buds have. Fewer than 2: Off and
      * Medium, or Off and the buds' first level.
      */
-    fun cycleModes(c: Context): List<String> {
-        val list = cycleOffered(c).filter { it in cyclePicked(c) }
+    fun cycleModes(c: Context, id: Int = NO_ID): List<String> {
+        val list = cycleOffered(c).filter { it in cyclePicked(c, id) }
         if (list.size >= 2) return list
         val levels = ancPicker(c)
         return listOfNotNull("off", (levels.firstOrNull { it.key == "med" } ?: levels.firstOrNull())?.key)
     }
 
     /** The mode key after [current] in [cycleModes]; the first mode when [current] is not in the list. */
-    fun cycleNext(c: Context, current: Mode): String {
-        val list = cycleModes(c)
+    fun cycleNext(c: Context, current: Mode, id: Int = NO_ID): String {
+        val list = cycleModes(c, id)
         val i = list.indexOf(current.key)
         return if (i < 0) list.first() else list[(i + 1) % list.size]
     }
+
+    /** No widget: the tile's own settings. */
+    const val NO_ID = android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID
 
     /**
      * True: the Nothing style (no boxes, tighter inset, Nothing OS's Ndot digits; layouts `widget_*_n`).
@@ -208,7 +217,7 @@ object WidgetSettings {
     /** Drops everything stored for widget [id] (removed from the home screen). */
     fun forget(c: Context, id: Int) {
         prefs(c).edit().apply {
-            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_BUTTONS, KEY_BACKGROUND, KEY_TAP_OPENS)) remove(k + id)
+            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_BUTTONS, KEY_BACKGROUND, KEY_TAP_OPENS, KEY_CYCLE)) remove(k + id)
         }.apply()
     }
 

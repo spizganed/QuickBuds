@@ -337,8 +337,14 @@
         <!-- Exported: the launcher opens it when a widget is placed or reconfigured. -->
         <activity
             android:name=".widget.NoiseCycleActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".widget.WidgetSetupActivity"
