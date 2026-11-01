@@ -33,6 +33,8 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
 
 ## Parked
 
+- **Other brands:** Nothing first, then Google, then Anker (Soundcore, issue #32). Start after about 100 models
+  (80% of the list) are confirmed. Each brand needs snoop logs and the earbuds in hand.
 - **realme Link `0x0403` extras** (vocal enhance, `0x0403 09`; PROTOCOL.md §11): no data
   says which realme models have them. Start when a realme owner can test them (issue #8).
 
@@ -48,8 +50,8 @@ These work in code but no owner has confirmed them. They count as working until 
 
 ## Decided against — do not suggest again
 
-- **Other brands** (Xiaomi, Samsung, Sony, Huawei, Soundcore): each is a separate protocol that one
-  person cannot test.
+- **Other brands** (Xiaomi, Samsung, Sony, Huawei): each is a separate protocol that one
+  person cannot test. Nothing, Google and Anker are parked.
 - **Any feature that needs a server.** Exception: the problem report's free Cloudflare Worker
   (`report-worker/`).
 - **Firmware updates:** a failed flash can brick the buds. The firmware row points to HeyMelody.
