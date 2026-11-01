@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">สั่นเมื่อมีการเปลี่ยนการตั้งค่า</string>
     <string name="settings_clear_battery_title">ซ่อนระดับแบตเตอรี่เก่า</string>
     <string name="settings_clear_battery_sub">ล้างระดับที่หูฟังหยุดรายงาน เช่น เคสหลังปิดฝา</string>
+    <string name="settings_full_notif_title">แบตเตอรี่ในการแจ้งเตือน</string>
+    <string name="settings_full_notif_sub">แสดงระดับแบตเตอรี่ ปิด: การแจ้งเตือนขนาดเล็กโดยไม่มีไอคอนในแถบสถานะ</string>
     <string name="settings_background_title">บริการเบื้องหลัง</string>
     <string name="settings_background_sub">เชื่อมต่อไว้เมื่อปิดแอป</string>
     <string name="settings_background_warn_title">ปิดบริการเบื้องหลังไหม</string>
@@ -462,6 +464,8 @@
     <string name="problem_unsupported">QuickBuds รองรับเฉพาะหูฟัง OnePlus, OPPO และ realme เลือกรุ่นของคุณจากรายการ</string>
     <string name="problem_supported_list">ดูหูฟังที่รองรับทั้งหมด</string>
     <string name="problem_log_empty">บันทึกว่างเปล่า: หูฟังยังไม่เชื่อมต่อ เชื่อมต่อหูฟังก่อน แล้วค่อยส่งความคิดเห็น</string>
+    <string name="problem_capture_hint">ไม่มีการตั้งค่า หรือสวิตช์ไม่ทำงาน? ส่ง Bluetooth snoop log ของ HeyMelody หรือ realme Link มา บันทึกนี้แสดงคำสั่งที่ถูกต้อง หากไม่มี ผู้พัฒนาต้องเดา</string>
+    <string name="problem_capture_link">วิธีสร้าง snoop log</string>
     <string name="test_title">ทดสอบหูฟัง</string>
     <string name="test_sub">ลองใช้ทุกฟีเจอร์แล้วส่งผลลัพธ์</string>
     <string name="test_ask_body">QuickBuds ยังไม่ได้รับการยืนยันกับหูฟังนี้ การทดสอบสั้น ๆ จะแสดงว่าอะไรใช้งานได้ ไม่มีสิ่งใดถูกส่งจนกว่าคุณจะแตะส่ง</string>
@@ -578,4 +582,10 @@
     <string name="widget_tap_opens_title">แตะเพื่อเปิด QuickBuds</string>
     <string name="widget_tap_opens_sub">แตะวิดเจ็ตเพื่อเปิดแอป</string>
     <string name="widget_open_app">เปิด QuickBuds</string>
+    <string name="widget_cycle">สลับโหมดเสียง</string>
+    <string name="tile_on">เปิด</string>
+    <string name="tile_off">ปิด</string>
+    <string name="cycle_intro">เลือกอย่างน้อย 2 โหมด การแตะไทล์หรือปุ่มสลับโหมดเสียงจะไปยังโหมดถัดไปตามลำดับนี้</string>
+    <string name="settings_cycle_sub">โหมดของไทล์และปุ่มวิดเจ็ต</string>
+    <string name="widget_cycle_name">QuickBuds สลับโหมดเสียง</string>
 </resources>

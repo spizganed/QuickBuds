@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">設定が変わるときに振動</string>
     <string name="settings_clear_battery_title">古いバッテリー残量を隠す</string>
     <string name="settings_clear_battery_sub">イヤホンが報告しなくなった残量を消去します（ふたを閉じた後のケースなど）</string>
+    <string name="settings_full_notif_title">通知にバッテリーを表示</string>
+    <string name="settings_full_notif_sub">残量を表示します。オフ：ステータスバーのアイコンなしの小さな通知</string>
     <string name="settings_background_title">バックグラウンドサービス</string>
     <string name="settings_background_sub">アプリを閉じても接続を維持</string>
     <string name="settings_background_warn_title">バックグラウンドサービスをオフにしますか？</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds が対応するのは OnePlus、OPPO、realme のイヤホンのみです。リストからモデルを選んでください。</string>
     <string name="problem_supported_list">対応イヤホンの一覧を見る</string>
     <string name="problem_log_empty">ログが空です。イヤホンがまだ接続されていません。先にイヤホンを接続してから、フィードバックを送ってください。</string>
+    <string name="problem_capture_hint">設定がない、またはスイッチが効かない場合は、HeyMelody または realme Link の Bluetooth スヌープログを送ってください。正確なコマンドがわかります。ログがないと、開発者は推測するしかありません。</string>
+    <string name="problem_capture_link">スヌープログの作り方</string>
     <string name="test_title">イヤホンをテスト</string>
     <string name="test_sub">各機能を試して結果を送信</string>
     <string name="test_ask_body">QuickBuds はこのイヤホンでまだ確認されていません。短いテストで動く機能がわかります。「送信」をタップするまで何も送信されません。</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">タップで QuickBuds を開く</string>
     <string name="widget_tap_opens_sub">ウィジェットをタップするとアプリが開きます</string>
     <string name="widget_open_app">QuickBuds を開く</string>
+    <string name="widget_cycle">ノイズ切替</string>
+    <string name="tile_on">オン</string>
+    <string name="tile_off">オフ</string>
+    <string name="cycle_intro">2つ以上のモードを選んでください。タイルまたはノイズ切替ボタンをタップすると、この順で次のモードに切り替わります。</string>
+    <string name="settings_cycle_sub">タイルとウィジェットボタンのモード</string>
+    <string name="widget_cycle_name">QuickBuds ノイズ切替</string>
 </resources>

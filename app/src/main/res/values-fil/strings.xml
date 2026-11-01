@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Mag-vibrate kapag nagbago ang isang setting</string>
     <string name="settings_clear_battery_title">Itago ang lumang antas ng baterya</string>
     <string name="settings_clear_battery_sub">Burahin ang antas na hindi na iniuulat ng buds, gaya ng case pagkasara ng takip</string>
+    <string name="settings_full_notif_title">Baterya sa notification</string>
+    <string name="settings_full_notif_sub">Ipinapakita ang mga level. Off: maliit na notification na walang icon sa status bar</string>
     <string name="settings_background_title">Background service</string>
     <string name="settings_background_sub">Manatiling nakakonekta kahit sarado ang app</string>
     <string name="settings_background_warn_title">I-off ang background service?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">Sinusuportahan lang ng QuickBuds ang earbuds ng OnePlus, OPPO at realme. Piliin ang iyong modelo mula sa listahan.</string>
     <string name="problem_supported_list">Tingnan ang lahat ng suportadong earbuds</string>
     <string name="problem_log_empty">Walang laman ang log: hindi pa nakakonekta ang iyong earbuds. Ikonekta muna ang earbuds, saka ipadala ang feedback.</string>
+    <string name="problem_capture_hint">May kulang na setting, o walang ginagawa ang isang switch? Magpadala ng Bluetooth snoop log ng HeyMelody o realme Link. Ipinapakita nito ang eksaktong command. Kung wala ito, manghuhula ang developer.</string>
+    <string name="problem_capture_link">Paano gumawa ng snoop log</string>
     <string name="test_title">Subukan ang aking earbuds</string>
     <string name="test_sub">Subukan ang bawat feature at ipadala ang resulta</string>
     <string name="test_ask_body">Hindi pa kumpirmado ang QuickBuds sa earbuds na ito. Ipinapakita ng maikling test kung ano ang gumagana. Walang ipapadala hangga\'t hindi mo pinipindot ang Ipadala.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Pagtap ay magbubukas ng QuickBuds</string>
     <string name="widget_tap_opens_sub">Ang pagtap sa widget ay magbubukas ng app</string>
     <string name="widget_open_app">Buksan ang QuickBuds</string>
+    <string name="widget_cycle">Ikot ng ingay</string>
+    <string name="tile_on">On</string>
+    <string name="tile_off">Off</string>
+    <string name="cycle_intro">Pumili ng hindi bababa sa 2 mode. Ang tap sa tile o sa button ng Ikot ng ingay ay lilipat sa susunod na mode, sa ayos na ito.</string>
+    <string name="settings_cycle_sub">Mga mode para sa tile at sa button ng widget</string>
+    <string name="widget_cycle_name">QuickBuds ikot ng ingay</string>
 </resources>

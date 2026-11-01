@@ -115,6 +115,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             BatteryWidgetProvider::class.java to Kind.BATTERY,
             BatteryOnlyWidgetProvider::class.java to Kind.BATTERY_ONLY,
             ControlsWidgetProvider::class.java to Kind.CONTROLS,
+            NoiseCycleWidgetProvider::class.java to Kind.CONTROLS,
             AncWidgetProvider::class.java to Kind.COMBINED
         )
 
@@ -178,6 +179,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 val st = WidgetStateStore.read(context)
                 if (st.leftBattery >= 0 || st.caseBattery >= 0 || st.rightBattery >= 0) { awaitLevels = false; return sweep(context, true, null) }
             }
+            LiveTileService.refresh(context)
             val mgr = AppWidgetManager.getInstance(context)
             for ((cls, kind) in providers) {
                 for (id in mgr.getAppWidgetIds(ComponentName(context, cls))) update(context, mgr, id, kind)
@@ -767,8 +769,11 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 "ll" -> Q(state.gameMode, R.drawable.ic_low_latency, initials(R.string.widget_low_latency),
                     context.getString(R.string.row_game_title), receiverPI(context, WidgetActions.ACTION_GAME_TOGGLE, id, swap = swap),
                     context.getString(R.string.widget_low_latency))
-                "app" -> Q(false, R.drawable.ic_earbud, "QB", context.getString(R.string.widget_open_app),
-                    if (swap != null) receiverPI(context, WidgetActions.ACTION_LAUNCH_APP, id, swap = swap) else openAppPI(context))
+                "cycle" -> Q(current.key != "off", current.icon, context.getString(current.short),
+                    context.getString(R.string.widget_cycle) + ": " + context.getString(current.name), quick("cycle"),
+                    context.getString(current.name))
+                // An activity intent, not the receiver: Android blocks an app start from a receiver after the double tap wait (issue 26).
+                "app" -> Q(false, R.drawable.ic_earbud, "QB", context.getString(R.string.widget_open_app), openAppPI(context))
                 else -> {
                     val f = WidgetSettings.FEATURE_BUTTONS.getValue(key)
                     Q(WidgetSettings.featureOn(context, f), R.drawable.ic_anc, initials(R.string.row_wind_noise_title),
@@ -857,6 +862,20 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val bmp = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
             drawRing(context, Canvas(bmp), px.toFloat(), p, level, slot, tint)
             return bmp
+        }
+
+        /**
+         * One battery ring for the service notification. The notification sits on the system's shade, not on the
+         * app's background, so the track and the glyph take the system's light or dark shade.
+         */
+        fun notificationRing(context: Context, level: Int, slot: Int, status: Int): Bitmap {
+            val night = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+            val ink = if (night) Color.WHITE else Color.BLACK
+            val p = ThemeRes.palette(context).copy(glass = false, glassLight = false,
+                background = if (night) Color.BLACK else Color.WHITE, card = if (night) Color.BLACK else Color.WHITE,
+                text = ink, textSecondary = Palette.withAlpha(ink, 0.6f), outline = Palette.withAlpha(ink, 0.2f))
+            return ring(context, p, level, slot, status, 40f)
         }
 
         /** How visible the empty battery page is behind the Connect chip. */
@@ -1553,3 +1572,16 @@ class BatteryOnlyWidgetProvider : QuickBudsWidget(Kind.BATTERY_ONLY)
 
 /** 2x2, controls page only. */
 class ControlsWidgetProvider : QuickBudsWidget(Kind.CONTROLS)
+
+/** 1x1, the Noise cycle button only. Its button list is fixed. */
+class NoiseCycleWidgetProvider : QuickBudsWidget(Kind.CONTROLS) {
+    override fun onUpdate(context: Context, mgr: AppWidgetManager, ids: IntArray) {
+        for (id in ids) WidgetSettings.setButtons(context, id, listOf("cycle"))
+        super.onUpdate(context, mgr, ids)
+    }
+
+    override fun onAppWidgetOptionsChanged(context: Context, mgr: AppWidgetManager, id: Int, options: android.os.Bundle) {
+        WidgetSettings.setButtons(context, id, listOf("cycle"))
+        super.onAppWidgetOptionsChanged(context, mgr, id, options)
+    }
+}

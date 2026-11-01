@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Vibrera när en inställning ändras</string>
     <string name="settings_clear_battery_title">Dölj gamla batterinivåer</string>
     <string name="settings_clear_battery_sub">Rensa en nivå som hörlurarna slutar rapportera, som fodralet när locket stängts</string>
+    <string name="settings_full_notif_title">Batteri i aviseringen</string>
+    <string name="settings_full_notif_sub">Visar nivåerna. Av: en liten avisering utan ikon i statusfältet</string>
     <string name="settings_background_title">Bakgrundstjänst</string>
     <string name="settings_background_sub">Förbli ansluten när appen är stängd</string>
     <string name="settings_background_warn_title">Stänga av bakgrundstjänsten?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds stöder bara hörlurar från OnePlus, OPPO och realme. Välj din modell i listan.</string>
     <string name="problem_supported_list">Se alla hörlurar som stöds</string>
     <string name="problem_log_empty">Loggen är tom: dina hörlurar har inte anslutit än. Anslut dem först och skicka sedan din feedback.</string>
+    <string name="problem_capture_hint">Saknas en inställning, eller gör en brytare ingenting? Skicka en Bluetooth-snooplogg från HeyMelody eller realme Link. Den visar det exakta kommandot. Utan den måste utvecklaren gissa.</string>
+    <string name="problem_capture_link">Så gör du en snooplogg</string>
     <string name="test_title">Testa mina hörlurar</string>
     <string name="test_sub">Prova varje funktion och skicka resultatet</string>
     <string name="test_ask_body">QuickBuds är inte bekräftat på de här hörlurarna än. Ett kort test visar vad som fungerar. Inget skickas förrän du trycker på Skicka.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Tryck öppnar QuickBuds</string>
     <string name="widget_tap_opens_sub">Ett tryck på widgeten öppnar appen</string>
     <string name="widget_open_app">Öppna QuickBuds</string>
+    <string name="widget_cycle">Brusväxling</string>
+    <string name="tile_on">På</string>
+    <string name="tile_off">Av</string>
+    <string name="cycle_intro">Välj minst 2 lägen. Ett tryck på rutan eller knappen Brusväxling går till nästa läge, i den här ordningen.</string>
+    <string name="settings_cycle_sub">Lägen för rutan och widgetknappen</string>
+    <string name="widget_cycle_name">QuickBuds brusväxling</string>
 </resources>

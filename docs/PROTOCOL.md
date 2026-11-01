@@ -364,7 +364,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0404` | ANC mode / hold cycle | `01 01 <mask>` / `02 <kind> <mask>` | 14 |
 | `0x0405` | Fit test | `01` / `00` | 20 |
 | `0x0406` | Select built-in EQ | `<id>` | 17 |
-| `0x0407` | Volume enhancer (realme Buds T01) | `<01 on, 00 off>` | 22 |
+| `0x0407` | Volume enhancer (realme Buds T01; T310 and T500 Pro untested) | `<01 on, 00 off>` | 22 |
 | `0x0408` | Related-device list | `<hostType> <host MAC 6> <count>`, then `<type> <MAC 6> <state>` per device; at most 6 | 22 |
 | `0x0409` | Unused | — | 22 |
 | `0x040B` | Unused | — | 22 |
@@ -1028,7 +1028,7 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - OPPO Enco Buds2 `064810`: `statusQuery` `05 06` `[TESTED]`.
 - realme Buds T310 `063C12`: lacks ids `04 0B 18 27 35` (status `01`) `[CAPTURE]`. It has `windMode`.
 - realme Link rows: dynamic sound `1D`, enhance voice `09`, wind noise `1A`, game mode `06`, wear `04`, dual `11`, Hi-Res `18`, 3D sound `1B`; a second enhance voice setter writes `0C`; power saving is reported as `05` `[VENDOR]`.
-- Models with `windMode`: `0x010D` asks `1A` only for them. realme Buds Air7 Pro `064C12` and T310 `063C12` have the wind-noise row in realme Link. Report #46 says the vendor app shows it `[VENDOR]`. No capture proves that every `windMode` model answers `[GUESS]`.
+- Models with `windMode`: `0x010D` asks `1A` only for them. realme Buds Air7 Pro `064C12`, T310 `063C12` and T500 Pro `066452` have the wind-noise row in realme Link (T500 Pro: issue 30). Report #46 says the vendor app shows it `[VENDOR]`. No capture proves that every `windMode` model answers `[GUESS]`.
 - realme models with a hearing profile `[VENDOR]`: Air8 Pro `066C12`, Air7 Pro `064C12`, Air 5 Pro `061C12`, Air6 Pro `063012`. The T500 Pro `066452` does not list one (report #21), and its buds do not answer the tones.
 - OnePlus Buds 4 `065414`: refuses `18 01` 32 times while the phone plays AAC; accepts it on LHDC V5 `[CAPTURE]`.
 - OPPO Enco Buds3 Pro: `1B` is in the status reply and reports `1B=1`, but `0x012A` is absent; two owners hear no 3D audio (reports #60 #61). The row is hidden through `statusQuery` `05 11 06` `[CAPTURE]`.

@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Vibrovat při změně nastavení</string>
     <string name="settings_clear_battery_title">Skrýt staré úrovně baterie</string>
     <string name="settings_clear_battery_sub">Vymazat úroveň, kterou sluchátka přestanou hlásit, např. pouzdro po zavření víka</string>
+    <string name="settings_full_notif_title">Baterie v oznámení</string>
+    <string name="settings_full_notif_sub">Zobrazí stav baterie. Vypnuto: malé oznámení bez ikony na stavovém řádku</string>
     <string name="settings_background_title">Služba na pozadí</string>
     <string name="settings_background_sub">Zůstat připojeno i při zavřené aplikaci</string>
     <string name="settings_background_warn_title">Vypnout službu na pozadí?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds podporuje pouze sluchátka OnePlus, OPPO a realme. Vyberte svůj model ze seznamu.</string>
     <string name="problem_supported_list">Zobrazit všechna podporovaná sluchátka</string>
     <string name="problem_log_empty">Protokol je prázdný: sluchátka se zatím nepřipojila. Nejdřív sluchátka připojte, pak pošlete zpětnou vazbu.</string>
+    <string name="problem_capture_hint">Chybí nastavení nebo přepínač nic nedělá? Pošlete Bluetooth snoop log z aplikace HeyMelody nebo realme Link. Ukazuje přesný příkaz. Bez něj musí vývojář hádat.</string>
+    <string name="problem_capture_link">Jak vytvořit snoop log</string>
     <string name="test_title">Otestovat sluchátka</string>
     <string name="test_sub">Vyzkoušejte každou funkci a odešlete výsledek</string>
     <string name="test_ask_body">QuickBuds zatím není na těchto sluchátkách potvrzen. Krátký test ukáže, co funguje. Nic se neodešle, dokud neklepnete na Odeslat.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Klepnutí otevře QuickBuds</string>
     <string name="widget_tap_opens_sub">Klepnutí na widget otevře aplikaci</string>
     <string name="widget_open_app">Otevřít QuickBuds</string>
+    <string name="widget_cycle">Cyklus hluku</string>
+    <string name="tile_on">Zap.</string>
+    <string name="tile_off">Vyp.</string>
+    <string name="cycle_intro">Vyberte alespoň 2 režimy. Klepnutí na dlaždici Ovládání hluku nebo na tlačítko Cyklus hluku přepne na další režim v tomto pořadí.</string>
+    <string name="settings_cycle_sub">Režimy pro dlaždici a tlačítko widgetu</string>
+    <string name="widget_cycle_name">QuickBuds cyklus hluku</string>
 </resources>

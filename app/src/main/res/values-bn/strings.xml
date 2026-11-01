@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">সেটিং বদলালে কম্পন</string>
     <string name="settings_clear_battery_title">পুরোনো ব্যাটারি স্তর লুকান</string>
     <string name="settings_clear_battery_sub">বাডস যে স্তর জানানো বন্ধ করে তা মুছুন, যেমন ঢাকনা বন্ধের পর কেস</string>
+    <string name="settings_full_notif_title">বিজ্ঞপ্তিতে ব্যাটারি</string>
+    <string name="settings_full_notif_sub">লেভেল দেখায়। বন্ধ: স্ট্যাটাস বার আইকন ছাড়া ছোট বিজ্ঞপ্তি</string>
     <string name="settings_background_title">ব্যাকগ্রাউন্ড সার্ভিস</string>
     <string name="settings_background_sub">অ্যাপ বন্ধ থাকলেও সংযুক্ত থাকুন</string>
     <string name="settings_background_warn_title">ব্যাকগ্রাউন্ড সার্ভিস বন্ধ করবেন?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds শুধু OnePlus, OPPO ও realme ইয়ারবাড সমর্থন করে। তালিকা থেকে আপনার মডেল বেছে নিন।</string>
     <string name="problem_supported_list">সব সমর্থিত ইয়ারবাড দেখুন</string>
     <string name="problem_log_empty">লগ খালি: আপনার বাড এখনও সংযুক্ত হয়নি। আগে বাড সংযুক্ত করুন, তারপর মতামত পাঠান।</string>
+    <string name="problem_capture_hint">কোনো সেটিং নেই, বা কোনো সুইচ কাজ করে না? HeyMelody বা realme Link-এর একটি Bluetooth snoop log পাঠান। এতে সঠিক কমান্ড দেখা যায়। এটি ছাড়া ডেভেলপারকে অনুমান করতে হয়।</string>
+    <string name="problem_capture_link">কীভাবে snoop log তৈরি করবেন</string>
     <string name="test_title">আমার ইয়ারবাড পরীক্ষা করুন</string>
     <string name="test_sub">প্রতিটি ফিচার চেষ্টা করে ফলাফল পাঠান</string>
     <string name="test_ask_body">এই ইয়ারবাডে QuickBuds এখনও নিশ্চিত নয়। একটি ছোট পরীক্ষা দেখায় কী কাজ করে। পাঠান চাপার আগে কিছুই পাঠানো হয় না।</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">টাপ করলে QuickBuds খোলে</string>
     <string name="widget_tap_opens_sub">উইজেটে টাপ করলে অ্যাপ খোলে</string>
     <string name="widget_open_app">QuickBuds খুলুন</string>
+    <string name="widget_cycle">নয়েজ চক্র</string>
+    <string name="tile_on">চালু</string>
+    <string name="tile_off">বন্ধ</string>
+    <string name="cycle_intro">কমপক্ষে ২টি মোড বাছুন। নয়েজ কন্ট্রোল টাইল বা নয়েজ চক্র বোতামে ট্যাপ করলে এই ক্রমে পরের মোড আসে।</string>
+    <string name="settings_cycle_sub">টাইল ও উইজেট বোতামের মোড</string>
+    <string name="widget_cycle_name">QuickBuds নয়েজ চক্র</string>
 </resources>

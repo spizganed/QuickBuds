@@ -68,7 +68,7 @@ object WidgetStateStore {
         }
     }
 
-    private fun prefs(context: Context): SharedPreferences =
+    fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     fun read(context: Context): State {

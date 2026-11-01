@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">सेटिंग बदलने पर वाइब्रेट करें</string>
     <string name="settings_clear_battery_title">पुराने बैटरी स्तर छिपाएँ</string>
     <string name="settings_clear_battery_sub">बड्स जो स्तर बताना बंद कर दें उसे हटाएँ, जैसे ढक्कन बंद होने के बाद केस</string>
+    <string name="settings_full_notif_title">सूचना में बैटरी</string>
+    <string name="settings_full_notif_sub">लेवल दिखाता है। बंद: स्टेटस बार आइकन के बिना छोटी सूचना</string>
     <string name="settings_background_title">बैकग्राउंड सेवा</string>
     <string name="settings_background_sub">ऐप बंद होने पर भी कनेक्टेड रहें</string>
     <string name="settings_background_warn_title">बैकग्राउंड सेवा बंद करें?</string>
@@ -462,6 +464,8 @@
     <string name="problem_unsupported">QuickBuds केवल OnePlus, OPPO और realme ईयरबड्स को सपोर्ट करता है। सूची से अपना मॉडल चुनें।</string>
     <string name="problem_supported_list">सभी सपोर्टेड ईयरबड्स देखें</string>
     <string name="problem_log_empty">लॉग खाली है: आपके बड्स अभी जुड़े नहीं। पहले बड्स जोड़ें, फिर अपना फ़ीडबैक भेजें।</string>
+    <string name="problem_capture_hint">कोई सेटिंग नहीं है, या कोई स्विच कुछ नहीं करता? HeyMelody या realme Link का Bluetooth snoop log भेजें। इसमें सही कमांड दिखता है। इसके बिना डेवलपर को अनुमान लगाना पड़ता है।</string>
+    <string name="problem_capture_link">snoop log कैसे बनाएँ</string>
     <string name="test_title">मेरे ईयरबड्स जांचें</string>
     <string name="test_sub">हर फ़ीचर आज़माएँ और नतीजा भेजें</string>
     <string name="test_ask_body">इन ईयरबड्स पर QuickBuds अभी पुष्ट नहीं है। एक छोटा टेस्ट दिखाता है कि क्या काम करता है। भेजें टैप करने तक कुछ नहीं भेजा जाता।</string>
@@ -578,4 +582,10 @@
     <string name="widget_tap_opens_title">टैप से QuickBuds खुलता है</string>
     <string name="widget_tap_opens_sub">विजेट पर टैप करने से ऐप खुलता है</string>
     <string name="widget_open_app">QuickBuds खोलें</string>
+    <string name="widget_cycle">नॉइज़ चक्र</string>
+    <string name="tile_on">चालू</string>
+    <string name="tile_off">बंद</string>
+    <string name="cycle_intro">कम से कम 2 मोड चुनें। टाइल या नॉइज़ चक्र बटन पर टैप करने से इसी क्रम में अगला मोड आता है।</string>
+    <string name="settings_cycle_sub">टाइल और विजेट बटन के मोड</string>
+    <string name="widget_cycle_name">QuickBuds नॉइज़ चक्र</string>
 </resources>

@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Vibrer quand un réglage change</string>
     <string name="settings_clear_battery_title">Masquer les anciens niveaux de batterie</string>
     <string name="settings_clear_battery_sub">Effacer un niveau que les écouteurs ne signalent plus, comme le boîtier une fois fermé</string>
+    <string name="settings_full_notif_title">Batterie dans la notification</string>
+    <string name="settings_full_notif_sub">Affiche les niveaux. Désactivé : petite notification sans icône dans la barre d\'état</string>
     <string name="settings_background_title">Service en arrière-plan</string>
     <string name="settings_background_sub">Rester connecté quand l\'app est fermée</string>
     <string name="settings_background_warn_title">Désactiver le service en arrière-plan ?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds prend en charge uniquement les écouteurs OnePlus, OPPO et realme. Choisissez votre modèle dans la liste.</string>
     <string name="problem_supported_list">Voir tous les écouteurs pris en charge</string>
     <string name="problem_log_empty">Le journal est vide : vos écouteurs ne se sont pas encore connectés. Connectez-les d’abord, puis envoyez vos commentaires.</string>
+    <string name="problem_capture_hint">Un réglage manque, ou un interrupteur ne fait rien ? Envoyez un journal snoop Bluetooth de HeyMelody ou realme Link. Il montre la commande exacte. Sans lui, le développeur doit deviner.</string>
+    <string name="problem_capture_link">Comment créer un journal snoop</string>
     <string name="test_title">Tester mes écouteurs</string>
     <string name="test_sub">Essayez chaque fonction et envoyez le résultat</string>
     <string name="test_ask_body">QuickBuds n\'est pas encore confirmé sur ces écouteurs. Un court test montre ce qui fonctionne. Rien n\'est envoyé avant que vous touchiez Envoyer.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Un appui ouvre QuickBuds</string>
     <string name="widget_tap_opens_sub">Un appui sur le widget ouvre l\'application</string>
     <string name="widget_open_app">Ouvrir QuickBuds</string>
+    <string name="widget_cycle">Cycle du bruit</string>
+    <string name="tile_on">Activé</string>
+    <string name="tile_off">Désactivé</string>
+    <string name="cycle_intro">Choisissez au moins 2 modes. Un appui sur la vignette ou sur le bouton Cycle du bruit passe au mode suivant, dans cet ordre.</string>
+    <string name="settings_cycle_sub">Modes de la vignette et du bouton du widget</string>
+    <string name="widget_cycle_name">QuickBuds cycle du bruit</string>
 </resources>

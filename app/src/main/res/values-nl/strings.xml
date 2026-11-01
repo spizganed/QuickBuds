@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Trillen als een instelling verandert</string>
     <string name="settings_clear_battery_title">Oude batterijniveaus verbergen</string>
     <string name="settings_clear_battery_sub">Wis een niveau dat de oordopjes niet meer melden, zoals de case na het sluiten</string>
+    <string name="settings_full_notif_title">Batterij in de melding</string>
+    <string name="settings_full_notif_sub">Toont de niveaus. Uit: een kleine melding zonder pictogram in de statusbalk</string>
     <string name="settings_background_title">Achtergrondservice</string>
     <string name="settings_background_sub">Verbonden blijven als de app gesloten is</string>
     <string name="settings_background_warn_title">Achtergrondservice uitzetten?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds ondersteunt alleen oordopjes van OnePlus, OPPO en realme. Kies je model uit de lijst.</string>
     <string name="problem_supported_list">Bekijk alle ondersteunde oordopjes</string>
     <string name="problem_log_empty">Het logboek is leeg: je oordopjes zijn nog niet verbonden. Verbind ze eerst en stuur dan je feedback.</string>
+    <string name="problem_capture_hint">Ontbreekt er een instelling, of doet een schakelaar niets? Stuur een Bluetooth-snooplog van HeyMelody of realme Link. Die toont het exacte commando. Zonder log moet de ontwikkelaar gokken.</string>
+    <string name="problem_capture_link">Zo maak je een snooplog</string>
     <string name="test_title">Mijn oordopjes testen</string>
     <string name="test_sub">Probeer elke functie en verstuur het resultaat</string>
     <string name="test_ask_body">QuickBuds is nog niet bevestigd op deze oordopjes. Een korte test laat zien wat werkt. Er wordt niets verstuurd tot je op Versturen tikt.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Tikken opent QuickBuds</string>
     <string name="widget_tap_opens_sub">Een tik op de widget opent de app</string>
     <string name="widget_open_app">QuickBuds openen</string>
+    <string name="widget_cycle">Ruiscyclus</string>
+    <string name="tile_on">Aan</string>
+    <string name="tile_off">Uit</string>
+    <string name="cycle_intro">Kies minstens 2 modi. Een tik op de tegel of de knop Ruiscyclus gaat naar de volgende modus, in deze volgorde.</string>
+    <string name="settings_cycle_sub">Modi voor de tegel en de widgetknop</string>
+    <string name="widget_cycle_name">QuickBuds ruiscyclus</string>
 </resources>

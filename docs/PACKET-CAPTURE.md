@@ -203,6 +203,42 @@ Then use File › Export Specified Packets, select **Displayed**, and save.
 
 If you send the raw `btsnoop_hci.log` file in private, the developer can do the filtering.
 
+## Send a snoop log for a missing feature
+
+Use this section when HeyMelody or realme Link has a setting that QuickBuds does not have.
+Use it also when a QuickBuds switch does nothing on your earbuds. You need an Android phone.
+A PC cannot make this log: HeyMelody and realme Link run only on a phone.
+An iPhone cannot make it with these steps either.
+A snoop log shows the exact command that the vendor app sends. Without it, the developer must guess.
+A guessed command fails silently on the earbuds.
+
+### Before you start
+
+1. Turn on the snoop log. Follow [Turn on the snoop log with the phone](#1-turn-on-the-snoop-log-with-the-phone).
+2. Install HeyMelody or realme Link, the app that has the setting.
+3. Stop QuickBuds: Quick Settings › **Active apps** › Stop. The earbuds talk to one app at a time.
+
+### Record the setting
+
+1. Disconnect other Bluetooth devices: the car, the watch, and other headphones.
+2. Open the vendor app and let it connect to the earbuds.
+3. Change only the setting that QuickBuds lacks. Turn it on, wait 5 s, turn it off, wait 5 s, turn it on.
+4. For a setting with more than 2 values, select each value. Wait 5 s between changes.
+5. Write down each change and its time.
+6. Record the screen of the vendor app during the test. Or take a screenshot of each step, with a number and a label.
+7. Get the log within 15 minutes. The phone keeps only the newest Bluetooth traffic.
+
+### Send it
+
+1. Get the `btsnoop_hci.log` file. Follow [Get the log file without a PC](#3-get-the-log-file-without-a-pc).
+2. Read [Protect your privacy](#4-protect-your-privacy).
+3. Open a [Missing feature issue](https://github.com/spizganed/QuickBuds/issues/new?template=missing-feature.yml).
+   Attach the log, the recording or screenshots, and your notes. To keep the log private, send it as in
+   [Where to send the file](#5-where-to-send-the-file) and write "sent on Discord" in the issue.
+
+One log for one setting is enough. You can record several settings in one log.
+Then write down the time of each change.
+
 ## Still open, and capturable
 
 - `act 0x03` in the on-call group (`btn 0x06`): a third slot HeyMelody's UI has never used.

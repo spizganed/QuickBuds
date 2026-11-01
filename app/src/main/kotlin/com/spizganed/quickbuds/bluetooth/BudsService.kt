@@ -120,6 +120,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             addAction(Intent.ACTION_SCREEN_OFF); addAction(Intent.ACTION_SCREEN_ON); addAction(Intent.ACTION_USER_PRESENT)
         }
         registerReceiver(screenReceiver, screen)
+        getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(prefListener)
         // Started by a Bluetooth event while locked: stay asleep until the unlock.
         if (backgroundAllowed(this) && shouldSleep()) asleep = true
     }
@@ -245,6 +246,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             val link = device?.let { manager?.audioLinkState(it) } ?: LinkState.UNKNOWN
             if (!ConnectPolicy.autoConnectAllowed(link, virtual)) {
                 statusLog("[SVC] FORCE_CONNECT skipped (the buds have no audio link)")
+                // The sleep kept the connected state and the last levels. The buds left during the lock: clear them (reports 134, 135).
+                if (WidgetStateStore.read(this).connected) onConnected(false)
                 return
             }
         }
@@ -303,41 +306,84 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
     }
 
-    private fun startForegroundService() {
-        val channelId = "QuickBuds_Service"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Buds Connection",
-                NotificationManager.IMPORTANCE_MIN
-            ).apply {
-                setShowBadge(false)
-                enableLights(false)
-                enableVibration(false)
-                setSound(null, null)
-                description = "Keeps the connection to your earbuds alive"
-            }
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-        }
+    /** The last levels the notification shows, so an unchanged battery event does not repost it. */
+    private var shownLevels: String? = null
 
-        val notification: Notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(this, channelId)
-                .setContentTitle("QuickBuds")
-                .setContentText("Maintaining connection to earbuds")
-                .setSmallIcon(R.drawable.ic_stat_buds)
-                .setOngoing(false)
-                .setShowWhen(false)
-                .build()
-        } else {
-            @Suppress("DEPRECATION")
-            Notification.Builder(this)
-                .setContentTitle("QuickBuds")
-                .setContentText("Maintaining connection to earbuds")
-                .setSmallIcon(R.drawable.ic_stat_buds)
-                .setOngoing(false)
-                .setShowWhen(false)
-                .build()
+    /**
+     * The service notification. A tap opens the app (issue 26). Connected with a level: the battery rings,
+     * drawn like the widget's. Else the plain text.
+     */
+    private fun buildNotification(): Notification {
+        val open = android.app.PendingIntent.getActivity(this, 0,
+            Intent(this, com.spizganed.quickbuds.ui.MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE)
+        val full = fullNotification()
+        val b = Notification.Builder(this, if (full) CHANNEL_FULL_ID else CHANNEL_ID)
+            .setContentTitle("QuickBuds")
+            .setContentText("Maintaining connection to earbuds")
+            .setSmallIcon(R.drawable.ic_stat_buds)
+            .setContentIntent(open)
+            .setOngoing(false)
+            .setShowWhen(false)
+        val st = WidgetStateStore.read(this)
+        val levels = intArrayOf(st.leftBattery, st.caseBattery, st.rightBattery)
+        if (full && st.connected && levels.any { it >= 0 }) {
+            val v = android.widget.RemoteViews(packageName, R.layout.notification_battery)
+            val rings = intArrayOf(R.id.n_ring_l, R.id.n_ring_c, R.id.n_ring_r)
+            val pcts = intArrayOf(R.id.n_pct_l, R.id.n_pct_c, R.id.n_pct_r)
+            val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
+            val statuses = intArrayOf(st.leftStatus, -1, st.rightStatus)
+            for (slot in 0..2) {
+                v.setImageViewBitmap(rings[slot], com.spizganed.quickbuds.widget.QuickBudsWidget.notificationRing(this, levels[slot], slot, statuses[slot]))
+                v.setTextViewText(pcts[slot], if (levels[slot] >= 0) "${levels[slot]}%" else "–")
+                v.setContentDescription(rings[slot], getString(names[slot]))
+            }
+            b.setCustomContentView(v).setStyle(Notification.DecoratedCustomViewStyle())
         }
+        return b.build()
+    }
+
+    /** Reposts the notification when the shown levels or the connection changed. */
+    private fun updateNotification() {
+        val st = WidgetStateStore.read(this)
+        val key = "${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus}"
+        if (key == shownLevels) return
+        shownLevels = key
+        try {
+            getSystemService(NotificationManager::class.java).notify(1, buildNotification())
+        } catch (e: Exception) {
+            statusLog("[SVC] notification update failed: ${e.javaClass.simpleName}")
+        }
+    }
+
+    /**
+     * Two channels: the small one (minimum importance, folded, no status bar icon) and the full one
+     * (low importance, open, with the battery rings). [PREF_FULL_NOTIFICATION] picks one.
+     */
+    private fun createChannels() {
+        fun channel(id: String, name: String, importance: Int) = NotificationChannel(id, name, importance).apply {
+            setShowBadge(false)
+            enableLights(false)
+            enableVibration(false)
+            setSound(null, null)
+            description = "Keeps the connection to your earbuds alive"
+        }
+        getSystemService(NotificationManager::class.java).createNotificationChannels(listOf(
+            channel(CHANNEL_ID, "Buds Connection", NotificationManager.IMPORTANCE_MIN),
+            channel(CHANNEL_FULL_ID, "Battery", NotificationManager.IMPORTANCE_LOW)))
+    }
+
+    private fun fullNotification() =
+        getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_FULL_NOTIFICATION, true)
+
+    /** Settings › Full notification: repost on the other channel at once. */
+    private val prefListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == PREF_FULL_NOTIFICATION) { shownLevels = null; updateNotification() }
+    }
+
+    private fun startForegroundService() {
+        createChannels()
+        val notification = buildNotification()
         // Android 12+ refuses this when the app is in the background (report: realme RMX3890, Android 15). Stop instead of crashing.
         try {
             startForeground(1, notification)
@@ -367,6 +413,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(screenReceiver) } catch (_: Exception) {}
+        getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(prefListener)
         super.onDestroy()
     }
 
@@ -400,6 +447,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         if (before.connected != connected) AncWidgetProvider.animate(this, connected, before.takeIf { it.connected })
         else AncWidgetProvider.refreshAll(this)
         gameEq.update()
+        updateNotification()
     }
 
     override fun onBattery(
@@ -419,6 +467,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         if (right != null || clear) st.rightBattery = right ?: -1
         WidgetStateStore.write(this, st)
         AncWidgetProvider.refreshAll(this)
+        updateNotification()
     }
 
     override fun onWearState(leftRaw: Int, rightRaw: Int, caseSt: Int) {
@@ -495,6 +544,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onFeatureStates(states: Map<Int, Int>) {
         gameEq.update()
+        // The Quick Settings tiles show more switches than the widget, so they repaint on every answer.
+        com.spizganed.quickbuds.widget.LiveTileService.refresh(this)
         val now = WidgetSettings.FEATURE_BUTTONS.values.map { states[it] }
         if (now == widgetFeatures) return
         widgetFeatures = now
@@ -511,6 +562,12 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     }
 
     companion object {
+        /** The service notification's channel. */
+        private const val CHANNEL_ID = "QuickBuds_Service"
+        /** The full notification's channel: open in the shade, with the battery rings. */
+        private const val CHANNEL_FULL_ID = "QuickBuds_Battery"
+        /** Settings › Full notification. On by default. */
+        const val PREF_FULL_NOTIFICATION = "fullNotification"
         const val ACTION_FORCE_CONNECT = "com.spizganed.quickbuds.FORCE_CONNECT"
         /** On FORCE_CONNECT: true when the user asked (pill), so phone audio is brought up too. */
         const val EXTRA_WITH_AUDIO = "with_audio"

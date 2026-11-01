@@ -53,6 +53,11 @@ class SettingsActivity : Activity() {
             backgroundRow(prefs),
             toggle(R.drawable.ic_battery, R.string.settings_clear_battery_title, R.string.settings_clear_battery_sub,
                 BudsService.PREF_CLEAR_BATTERY, false),
+            link(R.drawable.ic_mode_transparency, R.string.widget_cycle, R.string.settings_cycle_sub) {
+                startActivity(Intent(this, com.spizganed.quickbuds.widget.NoiseCycleActivity::class.java))
+            },
+            toggle(R.drawable.ic_battery, R.string.settings_full_notif_title, R.string.settings_full_notif_sub,
+                BudsService.PREF_FULL_NOTIFICATION, true),
             toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true),
             toggle(R.drawable.ic_info, R.string.settings_ping_title, R.string.settings_ping_sub, UsagePing.KEY_ENABLED, true)
         )

@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Вібрація під час зміни налаштування</string>
     <string name="settings_clear_battery_title">Приховувати старий заряд</string>
     <string name="settings_clear_battery_sub">Скидати рівень, про який навушники перестали повідомляти, наприклад кейса після закриття</string>
+    <string name="settings_full_notif_title">Батарея в сповіщенні</string>
+    <string name="settings_full_notif_sub">Показує заряд. Вимк.: маленьке сповіщення без значка в рядку стану</string>
     <string name="settings_background_title">Фонова служба</string>
     <string name="settings_background_sub">Залишатися підключеним, коли застосунок закрито</string>
     <string name="settings_background_warn_title">Вимкнути фонову службу?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds підтримує лише навушники OnePlus, OPPO і realme. Виберіть свою модель зі списку.</string>
     <string name="problem_supported_list">Усі підтримувані навушники</string>
     <string name="problem_log_empty">Журнал порожній: навушники ще не підключалися. Спершу підключіть їх, потім надішліть відгук.</string>
+    <string name="problem_capture_hint">Немає налаштування або перемикач нічого не робить? Надішліть Bluetooth snoop-лог із HeyMelody або realme Link. У ньому видно точну команду. Без нього розробнику доводиться вгадувати.</string>
+    <string name="problem_capture_link">Як зробити snoop-лог</string>
     <string name="test_title">Перевірити навушники</string>
     <string name="test_sub">Спробуйте кожну функцію й надішліть результат</string>
     <string name="test_ask_body">Роботу QuickBuds із цими навушниками ще не підтверджено. Коротка перевірка покаже, що працює. Нічого не надсилається, доки ви не натиснете «Надіслати».</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Дотик відкриває QuickBuds</string>
     <string name="widget_tap_opens_sub">Дотик до віджета відкриває застосунок</string>
     <string name="widget_open_app">Відкрити QuickBuds</string>
+    <string name="widget_cycle">Зміна шумозаглушення</string>
+    <string name="tile_on">Увімк.</string>
+    <string name="tile_off">Вимк.</string>
+    <string name="cycle_intro">Виберіть щонайменше 2 режими. Дотик до плитки або кнопки зміни режиму перемикає на наступний режим у цьому порядку.</string>
+    <string name="settings_cycle_sub">Режими для плитки й кнопки віджета</string>
+    <string name="widget_cycle_name">QuickBuds зміна шумозаглушення</string>
 </resources>

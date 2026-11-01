@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">變更設定時震動</string>
     <string name="settings_clear_battery_title">隱藏過時的電量</string>
     <string name="settings_clear_battery_sub">清除耳機不再回報的電量，例如蓋上蓋子後的充電盒</string>
+    <string name="settings_full_notif_title">在通知中顯示電量</string>
+    <string name="settings_full_notif_sub">顯示電量。關閉：小通知，狀態列無圖示</string>
     <string name="settings_background_title">背景服務</string>
     <string name="settings_background_sub">關閉應用程式後保持連線</string>
     <string name="settings_background_warn_title">關閉背景服務？</string>
@@ -462,6 +464,8 @@
     <string name="problem_unsupported">QuickBuds 僅支援 OnePlus、OPPO 和 realme 耳機。請從清單中選擇你的型號。</string>
     <string name="problem_supported_list">查看所有支援的耳機</string>
     <string name="problem_log_empty">記錄為空：你的耳機還沒有連線。請先連線耳機，再傳送意見回饋。</string>
+    <string name="problem_capture_hint">缺少某項設定，或開關沒有作用？請傳送 HeyMelody 或 realme Link 的藍牙 HCI snoop 記錄。記錄會顯示確切的指令。沒有記錄，開發者只能猜測。</string>
+    <string name="problem_capture_link">如何產生 snoop 記錄</string>
     <string name="test_title">測試我的耳機</string>
     <string name="test_sub">逐一試用各項功能並傳送結果</string>
     <string name="test_ask_body">QuickBuds 尚未在這款耳機上獲得確認。簡短的測試可以顯示哪些功能可用。在您輕觸「傳送」之前，不會傳送任何內容。</string>
@@ -578,4 +582,10 @@
     <string name="widget_tap_opens_title">點按開啟 QuickBuds</string>
     <string name="widget_tap_opens_sub">點按小工具即可開啟應用程式</string>
     <string name="widget_open_app">開啟 QuickBuds</string>
+    <string name="widget_cycle">降噪切換</string>
+    <string name="tile_on">開</string>
+    <string name="tile_off">關</string>
+    <string name="cycle_intro">至少選擇 2 種模式。輕觸圖塊或降噪切換按鈕，會依此順序切換到下一種模式。</string>
+    <string name="settings_cycle_sub">圖塊和小工具按鈕的模式</string>
+    <string name="widget_cycle_name">QuickBuds 降噪切換</string>
 </resources>

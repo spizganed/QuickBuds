@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Vibrieren, wenn sich eine Einstellung ändert</string>
     <string name="settings_clear_battery_title">Alte Akkustände ausblenden</string>
     <string name="settings_clear_battery_sub">Einen Stand löschen, den die Earbuds nicht mehr melden, etwa das Case nach dem Schließen</string>
+    <string name="settings_full_notif_title">Akku in der Benachrichtigung</string>
+    <string name="settings_full_notif_sub">Zeigt die Akkustände. Aus: kleine Benachrichtigung ohne Symbol in der Statusleiste</string>
     <string name="settings_background_title">Hintergrunddienst</string>
     <string name="settings_background_sub">Bei geschlossener App verbunden bleiben</string>
     <string name="settings_background_warn_title">Hintergrunddienst ausschalten?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds unterstützt nur Ohrhörer von OnePlus, OPPO und realme. Wähle dein Modell aus der Liste.</string>
     <string name="problem_supported_list">Alle unterstützten Ohrhörer ansehen</string>
     <string name="problem_log_empty">Das Protokoll ist leer: Deine Ohrhörer haben sich noch nicht verbunden. Verbinde sie zuerst und sende dann dein Feedback.</string>
+    <string name="problem_capture_hint">Fehlt eine Einstellung oder bewirkt ein Schalter nichts? Sende ein Bluetooth-Snoop-Log von HeyMelody oder realme Link. Es zeigt den genauen Befehl. Ohne es muss der Entwickler raten.</string>
+    <string name="problem_capture_link">So erstellst du ein Snoop-Log</string>
     <string name="test_title">Earbuds testen</string>
     <string name="test_sub">Jede Funktion ausprobieren und das Ergebnis senden</string>
     <string name="test_ask_body">QuickBuds ist für diese Earbuds noch nicht bestätigt. Ein kurzer Test zeigt, was funktioniert. Nichts wird gesendet, bevor du auf Senden tippst.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Tippen öffnet QuickBuds</string>
     <string name="widget_tap_opens_sub">Ein Tipp auf das Widget öffnet die App</string>
     <string name="widget_open_app">QuickBuds öffnen</string>
+    <string name="widget_cycle">Geräuschmodus wechseln</string>
+    <string name="tile_on">An</string>
+    <string name="tile_off">Aus</string>
+    <string name="cycle_intro">Wähle mindestens 2 Modi. Ein Tipp auf die Kachel Geräuschsteuerung oder die Taste Geräuschmodus wechseln springt zum nächsten Modus, in dieser Reihenfolge.</string>
+    <string name="settings_cycle_sub">Modi für die Kachel und die Widget-Taste</string>
+    <string name="widget_cycle_name">QuickBuds Geräuschmodus</string>
 </resources>

@@ -29,8 +29,11 @@ object WidgetSettings {
         Mode("adapt", "Adaptive", R.string.anc_seg_adapt, R.string.anc_seg_adapt, R.drawable.ic_mode_adaptive),
         Mode("off", "Off", R.string.anc_seg_off, R.string.anc_seg_off, R.drawable.ic_mode_off)
     )
-    /** How long a tap waits for a second one (400 ms felt slow). */
-    const val DOUBLE_TAP_MS = 200L
+    /**
+     * How long a tap waits for a second one. Was: 200 ms; a real double tap often missed it (issue 26).
+     * Is: 300 ms, Android's own double tap timeout. 400 ms felt slow.
+     */
+    const val DOUBLE_TAP_MS = 300L
 
     private const val KEY_LIST_AT = "widgetListAt_"
     private const val KEY_PAGE = "widgetPage_"
@@ -40,9 +43,10 @@ object WidgetSettings {
 
     /**
      * The controls page's buttons, in setup screen order: "anc" opens the level list, "trans" / "adapt" / "off"
-     * select a mode, "ll" toggles low latency, a [FEATURE_BUTTONS] key toggles that `0x0403` switch.
+     * select a mode, "cycle" steps through the Noise cycle modes ([cycleNext]), "ll" toggles low latency,
+     * a [FEATURE_BUTTONS] key toggles that `0x0403` switch.
      */
-    val BUTTONS = listOf("anc", "trans", "adapt", "off", "ll", "wind", "app")
+    val BUTTONS = listOf("anc", "trans", "adapt", "off", "cycle", "ll", "wind", "app")
     /** Feature buttons: key -> `0x0403` id. */
     val FEATURE_BUTTONS = mapOf("wind" to Feature.WIND_NOISE)
     /** Buttons a widget shows before its setup screen saves a choice. */
@@ -65,6 +69,40 @@ object WidgetSettings {
         return MODES.filter { it.key in PICKER && anc.supports(it.store) }
     }
     private val PICKER = setOf("low", "med", "high", "smart")
+
+    /** The Noise cycle screen's order, which is also the step order. */
+    val CYCLE_ORDER = listOf("off", "trans", "adapt", "low", "med", "high", "smart")
+    private const val KEY_CYCLE = "noiseCycle"
+
+    /** The cycle modes the connected buds have. */
+    fun cycleOffered(c: Context): List<String> =
+        CYCLE_ORDER.filter { k -> if (k == "off") available(c, "off") else AncModes.of(c).supports(MODES.first { it.key == k }.store) }
+
+    /** The modes the person picked on the Noise cycle screen. Default: Off and Medium. */
+    fun cyclePicked(c: Context): Set<String> =
+        prefs(c).getString(KEY_CYCLE, null)?.split(',')?.filter { it in CYCLE_ORDER }?.toSet() ?: setOf("off", "med")
+
+    fun setCyclePicked(c: Context, keys: Collection<String>) {
+        prefs(c).edit().putString(KEY_CYCLE, CYCLE_ORDER.filter { it in keys }.joinToString(",")).apply()
+    }
+
+    /**
+     * The modes a tap steps through, in [CYCLE_ORDER]: the picked modes these buds have. Fewer than 2: Off and
+     * Medium, or Off and the buds' first level.
+     */
+    fun cycleModes(c: Context): List<String> {
+        val list = cycleOffered(c).filter { it in cyclePicked(c) }
+        if (list.size >= 2) return list
+        val levels = ancPicker(c)
+        return listOfNotNull("off", (levels.firstOrNull { it.key == "med" } ?: levels.firstOrNull())?.key)
+    }
+
+    /** The mode key after [current] in [cycleModes]; the first mode when [current] is not in the list. */
+    fun cycleNext(c: Context, current: Mode): String {
+        val list = cycleModes(c)
+        val i = list.indexOf(current.key)
+        return if (i < 0) list.first() else list[(i + 1) % list.size]
+    }
 
     /**
      * True: the Nothing style (no boxes, tighter inset, Nothing OS's Ndot digits; layouts `widget_*_n`).
@@ -155,6 +193,7 @@ object WidgetSettings {
             "anc" -> ancCmd && ancPicker(c).isNotEmpty()
             "trans", "adapt" -> ancCmd && anc.supports(MODES.first { it.key == key }.store)
             "off" -> ancCmd && !anc.isEmpty
+            "cycle" -> ancCmd && ancPicker(c).isNotEmpty()
             "ll" -> Capabilities.hasFeature(c, Capabilities.gameModeId(c))
             "wind" -> Capabilities.offered(c, Feature.WIND_NOISE, "windMode")
             "app" -> true

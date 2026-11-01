@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Bergetar apabila tetapan berubah</string>
     <string name="settings_clear_battery_title">Sembunyikan aras bateri lama</string>
     <string name="settings_clear_battery_sub">Kosongkan aras yang tidak lagi dilaporkan oleh earbud, seperti bekas selepas penutup ditutup</string>
+    <string name="settings_full_notif_title">Bateri dalam pemberitahuan</string>
+    <string name="settings_full_notif_sub">Menunjukkan paras. Mati: pemberitahuan kecil tanpa ikon bar status</string>
     <string name="settings_background_title">Perkhidmatan latar belakang</string>
     <string name="settings_background_sub">Kekal bersambung walaupun aplikasi ditutup</string>
     <string name="settings_background_warn_title">Matikan perkhidmatan latar belakang?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds hanya menyokong earbud OnePlus, OPPO dan realme. Pilih model anda daripada senarai.</string>
     <string name="problem_supported_list">Lihat semua earbud yang disokong</string>
     <string name="problem_log_empty">Log kosong: fon telinga anda belum bersambung. Sambungkan fon telinga dahulu, kemudian hantar maklum balas.</string>
+    <string name="problem_capture_hint">Tetapan tiada, atau suis tidak berfungsi? Hantar log snoop Bluetooth daripada HeyMelody atau realme Link. Log ini menunjukkan arahan yang tepat. Tanpanya, pembangun perlu meneka.</string>
+    <string name="problem_capture_link">Cara membuat log snoop</string>
     <string name="test_title">Uji fon telinga saya</string>
     <string name="test_sub">Cuba setiap ciri dan hantar hasilnya</string>
     <string name="test_ask_body">QuickBuds belum disahkan pada fon telinga ini. Ujian ringkas menunjukkan apa yang berfungsi. Tiada apa-apa dihantar sehingga anda mengetik Hantar.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Ketik untuk buka QuickBuds</string>
     <string name="widget_tap_opens_sub">Mengetik widget membuka aplikasi</string>
     <string name="widget_open_app">Buka QuickBuds</string>
+    <string name="widget_cycle">Kitaran bunyi</string>
+    <string name="tile_on">Hidup</string>
+    <string name="tile_off">Mati</string>
+    <string name="cycle_intro">Pilih sekurang-kurangnya 2 mod. Ketikan pada jubin atau butang Kitaran bunyi beralih ke mod seterusnya, mengikut urutan ini.</string>
+    <string name="settings_cycle_sub">Mod untuk jubin dan butang widget</string>
+    <string name="widget_cycle_name">QuickBuds kitaran bunyi</string>
 </resources>

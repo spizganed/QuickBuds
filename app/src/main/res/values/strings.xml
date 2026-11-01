@@ -348,6 +348,8 @@
     <string name="settings_haptics_sub">Vibrate when a setting changes</string>
     <string name="settings_clear_battery_title">Hide old battery levels</string>
     <string name="settings_clear_battery_sub">Clear a level the buds stop reporting, like the case after the lid closes</string>
+    <string name="settings_full_notif_title">Battery in the notification</string>
+    <string name="settings_full_notif_sub">Shows the levels. Off: a small notification without a status bar icon</string>
     <string name="settings_background_title">Background service</string>
     <string name="settings_background_sub">Stay connected with the app closed</string>
     <string name="settings_background_warn_title">Turn off the background service?</string>
@@ -427,6 +429,12 @@
     <string name="widget_background_title">Widget background</string>
     <string name="widget_background_sub">Off: the widget sits on your wallpaper</string>
     <string name="widget_open_app">Open QuickBuds</string>
+    <string name="widget_cycle">Noise cycle</string>
+    <string name="tile_on">On</string>
+    <string name="tile_off">Off</string>
+    <string name="cycle_intro">Pick at least 2 modes. A tap on the Noise control tile or the Noise cycle button moves to the next mode, in this order.</string>
+    <string name="settings_cycle_sub">Modes for the tile and the widget button</string>
+    <string name="widget_cycle_name">QuickBuds noise cycle</string>
     <string name="widget_tap_opens_title">Tap opens QuickBuds</string>
     <string name="widget_tap_opens_sub">A tap on the widget opens the app</string>
     <string name="widget_style_classic" translatable="false">QuickBuds</string>
@@ -556,6 +564,8 @@
     <string name="problem_unsupported">QuickBuds supports OnePlus, OPPO and realme earbuds only. Pick your model from the list.</string>
     <string name="problem_supported_list">See all supported earbuds</string>
     <string name="problem_log_empty">The log is empty: your buds did not connect yet. Connect your buds first, then send your feedback.</string>
+    <string name="problem_capture_hint">A setting is missing, or a switch does nothing? Send a Bluetooth snoop log of HeyMelody or realme Link. It shows the exact command. Without it, the developer must guess.</string>
+    <string name="problem_capture_link">How to make a snoop log</string>
     <string name="test_title">Test my earbuds</string>
     <string name="test_sub">Try each feature and send the result</string>
     <string name="test_ask_body">QuickBuds is not confirmed on these earbuds yet. A short test shows what works. Nothing is sent until you tap Send.</string>

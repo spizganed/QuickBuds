@@ -1,0 +1,66 @@
+name: Missing feature
+description: A setting that HeyMelody or realme Link has, and QuickBuds does not have or cannot change.
+labels: [missing feature]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        The app's log is not enough to add a feature. The developer does not own your earbuds and cannot guess the
+        command. This form needs a Bluetooth snoop log and a screen recording (or numbered screenshots) from the same test.
+        An issue without them closes after 7 days with no answer.
+        Steps: [Send a snoop log for a missing feature](https://github.com/spizganed/QuickBuds/blob/main/docs/PACKET-CAPTURE.md#send-a-snoop-log-for-a-missing-feature).
+        You need an Android phone. A PC or an iPhone cannot make this log.
+  - type: dropdown
+    id: brand
+    attributes:
+      label: Brand
+      options: [OnePlus, OPPO, realme, DIZO]
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Earbuds model
+      description: As in the README's Supported earbuds list.
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: Phone and Android version
+      description: For example "Pixel 8, Android 16".
+    validations:
+      required: true
+  - type: input
+    id: setting
+    attributes:
+      label: The setting
+      description: Its name in HeyMelody or realme Link, and its values. For example "Wind noise reduction, on and off".
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What you did, and when
+      description: Each change, its old and new value, and the time. For example "10:02:15 on, 10:02:20 off, 10:02:25 on".
+    validations:
+      required: true
+  - type: textarea
+    id: snoop
+    attributes:
+      label: Snoop log
+      description: >-
+        Attach `btsnoop_hci.log` (zip it if GitHub refuses the file). Everyone can read an attached log, and it holds the
+        Bluetooth addresses and names of your devices. To keep it private, send it in a direct message on Discord
+        (https://discord.gg/pvsnEf9TrZ) and write "sent on Discord" here.
+    validations:
+      required: true
+  - type: textarea
+    id: recording
+    attributes:
+      label: Screen recording or numbered screenshots
+      description: >-
+        A screen recording of the vendor app during the same test. Or screenshots, each with a number and a label,
+        for example "1. Wind noise reduction off", "2. Wind noise reduction on".
+    validations:
+      required: true

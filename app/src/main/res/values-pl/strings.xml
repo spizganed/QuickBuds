@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Wibruj przy zmianie ustawienia</string>
     <string name="settings_clear_battery_title">Ukryj stare poziomy baterii</string>
     <string name="settings_clear_battery_sub">Czyść poziom, którego słuchawki już nie zgłaszają, np. etui po zamknięciu</string>
+    <string name="settings_full_notif_title">Bateria w powiadomieniu</string>
+    <string name="settings_full_notif_sub">Pokazuje poziomy. Wył.: małe powiadomienie bez ikony na pasku stanu</string>
     <string name="settings_background_title">Usługa w tle</string>
     <string name="settings_background_sub">Pozostań połączony po zamknięciu aplikacji</string>
     <string name="settings_background_warn_title">Wyłączyć usługę w tle?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">QuickBuds obsługuje tylko słuchawki OnePlus, OPPO i realme. Wybierz swój model z listy.</string>
     <string name="problem_supported_list">Zobacz wszystkie obsługiwane słuchawki</string>
     <string name="problem_log_empty">Dziennik jest pusty: słuchawki jeszcze się nie połączyły. Najpierw je połącz, potem wyślij opinię.</string>
+    <string name="problem_capture_hint">Brakuje ustawienia albo przełącznik nic nie robi? Wyślij log Bluetooth HCI snoop z HeyMelody lub realme Link. Pokazuje dokładne polecenie. Bez niego twórca musi zgadywać.</string>
+    <string name="problem_capture_link">Jak zrobić log snoop</string>
     <string name="test_title">Przetestuj słuchawki</string>
     <string name="test_sub">Wypróbuj każdą funkcję i wyślij wynik</string>
     <string name="test_ask_body">QuickBuds nie jest jeszcze potwierdzony na tych słuchawkach. Krótki test pokazuje, co działa. Nic nie zostanie wysłane, dopóki nie dotkniesz Wyślij.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Dotknięcie otwiera QuickBuds</string>
     <string name="widget_tap_opens_sub">Dotknięcie widżetu otwiera aplikację</string>
     <string name="widget_open_app">Otwórz QuickBuds</string>
+    <string name="widget_cycle">Cykl szumów</string>
+    <string name="tile_on">Wł.</string>
+    <string name="tile_off">Wył.</string>
+    <string name="cycle_intro">Wybierz co najmniej 2 tryby. Dotknięcie kafelka lub przycisku Cykl szumów przełącza na następny tryb, w tej kolejności.</string>
+    <string name="settings_cycle_sub">Tryby kafelka i przycisku widżetu</string>
+    <string name="widget_cycle_name">QuickBuds cykl szumów</string>
 </resources>

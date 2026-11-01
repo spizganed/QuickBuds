@@ -3,6 +3,11 @@ description: An idea for a new feature in QuickBuds.
 labels: [idea]
 title: "[Idea] "
 body:
+  - type: markdown
+    attributes:
+      value: >-
+        A setting that HeyMelody or realme Link has, and QuickBuds does not: use the Missing feature form.
+        It needs a Bluetooth snoop log and a screen recording.
   - type: textarea
     id: idea
     attributes:

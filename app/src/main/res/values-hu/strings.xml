@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Rezgés beállítás módosításakor</string>
     <string name="settings_clear_battery_title">Régi akkuszintek elrejtése</string>
     <string name="settings_clear_battery_sub">Törli azt a szintet, amelyet a fülhallgató már nem jelent, pl. a tokét a fedél zárása után</string>
+    <string name="settings_full_notif_title">Akkumulátor az értesítésben</string>
+    <string name="settings_full_notif_sub">Megmutatja a szinteket. Ki: kis értesítés állapotsor-ikon nélkül</string>
     <string name="settings_background_title">Háttérszolgáltatás</string>
     <string name="settings_background_sub">Kapcsolat fenntartása bezárt alkalmazásnál is</string>
     <string name="settings_background_warn_title">Kikapcsolja a háttérszolgáltatást?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">A QuickBuds csak OnePlus, OPPO és realme fülhallgatókat támogat. Válaszd ki a modelledet a listából.</string>
     <string name="problem_supported_list">Az összes támogatott fülhallgató</string>
     <string name="problem_log_empty">A napló üres: a fülhallgatód még nem csatlakozott. Előbb csatlakoztasd, utána küldd el a visszajelzést.</string>
+    <string name="problem_capture_hint">Hiányzik egy beállítás, vagy egy kapcsoló nem csinál semmit? Küldj Bluetooth snoop logot a HeyMelody vagy a realme Link használatáról. Ez megmutatja a pontos parancsot. Enélkül a fejlesztőnek találgatnia kell.</string>
+    <string name="problem_capture_link">Hogyan készíts snoop logot</string>
     <string name="test_title">Fülhallgató tesztelése</string>
     <string name="test_sub">Próbálj ki minden funkciót, és küldd el az eredményt</string>
     <string name="test_ask_body">A QuickBuds még nincs megerősítve ezen a fülhallgatón. Egy rövid teszt megmutatja, mi működik. Semmi nem megy el, amíg nem koppintasz a Küldés gombra.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Koppintásra megnyílik a QuickBuds</string>
     <string name="widget_tap_opens_sub">A widget megérintése megnyitja az alkalmazást</string>
     <string name="widget_open_app">QuickBuds megnyitása</string>
+    <string name="widget_cycle">Zajmód váltása</string>
+    <string name="tile_on">Be</string>
+    <string name="tile_off">Ki</string>
+    <string name="cycle_intro">Válassz legalább 2 módot. A csempe vagy a Zajmód váltása gomb megérintése a következő módra lép, ebben a sorrendben.</string>
+    <string name="settings_cycle_sub">A csempe és a widgetgomb módjai</string>
+    <string name="widget_cycle_name">QuickBuds zajmód váltás</string>
 </resources>

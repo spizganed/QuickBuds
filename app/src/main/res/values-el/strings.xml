@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Δόνηση όταν αλλάζει μια ρύθμιση</string>
     <string name="settings_clear_battery_title">Απόκρυψη παλιών επιπέδων μπαταρίας</string>
     <string name="settings_clear_battery_sub">Διαγραφή επιπέδου που τα ακουστικά σταματούν να αναφέρουν, π.χ. η θήκη όταν κλείσει</string>
+    <string name="settings_full_notif_title">Μπαταρία στην ειδοποίηση</string>
+    <string name="settings_full_notif_sub">Δείχνει τα επίπεδα. Ανενεργό: μικρή ειδοποίηση χωρίς εικονίδιο στη γραμμή κατάστασης</string>
     <string name="settings_background_title">Υπηρεσία παρασκηνίου</string>
     <string name="settings_background_sub">Παραμονή σε σύνδεση με κλειστή την εφαρμογή</string>
     <string name="settings_background_warn_title">Απενεργοποίηση υπηρεσίας παρασκηνίου;</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">Το QuickBuds υποστηρίζει μόνο ακουστικά OnePlus, OPPO και realme. Επιλέξτε το μοντέλο σας από τη λίστα.</string>
     <string name="problem_supported_list">Δείτε όλα τα υποστηριζόμενα ακουστικά</string>
     <string name="problem_log_empty">Το αρχείο καταγραφής είναι κενό: τα ακουστικά δεν συνδέθηκαν ακόμη. Σύνδεσέ τα πρώτα και μετά στείλε τα σχόλιά σου.</string>
+    <string name="problem_capture_hint">Λείπει μια ρύθμιση ή ένας διακόπτης δεν κάνει τίποτα; Στείλτε ένα Bluetooth snoop log από το HeyMelody ή το realme Link. Δείχνει την ακριβή εντολή. Χωρίς αυτό, ο προγραμματιστής πρέπει να μαντέψει.</string>
+    <string name="problem_capture_link">Πώς φτιάχνετε ένα snoop log</string>
     <string name="test_title">Δοκιμή ακουστικών</string>
     <string name="test_sub">Δοκιμάστε κάθε λειτουργία και στείλτε το αποτέλεσμα</string>
     <string name="test_ask_body">Το QuickBuds δεν έχει επιβεβαιωθεί ακόμη σε αυτά τα ακουστικά. Μια σύντομη δοκιμή δείχνει τι λειτουργεί. Τίποτα δεν αποστέλλεται πριν πατήσετε Αποστολή.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Το πάτημα ανοίγει το QuickBuds</string>
     <string name="widget_tap_opens_sub">Πατώντας το widget ανοίγει η εφαρμογή</string>
     <string name="widget_open_app">Άνοιγμα QuickBuds</string>
+    <string name="widget_cycle">Εναλλαγή θορύβου</string>
+    <string name="tile_on">Ενεργό</string>
+    <string name="tile_off">Ανενεργό</string>
+    <string name="cycle_intro">Επιλέξτε τουλάχιστον 2 λειτουργίες. Ένα πάτημα στο πλακίδιο ή στο κουμπί εναλλαγής περνά στην επόμενη λειτουργία, με αυτή τη σειρά.</string>
+    <string name="settings_cycle_sub">Λειτουργίες για το πλακίδιο και το κουμπί του widget</string>
+    <string name="widget_cycle_name">QuickBuds εναλλαγή θορύβου</string>
 </resources>

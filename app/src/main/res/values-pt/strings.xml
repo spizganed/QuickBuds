@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Vibrar quando uma definição muda</string>
     <string name="settings_clear_battery_title">Ocultar níveis de bateria antigos</string>
     <string name="settings_clear_battery_sub">Limpar um nível que os fones deixam de informar, como o estojo depois de fechado</string>
+    <string name="settings_full_notif_title">Bateria na notificação</string>
+    <string name="settings_full_notif_sub">Mostra os níveis. Desligado: notificação pequena sem ícone na barra de status</string>
     <string name="settings_background_title">Serviço em segundo plano</string>
     <string name="settings_background_sub">Manter a ligação com a app fechada</string>
     <string name="settings_background_warn_title">Desativar o serviço em segundo plano?</string>
@@ -460,6 +462,8 @@
     <string name="problem_unsupported">O QuickBuds suporta apenas fones OnePlus, OPPO e realme. Escolha o seu modelo na lista.</string>
     <string name="problem_supported_list">Ver todos os fones suportados</string>
     <string name="problem_log_empty">O registro está vazio: seus fones ainda não conectaram. Conecte-os primeiro e depois envie seu feedback.</string>
+    <string name="problem_capture_hint">Falta uma configuração, ou um botão não faz nada? Envie um log snoop do Bluetooth do HeyMelody ou realme Link. Ele mostra o comando exato. Sem ele, o desenvolvedor precisa adivinhar.</string>
+    <string name="problem_capture_link">Como criar um log snoop</string>
     <string name="test_title">Testar os meus auriculares</string>
     <string name="test_sub">Experimente cada função e envie o resultado</string>
     <string name="test_ask_body">O QuickBuds ainda não está confirmado nestes auriculares. Um teste curto mostra o que funciona. Nada é enviado até tocar em Enviar.</string>
@@ -576,4 +580,10 @@
     <string name="widget_tap_opens_title">Tocar abre o QuickBuds</string>
     <string name="widget_tap_opens_sub">Tocar no widget abre o aplicativo</string>
     <string name="widget_open_app">Abrir o QuickBuds</string>
+    <string name="widget_cycle">Ciclo de ruído</string>
+    <string name="tile_on">Ligado</string>
+    <string name="tile_off">Desligado</string>
+    <string name="cycle_intro">Escolha pelo menos 2 modos. Um toque no bloco ou no botão Ciclo de ruído passa para o próximo modo, nesta ordem.</string>
+    <string name="settings_cycle_sub">Modos do bloco e do botão do widget</string>
+    <string name="widget_cycle_name">QuickBuds ciclo de ruído</string>
 </resources>

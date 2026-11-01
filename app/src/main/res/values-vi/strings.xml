@@ -268,6 +268,8 @@
     <string name="settings_haptics_sub">Rung khi thay đổi cài đặt</string>
     <string name="settings_clear_battery_title">Ẩn mức pin cũ</string>
     <string name="settings_clear_battery_sub">Xóa mức pin mà tai nghe ngừng báo, như hộp sạc sau khi đóng nắp</string>
+    <string name="settings_full_notif_title">Pin trong thông báo</string>
+    <string name="settings_full_notif_sub">Hiện mức pin. Tắt: thông báo nhỏ, không có biểu tượng trên thanh trạng thái</string>
     <string name="settings_background_title">Dịch vụ nền</string>
     <string name="settings_background_sub">Giữ kết nối khi đóng ứng dụng</string>
     <string name="settings_background_warn_title">Tắt dịch vụ nền?</string>
@@ -462,6 +464,8 @@
     <string name="problem_unsupported">QuickBuds chỉ hỗ trợ tai nghe OnePlus, OPPO và realme. Hãy chọn mẫu của bạn trong danh sách.</string>
     <string name="problem_supported_list">Xem tất cả tai nghe được hỗ trợ</string>
     <string name="problem_log_empty">Nhật ký trống: tai nghe của bạn chưa kết nối. Hãy kết nối tai nghe trước, rồi gửi phản hồi.</string>
+    <string name="problem_capture_hint">Thiếu một cài đặt, hoặc một công tắc không có tác dụng? Hãy gửi nhật ký snoop Bluetooth của HeyMelody hoặc realme Link. Nhật ký cho thấy lệnh chính xác. Không có nó, nhà phát triển phải đoán.</string>
+    <string name="problem_capture_link">Cách tạo nhật ký snoop</string>
     <string name="test_title">Kiểm tra tai nghe</string>
     <string name="test_sub">Thử từng tính năng và gửi kết quả</string>
     <string name="test_ask_body">QuickBuds chưa được xác nhận trên tai nghe này. Một bài kiểm tra ngắn cho thấy tính năng nào hoạt động. Không có gì được gửi cho đến khi bạn nhấn Gửi.</string>
@@ -578,4 +582,10 @@
     <string name="widget_tap_opens_title">Chạm để mở QuickBuds</string>
     <string name="widget_tap_opens_sub">Chạm vào tiện ích để mở ứng dụng</string>
     <string name="widget_open_app">Mở QuickBuds</string>
+    <string name="widget_cycle">Chuyển chế độ ồn</string>
+    <string name="tile_on">Bật</string>
+    <string name="tile_off">Tắt</string>
+    <string name="cycle_intro">Chọn ít nhất 2 chế độ. Chạm vào ô hoặc nút Chuyển chế độ ồn sẽ chuyển sang chế độ tiếp theo, theo thứ tự này.</string>
+    <string name="settings_cycle_sub">Các chế độ cho ô và nút tiện ích</string>
+    <string name="widget_cycle_name">QuickBuds chuyển chế độ ồn</string>
 </resources>

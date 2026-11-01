@@ -43,3 +43,11 @@ body:
         Prefer Settings › Feedback › Report a problem. It sends the log to the developer privately,
         with the Bluetooth addresses and the device names removed. If you attach a log here, everyone
         can read it: remove the addresses and the names of your other devices first.
+  - type: textarea
+    id: snoop
+    attributes:
+      label: Snoop log
+      description: >-
+        A switch that does nothing on the buds needs a Bluetooth snoop log of HeyMelody or realme Link, with a
+        screen recording. For a setting that QuickBuds lacks, use the Missing feature form instead. Steps:
+        https://github.com/spizganed/QuickBuds/blob/main/docs/PACKET-CAPTURE.md#send-a-snoop-log-for-a-missing-feature
