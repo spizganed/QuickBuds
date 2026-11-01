@@ -8,7 +8,8 @@
 set -euo pipefail
 pkg=$(realpath "$1")
 out=$(realpath -m "$2")
-tools=$(cd "$(dirname "$0")/.." && pwd)/desktop/target/appimage-tools
+root=$(cd "$(dirname "$0")/.." && pwd)
+tools=$root/desktop/target/appimage-tools
 mkdir -p "$tools"
 get() { [ -s "$tools/$1" ] || curl -fsSL -o "$tools/$1" "$2"; chmod +x "$tools/$1"; }
 get linuxdeploy-x86_64.AppImage https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -25,6 +26,9 @@ done
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 cd "$work"
+# appimagetool needs a PNG named after the desktop file's Icon= for .DirIcon; it refuses an SVG (since 2026-10-31).
+# desktop/quickbuds-appimage.png is quickbuds.svg drawn at 256x256 (rsvg-convert -w 256 -h 256).
+cp "$root/desktop/quickbuds-appimage.png" quickbuds.png
 APPIMAGE_EXTRACT_AND_RUN=1 DEPLOY_GTK_VERSION=3 ARCH=x86_64 LDAI_OUTPUT="$out" PATH="$tools:$PATH" \
   linuxdeploy-x86_64.AppImage --appdir AppDir -e "$pkg/quickbuds" -d "$pkg/quickbuds.desktop" \
-  -i "$pkg/quickbuds.svg" "${libs[@]}" --plugin gtk --output appimage >/dev/null
+  -i quickbuds.png "${libs[@]}" --plugin gtk --output appimage >/dev/null
