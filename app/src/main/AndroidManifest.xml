@@ -218,7 +218,7 @@
             android:name=".widget.NoiseTileService"
             android:exported="true"
             android:icon="@drawable/ic_mode_anc_medium"
-            android:label="@string/anc_seg_anc"
+            android:label="@string/anc_section"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
