@@ -30,7 +30,7 @@ On OnePlus, OPPO and realme phones (OxygenOS 12 and later, ColorOS, realme UI), 
 earbud settings can hold the control link of the earbuds. QuickBuds cannot connect in that case. Use
 the earbud settings in Settings › Bluetooth › your earbuds, or report the case.
 
-<details><summary><b>Confirmed</b> (42 models)</summary>
+<details><summary><b>Confirmed</b> (43 models)</summary>
 
 <details><summary><b>OnePlus</b> (15 models)</summary>
 
@@ -65,14 +65,15 @@ the earbud settings in Settings › Bluetooth › your earbuds, or report the ca
 
 </details>
 
-<details><summary><b>realme</b> (19 models)</summary>
+<details><summary><b>realme</b> (20 models)</summary>
 
+- **realme Buds Air 3 Neo**: confirmed by its owner on Android: battery. Wear detection does not work.
 - **realme Buds Air 5 Pro**: confirmed by its owner on Android: noise control and the feature switches, read back from the buds.
 - **realme Buds Air6**: confirmed by its owner on Android: battery, noise control, low latency, high-quality audio, equalizer, dual connection, wear detection, find my earbuds.
 - **realme Buds Air6 Pro**: confirmed by its owner on Android and Windows: battery, noise control, wind noise reduction, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, find my earbuds.
 - **realme Buds Air7**: confirmed by its owner on Android: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
 - **realme Buds Air7 Pro**: confirmed by its owner on Android and Windows: battery, noise control, wind noise reduction, low latency, high-quality audio, 3D audio, hearing profile, equalizer, gestures, wear detection, find my earbuds.
-- **realme Buds Air8**: confirmed by its owner on Android: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
+- **realme Buds Air8**: confirmed by its owners on Android and Windows: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
 - **realme Buds Air8 Pro**: confirmed by its owner on Android: battery, noise control, low latency, high-quality audio, hearing profile, dual connection, gestures, wear detection.
 - **realme Buds Clip**: confirmed by its owner on Android: battery, 3D audio, equalizer, gestures, find my earbuds.
 - **realme Buds T01**: confirmed by its owners on Android and Windows: battery, gestures. Low latency works on Windows, not on Android.
@@ -91,7 +92,7 @@ the earbud settings in Settings › Bluetooth › your earbuds, or report the ca
 
 </details>
 
-<details><summary><b>Not confirmed yet</b> (101 models)</summary>
+<details><summary><b>Not confirmed yet</b> (100 models)</summary>
 
 The app detects these models. Their features come from HeyMelody's and realme Link's data. Some may not work.
 
@@ -107,9 +108,9 @@ OPPO Enco Quiet, OPPO Enco M31, OPPO Enco M32, OPPO Enco M33, OPPO Enco Free, OP
 
 </details>
 
-<details><summary><b>realme</b> (32 models)</summary>
+<details><summary><b>realme</b> (31 models)</summary>
 
-realme Buds Wireless 2S, realme Buds Wireless 3 Neo, realme Buds Wireless 5 ANC, realme Buds Wireless 6 Neo, realme Buds Wireless 6, realme Buds Wireless 6 ANC, realme Buds Air 3, realme Buds Q2s, realme Buds Air 3S, realme Buds Air 3 Neo, realme Buds Air 5, realme Buds N1 Pro, realme Buds N1, realme Buds T200 Lite, realme TechLife Buds, realme Buds T500, realme Buds T500 Pro Harry Potter Edition, realme TechLife Buds T500 Pro, realme Buds Air 2 Neo, realme Buds Air, realme Buds Q2, realme Buds Air Pro, realme Brick Speaker, realme Buds Air 2, realme Buds Wireless 2, realme Buds Wireless 2 Neo, DIZO Wireless, DIZO GoPods D, DIZO GoPods, realme Pocket Speaker, realme Buds Wireless Pro, realme Buds Air Neo
+realme Buds Wireless 2S, realme Buds Wireless 3 Neo, realme Buds Wireless 5 ANC, realme Buds Wireless 6 Neo, realme Buds Wireless 6, realme Buds Wireless 6 ANC, realme Buds Air 3, realme Buds Q2s, realme Buds Air 3S, realme Buds Air 5, realme Buds N1 Pro, realme Buds N1, realme Buds T200 Lite, realme TechLife Buds, realme Buds T500, realme Buds T500 Pro Harry Potter Edition, realme TechLife Buds T500 Pro, realme Buds Air 2 Neo, realme Buds Air, realme Buds Q2, realme Buds Air Pro, realme Brick Speaker, realme Buds Air 2, realme Buds Wireless 2, realme Buds Wireless 2 Neo, DIZO Wireless, DIZO GoPods D, DIZO GoPods, realme Pocket Speaker, realme Buds Wireless Pro, realme Buds Air Neo
 
 </details>
 
@@ -148,7 +149,7 @@ All steps: [Send a snoop log for a missing feature](./docs/PACKET-CAPTURE.md#sen
 
 ## Install
 
-The current release is 5.5.0. Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds. It does not pair them.
+The current release is 5.6.0. Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects to paired earbuds. It does not pair them.
 
 | Platform | How |
 | --- | --- |
@@ -177,7 +178,7 @@ The script needs no administrator rights, adds a menu entry, and the app updates
 | **Hearing** | A hearing test that tunes the sound to your ears, and a fit test of the ear-tip seal. |
 | **Controls** | Gestures per bud, wear detection, dual connection, find my earbuds, prompt volume, tap sensitivity, firmware version. |
 | **Per model** | QuickBuds reads the model and shows only what that model supports. Settings › Known issues lists the limits of your model and phone, and the app tells you once when your model has some. A switch on the feature-sync engine moves only when the earbuds confirm it. Noise control moves at the tap. A failed change shows a toast with the reason. |
-| **Android** | Home screen widgets from 2×2 up: the battery first, then the noise control and switches after a double tap. A ten-page setup guide. A game equalizer that follows the game in the foreground (needs Usage access). |
+| **Android** | Home screen widgets from 2×2 up: the battery first, then the noise control and switches after a double tap. A 1×1 widget steps through your noise control modes. Quick Settings tiles: noise control, low latency, wind noise reduction and open QuickBuds. A notification with the battery rings. On Android 16, a status chip can show the earbud levels in the status bar. A ten-page setup guide. A game equalizer that follows the game in the foreground (needs Usage access). |
 | **PC** | A tray icon with quick controls (Windows) or a battery menu (Linux). |
 | **Looks** | Material, QuickBuds, Pixel art and Glass styles. OLED Black, Classic Dark and White themes, wallpaper colours, your own accent and palettes. Glass has six backgrounds. The phone and its widgets have all four styles. The PC app has the first three. |
 | **Feedback** | Settings › Feedback sends a description, a model test or a crash report with the log, without a GitHub account. The developer can answer a report, and the answer shows once in the app. |
