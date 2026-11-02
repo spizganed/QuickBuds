@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Dezactivează</string>
     <string name="settings_devtools_title">Buton instrumente pentru dezvoltatori</string>
     <string name="settings_devtools_sub">Afișează instrumentele pentru dezvoltatori în antet</string>
-    <string name="virtual_buds">Căști virtuale</string>
-    <string name="virtual_buds_sub">Conectează-te la un server fals de căști în loc de Bluetooth. Doar pentru dezvoltare.</string>
-    <string name="virtual_buds_address">Gazdă și port</string>
-    <string name="virtual_buds_name">Nume afișat</string>
     <string name="settings_update_sub">Instalată %1$s</string>
     <string name="settings_about_title">Despre</string>
     <string name="settings_about_sub">Versiune, licențe, GitHub</string>

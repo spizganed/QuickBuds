@@ -156,7 +156,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                 // disconnect() also runs after a failed connect attempt.
                 BudsDevice.find(this)?.let { manager?.setPhoneAudio(it, on = false) }
             }
-            ACTION_TOGGLE_BRIDGE -> manager?.setBridge(!RfcommBridge.running)
             ACTION_WIDGET_COMMAND -> {
                 statusLog("<< startService WIDGET_COMMAND")
                 if (manager?.isConnected() == true) {
@@ -238,13 +237,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             return
         }
         // An automatic connect needs the live audio link. With the buds in the closed case the
-        // A2DP / HEADSET state is disconnected, and 5 socket tries would only fail. Virtual buds
-        // keep their own path, and an unknown state connects as before.
+        // A2DP / HEADSET state is disconnected, and 5 socket tries would only fail. An unknown state connects as before.
         if (!user && !fromLink) {
-            val virtual = VirtualBuds.on(this)
-            val device = if (virtual) null else try { BudsDevice.find(this) } catch (_: Exception) { null }
+            val device = try { BudsDevice.find(this) } catch (_: Exception) { null }
             val link = device?.let { manager?.audioLinkState(it) } ?: LinkState.UNKNOWN
-            if (!ConnectPolicy.autoConnectAllowed(link, virtual)) {
+            if (!ConnectPolicy.autoConnectAllowed(link)) {
                 statusLog("[SVC] FORCE_CONNECT skipped (the buds have no audio link)")
                 // The sleep kept the connected state and the last levels. The buds left during the lock: clear them (reports 134, 135).
                 if (WidgetStateStore.read(this).connected) onConnected(false)
@@ -253,17 +250,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
         statusLog("[SVC] FORCE_CONNECT: connecting...")
         AncWidgetProvider.setConnecting(this, true)
-        // Dev tools › Virtual buds: no paired device and no Bluetooth adapter is needed.
-        if (VirtualBuds.on(this)) {
-            val target = VirtualBuds.parseAddress(VirtualBuds.address(this))
-            if (target == null) {
-                statusLog("[SVC] Virtual buds: bad host:port '${VirtualBuds.address(this)}'")
-                AncWidgetProvider.setConnecting(this, false)
-                return
-            }
-            manager?.connectVirtual(target.first, target.second, VirtualBuds.name(this))
-            return
-        }
         try {
             val device = BudsDevice.find(this)
             if (device != null) manager?.connect(device, withAudio, user)
@@ -428,9 +414,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             statusLog("[SVC] startForeground refused: ${e.javaClass.simpleName}")
             stopSelf()
         } catch (e: SecurityException) {
-            // A real phone without the permission stops here. Virtual buds only need the bound service.
+            // A phone without the permission stops here.
             statusLog("[SVC] startForeground refused: ${e.javaClass.simpleName}")
-            if (!VirtualBuds.on(this)) stopSelf()
+            stopSelf()
         }
     }
 
@@ -446,7 +432,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         // Close the RFCOMM link with the service: with the background service switched off,
         // leaving the app stops the service, and a live socket must not outlive it.
         try { manager?.disconnect() } catch (e: Exception) { PacketLogger.error("service stop disconnect", e) }
-        try { manager?.setBridge(false) } catch (_: Exception) {}
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(screenReceiver) } catch (_: Exception) {}
@@ -623,8 +608,6 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         /** On FORCE_CONNECT from [KeepAliveReceiver]: Android reported the buds' ACL or audio link. */
         const val EXTRA_FROM_LINK = "from_link"
         const val ACTION_FORCE_DISCONNECT = "com.spizganed.quickbuds.FORCE_DISCONNECT"
-        /** Dev tools › Bridge on/off ([RfcommBridge]). */
-        const val ACTION_TOGGLE_BRIDGE = "com.spizganed.quickbuds.TOGGLE_BRIDGE"
         const val ACTION_WIDGET_COMMAND = "com.spizganed.quickbuds.WIDGET_COMMAND"
         const val EXTRA_WIDGET_ACTION = "widget_action"
         const val EXTRA_WIDGET_ANC_MODE = "widget_anc_mode"

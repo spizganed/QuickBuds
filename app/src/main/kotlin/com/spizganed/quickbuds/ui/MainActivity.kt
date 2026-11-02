@@ -30,7 +30,6 @@ import com.spizganed.quickbuds.bluetooth.BudsDevice
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.ConnectPolicy
 import com.spizganed.quickbuds.bluetooth.PacketLogger
-import com.spizganed.quickbuds.bluetooth.VirtualBuds
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.Capabilities
@@ -493,14 +492,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * that cannot connect.
      */
     private fun startAndBindServiceIfPermitted() {
-        if (!hasBluetoothPermissions() && !VirtualBuds.on(this)) return
+        if (!hasBluetoothPermissions()) return
         if (isBound) return
         val serviceIntent = Intent(this, BudsService::class.java)
-        // Virtual buds needs no Bluetooth permission, so the connectedDevice foreground type (which
-        // needs BLUETOOTH_CONNECT) is not asked for: a plain start keeps the service alive while bound.
-        if (VirtualBuds.on(this)) {
-            startService(serviceIntent)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
         } else {
             startService(serviceIntent)
@@ -638,7 +633,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         if (::manager.isInitialized) onFeatureStates(manager.featureStates)
         // Settings › Developer › Dev tools button (default on).
         btnDevTools.visibility = if (getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
-                .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, true)) View.VISIBLE else View.GONE
+                .getBoolean(SettingsActivity.KEY_DEV_TOOLS_BUTTON, false)) View.VISIBLE else View.GONE
         // The phone may have changed its codec while the app was away, or does so when a stream starts.
         refreshCodecRow()
         val filter = IntentFilter(android.bluetooth.BluetoothA2dp.ACTION_PLAYING_STATE_CHANGED)
@@ -1349,11 +1344,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      * deliberately excluded from hasBluetoothPermissions().
      */
     private fun checkPermissions() {
-        // Dev tools › Virtual buds: a socket needs no Bluetooth permission, so nothing is asked.
-        if (VirtualBuds.on(this)) {
-            startAndBindServiceIfPermitted()
-            return
-        }
         val needed = mutableListOf<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) needed.add(Manifest.permission.BLUETOOTH_CONNECT)
@@ -1411,16 +1401,6 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             toast("Service not bound yet.")
             return
         }
-        // Dev tools › Virtual buds: skip the adapter and the paired-device list. The emulator has no adapter.
-        if (VirtualBuds.on(this)) {
-            val target = VirtualBuds.parseAddress(VirtualBuds.address(this))
-            if (target == null) {
-                toast("Virtual buds: set a host and port.")
-                return
-            }
-            manager.connectVirtual(target.first, target.second, VirtualBuds.name(this))
-            return
-        }
         val adapter = getSystemService(BluetoothManager::class.java)?.adapter
         if (adapter == null || !adapter.isEnabled) {
             toast("Bluetooth is off.")
@@ -1433,7 +1413,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         }
         // App open: an automatic connect starts only with the live audio link. With the buds in
         // the closed case Android reports disconnected, and the tries would only fail.
-        if (!ConnectPolicy.autoConnectAllowed(manager.audioLinkState(device), virtual = false)) return
+        if (!ConnectPolicy.autoConnectAllowed(manager.audioLinkState(device))) return
         manager.connect(device, withAudio = true)
     }
 

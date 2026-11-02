@@ -20,7 +20,6 @@ import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsDevice
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
-import com.spizganed.quickbuds.bluetooth.VirtualBuds
 import com.spizganed.quickbuds.protocol.ModelCatalog
 
 /**
@@ -168,10 +167,7 @@ class ModelTestActivity : Activity(), BudsConnectionManager.Listener {
     /** Clears the log, drops the link and connects again; [finishCheck] runs once the buds have answered. */
     private fun begin() {
         val m = manager ?: return
-        // Dev tools › Virtual buds: there is no paired Bluetooth device. Connect to the fake server instead.
-        val virtual = if (VirtualBuds.on(this)) VirtualBuds.parseAddress(VirtualBuds.address(this)) else null
-        val device = if (virtual != null) null else BudsDevice.find(this)
-        if (device == null && virtual == null) return showStatus(R.string.no_buds_paired)
+        val device = BudsDevice.find(this) ?: return showStatus(R.string.no_buds_paired)
         running = true
         answered.clear()
         start.isEnabled = false
@@ -181,10 +177,7 @@ class ModelTestActivity : Activity(), BudsConnectionManager.Listener {
         PacketLogger.clear()
         PacketLogger.log("MODEL TEST: start, ${ModelCatalog.current(this)?.name ?: "unknown model"}")
         m.disconnect()
-        main.postDelayed({
-            if (virtual != null) m.connectVirtual(virtual.first, virtual.second, VirtualBuds.name(this))
-            else device?.let { m.connect(it) }
-        }, RECONNECT_GAP_MS)
+        main.postDelayed({ m.connect(device) }, RECONNECT_GAP_MS)
         main.postDelayed({ if (running && "connected" !in answered) fail() }, CONNECT_TIMEOUT_MS)
     }
 

@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Disattiva</string>
     <string name="settings_devtools_title">Pulsante strumenti sviluppatore</string>
     <string name="settings_devtools_sub">Mostra gli strumenti sviluppatore nell\'intestazione</string>
-    <string name="virtual_buds">Auricolari virtuali</string>
-    <string name="virtual_buds_sub">Connetti a un server finto di auricolari invece del Bluetooth. Solo per lo sviluppo.</string>
-    <string name="virtual_buds_address">Host e porta</string>
-    <string name="virtual_buds_name">Nome mostrato</string>
     <string name="settings_update_sub">Installata %1$s</string>
     <string name="settings_about_title">Informazioni</string>
     <string name="settings_about_sub">Versione, licenze, GitHub</string>

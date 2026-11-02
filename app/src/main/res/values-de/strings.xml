@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Ausschalten</string>
     <string name="settings_devtools_title">Button für Entwicklertools</string>
     <string name="settings_devtools_sub">Entwicklertools in der Kopfzeile anzeigen</string>
-    <string name="virtual_buds">Virtuelle Ohrhörer</string>
-    <string name="virtual_buds_sub">Statt Bluetooth mit einem gefälschten Ohrhörer-Server verbinden. Nur für die Entwicklung.</string>
-    <string name="virtual_buds_address">Host und Port</string>
-    <string name="virtual_buds_name">Angezeigter Name</string>
     <string name="settings_update_sub">Installiert: %1$s</string>
     <string name="settings_about_title">Über</string>
     <string name="settings_about_sub">Version, Lizenzen, GitHub</string>

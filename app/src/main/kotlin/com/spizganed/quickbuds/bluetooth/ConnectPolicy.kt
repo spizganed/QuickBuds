@@ -12,8 +12,7 @@ enum class LinkState { CONNECTED, DISCONNECTED, UNKNOWN }
  */
 object ConnectPolicy {
 
-    fun autoConnectAllowed(link: LinkState, virtual: Boolean): Boolean =
-        virtual || link != LinkState.DISCONNECTED
+    fun autoConnectAllowed(link: LinkState): Boolean = link != LinkState.DISCONNECTED
 
     fun showTryToast(user: Boolean): Boolean = user
 }

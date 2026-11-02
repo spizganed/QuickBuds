@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">বন্ধ করুন</string>
     <string name="settings_devtools_title">ডেভেলপার টুল বোতাম</string>
     <string name="settings_devtools_sub">হেডারে ডেভেলপার টুল দেখান</string>
-    <string name="virtual_buds">ভার্চুয়াল বাডস</string>
-    <string name="virtual_buds_sub">ব্লুটুথের বদলে একটি নকল ইয়ারবাডস সার্ভারে সংযোগ করুন। শুধু ডেভেলপমেন্টের জন্য।</string>
-    <string name="virtual_buds_address">হোস্ট ও পোর্ট</string>
-    <string name="virtual_buds_name">দেখানো নাম</string>
     <string name="settings_update_sub">ইনস্টল করা %1$s</string>
     <string name="settings_about_title">সম্পর্কে</string>
     <string name="settings_about_sub">সংস্করণ, লাইসেন্স, GitHub</string>

@@ -51,8 +51,6 @@ import com.spizganed.quickbuds.protocol.Replies
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.net.InetSocketAddress
-import java.net.Socket
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -70,8 +68,6 @@ class BudsConnectionManager(private val context: Context) {
         private const val CONNECT_TIMEOUT_MS = 12_000L
         /** A fresh UUID query gets this long for its answer, then its receiver goes away. */
         private const val UUID_REFRESH_TIMEOUT_MS = 10_000L
-        /** Virtual buds: a refused or silent TCP connect must not hang the UI. */
-        private const val VIRTUAL_CONNECT_TIMEOUT_MS = 5_000
     }
 
     /**
@@ -227,8 +223,6 @@ class BudsConnectionManager(private val context: Context) {
     @Volatile private var syncPrimed = false
 
     private var bluetoothSocket: BluetoothSocket? = null
-    /** Set only in virtual mode (Dev tools › Virtual buds); [bluetoothSocket] stays null there. */
-    private var virtualSocket: Socket? = null
     private var connectedThread: ConnectedThread? = null
     private var isReady = false
     private var isConnecting = false
@@ -267,9 +261,8 @@ class BudsConnectionManager(private val context: Context) {
 
     fun isConnected(): Boolean = isReady && linkUp()
 
-    /** The open link, Bluetooth or virtual. A null adapter never reaches this. */
-    private fun linkUp(): Boolean =
-        bluetoothSocket?.isConnected == true || virtualSocket?.isConnected == true
+    /** The open link. A null adapter never reaches this. */
+    private fun linkUp(): Boolean = bluetoothSocket?.isConnected == true
 
     /**
      * Drops or restores the phone's own audio link, the way HeyMelody's Connect/Disconnect does:
@@ -347,7 +340,6 @@ class BudsConnectionManager(private val context: Context) {
         }
         isConnecting = true
         lastDevice = device
-        virtualTarget = null
         val generation = ++connectGeneration
         // Starts the attempt, or clears the latch if the setup before it throws.
         val started = try {
@@ -542,9 +534,7 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /**
-     * Everything after a link is open. The same steps for Bluetooth and virtual buds, so the init
-     * sequence, the feature-sync engine and the UI callbacks do not know the difference.
-     * [audioDevice] is null in virtual mode: there is no phone audio to bring up.
+     * Everything after a link is open: the init sequence, the feature-sync engine and the UI callbacks.
      */
     private fun onLinkUp(audioDevice: BluetoothDevice?) {
         isReady = true
@@ -560,55 +550,6 @@ class BudsConnectionManager(private val context: Context) {
         syncHandler.post { execute(sync.reconnect(SystemClock.elapsedRealtime())) }
         log("Ready for commands. Running init sequence...")
         runInitSequence()
-    }
-
-    /** Where a lost virtual link goes back to, so a Hi-Res restart reconnects by itself. */
-    private var virtualTarget: Pair<String, Int>? = null
-
-    /**
-     * Dev tools › Virtual buds: a TCP socket to a local fake earbuds server instead of RFCOMM.
-     * No BluetoothAdapter, no paired device and no Bluetooth permission is touched here.
-     * Everything after the socket is the normal path ([onLinkUp]).
-     */
-    fun connectVirtual(host: String, port: Int, shownName: String) {
-        if (isConnecting || isConnected()) {
-            log("Already connecting/connected, ignoring.")
-            return
-        }
-        isConnecting = true
-        virtualTarget = host to port
-        val generation = ++connectGeneration
-        Thread {
-            try {
-                log("Connecting to the fake buds at $host:$port...")
-                rememberDeviceName(shownName)
-                val socket = Socket()
-                try {
-                    socket.connect(InetSocketAddress(host, port), VIRTUAL_CONNECT_TIMEOUT_MS)
-                } catch (e: Exception) {
-                    log("Virtual connect failed: ${e.message}")
-                    try { socket.close() } catch (_: Exception) {}
-                    disconnect()
-                    return@Thread
-                }
-                if (generation != connectGeneration) {
-                    log("Virtual connect cancelled: the link was dropped meanwhile.")
-                    try { socket.close() } catch (_: Exception) {}
-                    return@Thread
-                }
-                socket.tcpNoDelay = true
-                virtualSocket = socket
-                connectedThread = ConnectedThread(socket.getInputStream(), socket.getOutputStream()) { socket.close() }
-                connectedThread?.start()
-                log("Connected to $host:$port")
-                onLinkUp(null)
-            } catch (e: Exception) {
-                log("Virtual connect error: ${e.javaClass.simpleName}: ${e.message}")
-                disconnect()
-            } finally {
-                isConnecting = false
-            }
-        }.start()
     }
 
     private fun runInitSequence() {
@@ -676,17 +617,6 @@ class BudsConnectionManager(private val context: Context) {
      * give them time to settle; a connection that lived 30 s starts the count over.
      */
     private fun reconnectAfterLoss() {
-        val target = virtualTarget
-        if (target != null) {
-            // The fake buds drop the link after an accepted Hi-Res write and listen again after 4 s.
-            log("Reconnect to the fake buds in 4s...")
-            val r = Runnable {
-                if (!isConnected() && !isConnecting) connectVirtual(target.first, target.second, VirtualBuds.name(context))
-            }
-            pendingReconnect = r
-            handler.postDelayed(r, 4000)
-            return
-        }
         val device = lastDevice ?: return
         if (System.currentTimeMillis() - connectedAt > 30_000) lossRetries = 0
         if (lossRetries >= 8) {
@@ -724,29 +654,10 @@ class BudsConnectionManager(private val context: Context) {
         connectedThread?.cancel()
         connectedThread = null
         bluetoothSocket = null
-        virtualSocket = null
-        bridge?.dropClient()
         handler.post { listeners.forEach { it.onConnected(false) } }
         syncPrimed = false
         syncHandler.post { execute(sync.disconnect(SystemClock.elapsedRealtime())) }
         log("Disconnected")
-    }
-
-    private var bridge: RfcommBridge? = null
-
-    /** Dev tools › Bridge ([RfcommBridge]). False when the port is taken. */
-    fun setBridge(on: Boolean): Boolean {
-        bridge?.stop()
-        bridge = null
-        if (!on) { log("Bridge off"); return true }
-        return try {
-            bridge = RfcommBridge { sendRawBlocking(it, "bridge") }
-            log("Bridge on 127.0.0.1:${RfcommBridge.PORT}")
-            true
-        } catch (e: IOException) {
-            log("Bridge failed: ${e.message}")
-            false
-        }
     }
 
     /**
@@ -862,7 +773,7 @@ class BudsConnectionManager(private val context: Context) {
     val eqCustom: List<EqCodec.Preset> get() = eqState.custom
     val bassWaveLevel: Int? get() = eqState.bassWave
 
-    /** The MAC of the linked buds; null while no link is up, and in virtual mode. */
+    /** The MAC of the linked buds; null while no link is up. */
     @Volatile private var eqMac: String? = null
     private val eqReadGate = EqReadGate()
 
@@ -995,7 +906,7 @@ class BudsConnectionManager(private val context: Context) {
         rememberDeviceName(runCatching { device.name }.getOrNull())
     }
 
-    /** [name] is the Bluetooth name, or the "Name shown" field in virtual mode (Dev tools › Virtual buds). */
+    /** [name] is the Bluetooth name. */
     private fun rememberDeviceName(name: String?) {
         if (name == null) return
         val prefs = featurePrefs()
@@ -1602,7 +1513,6 @@ class BudsConnectionManager(private val context: Context) {
                     // Target 37+: a dropped RFCOMM link returns -1 instead of throwing.
                     if (bytes < 0) throw IOException("stream closed")
                     if (bytes > 0) {
-                        bridge?.forward(buffer, bytes)
                         // The handlers read the fixed 9-byte header, so each packet comes out in that form.
                         for (frame in framer.append(buffer, bytes)) handlePacket(frame)
                     }

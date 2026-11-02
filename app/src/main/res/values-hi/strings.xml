@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">बंद करें</string>
     <string name="settings_devtools_title">डेवलपर टूल बटन</string>
     <string name="settings_devtools_sub">हेडर में डेवलपर टूल दिखाएं</string>
-    <string name="virtual_buds">वर्चुअल ईयरबड्स</string>
-    <string name="virtual_buds_sub">ब्लूटूथ के बजाय नकली ईयरबड्स सर्वर से कनेक्ट करें। केवल डेवलपमेंट के लिए।</string>
-    <string name="virtual_buds_address">होस्ट और पोर्ट</string>
-    <string name="virtual_buds_name">दिखाया गया नाम</string>
     <string name="settings_update_sub">%1$s इंस्टॉल है</string>
     <string name="settings_about_title">परिचय</string>
     <string name="settings_about_sub">संस्करण, लाइसेंस, GitHub</string>

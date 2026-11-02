@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Desativar</string>
     <string name="settings_devtools_title">Botão de ferramentas de desenvolvimento</string>
     <string name="settings_devtools_sub">Mostrar as ferramentas de desenvolvimento no cabeçalho</string>
-    <string name="virtual_buds">Aurículos virtuais</string>
-    <string name="virtual_buds_sub">Ligar a um servidor falso de auriculares em vez de Bluetooth. Apenas para desenvolvimento.</string>
-    <string name="virtual_buds_address">Anfitrião e porta</string>
-    <string name="virtual_buds_name">Nome apresentado</string>
     <string name="settings_update_sub">Instalada %1$s</string>
     <string name="settings_about_title">Acerca de</string>
     <string name="settings_about_sub">Versão, licenças, GitHub</string>

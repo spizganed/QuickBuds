@@ -359,10 +359,6 @@
     <string name="settings_background_warn_action">Turn off</string>
     <string name="settings_devtools_title">Dev tools button</string>
     <string name="settings_devtools_sub">Show dev tools in the header</string>
-    <string name="virtual_buds">Virtual buds</string>
-    <string name="virtual_buds_sub">Connect to a fake earbuds server instead of Bluetooth. For development only.</string>
-    <string name="virtual_buds_address">Host and port</string>
-    <string name="virtual_buds_name">Name shown</string>
     <string name="settings_update_sub">Installed %1$s</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_sub">Version, licenses, GitHub</string>

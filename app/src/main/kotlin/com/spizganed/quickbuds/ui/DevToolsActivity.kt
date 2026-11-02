@@ -1,7 +1,6 @@
 package com.spizganed.quickbuds.ui
 
 import android.Manifest
-import com.spizganed.quickbuds.QuickBudsApp
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,13 +15,10 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.graphics.Typeface
-import android.text.Editable
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.view.Gravity
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -33,8 +29,6 @@ import androidx.core.widget.TextViewCompat
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.PacketLogger
-import com.spizganed.quickbuds.bluetooth.RfcommBridge
-import com.spizganed.quickbuds.bluetooth.VirtualBuds
 import com.spizganed.quickbuds.protocol.LogDecoder
 import com.spizganed.quickbuds.protocol.SimpleLog
 import java.io.File
@@ -51,7 +45,7 @@ import java.util.concurrent.Executors
  *   - Detailed: every line decoded ([LogDecoder]), with the bytes under each packet
  * Both use one colour per kind: sent by the app, from the buds, connection, problem.
  *
- * Also provides Clear / Export of the log, Reconnect / Disconnect, the RFCOMM bridge and the crash logger test.
+ * Also provides Clear / Export of the log, Reconnect / Disconnect.
  */
 class DevToolsActivity : Activity() {
 
@@ -128,50 +122,7 @@ class DevToolsActivity : Activity() {
             startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FORCE_DISCONNECT))
             showInLog("disconnect requested (FORCE_DISCONNECT)")
         })
-        // Raw RFCOMM on 127.0.0.1 for the desktop app running on this phone (RfcommBridge).
-        actions.addView(action(R.drawable.ic_devices, "Bridge") {
-            startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_TOGGLE_BRIDGE))
-            showInLog(if (RfcommBridge.running) "bridge off requested"
-                else "bridge on requested: QB_BRIDGE=127.0.0.1:${RfcommBridge.PORT}")
-        })
-        // Proves the crash logger catches a crash before any app logic: arms a throw at the
-        // very start of the next launch (QuickBudsApp.attachBaseContext), then closes the app.
-        actions.addView(action(R.drawable.ic_warning, "Crash test") {
-            ConfirmDialog.show(
-                this, "Crash test?",
-                "The app closes now and crashes once on its next launch, to test the crash logger.",
-                "Crash test"
-            ) {
-                getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).edit()
-                    .putBoolean(QuickBudsApp.PREF_CRASH_ON_LAUNCH, true).commit()
-                Toast.makeText(this, "Reopen the app: it crashes once at launch", Toast.LENGTH_LONG).show()
-                finishAffinity()
-                android.os.Process.killProcess(android.os.Process.myPid())
-            }
-        })
         root.addView(actions, spaced(dp(12f)))
-
-        // Dev tools › Virtual buds: the app connects to a local fake earbuds server over TCP instead of Bluetooth,
-        // so the emulator shows every row with no phone and no real earbuds. Off by default.
-        val virtualPrefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
-        val virtualCard = SettingRowFactory.card(this)
-        val virtualSwitch = SettingRowFactory.buildSwitch(this, virtualPrefs.getBoolean(VirtualBuds.KEY_ON, false))
-        virtualSwitch.setOnCheckedChangeListener { _, on ->
-            virtualPrefs.edit().putBoolean(VirtualBuds.KEY_ON, on).apply()
-            showInLog("virtual buds ${if (on) "on" else "off"}")
-        }
-        SettingRowFactory.addRow(virtualCard, SettingRowFactory.build(
-            this, R.drawable.ic_earbud, R.string.virtual_buds, R.string.virtual_buds_sub, virtualSwitch
-        ) { virtualSwitch.performClick() })
-        SettingRowFactory.addRow(virtualCard, SettingRowFactory.build(
-            this, 0, R.string.virtual_buds_address, 0, null,
-            textField(VirtualBuds.KEY_ADDRESS, VirtualBuds.DEFAULT_ADDRESS)
-        ))
-        SettingRowFactory.addRow(virtualCard, SettingRowFactory.build(
-            this, 0, R.string.virtual_buds_name, 0, null,
-            textField(VirtualBuds.KEY_NAME, VirtualBuds.DEFAULT_NAME)
-        ))
-        root.addView(virtualCard, spaced(dp(12f)))
 
         logText = TextView(this).apply {
             setTextIsSelectable(true)
@@ -235,33 +186,6 @@ class DevToolsActivity : Activity() {
                 layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 setTextColor(ThemeRes.color(this@DevToolsActivity, R.attr.appColorTextPrimary))
                 setPadding(dp(2f), dp(5f), dp(2f), 0)
-            })
-        }
-    }
-
-    /**
-     * One text field of the Virtual buds card. It saves on every edit, so the next launch and the
-     * next connect read it without a Save button.
-     */
-    private fun textField(key: String, default: String): EditText {
-        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
-        val dp = { v: Float -> ThemeRes.dp(this, v) }
-        return EditText(this).apply {
-            setText(prefs.getString(key, default).orEmpty())
-            hint = default
-            textSize = 14f
-            setSingleLine()
-            setTextColor(ThemeRes.color(this@DevToolsActivity, R.attr.appColorTextPrimary))
-            setHintTextColor(ThemeRes.color(this@DevToolsActivity, R.attr.appColorTextSecondary))
-            background = null
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                .apply { marginStart = dp(8f) }
-            addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable) {
-                    prefs.edit().putString(key, s.toString().trim()).apply()
-                }
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
         }
     }

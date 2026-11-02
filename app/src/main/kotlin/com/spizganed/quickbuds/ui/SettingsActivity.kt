@@ -59,7 +59,7 @@ class SettingsActivity : Activity() {
                 startActivity(Intent(this, com.spizganed.quickbuds.widget.NoiseCycleActivity::class.java))
             },
             fullNotifRow,
-            toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true),
+            toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, false),
             toggle(R.drawable.ic_info, R.string.settings_ping_title, R.string.settings_ping_sub, UsagePing.KEY_ENABLED, true)
         )
         // The chip is an Android 16 live update: older versions do not get the row.

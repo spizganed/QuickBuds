@@ -11,19 +11,15 @@ import org.junit.Test
 class ConnectPolicyTest {
 
     @Test fun automaticConnectStartsWithTheAudioLink() {
-        assertTrue(ConnectPolicy.autoConnectAllowed(LinkState.CONNECTED, virtual = false))
+        assertTrue(ConnectPolicy.autoConnectAllowed(LinkState.CONNECTED))
     }
 
     @Test fun automaticConnectDoesNotStartWithoutTheAudioLink() {
-        assertFalse(ConnectPolicy.autoConnectAllowed(LinkState.DISCONNECTED, virtual = false))
+        assertFalse(ConnectPolicy.autoConnectAllowed(LinkState.DISCONNECTED))
     }
 
     @Test fun anUnknownLinkStateConnectsAsToday() {
-        assertTrue(ConnectPolicy.autoConnectAllowed(LinkState.UNKNOWN, virtual = false))
-    }
-
-    @Test fun virtualBudsKeepTheirConnect() {
-        assertTrue(ConnectPolicy.autoConnectAllowed(LinkState.DISCONNECTED, virtual = true))
+        assertTrue(ConnectPolicy.autoConnectAllowed(LinkState.UNKNOWN))
     }
 
     @Test fun theUserConnectShowsTheTryToasts() {

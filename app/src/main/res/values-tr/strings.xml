@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Kapat</string>
     <string name="settings_devtools_title">Geliştirici araçları düğmesi</string>
     <string name="settings_devtools_sub">Geliştirici araçlarını başlıkta göster</string>
-    <string name="virtual_buds">Sanal kulaklıklar</string>
-    <string name="virtual_buds_sub">Bluetooth yerine sahte bir kulaklık sunucusuna bağlan. Yalnızca geliştirme için.</string>
-    <string name="virtual_buds_address">Sunucu ve bağlantı noktası</string>
-    <string name="virtual_buds_name">Gösterilen ad</string>
     <string name="settings_update_sub">Yüklü: %1$s</string>
     <string name="settings_about_title">Hakkında</string>
     <string name="settings_about_sub">Sürüm, lisanslar, GitHub</string>

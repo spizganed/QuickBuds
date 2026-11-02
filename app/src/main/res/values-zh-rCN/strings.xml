@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">关闭</string>
     <string name="settings_devtools_title">开发者工具按钮</string>
     <string name="settings_devtools_sub">在顶部显示开发者工具</string>
-    <string name="virtual_buds">虚拟耳机</string>
-    <string name="virtual_buds_sub">连接到假的耳机服务器而不是蓝牙。仅用于开发。</string>
-    <string name="virtual_buds_address">主机和端口</string>
-    <string name="virtual_buds_name">显示名称</string>
     <string name="settings_update_sub">已安装 %1$s</string>
     <string name="settings_about_title">关于</string>
     <string name="settings_about_sub">版本、许可证、GitHub</string>

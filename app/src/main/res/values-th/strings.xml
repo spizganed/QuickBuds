@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">ปิด</string>
     <string name="settings_devtools_title">ปุ่มเครื่องมือนักพัฒนา</string>
     <string name="settings_devtools_sub">แสดงเครื่องมือนักพัฒนาที่ส่วนหัว</string>
-    <string name="virtual_buds">หูฟังเสมือน</string>
-    <string name="virtual_buds_sub">เชื่อมต่อกับเซิร์ฟเวอร์หูฟังปลอมแทนบลูทูธ สำหรับการพัฒนาเท่านั้น</string>
-    <string name="virtual_buds_address">โฮสต์และพอร์ต</string>
-    <string name="virtual_buds_name">ชื่อที่แสดง</string>
     <string name="settings_update_sub">ติดตั้ง %1$s แล้ว</string>
     <string name="settings_about_title">เกี่ยวกับ</string>
     <string name="settings_about_sub">เวอร์ชัน สัญญาอนุญาต GitHub</string>

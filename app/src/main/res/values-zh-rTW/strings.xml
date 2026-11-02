@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">關閉</string>
     <string name="settings_devtools_title">開發者工具按鈕</string>
     <string name="settings_devtools_sub">在頂部顯示開發者工具</string>
-    <string name="virtual_buds">虛擬耳機</string>
-    <string name="virtual_buds_sub">連線到假的耳機伺服器，而非藍牙。僅供開發使用。</string>
-    <string name="virtual_buds_address">主機與連接埠</string>
-    <string name="virtual_buds_name">顯示名稱</string>
     <string name="settings_update_sub">已安裝 %1$s</string>
     <string name="settings_about_title">關於</string>
     <string name="settings_about_sub">版本、授權、GitHub</string>

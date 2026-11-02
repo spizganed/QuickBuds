@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Matikan</string>
     <string name="settings_devtools_title">Tombol alat developer</string>
     <string name="settings_devtools_sub">Tampilkan alat developer di atas</string>
-    <string name="virtual_buds">Earbud virtual</string>
-    <string name="virtual_buds_sub">Hubungkan ke server earbud palsu, bukan Bluetooth. Hanya untuk pengembangan.</string>
-    <string name="virtual_buds_address">Host dan port</string>
-    <string name="virtual_buds_name">Nama yang ditampilkan</string>
     <string name="settings_update_sub">Terpasang %1$s</string>
     <string name="settings_about_title">Tentang</string>
     <string name="settings_about_sub">Versi, lisensi, GitHub</string>

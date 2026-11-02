@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Uitzetten</string>
     <string name="settings_devtools_title">Knop voor ontwikkelaarstools</string>
     <string name="settings_devtools_sub">Ontwikkelaarstools in de koptekst tonen</string>
-    <string name="virtual_buds">Virtuele oordopjes</string>
-    <string name="virtual_buds_sub">Verbind met een nep-oordopjesserver in plaats van Bluetooth. Alleen voor ontwikkeling.</string>
-    <string name="virtual_buds_address">Host en poort</string>
-    <string name="virtual_buds_name">Getoonde naam</string>
     <string name="settings_update_sub">Geïnstalleerd: %1$s</string>
     <string name="settings_about_title">Over</string>
     <string name="settings_about_sub">Versie, licenties, GitHub</string>

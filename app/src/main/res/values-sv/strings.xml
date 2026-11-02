@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Stäng av</string>
     <string name="settings_devtools_title">Knapp för utvecklarverktyg</string>
     <string name="settings_devtools_sub">Visa utvecklarverktyg i sidhuvudet</string>
-    <string name="virtual_buds">Virtuella hörlurar</string>
-    <string name="virtual_buds_sub">Anslut till en falsk hörlursserver i stället för Bluetooth. Endast för utveckling.</string>
-    <string name="virtual_buds_address">Värd och port</string>
-    <string name="virtual_buds_name">Visat namn</string>
     <string name="settings_update_sub">Installerad %1$s</string>
     <string name="settings_about_title">Om</string>
     <string name="settings_about_sub">Version, licenser, GitHub</string>

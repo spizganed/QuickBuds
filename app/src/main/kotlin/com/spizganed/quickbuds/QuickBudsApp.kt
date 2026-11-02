@@ -77,12 +77,6 @@ class QuickBudsApp : Application() {
             // Hand back to the platform so the normal "app has stopped" flow runs.
             previous?.uncaughtException(thread, throwable)
         }
-        // Dev Tools' "Crash test": one throw at launch, cleared first so it never loops.
-        val prefs = base.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
-        if (prefs.getBoolean(PREF_CRASH_ON_LAUNCH, false)) {
-            prefs.edit().remove(PREF_CRASH_ON_LAUNCH).commit()
-            throw RuntimeException("Crash test from Dev Tools (crash logger check)")
-        }
     }
 
     /** Match system: open screens recreate themselves (no uiMode in configChanges); widgets need a push. */
@@ -209,9 +203,6 @@ class QuickBudsApp : Application() {
     companion object {
         /** Subfolder of Download holding crash reports (and the Dev Tools log exports). */
         const val PUBLIC_DIR = "QuickBuds"
-
-        /** Dev Tools' "Crash test" arms this; the next launch throws once in attachBaseContext. */
-        const val PREF_CRASH_ON_LAUNCH = "devCrashOnLaunch"
     }
 }
 

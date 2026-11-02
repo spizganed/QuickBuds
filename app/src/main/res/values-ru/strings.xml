@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Выключить</string>
     <string name="settings_devtools_title">Кнопка инструментов разработчика</string>
     <string name="settings_devtools_sub">Показывать инструменты разработчика в заголовке</string>
-    <string name="virtual_buds">Виртуальные наушники</string>
-    <string name="virtual_buds_sub">Подключение к поддельному серверу наушников вместо Bluetooth. Только для разработки.</string>
-    <string name="virtual_buds_address">Хост и порт</string>
-    <string name="virtual_buds_name">Отображаемое имя</string>
     <string name="settings_update_sub">Установлена %1$s</string>
     <string name="settings_about_title">О приложении</string>
     <string name="settings_about_sub">Версия, лицензии, GitHub</string>

@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Απενεργοποίηση</string>
     <string name="settings_devtools_title">Κουμπί εργαλείων προγραμματιστή</string>
     <string name="settings_devtools_sub">Εμφάνιση εργαλείων προγραμματιστή στην κεφαλίδα</string>
-    <string name="virtual_buds">Εικονικά ακουστικά</string>
-    <string name="virtual_buds_sub">Σύνδεση σε ψεύτικο διακομιστή ακουστικών αντί για Bluetooth. Μόνο για ανάπτυξη.</string>
-    <string name="virtual_buds_address">Διακομιστής και θύρα</string>
-    <string name="virtual_buds_name">Εμφανιζόμενο όνομα</string>
     <string name="settings_update_sub">Εγκατεστημένη %1$s</string>
     <string name="settings_about_title">Σχετικά</string>
     <string name="settings_about_sub">Έκδοση, άδειες, GitHub</string>

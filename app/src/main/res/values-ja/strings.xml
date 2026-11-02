@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">オフにする</string>
     <string name="settings_devtools_title">開発者ツールのボタン</string>
     <string name="settings_devtools_sub">ヘッダーに開発者ツールを表示</string>
-    <string name="virtual_buds">仮想イヤホン</string>
-    <string name="virtual_buds_sub">Bluetooth の代わりに偽のイヤホンサーバーに接続します。開発専用です。</string>
-    <string name="virtual_buds_address">ホストとポート</string>
-    <string name="virtual_buds_name">表示名</string>
     <string name="settings_update_sub">インストール済み %1$s</string>
     <string name="settings_about_title">このアプリについて</string>
     <string name="settings_about_sub">バージョン、ライセンス、GitHub</string>

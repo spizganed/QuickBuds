@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Kikapcsolás</string>
     <string name="settings_devtools_title">Fejlesztői eszközök gomb</string>
     <string name="settings_devtools_sub">Fejlesztői eszközök megjelenítése a fejlécben</string>
-    <string name="virtual_buds">Virtuális fülhallgató</string>
-    <string name="virtual_buds_sub">Csatlakozás hamis fülhallgató-kiszolgálóhoz Bluetooth helyett. Csak fejlesztéshez.</string>
-    <string name="virtual_buds_address">Gazdagép és port</string>
-    <string name="virtual_buds_name">Megjelenített név</string>
     <string name="settings_update_sub">Telepítve: %1$s</string>
     <string name="settings_about_title">Névjegy</string>
     <string name="settings_about_sub">Verzió, licencek, GitHub</string>

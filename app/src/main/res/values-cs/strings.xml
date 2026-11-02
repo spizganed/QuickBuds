@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Vypnout</string>
     <string name="settings_devtools_title">Tlačítko vývojářských nástrojů</string>
     <string name="settings_devtools_sub">Zobrazit vývojářské nástroje v záhlaví</string>
-    <string name="virtual_buds">Virtuální sluchátka</string>
-    <string name="virtual_buds_sub">Připojte se k falešnému serveru sluchátek místo Bluetooth. Jen pro vývoj.</string>
-    <string name="virtual_buds_address">Hostitel a port</string>
-    <string name="virtual_buds_name">Zobrazený název</string>
     <string name="settings_update_sub">Nainstalováno %1$s</string>
     <string name="settings_about_title">O aplikaci</string>
     <string name="settings_about_sub">Verze, licence, GitHub</string>

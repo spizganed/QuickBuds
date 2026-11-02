@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Tắt</string>
     <string name="settings_devtools_title">Nút công cụ nhà phát triển</string>
     <string name="settings_devtools_sub">Hiện công cụ nhà phát triển ở đầu trang</string>
-    <string name="virtual_buds">Tai nghe ảo</string>
-    <string name="virtual_buds_sub">Kết nối tới máy chủ tai nghe giả thay vì Bluetooth. Chỉ dùng cho phát triển.</string>
-    <string name="virtual_buds_address">Máy chủ và cổng</string>
-    <string name="virtual_buds_name">Tên hiển thị</string>
     <string name="settings_update_sub">Đã cài %1$s</string>
     <string name="settings_about_title">Giới thiệu</string>
     <string name="settings_about_sub">Phiên bản, giấy phép, GitHub</string>

@@ -279,10 +279,6 @@
     <string name="settings_background_warn_action">Wyłącz</string>
     <string name="settings_devtools_title">Przycisk narzędzi deweloperskich</string>
     <string name="settings_devtools_sub">Pokaż narzędzia deweloperskie w nagłówku</string>
-    <string name="virtual_buds">Wirtualne słuchawki</string>
-    <string name="virtual_buds_sub">Połącz z fałszywym serwerem słuchawek zamiast Bluetooth. Tylko do celów programistycznych.</string>
-    <string name="virtual_buds_address">Host i port</string>
-    <string name="virtual_buds_name">Wyświetlana nazwa</string>
     <string name="settings_update_sub">Zainstalowana %1$s</string>
     <string name="settings_about_title">O aplikacji</string>
     <string name="settings_about_sub">Wersja, licencje, GitHub</string>
