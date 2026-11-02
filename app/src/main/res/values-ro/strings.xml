@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Șterge un nivel pe care căștile nu-l mai raportează, de ex. carcasa după închidere</string>
     <string name="settings_full_notif_title">Baterie în notificare</string>
     <string name="settings_full_notif_sub">Arată nivelurile. Oprit: notificare mică, fără pictogramă în bara de stare</string>
+    <string name="settings_live_chip_title">Chip în bara de stare</string>
+    <string name="settings_live_chip_sub">Afișează în bara de stare nivelurile căștilor pe care le porți. Necesită Android 16. Dezactivat: inele de baterie în notificare</string>
     <string name="settings_background_title">Serviciu în fundal</string>
     <string name="settings_background_sub">Rămâi conectat cu aplicația închisă</string>
     <string name="settings_background_warn_title">Dezactivezi serviciul în fundal?</string>

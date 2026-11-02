@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Сбрасывать уровень, о котором наушники перестали сообщать, например кейса после закрытия</string>
     <string name="settings_full_notif_title">Батарея в уведомлении</string>
     <string name="settings_full_notif_sub">Показывает заряд. Выкл.: маленькое уведомление без значка в строке состояния</string>
+    <string name="settings_live_chip_title">Чип в строке состояния</string>
+    <string name="settings_live_chip_sub">Показывает в строке состояния заряд надетых наушников. Нужен Android 16. Выкл.: кольца батареи в уведомлении</string>
     <string name="settings_background_title">Фоновая служба</string>
     <string name="settings_background_sub">Оставаться подключённым при закрытом приложении</string>
     <string name="settings_background_warn_title">Выключить фоновую службу?</string>

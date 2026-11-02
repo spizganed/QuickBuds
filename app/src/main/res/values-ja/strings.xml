@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">イヤホンが報告しなくなった残量を消去します（ふたを閉じた後のケースなど）</string>
     <string name="settings_full_notif_title">通知にバッテリーを表示</string>
     <string name="settings_full_notif_sub">残量を表示します。オフ：ステータスバーのアイコンなしの小さな通知</string>
+    <string name="settings_live_chip_title">ステータスバーのチップ</string>
+    <string name="settings_live_chip_sub">装着中のイヤホンの残量をステータスバーに表示します。Android 16 が必要です。オフ：通知にバッテリーリングを表示</string>
     <string name="settings_background_title">バックグラウンドサービス</string>
     <string name="settings_background_sub">アプリを閉じても接続を維持</string>
     <string name="settings_background_warn_title">バックグラウンドサービスをオフにしますか？</string>

@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Hapus level yang tidak lagi dilaporkan earbud, seperti case setelah tutupnya ditutup</string>
     <string name="settings_full_notif_title">Baterai di notifikasi</string>
     <string name="settings_full_notif_sub">Menampilkan level. Mati: notifikasi kecil tanpa ikon bilah status</string>
+    <string name="settings_live_chip_title">Chip di bilah status</string>
+    <string name="settings_live_chip_sub">Menampilkan level earbud yang dipakai di bilah status. Butuh Android 16. Mati: cincin baterai di notifikasi</string>
     <string name="settings_background_title">Layanan latar belakang</string>
     <string name="settings_background_sub">Tetap terhubung saat aplikasi ditutup</string>
     <string name="settings_background_warn_title">Matikan layanan latar belakang?</string>

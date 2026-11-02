@@ -48,6 +48,8 @@ class SettingsActivity : Activity() {
         }
         section(R.string.settings_appearance, themeRow, layoutRow)
 
+        val fullNotifRow = toggle(R.drawable.ic_battery, R.string.settings_full_notif_title, R.string.settings_full_notif_sub,
+            BudsService.PREF_FULL_NOTIFICATION, true)
         val general = mutableListOf<android.view.View>(
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
             backgroundRow(prefs),
@@ -56,11 +58,15 @@ class SettingsActivity : Activity() {
             link(R.drawable.ic_mode_transparency, R.string.settings_tile_title, R.string.settings_cycle_sub) {
                 startActivity(Intent(this, com.spizganed.quickbuds.widget.NoiseCycleActivity::class.java))
             },
-            toggle(R.drawable.ic_battery, R.string.settings_full_notif_title, R.string.settings_full_notif_sub,
-                BudsService.PREF_FULL_NOTIFICATION, true),
+            fullNotifRow,
             toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, true),
             toggle(R.drawable.ic_info, R.string.settings_ping_title, R.string.settings_ping_sub, UsagePing.KEY_ENABLED, true)
         )
+        // The chip is an Android 16 live update: older versions do not get the row.
+        if (android.os.Build.VERSION.SDK_INT >= 36) {
+            general.add(general.indexOfFirst { it === fullNotifRow } + 1,
+                toggle(R.drawable.ic_battery, R.string.settings_live_chip_title, R.string.settings_live_chip_sub, BudsService.PREF_LIVE_CHIP, false))
+        }
         general.add(0, link(R.drawable.ic_language, R.string.settings_language_title, R.string.settings_language_sub) {
             startActivity(Intent(this, LanguageActivity::class.java))
         })

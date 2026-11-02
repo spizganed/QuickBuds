@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">清除耳机不再报告的电量，例如合上盖子后的充电盒</string>
     <string name="settings_full_notif_title">在通知中显示电量</string>
     <string name="settings_full_notif_sub">显示电量。关闭：小通知，状态栏无图标</string>
+    <string name="settings_live_chip_title">状态栏胶囊</string>
+    <string name="settings_live_chip_sub">在状态栏显示您佩戴的耳机电量。需要 Android 16。关闭：通知中显示电池环</string>
     <string name="settings_background_title">后台服务</string>
     <string name="settings_background_sub">关闭应用后保持连接</string>
     <string name="settings_background_warn_title">关闭后台服务？</string>

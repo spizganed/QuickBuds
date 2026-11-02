@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Limpar um nível que os fones deixam de informar, como o estojo depois de fechado</string>
     <string name="settings_full_notif_title">Bateria na notificação</string>
     <string name="settings_full_notif_sub">Mostra os níveis. Desligado: notificação pequena sem ícone na barra de status</string>
+    <string name="settings_live_chip_title">Chip na barra de status</string>
+    <string name="settings_live_chip_sub">Mostra na barra de status os níveis dos fones que você está usando. Requer Android 16. Desativado: anéis de bateria na notificação</string>
     <string name="settings_background_title">Serviço em segundo plano</string>
     <string name="settings_background_sub">Manter a ligação com a app fechada</string>
     <string name="settings_background_warn_title">Desativar o serviço em segundo plano?</string>

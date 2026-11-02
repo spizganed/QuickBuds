@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Cancella un livello che gli auricolari non segnalano più, come la custodia chiusa</string>
     <string name="settings_full_notif_title">Batteria nella notifica</string>
     <string name="settings_full_notif_sub">Mostra i livelli. Disattivato: notifica piccola senza icona nella barra di stato</string>
+    <string name="settings_live_chip_title">Chip nella barra di stato</string>
+    <string name="settings_live_chip_sub">Mostra nella barra di stato i livelli degli auricolari che indossi. Richiede Android 16. Disattivato: anelli batteria nella notifica</string>
     <string name="settings_background_title">Servizio in background</string>
     <string name="settings_background_sub">Resta connesso con l\'app chiusa</string>
     <string name="settings_background_warn_title">Disattivare il servizio in background?</string>

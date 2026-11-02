@@ -306,6 +306,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
     }
 
+    /** True for 1 s after a disconnect: the chip shows "– –" before it goes. */
+    private var goodbye = false
+
     /** The last levels the notification shows, so an unchanged battery event does not repost it. */
     private var shownLevels: String? = null
 
@@ -327,7 +330,23 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             .setShowWhen(false)
         val st = WidgetStateStore.read(this)
         val levels = intArrayOf(st.leftBattery, st.caseBattery, st.rightBattery)
-        if (full && st.connected && levels.any { it >= 0 }) {
+        val known = levels.any { it >= 0 }
+        if (android.os.Build.VERSION.SDK_INT >= 36 && liveChip() && (goodbye || st.connected)) {
+            // Live update (Android 16+): a promoted notification needs a standard style, so no rings. The chip shows chipText.
+            // "– –" while the levels are not read yet (connect) and for 1 s after a disconnect.
+            if (known && !goodbye) {
+                val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
+                val text = (0..2).filter { levels[it] >= 0 }.joinToString("  ") { "${getString(names[it])} ${levels[it]}%" }
+                b.setStyle(Notification.BigTextStyle().bigText(text)).setContentText(text)
+            }
+            b.setOngoing(true)
+            val chip = if (known && !goodbye) chipText(st) else "– –"
+            if (chip != null) {
+                b.setShortCriticalText(chip)
+                // Notification.Builder.setRequestPromotedOngoing is missing on Android 16.0; the extra is the same flag.
+                b.extras.putBoolean("android.requestPromotedOngoing", true)
+            }
+        } else if (full && st.connected && levels.any { it >= 0 }) {
             val v = android.widget.RemoteViews(packageName, R.layout.notification_battery)
             val rings = intArrayOf(R.id.n_ring_l, R.id.n_ring_c, R.id.n_ring_r)
             val pcts = intArrayOf(R.id.n_pct_l, R.id.n_pct_c, R.id.n_pct_r)
@@ -343,10 +362,21 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         return b.build()
     }
 
+    /**
+     * The status bar chip text, 7 characters at most: the levels of the buds outside the case, left then right
+     * ("82 80", "100 100" at most, one number with one bud out). Null when no bud is out: no chip.
+     */
+    private fun chipText(st: WidgetStateStore.State): String? {
+        // Status 4 = in the case, 0 = in the case and asleep (a closed lid).
+        fun shown(level: Int, status: Int) = level.takeIf { it >= 0 && status != 4 && status != 0 }
+        return listOfNotNull(shown(st.leftBattery, st.leftStatus), shown(st.rightBattery, st.rightStatus))
+            .takeIf { it.isNotEmpty() }?.joinToString(" ")
+    }
+
     /** Reposts the notification when the shown levels or the connection changed. */
     private fun updateNotification() {
         val st = WidgetStateStore.read(this)
-        val key = "${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus}"
+        val key = "$goodbye ${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus}"
         if (key == shownLevels) return
         shownLevels = key
         try {
@@ -373,12 +403,19 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             channel(CHANNEL_FULL_ID, "Battery", NotificationManager.IMPORTANCE_LOW)))
     }
 
+    /** The status bar chip (Android 16+ live update): the setting is on and the system lets the app post promoted notifications. */
+    private fun liveChip(): Boolean {
+        if (android.os.Build.VERSION.SDK_INT < 36 || !fullNotification()) return false
+        if (!getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_LIVE_CHIP, false)) return false
+        return getSystemService(NotificationManager::class.java).canPostPromotedNotifications()
+    }
+
     private fun fullNotification() =
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_FULL_NOTIFICATION, true)
 
     /** Settings › Full notification: repost on the other channel at once. */
     private val prefListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == PREF_FULL_NOTIFICATION) { shownLevels = null; updateNotification() }
+        if (key == PREF_FULL_NOTIFICATION || key == PREF_LIVE_CHIP) { shownLevels = null; updateNotification() }
     }
 
     private fun startForegroundService() {
@@ -444,6 +481,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             }
         }
         WidgetStateStore.write(this, st)
+        goodbye = false
+        if (!connected && before.connected && liveChip() && chipText(before) != null) {
+            goodbye = true
+            handler.postDelayed({ goodbye = false; updateNotification() }, 1000)
+        }
         if (before.connected != connected) AncWidgetProvider.animate(this, connected, before.takeIf { it.connected })
         else AncWidgetProvider.refreshAll(this)
         gameEq.update()
@@ -494,6 +536,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             statusLog("[SVC] Wear state: L=$left R=$right case=$caseSt")
             WidgetStateStore.write(this, st)
             AncWidgetProvider.refreshAll(this)
+            updateNotification()
         }
         if (wasWorn && !isWorn(st.leftStatus) && !isWorn(st.rightStatus)) smartPause()
     }
@@ -568,6 +611,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         private const val CHANNEL_FULL_ID = "QuickBuds_Battery"
         /** Settings › Full notification. On by default. */
         const val PREF_FULL_NOTIFICATION = "fullNotification"
+        const val PREF_LIVE_CHIP = "liveChip"
         const val ACTION_FORCE_CONNECT = "com.spizganed.quickbuds.FORCE_CONNECT"
         /** On FORCE_CONNECT: true when the user asked (pill), so phone audio is brought up too. */
         const val EXTRA_WITH_AUDIO = "with_audio"

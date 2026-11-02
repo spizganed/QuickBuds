@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Czyść poziom, którego słuchawki już nie zgłaszają, np. etui po zamknięciu</string>
     <string name="settings_full_notif_title">Bateria w powiadomieniu</string>
     <string name="settings_full_notif_sub">Pokazuje poziomy. Wył.: małe powiadomienie bez ikony na pasku stanu</string>
+    <string name="settings_live_chip_title">Chip na pasku stanu</string>
+    <string name="settings_live_chip_sub">Pokazuje na pasku stanu poziomy naładowania noszonych słuchawek. Wymaga Androida 16. Wyłączone: pierścienie baterii w powiadomieniu</string>
     <string name="settings_background_title">Usługa w tle</string>
     <string name="settings_background_sub">Pozostań połączony po zamknięciu aplikacji</string>
     <string name="settings_background_warn_title">Wyłączyć usługę w tle?</string>

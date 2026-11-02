@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Διαγραφή επιπέδου που τα ακουστικά σταματούν να αναφέρουν, π.χ. η θήκη όταν κλείσει</string>
     <string name="settings_full_notif_title">Μπαταρία στην ειδοποίηση</string>
     <string name="settings_full_notif_sub">Δείχνει τα επίπεδα. Ανενεργό: μικρή ειδοποίηση χωρίς εικονίδιο στη γραμμή κατάστασης</string>
+    <string name="settings_live_chip_title">Chip στη γραμμή κατάστασης</string>
+    <string name="settings_live_chip_sub">Εμφανίζει τα επίπεδα των ακουστικών που φοράτε στη γραμμή κατάστασης. Απαιτεί Android 16. Ανενεργό: δακτύλιοι μπαταρίας στην ειδοποίηση</string>
     <string name="settings_background_title">Υπηρεσία παρασκηνίου</string>
     <string name="settings_background_sub">Παραμονή σε σύνδεση με κλειστή την εφαρμογή</string>
     <string name="settings_background_warn_title">Απενεργοποίηση υπηρεσίας παρασκηνίου;</string>

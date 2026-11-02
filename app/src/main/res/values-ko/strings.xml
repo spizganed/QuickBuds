@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">이어버드가 더 이상 보고하지 않는 잔량을 지웁니다(뚜껑을 닫은 후의 케이스 등)</string>
     <string name="settings_full_notif_title">알림에 배터리 표시</string>
     <string name="settings_full_notif_sub">배터리 잔량을 표시합니다. 끄기: 상태 표시줄 아이콘 없는 작은 알림</string>
+    <string name="settings_live_chip_title">상태 표시줄 칩</string>
+    <string name="settings_live_chip_sub">착용 중인 이어버드의 배터리 잔량을 상태 표시줄에 표시합니다. Android 16이 필요합니다. 끄면 알림에 배터리 링이 표시됩니다</string>
     <string name="settings_background_title">백그라운드 서비스</string>
     <string name="settings_background_sub">앱을 닫아도 연결 유지</string>
     <string name="settings_background_warn_title">백그라운드 서비스를 끌까요?</string>

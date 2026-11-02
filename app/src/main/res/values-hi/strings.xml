@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">बड्स जो स्तर बताना बंद कर दें उसे हटाएँ, जैसे ढक्कन बंद होने के बाद केस</string>
     <string name="settings_full_notif_title">सूचना में बैटरी</string>
     <string name="settings_full_notif_sub">लेवल दिखाता है। बंद: स्टेटस बार आइकन के बिना छोटी सूचना</string>
+    <string name="settings_live_chip_title">स्टेटस बार चिप</string>
+    <string name="settings_live_chip_sub">स्टेटस बार में पहने हुए ईयरबड्स का चार्ज दिखाता है। Android 16 चाहिए। बंद: सूचना में बैटरी रिंग</string>
     <string name="settings_background_title">बैकग्राउंड सेवा</string>
     <string name="settings_background_sub">ऐप बंद होने पर भी कनेक्टेड रहें</string>
     <string name="settings_background_warn_title">बैकग्राउंड सेवा बंद करें?</string>

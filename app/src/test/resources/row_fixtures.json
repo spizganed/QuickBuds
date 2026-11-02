@@ -90,6 +90,39 @@
       "capabilities": "0100 0101 0102 0103 0104 0105 0106 0107 0108 0109 010B 010C 010D 010F 0112 0114 0118 011C 011E 011F 0122 0123 012B 012F 0130 0131 0132 0205 0400 0401 0402 0403 0404 0405 0406 0408 0409 040B 040D 040F 0411 0413 0415 0416 0418 041A 041E 0423 0427 0428 0429 0F00 0F03 0F04 EF01 EF02 EF03 EF04 EF07",
       "expect": ["earbuds", "game", "hires", "spatial", "golden", "eq", "dual", "anc"],
       "uncertain": []
+    },
+    {
+      "model": "OnePlus Buds Pro 3",
+      "report": 150,
+      "platform": "Android",
+      "firmware": "143.143.039",
+      "productId": "064014",
+      "features": "04=0 05=1 06=1 0B=1 11=1 13=1 18=1 1D=1 27=1 28=0",
+      "capabilities": "0022 0023 0024 0100 0101 0102 0103 0104 0105 0106 0107 0108 0109 010B 010C 010D 010F 0112 0114 0115 0116 0118 0119 011A 011C 011E 011F 0121 0122 0123 0124 0126 0129 012A 012B 0131 0205 0400 0401 0402 0403 0404 0405 0406 0408 0409 040B 040D 040E 040F 0410 0411 0412 0413 0415 0416 0417 0418 041A 041B 041E 0421 0422 0423 0424 0428 0F00 0F03 0F04 EF01 EF02 EF03",
+      "expect": ["anc", "dual", "earbuds", "eq", "game", "golden", "hires", "spatial"],
+      "uncertain": []
+    },
+    {
+      "model": "realme Buds T110",
+      "report": 151,
+      "platform": "Android",
+      "firmware": "1.1.0.75.1.1.0.75.001",
+      "productId": "062812",
+      "features": "05=0 06=0 28=0",
+      "capabilities": "0100 0101 0102 0103 0104 0105 0106 0107 0108 010B 010D 010F 0401 0403 0406 0407 0416 0F00 0F03 0F04",
+      "expect": ["earbuds", "game"],
+      "uncertain": []
+    },
+    {
+      "model": "OnePlus Nord Buds 3r",
+      "report": 155,
+      "platform": "Android",
+      "firmware": "112.112.101",
+      "productId": "",
+      "features": "05=0 06=0 11=0 1B=1 1E=0 28=0",
+      "capabilities": "0100 0101 0102 0103 0104 0105 0106 0107 0108 0109 010B 010D 010F 0112 0118 0122 0130 0131 0205 0400 0401 0402 0403 0406 0408 0409 040B 040D 040F 0411 0416 0418 0420 0427 0428 0F00 0F03 0F04 EF02",
+      "expect": ["dual", "earbuds", "eq", "game", "spatial"],
+      "uncertain": []
     }
   ]
 }

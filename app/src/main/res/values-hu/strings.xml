@@ -270,6 +270,8 @@
     <string name="settings_clear_battery_sub">Törli azt a szintet, amelyet a fülhallgató már nem jelent, pl. a tokét a fedél zárása után</string>
     <string name="settings_full_notif_title">Akkumulátor az értesítésben</string>
     <string name="settings_full_notif_sub">Megmutatja a szinteket. Ki: kis értesítés állapotsor-ikon nélkül</string>
+    <string name="settings_live_chip_title">Chip az állapotsoron</string>
+    <string name="settings_live_chip_sub">Az állapotsoron mutatja a viselt fülhallgatók töltöttségét. Android 16 kell hozzá. Kikapcsolva: akkumulátorgyűrűk az értesítésben</string>
     <string name="settings_background_title">Háttérszolgáltatás</string>
     <string name="settings_background_sub">Kapcsolat fenntartása bezárt alkalmazásnál is</string>
     <string name="settings_background_warn_title">Kikapcsolja a háttérszolgáltatást?</string>
