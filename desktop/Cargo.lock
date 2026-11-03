@@ -3959,7 +3959,7 @@ dependencies = [
 
 [[package]]
 name = "quickbuds"
-version = "5.6.0"
+version = "5.6.1"
 dependencies = [
  "buds-core",
  "dbus",
