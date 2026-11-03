@@ -123,6 +123,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(prefListener)
         // Started by a Bluetooth event while locked: stay asleep until the unlock.
         if (backgroundAllowed(this) && shouldSleep()) asleep = true
+        // A new service has no link. A connected state from an earlier process is stale (report 158); the sleep keeps it on purpose.
+        else if (WidgetStateStore.read(this).connected) onConnected(false)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -295,6 +297,12 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     /** True for 1 s after a disconnect: the chip shows "– –" before it goes. */
     private var goodbye = false
 
+    /** True when the last posted notification has the levels chip. */
+    private var chipShown = false
+
+    /** The RFCOMM link is open. The sleep keeps the connected state with no link: the chip must not show those old levels. */
+    private fun linkUp() = manager?.isConnected() == true
+
     /** The last levels the notification shows, so an unchanged battery event does not repost it. */
     private var shownLevels: String? = null
 
@@ -317,7 +325,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         val st = WidgetStateStore.read(this)
         val levels = intArrayOf(st.leftBattery, st.caseBattery, st.rightBattery)
         val known = levels.any { it >= 0 }
-        if (android.os.Build.VERSION.SDK_INT >= 36 && liveChip() && (goodbye || st.connected)) {
+        chipShown = false
+        if (android.os.Build.VERSION.SDK_INT >= 36 && liveChip() && (goodbye || (st.connected && linkUp()))) {
             // Live update (Android 16+): a promoted notification needs a standard style, so no rings. The chip shows chipText.
             // "– –" while the levels are not read yet (connect) and for 1 s after a disconnect.
             if (known && !goodbye) {
@@ -328,6 +337,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             b.setOngoing(true)
             val chip = if (known && !goodbye) chipText(st) else "– –"
             if (chip != null) {
+                chipShown = !goodbye
                 b.setShortCriticalText(chip)
                 // Notification.Builder.setRequestPromotedOngoing is missing on Android 16.0; the extra is the same flag.
                 b.extras.putBoolean("android.requestPromotedOngoing", true)
@@ -362,7 +372,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     /** Reposts the notification when the shown levels or the connection changed. */
     private fun updateNotification() {
         val st = WidgetStateStore.read(this)
-        val key = "$goodbye ${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus}"
+        val key = "$goodbye ${linkUp()} ${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus}"
         if (key == shownLevels) return
         shownLevels = key
         try {
@@ -441,7 +451,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onConnected(connected: Boolean) {
         // Our own sleep, not a lost link: the widget keeps showing the connected state and the last levels until the unlock reconnects.
-        if (!connected && asleep) { statusLog("[SVC] Sleep: widget state kept"); return }
+        if (!connected && asleep) { statusLog("[SVC] Sleep: widget state kept"); updateNotification(); return }
         val st = WidgetStateStore.read(this)
         val before = st.copy()
         st.connected = connected
@@ -467,7 +477,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
         WidgetStateStore.write(this, st)
         goodbye = false
-        if (!connected && before.connected && liveChip() && chipText(before) != null) {
+        if (!connected && before.connected && chipShown && liveChip()) {
             goodbye = true
             handler.postDelayed({ goodbye = false; updateNotification() }, 1000)
         }

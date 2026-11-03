@@ -203,9 +203,12 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             try {
                 val fit = fit(context, kind, id)
                 if (sweepK < 0f) {
-                    val sig = listOf(kind, fit.shape, fit.ring, fit.tiles, fit.units, WidgetStateStore.read(context), WidgetSettings.palette(context).tokens.toList(),
+                    val st = WidgetStateStore.read(context)
+                    // The Connect chip shows only while disconnected. A connect from the kept sleep state (unlock) must not resend every tick: each resend flashes.
+                    val chipLoad = if (st.connected) "" else "$connecting $connectTick"
+                    val sig = listOf(kind, fit.shape, fit.ring, fit.tiles, fit.units, st, WidgetSettings.palette(context).tokens.toList(),
                         context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).all.toSortedMap().toString(),
-                        connecting, connectTick, awaitLevels).joinToString("|")
+                        chipLoad, awaitLevels).joinToString("|")
                     if (!force && lastSig[id] == sig) return
                     lastSig[id] = sig
                 } else lastSig.remove(id)
