@@ -34,7 +34,7 @@ the earbud settings in Settings › Bluetooth › your earbuds, or report the ca
 
 <details><summary><b>OnePlus</b> (15 models)</summary>
 
-- **OnePlus Buds 3**: confirmed by its owner on Android and Windows: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
+- **OnePlus Buds 3**: confirmed by its owner on Android, Windows and Linux: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
 - **OnePlus Buds 4**: fully working. Every feature is tested on a Nothing Phone (3a), Android 16, and on Windows and Linux.
 - **OnePlus Buds Ace**: confirmed by its owner on Android: noise control, low latency.
 - **OnePlus Buds Clip**: confirmed by its owner on Android and Windows: battery, low latency, high-quality audio, 3D audio, equalizer, dual connection, gestures, wear detection, find my earbuds.
@@ -84,7 +84,7 @@ the earbud settings in Settings › Bluetooth › your earbuds, or report the ca
 - **realme Buds T200 Lite**: confirmed by its owner on Android: all features that QuickBuds offers, except find my earbuds.
 - **realme Buds T300**: confirmed by its owner on Android and Windows: battery, noise control, low latency, 3D audio, equalizer, gestures, find my earbuds.
 - **realme Buds T310**: confirmed by its owner on Android and Windows: battery, noise control, wind noise reduction, low latency, 3D audio, equalizer, dual connection, gestures, find my earbuds.
-- **realme Buds T500 Pro**: confirmed by its owner on Android: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
+- **realme Buds T500 Pro**: confirmed by its owner on Android and Linux: battery, noise control, wind noise reduction, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
 - **realme Buds Wireless 3**: confirmed by its owner on Android: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, wear detection.
 - **realme Cobble Speaker**: confirmed by its owner on Android: battery, low latency.
 
