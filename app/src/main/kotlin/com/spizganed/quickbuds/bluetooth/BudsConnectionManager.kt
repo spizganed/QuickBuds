@@ -545,11 +545,29 @@ class BudsConnectionManager(private val context: Context) {
         if (eqMac != null) eqState = EqState.forLink(eqSnapshot, eqMac)
         eqReadGate.onLinkUp()
         if (audioDevice != null && audioAfterRestart) { audioAfterRestart = false; setPhoneAudio(audioDevice, on = true) }
+        (audioDevice ?: lastDevice)?.let { audioCheck(it, connectGeneration) }
         handler.post { listeners.forEach { it.onConnected(true) } }
         syncPrimed = false
         syncHandler.post { execute(sync.reconnect(SystemClock.elapsedRealtime())) }
         log("Ready for commands. Running init sequence...")
         runInitSequence()
+    }
+
+    /**
+     * Android sometimes leaves the phone audio down after the buds connect (no media, no calls). An automatic
+     * connect does not ask for audio at once: that raced Android's own audio connect. 1 s after the link is up,
+     * audio that is still fully down (not connecting) is brought up, as the Connect button does.
+     */
+    @SuppressLint("MissingPermission")
+    private fun audioCheck(device: BluetoothDevice, generation: Int) {
+        handler.postDelayed({
+            if (generation != connectGeneration || !isConnected()) return@postDelayed
+            val proxies = audioProxies.values.toList()
+            val down = try {
+                proxies.size == 2 && proxies.all { it.getConnectionState(device) == BluetoothProfile.STATE_DISCONNECTED }
+            } catch (_: Exception) { false }
+            if (down) { log("Audio check: phone audio down, connecting"); setPhoneAudio(device, on = true) }
+        }, 1000)
     }
 
     private fun runInitSequence() {
