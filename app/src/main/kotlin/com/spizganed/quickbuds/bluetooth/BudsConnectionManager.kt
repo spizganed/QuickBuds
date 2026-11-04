@@ -261,6 +261,9 @@ class BudsConnectionManager(private val context: Context) {
 
     fun isConnected(): Boolean = isReady && linkUp()
 
+    /** No link, no connect in progress and no retry queued: the service can stop (see BudsService.park). */
+    fun isIdle(): Boolean = !isConnected() && !isConnecting && pendingRetry == null && pendingReconnect == null
+
     /** The open link. A null adapter never reaches this. */
     private fun linkUp(): Boolean = bluetoothSocket?.isConnected == true
 

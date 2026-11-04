@@ -59,6 +59,47 @@ class BudsService : Service(), BudsConnectionManager.Listener {
      */
     @Volatile private var asleep = false
 
+    /** Activities bound to this service. While one is open the service stays. */
+    @Volatile private var bindCount = 0
+
+    private fun bluetoothOff() =
+        getSystemService(android.bluetooth.BluetoothManager::class.java)?.adapter?.isEnabled != true
+
+    /**
+     * The notification belongs to a connection. With nothing connected, nothing connecting and no screen open, the
+     * service stops and its notification goes: when Bluetooth is off at once, else after [IDLE_MS]. The buds' audio
+     * link and the widgets start it again (KeepAliveReceiver, WidgetActionReceiver).
+     */
+    private val idleCheck = Runnable {
+        val m = manager
+        when {
+            bindCount > 0 || m == null -> Unit
+            m.isConnected() -> Unit
+            !m.isIdle() -> scheduleIdleCheck(IDLE_MS)
+            // A locked phone sleeps the link on purpose; the unlock wakes it. Only a Bluetooth that is off ends that.
+            asleep && !bluetoothOff() -> Unit
+            else -> park()
+        }
+    }
+
+    private fun scheduleIdleCheck(delayMs: Long) {
+        handler.removeCallbacks(idleCheck)
+        handler.postDelayed(idleCheck, delayMs)
+    }
+
+    private fun park() {
+        statusLog("[SVC] Park: nothing connected (bluetooth off=${bluetoothOff()})")
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    private val bluetoothStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val state = intent.getIntExtra(android.bluetooth.BluetoothAdapter.EXTRA_STATE, -1)
+            if (state == android.bluetooth.BluetoothAdapter.STATE_OFF || state == android.bluetooth.BluetoothAdapter.STATE_TURNING_OFF) scheduleIdleCheck(BT_OFF_MS)
+        }
+    }
+
     private fun shouldSleep(): Boolean {
         val locked = getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked ||
             !getSystemService(android.os.PowerManager::class.java).isInteractive
@@ -84,6 +125,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         // Start the poll again only when game EQ is on; the link comes up after this call.
         gameEq.update()
         if (backgroundAllowed(this)) forceConnect(false)
+        scheduleIdleCheck(IDLE_MS)
     }
 
     private val screenReceiver = object : BroadcastReceiver() {
@@ -120,6 +162,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             addAction(Intent.ACTION_SCREEN_OFF); addAction(Intent.ACTION_SCREEN_ON); addAction(Intent.ACTION_USER_PRESENT)
         }
         registerReceiver(screenReceiver, screen)
+        registerReceiver(bluetoothStateReceiver, IntentFilter(android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED))
+        scheduleIdleCheck(if (bluetoothOff()) BT_OFF_MS else IDLE_MS)
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(prefListener)
         // Started by a Bluetooth event while locked: stay asleep until the unlock.
         if (backgroundAllowed(this) && shouldSleep()) asleep = true
@@ -224,6 +268,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             }
             else -> statusLog("[SVC] onStartCommand (no action)")
         }
+        // Whatever started us (a connect, a widget), the link gets [IDLE_MS] to come up.
+        scheduleIdleCheck(IDLE_MS)
         return START_STICKY
     }
 
@@ -432,7 +478,14 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onBind(intent: Intent?): IBinder {
         statusLog("[SVC] onBind")
+        bindCount++
         return binder
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        bindCount = (bindCount - 1).coerceAtLeast(0)
+        if (bindCount == 0) scheduleIdleCheck(IDLE_MS)
+        return false
     }
 
     override fun onDestroy() {
@@ -445,6 +498,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         try { manager?.removeListener(this) } catch (_: Exception) {}
         try { unregisterReceiver(widgetCommandReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(screenReceiver) } catch (_: Exception) {}
+        try { unregisterReceiver(bluetoothStateReceiver) } catch (_: Exception) {}
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(prefListener)
         super.onDestroy()
     }
@@ -485,6 +539,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         else AncWidgetProvider.refreshAll(this)
         gameEq.update()
         updateNotification()
+        if (connected) handler.removeCallbacks(idleCheck) else scheduleIdleCheck(IDLE_MS)
     }
 
     override fun onBattery(
@@ -653,6 +708,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
          * open, nothing starts it from Bluetooth events, and the widget only works with the app open.
          */
         const val PREF_BACKGROUND = "backgroundService"
+
+        /** The link gets this long to come up before an idle service stops. */
+        private const val IDLE_MS = 60_000L
+        /** Bluetooth off: nothing can connect, so the service stops soon. */
+        private const val BT_OFF_MS = 3_000L
 
         fun backgroundAllowed(c: Context) =
             c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREF_BACKGROUND, true)
