@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Alat pembangun</string>
     <string name="desktop_nav_overview">Gambaran keseluruhan</string>
     <string name="desktop_nav_app_settings">Tetapan apl</string>
+    <string name="desktop_autostart_title">Mula bersama komputer</string>
+    <string name="desktop_autostart_sub">Dibuka dalam dulang apabila anda log masuk</string>
+    <string name="desktop_devtools_sub">Tunjukkan alat pembangun dalam menu di sebelah kiri</string>
+    <string name="desktop_copy_log">Salin log</string>
+    <string name="desktop_dual_empty">Sambungkan peranti untuk dipaparkan di sini</string>
     <string name="action_settings">Tetapan</string>
     <string name="conn_on">Disambungkan</string>
     <string name="conn_off">Terputus</string>

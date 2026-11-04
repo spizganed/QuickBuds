@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Ontwikkelaarstools</string>
     <string name="desktop_nav_overview">Overzicht</string>
     <string name="desktop_nav_app_settings">App-instellingen</string>
+    <string name="desktop_autostart_title">Starten met de computer</string>
+    <string name="desktop_autostart_sub">Opent in het systeemvak bij het aanmelden</string>
+    <string name="desktop_devtools_sub">Ontwikkelaarstools tonen in het menu links</string>
+    <string name="desktop_copy_log">Logboek kopiëren</string>
+    <string name="desktop_dual_empty">Verbind een apparaat om het hier te tonen</string>
     <string name="action_settings">Instellingen</string>
     <string name="conn_on">Verbonden</string>
     <string name="conn_off">Niet verbonden</string>

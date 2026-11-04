@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Εργαλεία προγραμματιστή</string>
     <string name="desktop_nav_overview">Επισκόπηση</string>
     <string name="desktop_nav_app_settings">Ρυθμίσεις εφαρμογής</string>
+    <string name="desktop_autostart_title">Εκκίνηση με τον υπολογιστή</string>
+    <string name="desktop_autostart_sub">Ανοίγει στην περιοχή ειδοποιήσεων όταν συνδέεστε</string>
+    <string name="desktop_devtools_sub">Εμφάνιση των εργαλείων προγραμματιστή στο μενού αριστερά</string>
+    <string name="desktop_copy_log">Αντιγραφή αρχείου καταγραφής</string>
+    <string name="desktop_dual_empty">Συνδέστε μια συσκευή για να εμφανιστεί εδώ</string>
     <string name="action_settings">Ρυθμίσεις</string>
     <string name="conn_on">Συνδεδεμένα</string>
     <string name="conn_off">Αποσυνδεδεμένα</string>

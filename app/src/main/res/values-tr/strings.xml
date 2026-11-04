@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Geliştirici araçları</string>
     <string name="desktop_nav_overview">Genel bakış</string>
     <string name="desktop_nav_app_settings">Uygulama ayarları</string>
+    <string name="desktop_autostart_title">Bilgisayarla birlikte başlat</string>
+    <string name="desktop_autostart_sub">Oturum açtığında tepsiye açılır</string>
+    <string name="desktop_devtools_sub">Geliştirici araçlarını soldaki menüde göster</string>
+    <string name="desktop_copy_log">Günlüğü kopyala</string>
+    <string name="desktop_dual_empty">Burada görmek için bir cihaz bağlayın</string>
     <string name="action_settings">Ayarlar</string>
     <string name="conn_on">Bağlı</string>
     <string name="conn_off">Bağlı değil</string>

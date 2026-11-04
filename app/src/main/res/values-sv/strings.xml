@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Utvecklarverktyg</string>
     <string name="desktop_nav_overview">Översikt</string>
     <string name="desktop_nav_app_settings">Appinställningar</string>
+    <string name="desktop_autostart_title">Starta med datorn</string>
+    <string name="desktop_autostart_sub">Öppnas i systemfältet när du loggar in</string>
+    <string name="desktop_devtools_sub">Visa utvecklarverktyg i menyn till vänster</string>
+    <string name="desktop_copy_log">Kopiera logg</string>
+    <string name="desktop_dual_empty">Anslut en enhet för att visa den här</string>
     <string name="action_settings">Inställningar</string>
     <string name="conn_on">Ansluten</string>
     <string name="conn_off">Frånkopplad</string>

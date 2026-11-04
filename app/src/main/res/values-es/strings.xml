@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Herramientas de desarrollo</string>
     <string name="desktop_nav_overview">Resumen</string>
     <string name="desktop_nav_app_settings">Ajustes de la app</string>
+    <string name="desktop_autostart_title">Iniciar con el ordenador</string>
+    <string name="desktop_autostart_sub">Se abre en la bandeja al iniciar sesión</string>
+    <string name="desktop_devtools_sub">Mostrar las herramientas de desarrollo en el menú de la izquierda</string>
+    <string name="desktop_copy_log">Copiar registro</string>
+    <string name="desktop_dual_empty">Conecta un dispositivo para mostrarlo aquí</string>
     <string name="action_settings">Ajustes</string>
     <string name="conn_on">Conectado</string>
     <string name="conn_off">Desconectado</string>

@@ -13,6 +13,11 @@
     <string name="action_dev_tools">Dev tools</string>
     <string name="desktop_nav_overview">Overview</string>
     <string name="desktop_nav_app_settings">App settings</string>
+    <string name="desktop_autostart_title">Start with your computer</string>
+    <string name="desktop_autostart_sub">Opens in the tray when you sign in</string>
+    <string name="desktop_devtools_sub">Show Dev tools in the menu on the left</string>
+    <string name="desktop_copy_log">Copy log</string>
+    <string name="desktop_dual_empty">Connect a device to show it here</string>
     <string name="action_settings">Settings</string>
 
     <!-- Connection status pill in the header. Short by necessity: it sits beside the

@@ -4,6 +4,11 @@
     <string name="action_dev_tools">ডেভেলপার টুল</string>
     <string name="desktop_nav_overview">সংক্ষিপ্ত বিবরণ</string>
     <string name="desktop_nav_app_settings">অ্যাপ সেটিংস</string>
+    <string name="desktop_autostart_title">কম্পিউটারের সাথে চালু করুন</string>
+    <string name="desktop_autostart_sub">সাইন ইন করলে ট্রেতে খোলে</string>
+    <string name="desktop_devtools_sub">বাম দিকের মেনুতে ডেভেলপার টুল দেখান</string>
+    <string name="desktop_copy_log">লগ কপি করুন</string>
+    <string name="desktop_dual_empty">এখানে দেখাতে একটি ডিভাইস সংযুক্ত করুন</string>
     <string name="action_settings">সেটিংস</string>
     <string name="conn_on">সংযুক্ত</string>
     <string name="conn_off">বিচ্ছিন্ন</string>

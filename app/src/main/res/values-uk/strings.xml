@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Інструменти розробника</string>
     <string name="desktop_nav_overview">Огляд</string>
     <string name="desktop_nav_app_settings">Налаштування застосунку</string>
+    <string name="desktop_autostart_title">Запускати разом із комп\'ютером</string>
+    <string name="desktop_autostart_sub">Відкривається в треї під час входу в систему</string>
+    <string name="desktop_devtools_sub">Показувати інструменти розробника в меню зліва</string>
+    <string name="desktop_copy_log">Копіювати журнал</string>
+    <string name="desktop_dual_empty">Підключіть пристрій, щоб він з\'явився тут</string>
     <string name="action_settings">Налаштування</string>
     <string name="conn_on">Підключено</string>
     <string name="conn_off">Відключено</string>

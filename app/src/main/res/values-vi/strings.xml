@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Công cụ nhà phát triển</string>
     <string name="desktop_nav_overview">Tổng quan</string>
     <string name="desktop_nav_app_settings">Cài đặt ứng dụng</string>
+    <string name="desktop_autostart_title">Khởi động cùng máy tính</string>
+    <string name="desktop_autostart_sub">Mở trong khay hệ thống khi bạn đăng nhập</string>
+    <string name="desktop_devtools_sub">Hiện công cụ nhà phát triển trong menu bên trái</string>
+    <string name="desktop_copy_log">Sao chép nhật ký</string>
+    <string name="desktop_dual_empty">Hãy kết nối một thiết bị để hiển thị tại đây</string>
     <string name="action_settings">Cài đặt</string>
     <string name="conn_on">Đã kết nối</string>
     <string name="conn_off">Đã ngắt kết nối</string>

@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Instrumente pentru dezvoltatori</string>
     <string name="desktop_nav_overview">Prezentare generală</string>
     <string name="desktop_nav_app_settings">Setările aplicației</string>
+    <string name="desktop_autostart_title">Pornește odată cu calculatorul</string>
+    <string name="desktop_autostart_sub">Se deschide în bara de notificări la conectare</string>
+    <string name="desktop_devtools_sub">Afișează instrumentele de dezvoltare în meniul din stânga</string>
+    <string name="desktop_copy_log">Copiază jurnalul</string>
+    <string name="desktop_dual_empty">Conectează un dispozitiv ca să apară aici</string>
     <string name="action_settings">Setări</string>
     <string name="conn_on">Conectat</string>
     <string name="conn_off">Deconectat</string>

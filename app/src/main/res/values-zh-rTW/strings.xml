@@ -4,6 +4,11 @@
     <string name="action_dev_tools">開發者工具</string>
     <string name="desktop_nav_overview">總覽</string>
     <string name="desktop_nav_app_settings">應用程式設定</string>
+    <string name="desktop_autostart_title">隨電腦啟動</string>
+    <string name="desktop_autostart_sub">登入時在系統匣中開啟</string>
+    <string name="desktop_devtools_sub">在左側選單中顯示開發人員工具</string>
+    <string name="desktop_copy_log">複製記錄</string>
+    <string name="desktop_dual_empty">連接裝置後將顯示在此</string>
     <string name="action_settings">設定</string>
     <string name="conn_on">已連線</string>
     <string name="conn_off">未連線</string>

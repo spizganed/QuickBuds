@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Mga tool ng developer</string>
     <string name="desktop_nav_overview">Pangkalahatang-ideya</string>
     <string name="desktop_nav_app_settings">Mga setting ng app</string>
+    <string name="desktop_autostart_title">Magsimula kasama ng computer</string>
+    <string name="desktop_autostart_sub">Magbubukas sa tray kapag nag-sign in ka</string>
+    <string name="desktop_devtools_sub">Ipakita ang mga dev tool sa menu sa kaliwa</string>
+    <string name="desktop_copy_log">Kopyahin ang log</string>
+    <string name="desktop_dual_empty">Magkonekta ng device para lumabas dito</string>
     <string name="action_settings">Mga Setting</string>
     <string name="conn_on">Nakakonekta</string>
     <string name="conn_off">Hindi nakakonekta</string>

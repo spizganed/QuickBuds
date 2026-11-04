@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Outils de développement</string>
     <string name="desktop_nav_overview">Aperçu</string>
     <string name="desktop_nav_app_settings">Paramètres de l\'app</string>
+    <string name="desktop_autostart_title">Démarrer avec l\'ordinateur</string>
+    <string name="desktop_autostart_sub">S\'ouvre dans la zone de notification à la connexion</string>
+    <string name="desktop_devtools_sub">Afficher les outils de développement dans le menu de gauche</string>
+    <string name="desktop_copy_log">Copier le journal</string>
+    <string name="desktop_dual_empty">Connectez un appareil pour l\'afficher ici</string>
     <string name="action_settings">Paramètres</string>
     <string name="conn_on">Connecté</string>
     <string name="conn_off">Déconnecté</string>

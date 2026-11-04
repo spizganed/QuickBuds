@@ -4,6 +4,11 @@
     <string name="action_dev_tools">开发者工具</string>
     <string name="desktop_nav_overview">概览</string>
     <string name="desktop_nav_app_settings">应用设置</string>
+    <string name="desktop_autostart_title">随电脑启动</string>
+    <string name="desktop_autostart_sub">登录时在托盘中打开</string>
+    <string name="desktop_devtools_sub">在左侧菜单中显示开发者工具</string>
+    <string name="desktop_copy_log">复制日志</string>
+    <string name="desktop_dual_empty">连接设备后将在此显示</string>
     <string name="action_settings">设置</string>
     <string name="conn_on">已连接</string>
     <string name="conn_off">未连接</string>

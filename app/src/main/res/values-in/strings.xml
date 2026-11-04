@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Alat developer</string>
     <string name="desktop_nav_overview">Ringkasan</string>
     <string name="desktop_nav_app_settings">Setelan aplikasi</string>
+    <string name="desktop_autostart_title">Mulai bersama komputer</string>
+    <string name="desktop_autostart_sub">Terbuka di baki saat Anda masuk</string>
+    <string name="desktop_devtools_sub">Tampilkan alat pengembang di menu sebelah kiri</string>
+    <string name="desktop_copy_log">Salin log</string>
+    <string name="desktop_dual_empty">Hubungkan perangkat agar tampil di sini</string>
     <string name="action_settings">Pengaturan</string>
     <string name="conn_on">Terhubung</string>
     <string name="conn_off">Terputus</string>

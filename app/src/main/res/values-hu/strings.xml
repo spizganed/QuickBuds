@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Fejlesztői eszközök</string>
     <string name="desktop_nav_overview">Áttekintés</string>
     <string name="desktop_nav_app_settings">Alkalmazásbeállítások</string>
+    <string name="desktop_autostart_title">Indítás a számítógéppel</string>
+    <string name="desktop_autostart_sub">Bejelentkezéskor az értesítési területen nyílik meg</string>
+    <string name="desktop_devtools_sub">Fejlesztői eszközök megjelenítése a bal oldali menüben</string>
+    <string name="desktop_copy_log">Napló másolása</string>
+    <string name="desktop_dual_empty">Csatlakoztass egy eszközt, hogy itt megjelenjen</string>
     <string name="action_settings">Beállítások</string>
     <string name="conn_on">Csatlakoztatva</string>
     <string name="conn_off">Leválasztva</string>

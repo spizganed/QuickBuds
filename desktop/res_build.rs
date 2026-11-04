@@ -46,7 +46,7 @@ const STRINGS: &[&str] = &[
     "settings_background_warn_action", "settings_devtools_title", "settings_devtools_sub", "settings_update_sub", "row_update_title",
     "settings_ping_title", "settings_ping_sub", "settings_setup_title", "row_gesture_title", "row_wear_title", "row_wear_sub",
     "wear_title", "wear_smart_title", "wear_smart_sub",
-    "conn_on", "conn_action_connect", "conn_action_disconnect", "conn_connecting", "dual_not_connected",
+    "conn_on", "conn_off", "conn_action_connect", "conn_action_disconnect", "conn_connecting", "dual_not_connected",
     "status_left", "status_right", "status_case", "anc_section", "anc_seg_off", "anc_seg_anc", "anc_need_ear",
     "anc_seg_adapt", "anc_seg_trans", "anc_mode_low", "anc_mode_medium", "anc_mode_high",
     "anc_mode_smart", "widget_low_latency",
@@ -114,6 +114,8 @@ const STRINGS: &[&str] = &[
     "about_privacy_reply", "issues_dialog_body", "issues_dialog_action",
     // The desktop tray menu.
     "tray_open", "tray_quit",
+    // Desktop-only rows and the Tauri pages.
+    "desktop_autostart_title", "desktop_autostart_sub", "desktop_devtools_sub", "desktop_copy_log", "desktop_dual_empty", "about_privacy_reset", "problem_capture_hint", "row_dual_title",
 ];
 
 fn attr<'a>(tag: &'a str, name: &str) -> Option<&'a str> {
@@ -222,7 +224,7 @@ fn generate() {
     let body = &fg[fg.find('>').unwrap() + 1..];
     let launcher = format!(r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="72" height="72"><rect x="18" y="18" width="72" height="72" rx="16" fill="#000000"/>{body}"##);
     writeln!(icons, "pub const LAUNCHER: &str = {launcher:?};").unwrap();
-    if env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") { exe_icon(&launcher, &out); }
+    if env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") && env::var("CARGO_PKG_NAME").as_deref() != Ok("quickbuds-tauri") { exe_icon(&launcher, &out); }
     fs::write(Path::new(&out).join("icons.rs"), icons).unwrap();
 
     // (locale tag, values) per `values-*` folder; "" is the English default.

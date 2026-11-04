@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Narzędzia deweloperskie</string>
     <string name="desktop_nav_overview">Przegląd</string>
     <string name="desktop_nav_app_settings">Ustawienia aplikacji</string>
+    <string name="desktop_autostart_title">Uruchamiaj z komputerem</string>
+    <string name="desktop_autostart_sub">Otwiera się w zasobniku po zalogowaniu</string>
+    <string name="desktop_devtools_sub">Pokaż narzędzia deweloperskie w menu po lewej</string>
+    <string name="desktop_copy_log">Kopiuj dziennik</string>
+    <string name="desktop_dual_empty">Połącz urządzenie, aby wyświetlić je tutaj</string>
     <string name="action_settings">Ustawienia</string>
     <string name="conn_on">Połączono</string>
     <string name="conn_off">Rozłączono</string>

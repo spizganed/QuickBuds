@@ -4,6 +4,11 @@
     <string name="action_dev_tools">เครื่องมือนักพัฒนา</string>
     <string name="desktop_nav_overview">ภาพรวม</string>
     <string name="desktop_nav_app_settings">การตั้งค่าแอป</string>
+    <string name="desktop_autostart_title">เริ่มพร้อมคอมพิวเตอร์</string>
+    <string name="desktop_autostart_sub">เปิดในถาดระบบเมื่อคุณลงชื่อเข้าใช้</string>
+    <string name="desktop_devtools_sub">แสดงเครื่องมือสำหรับนักพัฒนาในเมนูด้านซ้าย</string>
+    <string name="desktop_copy_log">คัดลอกบันทึก</string>
+    <string name="desktop_dual_empty">เชื่อมต่ออุปกรณ์เพื่อแสดงที่นี่</string>
     <string name="action_settings">การตั้งค่า</string>
     <string name="conn_on">เชื่อมต่อแล้ว</string>
     <string name="conn_off">ไม่ได้เชื่อมต่อ</string>

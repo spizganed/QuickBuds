@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Vývojářské nástroje</string>
     <string name="desktop_nav_overview">Přehled</string>
     <string name="desktop_nav_app_settings">Nastavení aplikace</string>
+    <string name="desktop_autostart_title">Spustit s počítačem</string>
+    <string name="desktop_autostart_sub">Po přihlášení se otevře v oznamovací oblasti</string>
+    <string name="desktop_devtools_sub">Zobrazit vývojářské nástroje v nabídce vlevo</string>
+    <string name="desktop_copy_log">Kopírovat protokol</string>
+    <string name="desktop_dual_empty">Připojte zařízení, aby se zobrazilo zde</string>
     <string name="action_settings">Nastavení</string>
     <string name="conn_on">Připojeno</string>
     <string name="conn_off">Odpojeno</string>

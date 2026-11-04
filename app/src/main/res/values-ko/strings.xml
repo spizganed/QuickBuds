@@ -4,6 +4,11 @@
     <string name="action_dev_tools">개발자 도구</string>
     <string name="desktop_nav_overview">개요</string>
     <string name="desktop_nav_app_settings">앱 설정</string>
+    <string name="desktop_autostart_title">컴퓨터와 함께 시작</string>
+    <string name="desktop_autostart_sub">로그인하면 트레이에서 열립니다</string>
+    <string name="desktop_devtools_sub">왼쪽 메뉴에 개발자 도구 표시</string>
+    <string name="desktop_copy_log">로그 복사</string>
+    <string name="desktop_dual_empty">기기를 연결하면 여기에 표시됩니다</string>
     <string name="action_settings">설정</string>
     <string name="conn_on">연결됨</string>
     <string name="conn_off">연결 끊김</string>

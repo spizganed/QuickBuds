@@ -4,6 +4,11 @@
     <string name="action_dev_tools">開発者ツール</string>
     <string name="desktop_nav_overview">概要</string>
     <string name="desktop_nav_app_settings">アプリの設定</string>
+    <string name="desktop_autostart_title">パソコンの起動時に開始</string>
+    <string name="desktop_autostart_sub">サインイン時にトレイで起動します</string>
+    <string name="desktop_devtools_sub">左のメニューに開発ツールを表示</string>
+    <string name="desktop_copy_log">ログをコピー</string>
+    <string name="desktop_dual_empty">デバイスを接続すると、ここに表示されます</string>
     <string name="action_settings">設定</string>
     <string name="conn_on">接続済み</string>
     <string name="conn_off">未接続</string>

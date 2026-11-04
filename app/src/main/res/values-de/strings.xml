@@ -4,6 +4,11 @@
     <string name="action_dev_tools">Entwicklertools</string>
     <string name="desktop_nav_overview">Übersicht</string>
     <string name="desktop_nav_app_settings">App-Einstellungen</string>
+    <string name="desktop_autostart_title">Mit dem Computer starten</string>
+    <string name="desktop_autostart_sub">Startet in der Taskleiste, wenn du dich anmeldest</string>
+    <string name="desktop_devtools_sub">Dev-Tools im Menü links anzeigen</string>
+    <string name="desktop_copy_log">Protokoll kopieren</string>
+    <string name="desktop_dual_empty">Verbinde ein Gerät, um es hier anzuzeigen</string>
     <string name="action_settings">Einstellungen</string>
     <string name="conn_on">Verbunden</string>
     <string name="conn_off">Getrennt</string>

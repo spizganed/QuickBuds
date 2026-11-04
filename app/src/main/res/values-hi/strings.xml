@@ -4,6 +4,11 @@
     <string name="action_dev_tools">डेवलपर टूल</string>
     <string name="desktop_nav_overview">अवलोकन</string>
     <string name="desktop_nav_app_settings">ऐप सेटिंग्स</string>
+    <string name="desktop_autostart_title">कंप्यूटर के साथ शुरू करें</string>
+    <string name="desktop_autostart_sub">साइन इन करने पर ट्रे में खुलता है</string>
+    <string name="desktop_devtools_sub">बाईं ओर के मेनू में डेवलपर टूल दिखाएँ</string>
+    <string name="desktop_copy_log">लॉग कॉपी करें</string>
+    <string name="desktop_dual_empty">यहाँ दिखाने के लिए कोई डिवाइस कनेक्ट करें</string>
     <string name="action_settings">सेटिंग्स</string>
     <string name="conn_on">कनेक्टेड</string>
     <string name="conn_off">डिस्कनेक्टेड</string>
