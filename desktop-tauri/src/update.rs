@@ -306,3 +306,66 @@ mod download_tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
+
+#[cfg(all(test, unix))]
+mod install_tests {
+    use super::*;
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+
+    /// A server with two files: the new AppImage and its SHA256SUMS.
+    fn serve(files: Vec<(&'static str, Vec<u8>)>) -> String {
+        let l = TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = l.local_addr().unwrap();
+        std::thread::spawn(move || {
+            for stream in l.incoming() {
+                let Ok(mut s) = stream else { continue };
+                let mut buf = [0u8; 2048];
+                let n = s.read(&mut buf).unwrap_or(0);
+                let req = String::from_utf8_lossy(&buf[..n]).into_owned();
+                let head = req.starts_with("HEAD");
+                let path = req.split_whitespace().nth(1).unwrap_or("/").to_string();
+                match files.iter().find(|(name, _)| path.ends_with(name)) {
+                    Some((_, body)) => {
+                        let _ = write!(s, "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n", body.len());
+                        if !head { let _ = s.write_all(body); }
+                    }
+                    None => { let _ = write!(s, "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"); }
+                }
+            }
+        });
+        format!("http://{addr}")
+    }
+
+    /// The whole update on an AppImage: download, SHA256SUMS check, swap, old file kept, new file started.
+    #[test]
+    fn installs_a_newer_appimage_and_starts_it() {
+        let dir = std::env::temp_dir().join(format!("qb-install-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let marker = dir.join("started");
+        let current = dir.join("QuickBuds.AppImage");
+        std::fs::write(&current, "#!/bin/sh\necho old\n").unwrap();
+        let new_body = format!("#!/bin/sh\necho started > {}\n", marker.display()).into_bytes();
+        let name = "QuickBuds-linux-x64.AppImage";
+        let sums = format!("{}  {name}\n", hex(&sha256(&new_body))).into_bytes();
+        let base = serve(vec![(name, new_body.clone()), ("SHA256SUMS", sums)]);
+        std::env::set_var("APPIMAGE", &current);
+        let r = Release { version: "9.9.9".into(), url: format!("{base}/{name}"), sums: Some(format!("{base}/SHA256SUMS")), notes: String::new() };
+        let seen = std::sync::Mutex::new(0u64);
+        install(&r, &|done, _| { let mut m = seen.lock().unwrap(); *m = (*m).max(done); }).unwrap();
+        assert_eq!(std::fs::read(&current).unwrap(), new_body, "the AppImage was not replaced");
+        assert_eq!(std::fs::read(old(&current.canonicalize().unwrap())).unwrap(), b"#!/bin/sh\necho old\n", "the old file is not kept");
+        for _ in 0..50 { if marker.exists() { break; } std::thread::sleep(std::time::Duration::from_millis(100)); }
+        assert!(marker.exists(), "the new AppImage did not start");
+        assert!(*seen.lock().unwrap() > 0);
+        // A download that does not match SHA256SUMS changes nothing.
+        let bad = serve(vec![(name, b"#!/bin/sh\necho tampered\n".to_vec()), ("SHA256SUMS", format!("{}  {name}\n", hex(&sha256(b"something else"))).into_bytes())]);
+        let before = std::fs::read(&current).unwrap();
+        let r2 = Release { version: "9.9.10".into(), url: format!("{bad}/{name}"), sums: Some(format!("{bad}/SHA256SUMS")), notes: String::new() };
+        assert!(install(&r2, &|_, _| {}).is_err());
+        assert_eq!(std::fs::read(&current).unwrap(), before, "a bad download replaced the file");
+        std::env::remove_var("APPIMAGE");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+}
