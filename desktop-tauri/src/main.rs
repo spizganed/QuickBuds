@@ -181,7 +181,7 @@ fn style(w: &WebviewWindow, label: &str) {
     {
         use tauri::{utils::config::WindowEffectsConfig, window::Effect};
         let _ = label;
-        let _ = w.set_effects(WindowEffectsConfig { effects: vec![Effect::Acrylic], state: None, radius: None, color: None });
+        let _ = w.set_effects(WindowEffectsConfig { effects: vec![Effect::Acrylic], state: None, radius: None, color: None, interactive: false });
     }
     #[cfg(not(any(target_os = "linux", windows)))]
     let _ = (w, label);
@@ -271,14 +271,31 @@ fn open_main(app: AppHandle) {
 #[tauri::command]
 fn quit(app: AppHandle) { app.exit(0); }
 
+/// Counts the window size changes: a newer change stops an older animation.
+static SIZE_GEN: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
 /// The main window has a fixed size the user cannot change. The pixel style asks for a larger one: its dot text is wide.
+/// The window grows or shrinks over 250 ms (ease out), not in one jump.
 #[tauri::command]
 fn main_size(app: AppHandle, width: f64, height: f64) {
+    use std::sync::atomic::Ordering;
     let Some(w) = app.get_webview_window("main") else { return };
-    // A window that is not resizable ignores set_size on some systems: allow it for the one call.
-    let _ = w.set_resizable(true);
-    let _ = w.set_size(tauri::LogicalSize::new(width, height));
-    let _ = w.set_resizable(false);
+    let gen = SIZE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
+    std::thread::spawn(move || {
+        let scale = w.scale_factor().unwrap_or(1.0);
+        let (fw, fh) = w.inner_size().map(|s| (s.width as f64 / scale, s.height as f64 / scale)).unwrap_or((width, height));
+        // A window that is not resizable ignores set_size on some systems: allow it while it animates.
+        let _ = w.set_resizable(true);
+        const STEPS: u32 = 16;
+        for i in 1..=STEPS {
+            if SIZE_GEN.load(Ordering::SeqCst) != gen { return; }
+            let t = f64::from(i) / f64::from(STEPS);
+            let e = 1.0 - (1.0 - t).powi(3);
+            let _ = w.set_size(tauri::LogicalSize::new(fw + (width - fw) * e, fh + (height - fh) * e));
+            std::thread::sleep(std::time::Duration::from_millis(16));
+        }
+        let _ = w.set_resizable(false);
+    });
 }
 
 /// Sizes the panel to its content. The panel has no frame, so the user cannot resize it by hand.
