@@ -8,7 +8,7 @@ const I={
   battery:'<path d="M4.5,7h12a2,2 0,0 1,2 2v6a2,2 0,0 1,-2 2h-12a2,2 0,0 1,-2 -2v-6a2,2 0,0 1,2 -2zM21.5,10.5v3" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5,10h5.5v4h-5.5z" fill="#fff"/>',
   palette:'<path d="M12,3a9,9 0,1 0,0,18c1.4,0 2,-0.9 2,-2c0,-1.2 -1,-1.6 -1,-2.8c0,-1.1 0.9,-1.7 2,-1.7h2.5c1.9,0 3.5,-1.4 3.5,-3.5C21,6.6 17,3 12,3z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.1,11a1.4,1.4 0,1 0,2.8,0a1.4,1.4 0,1 0,-2.8,0zM8.6,7a1.4,1.4 0,1 0,2.8,0a1.4,1.4 0,1 0,-2.8,0zM13.6,7.5a1.4,1.4 0,1 0,2.8,0a1.4,1.4 0,1 0,-2.8,0z" fill="#fff"/>',
   off:'<path d="M12 3.5 A8.5 8.5 0 1 1 11.99 3.5 M6 6 L18 18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-  anc:'<path d="M12 9 A3 3 0 1 1 11.99 9 M12 5 A7 7 0 1 1 11.99 5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M12 1.5 A10.5 10.5 0 1 1 11.99 1.5" fill="none" stroke="#fff" stroke-width="2" stroke-opacity="0.5"/>',
+  anc:'<path d="M12 9 A3 3 0 1 1 11.99 9 M12 5 A7 7 0 1 1 11.99 5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M12 1.5 A10.5 10.5 0 1 1 11.99 1.5" fill="none" stroke="#fff" stroke-width="2"/>',
   adaptive:'<path d="M12 3.5 L13.9 10.1 L20.5 12 L13.9 13.9 L12 20.5 L10.1 13.9 L3.5 12 L10.1 10.1 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>',
   transp:'<path d="M3 12 H5 M7.5 8 V16 M12 4.5 V19.5 M16.5 8 V16 M21 12 H19" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>',
   low:'<path d="M9.8,12a2.2,2.2 0 1,0 4.4,0a2.2,2.2 0 1,0 -4.4,0z" fill="#fff"/><path d="M6.8,12a5.2,5.2 0 1,0 10.4,0a5.2,5.2 0 1,0 -10.4,0z" fill="none" stroke="#fff" stroke-width="1.9"/>',
@@ -29,7 +29,7 @@ const I={
   chev:'<path d="M9,6l6,6 -6,6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
   back:'<path d="M15,6l-6,6 6,6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
   plus:'<path d="M12,5v14M5,12h14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
-  check:'<path d="M5,12.5l4.5,4.5L19,7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
+  check:'<path d="M5.5,12.5l4,4L18.5,7.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   pencil:'<path d="M3,21 L4.6,15.2 L15.6,4.2 L19.8,8.4 L8.8,19.4 Z" fill="#fff"/>',
   del:'<path d="M9,3h6v2h-6z M3,6h18v3h-18z M5,10.5h14l-1.2,10.5h-11.6z" fill="#fff"/>',
   close:'<path d="M6,6L18,18 M18,6L6,18" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>',
@@ -122,12 +122,18 @@ function palette(){let p,id=activeId();const pr=S.colorMode==='palette'?S.preset
 
 /* ================= apply the palette (ThemeRes.palette + glassify) ================= */
 let lastStyle=null;
+// The knob of a slider: a ring of 9 x 9 dots in the accent colour, as an image (the phone's DotArt.knob).
+function knobVar(color){const ring=['..#####..','.#.....#.','#.......#','#.......#','#.......#','#.......#','#.......#','.#.....#.','..#####..'],cells=[];
+  ring.forEach((r,y)=>[...r].forEach((c,x)=>{if(c==='#')cells.push([x,y]);}));
+  const svg=dotsSvg(cells,9,9,3).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ').replace('fill="currentColor"',`fill="${color}"`);
+  document.documentElement.style.setProperty('--knob',`url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`);}
 function apply(){
   const p=palette(),root=document.documentElement,st=root.style,set=(k,v)=>st.setProperty(k,v),light=p.isLight,glass=S.style==='glass';
   const[lt,dk]=lum(p.text)>lum(p.bg)?[p.text,p.bg]:[p.bg,p.text];
   const onAccent=(contrast(lt,p.accent)>=3||contrast(lt,p.accent)>=contrast(dk,p.accent))?lt:dk;
   const track=light?blend(p.outline,p.text,0.14):blend(p.outline,p.text,0.06);
   const container=blend(blend(p.card,p.text,(!light&&lum(p.card)<0.005)?0.09:0),p.accent,light?0.05:0.08);
+  knobVar(hex(p.accent));
   set('--bg',hex(p.bg));set('--card',hex(p.card));set('--accent',hex(p.accent));set('--track',hex(track));
   set('--thumb-off',light?hex(p.card):rgba(p.text,0.9));set('--container',hex(container));set('--tonal',hex(blend(container,p.accent,light?0.18:0.28)));
   if(glass){
@@ -150,6 +156,8 @@ function apply(){
     set('--dlg-bg',`linear-gradient(${rgba(base,.4)},${rgba(base,.4)}),${gb}`);
   }else{set('--text',hex(p.text));set('--ink',hex(p.text));set('--text2',hex(p.text2));set('--outline',hex(p.outline));set('--on-accent',hex(onAccent));}
   const d=root.dataset;d.style=S.style;d.glassbg=S.glassBg;d.light=light?'1':'0';
+  // Only the pixel style has a larger window (a fixed size, the user cannot resize it): the other styles are made for 800 x 600.
+  if(window.__TAURI__&&root.classList.contains('native')&&apply._px!==(S.style==='pixel')){apply._px=S.style==='pixel';window.__TAURI__.core.invoke('main_size',{width:apply._px?1060:800,height:apply._px?760:600});}
   document.getElementById('desk').style.background=S.wall==='upload'&&uploadUrl?`center/cover no-repeat url("${uploadUrl}")`:WALLS[typeof S.wall==='number'?S.wall:0].css;
   sync(p);
   if(S.style==='pixel'&&lastStyle!=='pixel')requestAnimationFrame(()=>pixelize(document));
@@ -160,6 +168,8 @@ function apply(){
    A drawing is rendered at one pixel per cell; every covered cell becomes one round dot (radius 0.42 pitch). */
 const DPR=Math.max(1,window.devicePixelRatio||1);
 const pitchPx=dp=>Math.max(2,Math.round(dp*DPR))/DPR;
+// The phone's values (DotArt.kt): 2.2 dp for boxes, rings and switches, 1.2 dp for icons. A screen at 1x cannot draw less than 1 px.
+// 1.2 dp for icons as on the phone. Boxes, rings and switches use 2.6 dp: at 1x a pitch below 3 px merges the dots into lines.
 const PITCH=pitchPx(2.6),ICON_PITCH=pitchPx(1.2),SOLID_MIN=90,MIN_ALPHA=50;
 document.documentElement.style.setProperty('--dp',PITCH+'px');document.documentElement.style.setProperty('--dr',(PITCH*0.42).toFixed(2)+'px');
 const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
@@ -180,7 +190,7 @@ const PATTERNS={
   tap3:[17,5,(x,y)=>{const dx=x%6-2,dy=y-2;return x%6<5&&dx*dx+dy*dy<=6;}],
   hold:[15,15,(x,y)=>{const d=Math.hypot(x-7,y-7);return d<=2.3||(d>=5.6&&d<=7.2);}],
   close:strokes(1.0,[2.5,2.5,12.5,12.5],[12.5,2.5,2.5,12.5]),
-  check:strokes(1.15,[2.5,8,6,11.5],[6,11.5,12.5,4]),
+  check:strokes(0.8,[2.5,8,6,11.5],[6,11.5,12.5,4]),
   pencil:[15,15,(x,y)=>{const t=[0];const d=seg(x+.5,y+.5,2.5,12.5,12,3,t);return d<=0.5+1.4*t[0];}],
   del:[15,15,(x,y)=>y===1?x>=5&&x<=9:y===2?x===5||x===9:(y===3||y===4)?x>=1&&x<=13:(y>=6&&y<=13)?x>=2&&x<=12:false],
   cog:[17,17,(x,y)=>{const dx=x-8,dy=y-8,d=Math.hypot(dx,dy),a=Math.atan2(dy,dx)+Math.PI/2,off=Math.abs(a-Math.round(a/(Math.PI/3))*(Math.PI/3));return (d>=3.6&&d<=5.9)||(d>=5.5&&d<=8.4&&off<=0.27);}],
@@ -188,8 +198,42 @@ const PATTERNS={
   min:[15,15,(x,y)=>y===7&&x>=3&&x<=11],
   max:[15,15,(x,y)=>(x>=3&&x<=11&&y>=3&&y<=11)&&(x===3||x===11||y===3||y===11)]
 };
+/* Hand-drawn pixel icons, 9 x 9 cells: a sampled vector has too few dots at 1x and turns into a blob. */
+const bm=r=>[r[0].length,r.length,(x,y)=>r[y][x]==='#'];
+const HAND={
+  battery:bm(['.........','.........','########.','#......#.','#.####.##','#.####.##','#......#.','########.','.........']),
+  palette:bm(['..#####..','.#.....#.','#..#....#','#......#.','#.#.....#','#.....#.#','.#.....#.','..#####..','.........']),
+  off:bm(['..#####..','.#.....#.','#.#.....#','#..#....#','#...#...#','#....#..#','#.....#.#','.#.....#.','..#####..']),
+  anc:bm(['..#####..','.#.....#.','#..###..#','#.#...#.#','#.#.#.#.#','#.#...#.#','#..###..#','.#.....#.','..#####..']),
+  adaptive:bm(['....#....','....#....','...#.#...','..#...#..','###...###','..#...#..','...#.#...','....#....','....#....']),
+  transp:bm(['....#....','....#....','..#.#.#..','..#.#.#..','#.#.#.#.#','..#.#.#..','..#.#.#..','....#....','....#....']),
+  low:bm(['.........','.........','..#####..','..#...#..','..#.#.#..','..#...#..','..#####..','.........','.........']),
+  high:bm(['..#####..','.#######.','##.....##','##.###.##','##.###.##','##.###.##','##.....##','.#######.','..#####..']),
+  smart:bm(['..#####.#','.#.....#.','#..###..#','#.#...#.#','#.#.#.#.#','#.#...#.#','#..###..#','.#.....#.','..#####..']),
+  bolt:bm(['....###..','...##....','..##.....','.#####...','...##....','..##.....','.##......','..#......','.........']),
+  hires:bm(['.........','######..#','........#','####....#','........#','##......#','........#','........#','.........']),
+  spatial:bm(['.#######.','#.......#','...###...','..#...#..','.........','....#....','...###...','...#.#...','...#.#...']),
+  hearing:bm(['..####...','.#....#..','#..##..#.','#.#..#.#.','#.#..#.#.','#..#.#.#.','.....##..','...#.....','...##....']),
+  eq:bm(['.........','.........','....#....','....#....','..#.#.#..','..#.#.#..','#.#.#.#.#','#.#.#.#.#','#.#.#.#.#']),
+  devices:bm(['#######..','#.....#..','#.....###','#.....#.#','#######.#','..###...#','..###..##','..###....','.........']),
+  gesture:bm(['...##....','...##....','...##....','...##.##.','...######','#..######','.########','.#######.','..#####..']),
+  earbud:bm(['..####...','.######..','.######..','.######..','..####...','...###...','...###...','...###...','....##...']),
+  find:bm(['..#####..','.#######.','##.###.##','##.###.##','.#######.','..#####..','...###...','....#....','.........']),
+  power:bm(['....#....','..#.#.#..','.#..#..#.','#...#...#','#.......#','#.......#','.#.....#.','..#####..','.........']),
+  dev:bm(['.........','#........','.#.......','..#......','.#.......','#........','.....####','.........','.........']),
+  info:bm(['..#####..','.#.....#.','#...#...#','#.......#','#...#...#','#...#...#','#...#...#','.#.....#.','..#####..']),
+  chev:bm(['.........','..#......','...#.....','....#....','.....#...','....#....','...#.....','..#......','.........']),
+  back:bm(['.........','....#....','...#.....','..#......','.#######.','..#......','...#.....','....#....','.........']),
+  plus:bm(['.........','....#....','....#....','....#....','.#######.','....#....','....#....','....#....','.........']),
+  update:bm(['....#....','....#....','....#....','..#.#.#..','...###...','....#....','.........','#########','.........']),
+  language:bm(['..#####..','.#..#..#.','#...#...#','#########','#...#...#','#...#...#','.#..#..#.','..#####..','.........']),
+  chat:bm(['.........','#########','#.......#','#.......#','#.......#','#########','..#......','.#.......','.........']),
+  warn:bm(['....#....','...#.#...','...#.#...','..#.#.#..','..#.#.#..','.#..#..#.','.#.....#.','#########','.........']),
+  volume:bm(['.........','...#.....','..##..#..','.###...#.','####...#.','.###...#.','..##..#..','...#.....','.........'])
+};
+Object.assign(PATTERNS,HAND);
 function patternDots(key,size){const[cols,rows,f]=PATTERNS[key];const cells=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)if(f(x,y))cells.push([x,y]);
-  const p=Math.min(ICON_PITCH*Math.max(1,size/24),size/Math.max(cols,rows)*1.15);return dotsSvg(cells,cols,rows,p);}
+  const p=HAND[key]?Math.max(2,Math.round(size/Math.max(cols,rows)*DPR))/DPR:Math.min(ICON_PITCH*Math.max(1,size/24),size/Math.max(cols,rows)*1.15);return dotsSvg(cells,cols,rows,p);}
 /* DotArt.Icon: the vector sampled at the icon pitch (dots grow past 24px, so the count stays the same) */
 const iconCache=new Map();
 function iconDots(key,w,h){const id=key+'|'+w+'x'+h;if(iconCache.has(id))return iconCache.get(id);
@@ -218,8 +262,9 @@ function drawBox(el){const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;c
 function pixelize(root){if(S.style!=='pixel')return;
   root.querySelectorAll(BOXSEL).forEach(el=>{if(!el._ro){ro.observe(el);el._ro=1;}el._dzk=null;drawBox(el);});
   root.querySelectorAll('.ic[data-ic]').forEach(el=>{const k=el.dataset.ic,w=el.clientWidth||20,h=el.clientHeight||20;if(!w)return;const id=k+w+'x'+h;if(el._dz===id)return;el._dz=id;
-    const put=svg=>{el.querySelector(':scope>.dz')?.remove();el.insertAdjacentHTML('beforeend',svg);};
-    if(PATTERNS[k])put(patternDots(k,Math.min(w,h)));else iconDots(k,w,h).then(put);});
+    const put=svg=>{el.querySelector(':scope>.dz')?.remove();el.insertAdjacentHTML('beforeend',svg);el.classList.add('dotted');};
+    // A sampled icon below 40 px has about 10 dots across at 1x: the dots merge into a blob. It stays a clean vector there.
+    if(PATTERNS[k]&&(!HAND[k]||Math.min(w,h)>=24))put(patternDots(k,Math.min(w,h)));else if(!PATTERNS[k]&&Math.min(w,h)>=40)iconDots(k,w,h).then(put);});
   root.querySelectorAll('.ring').forEach(el=>{const s=el.clientWidth;if(!s||el._dz===s)return;el._dz=s;el.querySelector(':scope>.dz')?.remove();
     el.insertAdjacentHTML('beforeend',ringDots(s,+el.dataset.pct));const g=BIG[el.dataset.g],gw=s*(el.dataset.g==='case'?.48:.3),gh=s*(el.dataset.g==='case'?.39:.46);
     iconDots(el.dataset.g,Math.round(gw),Math.round(gh)).then(svg=>{const box=document.createElement('span');box.className='ic glyph '+(el.dataset.g==='case'?'case':'');box.style.cssText=`position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:${gw}px;height:${gh}px`;
@@ -558,8 +603,24 @@ function sync(p){
 
 /* ================= motion ================= */
 const reduce=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
-// The native glass window is see-through: a view transition would paint its snapshot on an opaque layer and the end would not match.
-function reveal(ev,fn){if(!document.startViewTransition||reduce()||(document.documentElement.classList.contains('native')&&S.style==='glass')){fn();return;}
+// The native glass window is see-through: a view transition paints its snapshot on an opaque layer, so the end would not match.
+// There the circle sweeps the background itself: the old and the new background are two layers, each masked to its own part,
+// so no pixel shows both and the see-through stays true all the way.
+function sweep(ev,fn){
+  const app=document.querySelector('.app');if(!app){fn();return;}
+  const grab=()=>{const c=getComputedStyle(app);return `${c.backgroundImage}, ${c.backgroundColor}`.replace(/^none, /,'');};
+  const before=grab();fn();const after=grab();
+  const r0=app.getBoundingClientRect(),x=(ev?.clientX??innerWidth/2)-r0.left,y=(ev?.clientY??innerHeight/2)-r0.top,
+    R=Math.hypot(Math.max(x,r0.width-x),Math.max(y,r0.height-y))+4;
+  const mk=bg=>{const d=document.createElement('div');d.style.cssText=`position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:${bg}`;return d;};
+  const lo=mk(before),ln=mk(after);app.classList.add('sweeping');app.prepend(ln,lo);
+  const sp=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1,dur=420*sp,t0=performance.now();
+  const step=now=>{const t=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-t,3),rad=R*e;
+    ln.style.webkitMaskImage=`radial-gradient(circle at ${x}px ${y}px,#000 ${rad}px,transparent ${rad+1}px)`;
+    lo.style.webkitMaskImage=`radial-gradient(circle at ${x}px ${y}px,transparent ${rad}px,#000 ${rad+1}px)`;
+    if(t<1)requestAnimationFrame(step);else{lo.remove();ln.remove();app.classList.remove('sweeping');}};
+  requestAnimationFrame(step);}
+function reveal(ev,fn){if(reduce()){fn();return;}if(document.documentElement.classList.contains('native')&&S.style==='glass'){sweep(ev,fn);return;}if(!document.startViewTransition){fn();return;}
   const x=ev?.clientX??innerWidth/2,y=ev?.clientY??innerHeight/2,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
   const vt=document.startViewTransition(fn);vt.ready.then(()=>document.documentElement.animate({clipPath:[`circle(0px at ${x}px ${y}px)`,`circle(${r}px at ${x}px ${y}px)`]},{duration:420*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1),easing:'cubic-bezier(.2,0,0,1)',pseudoElement:'::view-transition-new(root)'})).catch(()=>{});}
 function replay(el){if(!el)return;el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter');}
@@ -797,6 +858,8 @@ if(window.__TAURI__){
     // Disconnected: the tiles dim and go inert (the phone's DISABLED_ALPHA); the connect button's text cross-fades.
     document.documentElement.classList.toggle('off',s.status!=='on');
     if(s.status==='on'&&QBLIVE._was!=='on'&&['earbud','gestures','hearing'].includes(S.page))setTimeout(()=>QBLIVE.pageReads(S.page),300);
+    // The two-device list is read as soon as the buds connect, so Earbud settings shows it at once.
+    if(s.status==='on'&&QBLIVE._was!=='on'&&s.has&&s.has.dual)setTimeout(()=>QBLIVE.send({t:'dual_open'}),1500);
     QBLIVE._was=s.status;
     const sp=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1,
       fade=(sel,label)=>document.querySelectorAll(sel).forEach(el=>{
@@ -858,8 +921,6 @@ if(window.__TAURI__){
         // Never below the model's minimum.
         if(on){if(working.length>g.holdMin)working=working.filter(x=>x!==a);}else working.push(a);
         d.querySelectorAll('.pkopt').forEach(x=>{const on=working.includes(+x.dataset.o),c=x.querySelector('.ch');x.setAttribute('aria-pressed',String(on));if(on&&!c)x.insertAdjacentHTML('beforeend',ic('check','ch'));if(!on&&c)c.remove();});});
-    // The two-device list is read as soon as the buds connect, so Earbud settings shows it at once.
-    if(s.status==='on'&&QBLIVE._was!=='on'&&s.has&&s.has.dual)setTimeout(()=>QBLIVE.send({t:'dual_open'}),1500);
       d.querySelector('#nzGo').addEventListener('click',()=>{
         // In the list's order, so the cycle matches what was shown.
         if(working.length>=g.holdMin)send({t:'gesture',g:r.g,side,actions:r.options.filter(x=>working.includes(x))});close();});});}
