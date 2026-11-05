@@ -816,7 +816,7 @@ html.traywin .tray{box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
 
 /* Disconnected (the phone's main screen): the device name fades, every tile but the battery dims to 35% and takes no input. */
 .page>*,.tray>*,.mname{transition:opacity calc(240ms*var(--speed))}
-html.off .page>*:not(.budsw):not(.ph):not(.lbl),html.off .tray>*:not(.thead):not(.budsw):not(.tfoot):not(.toast){opacity:.35;pointer-events:none}
+html.off .page:is([data-page=overview],[data-page=eq],[data-page=hearing],[data-page=gestures],[data-page=earbud])>*:not(.budsw):not(.ph):not(.lbl),html.off .tray>*:not(.thead):not(.budsw):not(.tfoot):not(.toast){opacity:.35;pointer-events:none}
 html.off .mname span{opacity:0}
 html.off .btn .dot{background:var(--text2)}
 .bassoff .range,.bassoff .v{opacity:.35;transition:opacity calc(240ms*var(--speed))}
