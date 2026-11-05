@@ -4,7 +4,7 @@
 #   QuickBuds-linux-x64.AppImage         WebKitGTK inside. No version in the name: releases/latest/download/ always finds it.
 # Usage: scripts/desktop-dist.sh <version>   (e.g. 5.7.0). QB_APPIMAGE_ONLY=1 builds the AppImage only.
 # Needs: podman (unless QB_NATIVE=1), zip. Windows also needs cargo-xwin, clang, lld, llvm and the msvc rustup target.
-# Linux builds in Ubuntu 22.04 (glibc 2.35) so the binary runs on older distros than the build PC.
+# Linux builds in Ubuntu 24.04 (glibc 2.39): its WebKitGTK renders the transparent window cleanly (the 22.04 one ghosts text).
 # The podman image (scripts/desktop-build.Containerfile) is built once.
 set -euo pipefail
 ver=${1:?version}

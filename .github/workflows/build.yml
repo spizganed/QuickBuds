@@ -62,8 +62,8 @@ jobs:
 
   desktop:
     runs-on: ubuntu-24.04
-    # Ubuntu 22.04 (glibc 2.35), so the Linux binary runs on older distros too.
-    container: ubuntu:22.04
+    # Ubuntu 24.04 (glibc 2.39): its WebKitGTK renders the transparent window cleanly. The 22.04 one ghosts.
+    container: ubuntu:24.04
     env:
       DEBIAN_FRONTEND: noninteractive
     steps:
