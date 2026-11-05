@@ -42,7 +42,9 @@ object ModelTest {
         Feature("wear", R.string.row_wear_title, "Wear detection") {
             Capabilities.hasFeature(it, com.spizganed.quickbuds.protocol.Feature.AUTO_PLAY_PAUSE)
         },
-        Feature("find", R.string.row_find_title, "Find my earbuds") { Capabilities.supports(it, OpoProtocol.CMD_FIND_BUDS) },
+        Feature("find", R.string.row_find_title, "Find my earbuds") {
+            Capabilities.supports(it, OpoProtocol.CMD_FIND_BUDS) && ModelCatalog.current(it)?.json?.optInt("noFind") != 1
+        },
     )
 
     /** The report's category; the Worker requires the log with it (report-worker/src/index.js). */

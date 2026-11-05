@@ -16,6 +16,7 @@ Each earbud model is one line in `app/src/main/assets/models.json`. The app and 
 | `confirmed` | The rows that an owner tested and confirmed. |
 | `statusQuery` | The feature IDs to ask the buds for, for example `05 06 0B 11 18 1B`. A row shows only if the buds answer. |
 | `windMode` | Show the wind noise switch (feature `0x1A`). |
+| `noFind` | `1`: hide Find my earbuds. The buds ack the command and play no tone (realme Buds T200 Lite, T200x). |
 | `gameConfirm` | `read`: the buds apply the low latency write and never push. The app reads the state back. |
 | `seqless` | `1`: the buds answer with their own sequence byte, not ours (realme Buds T100). |
 | `ancModes`, `gestures`, `eqPresets`, `codecs` | Noise modes, gesture options, equalizer presets and codecs. Copy them from a model of the same family. |

@@ -98,7 +98,7 @@ object RowRules {
             if (OpoProtocol.CMD_SET_KEY_FUNCTION in caps && hasArray(model, "gestures")) out += CONTROLS
         }
         if (has(Feature.AUTO_PLAY_PAUSE)) out += WEAR
-        if (OpoProtocol.CMD_FIND_BUDS in caps) out += FIND
+        if (OpoProtocol.CMD_FIND_BUDS in caps && model?.optInt("noFind") != 1) out += FIND
         if (OpoProtocol.CMD_FIT_TEST in caps) out += FIT
         if (OpoProtocol.CMD_SET_ALERT_VOLUME in caps) out += ALERT_VOLUME
         if (OpoProtocol.CMD_QUERY_FIRMWARE in caps) out += FIRMWARE

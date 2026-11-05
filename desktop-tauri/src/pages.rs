@@ -135,7 +135,7 @@ pub fn earbud_json(s: &Snapshot) -> Value {
         "wornAny": worn(s).1,
         "issues": issues(s),
         "smartPause": crate::load_settings()["smart_auto_pause"].as_bool() == Some(true),
-        "find": s.caps.supports(CMD_FIND_BUDS),
+        "find": s.caps.supports(CMD_FIND_BUDS) && !s.model.is_some_and(|m| m["noFind"] == 1),
         "fit": s.caps.supports(CMD_FIT_TEST),
         "fitState": { "l": s.fit.0, "r": s.fit.1, "seq": s.fit.2 },
         "pncState": { "kind": s.pnc.0, "value": s.pnc.1, "seq": s.pnc.2 },

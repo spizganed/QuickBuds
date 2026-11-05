@@ -30,7 +30,7 @@ const FEATURES: &[Feature] = &[
     ("dual", "dual_title", "Dual connection", |s| has_feature(&s.features, FEATURE_DUAL)),
     ("gestures", "gesture_title", "Gestures", |s| (s.caps.supports(CMD_SET_KEY_FUNCTION) && !crate::gesture_logic::Model::of(s).rows.is_empty())),
     ("wear", "wear_firmware_title", "Wear detection", |s| listed(s, 0x04)),
-    ("find", "row_find_title", "Find my earbuds", |s| s.caps.supports(CMD_FIND_BUDS)),
+    ("find", "row_find_title", "Find my earbuds", |s| s.caps.supports(CMD_FIND_BUDS) && !s.model.is_some_and(|m| m["noFind"] == 1)),
 ];
 
 /// The automatic check: (key, label, name in the report).

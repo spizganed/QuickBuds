@@ -104,7 +104,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 manager?.featureStates?.get(Feature.AUTO_PLAY_PAUSE)).also { it.show() }
         }
         sheetRow(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub,
-            Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS)) {
+            Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS) &&
+            ModelCatalog.current(this)?.json?.optInt("noFind") != 1) {
             FindBudsSheet(this) { on ->
                 startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FIND_BUDS)
                     .putExtra(BudsService.EXTRA_FIND_ON, on))
