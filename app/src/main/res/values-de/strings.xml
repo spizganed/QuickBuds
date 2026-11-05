@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Zeigt die Akkustände. Aus: kleine Benachrichtigung ohne Symbol in der Statusleiste</string>
     <string name="settings_live_chip_title">Chip in der Statusleiste</string>
     <string name="settings_live_chip_sub">Zeigt die Akkustände der getragenen Ohrhörer in der Statusleiste. Braucht Android 16. Aus: Akkuringe in der Benachrichtigung</string>
+    <string name="settings_lock_notif_title">Benachrichtigung sperren</string>
+    <string name="settings_lock_notif_sub">Die Benachrichtigung lässt sich nicht wegwischen. Aus: Sie lässt sich wegwischen</string>
     <string name="settings_background_title">Hintergrunddienst</string>
     <string name="settings_background_sub">Bei geschlossener App verbunden bleiben</string>
     <string name="settings_background_warn_title">Hintergrunddienst ausschalten?</string>

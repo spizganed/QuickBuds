@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Pokazuje poziomy. Wył.: małe powiadomienie bez ikony na pasku stanu</string>
     <string name="settings_live_chip_title">Chip na pasku stanu</string>
     <string name="settings_live_chip_sub">Pokazuje na pasku stanu poziomy naładowania noszonych słuchawek. Wymaga Androida 16. Wyłączone: pierścienie baterii w powiadomieniu</string>
+    <string name="settings_lock_notif_title">Zablokuj powiadomienie</string>
+    <string name="settings_lock_notif_sub">Powiadomienia nie można usunąć przesunięciem. Wyłączone: można je usunąć</string>
     <string name="settings_background_title">Usługa w tle</string>
     <string name="settings_background_sub">Pozostań połączony po zamknięciu aplikacji</string>
     <string name="settings_background_warn_title">Wyłączyć usługę w tle?</string>

@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Visar nivåerna. Av: en liten avisering utan ikon i statusfältet</string>
     <string name="settings_live_chip_title">Chip i statusfältet</string>
     <string name="settings_live_chip_sub">Visar nivåerna för de öronsnäckor du bär i statusfältet. Kräver Android 16. Av: batteriringar i aviseringen</string>
+    <string name="settings_lock_notif_title">Lås aviseringen</string>
+    <string name="settings_lock_notif_sub">Aviseringen kan inte svepas bort. Av: den kan svepas bort</string>
     <string name="settings_background_title">Bakgrundstjänst</string>
     <string name="settings_background_sub">Förbli ansluten när appen är stängd</string>
     <string name="settings_background_warn_title">Stänga av bakgrundstjänsten?</string>

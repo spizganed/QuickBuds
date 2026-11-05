@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">顯示電量。關閉：小通知，狀態列無圖示</string>
     <string name="settings_live_chip_title">狀態列膠囊</string>
     <string name="settings_live_chip_sub">在狀態列顯示您佩戴的耳機電量。需要 Android 16。關閉：通知中顯示電池環</string>
+    <string name="settings_lock_notif_title">鎖定通知</string>
+    <string name="settings_lock_notif_sub">無法滑動清除通知。關閉：可以滑動清除</string>
     <string name="settings_background_title">背景服務</string>
     <string name="settings_background_sub">關閉應用程式後保持連線</string>
     <string name="settings_background_warn_title">關閉背景服務？</string>

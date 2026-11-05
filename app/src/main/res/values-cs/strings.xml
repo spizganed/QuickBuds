@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Zobrazí stav baterie. Vypnuto: malé oznámení bez ikony na stavovém řádku</string>
     <string name="settings_live_chip_title">Čip ve stavovém řádku</string>
     <string name="settings_live_chip_sub">Zobrazí stav sluchátek, která máte v uších, ve stavovém řádku. Vyžaduje Android 16. Vypnuto: kroužky baterie v oznámení</string>
+    <string name="settings_lock_notif_title">Zamknout oznámení</string>
+    <string name="settings_lock_notif_sub">Oznámení nelze smáznout přejetím. Vypnuto: lze ho smáznout</string>
     <string name="settings_background_title">Služba na pozadí</string>
     <string name="settings_background_sub">Zůstat připojeno i při zavřené aplikaci</string>
     <string name="settings_background_warn_title">Vypnout službu na pozadí?</string>

@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Hiện mức pin. Tắt: thông báo nhỏ, không có biểu tượng trên thanh trạng thái</string>
     <string name="settings_live_chip_title">Chip trên thanh trạng thái</string>
     <string name="settings_live_chip_sub">Hiện mức pin của tai nghe bạn đang đeo trên thanh trạng thái. Cần Android 16. Tắt: vòng pin trong thông báo</string>
+    <string name="settings_lock_notif_title">Khóa thông báo</string>
+    <string name="settings_lock_notif_sub">Không thể vuốt để xóa thông báo. Tắt: có thể vuốt để xóa</string>
     <string name="settings_background_title">Dịch vụ nền</string>
     <string name="settings_background_sub">Giữ kết nối khi đóng ứng dụng</string>
     <string name="settings_background_warn_title">Tắt dịch vụ nền?</string>

@@ -173,6 +173,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         statusLog("[SVC] onStartCommand action=${intent?.action}")
+        // Android 12+ kills the app when a startForegroundService() call gets no startForeground() within 5 s. onCreate does
+        // it once; a start of a running service needs it again (report 165). A repeat only reposts the notification.
+        if (intent != null) startForegroundService()
 
         when (intent?.action) {
             ACTION_FORCE_CONNECT -> {
@@ -366,7 +369,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             .setContentText("Maintaining connection to earbuds")
             .setSmallIcon(R.drawable.ic_stat_buds)
             .setContentIntent(open)
-            .setOngoing(false)
+            .setOngoing(lockNotification())
             .setShowWhen(false)
         val st = WidgetStateStore.read(this)
         val levels = intArrayOf(st.leftBattery, st.caseBattery, st.rightBattery)
@@ -457,8 +460,12 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     /** Settings › Full notification: repost on the other channel at once. */
     private val prefListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == PREF_FULL_NOTIFICATION || key == PREF_LIVE_CHIP) { shownLevels = null; updateNotification() }
+        if (key == PREF_FULL_NOTIFICATION || key == PREF_LIVE_CHIP || key == PREF_LOCK_NOTIFICATION) { shownLevels = null; updateNotification() }
     }
+
+    /** Settings › Lock the notification: the user cannot swipe the service notification away (issue 36). */
+    private fun lockNotification() =
+        getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_LOCK_NOTIFICATION, false)
 
     private fun startForegroundService() {
         createChannels()
@@ -662,6 +669,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         /** Settings › Full notification. On by default. */
         const val PREF_FULL_NOTIFICATION = "fullNotification"
         const val PREF_LIVE_CHIP = "liveChip"
+        const val PREF_LOCK_NOTIFICATION = "lockNotification"
         const val ACTION_FORCE_CONNECT = "com.spizganed.quickbuds.FORCE_CONNECT"
         /** On FORCE_CONNECT: true when the user asked (pill), so phone audio is brought up too. */
         const val EXTRA_WITH_AUDIO = "with_audio"

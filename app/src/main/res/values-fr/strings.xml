@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Affiche les niveaux. Désactivé : petite notification sans icône dans la barre d\'état</string>
     <string name="settings_live_chip_title">Puce dans la barre d\'état</string>
     <string name="settings_live_chip_sub">Affiche dans la barre d\'état les niveaux des écouteurs que vous portez. Nécessite Android 16. Désactivé : anneaux de batterie dans la notification</string>
+    <string name="settings_lock_notif_title">Verrouiller la notification</string>
+    <string name="settings_lock_notif_sub">La notification ne peut pas être balayée. Désactivé : elle peut être balayée</string>
     <string name="settings_background_title">Service en arrière-plan</string>
     <string name="settings_background_sub">Rester connecté quand l\'app est fermée</string>
     <string name="settings_background_warn_title">Désactiver le service en arrière-plan ?</string>

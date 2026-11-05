@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">লেভেল দেখায়। বন্ধ: স্ট্যাটাস বার আইকন ছাড়া ছোট বিজ্ঞপ্তি</string>
     <string name="settings_live_chip_title">স্ট্যাটাস বার চিপ</string>
     <string name="settings_live_chip_sub">আপনার পরা বাডসের চার্জ স্ট্যাটাস বারে দেখায়। Android 16 দরকার। বন্ধ: নোটিফিকেশনে ব্যাটারি রিং</string>
+    <string name="settings_lock_notif_title">বিজ্ঞপ্তি লক করুন</string>
+    <string name="settings_lock_notif_sub">বিজ্ঞপ্তিটি সোয়াইপ করে সরানো যায় না। বন্ধ: সোয়াইপ করলে সরে যায়</string>
     <string name="settings_background_title">ব্যাকগ্রাউন্ড সার্ভিস</string>
     <string name="settings_background_sub">অ্যাপ বন্ধ থাকলেও সংযুক্ত থাকুন</string>
     <string name="settings_background_warn_title">ব্যাকগ্রাউন্ড সার্ভিস বন্ধ করবেন?</string>

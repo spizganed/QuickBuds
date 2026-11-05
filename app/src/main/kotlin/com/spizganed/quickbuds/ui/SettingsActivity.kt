@@ -59,6 +59,8 @@ class SettingsActivity : Activity() {
                 startActivity(Intent(this, com.spizganed.quickbuds.widget.NoiseCycleActivity::class.java))
             },
             fullNotifRow,
+            toggle(R.drawable.ic_battery, R.string.settings_lock_notif_title, R.string.settings_lock_notif_sub,
+                BudsService.PREF_LOCK_NOTIFICATION, false),
             toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, false),
             toggle(R.drawable.ic_info, R.string.settings_ping_title, R.string.settings_ping_sub, UsagePing.KEY_ENABLED, true)
         )

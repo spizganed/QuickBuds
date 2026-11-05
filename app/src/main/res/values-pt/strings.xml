@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Mostra os níveis. Desligado: notificação pequena sem ícone na barra de status</string>
     <string name="settings_live_chip_title">Chip na barra de status</string>
     <string name="settings_live_chip_sub">Mostra na barra de status os níveis dos fones que você está usando. Requer Android 16. Desativado: anéis de bateria na notificação</string>
+    <string name="settings_lock_notif_title">Bloquear a notificação</string>
+    <string name="settings_lock_notif_sub">A notificação não pode ser removida ao deslizar. Desativado: pode ser removida</string>
     <string name="settings_background_title">Serviço em segundo plano</string>
     <string name="settings_background_sub">Manter a ligação com a app fechada</string>
     <string name="settings_background_warn_title">Desativar o serviço em segundo plano?</string>

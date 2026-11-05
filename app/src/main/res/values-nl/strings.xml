@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Toont de niveaus. Uit: een kleine melding zonder pictogram in de statusbalk</string>
     <string name="settings_live_chip_title">Chip in de statusbalk</string>
     <string name="settings_live_chip_sub">Toont de niveaus van de oordopjes die je draagt in de statusbalk. Vereist Android 16. Uit: batterijringen in de melding</string>
+    <string name="settings_lock_notif_title">Melding vergrendelen</string>
+    <string name="settings_lock_notif_sub">De melding kan niet worden weggeveegd. Uit: hij kan worden weggeveegd</string>
     <string name="settings_background_title">Achtergrondservice</string>
     <string name="settings_background_sub">Verbonden blijven als de app gesloten is</string>
     <string name="settings_background_warn_title">Achtergrondservice uitzetten?</string>

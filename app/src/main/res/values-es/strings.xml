@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Muestra los niveles. Desactivado: notificación pequeña sin icono en la barra de estado</string>
     <string name="settings_live_chip_title">Chip en la barra de estado</string>
     <string name="settings_live_chip_sub">Muestra los niveles de los auriculares que llevas puestos en la barra de estado. Requiere Android 16. Desactivado: anillos de batería en la notificación</string>
+    <string name="settings_lock_notif_title">Bloquear la notificación</string>
+    <string name="settings_lock_notif_sub">La notificación no se puede quitar deslizando. Desactivado: se puede quitar</string>
     <string name="settings_background_title">Servicio en segundo plano</string>
     <string name="settings_background_sub">Mantener la conexión con la app cerrada</string>
     <string name="settings_background_warn_title">¿Desactivar el servicio en segundo plano?</string>

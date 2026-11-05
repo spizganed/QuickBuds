@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Seviyeleri gösterir. Kapalı: durum çubuğu simgesi olmayan küçük bildirim</string>
     <string name="settings_live_chip_title">Durum çubuğu çipi</string>
     <string name="settings_live_chip_sub">Takılı kulaklıkların seviyelerini durum çubuğunda gösterir. Android 16 gerekir. Kapalı: bildirimde pil halkaları</string>
+    <string name="settings_lock_notif_title">Bildirimi kilitle</string>
+    <string name="settings_lock_notif_sub">Bildirim kaydırılarak kaldırılamaz. Kapalı: kaydırılarak kaldırılabilir</string>
     <string name="settings_background_title">Arka plan hizmeti</string>
     <string name="settings_background_sub">Uygulama kapalıyken bağlı kal</string>
     <string name="settings_background_warn_title">Arka plan hizmeti kapatılsın mı?</string>

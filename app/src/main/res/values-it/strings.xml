@@ -277,6 +277,8 @@
     <string name="settings_full_notif_sub">Mostra i livelli. Disattivato: notifica piccola senza icona nella barra di stato</string>
     <string name="settings_live_chip_title">Chip nella barra di stato</string>
     <string name="settings_live_chip_sub">Mostra nella barra di stato i livelli degli auricolari che indossi. Richiede Android 16. Disattivato: anelli batteria nella notifica</string>
+    <string name="settings_lock_notif_title">Blocca la notifica</string>
+    <string name="settings_lock_notif_sub">La notifica non si può rimuovere scorrendo. Disattivato: si può rimuovere</string>
     <string name="settings_background_title">Servizio in background</string>
     <string name="settings_background_sub">Resta connesso con l\'app chiusa</string>
     <string name="settings_background_warn_title">Disattivare il servizio in background?</string>
