@@ -26,7 +26,7 @@ if [ -z "${QB_APPIMAGE_ONLY:-}" ]; then
   winpid=$!
 fi
 
-# Linux. QB_NATIVE=1 builds in place, for CI, which already runs in Ubuntu 22.04 with the packages of the Containerfile.
+# Linux. QB_NATIVE=1 builds in place, for CI, which already runs in Ubuntu 24.04 with the packages of the Containerfile.
 build='cargo tauri build --bundles appimage'
 if [ -n "${QB_NATIVE:-}" ]; then
   (cd "$app" && CARGO_TARGET_DIR=target/ubuntu22 APPIMAGE_EXTRACT_AND_RUN=1 NO_STRIP=1 $build)
