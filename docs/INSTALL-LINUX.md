@@ -18,7 +18,6 @@ curl -fsSL https://raw.githubusercontent.com/spizganed/QuickBuds/main/scripts/in
 
 ## Without the script
 
-Download one file from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
+Download the file from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest):
 
 - `QuickBuds-linux-x64.AppImage`: make it executable and run it.
-- `QuickBuds<version>-linux-x64.tar.gz`: needs BlueZ, GTK 3 and libayatana-appindicator.

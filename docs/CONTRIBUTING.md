@@ -45,8 +45,7 @@ python3 scripts/check-locales.py   # every string in all 26 locales
 ./gradlew :app:testDebugUnitTest  # the Android protocol tests (app/src/test)
 ./gradlew :app:lintDebug          # Android lint
 cd core && cargo test              # the core crate tests (frames, messages, commands)
-cd desktop && cargo test           # the desktop tests, including core against protocol.rs
-cd desktop-egui && cargo test      # the egui desktop tests
+cd desktop-tauri && cargo test     # the desktop tests
 ```
 
 `scripts/release-build.sh` runs all the commands above and all release builds. It stops at the first

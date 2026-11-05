@@ -25,6 +25,7 @@ local/
 desktop/target/
 desktop-egui/target/
 desktop/dist/
+desktop-tauri/dist/
 
 # Screenshots are taken by hand; the script and its output stay local
 scripts/readme-screenshots.sh

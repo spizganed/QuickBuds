@@ -1,5 +1,5 @@
 # Checks the locales, runs the Android unit tests and lint, builds the release APK and AAB, runs the core and desktop
-# tests and builds the desktop archives (scripts/desktop-dist.sh). Runs only by hand (`gh workflow run Build`, or the
+# tests and builds the desktop files (scripts/desktop-dist.sh). Runs only by hand (`gh workflow run Build`, or the
 # Actions tab), never on a push or a pull request. On the PC,
 # scripts/release-build.sh builds the same release files, much faster (docs/CONTRIBUTING.md). The APK is signed
 # when the repository has the RELEASE_KEYSTORE_B64 and RELEASE_KEY_PROPERTIES secrets, so it installs over the
@@ -70,33 +70,36 @@ jobs:
       - name: Packages
         run: |
           apt-get update -qq
-          apt-get install -y -qq curl git zip python3 build-essential pkg-config gcc-mingw-w64-x86-64 \
-            libdbus-1-dev libgtk-3-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-0 dpkg-dev file
+          apt-get install -y -qq curl wget git zip python3 build-essential pkg-config file dpkg-dev patchelf xz-utils \
+            clang lld llvm libssl-dev libdbus-1-dev libgtk-3-dev libwebkit2gtk-4.1-dev libgtk-layer-shell-dev \
+            libayatana-appindicator3-dev librsvg2-dev libxkbcommon-x11-0
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Rust
         run: |
-          curl -sSf https://sh.rustup.rs | sh -s -- -y -q --profile minimal --target x86_64-pc-windows-gnu
+          curl -sSf https://sh.rustup.rs | sh -s -- -y -q --profile minimal --target x86_64-pc-windows-msvc
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          cargo install tauri-cli --version "^2" --locked
+          cargo install cargo-xwin --locked
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           workspaces: |
-            desktop -> target
+            desktop-tauri -> target
             core -> target
       - name: Test
         if: ${{ !inputs.appimage_only }}
         run: |
           cd core && cargo test
-          cd ../desktop && cargo test
+          cd ../desktop-tauri && cargo test
       - name: Archives
         env:
           QB_APPIMAGE_ONLY: ${{ inputs.appimage_only && '1' || '' }}
         run: |
-          ver=$(sed -n 's/^version = "\(.*\)"/\1/p' desktop/Cargo.toml | head -1)
+          ver=$(sed -n 's/^version = "\(.*\)"/\1/p' desktop-tauri/Cargo.toml | head -1)
           QB_NATIVE=1 scripts/desktop-dist.sh "$ver"
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: desktop
-          path: desktop/dist/*
+          path: desktop-tauri/dist/*
           retention-days: 14
 
   checksums:
