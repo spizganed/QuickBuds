@@ -47,6 +47,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     private val widgetCommandReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == ACTION_NOTIF_DISMISSED) {
+                // Android 14+ lets the user swipe away an ongoing service notification. With the lock on, post it again (issue 36).
+                if (lockNotification()) { shownLevels = null; updateNotification() }
+                return
+            }
             if (intent.action != ACTION_WIDGET_COMMAND) return
             statusLog("<< WIDGET broadcast")
             executeWidgetCommand(intent)
@@ -150,7 +155,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
         manager = BudsConnectionManager(this).also { it.addListener(this) }
 
-        val filter = IntentFilter(ACTION_WIDGET_COMMAND)
+        val filter = IntentFilter(ACTION_WIDGET_COMMAND).apply { addAction(ACTION_NOTIF_DISMISSED) }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(widgetCommandReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
@@ -370,6 +375,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             .setSmallIcon(R.drawable.ic_stat_buds)
             .setContentIntent(open)
             .setOngoing(lockNotification())
+            .setDeleteIntent(android.app.PendingIntent.getBroadcast(this, 1,
+                Intent(ACTION_NOTIF_DISMISSED).setPackage(packageName), android.app.PendingIntent.FLAG_IMMUTABLE))
             .setShowWhen(false)
         val st = WidgetStateStore.read(this)
         val levels = intArrayOf(st.leftBattery, st.caseBattery, st.rightBattery)
@@ -682,6 +689,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         const val EXTRA_FROM_LINK = "from_link"
         const val ACTION_FORCE_DISCONNECT = "com.spizganed.quickbuds.FORCE_DISCONNECT"
         const val ACTION_WIDGET_COMMAND = "com.spizganed.quickbuds.WIDGET_COMMAND"
+        const val ACTION_NOTIF_DISMISSED = "com.spizganed.quickbuds.NOTIF_DISMISSED"
         const val EXTRA_WIDGET_ACTION = "widget_action"
         const val EXTRA_WIDGET_ANC_MODE = "widget_anc_mode"
         const val EXTRA_WIDGET_GAME_MODE = "widget_game_mode"
