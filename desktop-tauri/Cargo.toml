@@ -5,6 +5,11 @@ edition = "2021"
 license = "GPL-3.0-or-later"
 description = "QuickBuds for Windows and Linux, Tauri UI"
 
+# The binary is named quickbuds on both systems: the updater of every earlier version looks for that file name in the download.
+[[bin]]
+name = "quickbuds"
+path = "src/main.rs"
+
 [dependencies]
 buds-core = { path = "../core" }
 tauri = { version = "2", features = ["tray-icon", "image-png"] }
@@ -42,4 +47,5 @@ windows-sys = { version = "0.59", features = [
     "Win32_Devices_Bluetooth",
     "Win32_System_SystemInformation",
     "Win32_System_Console",
+    "Win32_UI_WindowsAndMessaging",
 ] }

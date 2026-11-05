@@ -173,7 +173,9 @@ fn style(w: &WebviewWindow, label: &str) {
             gw.set_layer(Layer::Overlay);
             gw.set_namespace("quickbuds-panel");
             gw.set_keyboard_mode(KeyboardMode::OnDemand);
-            for edge in [Edge::Bottom, Edge::Right] { gw.set_anchor(edge, true); gw.set_layer_shell_margin(edge, 12); }
+            // The compositor already keeps the panel clear of the taskbar: a small bottom margin leaves a small gap, not a wide one.
+            gw.set_anchor(Edge::Bottom, true); gw.set_layer_shell_margin(Edge::Bottom, 0);
+            gw.set_anchor(Edge::Right, true); gw.set_layer_shell_margin(Edge::Right, 12);
         }
         blur::enable(&gw, radius(label));
     }
@@ -313,7 +315,26 @@ fn fit_panel(app: AppHandle, height: f64) {
     if PANEL.pending.swap(false, std::sync::atomic::Ordering::SeqCst) || p.is_visible().unwrap_or(false) { place_panel(&p); }
 }
 
+/// Windows: the page needs the WebView2 runtime (Windows 11 has it; an older Windows 10 may not).
+/// Without it the app would not open and show nothing. This says what is missing and opens the download page.
+#[cfg(windows)]
+fn check_webview2() {
+    let key = |hive: &str, path: &str| update::quiet("reg").args(["query", &format!("{hive}\\{path}"), "/v", "pv"]).output().is_ok_and(|o| o.status.success());
+    let id = r"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
+    let wow = r"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
+    if key("HKLM", wow) || key("HKLM", id) || key("HKCU", id) { return; }
+    use windows_sys::Win32::UI::WindowsAndMessaging::{MessageBoxW, IDOK, MB_ICONERROR, MB_OKCANCEL};
+    let wide = |s: &str| s.encode_utf16().chain(std::iter::once(0)).collect::<Vec<u16>>();
+    let text = wide("QuickBuds needs the Microsoft WebView2 runtime. Choose OK to open the download page, then start QuickBuds again.");
+    let title = wide("QuickBuds");
+    let r = unsafe { MessageBoxW(std::ptr::null_mut(), text.as_ptr(), title.as_ptr(), MB_OKCANCEL | MB_ICONERROR) };
+    if r == IDOK { update::open_url("https://developer.microsoft.com/microsoft-edge/webview2/#download"); }
+    std::process::exit(1);
+}
+
 fn main() {
+    #[cfg(windows)]
+    check_webview2();
     // Wayland finds the window icon through the application ID: the program name. `quickbuds.desktop` (install script, AppImage) names the icon.
     #[cfg(target_os = "linux")]
     gtk::glib::set_prgname(Some("quickbuds"));
