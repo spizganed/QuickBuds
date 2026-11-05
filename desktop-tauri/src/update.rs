@@ -255,3 +255,54 @@ fn host(cmd: &str) -> Command {
     c
 }
 
+#[cfg(test)]
+mod download_tests {
+    use super::*;
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+    use std::sync::Mutex;
+
+    /// A server for one file: answers HEAD with the size, GET with the body in slow chunks.
+    fn serve(body: Vec<u8>) -> String {
+        let l = TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = l.local_addr().unwrap();
+        std::thread::spawn(move || {
+            for stream in l.incoming() {
+                let Ok(mut s) = stream else { continue };
+                let mut buf = [0u8; 1024];
+                let n = s.read(&mut buf).unwrap_or(0);
+                let head = std::str::from_utf8(&buf[..n]).unwrap_or("").starts_with("HEAD");
+                let _ = write!(s, "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n", body.len());
+                if !head {
+                    for c in body.chunks(20_000) { let _ = s.write_all(c); let _ = s.flush(); std::thread::sleep(std::time::Duration::from_millis(60)); }
+                }
+            }
+        });
+        format!("http://{addr}/QuickBuds-linux-x64.AppImage")
+    }
+
+    #[test]
+    fn download_reports_progress_and_writes_the_file() {
+        let body: Vec<u8> = (0..200_000u32).map(|i| (i % 251) as u8).collect();
+        let url = serve(body.clone());
+        assert_eq!(size_of(&url), body.len() as u64);
+        let dir = std::env::temp_dir().join(format!("qb-dl-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("file.bin");
+        let seen = Mutex::new(Vec::new());
+        download(&url, &path, &|done, total| seen.lock().unwrap().push((done, total))).unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), body);
+        let seen = seen.into_inner().unwrap();
+        assert!(seen.iter().any(|&(d, t)| t == 200_000 && d > 0 && d < t), "no partial progress: {seen:?}");
+        assert_eq!(*seen.last().unwrap(), (200_000, 200_000));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn download_fails_on_a_refused_connection() {
+        let dir = std::env::temp_dir().join(format!("qb-dl-fail-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        assert!(download("http://127.0.0.1:1/nothing", &dir.join("x"), &|_, _| {}).is_err());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+}
