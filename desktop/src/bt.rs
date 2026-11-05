@@ -16,7 +16,7 @@ pub struct Device {
     pub vendor: bool,
 }
 
-pub use imp::{connect, paired, Link};
+pub use imp::{bring_up, connect, paired, Link};
 
 #[cfg(windows)]
 mod imp {
@@ -82,6 +82,18 @@ mod imp {
             BluetoothFindDeviceClose(h);
         }
         out
+    }
+
+    /// Ask Windows to connect the audio of paired buds (music and calls). Returns at once; the link comes later.
+    pub fn bring_up(addr: u64) {
+        unsafe {
+            let mut info: BLUETOOTH_DEVICE_INFO = zeroed();
+            info.dwSize = size_of::<BLUETOOTH_DEVICE_INFO>() as u32;
+            info.Address.Anonymous.ullLong = addr;
+            for uuid in [0x0000110B_0000_1000_8000_00805F9B34FB_u128, 0x0000111E_0000_1000_8000_00805F9B34FB] {
+                BluetoothSetServiceState(std::ptr::null_mut(), &info, &GUID::from_u128(uuid), BLUETOOTH_SERVICE_ENABLE);
+            }
+        }
     }
 
     fn guid_u128(g: &GUID) -> u128 {
@@ -187,6 +199,18 @@ mod imp {
             out.push(Device { addr, name, connected: flag(dev, "Connected"), vendor });
         }
         out
+    }
+
+    /// Ask BlueZ to connect the audio of paired buds. Blocks until BlueZ answers or 10 s pass.
+    pub fn bring_up(addr: u64) {
+        let Ok(conn) = dbus::blocking::Connection::new_system() else { return };
+        let Ok(objects) = conn.with_proxy("org.bluez", "/", Duration::from_secs(2)).get_managed_objects() else { return };
+        for (path, ifaces) in objects {
+            let Some(dev) = ifaces.get("org.bluez.Device1") else { continue };
+            if prop_cast::<String>(dev, "Address").and_then(|a| parse_addr(a)) != Some(addr) { continue }
+            let _: Result<(), _> = conn.with_proxy("org.bluez", path, Duration::from_secs(10)).method_call("org.bluez.Device1", "Connect", ());
+            return;
+        }
     }
 
     /// "0000079a-d102-11e1-9b23-00025b00a5a5" (BlueZ's form, any case) is one of [SPP_UUIDS].

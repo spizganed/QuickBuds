@@ -23,10 +23,10 @@ button{cursor:pointer}
 
 /* preview controls */
 .proto{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
-.proto h1{margin:0;font-size:15px;font-weight:600;flex:1 1 220px}
+.proto h1{margin:0;font-size:15px;font-weight:400;flex:1 1 220px}
 .proto h1 span{display:block;font-size:12px;font-weight:400;color:var(--page-dim);margin-top:2px}
 .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ctl>b{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--page-dim)}
+.ctl>b{font-size:11px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:var(--page-dim)}
 .pc{height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--page-line);background:var(--page-chip);font-size:12.5px;display:inline-flex;align-items:center}
 .pc[aria-pressed="true"]{background:var(--page-ink);color:var(--page);border-color:transparent}
 .wp{width:30px;height:30px;border-radius:50%;border:2px solid transparent;padding:0}
@@ -46,8 +46,8 @@ button{cursor:pointer}
 .app{font-family:var(--ui);color:var(--text);position:relative;isolation:isolate;background:var(--bg);font-size:13px}
 html[data-style="glass"] .app{background:var(--glass-bg)}
 html[data-style="glass"][data-glassbg="none"] .app{-webkit-backdrop-filter:blur(40px) saturate(1.5);backdrop-filter:blur(40px) saturate(1.5)}
-html[data-style="pixel"] .app{font-family:var(--dot);font-weight:700;letter-spacing:.02em}
-html[data-style="pixel"] .app .t,html[data-style="pixel"] .app h2,html[data-style="pixel"] .app .pct,html[data-style="pixel"] .app b{font-weight:900}
+html[data-style="pixel"] .app{font-family:var(--dot);font-weight:400;letter-spacing:.02em}
+html[data-style="pixel"] .app .t,html[data-style="pixel"] .app h2,html[data-style="pixel"] .app .pct,html[data-style="pixel"] .app b{font-weight:400}
 
 .win{width:100%;max-width:1000px;height:640px;border-radius:14px;display:flex;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08)}
 .caps{position:absolute;top:6px;right:6px;display:flex;gap:2px;z-index:6}
@@ -56,7 +56,7 @@ html[data-style="pixel"] .app .t,html[data-style="pixel"] .app h2,html[data-styl
 .cap:hover{background:color-mix(in srgb,var(--text) 10%,transparent);color:var(--text)}
 .cap.x:hover{background:#e5484d;color:#fff}
 .side{width:196px;flex:none;padding:14px 10px 12px;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;border-right:1px solid color-mix(in srgb,var(--outline) 70%,transparent)}
-.logo{display:flex;align-items:center;gap:9px;padding:2px 10px 14px;font-size:14px;font-weight:600}
+.logo{display:flex;align-items:center;gap:9px;padding:2px 10px 14px;font-size:14px;font-weight:400}
 .logo .ic{width:14px;height:22px}
 .nav{position:relative;display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:10px;border:0;background:transparent;text-align:left;font-size:13px;color:var(--text2);transition:background calc(.2s*var(--speed)),color calc(.2s*var(--speed))}
 .nav .ic{width:17px;height:17px;flex:none}
@@ -72,14 +72,14 @@ html[data-style="pixel"] .side{border-right-color:transparent;background:radial-
 .page.slide{animation:slide calc(260ms*var(--speed)) var(--decel)}
 @keyframes slide{from{opacity:0;transform:translateX(28px)}}
 .ph{display:flex;align-items:center;gap:10px;min-height:36px;flex-wrap:wrap}
-.ph h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em;flex:1;text-wrap:balance}
+.ph h2{margin:0;font-size:20px;font-weight:400;letter-spacing:-.01em;flex:1;text-wrap:balance}
 .ph .sub{font-size:12px;color:var(--text2);margin-top:2px}
 .ph .grow{flex:1;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
 .cols.w{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
 .col{display:flex;flex-direction:column;gap:14px;min-width:0}
 .lbl{font-size:11.5px;color:var(--text2);padding:0 4px;margin-bottom:-8px}
-.t{font-size:13.5px;font-weight:500}
+.t{font-size:13.5px;font-weight:400}
 .s{font-size:11.5px;color:var(--text2);margin-top:2px;line-height:1.4}
 .ic{display:inline-flex;position:relative;flex:none;width:20px;height:20px}
 .ic>svg{width:100%;height:100%}
@@ -131,7 +131,7 @@ html[data-style="pixel"] .ic>.dz{position:absolute;left:50%;top:50%;transform:tr
 .ring .glyph{color:color-mix(in srgb,var(--text) 42%,transparent)}
 .ring .glyph.case{color:color-mix(in srgb,var(--text) 82%,transparent)}
 .ring .dz .tr{color:color-mix(in srgb,var(--text) 20%,transparent)}
-.pct{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.pct{font-size:18px;font-weight:400;font-variant-numeric:tabular-nums}
 .ringc .s{margin-top:-5px}
 
 /* segmented controls */
@@ -190,7 +190,7 @@ html[data-style="pixel"] .sw::after{display:none}
 /* buttons, chips, inputs */
 .btn{position:relative;height:32px;padding:0 13px;border-radius:16px;border:1px solid var(--outline);background:color-mix(in srgb,var(--text) 6%,transparent);display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;color:var(--text);white-space:nowrap;flex:none}
 .btn .ic{width:15px;height:15px}
-.btn.pri{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
+.btn.pri{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:400}
 .btn.icon{width:32px;padding:0}
 html[data-style="material"] .btn{border:0;background:color-mix(in srgb,var(--text) 9%,transparent)}
 html[data-style="material"] .btn.pri{background:var(--accent)}
@@ -250,7 +250,7 @@ html[data-style="pixel"] .curve path.ln{stroke-width:4}
 .band .bar{position:absolute;left:calc(50% - 2px);width:4px;border-radius:2px;background:var(--accent)}
 .band .knob{position:absolute;left:calc(50% - 11px);width:22px;height:22px;border-radius:50%;background:#fff;border:0;padding:0;box-shadow:0 2px 6px rgba(0,0,0,.45);cursor:grab;touch-action:none;transition:transform calc(.15s*var(--speed))}
 .band .knob:active{cursor:grabbing;transform:scale(1.15)}
-.band .val{position:absolute;left:0;right:0;top:-22px;text-align:center;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.band .val{position:absolute;left:0;right:0;top:-22px;text-align:center;font-size:12px;font-weight:400;font-variant-numeric:tabular-nums}
 .band .hz{position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:11.5px;color:var(--text2)}
 .eqed .zero{position:absolute;left:0;right:0;top:50%;border-top:1px dashed color-mix(in srgb,var(--text) 16%,transparent)}
 .eqed{margin-top:26px}
@@ -275,7 +275,7 @@ html[data-style="pixel"] .curve path.ln{stroke-width:4}
 
 /* gestures table */
 .gt{width:100%;border-collapse:collapse;font-size:13px}
-.gt th{font-size:11.5px;font-weight:500;color:var(--text2);text-align:left;padding:10px 14px 6px}
+.gt th{font-size:11.5px;font-weight:400;color:var(--text2);text-align:left;padding:10px 14px 6px}
 .gt td{padding:6px 14px}
 .gt td:first-child{width:38%}
 .gt .gl{display:flex;align-items:center;gap:10px}
@@ -306,7 +306,7 @@ html[data-style="pixel"] .gt tr.r+tr.r td{border-top-color:transparent}
 .gsws{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .gsw{border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--text2);width:52px}
 .gsw span{width:52px;height:32px;border-radius:9px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 18%,transparent);transition:box-shadow calc(.2s*var(--speed)),transform calc(260ms*var(--speed)) var(--spring)}
-.gsw[aria-pressed="true"]{color:var(--text);font-weight:600}
+.gsw[aria-pressed="true"]{color:var(--text);font-weight:400}
 .gsw[aria-pressed="true"] span{box-shadow:0 0 0 2px var(--accent);transform:scale(1.05)}
 .tones{display:flex;gap:6px;flex:1}
 .tones span{flex:1;height:24px;border-radius:7px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent)}
@@ -330,21 +330,18 @@ html[data-style="pixel"] .gt tr.r+tr.r td{border-top-color:transparent}
 .tok[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent);border-color:transparent}
 
 /* dialogs */
-.scrim{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb,var(--bg) 45%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);animation:fade calc(200ms*var(--speed)) var(--decel)}
+.scrim{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);animation:fade calc(200ms*var(--speed)) var(--decel)}
 .scrim.out{animation:fade calc(160ms*var(--speed)) var(--decel) reverse forwards}
 @keyframes fade{from{opacity:0}}
-.dlg{position:relative;width:100%;max-width:420px;max-height:100%;overflow:auto;border-radius:24px;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;background:var(--card);border:1px solid var(--outline);box-shadow:0 24px 70px rgba(0,0,0,.5);animation:dlg calc(320ms*var(--speed)) var(--rise)}
+.dlg{position:relative;width:100%;max-width:420px;max-height:100%;overflow:auto;border-radius:24px;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 70px rgba(0,0,0,.5);animation:dlg calc(320ms*var(--speed)) var(--rise)}
 @keyframes dlg{from{opacity:0;transform:translateY(16px) scale(.95)}}
-.dlg h3{margin:0;font-size:16px;font-weight:600;text-align:center}
+.dlg h3{margin:0;font-size:16px;font-weight:400;text-align:center}
 .dlg .acts{display:flex;gap:8px;justify-content:center}
-html[data-style="material"] .dlg{background:var(--container);border:0;border-radius:28px}
-html[data-style="glass"] .dlg{background:linear-gradient(135deg,color-mix(in srgb,var(--bg) 70%,rgba(255,255,255,.12)),color-mix(in srgb,var(--bg) 80%,transparent));border:1px solid var(--g-rim);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);box-shadow:inset 0 1px 0 var(--g-lit),0 24px 70px rgba(0,0,0,.5)}
-html[data-style="glass"][data-light="0"] .dlg{background:linear-gradient(135deg,rgba(40,40,52,.75),rgba(15,15,22,.82))}
-html[data-style="pixel"] .dlg{border-color:transparent;background:var(--bg)}
+html[data-style="glass"] .dlg{-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px)}
 .fitbuds{display:flex;justify-content:center;gap:44px}
 .fb{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--text2)}
 .fb .ic{width:44px;height:68px;color:color-mix(in srgb,var(--text) 78%,transparent)}
-.fb b{font-size:16px;color:var(--text);font-weight:600}
+.fb b{font-size:16px;color:var(--text);font-weight:400}
 .wave .ic{animation:wav calc(900ms*var(--speed)) ease-in-out infinite alternate}
 @keyframes wav{to{transform:translateY(-4px)}}
 .langs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
@@ -372,7 +369,7 @@ html[data-style="material"] .tray .seg.big .cell .ic>svg{width:18px;height:18px;
 .tray .row{min-height:42px;padding:5px 12px;gap:10px}
 .tray .row>.ic{width:18px;height:18px}
 .thead{display:flex;align-items:center;gap:10px;min-height:38px;padding:0 2px 0 6px}
-.thead .nm{flex:1;font-size:14px;font-weight:600}
+.thead .nm{flex:1;font-size:14px;font-weight:400}
 .thead .st{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text2)}
 .tfoot{display:flex;gap:8px}
 .tfoot .btn{flex:1}
@@ -473,7 +470,7 @@ html[data-style="material"] .tray .seg.big .cell .ic{width:30px;height:30px}
 html[data-style="material"] .tray .seg.big .cell .ic>svg{width:16px;height:16px;margin:7px}
 .tray .seg.lvls .cell{min-height:26px;font-size:10.5px}
 .qts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.qt{position:relative;display:flex;align-items:center;gap:9px;height:42px;padding:0 14px;border-radius:21px;border:0;background:color-mix(in srgb,var(--text) 10%,transparent);color:var(--text);font-size:12px;font-weight:500;text-align:left;transition:background calc(.2s*var(--speed)),color calc(.2s*var(--speed))}
+.qt{position:relative;display:flex;align-items:center;gap:9px;height:42px;padding:0 14px;border-radius:21px;border:0;background:color-mix(in srgb,var(--text) 10%,transparent);color:var(--text);font-size:12px;font-weight:400;text-align:left;transition:background calc(.2s*var(--speed)),color calc(.2s*var(--speed))}
 .qt .ic{width:16px;height:16px}
 .qt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qt[aria-checked="true"]{background:var(--accent);color:var(--on-accent)}
@@ -499,7 +496,7 @@ html[data-style="pixel"] .qt[aria-checked="true"]>.dzb{color:var(--accent)}
 .bud .rtx{margin-top:2px}
 .bud .pct{font-size:22px}
 .bst{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:-4px}
-.bst .t{font-size:11.5px;color:var(--text2);font-weight:500}
+.bst .t{font-size:11.5px;color:var(--text2);font-weight:400}
 .chipst{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:11px;font-size:11px;color:var(--text);background:color-mix(in srgb,var(--text) 9%,transparent)}
 .chipst .ic{width:12px;height:12px}
 html[data-style="glass"] .chipst{background:linear-gradient(135deg,var(--g-from),var(--g-to));box-shadow:inset 0 0 0 1px var(--g-rim)}
@@ -594,7 +591,7 @@ html[data-style="pixel"] .tl.go>.dzb{color:var(--accent)}
 .prose{font-size:12px}
 
 /* ---- model name button ---- */
-.mname{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--text);font:inherit;font-size:16px;font-weight:600;padding:3px 8px;margin-left:-8px;border-radius:10px;max-width:100%}
+.mname{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--text);font:inherit;font-size:16px;font-weight:400;padding:3px 8px;margin-left:-8px;border-radius:10px;max-width:100%}
 .mname span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mname:hover{background:color-mix(in srgb,var(--text) 8%,transparent)}
 .mname .ic.dn{width:14px;height:14px;transform:rotate(90deg);color:var(--text2);flex:none}
@@ -618,7 +615,7 @@ html[data-style="pixel"] .optind{background:transparent;box-shadow:none}
 html[data-style="pixel"] .optind>.dzb{color:var(--accent)}
 html[data-style="pixel"] .optind.go{transition:transform calc(240ms*var(--speed)) steps(5,end)}
 .dlg .acts.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.dlg .acts.two .btn{height:40px;border-radius:20px;font-size:14px;font-weight:600}
+.dlg .acts .btn{height:34px;border-radius:17px;font-size:13px;font-weight:400;min-width:110px}
 
 /* ================= 600 x 400 ================= */
 .win.sm{width:600px;height:400px}
@@ -714,7 +711,7 @@ html[data-style="material"] .win.sm .seg.big .cell .ic>svg{width:14px;height:14p
 .win.sm .dlg.pk:has(.many){max-width:460px}
 .win.sm .opt{height:32px;font-size:12.5px}
 .win.sm .dlg.pk{padding:14px 14px 14px;gap:10px}
-.win.sm .dlg .acts.two .btn{height:34px;font-size:13px}
+.win.sm .dlg .acts .btn{height:30px;font-size:12px;min-width:90px}
 .win.sm [data-page="appearance"] .srow .s,.win.sm .cpanel .s{display:none}
 .win.sm .gsws{flex-wrap:nowrap}
 .win.sm .tl .t,.win.sm .tl .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -733,7 +730,7 @@ html[data-style="material"] .win.sm .seg.big .cell .ic>svg{width:14px;height:14p
 .win.sm .hcard{gap:4px;padding:8px 11px}
 .win.sm .hcard .hearw{padding:0}
 .gt th:not(:first-child){text-align:center}
-.gt th .budh{padding:6px 16px;border-radius:15px;font-size:12.5px;font-weight:600;color:var(--text);gap:8px}
+.gt th .budh{padding:6px 16px;border-radius:15px;font-size:12.5px;font-weight:400;color:var(--text);gap:8px}
 .gt th .budh .ic{width:13px;height:20px}
 .win.sm .gt th .budh{padding:4px 12px;font-size:11.5px}.win.sm .gt th .budh .ic{width:10px;height:16px}
 .dualw{display:flex;flex-direction:column;padding-bottom:8px}
@@ -750,7 +747,7 @@ html[data-style="material"] .win.sm .seg.big .cell .ic>svg{width:14px;height:14p
 .herot{max-width:440px}
 .hero .herot .s{margin-top:4px}
 .btnrow{gap:8px}
-.btnrow .btn{flex:1 1 0!important;height:42px;border-radius:21px;font-size:13.5px;font-weight:600;gap:9px}
+.btnrow .btn{flex:1 1 0!important;height:42px;border-radius:21px;font-size:13.5px;font-weight:400;gap:9px}
 .btnrow .btn .ic{width:18px;height:18px}
 .win.sm .hero{padding:8px 12px;gap:4px}
 .win.sm .btnrow .btn{height:32px;font-size:12px}.win.sm .btnrow .btn .ic{width:15px;height:15px}
@@ -834,20 +831,19 @@ html.off .btn .dot{background:var(--text2)}
 .tray .thead{display:flex;align-items:center;gap:8px}
 .tray .thead .nm{flex:1;min-width:0}
 
-/* connect button variants (preview): the page root carries data-cv */
+/* the sidebar footer: connection dot and connect button */
 .cdot{width:8px;height:8px;border-radius:50%;background:#34c759;flex:none;transition:background calc(.2s*var(--speed))}
 html.off .cdot{background:var(--text2)}
 html.cing .cdot{background:var(--accent);animation:cpulse calc(1s*var(--speed)) ease-in-out infinite alternate}
 @keyframes cpulse{from{opacity:.35}to{opacity:1}}
 .connf{display:flex;align-items:center;gap:9px;margin-top:8px;padding:8px 6px 2px 10px;border-top:1px solid color-mix(in srgb,var(--outline) 70%,transparent)}
 .connf .txt{flex:1;min-width:0}
-.connf .t{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.connf .t{font-size:12.5px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .connf .s{font-size:11.5px;color:var(--text2)}
 .win.sm .connf{flex-direction:column;padding:8px 0 0;gap:6px}
 .win.sm .connf .txt{display:none}
-.win.sm 
 /* multi-select option, tap and hearing profile tiles */
-.opt.multi[aria-pressed="true"]{background:var(--tonal);font-weight:600}
+.opt.multi[aria-pressed="true"]{background:var(--tonal);font-weight:400}
 .opt.multi[aria-pressed="true"]::after{content:"✓";float:right}
 .tl.press{cursor:pointer}
 .dev .s{font-size:11px;color:var(--text2)}
@@ -860,11 +856,10 @@ html.cing .cdot{background:var(--accent);animation:cpulse calc(1s*var(--speed)) 
 .gt .sel{width:100%;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .gt td{overflow:hidden}
 
-/* the sidebar footer is the only connect button */
 .page.narrow{max-width:520px;width:100%;margin:0 auto}
 .updc{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:20px}
 .updv{display:flex;gap:48px;justify-content:center}
-.updv .pct{font-size:28px;font-weight:700}
+.updv .pct{font-size:28px;font-weight:400}
 .devempty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:84px;padding:14px;text-align:center;color:var(--text2)}
 .devempty .ic{width:22px;height:22px;opacity:.7}
 /* pages scroll when they are taller than the window; Dev tools fills the window and its log scrolls */
@@ -895,3 +890,48 @@ html[data-style="pixel"] .gt .sel{background-color:transparent;box-shadow:inset 
 .gt .sel::after{content:"";position:absolute;right:14px;top:50%;width:6px;height:6px;border-right:1.6px solid var(--text2);border-bottom:1.6px solid var(--text2);transform:translateY(-70%) rotate(45deg)}
 .gt .sel{overflow:hidden}
 .gt .sel{display:block;line-height:34px;text-overflow:ellipsis;white-space:nowrap}
+
+/* A built-in EQ preset: the editor is read-only and shows no values. */
+#eqed.locked .knob{pointer-events:none;opacity:0;transition:opacity calc(.25s*var(--speed))}
+#eqed.locked .bar,#eqed.locked .val{opacity:0}
+#eqed.locked .ln,#eqed.locked .fillp{opacity:.25}
+#eqed .bar,#eqed .val,#eqed .ln,#eqed .fillp{transition:opacity calc(.25s*var(--speed))}
+
+/* Tile buttons use the same weight as the text around them. */
+.tile .btn.pri{font-weight:400}
+
+/* No bold text anywhere. */
+b,strong,th,h1,h2,h3,h4,h5,h6,label{font-weight:400}
+
+/* The Left and Right headers of the gesture table are labels, not buttons. */
+.gt th .budh{background:none;border-radius:0;padding:4px 0}
+
+/* A dialog is a card: it takes the card look of every style. */
+html .dlg.card{overflow:auto}
+.dlg .group.opts{gap:2px}
+html[data-style="glass"] .dlg .group.opts{gap:4px}
+
+/* A dialog has a solid base: nothing behind it shows through its glass. */
+html:not([data-style="glass"]) .dlg.card{background-color:color-mix(in srgb,var(--bg) 96%,#000)!important}
+html[data-style="glass"] .dlg.card{background:var(--dlg-bg)!important}
+/* Small controls in a dialog: a plain rim, no corner highlights. */
+html .dlg .group>.row,html .dlg .btn{box-shadow:none!important}
+html .dlg .btn.pri{box-shadow:none!important}
+
+/* App update: the button and the progress bar share one cell, so the card keeps its size. */
+.updact{display:grid;justify-items:center;align-items:center;width:100%;min-height:34px}
+.updact>*{grid-area:1/1}
+.updact .btn{min-width:170px;transition:opacity calc(.2s*var(--speed))}
+.updact .btn.gone{opacity:0;pointer-events:none}
+.prog{width:min(260px,100%);height:8px;border-radius:4px;overflow:hidden;background:var(--track);opacity:0;transition:opacity calc(.2s*var(--speed))}
+.prog.on{opacity:1}
+.prog i{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);background:var(--accent);border-radius:4px;transition:transform calc(.18s*var(--speed)) linear}
+#updStatus{min-height:1.4em}
+
+/* Release notes: headings and bullets; no notes is a muted line. */
+#updNotes{display:flex;flex-direction:column;gap:4px}
+#updNotes.none{color:var(--text2)}
+#updNotes .nh{margin-top:6px;color:var(--text)}
+#updNotes .nh:first-child{margin-top:0}
+#updNotes .nb{position:relative;padding-left:14px}
+#updNotes .nb::before{content:"";position:absolute;left:3px;top:.7em;width:4px;height:4px;border-radius:50%;background:var(--text2)}

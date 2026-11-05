@@ -129,11 +129,16 @@ pub fn set_autostart(on: bool) {
 /// Looks for a newer release. Answer: { latest, newer, error }.
 #[tauri::command]
 pub async fn update_check() -> Value {
+    // A test of the update page: `QB_FAKE_UPDATE=1` offers a newer version and "downloads" it. Nothing is installed.
+    if std::env::var_os("QB_FAKE_UPDATE").is_some() {
+        *FOUND.lock().unwrap() = Some(Release { version: "99.0.0".into(), url: String::new(), sums: None, notes: "## Fake update\n- A test of the update page.\n- Nothing is installed.".into() });
+        return json!({ "latest": "99.0.0", "newer": true, "notes": "## Fake update\n- A test of the update page.\n- Nothing is installed." });
+    }
     update::clean_up();
     match update::latest() {
         Ok(r) => {
             let newer = update::newer(&r.version, env!("CARGO_PKG_VERSION"));
-            let v = json!({ "latest": r.version, "newer": newer });
+            let v = json!({ "latest": r.version, "newer": newer, "notes": r.notes });
             *FOUND.lock().unwrap() = newer.then_some(r);
             v
         }
@@ -146,12 +151,22 @@ pub async fn update_check() -> Value {
 #[tauri::command]
 pub async fn update_install(app: AppHandle) -> Value {
     let Some(r) = FOUND.lock().unwrap().take() else { return json!({ "error": "no release" }) };
+    if std::env::var_os("QB_FAKE_UPDATE").is_some() {
+        for i in 0..=50u64 { let _ = app.emit("update_progress", json!({ "done": i, "total": 50 })); tokio_sleep(80).await; }
+        *FOUND.lock().unwrap() = Some(r);
+        return json!({ "error": "fake update: nothing was installed" });
+    }
     if !update::can_install() { update::open_page(); *FOUND.lock().unwrap() = Some(r); return json!({ "page": true }); }
-    match update::install(&r) {
-        Ok(()) => { app.exit(0); json!({}) }
-        Err(e) => { *FOUND.lock().unwrap() = Some(r); json!({ "error": e }) }
+    let a2 = app.clone();
+    let sent = move |done: u64, total: u64| { let _ = a2.emit("update_progress", json!({ "done": done, "total": total })); };
+    match tauri::async_runtime::spawn_blocking(move || { let res = update::install(&r, &sent); (res, r) }).await {
+        Ok((Ok(()), _)) => { app.exit(0); json!({}) }
+        Ok((Err(e), r)) => { *FOUND.lock().unwrap() = Some(r); json!({ "error": e }) }
+        Err(e) => json!({ "error": e.to_string() }),
     }
 }
+
+async fn tokio_sleep(ms: u64) { let _ = tauri::async_runtime::spawn_blocking(move || std::thread::sleep(std::time::Duration::from_millis(ms))).await; }
 
 // ---- Feedback ----
 

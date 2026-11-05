@@ -19,7 +19,7 @@ fn asset() -> &'static str {
     if cfg!(windows) { "-windows-x64.zip" } else if appimage().is_some() { "-linux-x64.AppImage" } else { "-linux-x64.tar.gz" }
 }
 
-pub struct Release { pub version: String, pub url: String, pub sums: Option<String> }
+pub struct Release { pub version: String, pub url: String, pub sums: Option<String>, pub notes: String }
 
 pub fn quiet(cmd: &str) -> Command {
     #[allow(unused_mut)]
@@ -64,7 +64,8 @@ fn pick_one(r: &Value, asset: &str) -> Option<Release> {
     let urls: Vec<&str> = r["assets"].as_array()?.iter().filter_map(|a| a["browser_download_url"].as_str()).collect();
     let url = urls.iter().find(|u| u.ends_with(asset))?.to_string();
     let sums = urls.iter().find(|u| u.ends_with("SHA256SUMS")).map(|u| u.to_string());
-    Some(Release { version, url, sums })
+    let notes = r["body"].as_str().unwrap_or("").trim().to_string();
+    Some(Release { version, url, sums, notes })
 }
 
 fn pick(list: &Value, asset: &str) -> Option<Release> {
@@ -164,9 +165,37 @@ fn sha256(data: &[u8]) -> [u8; 32] {
     out
 }
 
+/// The size of the file at `url` (after redirects), 0 when the server does not say.
+fn size_of(url: &str) -> u64 {
+    curl(&["-I", url]).ok().and_then(|h| {
+        String::from_utf8_lossy(&h).lines().rev()
+            .find_map(|l| l.to_ascii_lowercase().strip_prefix("content-length:").and_then(|v| v.trim().parse().ok()))
+    }).unwrap_or(0)
+}
+
+/// Downloads `url` to `path`; `progress(done, total)` runs about 10 times a second.
+fn download(url: &str, path: &Path, progress: &dyn Fn(u64, u64)) -> Result<(), String> {
+    let total = size_of(url);
+    let mut child = quiet("curl").args(["-fsSL", "--max-time", "600", "-o"]).arg(path).arg(url)
+        .stderr(std::process::Stdio::piped()).spawn().map_err(|e| format!("curl: {e}"))?;
+    loop {
+        if let Some(st) = child.try_wait().map_err(|e| e.to_string())? {
+            if !st.success() {
+                let mut err = String::new();
+                if let Some(mut e) = child.stderr.take() { let _ = std::io::Read::read_to_string(&mut e, &mut err); }
+                return Err(err.trim().to_string());
+            }
+            progress(total.max(1), total.max(1));
+            return Ok(());
+        }
+        progress(std::fs::metadata(path).map(|m| m.len()).unwrap_or(0), total);
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+}
+
 /// Downloads `r`, swaps the binary (a running one can be renamed on both systems) and starts the new one.
 /// The caller quits right after. The download must match the release's `SHA256SUMS`.
-pub fn install(r: &Release) -> Result<(), String> {
+pub fn install(r: &Release, progress: &dyn Fn(u64, u64)) -> Result<(), String> {
     let exe = exe().ok_or("cannot find the running binary")?;
     let dir = exe.parent().ok_or("no folder")?;
     let sums_url = r.sums.as_deref().ok_or("This release has no SHA256SUMS file. Update stopped.")?;
@@ -176,14 +205,14 @@ pub fn install(r: &Release) -> Result<(), String> {
     std::fs::create_dir_all(&tmp).map_err(|e| e.to_string())?;
     let new = if appimage().is_some() {
         let new = tmp.join("QuickBuds.AppImage");
-        curl(&["-o", new.to_str().ok_or("path")?, &r.url])?;
+        download(&r.url, &new, progress)?;
         verify(&new, &r.url, &sums)?;
         #[cfg(unix)]
         std::fs::set_permissions(&new, std::os::unix::fs::PermissionsExt::from_mode(0o755)).map_err(|e| e.to_string())?;
         new
     } else {
         let archive = tmp.join(if cfg!(windows) { "update.zip" } else { "update.tar.gz" });
-        curl(&["-o", archive.to_str().ok_or("path")?, &r.url])?;
+        download(&r.url, &archive, progress)?;
         verify(&archive, &r.url, &sums)?;
         let ok = quiet("tar").arg("-xf").arg(&archive).arg("-C").arg(&tmp).status().map_err(|e| format!("tar: {e}"))?;
         if !ok.success() { return Err("could not unpack the download".into()); }

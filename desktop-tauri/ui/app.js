@@ -138,12 +138,16 @@ function apply(){
     set('--g-sel-from',rgba(p.accent,light?0.55:0.5));set('--g-sel-to',rgba(p.accent,light?0.38:0.3));set('--g-sel-rim',rgba(p.accent,0.85));set('--g-track',light?'rgba(20,21,43,.12)':'rgba(255,255,255,.18)');
     set('--on-accent',contrast(0xFFFFFF,p.accent)>=3?'#ffffff':'#14152b');
     const oled=p.id==='oled',base=light?0xF1F3FA:oled?0x050509:0x1B1D2B,a=light?[.34,.28,.24,.26]:oled?[.2,.14,.11,.12]:[.26,.19,.15,.17];
+    // In the native window the colour base is partly see-through: the desktop (blurred by the system) shows behind it.
+    const nat=root.classList.contains('native'),bs=nat?rgba(base,.5):hex(base);
     const ch=GLASS_BGS.find(g=>g.id===S.glassBg)||GLASS_BGS[0];let gb;
     if(ch.id==='none')gb=light?'rgba(241,243,250,.42)':oled?'rgba(5,5,9,.38)':'rgba(27,29,43,.45)';
-    else if(ch.id==='black')gb=hex(light?0xF4F5FA:oled?0x000000:0x1B1D26);
+    else if(ch.id==='black')gb=nat?rgba(light?0xF4F5FA:oled?0x000000:0x1B1D26,.72):hex(light?0xF4F5FA:oled?0x000000:0x1B1D26);
     else{const c=ch.blobs||[p.accent,blend(p.accent,0x4A6DFF,.5),blend(p.accent,0xFF9D6B,.5),blend(p.accent,0xFFFFFF,.35)],pos=['12% 18%','88% 12%','78% 92%','8% 95%'];
-      gb=c.map((col,i)=>`radial-gradient(circle at ${pos[i]},${rgba(col,a[i])} 0,${rgba(col,0)} 55%)`).join(',')+','+hex(base);}
+      gb=c.map((col,i)=>`radial-gradient(circle at ${pos[i]},${rgba(col,a[i])} 0,${rgba(col,0)} 55%)`).join(',')+','+bs;}
     set('--glass-bg',gb);
+    // A dialog uses the app's background with a backing layer: less see-through, never solid.
+    set('--dlg-bg',`linear-gradient(${rgba(base,.4)},${rgba(base,.4)}),${gb}`);
   }else{set('--text',hex(p.text));set('--ink',hex(p.text));set('--text2',hex(p.text2));set('--outline',hex(p.outline));set('--on-accent',hex(onAccent));}
   const d=root.dataset;d.style=S.style;d.glassbg=S.glassBg;d.light=light?'1':'0';
   document.getElementById('desk').style.background=S.wall==='upload'&&uploadUrl?`center/cover no-repeat url("${uploadUrl}")`:WALLS[typeof S.wall==='number'?S.wall:0].css;
@@ -384,15 +388,15 @@ function buildWindow(){
   <section class="page narrow" data-page="update" hidden>
     <div class="ph"><h2>${$t('update_title')}</h2></div>
     <div class="card pad updc"><div class="updv"><div><div class="s">${$t('update_installed')}</div><div class="pct" id="updInst">–</div></div><div><div class="s">${$t('update_latest')}</div><div class="pct" id="updLatest">–</div></div></div>
-      <div class="s" id="updStatus"></div><button class="btn pri press" id="updBtn" data-act="updgo">${$t('update_check')}</button></div>
+      <div class="s" id="updStatus"></div><div class="updact"><button class="btn pri press" id="updBtn" data-act="updgo">${$t('update_check')}</button><div class="prog" id="updProg" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i></i></div></div></div>
     <div class="group"><div class="row">${ic('update')}<div class="txt"><div class="t">${$t('update_auto_title')}</div><div class="s">${$t('update_auto_sub')}</div></div>${sw('upd')}</div></div>
     <div class="lbl">${$t('update_notes')}</div>
-    <div class="card pad prose">${$t('update_no_notes')}</div>
+    <div class="card pad prose" id="updNotes">${$t('update_no_notes')}</div>
   </section>
 
   <section class="page" data-page="about" hidden>
     <div class="card hero"><div class="logoBig">${ic('budL')}${ic('budR')}</div>
-      <div class="herot"><div class="t" style="font-size:17px;font-weight:700">${$t('app_name')} <span class="s" id="aboutVer" style="display:inline;font-size:12px;font-weight:400"></span></div><div class="s" style="font-size:12px">${$t('about_tagline')}</div></div></div>
+      <div class="herot"><div class="t" style="font-size:17px;font-weight:400">${$t('app_name')} <span class="s" id="aboutVer" style="display:inline;font-size:12px;font-weight:400"></span></div><div class="s" style="font-size:12px">${$t('about_tagline')}</div></div></div>
     <div class="btnrow"><button class="btn press" data-act="url" data-v="https://github.com/spizganed/QuickBuds">${ic('github')}GitHub</button><button class="btn press" data-act="url" data-v="https://ko-fi.com/spizganed">${ic('kofi')}Ko-fi</button><button class="btn press" data-act="url" data-v="https://discord.gg/pvsnEf9TrZ">${ic('discord')}Discord</button></div>
     <div id="replyBox" hidden><div class="lbl">${$t('reply_title')}</div><div class="card pad prose"></div></div>
     <div class="cols st">
@@ -434,11 +438,26 @@ function renderBuds(){const d=window.QBLIVE?QBLIVE.buds():(BUDS[S.budState]||BUD
   requestAnimationFrame(()=>pixelize(document));}
 
 function bassUi(br){if(!br)return;const mn=+br.min,mx=+br.max;br.value=S.bassLv;br.style.setProperty('--p',(S.bassLv-mn)/(mx-mn)*100+'%');document.getElementById('bassV').textContent=(S.bassLv>0?'+':'')+S.bassLv;}
-function renderEq(){
-  const g=S.gains,ed=document.getElementById('eqed');if(!ed)return;const H=ed.clientHeight||(S.size==='s'?96:180);ed.querySelector('svg.curve').setAttribute('viewBox',`0 0 600 ${H}`);
+function drawEq(g){
+  const ed=document.getElementById('eqed');if(!ed)return;const H=ed.clientHeight||(S.size==='s'?96:180);ed.querySelector('svg.curve').setAttribute('viewBox',`0 0 600 ${H}`);
   ed.querySelector('.fillp').setAttribute('d',curvePath(g,600,H,true));ed.querySelector('.ln').setAttribute('d',curvePath(g,600,H,false));
-  ed.querySelectorAll('.band').forEach((b,i)=>{const v=g[i],y=H/2-v*(H/2)/6.6;b.querySelector('.knob').style.top=(y-11)+'px';b.querySelector('.knob').setAttribute('aria-valuenow',v);
-    const bar=b.querySelector('.bar');bar.style.top=Math.min(y,H/2)+'px';bar.style.height=Math.abs(H/2-y)+'px';b.querySelector('.val').textContent=(v>0?'+':'')+v;});
+  ed.querySelectorAll('.band').forEach((b,i)=>{const v=g[i],r=Math.round(v),y=H/2-v*(H/2)/6.6;b.querySelector('.knob').style.top=(y-11)+'px';b.querySelector('.knob').setAttribute('aria-valuenow',r);
+    const bar=b.querySelector('.bar');bar.style.top=Math.min(y,H/2)+'px';bar.style.height=Math.abs(H/2-y)+'px';b.querySelector('.val').textContent=(r>0?'+':'')+r;});
+}
+// anim: the bars, knobs and curve glide to a new preset with a small overshoot (a preset switch, not a drag).
+function renderEq(anim){
+  const g=S.gains;if(!document.getElementById('eqed'))return;
+  cancelAnimationFrame(renderEq._r);
+  const prev=renderEq._shown;
+  if(anim&&prev&&prev.length===g.length&&prev.some((v,i)=>v!==g[i])){
+    const sp=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1,t0=performance.now(),dur=450*sp,from=prev.slice();
+    const ease=t=>{const c=1.70158*1.4;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);};
+    const step=now=>{const t=Math.min(1,(now-t0)/dur),e=ease(t),cur=g.map((v,i)=>from[i]+(v-from[i])*e);
+      if(t<1){drawEq(cur);renderEq._shown=cur;renderEq._r=requestAnimationFrame(step);}else{drawEq(g);renderEq._shown=g.slice();}};
+    renderEq._r=requestAnimationFrame(step);
+  }else{drawEq(g);renderEq._shown=g.slice();}
+  // A built-in preset is fixed and its gains are not readable from the buds: the editor shows no values and takes no input.
+  document.getElementById('eqed').classList.toggle('locked',!!(window.QBLIVE&&QBLIVE.eq&&S.eqPreset&&PRESETS[S.eqPreset]));
   const sel=n=>S.eqPreset===n?ic('check','ch'):'';
   document.getElementById('eqRec').innerHTML=Object.keys(PRESETS).map(n=>`<button class="row press" data-act="eqp" data-v="${n}" aria-pressed="${S.eqPreset===n}"><div class="txt"><div class="t">${n}</div></div>${sel(n)}</button>`).join('');
   document.getElementById('eqCus').innerHTML=S.custom.map((n,i)=>n?`<button class="row press" data-act="eqp" data-v="${esc(n)}" aria-pressed="${S.eqPreset===n}"><div class="txt"><div class="t">${esc(n)}</div></div>${sel(n)}</button>`
@@ -539,7 +558,8 @@ function sync(p){
 
 /* ================= motion ================= */
 const reduce=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
-function reveal(ev,fn){if(!document.startViewTransition||reduce()){fn();return;}
+// The native glass window is see-through: a view transition would paint its snapshot on an opaque layer and the end would not match.
+function reveal(ev,fn){if(!document.startViewTransition||reduce()||(document.documentElement.classList.contains('native')&&S.style==='glass')){fn();return;}
   const x=ev?.clientX??innerWidth/2,y=ev?.clientY??innerHeight/2,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
   const vt=document.startViewTransition(fn);vt.ready.then(()=>document.documentElement.animate({clipPath:[`circle(0px at ${x}px ${y}px)`,`circle(${r}px at ${x}px ${y}px)`]},{duration:420*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1),easing:'cubic-bezier(.2,0,0,1)',pseudoElement:'::view-transition-new(root)'})).catch(()=>{});}
 function replay(el){if(!el)return;el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter');}
@@ -562,7 +582,7 @@ function go(page){const fwd=ORDER.indexOf(page)>=ORDER.indexOf(S.page);S.page=pa
 
 /* ================= dialogs (find, fit test, language, known issues) ================= */
 function dialog(html,onOpen,onClose){const host=S.view==='tray'?document.getElementById('tray'):document.getElementById('win');const sc=document.createElement('div');sc.className='scrim';
-  sc.innerHTML=`<div class="dlg" role="dialog" aria-modal="true">${html}</div>`;host.appendChild(sc);
+  sc.innerHTML=`<div class="dlg pk card" role="dialog" aria-modal="true">${html}</div>`;host.appendChild(sc);
   let closed=false;const close=()=>{if(closed)return;closed=true;sc.classList.add('out');setTimeout(()=>sc.remove(),160);document.removeEventListener('keydown',esc_);onClose&&onClose();};const esc_=e=>{if(e.key==='Escape')close();};
   document.addEventListener('keydown',esc_);sc.addEventListener('click',e=>{if(e.target===sc||e.target.closest('[data-close]'))close();});
   onOpen&&onOpen(sc.firstChild,close);pixelize(sc);sc.querySelector('button')?.focus();}
@@ -579,15 +599,15 @@ function langDialog(){dialog(`<h3>Language</h3><div class="langs">${LANGS.map((l
   (d,close)=>d.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(!b)return;S.lang=+b.dataset.lang;d.querySelectorAll('.lang').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));apply();pixelize(d);}));}
 /* one list dialog, like the app's: tap a choice, the highlight glides to it, Done applies */
 function pickDialog(title,opts,cur,onDone,cls=''){let v=String(cur);
-  dialog(`<h3>${title}</h3><div class="opts ${cls}${opts.length>5&&!cls.includes('scroll')?' many':''}"><span class="optind" aria-hidden="true"></span>${opts.map(([k,l])=>`<button class="opt" data-o="${esc(String(k))}" aria-pressed="${String(k)===v}">${l}</button>`).join('')}</div>
-    <div class="acts two"><button class="btn press" data-close>Cancel</button><button class="btn pri press" id="pkDone">Done</button></div>`,
-  (d,close)=>{d.classList.add('pk');const ind=d.querySelector('.optind');
-    const place=()=>{const b=d.querySelector('.opt[aria-pressed="true"]');if(!b){ind.style.opacity=0;return;}ind.style.opacity=1;ind.style.width=b.offsetWidth+'px';ind.style.height=b.offsetHeight+'px';ind.style.transform=`translate(${b.offsetLeft}px,${b.offsetTop}px)`;};
-    place();requestAnimationFrame(()=>ind.classList.add('go'));
-    d.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;v=b.dataset.o;d.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));place();});
-    d.addEventListener('dblclick',e=>{if(e.target.closest('.opt')){onDone(v);close();}});
+  // The options are the same rows as the Equalizer presets, so they follow the style, the theme and the colours.
+  const mark=b=>{b.parentNode.querySelectorAll('.pkopt').forEach(x=>{const on=x===b;x.setAttribute('aria-pressed',String(on));const c=x.querySelector('.ch');if(on&&!c)x.insertAdjacentHTML('beforeend',ic('check','ch'));if(!on&&c)c.remove();});};
+  dialog(`<h3>${title}</h3><div class="group opts ${cls}${opts.length>5&&!cls.includes('scroll')?' many':''}">${opts.map(([k,l])=>`<button class="row press pkopt" data-o="${esc(String(k))}" aria-pressed="${String(k)===v}"><div class="txt"><div class="t">${l}</div></div>${String(k)===v?ic('check','ch'):''}</button>`).join('')}</div>
+    <div class="acts two"><button class="btn press" data-close>${$t('dialog_cancel')}</button><button class="btn pri press" id="pkDone">Done</button></div>`,
+  (d,close)=>{d.classList.add('pk');
+    d.addEventListener('click',e=>{const b=e.target.closest('.pkopt');if(!b)return;v=b.dataset.o;mark(b);});
+    d.addEventListener('dblclick',e=>{if(e.target.closest('.pkopt')){onDone(v);close();}});
     d.querySelector('#pkDone').addEventListener('click',()=>{onDone(v);close();});
-    const sb=d.querySelector('.opt[aria-pressed="true"]');const ol=d.querySelector('.opts.scroll');if(ol&&sb)ol.scrollTop=sb.offsetTop-ol.clientHeight/2+sb.offsetHeight/2;setTimeout(()=>sb&&sb.focus({preventScroll:true}),0);});}
+    const sb=d.querySelector('.pkopt[aria-pressed="true"]');const ol=d.querySelector('.opts.scroll');if(ol&&sb)ol.scrollTop=sb.offsetTop-ol.clientHeight/2+sb.offsetHeight/2;setTimeout(()=>sb&&sb.focus({preventScroll:true}),0);});}
 const MODELS=['OnePlus Buds 4','OnePlus Buds 3','OnePlus Buds Pro 2','OnePlus Buds','OnePlus Buds Z','OPPO Enco Air2','OPPO Enco Buds2','OPPO Enco R','realme Buds T500 Pro','realme Buds T500','realme Buds T310','realme Buds T300','realme Buds T200','realme Buds T200 Lite','realme Buds T200x','realme Buds T110','realme Buds T100','realme Buds Wireless Pro','realme Buds Wireless 6 ANC','realme Buds Wireless 6','realme Buds Wireless 6 Neo','realme Buds Wireless 5 ANC','realme Buds Wireless 3','realme Buds Wireless 3 Neo','realme Buds Wireless 2S','realme Buds Wireless 2','realme Buds Wireless 2 Neo','realme TechLife Buds T500 Pro'];
 function modelDialog(){pickDialog('Earbuds model',[['auto','Automatic (OnePlus Buds 4)'],...MODELS.map(m=>[m,m])],S.model,v=>{S.model=v;save();apply();toast(v==='auto'?'Model: found automatically.':`Model: ${v}.`);},'scroll');}
 function langPick(){pickDialog('Language',LANGS.map((l,i)=>[i,l]),S.lang,v=>{S.lang=+v;save();apply();toast(`Language: ${LANGS[S.lang]}.`);},'grid g4');}
@@ -597,7 +617,7 @@ function knownDialog(){dialog(`<h3>Known issues</h3><div class="group"><div clas
 document.addEventListener('click',ev=>{
   const b=ev.target.closest('[data-act]');if(!b||b.tagName==='SELECT')return;const a=b.dataset.act,v=b.dataset.v,k=b.dataset.k;
   if(a==='pick'){const i=+v;
-    if(k==='anc'){S.anc=i;window.QBLIVE&&QBLIVE.sendAnc();apply();requestAnimationFrame(()=>pixelize(document));return;}
+    if(k==='anc'){const enter=i===1&&S.anc!==1;S.anc=i;if(enter)S.level=-1;else window.QBLIVE&&QBLIVE.sendAnc();apply();requestAnimationFrame(()=>pixelize(document));return;}
     if(k==='level'){S.level=i;if(S.anc===1)window.QBLIVE&&QBLIVE.sendAnc();apply();return;}
     if(k==='fbtab'){go(i?'test':'feedback');return;}
     if(k==='style'){reveal(ev,()=>{S.style=STYLES[i];apply();});return;}
@@ -613,7 +633,7 @@ document.addEventListener('click',ev=>{
     const on=!S[k];S[k]=on;
     if(window.QBLIVE&&QBLIVE.setting)QBLIVE.setting(k,on);
     if(k==='devtools'&&!on&&S.page==='dev')go('overview');
-    if(k==='ll'&&window.QBLIVE)QBLIVE.send({t:'ll',on});
+    if(k==='ll'&&window.QBLIVE){S._llHold={on,until:Date.now()+2500};QBLIVE.send({t:'ll',on});}
     if(['hq','sp','hp','dual','wear','bass'].includes(k)&&window.QBLIVE)QBLIVE.send({t:'sw',k,on});
     if(on&&k==='hq'&&S.sp){S.sp=false;toast('3D audio went off: the earbuds run only one of them.');}
     if(on&&k==='sp'&&S.hq){S.hq=false;toast('High-quality audio went off: the earbuds run only one of them.');}
@@ -629,7 +649,7 @@ document.addEventListener('click',ev=>{
   if(window.QBLIVE&&QBLIVE.eq&&a==='eqnew'){QBLIVE.eqNew();return;}
   if(window.QBLIVE&&QBLIVE.eq&&a==='eqdel'){QBLIVE.eqDel();return;}
   if(window.QBLIVE&&QBLIVE.eq&&a==='eqsave'){QBLIVE.eqSave();return;}
-  if(a==='eqp'){S.eqPreset=v;S.gains=(PRESETS[v]||S.cg[v]||[0,0,0,0,0,0]).slice();renderEq();save();return;}
+  if(a==='eqp'){S.eqPreset=v;S.gains=(PRESETS[v]||S.cg[v]||[0,0,0,0,0,0]).slice();renderEq(true);save();return;}
   if(a==='eqnew'){const n=`Custom ${+v+1}`;S.custom[+v]=n;S.cg[n]=S.gains.slice();S.eqPreset=n;renderEq();save();toast(`${n} saved in slot ${+v+1}.`);return;}
   if(a==='eqdel'){const i=S.custom.indexOf(S.eqPreset);if(i<0){toast('Preset modes cannot be deleted.');return;}delete S.cg[S.eqPreset];S.custom[i]=null;S.eqPreset='Balanced';S.gains=PRESETS.Balanced.slice();renderEq();save();return;}
   if(a==='eqsave'){toast(`${S.eqPreset} saved to the earbuds.`);return;}
@@ -694,10 +714,10 @@ document.addEventListener('input',e=>{const t=e.target;
   if(t.id==='tapR'){t.style.setProperty('--p',(t.value-1)/4*100+'%');const v=document.getElementById('tapV');if(v)v.textContent=t.value;}
   if(t.id==='alertR'){S.alert=+t.value;t.style.setProperty('--p',(S.alert-t.min)/(t.max-t.min)*100+'%');save();}});
 /* equalizer knobs: drag in whole dB steps */
-document.addEventListener('pointerdown',e=>{const k=e.target.closest('.knob');if(!k)return;e.preventDefault();k.setPointerCapture(e.pointerId);const i=+k.dataset.band,ed=document.getElementById('eqed');
+document.addEventListener('pointerdown',e=>{const k=e.target.closest('.knob');if(!k||k.closest('.locked'))return;e.preventDefault();k.setPointerCapture(e.pointerId);const i=+k.dataset.band,ed=document.getElementById('eqed');
   const mv=ev=>{const r=ed.getBoundingClientRect(),y=Math.min(Math.max(ev.clientY-r.top,0),r.height),v=Math.max(-6,Math.min(6,Math.round((r.height/2-y)/(r.height/2)*6.6)));if(v!==S.gains[i]){S.gains[i]=v;if(S.cg[S.eqPreset])S.cg[S.eqPreset][i]=v;renderEq();}};
   const up=()=>{k.removeEventListener('pointermove',mv);k.removeEventListener('pointerup',up);save();window.QBLIVE&&QBLIVE.eq&&QBLIVE.eqSave();};k.addEventListener('pointermove',mv);k.addEventListener('pointerup',up);});
-document.addEventListener('keydown',e=>{const k=e.target.closest&&e.target.closest('.knob');if(!k)return;const i=+k.dataset.band;
+document.addEventListener('keydown',e=>{const k=e.target.closest&&e.target.closest('.knob');if(!k||k.closest('.locked'))return;const i=+k.dataset.band;
   if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();S.gains[i]=Math.max(-6,Math.min(6,S.gains[i]+(e.key==='ArrowUp'?1:-1)));renderEq();save();window.QBLIVE&&QBLIVE.eq&&QBLIVE.eqSave();}});
 function setView(v){S.view=v;const tray=document.getElementById('tray'),win=document.getElementById('win'),desk=document.getElementById('desk');
   tray.hidden=v!=='tray';win.hidden=v!=='window';fit();desk.classList.toggle('tray-view',v==='tray');
@@ -745,9 +765,14 @@ if(window.__TAURI__){
       return {L:one(0),R:one(1),C:one(2)};},
     eqPick(name){const e=this.eq,b=e.builtins.find(x=>x.name===name),c=e.custom.find(x=>x.name===name);
       if(b)this.send({t:'eq_builtin',id:b.id});else if(c)this.send({t:'eq_select',id:c.id});},
+    // New and delete show at once; the buds' re-read takes about a second and would show the old list first.
+    eqLocal(eq,ms){takeEq(eq);this.eqHold=Date.now()+ms;clearTimeout(this.eqT);this.eqT=setTimeout(()=>{if(snap&&snap.eq)takeEq(snap.eq);},ms+50);},
     eqNew(){const e=this.eq;if(e.custom.length>=e.max)return;
-      for(let i=1;i<=9;i++){const n='Custom'+i;if(!e.custom.some(p=>p.name===n)){this.send({t:'eq_create',name:n});return;}}},
-    eqDel(){const p=curEq();if(!p)return;this.send({t:'eq_delete',id:p.id});},
+      for(let i=1;i<=9;i++){const n='Custom'+i;if(!e.custom.some(p=>p.name===n)){
+        this.send({t:'eq_create',name:n});
+        this.eqLocal(Object.assign({},e,{current:-1,custom:[...e.custom,{id:-1,name:n,gains:new Array(e.freqs.length).fill(0),freqs:e.freqs}]}),2000);return;}}},
+    eqDel(){const p=curEq();if(!p)return;const e=this.eq;this.send({t:'eq_delete',id:p.id});
+      this.eqLocal(Object.assign({},e,{current:e.builtins.length?e.builtins[0].id:e.current,custom:e.custom.filter(x=>x.id!==p.id)}),2500);},
     eqSave(){const p=curEq();if(p)this.send({t:'eq_gains',id:p.id,gains:S.gains});},
   };
   // The EQ page follows the buds: their bands, presets and custom slots.
@@ -766,11 +791,13 @@ if(window.__TAURI__){
     const cp=curEq();S.gains=cp?cp.gains.slice():new Array(n).fill(0);
     const br=document.getElementById('bassR');
     if(br){br.min=-5;br.max=5;if(eq.bass.level!=null)S.bassLv=eq.bass.level;}
-    renderEq();};
+    renderEq(true);};
   const take=s=>{
     if(!s)return;snap=s;QBLIVE.live=true;
     // Disconnected: the tiles dim and go inert (the phone's DISABLED_ALPHA); the connect button's text cross-fades.
     document.documentElement.classList.toggle('off',s.status!=='on');
+    if(s.status==='on'&&QBLIVE._was!=='on'&&['earbud','gestures','hearing'].includes(S.page))setTimeout(()=>QBLIVE.pageReads(S.page),300);
+    QBLIVE._was=s.status;
     const sp=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1,
       fade=(sel,label)=>document.querySelectorAll(sel).forEach(el=>{
         if(el.textContent===label)return;
@@ -783,9 +810,9 @@ if(window.__TAURI__){
     if(s.status==='on'&&s.anc){
       if(s.anc==='Off')S.anc=0;else if(s.anc.startsWith('ANC')){S.anc=1;const i=LV.indexOf(s.anc);if(i>=0)S.level=i;}
       else if(s.anc==='Adaptive')S.anc=2;else if(s.anc==='Transparency')S.anc=3;}
-    if(s.lowLatency!=null)S.ll=s.lowLatency;
+    if(s.lowLatency!=null&&!(S._llHold&&S._llHold.until>Date.now()&&s.lowLatency!==S._llHold.on))S.ll=s.lowLatency;
     if(s.status==='on'){Object.assign(S,s.sw);}
-    if(s.status==='on'&&s.eq)takeEq(s.eq);
+    if(s.status==='on'&&s.eq&&!(QBLIVE.eqHold>Date.now()))takeEq(s.eq);
     const eb=s.earbud;QBLIVE.earbud=s.status==='on'?eb:null;
     if(eb&&eb.alert!=null){S.alert=eb.alert;const ar=document.getElementById('alertR');if(ar){ar.min=1;ar.max=10;}}
     if(s.firmware)document.querySelectorAll('.mono').forEach(e=>e.textContent=s.firmware);
@@ -823,14 +850,14 @@ if(window.__TAURI__){
     pixelize(gt);};
   function noiseDialog(r,side){
     const g=QBLIVE.gest;let working=(r.cur[side-1]||[]).filter(i=>g.actions[i].noise);
-    dialog(`<h3>${esc(r.label)}</h3><div class="opts"><span class="optind" style="display:none"></span>${r.options.map(a=>`<button class="opt multi" data-o="${a}" aria-pressed="${working.includes(a)}">${esc(g.actions[a].label)}</button>`).join('')}</div>
+    dialog(`<h3>${esc(r.label)}</h3><div class="group opts">${r.options.map(a=>`<button class="row press pkopt" data-o="${a}" aria-pressed="${working.includes(a)}"><div class="txt"><div class="t">${esc(g.actions[a].label)}</div></div>${working.includes(a)?ic('check','ch'):''}</button>`).join('')}</div>
       <div class="s" style="text-align:center;margin:0;min-height:1em">${g.holdMin===1?esc($t('gesture_hold_rule')):''}</div>
       <div class="acts two"><button class="btn press" data-close>${esc($t('dialog_cancel'))}</button><button class="btn pri press" id="nzGo">${esc($t('eq_save'))}</button></div>`,
     (d,close)=>{d.classList.add('pk');
-      d.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const a=+b.dataset.o,on=working.includes(a);
+      d.addEventListener('click',e=>{const b=e.target.closest('.pkopt');if(!b)return;const a=+b.dataset.o,on=working.includes(a);
         // Never below the model's minimum.
         if(on){if(working.length>g.holdMin)working=working.filter(x=>x!==a);}else working.push(a);
-        d.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',String(working.includes(+x.dataset.o))));});
+        d.querySelectorAll('.pkopt').forEach(x=>{const on=working.includes(+x.dataset.o),c=x.querySelector('.ch');x.setAttribute('aria-pressed',String(on));if(on&&!c)x.insertAdjacentHTML('beforeend',ic('check','ch'));if(!on&&c)c.remove();});});
       d.querySelector('#nzGo').addEventListener('click',()=>{
         // In the list's order, so the cycle matches what was shown.
         if(working.length>=g.holdMin)send({t:'gesture',g:r.g,side,actions:r.options.filter(x=>working.includes(x))});close();});});}
@@ -950,15 +977,22 @@ if(window.__TAURI__){
     const cx=150,cy=135,R=105,ang=[240,300,0,60,120,180].map(a=>a*Math.PI/180),pt=(r,a)=>`${(cx+r*Math.cos(a)).toFixed(1)},${(cy+r*Math.sin(a)).toFixed(1)}`;
     const L=st.radar?st.radar.left.map(v=>v/10):null,Rr=st.radar?st.radar.right.map(v=>v/10):null;
     const HZl=st.axes.map(f=>f>=1000?(f/1000)+' kHz':f+' Hz');
+    // Rebuild only when the data changes: a rebuild replays the bar animation and makes the page jump.
+    const dkey=JSON.stringify([st.axes,st.radar]),rd=byId('radar');
+    if(rd._k!==dkey){rd._k=dkey;
     let s='';[1,.75,.5,.25].forEach(k=>s+=`<polygon class="grid" points="${ang.map(a=>pt(R*k,a)).join(' ')}"/>`);
     ang.forEach(a=>s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(a)).toFixed(1)}" y2="${(cy+R*Math.sin(a)).toFixed(1)}" class="grid"/>`);
     if(L)s+=`<polygon class="lft" style="opacity:${S.showL?1:0}" points="${L.map((v,i)=>pt(R*v,ang[i])).join(' ')}"/><polygon class="rgt" style="opacity:${S.showR?1:0}" points="${Rr.map((v,i)=>pt(R*v,ang[i])).join(' ')}"/>`;
     ang.forEach((a,i)=>{const x=cx+(R+18)*Math.cos(a),y=cy+(R+16)*Math.sin(a)+4;s+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${Math.abs(Math.cos(a))<.2?'middle':Math.cos(a)>0?'start':'end'}">${HZl[i]}</text>`;});
-    byId('radar').innerHTML=s;
+    rd.innerHTML=s;
     const order=[0,5,4,3,2,1];
-    byId('freq').innerHTML=L?order.map(i=>`<span class="hz">${HZl[i]}</span><div class="bars"><span style="width:${L[i]*100}%;opacity:${S.showL?1:.15}"></span><span class="r" style="width:${Rr[i]*100}%;opacity:${S.showR?1:.15}"></span></div>`).join(''):'';
+    byId('freq').innerHTML=L?order.map(i=>`<span class="hz">${HZl[i]}</span><div class="bars"><span style="width:${L[i]*100}%;opacity:${S.showL?1:.15}"></span><span class="r" style="width:${Rr[i]*100}%;opacity:${S.showR?1:.15}"></span></div>`).join(''):'';}
+    // The two legend buttons only fade the lines.
+    rd.querySelector('.lft')&&(rd.querySelector('.lft').style.opacity=S.showL?1:0);rd.querySelector('.rgt')&&(rd.querySelector('.rgt').style.opacity=S.showR?1:0);
+    byId('freq').querySelectorAll('.bars').forEach(b=>{b.firstChild.style.opacity=S.showL?1:.15;b.lastChild.style.opacity=S.showR?1:.15;});
     document.querySelectorAll('.lg').forEach(b=>b.setAttribute('aria-pressed',String(!!S[b.dataset.v])));
-    const pr=byId('hprof');
+    const pr=byId('hprof'),pkey=JSON.stringify([st.profiles.map(p=>p.name),st.active,h.hasTest]);
+    if(pr._k===pkey)return;pr._k=pkey;
     pr.innerHTML=st.profiles.map((p,i)=>`<div class="card tl press${st.active===i?' on':''}" data-act="hpick" data-i="${i}" role="button" tabindex="0"><div class="tlh"><span class="dot" style="background:var(--accent)"></span><span class="t">${esc(p.name)}</span></div><button class="btn icon press tla" data-act="hdel" data-i="${i}" aria-label="${esc($t('eq_delete'))}">${ic('del')}</button></div>`).join('')
       +(st.profiles.length?'':`<div class="card tl"><span class="t">${esc($t('golden_none'))}</span></div>`)
       +(h.hasTest?`<button class="card tl go press" data-act="htest">${ic('hearing')}<span class="t">${esc($t('golden_test_row'))}</span><span class="s">${esc($t('golden_test_sub'))}</span></button>`:'');
@@ -1001,16 +1035,27 @@ if(window.__TAURI__){
   QBLIVE.issuesDialog=function(){const list=(this.ex&&this.ex.issues)||[];
     dialog(`<h3>${esc($t('settings_issues_title'))}</h3>${list.length?`<div class="group">${list.map(i=>`<div class="row" style="align-items:flex-start;padding-block:12px">${ic('warn')}<div class="txt"><div class="t">${esc(i.title)}</div><div class="s">${esc(i.body)}</div></div></div>`).join('')}</div>`:`<div class="s" style="text-align:center;margin:0">${esc($t('issues_none'))}</div>`}<div class="acts"><button class="btn press" data-close>${esc($t('dialog_close'))}</button></div>`);};
   // App update
-  const upd={busy:false,found:false,latest:'–',status:''};
+  const upd={busy:false,found:false,dl:false,pct:0,latest:'–',status:'',notes:null};
+  // The release notes: plain text from the release page, one block per heading or bullet. No notes: a muted line.
+  const notesPaint=()=>{const el=byId('updNotes');if(!el)return;const t=(upd.notes||'').trim();
+    el.classList.toggle('none',!t);
+    el.innerHTML=t?t.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{const h=l.match(/^#+\s*(.*)/),b=l.match(/^[-*]\s+(.*)/);
+      return h?`<div class="nh">${esc(h[1])}</div>`:b?`<div class="nb">${esc(b[1].replace(/[*_`]/g,''))}</div>`:`<div>${esc(l.replace(/[*_`]/g,''))}</div>`;}).join(''):esc($t('update_no_notes'));};
+  // The button and the progress bar share one cell: the card never changes size.
   const updPaint=()=>{setText(byId('updLatest'),upd.latest);setText(byId('updStatus'),upd.status);
-    const b=byId('updBtn');if(b){b.textContent=$t(upd.busy?'update_checking':upd.found?'update_install':'update_check');b.disabled=upd.busy;}};
+    notesPaint();
+    const b=byId('updBtn'),pr=byId('updProg');
+    if(b){setText(b,$t(upd.found?'update_install':'update_check'));b.disabled=upd.busy;b.classList.toggle('gone',upd.dl);}
+    if(pr){pr.classList.toggle('on',upd.dl);pr.firstChild.style.transform=`scaleX(${upd.pct/100})`;pr.setAttribute('aria-valuenow',upd.pct);}};
   async function updCheck(){if(upd.busy)return;upd.busy=true;upd.status=$t('update_checking');updPaint();
     const r=await T.core.invoke('update_check');upd.busy=false;
     if(r.error)upd.status=$t('update_failed').replace('%1$s',r.error);
-    else{upd.latest=r.latest;upd.found=r.newer;upd.status=r.newer?$t('update_available').replace('%1$s',r.latest):$t('update_up_to_date');}
+    else{upd.latest=r.latest;upd.found=r.newer;upd.notes=r.notes||'';upd.status=r.newer?$t('update_available').replace('%1$s',r.latest):$t('update_up_to_date');}
     updPaint();}
-  async function updInstall(){upd.busy=true;upd.status=$t('update_downloading');updPaint();
-    const r=await T.core.invoke('update_install');upd.busy=false;
+  const dlText=()=>$t('update_downloading').replace('%1$d',Math.round(upd.pct)).replace('%%','%');
+  T.event.listen('update_progress',e=>{if(!upd.dl)return;const{done,total}=e.payload;upd.pct=total?Math.min(100,done/total*100):upd.pct;upd.status=dlText();updPaint();});
+  async function updInstall(){upd.busy=true;upd.dl=true;upd.pct=0;upd.status=dlText();updPaint();
+    const r=await T.core.invoke('update_install');upd.busy=false;upd.dl=false;
     if(r.error)upd.status=$t('update_failed').replace('%1$s',r.error);else if(r.page)upd.status=$t('update_available').replace('%1$s',upd.latest);
     updPaint();}
   QBLIVE.updGo=()=>upd.found?updInstall():updCheck();
@@ -1049,14 +1094,15 @@ if(window.__TAURI__){
   T.event.listen('snapshot',e=>take(e.payload));
   T.core.invoke('get_snapshot').then(take);
   // The Earbud settings page asks the buds for its values when it opens.
-  const goOrig=window.go;
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-act="page"]');if(!b)return;const v=b.dataset.v;
+  // A page that was open when the app started, or when the buds connected, asks for its values too.
+  QBLIVE.pageReads=v=>{
     if(v==='earbud'){QBLIVE.send({t:'earbud_open'});QBLIVE.send({t:'dual_open'});}
     if(v==='gestures')QBLIVE.send({t:'gestures_open'});
     if(v==='hearing')QBLIVE.send({t:'hearing_open'});
     if(v==='update')QBLIVE.updOpen();
     if(v==='feedback')QBLIVE.fbOpen();
-    if(v==='test')QBLIVE.send({t:'test_open'});});
+    if(v==='test')QBLIVE.send({t:'test_open'});};
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-act="page"]');if(!b)return;QBLIVE.pageReads(b.dataset.v);});
 }
 });
 })();

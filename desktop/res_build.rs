@@ -167,6 +167,28 @@ fn android_string(xml: &str, key: &str) -> Option<String> {
     let body = &xml[body_start..body_start + xml[body_start..].find("</string>")?];
     Some(body.trim_matches('"').replace("\\'", "'").replace("\\\"", "\"").replace("\\n", "\n")
         .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">"))
+        .map(|t| numeric_entities(&t))
+}
+
+/// `&#8230;` and `&#x2026;` become the character.
+fn numeric_entities(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    while let Some(i) = rest.find("&#") {
+        out.push_str(&rest[..i]);
+        let tail = &rest[i + 2..];
+        let decoded = tail.find(';').and_then(|e| {
+            let n = &tail[..e];
+            let code = n.strip_prefix(['x', 'X']).map_or_else(|| n.parse::<u32>().ok(), |h| u32::from_str_radix(h, 16).ok())?;
+            Some((char::from_u32(code)?, e + 1))
+        });
+        match decoded {
+            Some((c, used)) => { out.push(c); rest = &tail[used..]; }
+            None => { out.push_str("&#"); rest = tail; }
+        }
+    }
+    out.push_str(rest);
+    out
 }
 
 /// The launcher SVG as a PNG-in-ICO file, compiled by mingw's windres (`WINDRES` overrides) and linked in.

@@ -278,6 +278,7 @@ fn run(rx: Receiver<Cmd>, emit: Emit) {
     let mut paused = false;
     let mut manual = false;
     let mut sync = Sync::default();
+    let mut last_err = String::new();
     loop {
         if !paused {
             // Auto-connect follows audio: only buds the system has a link to. Buds are found by the vendor's
@@ -285,11 +286,24 @@ fn run(rx: Receiver<Cmd>, emit: Emit) {
             // is the last resort. A user Connect also tries any other connected device.
             let known = remembered();
             let rank = |d: &bt::Device| if d.vendor || known.contains(&d.addr) { 0 } else if is_known_name(&d.name) { 1 } else { 2 };
+            // A user Connect first asks the system to bring up the audio of known buds that have no link.
+            if manual {
+                for d in bt::paired().iter().filter(|d| !d.connected && rank(d) < 2) { bt::bring_up(d.addr); }
+            }
             let mut devices: Vec<_> = bt::paired().into_iter().filter(|d| d.connected && (manual || rank(d) < 2)).collect();
             devices.sort_by_key(rank);
             for d in devices {
                 emit(Snapshot { status: Status::Connecting, name: d.name.clone(), ..Default::default() });
-                let Ok(link) = bt::connect(d.addr) else { continue };
+                let link = match bt::connect(d.addr) {
+                    Ok(l) => l,
+                    Err(e) => {
+                        // One line per new error, not one per 5 s rescan.
+                        let msg = format!("Connect to {} failed: {e}", d.name);
+                        if msg != last_err { log("NOTE", Vec::new(), Some(msg.clone())); last_err = msg; }
+                        continue;
+                    }
+                };
+                last_err.clear();
                 log("NOTE", Vec::new(), Some(format!("Connected to {}", d.name)));
                 let mut c = Conn::new(link, d.name, d.addr, &emit);
                 match c.serve(&rx, &mut sync) {
