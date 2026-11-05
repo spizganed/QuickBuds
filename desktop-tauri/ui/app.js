@@ -858,6 +858,8 @@ if(window.__TAURI__){
         // Never below the model's minimum.
         if(on){if(working.length>g.holdMin)working=working.filter(x=>x!==a);}else working.push(a);
         d.querySelectorAll('.pkopt').forEach(x=>{const on=working.includes(+x.dataset.o),c=x.querySelector('.ch');x.setAttribute('aria-pressed',String(on));if(on&&!c)x.insertAdjacentHTML('beforeend',ic('check','ch'));if(!on&&c)c.remove();});});
+    // The two-device list is read as soon as the buds connect, so Earbud settings shows it at once.
+    if(s.status==='on'&&QBLIVE._was!=='on'&&s.has&&s.has.dual)setTimeout(()=>QBLIVE.send({t:'dual_open'}),1500);
       d.querySelector('#nzGo').addEventListener('click',()=>{
         // In the list's order, so the cycle matches what was shown.
         if(working.length>=g.holdMin)send({t:'gesture',g:r.g,side,actions:r.options.filter(x=>working.includes(x))});close();});});}
