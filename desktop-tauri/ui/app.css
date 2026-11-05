@@ -1,3 +1,4 @@
+@font-face{font-family:"Doto";src:url(fonts/doto.ttf) format("truetype");font-weight:100 900;font-display:block}
 
 /* Layout: a fake desktop holding the compact QuickBuds window (sidebar + pages) or its tray panel; preview controls sit above, outside the app. */
 :root{
@@ -46,7 +47,7 @@ button{cursor:pointer}
 .app{font-family:var(--ui);color:var(--text);position:relative;isolation:isolate;background:var(--bg);font-size:13px}
 html[data-style="glass"] .app{background:var(--glass-bg)}
 html[data-style="glass"][data-glassbg="none"] .app{-webkit-backdrop-filter:blur(40px) saturate(1.5);backdrop-filter:blur(40px) saturate(1.5)}
-html[data-style="pixel"] .app{font-family:var(--dot);font-weight:400;letter-spacing:.02em}
+html[data-style="pixel"] .app{font-family:var(--dot);font-weight:900;letter-spacing:.02em;font-synthesis:none}
 html[data-style="pixel"] .app .t,html[data-style="pixel"] .app h2,html[data-style="pixel"] .app .pct,html[data-style="pixel"] .app b{font-weight:400}
 
 .win{width:100%;max-width:1000px;height:640px;border-radius:14px;display:flex;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08)}
