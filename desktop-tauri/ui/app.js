@@ -106,7 +106,7 @@ const LANGS=['System default','English','简体中文','繁體中文','日本語
 
 /* ================= state ================= */
 const DEF={fblog:true,view:'window',page:'overview',style:'glass',theme:'oled',auto:true,autoDark:'oled',sysLight:false,colorMode:'wallpaper',accent:null,presets:[],active:null,editTok:2,
-  glassBg:document.documentElement.classList.contains('native')?'none':'midnight',wall:0,uploadSeed:null,anc:1,level:1,ll:false,hq:true,sp:false,hp:true,dual:false,wear:false,smart:false,svc:true,hide:false,devtools:false,tray:true,count:true,upd:true,
+  glassBg:'none',wall:0,uploadSeed:null,anc:1,level:1,ll:false,hq:true,sp:false,hp:true,dual:false,wear:false,smart:false,svc:true,hide:false,devtools:false,tray:true,count:true,upd:true,
   eqPreset:'GoodEQ',custom:['GoodEQ',null,null],cg:{GoodEQ:[-1,-1,1,3,2,6]},budState:'case',gains:[-1,-1,1,3,2,6],bass:true,bassLv:2,alert:85,showL:true,showR:true,lang:0,recent:[],model:'auto',size:'l',
   gest:{L:['none','play','none','vol','off','none','none'],R:['none','play','none','vol','off','none','none']}};
 let S=JSON.parse(JSON.stringify(DEF)), uploadUrl=null;
@@ -157,7 +157,9 @@ function apply(){
   }else{set('--text',hex(p.text));set('--ink',hex(p.text));set('--text2',hex(p.text2));set('--outline',hex(p.outline));set('--on-accent',hex(onAccent));}
   const d=root.dataset;d.style=S.style;d.glassbg=S.glassBg;d.light=light?'1':'0';
   // Only the pixel style has a larger window (a fixed size, the user cannot resize it): the other styles are made for 800 x 600.
-  if(window.__TAURI__&&root.classList.contains('native')&&apply._px!==(S.style==='pixel')){apply._px=S.style==='pixel';window.__TAURI__.core.invoke('main_size',{width:apply._px?1060:800,height:apply._px?760:600});}
+  if(window.__TAURI__&&root.classList.contains('native')&&apply._px!==(S.style==='pixel')){apply._px=S.style==='pixel';window.__TAURI__.core.invoke('main_size',{width:apply._px?1060:800,height:apply._px?760:600});
+    // The content dips while the window moves, so the change reads as one motion.
+    const app=document.querySelector('.app');if(app&&!reduce()){app.classList.add('resizing');clearTimeout(apply._rt);apply._rt=setTimeout(()=>app.classList.remove('resizing'),330);}}
   document.getElementById('desk').style.background=S.wall==='upload'&&uploadUrl?`center/cover no-repeat url("${uploadUrl}")`:WALLS[typeof S.wall==='number'?S.wall:0].css;
   sync(p);
   if(S.style==='pixel'&&lastStyle!=='pixel')requestAnimationFrame(()=>pixelize(document));
@@ -482,7 +484,7 @@ function renderBuds(){const d=window.QBLIVE?QBLIVE.buds():(BUDS[S.budState]||BUD
   document.querySelectorAll('#bsSeg .pc').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.budState)));
   requestAnimationFrame(()=>pixelize(document));}
 
-function bassUi(br){if(!br)return;const mn=+br.min,mx=+br.max;br.value=S.bassLv;br.style.setProperty('--p',(S.bassLv-mn)/(mx-mn)*100+'%');document.getElementById('bassV').textContent=(S.bassLv>0?'+':'')+S.bassLv;}
+function bassUi(br){if(!br)return;const mn=+br.min,mx=+br.max;if(!br._drag)br.value=S.bassLv;br.style.setProperty('--p',(S.bassLv-mn)/(mx-mn)*100+'%');document.getElementById('bassV').textContent=(S.bassLv>0?'+':'')+S.bassLv;}
 function drawEq(g){
   const ed=document.getElementById('eqed');if(!ed)return;const H=ed.clientHeight||(S.size==='s'?96:180);ed.querySelector('svg.curve').setAttribute('viewBox',`0 0 600 ${H}`);
   ed.querySelector('.fillp').setAttribute('d',curvePath(g,600,H,true));ed.querySelector('.ln').setAttribute('d',curvePath(g,600,H,false));
@@ -647,6 +649,7 @@ function dialog(html,onOpen,onClose){const host=S.view==='tray'?document.getElem
   let closed=false;const close=()=>{if(closed)return;closed=true;sc.classList.add('out');setTimeout(()=>sc.remove(),160);document.removeEventListener('keydown',esc_);onClose&&onClose();};const esc_=e=>{if(e.key==='Escape')close();};
   document.addEventListener('keydown',esc_);sc.addEventListener('click',e=>{if(e.target===sc||e.target.closest('[data-close]'))close();});
   onOpen&&onOpen(sc.firstChild,close);pixelize(sc);sc.querySelector('button')?.focus();}
+const infoDialog=(title,msg)=>dialog(`<h3>${esc(title)}</h3><div class="s" style="text-align:center;margin:0;white-space:pre-line">${esc(msg)}</div><div class="acts"><button class="btn press" data-close>${esc($t('dialog_close'))}</button></div>`);
 let findOn=false;
 function findDialog(){dialog(`<h3>Find my earbuds</h3><div class="fitbuds"><div class="fb">${ic('budL')}Left</div><div class="fb">${ic('budR')}Right</div></div>
   <div class="s" style="text-align:center;margin:0">Plays a loud tone on both earbuds at once. Take the earbuds out before playing it.</div><div class="acts"><button class="btn press" data-close>Close</button><button class="btn pri press" id="fPlay">Play sound</button></div>`,
@@ -766,18 +769,33 @@ document.addEventListener('click',ev=>{
   if(a==='wall'){S.wall=+v;reveal(ev,()=>{apply();renderColorPanel();});return;}
 });
 document.addEventListener('change',e=>{const t=e.target;
-  if(window.QBLIVE){if(t.id==='bassR'&&QBLIVE.eq)QBLIVE.send({t:'bass',level:S.bassLv,band:0});if(t.id==='alertR'&&QBLIVE.earbud)QBLIVE.send({t:'alert',v:S.alert});if(t.id==='tapR'&&QBLIVE.earbud)QBLIVE.send({t:'tap',v:+t.value});}
+  if(window.QBLIVE){if(t.id==='bassR'&&QBLIVE.eq)QBLIVE.send({t:'bass',level:S.bassLv,band:0});if(t.id==='alertR'&&QBLIVE.earbud)QBLIVE.send({t:'alert',v:S.alert});if(t.id==='tapR'&&QBLIVE.earbud)QBLIVE.send({t:'tap',v:stepped(t)});}
+  if(t.classList&&t.classList.contains('range'))glide(t);
   if(t.id==='langSel'){S.lang=+t.value;save();toast(`Language: ${LANGS[S.lang]}.`);}
   if(t.matches('select[data-act="gest"]')){S.gest[t.dataset.side][+t.dataset.i]=t.value;save();toast(`${GROWS[+t.dataset.i][1]} on the ${t.dataset.side==='L'?'left':'right'} earbud: ${ACTS[t.value]}.`);}});
+/* Smooth sliders: while the pointer is down the thumb follows it (step any); the value is the nearest whole step; on release the thumb glides to it. */
+const stepped=t=>Math.min(+t.max,Math.max(+t.min,Math.round(+t.value)));
+const paintRange=t=>t.style.setProperty('--p',((+t.value-t.min)/(t.max-t.min)*100)+'%');
+function glide(t){const to=stepped(t),from=+t.value,t0=performance.now(),dur=140;
+  const f=now=>{const k=Math.min(1,(now-t0)/dur);t.value=from+(to-from)*(1-Math.pow(1-k,3));paintRange(t);
+    if(k<1)requestAnimationFrame(f);else{t.value=to;paintRange(t);t.step=t._step||1;t._drag=false;}};requestAnimationFrame(f);}
+document.addEventListener('pointerdown',e=>{const t=e.target;if(t.classList&&t.classList.contains('range')&&t.tagName==='INPUT'){t._step=t.step||1;t.step='any';t._drag=true;}},true);
 document.addEventListener('input',e=>{const t=e.target;
   if(t.id==='bassT'){S.bassLv=+t.value;apply();renderEq();}
-  if(t.id==='bassR'){S.bassLv=+t.value;bassUi(t);save();}
-  if(t.id==='tapR'){t.style.setProperty('--p',(t.value-1)/4*100+'%');const v=document.getElementById('tapV');if(v)v.textContent=t.value;}
-  if(t.id==='alertR'){S.alert=+t.value;t.style.setProperty('--p',(S.alert-t.min)/(t.max-t.min)*100+'%');save();}});
+  if(t.id==='bassR'){S.bassLv=stepped(t);bassUi(t);t.style.setProperty('--p',(+t.value-t.min)/(t.max-t.min)*100+'%');save();}
+  if(t.id==='tapR'){t.style.setProperty('--p',(t.value-1)/4*100+'%');const v=document.getElementById('tapV');if(v)v.textContent=stepped(t);}
+  if(t.id==='alertR'){S.alert=stepped(t);t.style.setProperty('--p',(+t.value-t.min)/(t.max-t.min)*100+'%');save();}});
 /* equalizer knobs: drag in whole dB steps */
 document.addEventListener('pointerdown',e=>{const k=e.target.closest('.knob');if(!k||k.closest('.locked'))return;e.preventDefault();k.setPointerCapture(e.pointerId);const i=+k.dataset.band,ed=document.getElementById('eqed');
-  const mv=ev=>{const r=ed.getBoundingClientRect(),y=Math.min(Math.max(ev.clientY-r.top,0),r.height),v=Math.max(-6,Math.min(6,Math.round((r.height/2-y)/(r.height/2)*6.6)));if(v!==S.gains[i]){S.gains[i]=v;if(S.cg[S.eqPreset])S.cg[S.eqPreset][i]=v;renderEq();}};
-  const up=()=>{k.removeEventListener('pointermove',mv);k.removeEventListener('pointerup',up);save();window.QBLIVE&&QBLIVE.eq&&QBLIVE.eqSave();};k.addEventListener('pointermove',mv);k.addEventListener('pointerup',up);});
+  const mv=ev=>{const r=ed.getBoundingClientRect(),y=Math.min(Math.max(ev.clientY-r.top,0),r.height),raw=Math.max(-6,Math.min(6,(r.height/2-y)/(r.height/2)*6.6)),v=Math.round(raw);
+    // The knob and the curve follow the pointer; the value, the label and the buds get whole dB.
+    S.gains[i]=raw;if(S.cg[S.eqPreset])S.cg[S.eqPreset][i]=raw;renderEq();};
+  const up=()=>{k.removeEventListener('pointermove',mv);k.removeEventListener('pointerup',up);
+    const to=Math.round(S.gains[i]),from=S.gains[i],t0=performance.now();
+    const f=now=>{const q=Math.min(1,(now-t0)/140),v=from+(to-from)*(1-Math.pow(1-q,3));S.gains[i]=v;if(S.cg[S.eqPreset])S.cg[S.eqPreset][i]=v;renderEq();
+      if(q<1)requestAnimationFrame(f);else{S.gains[i]=to;if(S.cg[S.eqPreset])S.cg[S.eqPreset][i]=to;renderEq();save();window.QBLIVE&&QBLIVE.eq&&QBLIVE.eqSave();}};
+    requestAnimationFrame(f);};
+  k.addEventListener('pointermove',mv);k.addEventListener('pointerup',up);});
 document.addEventListener('keydown',e=>{const k=e.target.closest&&e.target.closest('.knob');if(!k||k.closest('.locked'))return;const i=+k.dataset.band;
   if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();S.gains[i]=Math.max(-6,Math.min(6,S.gains[i]+(e.key==='ArrowUp'?1:-1)));renderEq();save();window.QBLIVE&&QBLIVE.eq&&QBLIVE.eqSave();}});
 function setView(v){S.view=v;const tray=document.getElementById('tray'),win=document.getElementById('win'),desk=document.getElementById('desk');
@@ -1094,7 +1112,7 @@ if(window.__TAURI__){
   loadSettings();
   const SETKEY={count:'usage_ping',hide:'clear_battery',devtools:'dev_tools_button',upd:'update_auto'};
   QBLIVE.setting=(k,on)=>{if(SETKEY[k])T.core.invoke('set_setting',{key:SETKEY[k],value:on});if(k==='svc')T.core.invoke('set_autostart',{on});};
-  QBLIVE.langDialog=()=>pickDialog($t('settings_language_title'),LANGS.map((l,i)=>[i,i===0?$t('language_system'):l]),AS?AS.language:0,v=>T.core.invoke('set_language',{index:+v}),'grid');
+  QBLIVE.langDialog=()=>pickDialog($t('settings_language_title'),LANGS.map((l,i)=>[i,i===0?$t('language_system'):l]),AS?AS.language:0,v=>T.core.invoke('set_language',{index:+v}),'scroll');
   QBLIVE.issuesDialog=function(){const list=(this.ex&&this.ex.issues)||[];
     dialog(`<h3>${esc($t('settings_issues_title'))}</h3>${list.length?`<div class="group">${list.map(i=>`<div class="row" style="align-items:flex-start;padding-block:12px">${ic('warn')}<div class="txt"><div class="t">${esc(i.title)}</div><div class="s">${esc(i.body)}</div></div></div>`).join('')}</div>`:`<div class="s" style="text-align:center;margin:0">${esc($t('issues_none'))}</div>`}<div class="acts"><button class="btn press" data-close>${esc($t('dialog_close'))}</button></div>`);};
   // App update

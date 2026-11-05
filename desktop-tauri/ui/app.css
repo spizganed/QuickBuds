@@ -1015,3 +1015,21 @@ html[data-style="pixel"] .qt{height:auto;min-height:42px;padding-block:6px;line-
 html[data-style="pixel"] .srow .ctrl{flex:0 1 560px}
 html[data-style="pixel"] .srow .txt{flex:1 1 220px}
 html[data-style="pixel"] .tl{height:auto;min-height:84px;padding-block:12px}
+
+/* The content dips while the window changes size. */
+.app{transition:opacity calc(.18s*var(--speed))}
+.app.resizing{opacity:.55}
+
+/* QuickBuds style: no curved line between the cells (a shadow follows the cell's round corners); the filled pill sits inside the card. */
+html[data-style="quickbuds"] .seg{--pad:3px}
+html[data-style="quickbuds"] .seg .cell+.cell{box-shadow:none}
+html[data-style="quickbuds"] .seg .cell{border-radius:16px}
+html[data-style="quickbuds"] .seg .ind{border-radius:16px}
+
+/* QuickBuds style: a selected preset or option row has an accent title, a light accent tint and the check mark; no hard outline. */
+html[data-style="quickbuds"] .group>.row[aria-pressed="true"]{box-shadow:none;background:color-mix(in srgb,var(--accent) 14%,transparent)}
+html[data-style="quickbuds"] .group>.row[aria-pressed="true"] .t{color:var(--accent)}
+html[data-style="quickbuds"] .row .ch{color:var(--accent)}
+
+/* Long lists in a dialog scroll, in every style (the style rules for .group hide the overflow). */
+html .dlg .group.opts.scroll{overflow:auto;max-height:300px}
