@@ -27,7 +27,8 @@ impl ksni::Tray for Tray {
 
 pub fn start(app: &AppHandle) {
     use ksni::blocking::TrayMethods;
-    let Some(img) = app.default_window_icon() else { return };
+    // The tray icon is the logo cropped to its edges: the window icon has wide margins and looks small in a tray.
+    let Ok(img) = tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png")) else { return };
     let mut data = Vec::with_capacity(img.rgba().len());
     for px in img.rgba().chunks_exact(4) { data.extend_from_slice(&[px[3], px[0], px[1], px[2]]); }
     let tray = Tray { app: app.clone(), icon: ksni::Icon { width: img.width() as i32, height: img.height() as i32, data } };

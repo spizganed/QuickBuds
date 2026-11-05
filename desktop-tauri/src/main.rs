@@ -271,6 +271,16 @@ fn open_main(app: AppHandle) {
 #[tauri::command]
 fn quit(app: AppHandle) { app.exit(0); }
 
+/// The main window has a fixed size the user cannot change. The pixel style asks for a larger one: its dot text is wide.
+#[tauri::command]
+fn main_size(app: AppHandle, width: f64, height: f64) {
+    let Some(w) = app.get_webview_window("main") else { return };
+    // A window that is not resizable ignores set_size on some systems: allow it for the one call.
+    let _ = w.set_resizable(true);
+    let _ = w.set_size(tauri::LogicalSize::new(width, height));
+    let _ = w.set_resizable(false);
+}
+
 /// Sizes the panel to its content. The panel has no frame, so the user cannot resize it by hand.
 #[tauri::command]
 fn fit_panel(app: AppHandle, height: f64) {
@@ -287,8 +297,11 @@ fn fit_panel(app: AppHandle, height: f64) {
 }
 
 fn main() {
+    // Wayland finds the window icon through the application ID: the program name. `quickbuds.desktop` (install script, AppImage) names the icon.
+    #[cfg(target_os = "linux")]
+    gtk::glib::set_prgname(Some("quickbuds"));
     let app = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![fit_panel, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log])
+        .invoke_handler(tauri::generate_handler![fit_panel, main_size, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log])
         .setup(|app| {
             hearing::init(app.handle());
             modeltest::init(app.handle());
@@ -298,7 +311,7 @@ fn main() {
             // Windows: the icon opens the panel on a left or a right click. Linux has `tray.rs`.
             #[cfg(windows)]
             tauri::tray::TrayIconBuilder::new()
-                .icon(app.default_window_icon().expect("icon").clone())
+                .icon(tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png")).expect("tray icon"))
                 .tooltip("QuickBuds")
                 .on_tray_icon_event(|tray, e| {
                     if let tauri::tray::TrayIconEvent::Click { button_state: tauri::tray::MouseButtonState::Up, .. } = e {
