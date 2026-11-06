@@ -30,7 +30,9 @@ KV, from the code:
 - Writes: one when a new release comes out, and one for each digest run that finds new reports.
 - Was: the update check wrote 2 keys on every refresh, up to 576 writes a day. Cloudflare sent the 50% alert on Oct 30, Oct 31 and Nov 2. Is: the fresh answer lives in the edge cache, which has no daily limit.
 
-D1, Workers and Queues: not measured yet. Read the numbers in the Cloudflare dashboard (Workers & Pages, then Metrics) and write them here.
+D1, measured 2026-11-06 (`npx wrangler d1 info quickbuds-reports`, last 24 h): 49,794 rows read (1% of the limit), 1,317 rows written (1.3%), 6.09 MB stored.
+
+Workers requests and Queues: not measured yet. Read them in the Cloudflare dashboard (Workers & Pages, then Metrics) and write them here.
 
 ## Read the reports
 
