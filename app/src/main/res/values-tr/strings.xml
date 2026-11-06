@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Kutucuk ve widget düğmesi için modlar</string>
     <string name="settings_tile_title">Hızlı Ayarlar kutucuğu</string>
     <string name="widget_cycle_name">QuickBuds gürültü döngüsü</string>
+    <string name="support_kofi_title">QuickBuds\'ı beğendiniz mi?</string>
+    <string name="support_kofi_body">QuickBuds ücretsizdir ve tek bir kişi tarafından yapılır. Size yardımcı oluyorsa Ko-fi üzerinden küçük bir bahşiş onu yaşatır.</string>
+    <string name="support_kofi_action">Ko-fi\'de destekle</string>
+    <string name="support_github_title">QuickBuds\'ı beğendiniz mi?</string>
+    <string name="support_github_body">GitHub\'da bir yıldız, diğer kulaklık sahiplerinin uygulamayı bulmasına yardımcı olur.</string>
+    <string name="support_github_action">GitHub\'da yıldız ver</string>
+    <string name="support_later">Sonra</string>
+    <string name="support_never">Bir daha sorma</string>
 </resources>

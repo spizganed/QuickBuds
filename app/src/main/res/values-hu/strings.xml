@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">A csempe és a widgetgomb módjai</string>
     <string name="settings_tile_title">Gyorsbeállítások csempe</string>
     <string name="widget_cycle_name">QuickBuds zajmód váltás</string>
+    <string name="support_kofi_title">Tetszik a QuickBuds?</string>
+    <string name="support_kofi_body">A QuickBuds ingyenes, és egy ember készíti. Ha segít, egy kis borravaló a Ko-fi-n életben tartja.</string>
+    <string name="support_kofi_action">Támogatás a Ko-fi-n</string>
+    <string name="support_github_title">Tetszik a QuickBuds?</string>
+    <string name="support_github_body">Egy csillag a GitHubon segít más fülhallgatótulajdonosoknak megtalálni az appot.</string>
+    <string name="support_github_action">Csillag a GitHubon</string>
+    <string name="support_later">Később</string>
+    <string name="support_never">Ne kérdezz újra</string>
 </resources>

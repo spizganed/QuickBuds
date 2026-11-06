@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Mod untuk jubin dan butang widget</string>
     <string name="settings_tile_title">Jubin Tetapan Pantas</string>
     <string name="widget_cycle_name">QuickBuds kitaran bunyi</string>
+    <string name="support_kofi_title">Suka QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds percuma dan dibuat oleh seorang. Jika ia membantu anda, tip kecil di Ko-fi menjadikannya terus hidup.</string>
+    <string name="support_kofi_action">Sokong di Ko-fi</string>
+    <string name="support_github_title">Suka QuickBuds?</string>
+    <string name="support_github_body">Bintang di GitHub membantu pemilik earbud lain menemui aplikasi ini.</string>
+    <string name="support_github_action">Beri bintang di GitHub</string>
+    <string name="support_later">Nanti</string>
+    <string name="support_never">Jangan tanya lagi</string>
 </resources>

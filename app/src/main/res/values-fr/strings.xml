@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Modes de la vignette et du bouton du widget</string>
     <string name="settings_tile_title">Vignette Réglages rapides</string>
     <string name="widget_cycle_name">QuickBuds cycle du bruit</string>
+    <string name="support_kofi_title">Vous aimez QuickBuds ?</string>
+    <string name="support_kofi_body">QuickBuds est gratuit et fait par une seule personne. S\'il vous aide, un petit pourboire sur Ko-fi le fait vivre.</string>
+    <string name="support_kofi_action">Soutenir sur Ko-fi</string>
+    <string name="support_github_title">Vous aimez QuickBuds ?</string>
+    <string name="support_github_body">Une étoile sur GitHub aide les autres propriétaires d\'écouteurs à trouver l\'appli.</string>
+    <string name="support_github_action">Mettre une étoile sur GitHub</string>
+    <string name="support_later">Plus tard</string>
+    <string name="support_never">Ne plus demander</string>
 </resources>

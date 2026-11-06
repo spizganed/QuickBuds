@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">タイルとウィジェットボタンのモード</string>
     <string name="settings_tile_title">クイック設定タイル</string>
     <string name="widget_cycle_name">QuickBuds ノイズ切替</string>
+    <string name="support_kofi_title">QuickBuds を気に入っていただけましたか？</string>
+    <string name="support_kofi_body">QuickBuds は無料で、一人で作られています。お役に立てたなら、Ko-fi への小さな支援が開発の力になります。</string>
+    <string name="support_kofi_action">Ko-fi で支援する</string>
+    <string name="support_github_title">QuickBuds を気に入っていただけましたか？</string>
+    <string name="support_github_body">GitHub のスターは、ほかのイヤホンユーザーがアプリを見つける助けになります。</string>
+    <string name="support_github_action">GitHub でスターを付ける</string>
+    <string name="support_later">後で</string>
+    <string name="support_never">今後は表示しない</string>
 </resources>

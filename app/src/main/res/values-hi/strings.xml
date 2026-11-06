@@ -597,4 +597,12 @@
     <string name="settings_cycle_sub">टाइल और विजेट बटन के मोड</string>
     <string name="settings_tile_title">क्विक सेटिंग्स टाइल</string>
     <string name="widget_cycle_name">QuickBuds नॉइज़ चक्र</string>
+    <string name="support_kofi_title">क्या आपको QuickBuds पसंद है?</string>
+    <string name="support_kofi_body">QuickBuds मुफ़्त है और एक व्यक्ति ने इसे बनाया है। अगर यह आपके काम आता है, तो Ko-fi पर एक छोटा सा टिप इसे चालू रखता है।</string>
+    <string name="support_kofi_action">Ko-fi पर सहयोग करें</string>
+    <string name="support_github_title">क्या आपको QuickBuds पसंद है?</string>
+    <string name="support_github_body">GitHub पर एक स्टार दूसरे ईयरबड मालिकों को ऐप खोजने में मदद करता है।</string>
+    <string name="support_github_action">GitHub पर स्टार दें</string>
+    <string name="support_later">बाद में</string>
+    <string name="support_never">फिर न पूछें</string>
 </resources>

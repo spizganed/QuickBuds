@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Modi voor de tegel en de widgetknop</string>
     <string name="settings_tile_title">Tegel Snelle instellingen</string>
     <string name="widget_cycle_name">QuickBuds ruiscyclus</string>
+    <string name="support_kofi_title">Bevalt QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds is gratis en wordt door één persoon gemaakt. Helpt het je, dan houdt een kleine fooi op Ko-fi het draaiende.</string>
+    <string name="support_kofi_action">Steun op Ko-fi</string>
+    <string name="support_github_title">Bevalt QuickBuds?</string>
+    <string name="support_github_body">Een ster op GitHub helpt andere oordopjesbezitters de app te vinden.</string>
+    <string name="support_github_action">Geef een ster op GitHub</string>
+    <string name="support_later">Later</string>
+    <string name="support_never">Niet meer vragen</string>
 </resources>

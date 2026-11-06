@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">টাইল ও উইজেট বোতামের মোড</string>
     <string name="settings_tile_title">কুইক সেটিংস টাইল</string>
     <string name="widget_cycle_name">QuickBuds নয়েজ চক্র</string>
+    <string name="support_kofi_title">QuickBuds ভালো লাগছে?</string>
+    <string name="support_kofi_body">QuickBuds বিনামূল্যে এবং একজন মানুষ এটি বানিয়েছেন। কাজে লাগলে Ko-fi-তে ছোট একটি টিপ এটি চালু রাখতে সাহায্য করে।</string>
+    <string name="support_kofi_action">Ko-fi-তে সমর্থন করুন</string>
+    <string name="support_github_title">QuickBuds পছন্দ হয়েছে?</string>
+    <string name="support_github_body">GitHub-এ একটি স্টার অন্য ইয়ারবাড ব্যবহারকারীদের অ্যাপটি খুঁজে পেতে সাহায্য করে।</string>
+    <string name="support_github_action">GitHub-এ স্টার দিন</string>
+    <string name="support_later">পরে</string>
+    <string name="support_never">আর জিজ্ঞাসা করবেন না</string>
 </resources>

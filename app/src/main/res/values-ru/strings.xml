@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Режимы для плитки и кнопки виджета</string>
     <string name="settings_tile_title">Плитка быстрых настроек</string>
     <string name="widget_cycle_name">QuickBuds смена шумоподавления</string>
+    <string name="support_kofi_title">Нравится QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds бесплатен, его делает один человек. Если он вам полезен, небольшая поддержка на Ko-fi помогает проекту жить.</string>
+    <string name="support_kofi_action">Поддержать на Ko-fi</string>
+    <string name="support_github_title">Нравится QuickBuds?</string>
+    <string name="support_github_body">Звезда на GitHub помогает другим владельцам наушников найти приложение.</string>
+    <string name="support_github_action">Поставить звезду на GitHub</string>
+    <string name="support_later">Позже</string>
+    <string name="support_never">Больше не спрашивать</string>
 </resources>

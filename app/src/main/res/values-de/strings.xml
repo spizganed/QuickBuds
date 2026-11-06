@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Modi für die Kachel und die Widget-Taste</string>
     <string name="settings_tile_title">Schnelleinstellungs-Kachel</string>
     <string name="widget_cycle_name">QuickBuds Geräuschmodus</string>
+    <string name="support_kofi_title">Gefällt dir QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds ist kostenlos und wird von einer Person gebaut. Wenn es dir hilft, hält ein kleines Trinkgeld auf Ko-fi das Projekt am Laufen.</string>
+    <string name="support_kofi_action">Auf Ko-fi unterstützen</string>
+    <string name="support_github_title">Gefällt dir QuickBuds?</string>
+    <string name="support_github_body">Ein Stern auf GitHub hilft anderen Besitzern von Ohrhörern, die App zu finden.</string>
+    <string name="support_github_action">Auf GitHub einen Stern geben</string>
+    <string name="support_later">Später</string>
+    <string name="support_never">Nicht mehr fragen</string>
 </resources>

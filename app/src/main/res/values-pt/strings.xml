@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Modos do bloco e do botão do widget</string>
     <string name="settings_tile_title">Bloco de Configurações rápidas</string>
     <string name="widget_cycle_name">QuickBuds ciclo de ruído</string>
+    <string name="support_kofi_title">Está gostando do QuickBuds?</string>
+    <string name="support_kofi_body">O QuickBuds é gratuito e feito por uma pessoa. Se ele ajuda você, uma pequena gorjeta no Ko-fi o mantém vivo.</string>
+    <string name="support_kofi_action">Apoiar no Ko-fi</string>
+    <string name="support_github_title">Está gostando do QuickBuds?</string>
+    <string name="support_github_body">Uma estrela no GitHub ajuda outros donos de fones a encontrar o app.</string>
+    <string name="support_github_action">Dar uma estrela no GitHub</string>
+    <string name="support_later">Depois</string>
+    <string name="support_never">Não perguntar de novo</string>
 </resources>

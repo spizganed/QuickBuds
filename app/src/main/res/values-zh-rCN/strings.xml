@@ -597,4 +597,12 @@
     <string name="settings_cycle_sub">磁贴和小部件按钮的模式</string>
     <string name="settings_tile_title">快捷设置磁贴</string>
     <string name="widget_cycle_name">QuickBuds 降噪切换</string>
+    <string name="support_kofi_title">喜欢 QuickBuds 吗？</string>
+    <string name="support_kofi_body">QuickBuds 免费，由一个人开发。如果它对你有帮助，在 Ko-fi 上的小额打赏能让它继续下去。</string>
+    <string name="support_kofi_action">在 Ko-fi 上支持</string>
+    <string name="support_github_title">喜欢 QuickBuds 吗？</string>
+    <string name="support_github_body">GitHub 上的一颗星能帮助其他耳机用户找到这个应用。</string>
+    <string name="support_github_action">在 GitHub 上加星标</string>
+    <string name="support_later">以后再说</string>
+    <string name="support_never">不再询问</string>
 </resources>

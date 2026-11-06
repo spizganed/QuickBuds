@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Režimy pro dlaždici a tlačítko widgetu</string>
     <string name="settings_tile_title">Dlaždice Rychlého nastavení</string>
     <string name="widget_cycle_name">QuickBuds cyklus hluku</string>
+    <string name="support_kofi_title">Líbí se vám QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds je zdarma a vytvořil ho jeden člověk. Pokud vám pomáhá, malý příspěvek na Ko-fi pomůže projektu přežít.</string>
+    <string name="support_kofi_action">Podpořit na Ko-fi</string>
+    <string name="support_github_title">Líbí se vám QuickBuds?</string>
+    <string name="support_github_body">Hvězdička na GitHubu pomůže dalším majitelům sluchátek najít aplikaci.</string>
+    <string name="support_github_action">Dát hvězdičku na GitHubu</string>
+    <string name="support_later">Později</string>
+    <string name="support_never">Už se neptat</string>
 </resources>

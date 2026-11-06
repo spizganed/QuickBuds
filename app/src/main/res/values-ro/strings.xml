@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Modurile pentru dală și butonul widgetului</string>
     <string name="settings_tile_title">Dală Setări rapide</string>
     <string name="widget_cycle_name">QuickBuds ciclu zgomot</string>
+    <string name="support_kofi_title">Îți place QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds este gratuit și este făcut de o singură persoană. Dacă te ajută, un mic bacșiș pe Ko-fi îl ține în viață.</string>
+    <string name="support_kofi_action">Susține pe Ko-fi</string>
+    <string name="support_github_title">Îți place QuickBuds?</string>
+    <string name="support_github_body">O stea pe GitHub îi ajută pe alți proprietari de căști să găsească aplicația.</string>
+    <string name="support_github_action">Dă o stea pe GitHub</string>
+    <string name="support_later">Mai târziu</string>
+    <string name="support_never">Nu mai întreba</string>
 </resources>

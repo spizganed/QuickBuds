@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Mga mode para sa tile at sa button ng widget</string>
     <string name="settings_tile_title">Tile ng Quick Settings</string>
     <string name="widget_cycle_name">QuickBuds ikot ng ingay</string>
+    <string name="support_kofi_title">Nagugustuhan mo ba ang QuickBuds?</string>
+    <string name="support_kofi_body">Libre ang QuickBuds at isang tao ang gumawa nito. Kung nakakatulong ito sa iyo, ang maliit na tip sa Ko-fi ay nagpapatuloy dito.</string>
+    <string name="support_kofi_action">Suportahan sa Ko-fi</string>
+    <string name="support_github_title">Nagugustuhan mo ba ang QuickBuds?</string>
+    <string name="support_github_body">Ang star sa GitHub ay tumutulong sa ibang may earbuds na mahanap ang app.</string>
+    <string name="support_github_action">Mag-star sa GitHub</string>
+    <string name="support_later">Mamaya</string>
+    <string name="support_never">Huwag nang magtanong</string>
 </resources>

@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">타일과 위젯 버튼의 모드</string>
     <string name="settings_tile_title">빠른 설정 타일</string>
     <string name="widget_cycle_name">QuickBuds 노이즈 전환</string>
+    <string name="support_kofi_title">QuickBuds가 마음에 드시나요?</string>
+    <string name="support_kofi_body">QuickBuds는 무료이며 한 사람이 만들고 있습니다. 도움이 되었다면 Ko-fi의 작은 후원이 개발을 이어 가는 힘이 됩니다.</string>
+    <string name="support_kofi_action">Ko-fi에서 후원</string>
+    <string name="support_github_title">QuickBuds가 마음에 드시나요?</string>
+    <string name="support_github_body">GitHub의 별은 다른 이어버드 사용자가 앱을 찾는 데 도움이 됩니다.</string>
+    <string name="support_github_action">GitHub에서 별 주기</string>
+    <string name="support_later">나중에</string>
+    <string name="support_never">다시 묻지 않기</string>
 </resources>

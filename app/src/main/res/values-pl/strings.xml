@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Tryby kafelka i przycisku widżetu</string>
     <string name="settings_tile_title">Kafelek Szybkich ustawień</string>
     <string name="widget_cycle_name">QuickBuds cykl szumów</string>
+    <string name="support_kofi_title">Podoba Ci się QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds jest darmowy i tworzy go jedna osoba. Jeśli Ci pomaga, mały napiwek na Ko-fi pozwala go rozwijać.</string>
+    <string name="support_kofi_action">Wesprzyj na Ko-fi</string>
+    <string name="support_github_title">Podoba Ci się QuickBuds?</string>
+    <string name="support_github_body">Gwiazdka na GitHubie pomaga innym właścicielom słuchawek znaleźć aplikację.</string>
+    <string name="support_github_action">Daj gwiazdkę na GitHubie</string>
+    <string name="support_later">Później</string>
+    <string name="support_never">Nie pytaj ponownie</string>
 </resources>

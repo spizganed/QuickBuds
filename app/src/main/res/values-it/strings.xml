@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Modalità del riquadro e del pulsante del widget</string>
     <string name="settings_tile_title">Riquadro Impostazioni rapide</string>
     <string name="widget_cycle_name">QuickBuds ciclo rumore</string>
+    <string name="support_kofi_title">Ti piace QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds è gratuito e lo fa una sola persona. Se ti aiuta, una piccola mancia su Ko-fi lo tiene in vita.</string>
+    <string name="support_kofi_action">Sostieni su Ko-fi</string>
+    <string name="support_github_title">Ti piace QuickBuds?</string>
+    <string name="support_github_body">Una stella su GitHub aiuta altri possessori di auricolari a trovare l\'app.</string>
+    <string name="support_github_action">Dai una stella su GitHub</string>
+    <string name="support_later">Più tardi</string>
+    <string name="support_never">Non chiedere più</string>
 </resources>

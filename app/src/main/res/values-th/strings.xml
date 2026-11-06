@@ -597,4 +597,12 @@
     <string name="settings_cycle_sub">โหมดของไทล์และปุ่มวิดเจ็ต</string>
     <string name="settings_tile_title">ไทล์การตั้งค่าด่วน</string>
     <string name="widget_cycle_name">QuickBuds สลับโหมดเสียง</string>
+    <string name="support_kofi_title">ชอบ QuickBuds ไหม?</string>
+    <string name="support_kofi_body">QuickBuds ใช้ฟรีและสร้างโดยคนเพียงคนเดียว หากแอปช่วยคุณได้ ทิปเล็ก ๆ บน Ko-fi ช่วยให้โปรเจกต์เดินต่อไปได้</string>
+    <string name="support_kofi_action">สนับสนุนบน Ko-fi</string>
+    <string name="support_github_title">ชอบ QuickBuds ไหม?</string>
+    <string name="support_github_body">ดาวบน GitHub ช่วยให้เจ้าของหูฟังคนอื่นพบแอปนี้</string>
+    <string name="support_github_action">ให้ดาวบน GitHub</string>
+    <string name="support_later">ไว้ทีหลัง</string>
+    <string name="support_never">ไม่ต้องถามอีก</string>
 </resources>

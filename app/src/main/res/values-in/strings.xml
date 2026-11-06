@@ -597,4 +597,12 @@
     <string name="settings_cycle_sub">Mode untuk ubin dan tombol widget</string>
     <string name="settings_tile_title">Ubin Setelan Cepat</string>
     <string name="widget_cycle_name">QuickBuds siklus kebisingan</string>
+    <string name="support_kofi_title">Suka QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds gratis dan dibuat oleh satu orang. Jika membantu Anda, tip kecil di Ko-fi membuatnya terus berjalan.</string>
+    <string name="support_kofi_action">Dukung di Ko-fi</string>
+    <string name="support_github_title">Suka QuickBuds?</string>
+    <string name="support_github_body">Bintang di GitHub membantu pemilik earbud lain menemukan aplikasi ini.</string>
+    <string name="support_github_action">Beri bintang di GitHub</string>
+    <string name="support_later">Nanti</string>
+    <string name="support_never">Jangan tanya lagi</string>
 </resources>

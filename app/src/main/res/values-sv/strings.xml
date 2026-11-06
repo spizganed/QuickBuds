@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Lägen för rutan och widgetknappen</string>
     <string name="settings_tile_title">Snabbinställningsruta</string>
     <string name="widget_cycle_name">QuickBuds brusväxling</string>
+    <string name="support_kofi_title">Gillar du QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds är gratis och görs av en person. Om det hjälper dig håller en liten klapp på Ko-fi det vid liv.</string>
+    <string name="support_kofi_action">Stöd på Ko-fi</string>
+    <string name="support_github_title">Gillar du QuickBuds?</string>
+    <string name="support_github_body">En stjärna på GitHub hjälper andra hörlursägare att hitta appen.</string>
+    <string name="support_github_action">Ge en stjärna på GitHub</string>
+    <string name="support_later">Senare</string>
+    <string name="support_never">Fråga inte igen</string>
 </resources>

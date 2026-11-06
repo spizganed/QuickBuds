@@ -664,6 +664,7 @@ class BudsConnectionManager(private val context: Context) {
      * [disconnect], which raises the generation first.
      */
     private fun teardownLink() {
+        if (isReady) com.spizganed.quickbuds.ui.SupportAsk.countConnection(context, System.currentTimeMillis() - connectedAt)
         pendingReconnect?.let { handler.removeCallbacks(it) }
         pendingReconnect = null
         pendingRetry?.let { handler.removeCallbacks(it) }

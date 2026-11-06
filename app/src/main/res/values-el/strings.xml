@@ -595,4 +595,12 @@
     <string name="settings_cycle_sub">Λειτουργίες για το πλακίδιο και το κουμπί του widget</string>
     <string name="settings_tile_title">Πλακίδιο Γρήγορων ρυθμίσεων</string>
     <string name="widget_cycle_name">QuickBuds εναλλαγή θορύβου</string>
+    <string name="support_kofi_title">Σας αρέσει το QuickBuds;</string>
+    <string name="support_kofi_body">Το QuickBuds είναι δωρεάν και το φτιάχνει ένας άνθρωπος. Αν σας βοηθά, ένα μικρό φιλοδώρημα στο Ko-fi το κρατά ζωντανό.</string>
+    <string name="support_kofi_action">Υποστήριξη στο Ko-fi</string>
+    <string name="support_github_title">Σας αρέσει το QuickBuds;</string>
+    <string name="support_github_body">Ένα αστέρι στο GitHub βοηθά άλλους χρήστες ακουστικών να βρουν την εφαρμογή.</string>
+    <string name="support_github_action">Αστέρι στο GitHub</string>
+    <string name="support_later">Αργότερα</string>
+    <string name="support_never">Να μην ερωτηθώ ξανά</string>
 </resources>

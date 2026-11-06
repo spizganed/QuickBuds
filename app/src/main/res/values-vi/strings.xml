@@ -597,4 +597,12 @@
     <string name="settings_cycle_sub">Các chế độ cho ô và nút tiện ích</string>
     <string name="settings_tile_title">Ô Cài đặt nhanh</string>
     <string name="widget_cycle_name">QuickBuds chuyển chế độ ồn</string>
+    <string name="support_kofi_title">Bạn thích QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds miễn phí và do một người làm ra. Nếu ứng dụng giúp ích cho bạn, một khoản tip nhỏ trên Ko-fi giúp dự án tiếp tục.</string>
+    <string name="support_kofi_action">Ủng hộ trên Ko-fi</string>
+    <string name="support_github_title">Bạn thích QuickBuds?</string>
+    <string name="support_github_body">Một ngôi sao trên GitHub giúp chủ sở hữu tai nghe khác tìm thấy ứng dụng.</string>
+    <string name="support_github_action">Gắn sao trên GitHub</string>
+    <string name="support_later">Để sau</string>
+    <string name="support_never">Không hỏi lại</string>
 </resources>

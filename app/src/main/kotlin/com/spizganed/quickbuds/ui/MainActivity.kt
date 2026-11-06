@@ -626,6 +626,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         super.onResume()
         // Settings › Home layout may have changed the row order.
         if (featureRows.isNotEmpty()) layoutFeatureRows()
+        // A support card shows only when the buds have been connected and idle for 3 s.
+        window.decorView.postDelayed({
+            if (!isFinishing && !isDestroyed && ::manager.isInitialized && manager.isConnected()) SupportAsk.maybeShow(this)
+        }, 3000)
         // The model list may have changed the model, and with it the noise modes.
         showModelName()
         relayoutIfSupportChanged()
