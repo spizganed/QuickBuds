@@ -36,6 +36,31 @@ Update this file in the same commit as the protocol change.
 
 ---
 
+## How the buds behave
+
+The facts here come from captures, logs and tests. Details and per-model rules are in sections 3, 13-16, 18 and 21.
+
+- **The app is a remote control.** The buds decide. An ack of `00` means "accepted", not "applied". The app shows only
+  what the buds report, so it reads every write back (section 3, [FEATURE-SYNC.md](./FEATURE-SYNC.md)).
+- **Three kinds of answer, and one exception.**
+  - Answers with the value: reads. The reply repeats the `Seq`. The OnePlus Buds 4 echo a status read with a non-zero `Seq`.
+  - Acks only: writes. Status `00` can hide a dropped value. The Buds 4 acked `0x0021` and read back `0x0001` `[CAPTURE]`.
+  - Silent: a wrong command number, and `0x0402`, get no reply `[CAPTURE]`. The Air7 Pro lists `0x012A` and never answers it.
+    The realme Buds T310 do not answer `0x0124`. They never push the game-mode change (reports #16 and #73).
+    An ANC change is silent until the app subscribes to push `03`.
+  - Exception: the realme Buds T100 answer with their own `Seq`, not ours (report #100).
+- **3D (spatial) audio gives no clue that it works.** The realme Buds Air7 Pro play no sound on the `1B` switch (issue #9).
+  The OPPO Enco Buds3 Pro list `1B` and report `1B=1` after a write, yet two owners hear no 3D audio (reports #60 and #61).
+  The app hides the row on that model.
+- **The case does not report "closed" on some models.** The OnePlus Buds 4 report the case and a bud inside it only
+  while the lid is open. A closed lid leaves only the outside bud in the reply. The pushes fall to `0` about 1 s before the socket drops. The realme Buds Air7 Pro send the case at level `0` with the lid closed (issue #9).
+- **Some models have no wear detection.** The realme Buds T200, T200x and the OnePlus Nord Buds 3r answer "out" for a bud
+  in every state (report #46). They answer `0` or `4` in the case. The Bullets Wireless Z3 and the Buds Ace report `3`.
+- **Models differ in features.** The status reply and the `0x8100` bitmap list what a model claims. A claim is not proof:
+  see the Enco Buds3 Pro above. Section 21 lists the model rules.
+
+---
+
 ## 1. Transport
 
 Classic Bluetooth **RFCOMM / SPP**, not BLE. One long-lived socket. The buds push events at any time.
