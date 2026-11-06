@@ -1,17 +1,21 @@
 // The update check proxy. Both apps ask this Worker for the latest release, so they do not spend the
-// 60 requests per hour that GitHub gives one IP. The answer stays in KV for 5 minutes.
+// 60 requests per hour that GitHub gives one IP. The answer stays in the edge cache for 5 minutes.
+// The edge cache has no daily limit. KV holds only the last good answer, and a write happens only when it changes.
 // GitHub failure: the last good answer still goes out, marked x-cache: stale. No such answer: 502.
 const RELEASE = "https://api.github.com/repos/spizganed/QuickBuds/releases/latest";
-const KEY = "release:latest"; // fresh answer, 5 minutes
-const STALE = "release:stale"; // last good answer, no expiry
+const CACHE_KEY = "https://quickbuds-report.invalid/release/latest"; // fresh answer, edge cache
+const STALE = "release:stale"; // last good answer, KV, no expiry
 const TTL = 300;
 
 export async function latest(request, env) {
-  const fresh = await read(env, KEY);
-  if (fresh !== null) return answer(200, fresh);
+  const cache = caches.default;
+  const hit = await cache.match(CACHE_KEY);
+  if (hit) return hit;
 
   try {
-    return answer(200, await store(env));
+    const response = answer(200, await store(env), { "Cache-Control": `public, max-age=${TTL}` });
+    await cache.put(CACHE_KEY, response.clone());
+    return response;
   } catch {
     const stale = await read(env, STALE);
     if (stale === null) return answer(502, { error: "The release list is not available. Try again later." });
@@ -19,7 +23,7 @@ export async function latest(request, env) {
   }
 }
 
-/** Reads the GitHub answer, keeps the fields the apps parse, and caches it. */
+/** Reads the GitHub answer and keeps the fields the apps parse. Writes KV only when the answer changed. */
 async function store(env) {
   const res = await fetch(RELEASE, {
     headers: { Accept: "application/vnd.github+json", "User-Agent": "quickbuds-report" },
@@ -27,8 +31,7 @@ async function store(env) {
   if (!res.ok) throw new Error(`GitHub: HTTP ${res.status}`);
   const release = map(await res.json());
   const body = JSON.stringify(release);
-  await env.QUICKBUDS_KV.put(KEY, body, { expirationTtl: TTL });
-  await env.QUICKBUDS_KV.put(STALE, body);
+  if ((await env.QUICKBUDS_KV.get(STALE)) !== body) await env.QUICKBUDS_KV.put(STALE, body);
   return release;
 }
 

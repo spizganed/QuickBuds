@@ -20,6 +20,18 @@ npx wrangler deploy
 `openssl rand -hex 24` makes a random string. A change to `src/index.js` or `models.json` needs only
 `npx wrangler deploy`.
 
+## Free plan margin
+
+Free plan limits per day: KV 100,000 reads and 1,000 writes. Workers 100,000 requests. D1 5,000,000 rows read and
+100,000 rows written. Queues 10,000 operations.
+
+KV, from the code:
+- Reads: at most 96 for the cron (every 15 minutes) and 288 for the update check (one refresh every 5 minutes).
+- Writes: one when a new release comes out, and one for each digest run that finds new reports.
+- Was: the update check wrote 2 keys on every refresh, up to 576 writes a day. Cloudflare sent the 50% alert on Oct 30, Oct 31 and Nov 2. Is: the fresh answer lives in the edge cache, which has no daily limit.
+
+D1, Workers and Queues: not measured yet. Read the numbers in the Cloudflare dashboard (Workers & Pages, then Metrics) and write them here.
+
 ## Read the reports
 
 Open `https://quickbuds-report.<subdomain>.workers.dev/` in a browser. Type the key and click Load. The page keeps
