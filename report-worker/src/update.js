@@ -16,7 +16,8 @@ export async function latest(request, env) {
     const response = answer(200, await store(env), { "Cache-Control": `public, max-age=${TTL}` });
     await cache.put(CACHE_KEY, response.clone());
     return response;
-  } catch {
+  } catch (e) {
+    console.error("update: fresh path failed:", String(e));
     const stale = await read(env, STALE);
     if (stale === null) return answer(502, { error: "The release list is not available. Try again later." });
     return answer(200, stale, { "x-cache": "stale" });
