@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 2x2 widget (BatteryOnlyWidgetProvider, battery page only). No previewImage: a VECTOR there shows "Can't load widget" in some pickers (see git history).
-     Resizable: QuickBudsWidget.fit picks the layout for the size. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
+     Resizable down to 1x1 (issue #35): one row high is a STRIP, one cell wide a COLUMN, each with left bud, case and right bud. QuickBudsWidget.fit picks the layout for the size. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="110dp"
     android:minHeight="110dp"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
-    android:minResizeWidth="110dp"
-    android:minResizeHeight="110dp"
+    android:minResizeWidth="40dp"
+    android:minResizeHeight="40dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_pages"
     android:configure="com.spizganed.quickbuds.widget.WidgetSetupActivity"
