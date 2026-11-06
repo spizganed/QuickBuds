@@ -39,6 +39,7 @@ const STRINGS: &[&str] = &[
     "test_answered", "test_no_answer", "test_section_features", "test_works", "test_broken", "test_skip", "test_skipped",
     "test_not_marked", "test_broken_hint", "test_mark_all",
     "update_title", "update_installed", "update_latest", "update_check", "update_checking", "update_up_to_date",
+    "support_kofi_title", "support_kofi_body", "support_kofi_action", "support_github_title", "support_github_body", "support_github_action", "support_later", "support_never",
     "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
     "settings_clear_battery_sub", "update_found_title",
     "settings_layout_title", "settings_layout_sub", "settings_haptics_title", "settings_haptics_sub",

@@ -878,6 +878,8 @@ if(window.__TAURI__){
     if(s.status==='on'&&QBLIVE._was!=='on'&&['earbud','gestures','hearing'].includes(S.page))setTimeout(()=>QBLIVE.pageReads(S.page),300);
     // The two-device list is read as soon as the buds connect, so Earbud settings shows it at once.
     if(s.status==='on'&&QBLIVE._was!=='on'&&s.has&&s.has.dual)setTimeout(()=>QBLIVE.send({t:'dual_open'}),1500);
+    // A support card: 3 s after the buds connect, in the main window only, when no other dialog is open.
+    if(s.status==='on'&&QBLIVE._was!=='on'&&S.view!=='tray')setTimeout(()=>{if(snap&&snap.status==='on'&&!document.querySelector('.scrim'))QBLIVE.supportCard();},3000);
     QBLIVE._was=s.status;
     const sp=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1,
       fade=(sel,label)=>document.querySelectorAll(sel).forEach(el=>{
@@ -1110,6 +1112,11 @@ if(window.__TAURI__){
     const rp=byId('replyBox');if(rp){rp.hidden=!st.reply;if(st.reply)rp.querySelector('.prose').textContent=st.reply;}
     apply();});
   loadSettings();
+  // The due card (Ko-fi or a GitHub star): Support opens the page; Later and a closed dialog bring it back in 30 days.
+  QBLIVE.supportCard=()=>T.core.invoke('support_due').then(c=>{if(!c)return;
+    dialog(`<h3>${esc(c.title)}</h3><div class="s" style="text-align:center;margin:0;white-space:pre-line">${esc(c.body)}</div><div class="acts two"><button class="btn press" data-close>${esc(c.later)}</button><button class="btn pri press" id="spOk">${esc(c.action)}</button></div><div class="acts"><button class="btn press" id="spNever">${esc(c.never)}</button></div>`,
+      (d,close)=>{d.querySelector('#spOk').addEventListener('click',()=>{T.core.invoke('support_off',{card:c.card});T.core.invoke('open_url',{url:c.url});close();});
+        d.querySelector('#spNever').addEventListener('click',()=>{T.core.invoke('support_off',{card:c.card});close();});});});
   const SETKEY={count:'usage_ping',hide:'clear_battery',devtools:'dev_tools_button',upd:'update_auto'};
   QBLIVE.setting=(k,on)=>{if(SETKEY[k])T.core.invoke('set_setting',{key:SETKEY[k],value:on});if(k==='svc')T.core.invoke('set_autostart',{on});};
   QBLIVE.langDialog=()=>pickDialog($t('settings_language_title'),LANGS.map((l,i)=>[i,i===0?$t('language_system'):l]),AS?AS.language:0,v=>T.core.invoke('set_language',{index:+v}),'scroll');

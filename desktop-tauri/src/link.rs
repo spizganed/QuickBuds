@@ -60,6 +60,7 @@ pub fn start(app: &AppHandle) {
         if std::env::var_os("QB_DEBUG").is_some() { eprintln!("state: {:?} name={:?} battery={:?}", s.status as u8, s.name, s.battery); }
         crate::hearing::drain();
         crate::modeltest::apply(&s);
+        crate::support::note_link(s.status == Status::On);
         let v = snapshot_json(&s);
         if let Some(l) = h.try_state::<Link>() { *l.last.lock().unwrap() = (s, v.clone()); }
         let _ = h.emit("snapshot", v);

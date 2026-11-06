@@ -28,6 +28,7 @@ mod modeltest;
 mod link;
 mod pages;
 mod report;
+mod support;
 mod update;
 #[cfg(target_os = "linux")]
 mod tray;
@@ -339,7 +340,7 @@ fn main() {
     #[cfg(target_os = "linux")]
     gtk::glib::set_prgname(Some("quickbuds"));
     let app = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![fit_panel, main_size, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log])
+        .invoke_handler(tauri::generate_handler![fit_panel, main_size, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log, support::support_due, support::support_off])
         .setup(|app| {
             hearing::init(app.handle());
             modeltest::init(app.handle());
