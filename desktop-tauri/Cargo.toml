@@ -1,6 +1,6 @@
 [package]
 name = "quickbuds-tauri"
-version = "5.6.1"
+version = "6.0.0"
 edition = "2021"
 license = "GPL-3.0-or-later"
 description = "QuickBuds for Windows and Linux, Tauri UI"
@@ -17,7 +17,7 @@ serde_json = "1"
 sys-locale = "0.3"
 
 [build-dependencies]
-tauri-build = "2"
+tauri-build = { version = "2", features = [] }
 resvg = { version = "0.48", default-features = false }
 
 [profile.release]

@@ -228,7 +228,7 @@ fn exe_icon(svg: &str, out: &str) {
     println!("cargo:rustc-link-arg-bins={}", dir.join("icon.o").display());
 }
 
-/// Icons, strings and the Windows exe icon from the phone app's resources. Shared with `desktop-egui`.
+/// Icons, strings and the Windows exe icon from the phone app's resources. Shared with `desktop-tauri`.
 fn generate() {
     let out = env::var("OUT_DIR").unwrap();
 

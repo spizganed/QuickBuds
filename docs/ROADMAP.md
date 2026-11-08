@@ -12,8 +12,8 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
 - **Protocol: merge each verified finding into the one layer.** The layer is `protocol/`. Build a facts ledger. It lists
   every command, push and feature against every model, with the gaps marked. Then add each verified fact to the layer and
   to `docs/PROTOCOL.md`.
-- **Desktop UI rewrite (Tauri).** The code is in `desktop-tauri/`. It builds the release files. Test it on Windows and
-  Linux, then remove the Slint desktop (`desktop/`) and `desktop-egui/`.
+- **Desktop UI rewrite (Tauri).** The code is in `desktop-tauri/`. It builds the release files. The Slint desktop (`desktop/`) stays as a
+  fallback until the Tauri app proves itself on Windows and Linux.
 - **Captures wanted:**
   - Buds push `0x050E` and answer `0x012C` (realme Air6, Air7 Pro and Air8): the layouts are unknown, so QuickBuds does
     not use them.

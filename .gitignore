@@ -23,7 +23,6 @@ local/
 
 # Desktop (Rust)
 desktop/target/
-desktop-egui/target/
 desktop/dist/
 desktop-tauri/dist/
 

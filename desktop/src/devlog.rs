@@ -1,5 +1,5 @@
 //! The packet log in words (Simple) or with its bytes (Detailed), as the Dev tools page shows it.
-//! No UI here: `devtools` (Slint) and `desktop-egui` both use it.
+//! No UI here: `devtools` (Slint) and the Tauri app both use it.
 
 use crate::protocol::decode;
 use crate::session::Line;

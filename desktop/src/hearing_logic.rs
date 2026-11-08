@@ -1,5 +1,5 @@
 //! The hearing profiles kept on this PC (`settings.json` "hearing_profiles") and the helpers of the hearing test.
-//! No UI here: `hearing` (Slint) and `desktop-egui` both use it.
+//! No UI here: `hearing` (Slint) and the Tauri app both use it.
 
 use crate::types::*;
 use crate::{load_settings, save_setting};
