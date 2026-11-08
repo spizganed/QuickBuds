@@ -1,0 +1,197 @@
+name: QuickBuds ANC Tile APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'experimental/**'
+      - 'feature/**'
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'keystore/**'
+      - '.github/workflows/anc-tile-apk.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quickbuds-anc-tile-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build APKs with persistent release signature
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Set up Gradle caching
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Configure release signing key
+        env:
+          KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_B64 }}
+          PROPS: ${{ secrets.RELEASE_KEY_PROPERTIES }}
+        run: |
+          set -euo pipefail
+          mkdir -p local/keys
+          python3 - <<'PY'
+          import os, sys, base64
+
+          raw_keystore = os.environ.get('KEYSTORE', '').strip()
+          raw_props = os.environ.get('PROPS', '').strip()
+
+          configured = False
+
+          if raw_keystore:
+              clean_b64 = ''.join(raw_keystore.split())
+              try:
+                  keystore_bytes = base64.b64decode(clean_b64)
+                  if len(keystore_bytes) > 100:
+                      with open('local/keys/quickbuds-release.jks', 'wb') as f:
+                          f.write(keystore_bytes)
+                      print(f"Decoded secret keystore successfully ({len(keystore_bytes)} bytes)")
+                      configured = True
+              except Exception as e:
+                  print(f"Failed to decode secret KEYSTORE: {e}")
+
+          if configured and raw_props:
+              lines = raw_props.splitlines()
+              has_store_file = any(line.strip().startswith('storeFile=') for line in lines)
+              if not has_store_file:
+                  lines.insert(0, 'storeFile=local/keys/quickbuds-release.jks')
+              with open('local/keys/keystore.properties', 'w') as f:
+                  f.write('\n'.join(lines) + '\n')
+              print("Written keystore.properties from secret PROPS")
+          elif os.path.exists('keystore/quickbuds-release.jks') and os.path.exists('keystore/keystore.properties'):
+              print("Using persistent repository keystore from keystore/...")
+              import shutil
+              shutil.copy('keystore/quickbuds-release.jks', 'local/keys/quickbuds-release.jks')
+              shutil.copy('keystore/keystore.properties', 'local/keys/keystore.properties')
+          else:
+              print("Generating persistent release keystore...")
+              cmd = (
+                  'keytool -genkeypair -v -alias quickbuds -keyalg RSA -keysize 2048 -validity 10000 '
+                  '-keystore local/keys/quickbuds-release.jks -storepass quickbuds123 -keypass quickbuds123 '
+                  '-dname "CN=QuickBuds, OU=QuickBuds, O=QuickBuds, L=Unknown, ST=Unknown, C=US"'
+              )
+              if os.system(cmd) != 0:
+                  sys.exit(1)
+              with open('local/keys/keystore.properties', 'w') as f:
+                  f.write(
+                      "storeFile=local/keys/quickbuds-release.jks\n"
+                      "storePassword=quickbuds123\n"
+                      "keyAlias=quickbuds\n"
+                      "keyPassword=quickbuds123\n"
+                  )
+          PY
+          cat local/keys/keystore.properties
+
+      - name: Verify Gradle wrapper
+        run: |
+          test -f gradlew
+          test -f gradle/wrapper/gradle-wrapper.jar
+          test -f gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradlew
+          cat gradle/wrapper/gradle-wrapper.properties
+
+      - name: Build APKs
+        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease
+
+      - name: Prepare and verify APK signatures
+        if: success()
+        run: |
+          set -euo pipefail
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/.android/sdk}}"
+          APKSIGNER="$(find "$SDK_ROOT/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$APKSIGNER"
+
+          STORE_PASS=$(sed -n 's/^[[:space:]]*storePassword[[:space:]]*=[[:space:]]*//p' local/keys/keystore.properties | head -n 1)
+          KEY_PASS=$(sed -n 's/^[[:space:]]*keyPassword[[:space:]]*=[[:space:]]*//p' local/keys/keystore.properties | head -n 1)
+          KEY_ALIAS=$(sed -n 's/^[[:space:]]*keyAlias[[:space:]]*=[[:space:]]*//p' local/keys/keystore.properties | head -n 1)
+          KEY_PASS="${KEY_PASS:-$STORE_PASS}"
+
+          ver=$(sed -n 's/.*versionName = "\(.*\)"/\1/p' app/build.gradle.kts)
+          mkdir -p out
+
+          # Release APK
+          rel_apk=$(find app/build/outputs/apk/release/ -type f -name "*.apk" | head -n 1)
+          if [[ -n "$rel_apk" && -f "$rel_apk" ]]; then
+            cp "$rel_apk" "out/QuickBuds-$ver-ANC-Tile-release.apk"
+          fi
+
+          # Debug APK
+          dbg_apk=$(find app/build/outputs/apk/debug/ -type f -name "*.apk" | head -n 1)
+          if [[ -n "$dbg_apk" && -f "$dbg_apk" ]]; then
+            cp "$dbg_apk" "out/QuickBuds-$ver-ANC-Tile-debug.apk"
+          fi
+
+          expected=""
+          for apk in out/*.apk; do
+            echo "Verifying: $apk"
+            # If not verified by Gradle signingConfig, sign with apksigner
+            if ! "$APKSIGNER" verify "$apk" >/dev/null 2>&1; then
+              echo "Signing $apk with release key using apksigner..."
+              "$APKSIGNER" sign \
+                --ks local/keys/quickbuds-release.jks \
+                --ks-key-alias "$KEY_ALIAS" \
+                --ks-pass "pass:$STORE_PASS" \
+                --key-pass "pass:$KEY_PASS" \
+                --v1-signing-enabled true \
+                --v2-signing-enabled true \
+                --v3-signing-enabled true \
+                "$apk"
+            fi
+            echo "Certificate details for $apk:"
+            "$APKSIGNER" verify --verbose --print-certs "$apk"
+            fingerprint=$("$APKSIGNER" verify --print-certs "$apk" | grep -m 1 "certificate SHA-256 digest:" | sed -e 's/.*certificate SHA-256 digest:[[:space:]]*//' | tr -d '\r\n ')
+            echo "SHA-256 Fingerprint: $fingerprint"
+            test -n "$fingerprint"
+            if [[ -z "$expected" ]]; then
+              expected="$fingerprint"
+            elif [[ "$fingerprint" != "$expected" ]]; then
+              echo "Error: Signature mismatch! $apk has $fingerprint, expected $expected" >&2
+              exit 1
+            fi
+            printf '%s  %s\n' "$fingerprint" "$(basename "$apk")" >> out/signature-check.txt
+          done
+
+          echo "All APKs verified with identical signature:"
+          cat out/signature-check.txt
+          sha256sum out/*.apk > out/SHA256SUMS
+          ls -lh out/
+
+      - name: Upload APK artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickBuds-ANC-Tile-APK
+          path: out/*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload build diagnostics if build fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickBuds-ANC-Tile-build-diagnostics
+          path: |
+            app/build/reports/**
+            app/build/outputs/logs/**
+            build/reports/**
+          if-no-files-found: ignore
+          retention-days: 7
