@@ -204,6 +204,33 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- System Quick Settings tile: toggles ANC using BudsService's existing protocol path. -->
+        <service
+            android:name=".tile.AncQuickSettingsTileService"
+            android:label="Noise Cancellation"
+            android:icon="@drawable/ic_anc"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Long-press preferences route: shows the themed ANC strength picker or opens the app. -->
+        <activity
+            android:name=".tile.AncTileLongPressActivity"
+            android:exported="true"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.App.TileFloating">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".bluetooth.BudsService"
             android:foregroundServiceType="connectedDevice"

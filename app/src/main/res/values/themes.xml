@@ -23,6 +23,15 @@
     <attr name="appColorTextSecondary" format="color" />
     <attr name="appColorOutline" format="color" />
 
+    <!-- Transparent, non-dimming window used only for the Quick Settings floating panel. -->
+    <style name="Theme.App.TileFloating" parent="Theme.App.Base">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
     <style name="Theme.App.Base" parent="android:Theme.DeviceDefault.NoActionBar">
         <!-- One font for the whole app: DeviceDefault text follows the OEM font, while code-set
              typefaces (DEFAULT_BOLD, sans-serif-medium) are sans-serif, so screens mixed two. -->
