@@ -12,7 +12,7 @@ Android · Windows · Linux
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/spizganed)
 [![Discord](https://img.shields.io/badge/Discord-Chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/pvsnEf9TrZ)
 
-<img src="docs/images/phone.png" width="230" alt="QuickBuds on a phone"> &nbsp; <img src="docs/images/desktop.png" width="560" alt="QuickBuds on a PC">
+<img src="docs/images/hero.png" width="800" alt="QuickBuds on a phone and on a PC">
 
 </div>
 
@@ -187,9 +187,7 @@ The script needs no administrator rights, adds a menu entry, and the app updates
 
 <div align="center">
 
-| Widget: battery | Widget: noise control | Tray: Linux |
-| :---: | :---: | :---: |
-| <img src="docs/images/widget-battery.png" width="170"> | <img src="docs/images/widget-controls.png" width="170"> | <img src="docs/images/tray-linux.png" width="220"> |
+<img src="docs/images/extras.png" width="800" alt="The tray panel on the PC and the home screen widgets">
 
 </div>
 
