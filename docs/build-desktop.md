@@ -3,20 +3,19 @@
 The same code builds on Linux and on Windows. You need Rust (stable, from [rustup.rs](https://rustup.rs)).
 
 - **Linux:** also BlueZ and the development packages below.
-- **Windows:** rustup's default MSVC toolchain needs the Visual Studio C++ Build Tools; rustup offers them.
-  With mingw-w64 on `PATH` (or `WINDRES` set), the exe gets its icon. Without it, the build warns and the
-  exe has no icon.
+- **Windows:** rustup's default MSVC toolchain needs the Visual Studio C++ Build Tools; rustup offers them. The app needs the WebView2 runtime. Windows 11 has it.
 
 | Distribution | Packages |
 |---|---|
-| Arch | `base-devel dbus gtk3 libayatana-appindicator fontconfig libxkbcommon` |
-| Debian / Ubuntu | `build-essential pkg-config libdbus-1-dev libgtk-3-dev libayatana-appindicator3-dev libfontconfig1-dev libxkbcommon-dev` |
+| Arch | `base-devel dbus gtk3 webkit2gtk-4.1 libayatana-appindicator librsvg openssl` |
+| Debian / Ubuntu | `build-essential pkg-config libssl-dev libdbus-1-dev libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev` |
 
 ```bash
 git clone https://github.com/spizganed/QuickBuds.git
-cd QuickBuds/desktop
+cd QuickBuds/desktop-tauri
 cargo test
-cargo run --release
+cargo install tauri-cli --version "^2" --locked
+cargo tauri dev
 ```
 
 Pair the earbuds in the system's Bluetooth settings first. The app connects to them once their audio is

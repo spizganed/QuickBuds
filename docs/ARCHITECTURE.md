@@ -90,7 +90,7 @@ The user can turn the count off in Settings.
    It stores the last good answer in KV, and writes KV only when the release changes.
 3. If the Worker fails, the app asks GitHub directly.
 4. Android needs the `.apk` asset in the release. It downloads the file and opens the system installer through a FileProvider. The user confirms.
-5. Desktop picks the file for its system (`-windows-x64.zip`, `-linux-x64.AppImage` or `-linux-x64.tar.gz`),
+5. Desktop picks the file for its system (`-windows-x64.zip` or `-linux-x64.AppImage`),
    checks `SHA256SUMS` and replaces its own program. It never writes into a folder it cannot write to.
    It opens the release page instead.
 

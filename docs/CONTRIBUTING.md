@@ -74,13 +74,11 @@ The desktop calls these files:
 | File | Role |
 |---|---|
 | `src/protocol.rs` | Framing, decoders, answers and builders for the link |
-| `src/newproto.rs` | The bridge to the typed messages in `buds_core`, compiled for the tests only |
 | `src/types.rs` | What both share: ids, `Event`, `Caps`, model data, log frames, the packet log's text |
 
-Other files: `src/session.rs` (the link), `src/bt.rs` (Bluetooth sockets), `ui/app.slint` (the UI).
+Other files: `src/session.rs` (the link), `src/bt.rs` (Bluetooth sockets), `ui/` (the web UI: `index.html`, `app.js`, `app.css`).
 
-`session.rs` builds its frames with `buds_core::cmd` and reads and answers through `protocol.rs`. A differential test in `src/core_tests.rs` proves each
-`buds_core` builder and decoder against `protocol.rs`. There is one protocol path and no switch.
+`session.rs` builds its frames with `buds_core::cmd` and reads and answers through `protocol.rs`. There is one protocol path and no switch.
 
 Per-model data (features, noise control modes, EQ presets, gestures) is in
 `app/src/main/assets/models.json`. Our own key `confirmed` lists the features an owner confirmed
