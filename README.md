@@ -14,6 +14,8 @@ Android · Windows · Linux
 
 <img src="docs/images/hero.png" width="800" alt="QuickBuds on a phone and on a PC">
 
+<img src="docs/images/extras.png" width="800" alt="The tray panel on the PC and the home screen widgets">
+
 </div>
 
 QuickBuds is an open-source alternative to HeyMelody and realme Link. It talks to your earbuds over
@@ -185,11 +187,6 @@ The script needs no administrator rights, adds a menu entry, and the app updates
 | **Feedback** | Settings › Feedback sends a description, a model test or a crash report with the log, without a GitHub account. The developer can answer a report, and the answer shows once in the app. |
 | **Languages and updates** | 27 languages, switchable in the app. Updates come from GitHub releases. The PC app updates itself. |
 
-<div align="center">
-
-<img src="docs/images/extras.png" width="800" alt="The tray panel on the PC and the home screen widgets">
-
-</div>
 
 ## For developers
 
