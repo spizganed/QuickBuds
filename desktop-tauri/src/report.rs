@@ -1,6 +1,6 @@
 //! The report path for Feedback and Test my earbuds: header, scrubbed packet log, preview, Worker post.
 
-//! Ported from `desktop/src/report.rs` (the Slint file also holds the Slint screen).
+//! 
 
 
 

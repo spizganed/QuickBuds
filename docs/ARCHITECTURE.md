@@ -9,7 +9,7 @@ QuickBuds has four parts. This file shows how they connect and why. The wire for
 |---|---|---|---|
 | Core | `core/` | Rust | Frames, typed messages, commands, the setting engine. No I/O, no dependencies. |
 | Android app | `app/` | Kotlin | Phone UI, Bluetooth link, service, widgets, tiles, notification. |
-| Desktop app | `desktop-tauri/`, `desktop/` | Rust, web UI | Windows and Linux. The link thread and protocol live in `desktop/src`. The Tauri window shows the UI from `desktop-tauri/ui/`. |
+| Desktop app | `desktop-tauri/` | Rust, web UI | Windows and Linux. The link thread and protocol live in `desktop-tauri/src`. The Tauri window shows the UI from `desktop-tauri/ui/`. |
 | Report Worker | `report-worker/` | JavaScript | Cloudflare Worker: problem reports, the daily count, the update check, the Discord digest. |
 
 The core has no Bluetooth code. Each platform shell owns the RFCOMM socket and passes bytes in and out.
@@ -17,11 +17,10 @@ This keeps the core testable without a device.
 
 The Android app does not call the core. `app/.../protocol/` holds a Kotlin copy of the same rules
 (`Wire.kt`, `Commands.kt`, `Messages.kt`, `FeatureSync.kt`). A protocol change updates both copies and PROTOCOL.md.
-The desktop app calls the core directly (`desktop/src/main.rs` re-exports `cmd`, `msg` and `wire`).
+The desktop app calls the core directly (`desktop-tauri/src/main.rs` re-exports `cmd`, `msg` and `wire`).
 `core/src/ffi.rs` offers a C interface. Nothing uses it yet.
 
-The desktop app has older files too (`desktop/src` holds the Slint screens, `protocol.rs` the legacy decoder).
-`desktop-tauri/src/main.rs` includes the link thread, protocol and model files from `desktop/src` by path.
+`desktop-tauri/src/protocol.rs` is the legacy decoder.
 
 ## The model data
 
@@ -58,7 +57,7 @@ The buds are the only source of truth. The app is a remote control.
    `BudsService` (notification, chip), the activities, the widgets and the tiles.
 6. A link that drops without our request reconnects with growing delays. The service parks when the link is idle.
 
-The desktop link thread (`desktop/src/session.rs`) runs the same sequence and the same rules.
+The desktop link thread (`desktop-tauri/src/session.rs`) runs the same sequence and the same rules.
 
 ### A setting change
 

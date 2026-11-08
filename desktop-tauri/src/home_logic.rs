@@ -1,5 +1,4 @@
-//! What the Overview's Hi-Res and 3D audio switches write, from the buds' state and the model (PROTOCOL.md section 18). No UI here:
-//! `earbuds` (Slint) and the Tauri app both use it.
+//! What the Overview's Hi-Res and 3D audio switches write, from the buds' state and the model (PROTOCOL.md section 18). No UI here.
 
 use crate::icons;
 use crate::session::{Cmd, Snapshot};

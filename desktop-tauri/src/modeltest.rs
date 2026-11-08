@@ -1,6 +1,6 @@
 //! Test my earbuds: the phone's `ModelTest`, with the same feature keys and the same report text. Start clears the log
 //! and reconnects; the automatic check notes which reads the buds answered; the person marks each feature; Send posts
-//! one "Test" report, always with the log. Ported from `desktop/src/modeltest.rs` (Slint).
+//! one "Test" report, always with the log.
 
 use crate::session::{Cmd, Snapshot, Status, LOG};
 use crate::tr;

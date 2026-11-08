@@ -14,7 +14,7 @@ case "${1:-}" in
     pgrep -f "Xvfb :99" >/dev/null || { Xvfb :99 -screen 0 1400x900x24 -nolisten tcp & sleep 1; }
     pkill -f "target/debug/quickbuds" || true
     cfg="${2:-${XDG_CONFIG_HOME:-$HOME/.config}}"
-    XDG_CONFIG_HOME="$cfg" "$root/desktop/target/debug/quickbuds" >/dev/null 2>&1 &
+    XDG_CONFIG_HOME="$cfg" "$root/desktop-tauri/target/debug/quickbuds" >/dev/null 2>&1 &
     sleep 4
     ;;
   click)

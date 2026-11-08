@@ -1,5 +1,5 @@
 //! Hearing profile: the profiles kept on this PC, the radar of the active one and the hearing test.
-//! The rules are the ones of `desktop/src/hearing.rs` (Slint); the screen is the web page.
+//! The rules are in `hearing_logic.rs`; the screen is the web page.
 
 use crate::cmd;
 use crate::hearing_logic::*;

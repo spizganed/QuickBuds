@@ -22,8 +22,6 @@ Thumbs.db
 local/
 
 # Desktop (Rust)
-desktop/target/
-desktop/dist/
 desktop-tauri/dist/
 
 # Screenshots are taken by hand; the script and its output stay local

@@ -4,7 +4,7 @@ Matches QuickBuds 5.4.5 (version code 52).
 
 This is the wire format of the OPPO / OnePlus / realme earbud RFCOMM link. One protocol layer
 implements it in Kotlin: `protocol/`, which the Android app runs. Each section names its code file.
-The desktop apps decode with `desktop/src/protocol.rs` and build commands with `core/src/cmd.rs`; their feature
+The desktop apps decode with `desktop-tauri/src/protocol.rs` and build commands with `core/src/cmd.rs`; their feature
 sync is `core/src/feature_sync.rs`. Phase E moves the rest of the decoding into `core/`, the Rust port of `protocol/`.
 
 Each fact comes from a capture, from our own buds, or from the vendor apps' behaviour (studied for

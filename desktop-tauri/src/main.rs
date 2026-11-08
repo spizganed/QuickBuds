@@ -1,23 +1,14 @@
 //! QuickBuds for the desktop, Tauri UI. The frontend is in `ui/`.
-//! The link thread, the protocol and the model data are the ones of `desktop` (included from there).
 #![cfg_attr(windows, windows_subsystem = "windows")]
 #![allow(dead_code)]
 
-#[path = "../../desktop/src/bt.rs"]
 mod bt;
-#[path = "../../desktop/src/devlog.rs"]
 mod devlog;
-#[path = "../../desktop/src/gesture_logic.rs"]
 mod gesture_logic;
-#[path = "../../desktop/src/hearing_logic.rs"]
 mod hearing_logic;
-#[path = "../../desktop/src/home_logic.rs"]
 mod home_logic;
-#[path = "../../desktop/src/protocol.rs"]
 mod protocol;
-#[path = "../../desktop/src/session.rs"]
 mod session;
-#[path = "../../desktop/src/types.rs"]
 mod types;
 
 #[cfg(target_os = "linux")]
