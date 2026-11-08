@@ -354,6 +354,7 @@
     <string name="widget_mode_anc_smart">ANC スマート</string>
     <string name="widget_low_latency">低遅延</string>
     <string name="widget_battery_name">QuickBuds バッテリー</string>
+    <string name="widget_strip_name">QuickBuds バッテリーストリップ</string>
     <string name="settings_language_title">言語</string>
     <string name="settings_language_sub">アプリの言語</string>
     <string name="language_system">システムのデフォルト</string>

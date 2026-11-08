@@ -356,6 +356,7 @@
     <string name="widget_mode_anc_smart">ANC Cerdas</string>
     <string name="widget_low_latency">Latensi rendah</string>
     <string name="widget_battery_name">QuickBuds baterai</string>
+    <string name="widget_strip_name">Strip baterai QuickBuds</string>
     <string name="settings_language_title">Bahasa</string>
     <string name="settings_language_sub">Bahasa aplikasi</string>
     <string name="language_system">Default sistem</string>

@@ -62,6 +62,7 @@ class BudsConnectionManager(private val context: Context) {
         const val KEY_FIRMWARE = "firmwareVersion"
         /** The buds apply a write about a second after the ack; a read sooner returns the old value and the switch flickers. */
         private const val VERIFY_DELAY_MS = 2200L
+        private const val ANC_VERIFY_MS = 900L
         /** For this long after our own write, a read of that switch shows what we wrote. */
         private const val PENDING_MS = 2000L
         /** A blocked socket.connect() gets its socket closed after this long, so the try can fail. */
@@ -691,7 +692,12 @@ class BudsConnectionManager(private val context: Context) {
             ?: return log("ANC: $mode is not a mode of these buds, not sent")
         if (mode in AncModes.LEVELS) lastAncLevelSent = mode
         sendRaw(Commands.anc(bit),"ANC $mode")
+        // Quick taps can lose a push from the buds. One read after the last tap puts the real mode on screen.
+        handler.removeCallbacks(verifyAnc)
+        handler.postDelayed(verifyAnc, ANC_VERIFY_MS)
     }
+
+    private val verifyAnc = Runnable { sendRaw(Commands.queryAncMode(), "verify anc") }
 
     private val pending = java.util.concurrent.ConcurrentHashMap<Int, Pair<Int, Long>>()
 

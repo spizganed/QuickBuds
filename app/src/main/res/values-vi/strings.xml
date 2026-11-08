@@ -356,6 +356,7 @@
     <string name="widget_mode_anc_smart">ANC Thông minh</string>
     <string name="widget_low_latency">Độ trễ thấp</string>
     <string name="widget_battery_name">QuickBuds pin</string>
+    <string name="widget_strip_name">Thanh pin QuickBuds</string>
     <string name="settings_language_title">Ngôn ngữ</string>
     <string name="settings_language_sub">Ngôn ngữ ứng dụng</string>
     <string name="language_system">Mặc định hệ thống</string>

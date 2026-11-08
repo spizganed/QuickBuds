@@ -354,6 +354,7 @@
     <string name="widget_mode_anc_smart">ANC Akıllı</string>
     <string name="widget_low_latency">Düşük gecikme</string>
     <string name="widget_battery_name">QuickBuds pil</string>
+    <string name="widget_strip_name">QuickBuds pil şeridi</string>
     <string name="settings_language_title">Dil</string>
     <string name="settings_language_sub">Uygulama dili</string>
     <string name="language_system">Sistem varsayılanı</string>

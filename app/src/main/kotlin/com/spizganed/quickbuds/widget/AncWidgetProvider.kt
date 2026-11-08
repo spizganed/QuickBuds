@@ -34,6 +34,7 @@ import com.spizganed.quickbuds.ui.ThemeRes
  *
  *  - [BatteryWidgetProvider]     2x2, battery and controls pages
  *  - [BatteryOnlyWidgetProvider] 2x2, battery page only
+ *  - [BatteryStripWidgetProvider] 3x1, battery strip, resizes to a column
  *  - [ControlsWidgetProvider]    2x2, controls page only
  *  - [AncWidgetProvider]         4x2, three battery panels in a row, and controls
  *
@@ -55,7 +56,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
      * [fixed]: the one page a single-page widget shows; null for the two-page widgets.
      */
     enum class Kind(val fixed: Kind? = null) {
-        BATTERY, CONTROLS, COMBINED, BATTERY_ONLY(BATTERY);
+        BATTERY, CONTROLS, COMBINED, BATTERY_ONLY(BATTERY), BATTERY_RINGS(BATTERY);
 
         /** The page shown; CONTROLS is a single-page widget too (its own [fixed] would be a forward reference). */
         val page get() = if (this == CONTROLS) CONTROLS else fixed
@@ -85,7 +86,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
      * [shape] at the widget's size. Sizes in dp: [ring] and [font] (the number) for the sized shapes; [tiles] control
      * tiles shown, each [tileW] x [tileH]; [units] battery panels shown (0, 2 buds, or 3 with the case).
      */
-    class Fit(val shape: Shape, val ring: Float = 0f, val font: Float = 0f, val tiles: Int = 4, val units: Int = 3, val tileW: Float = 0f, val tileH: Float = 99f)
+    class Fit(val shape: Shape, val ring: Float = 0f, val font: Float = 0f, val tiles: Int = 4, val units: Int = 3, val tileW: Float = 0f, val tileH: Float = 99f, val bare: Boolean = false)
 
     override fun onUpdate(context: Context, mgr: AppWidgetManager, ids: IntArray) {
         for (id in ids) update(context, mgr, id, kind, force = true)
@@ -114,6 +115,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         private val providers = listOf(
             BatteryWidgetProvider::class.java to Kind.BATTERY,
             BatteryOnlyWidgetProvider::class.java to Kind.BATTERY_ONLY,
+            BatteryStripWidgetProvider::class.java to Kind.BATTERY_RINGS,
             ControlsWidgetProvider::class.java to Kind.CONTROLS,
             NoiseCycleWidgetProvider::class.java to Kind.CONTROLS,
             AncWidgetProvider::class.java to Kind.COMBINED
@@ -346,7 +348,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             }
             if (w <= 0 || h <= 0) return pages(kind == Kind.COMBINED)
             val battery = kind != Kind.CONTROLS
-            val controls = kind != Kind.BATTERY_ONLY
+            val rings = kind == Kind.BATTERY_RINGS
+            val controls = kind != Kind.BATTERY_ONLY && !rings
             val keys = if (controls) WidgetSettings.buttons(c, id).size.coerceAtLeast(1) else 0
             // Mirrors scripts/widget-layouts.py: PP the panel padding, GAP between panels and tiles.
             val pp = if (WidgetSettings.materialStyle(c)) 2f else if (WidgetSettings.nothingStyle(c)) 4f else 6f
@@ -359,6 +362,14 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             // The largest ring whose panel fits [avail] high.
             fun byH(avail: Float): Float { var d = avail; while (d > 16f && unitH(d) > avail) d -= 1f; return d }
             // The shaped sizes start below the 2x2's own minimum (110dp), so the pages keep their size.
+            // Battery strip widget: only the three rings and their glyphs, as large as the size allows. No number, no panel.
+            if (rings && (h < 110f || w < 110f)) {
+                val pad = 2f
+                val row = h < 110f
+                val d = if (row) minOf((w - 2 * pad - gap * 2) / 3 - 2 * pp, h - 2 * pad - 2 * pp)
+                        else minOf(w - 2 * pad - 2 * pp, (h - 2 * pad - gap * 2) / 3 - 2 * pp)
+                return Fit(if (row) Shape.STRIP else Shape.COLUMN, d.coerceAtLeast(16f), 0f, 0, 3, bare = true)
+            }
             if (h < 110f) {
                 if (!battery) return Fit(Shape.STRIP, tiles = keys, units = 0, tileW = (iw - gap * (keys - 1)) / keys, tileH = ih)
                 // Units and tiles share the row equally. Up to 4 tiles, while each is 44dp or wider and the
@@ -614,14 +625,15 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val caseBar = fit.shape.caseBar
             // The sized shapes show 3 units, 2 (the buds, no case) or none (controls only).
             val shown = (if (caseBar) listOf(0, 2) else listOf(0, 1, 2)).filter { paged || fit.units == 3 || (fit.units == 2 && it != 1) }
+            if (fit.bare) { val pd = ThemeRes.dp(context, 2f); v.setViewPadding(R.id.w_content, pd, pd, pd, pd) }
             if (!paged) for (slot in 0..2) if (!caseBar || slot != 1) v.setViewVisibility(PANEL_ROOTS[slot], if (slot in shown) View.VISIBLE else View.GONE)
             for (slot in shown) {
                 val (bgId, ringId, pct, label, strokeId) = PANELS[slot].toList()
-                panelBg(context, v, bgId, p)
-                panelOutline(context, v, strokeId, p)
+                if (fit.bare) { v.setViewVisibility(bgId, View.GONE); v.setViewVisibility(strokeId, View.GONE) }
+                else { panelBg(context, v, bgId, p); panelOutline(context, v, strokeId, p) }
                 v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp, k).let { if (ghost && GHOST_BLUR) soften(context, it) else it })
                 pctText(context, v, pct, p, levels[slot], if (paged) null else fit.font)
-                v.setViewVisibility(pct, if (ghost) View.INVISIBLE else View.VISIBLE)
+                v.setViewVisibility(pct, if (fit.bare) View.GONE else if (ghost) View.INVISIBLE else View.VISIBLE)
                 val inEar = statuses[slot] == 3 || statuses[slot] == 7
                 val text = if (slot == 1) context.getString(names[slot]) else wearLabel(context, statuses[slot]) ?: context.getString(names[slot])
                 // Nothing, Material and the sized shapes: no wear text, the glyph's shade says it ([nothingTint]) and the ring's content description reads it.
@@ -1572,6 +1584,9 @@ class BatteryWidgetProvider : QuickBudsWidget(Kind.BATTERY)
 
 /** 2x2, battery page only. */
 class BatteryOnlyWidgetProvider : QuickBudsWidget(Kind.BATTERY_ONLY)
+
+/** 3x1, battery strip only. It resizes to a column. */
+class BatteryStripWidgetProvider : QuickBudsWidget(Kind.BATTERY_RINGS)
 
 /** 2x2, controls page only. */
 class ControlsWidgetProvider : QuickBudsWidget(Kind.CONTROLS)

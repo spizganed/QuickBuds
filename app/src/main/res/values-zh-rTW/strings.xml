@@ -356,6 +356,7 @@
     <string name="widget_mode_anc_smart">降噪 智慧</string>
     <string name="widget_low_latency">低延遲</string>
     <string name="widget_battery_name">QuickBuds 電量</string>
+    <string name="widget_strip_name">QuickBuds 電池條</string>
     <string name="settings_language_title">語言</string>
     <string name="settings_language_sub">應用程式語言</string>
     <string name="language_system">跟隨系統</string>

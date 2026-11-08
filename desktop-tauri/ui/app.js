@@ -1191,6 +1191,11 @@ if(window.__TAURI__){
     if(v==='feedback')QBLIVE.fbOpen();
     if(v==='test')QBLIVE.send({t:'test_open'});};
   document.addEventListener('click',e=>{const b=e.target.closest('[data-act="page"]');if(!b)return;QBLIVE.pageReads(b.dataset.v);});
+  // Some buds (T300, T310) do not push a state that a gesture changed. The window reads the state again when it gets focus.
+  let lastRead=0;
+  window.addEventListener('focus',()=>{
+    if(!snap||snap.status!=='on'||Date.now()-lastRead<3000)return;
+    lastRead=Date.now();QBLIVE.send({t:'status_read'});});
 }
 });
 })();
