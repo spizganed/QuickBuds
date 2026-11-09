@@ -740,68 +740,56 @@ class BudsConnectionManager(private val context: Context) {
     @Volatile var devices: List<PairedDevice> = emptyList()
         private set
 
-    private val recentlyDisconnectedMacs = java.util.concurrent.ConcurrentHashMap<String, Long>()
-
-    /** Optimistically marks a device as disconnected in local list and notifies listeners. */
-    fun markDisconnected(mac: String) {
-        val now = System.currentTimeMillis()
-        recentlyDisconnectedMacs[mac.lowercase()] = now
-        val rev = mac.split(":").reversed().joinToString(":")
-        recentlyDisconnectedMacs[rev.lowercase()] = now
-        devices = devices.map {
-            if (it.mac.equals(mac, ignoreCase = true) || it.mac.equals(rev, ignoreCase = true)) {
-                it.copy(connected = false)
-            } else it
-        }
-        handler.post { listeners.forEach { it.onDevices(devices) } }
-    }
-
     fun refreshDevices() = sendRaw(Commands.queryDevices(), "query devices")
 
     /** Connects or disconnects another device on the list; handles endianness, retries, and refreshes. */
     fun connectDevice(mac: String, on: Boolean) {
         val revMac = mac.split(":").reversed().joinToString(":")
         if (on) {
-            recentlyDisconnectedMacs.remove(mac.lowercase())
-            recentlyDisconnectedMacs.remove(revMac.lowercase())
             sendRaw(Commands.connectDevice(mac, true), "Connect $mac")
-            if (revMac != mac) {
-                Thread {
-                    try {
-                        Thread.sleep(300)
-                        sendRawBlocking(Commands.connectDevice(revMac, true), "Connect rev $mac")
-                    } catch (_: Exception) {}
-                }.start()
-            }
+            Thread {
+                try {
+                    Thread.sleep(300)
+                    sendRawBlocking(Commands.connectDevice(revMac, true), "Connect rev $mac")
+                    Thread.sleep(1200)
+                    sendRawBlocking(Commands.queryDevices(), "refresh devices after connect")
+                } catch (_: Exception) {}
+            }.start()
             return
         }
         Thread {
             try {
-                // 1. Written MAC order (0x0429 02 <mac>)
+                // 1. Send targeted vendor disconnect commands (0x0429 02 and 0x0429 03 unpair)
                 sendRawBlocking(Commands.connectDevice(mac, false), "Disconnect $mac")
-                // 2. Wire / reversed MAC order (0x0429 02 <revMac>)
                 if (revMac != mac) {
                     sendRawBlocking(Commands.connectDevice(revMac, false), "Disconnect rev $mac")
                 }
-                // 3. Alternative disconnect payload: 0x01 <mac> 00
-                val alt1 = byteArrayOf(0x01) + Commands.macBytes(mac) + byteArrayOf(0x00)
-                sendRawBlocking(OpoProtocol.buildPacket(OpoProtocol.CMD_MULTI_CONNECT, payload = alt1), "Disconnect alt $mac")
-                if (revMac != mac) {
-                    val alt2 = byteArrayOf(0x01) + Commands.macBytes(revMac) + byteArrayOf(0x00)
-                    sendRawBlocking(OpoProtocol.buildPacket(OpoProtocol.CMD_MULTI_CONNECT, payload = alt2), "Disconnect alt rev $mac")
-                }
-                // 4. Fallback unpair command: 0x0429 03 <mac> (forces link tear down)
-                Thread.sleep(350)
                 val unpair1 = byteArrayOf(0x03) + Commands.macBytes(mac)
                 sendRawBlocking(OpoProtocol.buildPacket(OpoProtocol.CMD_MULTI_CONNECT, payload = unpair1), "Unpair $mac")
                 if (revMac != mac) {
                     val unpair2 = byteArrayOf(0x03) + Commands.macBytes(revMac)
                     sendRawBlocking(OpoProtocol.buildPacket(OpoProtocol.CMD_MULTI_CONNECT, payload = unpair2), "Unpair rev $mac")
                 }
-                Thread.sleep(1200)
-                sendRawBlocking(Commands.queryDevices(), "refresh devices after disconnect $mac")
+
+                // 2. Hardware multipoint link drop:
+                // Temporarily disable dual connection so the earbuds' Bluetooth controller
+                // forcefully drops the peer device's Bluetooth ACL link.
+                Thread.sleep(350)
+                sendRawBlocking(Commands.setFeature(Feature.DUAL_DEVICE, 0), "Drop peer: Dual off")
+                sendRawBlocking(Commands.dualFollowup(false), "dual followup off")
+
+                // Keep off briefly to allow the Bluetooth controller to complete teardown
+                Thread.sleep(600)
+
+                // Restore dual/triple connection mode so the earbuds remain in multipoint standby
+                sendRawBlocking(Commands.setFeature(Feature.DUAL_DEVICE, 1), "Restore multipoint: Dual on")
+                sendRawBlocking(Commands.dualFollowup(true), "dual followup on")
+
+                // 3. Query the buds for the genuine hardware device list
+                Thread.sleep(1000)
+                sendRawBlocking(Commands.queryDevices(), "refresh devices after disconnect")
                 Thread.sleep(1500)
-                sendRawBlocking(Commands.queryDevices(), "second refresh devices $mac")
+                sendRawBlocking(Commands.queryDevices(), "second refresh devices")
             } catch (e: Exception) {
                 log("DISCONNECT $mac failed: ${e.message}")
             }
@@ -835,10 +823,7 @@ class BudsConnectionManager(private val context: Context) {
         repeat(count) {
             if (o + 10 > p.size) return null
             val mac = (5 downTo 0).joinToString(":") { "%02X".format(p[o + it]) }
-            val rawConnected = p[o + 7].toInt() == 0x02
-            val now = System.currentTimeMillis()
-            val isRecentlyDisconnected = (recentlyDisconnectedMacs[mac.lowercase()] ?: 0L) > now - 10_000L
-            val connected = if (isRecentlyDisconnected) false else rawConnected
+            val connected = p[o + 7].toInt() == 0x02
             val flags = p[o + 8].toInt()
             val len = p[o + 9].toInt() and 0xFF
             if (o + 10 + len > p.size) return null

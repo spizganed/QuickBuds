@@ -183,8 +183,6 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
             getString(R.string.disconnect_ok),
             cancelRes = R.string.dialog_cancel,
             onConfirm = {
-                manager?.markDisconnected(d.mac)
-                manager?.connectDevice(d.mac, false)
                 if (self) {
                     try {
                         startService(
@@ -197,6 +195,8 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
                     window.decorView.postDelayed({
                         manager?.disconnect()
                     }, 250)
+                } else {
+                    manager?.connectDevice(d.mac, false)
                 }
             }
         )
@@ -207,7 +207,6 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         val on = !d.connected
         ConfirmDialog.show(this, getString(if (on) R.string.dual_connect_q else R.string.dual_disconnect_q, d.name), null,
             getString(if (on) R.string.conn_action_connect else R.string.conn_action_disconnect)) {
-            if (!on) manager?.markDisconnected(d.mac)
             manager?.connectDevice(d.mac, on)
         }
     }
