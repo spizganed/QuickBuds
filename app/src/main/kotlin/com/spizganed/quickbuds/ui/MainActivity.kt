@@ -1095,7 +1095,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         addRow(
             "dual",
             SettingRowFactory.build(
-                this, R.drawable.ic_devices, R.string.row_dual_title, R.string.row_dual_sub,
+                this, R.drawable.ic_devices,
+                if (ModelCatalog.isTripleConnectionModel(this)) R.string.triple_title else R.string.row_dual_title,
+                if (ModelCatalog.isTripleConnectionModel(this)) R.string.row_triple_sub else R.string.row_dual_sub,
                 SettingRowFactory.buildChevron(this)
             ) { startActivity(Intent(this, DualDeviceActivity::class.java)) }
         )
@@ -1283,6 +1285,18 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         deviceNameText.text = ModelCatalog.current(this)?.name
             ?: getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getString(ModelCatalog.KEY_DEVICE_NAME, null)
             ?: getString(R.string.default_device_name)
+        updateDualRowLabels()
+    }
+
+    private fun updateDualRowLabels() {
+        val dualRow = featureRows["dual"] ?: return
+        val isTriple = ModelCatalog.isTripleConnectionModel(this)
+        dualRow.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG)?.setText(
+            if (isTriple) R.string.triple_title else R.string.row_dual_title
+        )
+        dualRow.findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)?.setText(
+            if (isTriple) R.string.row_triple_sub else R.string.row_dual_sub
+        )
     }
 
     private fun rowSupported(key: String) = MainActivity.rowSupported(this, key)
@@ -1296,6 +1310,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         if (sig == supportSignature) return
         supportSignature = sig
         if (AncModes.of(this) !== ancModes) { buildAnc(); renderAnc(activeAncMode) }
+        updateDualRowLabels()
         layoutFeatureRows(rows)
     }
 

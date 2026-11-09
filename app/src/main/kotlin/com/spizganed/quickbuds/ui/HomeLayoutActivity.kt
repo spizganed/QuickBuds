@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.widget.WidgetStateStore
+import com.spizganed.quickbuds.protocol.ModelCatalog
 
 /**
  * Home layout: the main screen itself, in an edit mode. The battery and
@@ -100,6 +101,10 @@ class HomeLayoutActivity : Activity() {
         }
         eyes[key] = eye
         return SettingRowFactory.build(this, def.first, def.second, def.third, eye).apply {
+            if (key == "dual" && ModelCatalog.isTripleConnectionModel(this@HomeLayoutActivity)) {
+                findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG)?.setText(R.string.triple_title)
+                findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)?.setText(R.string.row_triple_sub)
+            }
             setOnLongClickListener { v ->
                 dragging = key
                 v.startDragAndDrop(null, View.DragShadowBuilder(v), key, 0)
