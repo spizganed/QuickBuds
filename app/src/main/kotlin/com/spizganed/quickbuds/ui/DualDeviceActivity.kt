@@ -42,6 +42,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
 
     /** A device-manager function of this model (`[VENDOR]` `multiConnectFunctions`), on buds that take `0x0429`. */
     private fun has(fn: String): Boolean {
+        if (ModelCatalog.isTripleConnectionModel(this)) return true
         val list = ModelCatalog.current(this)?.json?.optJSONArray("dualDevice") ?: return false
         if ((0 until list.length()).none { list.getString(it) == fn }) return false
         return Capabilities.supports(this, OpoProtocol.CMD_MULTI_CONNECT) || ModelCatalog.manual(this) != null
@@ -173,13 +174,31 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
 
     /** Connected-device rows always ask before sending the buds' disconnect command. */
     private fun confirmDisconnect(d: BudsConnectionManager.PairedDevice) {
+        val own = ownName()
+        val self = d.thisPhone || (own != null && d.name.equals(own, ignoreCase = true))
         ConfirmDialog.show(
             this,
             getString(R.string.disconnect_or_not),
             null,
             getString(R.string.disconnect_ok),
             cancelRes = R.string.dialog_cancel,
-            onConfirm = { manager?.connectDevice(d.mac, false) }
+            onConfirm = {
+                manager?.markDisconnected(d.mac)
+                manager?.connectDevice(d.mac, false)
+                if (self) {
+                    try {
+                        startService(
+                            Intent(this, BudsService::class.java).setAction(
+                                BudsService.ACTION_FORCE_DISCONNECT
+                            ).putExtra(BudsService.EXTRA_WITH_AUDIO, true)
+                                .putExtra(BudsService.EXTRA_USER_CONNECT, true)
+                        )
+                    } catch (_: Exception) {}
+                    window.decorView.postDelayed({
+                        manager?.disconnect()
+                    }, 250)
+                }
+            }
         )
     }
 
@@ -188,6 +207,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         val on = !d.connected
         ConfirmDialog.show(this, getString(if (on) R.string.dual_connect_q else R.string.dual_disconnect_q, d.name), null,
             getString(if (on) R.string.conn_action_connect else R.string.conn_action_disconnect)) {
+            if (!on) manager?.markDisconnected(d.mac)
             manager?.connectDevice(d.mac, on)
         }
     }
