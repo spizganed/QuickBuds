@@ -36,9 +36,13 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
     private lateinit var deviceCard: LinearLayout
     private var preferredText: TextView? = null
     private var preferred: String? = null
+    private var screenTitleView: TextView? = null
+    private var switchTitleView: TextView? = null
+    private var switchSubView: TextView? = null
 
     /** A device-manager function of this model (`[VENDOR]` `multiConnectFunctions`), on buds that take `0x0429`. */
     private fun has(fn: String): Boolean {
+        if (ModelCatalog.isTripleConnectionModel(this)) return true
         val list = ModelCatalog.current(this)?.json?.optJSONArray("dualDevice") ?: return false
         if ((0 until list.length()).none { list.getString(it) == fn }) return false
         return Capabilities.supports(this, OpoProtocol.CMD_MULTI_CONNECT) || ModelCatalog.manual(this) != null
@@ -55,6 +59,7 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
             manager?.requestFullStatus()
             if (preferredText != null && Capabilities.supports(this@DualDeviceActivity, OpoProtocol.CMD_QUERY_PREFERRED))
                 manager?.refreshPreferred()
+            updateTripleLabels()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -69,18 +74,25 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
         val root = SettingRowFactory.screen(this)
-        root.addView(SettingRowFactory.title(this, R.string.dual_title))
+        val isTriple = ModelCatalog.isTripleConnectionModel(this)
+        screenTitleView = SettingRowFactory.title(this, if (isTriple) R.string.triple_title else R.string.dual_title).also {
+            root.addView(it)
+        }
 
         dualSwitch = SettingRowFactory.buildSwitch(this, false)
         dualSwitch.setOnCheckedChangeListener { _, on ->
             if (!syncing) manager?.setDualDevice(on)
         }
+        val switchRow = SettingRowFactory.build(
+            this@DualDeviceActivity, 0,
+            if (isTriple) R.string.triple_title else R.string.dual_title,
+            if (isTriple) R.string.triple_switch_sub else R.string.dual_switch_sub,
+            dualSwitch
+        ) { dualSwitch.performClick() }
+        switchTitleView = switchRow.findViewWithTag(SettingRowFactory.TITLE_TAG)
+        switchSubView = switchRow.findViewWithTag(SettingRowFactory.SUBTITLE_TAG)
         root.addView(cardView().apply {
-            addView(
-                SettingRowFactory.build(
-                    this@DualDeviceActivity, 0, R.string.dual_title, R.string.dual_switch_sub, dualSwitch
-                ) { dualSwitch.performClick() }
-            )
+            addView(switchRow)
         })
 
         if (has("setPriorityDevice")) {
@@ -143,9 +155,11 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
                     textSize = 12f
                     setPadding(0, dp(2f), 0, 0)
                 })
-                if (manages && !self) {
+                if (d.connected || (manages && !self)) {
                     background = ThemeRes.ripple(context)
-                    setOnClickListener { confirmConnect(d) }
+                    setOnClickListener {
+                        if (d.connected) confirmDisconnect(d) else confirmConnect(d)
+                    }
                 }
             })
         }
@@ -155,6 +169,36 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
             SettingRowFactory.build(
                 this, 0, R.string.dual_add_title, 0, SettingRowFactory.buildChevron(this)
             ) { showAddDevice() }
+        )
+    }
+
+    /** Connected-device rows always ask before sending the buds' disconnect command. */
+    private fun confirmDisconnect(d: BudsConnectionManager.PairedDevice) {
+        val own = ownName()
+        val self = d.thisPhone || (own != null && d.name.equals(own, ignoreCase = true))
+        ConfirmDialog.show(
+            this,
+            getString(R.string.disconnect_or_not),
+            null,
+            getString(R.string.disconnect_ok),
+            cancelRes = R.string.dialog_cancel,
+            onConfirm = {
+                if (self) {
+                    try {
+                        startService(
+                            Intent(this, BudsService::class.java).setAction(
+                                BudsService.ACTION_FORCE_DISCONNECT
+                            ).putExtra(BudsService.EXTRA_WITH_AUDIO, true)
+                                .putExtra(BudsService.EXTRA_USER_CONNECT, true)
+                        )
+                    } catch (_: Exception) {}
+                    window.decorView.postDelayed({
+                        manager?.disconnect()
+                    }, 250)
+                } else {
+                    manager?.connectDevice(d.mac, false)
+                }
+            }
         )
     }
 
@@ -216,6 +260,22 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         syncing = true
         dualSwitch.setFromBuds(v == 1)
         syncing = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateTripleLabels()
+    }
+
+    override fun onCapabilities() {
+        updateTripleLabels()
+    }
+
+    private fun updateTripleLabels() {
+        val isTriple = ModelCatalog.isTripleConnectionModel(this)
+        screenTitleView?.setText(if (isTriple) R.string.triple_title else R.string.dual_title)
+        switchTitleView?.setText(if (isTriple) R.string.triple_title else R.string.dual_title)
+        switchSubView?.setText(if (isTriple) R.string.triple_switch_sub else R.string.dual_switch_sub)
     }
 
     override fun onConnected(connected: Boolean) {}

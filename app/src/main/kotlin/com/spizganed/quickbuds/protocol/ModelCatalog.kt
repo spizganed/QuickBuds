@@ -1,6 +1,7 @@
 package com.spizganed.quickbuds.protocol
 
 import android.content.Context
+import com.spizganed.quickbuds.bluetooth.BudsDevice
 import com.spizganed.quickbuds.ui.ThemeRes
 import org.json.JSONObject
 
@@ -112,6 +113,49 @@ object ModelCatalog {
     /** The manual pick if there is one, else [detected]. */
     fun current(context: Context): Model? =
         manual(context)?.let { id -> all(context).firstOrNull { it.id == id } } ?: detected(context)
+
+
+    /**
+     * Models that support connecting to three devices simultaneously (Triple Connection).
+     * To support another device in the future, simply add its model name to this set.
+     */
+    val TRIPLE_CONNECTION_MODELS = setOf(
+        "realme Buds T500 Pro",
+        "realme Buds T500 Pro Harry Potter Edition",
+        "realme TechLife Buds T500 Pro",
+    )
+
+    fun isTripleConnectionModelName(name: String?): Boolean {
+        if (name.isNullOrBlank()) return false
+        val trimmed = name.trim()
+        return TRIPLE_CONNECTION_MODELS.any { target ->
+            trimmed.equals(target, ignoreCase = true) ||
+            trimmed.contains(target, ignoreCase = true) ||
+            target.contains(trimmed, ignoreCase = true)
+        }
+    }
+
+    fun isTripleConnectionModel(model: Model?): Boolean {
+        if (model == null) return false
+        if (isTripleConnectionModelName(model.name)) return true
+        if (model.id.equals("066452", ignoreCase = true) ||
+            model.id.equals("067452", ignoreCase = true) ||
+            model.id.equals("067852", ignoreCase = true)) {
+            return true
+        }
+        return false
+    }
+
+    /** Triple-connection check by model name or detected device properties. */
+    fun isTripleConnectionModel(context: Context): Boolean {
+        val model = current(context) ?: detected(context)
+        if (isTripleConnectionModel(model)) return true
+        val devName = prefs(context).getString(KEY_DEVICE_NAME, null)
+        if (isTripleConnectionModelName(devName)) return true
+        val btName = try { BudsDevice.find(context)?.name } catch (_: Throwable) { null }
+        if (isTripleConnectionModelName(btName)) return true
+        return false
+    }
 
     /**
      * True once this model's buds have reported "in ear". Some models have no in-ear sensor and always report "out"

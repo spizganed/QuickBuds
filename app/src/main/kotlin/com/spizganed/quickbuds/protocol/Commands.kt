@@ -394,7 +394,7 @@ internal object Commands {
     fun queryDevices(): ByteArray = OpoProtocol.buildPacket(OpoProtocol.CMD_QUERY_DEVICES)
 
     /** The MAC in written order, as the connect and preferred writes send it. */
-    private fun macBytes(mac: String): ByteArray = mac.split(":").map { it.toInt(16).toByte() }.toByteArray()
+    internal fun macBytes(mac: String): ByteArray = mac.split(":").map { it.toInt(16).toByte() }.toByteArray()
 
     /** `0x0429 01|02 <MAC>`: connect or disconnect a device. */
     fun connectDevice(mac: String, on: Boolean): ByteArray =

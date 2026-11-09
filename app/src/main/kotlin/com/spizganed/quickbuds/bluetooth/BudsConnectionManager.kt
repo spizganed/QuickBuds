@@ -742,9 +742,65 @@ class BudsConnectionManager(private val context: Context) {
 
     fun refreshDevices() = sendRaw(Commands.queryDevices(), "query devices")
 
-    /** Connects or disconnects another device on the list; the buds push the new list. */
-    fun connectDevice(mac: String, on: Boolean) =
-        sendRaw(Commands.connectDevice(mac, on),"${if (on) "Connect" else "Disconnect"} $mac")
+    /** Connects or disconnects another device on the list; handles endianness, retries, and refreshes. */
+    fun connectDevice(mac: String, on: Boolean) {
+        val revMac = mac.split(":").reversed().joinToString(":")
+        if (on) {
+            sendRaw(Commands.connectDevice(mac, true), "Connect $mac")
+            Thread {
+                try {
+                    Thread.sleep(300)
+                    sendRawBlocking(Commands.connectDevice(revMac, true), "Connect rev $mac")
+                    Thread.sleep(1200)
+                    sendRawBlocking(Commands.queryDevices(), "refresh devices after connect")
+                } catch (_: Exception) {}
+            }.start()
+            return
+        }
+        Thread {
+            try {
+                log("DISCONNECT $mac: starting disconnect sequence")
+                // 1. Send targeted vendor disconnect commands (0x0429 02 and 0x0429 03 unpair)
+                sendRawBlocking(Commands.connectDevice(mac, false), "Disconnect $mac")
+                if (revMac != mac) {
+                    sendRawBlocking(Commands.connectDevice(revMac, false), "Disconnect rev $mac")
+                }
+                val unpair1 = byteArrayOf(0x03) + Commands.macBytes(mac)
+                sendRawBlocking(OpoProtocol.buildPacket(OpoProtocol.CMD_MULTI_CONNECT, payload = unpair1), "Unpair $mac")
+                if (revMac != mac) {
+                    val unpair2 = byteArrayOf(0x03) + Commands.macBytes(revMac)
+                    sendRawBlocking(OpoProtocol.buildPacket(OpoProtocol.CMD_MULTI_CONNECT, payload = unpair2), "Unpair rev $mac")
+                }
+
+                // 2. Hardware multipoint link drop:
+                // Disable multipoint connection so the earbuds' Bluetooth controller
+                // terminates the secondary phone's Bluetooth ACL connection.
+                notePending(Feature.DUAL_DEVICE, false)
+                sendRawBlocking(Commands.feature(Feature.DUAL_DEVICE, false), "Drop peer: Dual off")
+                Thread.sleep(VERIFY_DELAY_MS)
+                sendRawBlocking(statusQuery(), "verify features dual off")
+                sendRawBlocking(Commands.dualFollowup(false), "dual followup off")
+
+                // Keep off for 1.5s so the earbuds baseband controller completely tears down the ACL link
+                Thread.sleep(1500)
+
+                // Restore dual/triple connection mode so the earbuds re-enable multipoint standby
+                notePending(Feature.DUAL_DEVICE, true)
+                sendRawBlocking(Commands.feature(Feature.DUAL_DEVICE, true), "Restore multipoint: Dual on")
+                Thread.sleep(VERIFY_DELAY_MS)
+                sendRawBlocking(statusQuery(), "verify features dual on")
+                sendRawBlocking(Commands.dualFollowup(true), "dual followup on")
+
+                // 3. Query the buds for the genuine hardware device list
+                Thread.sleep(1000)
+                sendRawBlocking(Commands.queryDevices(), "refresh devices after disconnect")
+                Thread.sleep(1500)
+                sendRawBlocking(Commands.queryDevices(), "second refresh devices")
+            } catch (e: Exception) {
+                log("DISCONNECT $mac failed: ${e.message}")
+            }
+        }.start()
+    }
 
     fun setPreferred(mac: String?) {
         Thread {
