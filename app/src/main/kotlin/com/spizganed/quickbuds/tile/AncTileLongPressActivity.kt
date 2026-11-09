@@ -8,14 +8,18 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
+import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.Feature
+import com.spizganed.quickbuds.ui.MainActivity
 import com.spizganed.quickbuds.ui.Palette
 import com.spizganed.quickbuds.ui.ThemeRes
 import com.spizganed.quickbuds.widget.WidgetStateStore
@@ -106,6 +110,7 @@ class AncTileLongPressActivity : Activity() {
         addFeatureSwitch("LHDC", Feature.HIRES_CODEC)
         addFeatureSwitch("Spatial Sound", Feature.SPATIAL_SOUND)
         addLowLatencySwitch()
+        addMoreRow()
 
         setContentView(root)
     }
@@ -172,6 +177,56 @@ class AncTileLongPressActivity : Activity() {
         val row = LinearLayout.LayoutParams(-1, dp(52))
         row.topMargin = dp(2)
         root.addView(toggle, row)
+    }
+
+    private fun addMoreRow() {
+        val divider = View(this).apply {
+            setBackgroundColor(palette.outline)
+        }
+        val divLp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply {
+            topMargin = dp(8)
+            bottomMargin = dp(4)
+        }
+        root.addView(divider, divLp)
+
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(12), 0, dp(12), 0)
+            background = ThemeRes.ripple(this@AncTileLongPressActivity, GradientDrawable().apply {
+                setColor(Color.TRANSPARENT)
+                cornerRadius = dp(14).toFloat()
+            })
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                val intent = Intent(this@AncTileLongPressActivity, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                startActivity(intent)
+                finish()
+            }
+        }
+
+        val label = TextView(this).apply {
+            text = "More :"
+            textSize = 15f
+            setTextColor(palette.text)
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        row.addView(label, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+
+        val chevron = ImageView(this).apply {
+            setImageDrawable(ThemeRes.tint(this@AncTileLongPressActivity, R.drawable.ic_chevron_right, palette.accent))
+            scaleType = ImageView.ScaleType.FIT_CENTER
+        }
+        row.addView(chevron, LinearLayout.LayoutParams(dp(20), dp(20)))
+
+        val rowLp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(46)).apply {
+            topMargin = dp(2)
+        }
+        root.addView(row, rowLp)
     }
 
     private fun addFeatureSwitch(label: String, feature: Int) {
