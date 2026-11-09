@@ -759,6 +759,7 @@ class BudsConnectionManager(private val context: Context) {
         }
         Thread {
             try {
+                log("DISCONNECT $mac: starting disconnect sequence")
                 // 1. Send targeted vendor disconnect commands (0x0429 02 and 0x0429 03 unpair)
                 sendRawBlocking(Commands.connectDevice(mac, false), "Disconnect $mac")
                 if (revMac != mac) {
@@ -772,17 +773,22 @@ class BudsConnectionManager(private val context: Context) {
                 }
 
                 // 2. Hardware multipoint link drop:
-                // Temporarily disable dual connection so the earbuds' Bluetooth controller
-                // forcefully drops the peer device's Bluetooth ACL link.
-                Thread.sleep(350)
+                // Disable multipoint connection so the earbuds' Bluetooth controller
+                // terminates the secondary phone's Bluetooth ACL connection.
+                notePending(Feature.DUAL_DEVICE, false)
                 sendRawBlocking(Commands.feature(Feature.DUAL_DEVICE, false), "Drop peer: Dual off")
+                Thread.sleep(VERIFY_DELAY_MS)
+                sendRawBlocking(statusQuery(), "verify features dual off")
                 sendRawBlocking(Commands.dualFollowup(false), "dual followup off")
 
-                // Keep off briefly to allow the Bluetooth controller to complete teardown
-                Thread.sleep(600)
+                // Keep off for 1.5s so the earbuds baseband controller completely tears down the ACL link
+                Thread.sleep(1500)
 
-                // Restore dual/triple connection mode so the earbuds remain in multipoint standby
+                // Restore dual/triple connection mode so the earbuds re-enable multipoint standby
+                notePending(Feature.DUAL_DEVICE, true)
                 sendRawBlocking(Commands.feature(Feature.DUAL_DEVICE, true), "Restore multipoint: Dual on")
+                Thread.sleep(VERIFY_DELAY_MS)
+                sendRawBlocking(statusQuery(), "verify features dual on")
                 sendRawBlocking(Commands.dualFollowup(true), "dual followup on")
 
                 // 3. Query the buds for the genuine hardware device list
