@@ -567,6 +567,33 @@ Every part must be `1`-`3`.
 - **No in-ear sensor** `[CAPTURE]` (report #46, and the logs of the T200, T200x and Nord Buds 3r): these models answer `1` (out) for a bud in every state. They answer `0` or `4` when it sits in the case. The vendor's `wearDetection` flag does not tell. The Bullets Wireless Z3 and the Buds Ace lack it and report `3`. The app therefore shows `1` and `5` as in the ear, with no wear label, until the buds report `3` or `7` once. It remembers that per model.
 - Lid close `[CAPTURE]`: about 1 s before the socket drops, the pushes fall to `0`, ending with `01 00 02 00 03 00`. No lasting "closed" state exists. The app logs `Case closed` and skips the reconnect retries. Opening the lid brings `04 04 04` and the case battery.
 
+### Other battery sources `[VENDOR]`
+
+The RFCOMM link is not the only source. HeyMelody reads two more. QuickBuds uses neither yet. No capture confirms them.
+
+- **BLE advertisement.** No connection is needed. The buds send manufacturer data of company `0x079A` (OPPO) or `0x072F` (OnePlus). realme uses `0xA408`. Numbers are little-endian.
+
+| Offset | Size | Field |
+|---|---|---|
+| 0 | 3 | Product id |
+| 3 | 2 | Flags |
+| 5 | 2 | High byte `0x98`; low byte is `01` or `03` |
+| then | 1 | Pairing state, if flag bit 1 |
+| then | 6 | Other address, if flag bit 2 |
+| then | 1 | Earbuds status, if flag bit 3 |
+| then | 3 | Battery left, right, case, if flag bit 4 |
+| then | 1 | Colour, if flag bit 5 |
+| then | 2 | CRC16 value, if flag bit 6 |
+
+  - Flag bit 0 must be set, or the packet is not a fast-pairing packet.
+  - A battery byte has a valid flag in bit 0. When it is 0, the level is unknown. Else the level is `(byte >> 1) & 0x7F`.
+  - Earbuds status: bit 0 is lid open. Bits 1 to 4 give the state of each bud (in the ear or in the case). The mapping is unknown.
+  - The realme layout is at least 18 bytes. The address is at offset 8 and the lid bit is at offset 14, bit 0. Its battery bytes are unknown.
+- **Call-audio event.** The buds send the AT command `+VDBTY` over the call-audio link. Android turns it into the broadcast `android.bluetooth.headset.action.VENDOR_SPECIFIC_HEADSET_EVENT`. The arguments are `[count, id, level, ...]`. Id 1 is left, 2 is right, 3 is the case. The level is a percent. A level of 0 is dropped. The command `+VDRV` carries the firmware versions.
+- **System level.** Android keeps one battery level for each paired device. It has no left, right or case split.
+
+Open: which models send these, and if the Air3i case level (report #184) is in them. A scan near real buds answers this.
+
 Per-model battery and wearing rules are in section 21.8.
 
 **Code:** `protocol/Battery.kt`; `core/src/msg.rs`.
@@ -811,7 +838,8 @@ speechPerception, `34` meetingAssistant, `35` longPressVolume, `37` swiftPair, `
 
 Ids the vendor app also builds: `0D` camera tap, `14` voice wakeup, `15` smart call, `19` voice command,
 `22`-`24` neck health, `34` meeting assistant, `39` incoming-call control. Decided against: voice
-wakeup `14`, voice command `19`, call control `39`, neck health, meeting assistant `34` `[TESTED]`.
+wakeup `14`, voice command `19`, call control `39`, meeting assistant `34`. Planned, not built: neck health
+(needs a capture first) and the camera tap `0D`. Both need no server and no vendor app `[TESTED]`.
 
 realme Link writes the same ids: dynamic sound `1D`, enhance voice `09`, wind noise `1A`, game mode
 `06`, wear `04`, dual `11`, Hi-Res `18`, 3D sound `1B` `[VENDOR]`. A second "enhance voice" setter

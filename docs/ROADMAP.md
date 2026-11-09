@@ -20,6 +20,19 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
     translation setting (`0x0428`).
   - Find my phone (issue #24): the frame the buds send for the tap action.
 
+- **Features that read the buds and act on the phone.** Rule: no server and no vendor system app. Hide each one
+  behind a model flag until an owner confirms it.
+  - Head gestures: a nod answers a call and a shake declines it.
+  - Fall detection and lost remind: a notification with "Find my earbuds".
+  - Neck health: needs a capture first.
+  - Sleep detection, tap level, Spotify Tap and the camera tap.
+  - Swift pair: a popup when the case lid opens.
+  - A gesture that starts an app.
+- **More battery sources.** Read the BLE advertisement and the call-audio event. Use them as a fallback when another
+  app holds the RFCOMM link, and for the case level. Captures wanted: the advertisement bytes of real buds.
+- **Refactor before new brands.** Put each brand behind one driver interface (connect, battery, noise control, find,
+  gestures). The OPPO protocol becomes the first driver.
+
 ## Parked
 
 - **Other brands**, in this order. Start after about 100 models (80% of the list) are confirmed. Each brand is a
@@ -61,14 +74,12 @@ These work in code but no owner has confirmed them. They count as working until 
   - Voice wakeup (`0x14`, Breeno).
   - Voice commands (`0x19`, Chinese only).
   - Incoming-call voice control (`0x39`).
-  - Neck health and spine health (`0x22`-`0x24`, `0x0421`).
   - Meeting assistant (`0x34`).
   - Zen mode and white noise (server sound packs).
-  - The tap camera shutter.
+  - Personal dress (server skins).
   - AI translation, summary and clear call (ColorOS only).
 - **Multi-conversation** (`0x042E`) and the **LE Audio action** (`0x0424`).
-- **HeyMelody features no model uses:** conversation mode (`smartCall`, `0x011D`), Spotify Tap
-  (`spyTap`) and fall detection (`deviceLostRemind`, Enco Clip2 only).
+- **HeyMelody feature no model uses:** conversation mode (`smartCall`, `0x011D`).
 - **HeyMelody pages with no value here:** Earphones Lab, Connection info (the status chip shows it),
   realme's "More functions", skins, guides, tutorials and diagnostics.
 - **3D buds view** (the Aman-Kumar-Yadava fork's flat-drawn buds and case) and its Samsung / OnePlus
