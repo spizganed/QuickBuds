@@ -24,7 +24,7 @@ hold separate copies.
 
 ## Release files
 
-`scripts/desktop-dist.sh <version>` builds the Windows zip and the Linux AppImage into `desktop-tauri/dist/`, on
+`scripts/desktop-dist.sh <version>` builds the Windows zip and the Linux AppImage into the folder dist in desktop-tauri, on
 Linux. The Windows exe is cross-built with `cargo-xwin`. It needs `cargo install cargo-xwin`,
 `rustup target add x86_64-pc-windows-msvc`, clang, lld, llvm, `zip` and podman. The Linux build runs in the image
 of `scripts/desktop-build.Containerfile` (Ubuntu 24.04, tauri-cli). With `QB_NATIVE=1` it builds Linux without
