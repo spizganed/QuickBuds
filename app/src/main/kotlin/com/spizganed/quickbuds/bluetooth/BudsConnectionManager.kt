@@ -775,14 +775,14 @@ class BudsConnectionManager(private val context: Context) {
                 // Temporarily disable dual connection so the earbuds' Bluetooth controller
                 // forcefully drops the peer device's Bluetooth ACL link.
                 Thread.sleep(350)
-                sendRawBlocking(Commands.setFeature(Feature.DUAL_DEVICE, 0), "Drop peer: Dual off")
+                sendRawBlocking(Commands.feature(Feature.DUAL_DEVICE, false), "Drop peer: Dual off")
                 sendRawBlocking(Commands.dualFollowup(false), "dual followup off")
 
                 // Keep off briefly to allow the Bluetooth controller to complete teardown
                 Thread.sleep(600)
 
                 // Restore dual/triple connection mode so the earbuds remain in multipoint standby
-                sendRawBlocking(Commands.setFeature(Feature.DUAL_DEVICE, 1), "Restore multipoint: Dual on")
+                sendRawBlocking(Commands.feature(Feature.DUAL_DEVICE, true), "Restore multipoint: Dual on")
                 sendRawBlocking(Commands.dualFollowup(true), "dual followup on")
 
                 // 3. Query the buds for the genuine hardware device list
