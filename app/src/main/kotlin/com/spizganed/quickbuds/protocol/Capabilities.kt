@@ -96,7 +96,7 @@ object Capabilities {
     }
 
     /** The game mode switch: `0x28` on buds with game sound types, else `0x06`. */
-    fun gameModeId(context: Context) = RowRules.gameModeId(commands(context))
+    fun gameModeId(context: Context) = RowRules.gameModeId(commands(context), ModelCatalog.current(context)?.json)
 
     /** The buds listed [id] in their last `0x810D` reply. Nothing read yet means no. */
     fun hasFeature(context: Context, id: Int): Boolean = reply(context)?.containsKey(id) == true

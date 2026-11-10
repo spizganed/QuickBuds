@@ -77,6 +77,24 @@ class RowRulesTest {
         assertFalse(RowRules.SPATIAL in RowRules.rows(m, live, bitmap))
     }
 
+    @Test fun phoneMade3dAudioIsHidden() {
+        val reply = mapOf(0x1B to 1)
+        val oneplus = JSONObject("""{"id":"X","name":"OnePlus X"}""")
+        val realme = JSONObject("""{"id":"Y","name":"realme Y","spatialToggle":1}""")
+        // No 0xEF03: the phone makes the effect, only OPPO and OnePlus phones can.
+        assertFalse(RowRules.SPATIAL in RowRules.rows(oneplus, reply, setOf(0x0403)))
+        assertTrue(RowRules.SPATIAL in RowRules.rows(oneplus, reply, setOf(0x0403, 0xEF03)))
+        // realme models make the effect in the buds; no bitmap read yet hides nothing.
+        assertTrue(RowRules.SPATIAL in RowRules.rows(realme, reply, setOf(0x0403)))
+        assertFalse(RowRules.phoneSpatial(oneplus, null))
+    }
+
+    @Test fun modelGameIdWins() {
+        val m = JSONObject("""{"id":"X","name":"X","gameId":6}""")
+        assertEquals(Feature.GAME_MODE, RowRules.gameModeId(setOf(OpoProtocol.CMD_GAME_SOUND), m))
+        assertEquals(Feature.GAME_MODE_MAIN, RowRules.gameModeId(setOf(OpoProtocol.CMD_GAME_SOUND), JSONObject("{}")))
+    }
+
     @Test fun nothingReadShowsNoConditionalRow() {
         assertEquals(setOf(RowRules.EARBUDS), RowRules.rows(model("OnePlus Buds 4"), null, null))
         assertEquals(setOf(RowRules.EARBUDS), RowRules.rows(null, null, null))

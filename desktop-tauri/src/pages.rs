@@ -160,7 +160,7 @@ pub fn earbud_json(s: &Snapshot) -> Value {
             "has": s.features.iter().any(|f| f.0 == FEATURE_WIND_NOISE) || (s.manual && s.model.is_some_and(|m| m["windMode"] == 1)),
             "on": s.features.contains(&(FEATURE_WIND_NOISE, 1)),
         },
-        "gameBusy": s.busy.contains(&s.caps.game_mode_id()),
+        "gameBusy": s.busy.contains(&crate::home_logic::game_id(s)),
     })
 }
 

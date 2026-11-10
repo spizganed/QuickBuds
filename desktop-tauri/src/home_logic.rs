@@ -35,6 +35,19 @@ pub(crate) fn spatial_by_type(s: &Snapshot) -> bool {
     exclusive(s) && (s.caps.supports(CMD_QUERY_SPATIAL_TYPE) || s.manual && head_tracking(s))
 }
 
+/// The game-mode id the buds write and read. A model's `gameId` wins: OnePlus Buds Pro 3 ignore `28` and take
+/// low latency on `06` (PROTOCOL.md section 16).
+pub(crate) fn game_id(s: &Snapshot) -> u8 {
+    s.model.and_then(|m| m["gameId"].as_u64()).filter(|&g| g > 0).map_or_else(|| s.caps.game_mode_id(), |g| g as u8)
+}
+
+/// A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect, and only OPPO and OnePlus
+/// phones can (PROTOCOL.md section 18). The `1B` switch then does nothing audible, so the row is hidden.
+pub(crate) fn phone_spatial(s: &Snapshot) -> bool {
+    let name = s.model.and_then(|m| m["name"].as_str()).unwrap_or("");
+    (name.starts_with("OnePlus") || name.starts_with("OPPO")) && exclusive(s) && s.caps.read() && !s.caps.supports(0xEF03)
+}
+
 /// The model's `spatialModes` has `2`: Off / Fixed / Head tracking instead of a plain switch.
 pub(crate) fn head_tracking(s: &Snapshot) -> bool {
     s.model.is_some_and(|m| m["spatialModes"].as_array().is_some_and(|t| t.iter().any(|v| *v == 2)))

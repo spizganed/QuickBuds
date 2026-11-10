@@ -88,7 +88,7 @@ object RowRules {
         if (has(Feature.WIND_NOISE)) out += WIND
         if (GAME_IDS.any { has(it) }) out += GAME
         if (has(Feature.HIRES_CODEC) || codecPicker(model, bitmap)) out += HIRES
-        if (has(Feature.SPATIAL_SOUND) || spatialByType(model, bitmap)) out += SPATIAL
+        if ((has(Feature.SPATIAL_SOUND) && !phoneSpatial(model, bitmap)) || spatialByType(model, bitmap)) out += SPATIAL
         if (has(Feature.GOLDEN_SOUND)) out += GOLDEN
         if (eqVisible(model, bitmap)) out += EQ
         if (has(Feature.DUAL_DEVICE)) out += DUAL
@@ -164,9 +164,26 @@ object RowRules {
         askQuery(model, bitmap)?.split(' ')?.map { it.toInt(16) }?.toSet()
             ?: (DEFAULT_IDS + if (asksWind(model)) setOf(Feature.WIND_NOISE) else emptySet())
 
-    /** The game-mode id the buds write and read. One place, for the ask list and the row. */
-    fun gameModeId(bitmap: Set<Int>?): Int =
-        if (bitmap != null && OpoProtocol.CMD_GAME_SOUND in bitmap) Feature.GAME_MODE_MAIN else Feature.GAME_MODE
+    /**
+     * The game-mode id the buds write and read. One place, for the ask list and the row.
+     * A model's `gameId` wins: OnePlus Buds Pro 3 ignore `28` and take low latency on `06` (PROTOCOL.md section 16).
+     */
+    fun gameModeId(bitmap: Set<Int>?, model: JSONObject? = null): Int =
+        model?.optInt("gameId")?.takeIf { it > 0 }
+            ?: if (bitmap != null && OpoProtocol.CMD_GAME_SOUND in bitmap) Feature.GAME_MODE_MAIN else Feature.GAME_MODE
+
+    /**
+     * A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect, and only OPPO and OnePlus
+     * phones can (PROTOCOL.md section 18). The `1B` switch then does nothing audible, so the row is hidden.
+     */
+    fun phoneSpatial(model: JSONObject?, bitmap: Set<Int>?): Boolean {
+        val name = model?.optString("name").orEmpty()
+        val heyMelody = name.startsWith("OnePlus") || name.startsWith("OPPO")
+        return heyMelody && model?.optInt("spatialToggle") != 1 && !bitmap.isNullOrEmpty() && BUDS_SPATIAL !in bitmap
+    }
+
+    /** Bitmap bit 43: the buds make the 3D effect themselves. */
+    private const val BUDS_SPATIAL = 0xEF03
 
     /** `0x012A` on the buds, or `spatialModes` with `2`: the 3D row takes a type through `0x0422`. */
     fun spatialByType(model: JSONObject?, bitmap: Set<Int>?): Boolean =

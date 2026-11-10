@@ -22,9 +22,9 @@ const FEATURES: &[Feature] = &[
     ("wind", "row_wind_noise_title", "Wind noise reduction", |s| {
         listed(s, FEATURE_WIND_NOISE) || s.manual && s.model.is_some_and(|m| m["windMode"] == 1)
     }),
-    ("game", "row_game_title", "Low latency", |s| has_feature(&s.features, s.caps.game_mode_id())),
+    ("game", "row_game_title", "Low latency", |s| has_feature(&s.features, crate::home_logic::game_id(s))),
     ("hires", "row_hires_title", "High-quality audio", |s| listed(s, FEATURE_HIRES) || crate::home_logic::codec_picker(s)),
-    ("spatial", "row_spatial_title", "3D audio", |s| listed(s, FEATURE_SPATIAL) || crate::home_logic::spatial_by_type(s)),
+    ("spatial", "row_spatial_title", "3D audio", |s| (listed(s, FEATURE_SPATIAL) && !crate::home_logic::phone_spatial(s)) || crate::home_logic::spatial_by_type(s)),
     ("golden", "row_golden_title", "Hearing profile", |s| has_feature(&s.features, FEATURE_HEARING)),
     ("eq", "row_eq_title", "Equalizer", |s| eq_has(s.model, &s.caps)),
     ("dual", "dual_title", "Dual connection", |s| has_feature(&s.features, FEATURE_DUAL)),

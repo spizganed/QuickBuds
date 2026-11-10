@@ -411,7 +411,7 @@ impl<'a> Conn<'a> {
                         Some(x) => x.1 = value,
                         None => self.s.features.push((id, value)),
                     }
-                    if id == self.s.caps.game_mode_id() { self.s.low_latency = Some(value == 1); }
+                    if id == crate::home_logic::game_id(&self.s) { self.s.low_latency = Some(value == 1); }
                     changed = true;
                 }
                 Out::Busy { key, on } => {
@@ -494,7 +494,7 @@ impl<'a> Conn<'a> {
                     }
                     Some(Event::GameMode(pl)) => {
                         if let Some(on) = game_on(pl, crate::load_settings()["product_id"].as_str()) {
-                            let key = self.s.caps.game_mode_id();
+                            let key = crate::home_logic::game_id(&self.s);
                             changed |= self.exec(sync.engine.report(&[(key, on as u8)], None, now_ms(), true), sync)?;
                         }
                     }
@@ -580,7 +580,7 @@ impl<'a> Conn<'a> {
             Event::Features(f) | Event::FeaturePush(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 // Game mode and Hi-Res follow the engine: no hold, so only the buds move them.
-                let game = s.caps.game_mode_id();
+                let game = crate::home_logic::game_id(s);
                 s.low_latency = get(game).or(s.low_latency);
                 s.bass_on = get(FEATURE_BASSWAVE).map(|v| held(FEATURE_BASSWAVE, v)).or(s.bass_on);
                 for (id, v) in f {
@@ -727,7 +727,7 @@ impl<'a> Conn<'a> {
                     }
                     Cmd::LowLatency(on) => {
                         // One engine operation: the switch moves when the buds push the state.
-                        let key = self.s.caps.game_mode_id();
+                        let key = crate::home_logic::game_id(&self.s);
                         // A model whose buds apply the write and never push sets "gameConfirm":"read" (T300, T310).
                         let confirm = if self.s.model.is_some_and(|m| m["gameConfirm"] == "read") { Confirm::Read } else { Confirm::Push };
                         log("NOTE", Vec::new(), Some(format!("SYNC: tap key=0x{key:02X} on={on} confirm={confirm:?}")));
@@ -764,7 +764,7 @@ impl<'a> Conn<'a> {
                     // Power saving restarts the buds: the link drops and the idle rescan reconnects.
                     // Game mode and Hi-Res follow the engine: no hold, and no local move.
                     Cmd::Features(changes) => {
-                        let game = self.s.caps.game_mode_id();
+                        let game = crate::home_logic::game_id(&self.s);
                         for &(id, on) in &changes {
                             if id == FEATURE_HIRES || id == game { continue; }
                             self.hold(id, on);
