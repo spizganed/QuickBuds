@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Telefonu bul</string>
     <string name="row_find_phone_sub">Kulaklık hareketi bu telefonu çaldırır</string>
     <string name="find_phone_ringing">Kulaklıkların bu telefonu çaldırıyor</string>
+    <string name="row_auto_answer_title">Aramaları otomatik yanıtla</string>
+    <string name="row_auto_answer_sub">Kulaklıklar gelen aramaları otomatik yanıtlar</string>
     <string name="row_power_saving_title">Güç tasarrufu</string>
     <string name="row_power_saving_sub">Daha uzun pil ömrü için ekstraları kapatır</string>
     <string name="power_saving_confirm">Kulaklıklar yeniden başlatılacak.</string>

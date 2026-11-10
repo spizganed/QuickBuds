@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Tìm điện thoại</string>
     <string name="row_find_phone_sub">Cử chỉ trên tai nghe làm điện thoại này đổ chuông</string>
     <string name="find_phone_ringing">Tai nghe đang làm điện thoại này đổ chuông</string>
+    <string name="row_auto_answer_title">Tự động trả lời cuộc gọi</string>
+    <string name="row_auto_answer_sub">Tai nghe tự động trả lời cuộc gọi đến</string>
     <string name="row_power_saving_title">Tiết kiệm pin</string>
     <string name="row_power_saving_sub">Tắt tính năng phụ để pin lâu hơn</string>
     <string name="power_saving_confirm">Tai nghe sẽ khởi động lại.</string>

@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Telefon keresése</string>
     <string name="row_find_phone_sub">Egy fülhallgató-mozdulat megcsörgeti ezt a telefont</string>
     <string name="find_phone_ringing">A fülhallgatód megcsörgeti ezt a telefont</string>
+    <string name="row_auto_answer_title">Hívások automatikus fogadása</string>
+    <string name="row_auto_answer_sub">A fülhallgató automatikusan fogadja a bejövő hívásokat</string>
     <string name="row_power_saving_title">Energiatakarékosság</string>
     <string name="row_power_saving_sub">Kikapcsolja az extrákat a hosszabb üzemidőért</string>
     <string name="power_saving_confirm">A fülhallgatók újraindulnak.</string>

@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Trova telefono</string>
     <string name="row_find_phone_sub">Un gesto sull\'auricolare fa squillare questo telefono</string>
     <string name="find_phone_ringing">I tuoi auricolari fanno squillare questo telefono</string>
+    <string name="row_auto_answer_title">Risposta automatica alle chiamate</string>
+    <string name="row_auto_answer_sub">Gli auricolari rispondono automaticamente alle chiamate in arrivo</string>
     <string name="row_power_saving_title">Risparmio energetico</string>
     <string name="row_power_saving_sub">Disattiva gli extra per più autonomia</string>
     <string name="power_saving_confirm">Gli auricolari si riavvieranno.</string>

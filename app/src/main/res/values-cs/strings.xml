@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Najít telefon</string>
     <string name="row_find_phone_sub">Gesto na sluchátku rozezvoní tento telefon</string>
     <string name="find_phone_ringing">Sluchátka zvoní na tento telefon</string>
+    <string name="row_auto_answer_title">Automatické přijímání hovorů</string>
+    <string name="row_auto_answer_sub">Sluchátka sama přijímají příchozí hovory</string>
     <string name="row_power_saving_title">Úspora energie</string>
     <string name="row_power_saving_sub">Vypne doplňky pro delší výdrž</string>
     <string name="power_saving_confirm">Sluchátka se restartují.</string>

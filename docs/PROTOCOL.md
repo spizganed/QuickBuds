@@ -792,7 +792,7 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 | `05` | ? | First id in every query; the vendor app ignores the value and never writes it `[VENDOR]` |
 | `06` | Game mode, low latency | the apps call it Low latency mode; all models except where the bitmap has `0x0423`; there it is `28` |
 | `07` | Party mode | realme Link writes `0x0403 07` (setting type 12) `[VENDOR]` |
-| `08` | Auto-answer calls | realme Link writes `0x0403 08` (setting type 16, item `ITEM_AUTO_ANSWER`, 18 of our realme models); the T310 answers `08` in the status read `[VENDOR]` |
+| `08` | Auto-answer calls | realme Link writes `0x0403 08` (setting type 16, item `ITEM_AUTO_ANSWER`, 17 of our realme models); the T310 answers `08` in the status read `[VENDOR]`. realme Link never reads it back, so QuickBuds keeps the last tap for models with the `autoAnswer` flag |
 | `09` | Vocal enhancement | `[VENDOR]` |
 | `0B` | Golden Sound; the apps call it Hearing profile | section 20 `[CAPTURE]` |
 | `0C` | Personalised ANC applied | the apps call it Personalised noise cancelling; the buds set it when a result applies |

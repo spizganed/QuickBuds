@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">尋找手機</string>
     <string name="row_find_phone_sub">耳機手勢讓這支手機響鈴</string>
     <string name="find_phone_ringing">耳機正在讓這支手機響鈴</string>
+    <string name="row_auto_answer_title">自動接聽來電</string>
+    <string name="row_auto_answer_sub">耳機自動接聽來電</string>
     <string name="row_power_saving_title">省電模式</string>
     <string name="row_power_saving_sub">關閉非必要功能以延長續航</string>
     <string name="power_saving_confirm">耳機將會重新啟動。</string>

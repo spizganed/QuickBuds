@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Trouver le téléphone</string>
     <string name="row_find_phone_sub">Un geste sur l\'écouteur fait sonner ce téléphone</string>
     <string name="find_phone_ringing">Tes écouteurs font sonner ce téléphone</string>
+    <string name="row_auto_answer_title">Réponse automatique aux appels</string>
+    <string name="row_auto_answer_sub">Les écouteurs répondent automatiquement aux appels entrants</string>
     <string name="row_power_saving_title">Économie d\'énergie</string>
     <string name="row_power_saving_sub">Désactive les extras pour plus d\'autonomie</string>
     <string name="power_saving_confirm">Les écouteurs vont redémarrer.</string>

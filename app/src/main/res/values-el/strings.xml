@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Εύρεση τηλεφώνου</string>
     <string name="row_find_phone_sub">Μια κίνηση στο ακουστικό κάνει αυτό το τηλέφωνο να χτυπά</string>
     <string name="find_phone_ringing">Τα ακουστικά σου κάνουν αυτό το τηλέφωνο να χτυπά</string>
+    <string name="row_auto_answer_title">Αυτόματη απάντηση κλήσεων</string>
+    <string name="row_auto_answer_sub">Τα ακουστικά απαντούν αυτόματα στις εισερχόμενες κλήσεις</string>
     <string name="row_power_saving_title">Εξοικονόμηση ενέργειας</string>
     <string name="row_power_saving_sub">Κλείνει τα επιπλέον για μεγαλύτερη αυτονομία</string>
     <string name="power_saving_confirm">Τα ακουστικά θα επανεκκινηθούν.</string>

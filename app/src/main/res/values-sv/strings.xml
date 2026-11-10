@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Hitta telefonen</string>
     <string name="row_find_phone_sub">En gest på hörsnäckan får telefonen att ringa</string>
     <string name="find_phone_ringing">Dina hörsnäckor får telefonen att ringa</string>
+    <string name="row_auto_answer_title">Svara automatiskt på samtal</string>
+    <string name="row_auto_answer_sub">Hörsnäckorna svarar automatiskt på inkommande samtal</string>
     <string name="row_power_saving_title">Energisparläge</string>
     <string name="row_power_saving_sub">Stänger av extrafunktioner för längre batteritid</string>
     <string name="power_saving_confirm">Hörlurarna startas om.</string>

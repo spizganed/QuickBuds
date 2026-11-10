@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">Encontrar telefone</string>
     <string name="row_find_phone_sub">Um gesto no fone faz este telefone tocar</string>
     <string name="find_phone_ringing">Seus fones estão fazendo este telefone tocar</string>
+    <string name="row_auto_answer_title">Atender chamadas automaticamente</string>
+    <string name="row_auto_answer_sub">Os fones atendem as chamadas recebidas automaticamente</string>
     <string name="row_power_saving_title">Poupança de energia</string>
     <string name="row_power_saving_sub">Desliga extras para mais autonomia</string>
     <string name="power_saving_confirm">Os auriculares vão reiniciar.</string>

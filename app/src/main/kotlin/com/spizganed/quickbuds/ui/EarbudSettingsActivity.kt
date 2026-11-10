@@ -244,6 +244,19 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             card.addView(SettingRowFactory.build(this, R.drawable.ic_volume, R.string.row_volume_enhancer_title,
                 R.string.row_volume_enhancer_sub, sw) { sw.performClick() })
         }
+        // Write-only too: realme Link never reads it back, so the last tap is remembered. Off by default, as there.
+        if (ModelCatalog.current(this)?.json?.optInt("autoAnswer") == 1) {
+            val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+            val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean("autoAnswer", false))
+            sw.setOnCheckedChangeListener { _, on ->
+                if (syncing) return@setOnCheckedChangeListener
+                prefs.edit().putBoolean("autoAnswer", on).apply()
+                manager?.setFeatures(Feature.AUTO_ANSWER to on)
+            }
+            if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
+            card.addView(SettingRowFactory.build(this, R.drawable.ic_devices, R.string.row_auto_answer_title,
+                R.string.row_auto_answer_sub, sw) { sw.performClick() })
+        }
         syncSwitch(Feature.ADAPTIVE_VOLUME, null, R.drawable.ic_volume,
             R.string.row_adaptive_volume_title, R.string.row_adaptive_volume_sub)
         syncSwitch(Feature.ADAPTIVE_EAR, null, R.drawable.ic_earbud,

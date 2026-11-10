@@ -109,6 +109,8 @@
     <string name="row_find_phone_title">查找手机</string>
     <string name="row_find_phone_sub">耳机手势让这部手机响铃</string>
     <string name="find_phone_ringing">耳机正在让这部手机响铃</string>
+    <string name="row_auto_answer_title">自动接听来电</string>
+    <string name="row_auto_answer_sub">耳机自动接听来电</string>
     <string name="row_power_saving_title">省电模式</string>
     <string name="row_power_saving_sub">关闭非必要功能以延长续航</string>
     <string name="power_saving_confirm">耳机将会重启。</string>
