@@ -479,7 +479,7 @@
     <string name="test_sub">हर फ़ीचर आज़माएँ और नतीजा भेजें</string>
     <string name="test_ask_body">इन ईयरबड्स पर QuickBuds अभी पुष्ट नहीं है। एक छोटा टेस्ट दिखाता है कि क्या काम करता है। भेजें टैप करने तक कुछ नहीं भेजा जाता।</string>
     <string name="test_ask_later">अभी नहीं</string>
-    <string name="test_intro">शुरू करें ईयरबड्स को फिर से जोड़ता है और लॉग साफ़ करता है। फिर अभी आज़माएँ दबाकर हर फ़ीचर खोलें, उसे आज़माएँ, यहाँ लौटें और उसे चिह्नित करें।</string>
+    <string name="test_intro">शुरू करें ईयरबड्स को फिर से जोड़ता है और लॉग साफ़ करता है। फिर अभी आज़माएँ दबाकर हर फ़ीचर खोलें, उसे आज़माएँ, यहाँ लौटें और उसे चिह्नित करें। यह टेस्ट सिर्फ़ वही जाँचता है जो QuickBuds पहले से करता है। कोई फ़ीचर जोड़ने या ठीक करने के लिए HeyMelody या realme Link का Bluetooth snoop log भेजें।</string>
     <string name="test_start">शुरू करें</string>
     <string name="test_restart">फिर से शुरू करें</string>
     <string name="test_reconnecting">फिर से जोड़ रहे हैं…</string>

@@ -477,7 +477,7 @@
     <string name="test_sub">Prova varje funktion och skicka resultatet</string>
     <string name="test_ask_body">QuickBuds är inte bekräftat på de här hörlurarna än. Ett kort test visar vad som fungerar. Inget skickas förrän du trycker på Skicka.</string>
     <string name="test_ask_later">Inte nu</string>
-    <string name="test_intro">Start ansluter hörlurarna igen och rensar loggen. Öppna sedan varje funktion med Prova nu, prova den, kom tillbaka hit och markera den.</string>
+    <string name="test_intro">Start ansluter hörlurarna igen och rensar loggen. Öppna sedan varje funktion med Prova nu, prova den, kom tillbaka hit och markera den. Det här testet kontrollerar bara det som QuickBuds redan gör. Skicka en Bluetooth-snooplogg från HeyMelody eller realme Link för att lägga till eller laga en funktion.</string>
     <string name="test_start">Starta</string>
     <string name="test_restart">Börja om</string>
     <string name="test_reconnecting">Ansluter igen…</string>

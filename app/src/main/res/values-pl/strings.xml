@@ -477,7 +477,7 @@
     <string name="test_sub">Wypróbuj każdą funkcję i wyślij wynik</string>
     <string name="test_ask_body">QuickBuds nie jest jeszcze potwierdzony na tych słuchawkach. Krótki test pokazuje, co działa. Nic nie zostanie wysłane, dopóki nie dotkniesz Wyślij.</string>
     <string name="test_ask_later">Nie teraz</string>
-    <string name="test_intro">Start ponownie łączy słuchawki i czyści dziennik. Potem kliknij Wypróbuj, aby otworzyć każdą funkcję, wypróbuj ją, wróć tutaj i ją oznacz.</string>
+    <string name="test_intro">Start ponownie łączy słuchawki i czyści dziennik. Potem kliknij Wypróbuj, aby otworzyć każdą funkcję, wypróbuj ją, wróć tutaj i ją oznacz. Ten test sprawdza tylko to, co QuickBuds już potrafi. Aby dodać lub naprawić funkcję, wyślij log snoop Bluetooth z HeyMelody lub realme Link.</string>
     <string name="test_start">Start</string>
     <string name="test_restart">Zacznij od nowa</string>
     <string name="test_reconnecting">Ponowne łączenie…</string>

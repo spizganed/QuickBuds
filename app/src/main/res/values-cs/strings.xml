@@ -477,7 +477,7 @@
     <string name="test_sub">Vyzkoušejte každou funkci a odešlete výsledek</string>
     <string name="test_ask_body">QuickBuds zatím není na těchto sluchátkách potvrzen. Krátký test ukáže, co funguje. Nic se neodešle, dokud neklepnete na Odeslat.</string>
     <string name="test_ask_later">Teď ne</string>
-    <string name="test_intro">Start znovu připojí sluchátka a vymaže log. Pak klikněte na Vyzkoušet a otevřete každou funkci, vyzkoušejte ji, vraťte se sem a označte ji.</string>
+    <string name="test_intro">Start znovu připojí sluchátka a vymaže log. Pak klikněte na Vyzkoušet a otevřete každou funkci, vyzkoušejte ji, vraťte se sem a označte ji. Tento test jen ověřuje, co QuickBuds už umí. Chcete-li přidat nebo opravit funkci, pošlete Bluetooth snoop log z HeyMelody nebo realme Link.</string>
     <string name="test_start">Start</string>
     <string name="test_restart">Začít znovu</string>
     <string name="test_reconnecting">Opětovné připojování…</string>

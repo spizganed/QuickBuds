@@ -477,7 +477,7 @@
     <string name="test_sub">Prova ogni funzione e invia il risultato</string>
     <string name="test_ask_body">QuickBuds non è ancora confermato su questi auricolari. Un breve test mostra cosa funziona. Non viene inviato nulla finché non tocchi Invia.</string>
     <string name="test_ask_later">Non ora</string>
-    <string name="test_intro">Avvia ricollega gli auricolari e cancella il registro. Poi apri ogni funzione con «Prova ora», provala, torna qui e segnala.</string>
+    <string name="test_intro">Avvia ricollega gli auricolari e cancella il registro. Poi apri ogni funzione con «Prova ora», provala, torna qui e segnala. Questo test controlla solo ciò che QuickBuds fa già. Per aggiungere o correggere una funzione, invia un log snoop Bluetooth di HeyMelody o realme Link.</string>
     <string name="test_start">Avvia</string>
     <string name="test_restart">Ricomincia</string>
     <string name="test_reconnecting">Riconnessione…</string>

@@ -10,8 +10,8 @@ Two ways, from easy to thorough:
 | **1. The app's own log** | Only the app | Everything QuickBuds sends and receives |
 | **2. Bluetooth HCI snoop log** | Developer options, adb, Wireshark / tshark | Everything on the Bluetooth link, **HeyMelody's traffic included** |
 
-Start with 1. Use 2 to learn what HeyMelody sends for a setting. Use it also when a frame
-never shows in the app's log.
+The app's log shows only the commands that QuickBuds already knows. It cannot show a new command.
+For a missing setting, or a switch that does nothing, use 2. Use 1 for a fault in a feature that already works.
 
 ## 1. The app's own log
 
@@ -223,6 +223,7 @@ A guessed command fails silently on the earbuds.
 1. Disconnect other Bluetooth devices: the car, the watch, and other headphones.
 2. Open the vendor app and let it connect to the earbuds.
 3. Change only the setting that QuickBuds lacks. Turn it on, wait 5 s, turn it off, wait 5 s, turn it on.
+   Do not change other settings in the same test. A log without the missing setting cannot help.
 4. For a setting with more than 2 values, select each value. Wait 5 s between changes.
 5. Write down each change and its time.
 6. Record the screen of the vendor app during the test. Or take a screenshot of each step, with a number and a label.

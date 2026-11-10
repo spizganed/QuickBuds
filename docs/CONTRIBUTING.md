@@ -7,6 +7,9 @@ contributions are welcome too.
 
 ## Reporting a model
 
+A model report confirms what QuickBuds already does. It cannot add or fix a feature. For a missing setting or a
+switch that does nothing, send a snoop log: [Send a snoop log for a missing feature](./PACKET-CAPTURE.md#send-a-snoop-log-for-a-missing-feature).
+
 The quickest way is in the app: Settings › **Test my earbuds** (desktop: App settings). Tap **Start**,
 then open each feature with **Try it now**, try it, and mark the result. The **Diagnosis** section
 lists each row that the buds' answers do not explain. The app writes one JSON line with the model, the

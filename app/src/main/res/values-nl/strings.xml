@@ -477,7 +477,7 @@
     <string name="test_sub">Probeer elke functie en verstuur het resultaat</string>
     <string name="test_ask_body">QuickBuds is nog niet bevestigd op deze oordopjes. Een korte test laat zien wat werkt. Er wordt niets verstuurd tot je op Versturen tikt.</string>
     <string name="test_ask_later">Niet nu</string>
-    <string name="test_intro">Start verbindt de oordopjes opnieuw en wist het logboek. Open daarna elke functie met Nu proberen, probeer hem, kom hier terug en markeer hem.</string>
+    <string name="test_intro">Start verbindt de oordopjes opnieuw en wist het logboek. Open daarna elke functie met Nu proberen, probeer hem, kom hier terug en markeer hem. Deze test controleert alleen wat QuickBuds al doet. Stuur een Bluetooth-snooplog van HeyMelody of realme Link om een functie toe te voegen of te repareren.</string>
     <string name="test_start">Start</string>
     <string name="test_restart">Opnieuw beginnen</string>
     <string name="test_reconnecting">Opnieuw verbinden…</string>

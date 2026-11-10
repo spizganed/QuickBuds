@@ -7,6 +7,8 @@ body:
       value: >-
         QuickBuds supports OnePlus, OPPO, realme and DIZO earbuds only. Other brands use a different
         protocol, and QuickBuds cannot connect to them.
+        A model report confirms what QuickBuds already does. It cannot add or fix a feature.
+        Only a Bluetooth snoop log of HeyMelody or realme Link can do that: use the Missing feature form.
   - type: dropdown
     id: brand
     attributes:

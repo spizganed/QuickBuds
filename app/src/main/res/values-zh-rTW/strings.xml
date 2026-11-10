@@ -479,7 +479,7 @@
     <string name="test_sub">逐一試用各項功能並傳送結果</string>
     <string name="test_ask_body">QuickBuds 尚未在這款耳機上獲得確認。簡短的測試可以顯示哪些功能可用。在您輕觸「傳送」之前，不會傳送任何內容。</string>
     <string name="test_ask_later">以後再說</string>
-    <string name="test_intro">「開始」會重新連線耳機並清除記錄。接著使用「立即試用」開啟各項功能，試用後回到這裡進行標記。</string>
+    <string name="test_intro">「開始」會重新連線耳機並清除記錄。接著使用「立即試用」開啟各項功能，試用後回到這裡進行標記。此測試只檢查 QuickBuds 已有的功能。要新增或修正功能，請傳送 HeyMelody 或 realme Link 的藍牙 snoop 記錄。</string>
     <string name="test_start">開始</string>
     <string name="test_restart">重新開始</string>
     <string name="test_reconnecting">正在重新連線…</string>

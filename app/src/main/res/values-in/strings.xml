@@ -479,7 +479,7 @@
     <string name="test_sub">Coba setiap fitur dan kirim hasilnya</string>
     <string name="test_ask_body">QuickBuds belum dikonfirmasi pada earbud ini. Tes singkat menunjukkan apa yang berfungsi. Tidak ada yang dikirim sampai Anda mengetuk Kirim.</string>
     <string name="test_ask_later">Jangan sekarang</string>
-    <string name="test_intro">Mulai menyambungkan ulang earbud dan menghapus log. Lalu buka setiap fitur dengan Coba sekarang, coba, kembali ke sini, dan tandai.</string>
+    <string name="test_intro">Mulai menyambungkan ulang earbud dan menghapus log. Lalu buka setiap fitur dengan Coba sekarang, coba, kembali ke sini, dan tandai. Tes ini hanya memeriksa apa yang sudah dilakukan QuickBuds. Untuk menambah atau memperbaiki fitur, kirim log snoop Bluetooth dari HeyMelody atau realme Link.</string>
     <string name="test_start">Mulai</string>
     <string name="test_restart">Mulai lagi</string>
     <string name="test_reconnecting">Menyambungkan ulang…</string>

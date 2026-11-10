@@ -477,7 +477,7 @@
     <string name="test_sub">Próbálj ki minden funkciót, és küldd el az eredményt</string>
     <string name="test_ask_body">A QuickBuds még nincs megerősítve ezen a fülhallgatón. Egy rövid teszt megmutatja, mi működik. Semmi nem megy el, amíg nem koppintasz a Küldés gombra.</string>
     <string name="test_ask_later">Most nem</string>
-    <string name="test_intro">A Start újracsatlakoztatja a fülhallgatót, és törli a naplót. Ezután nyisd meg az egyes funkciókat a Kipróbálom gombbal, próbáld ki, gyere vissza, és jelöld meg.</string>
+    <string name="test_intro">A Start újracsatlakoztatja a fülhallgatót, és törli a naplót. Ezután nyisd meg az egyes funkciókat a Kipróbálom gombbal, próbáld ki, gyere vissza, és jelöld meg. Ez a teszt csak azt ellenőrzi, amit a QuickBuds már tud. Egy funkció hozzáadásához vagy javításához küldj Bluetooth snoop naplót a HeyMelodyból vagy a realme Linkből.</string>
     <string name="test_start">Start</string>
     <string name="test_restart">Újrakezdés</string>
     <string name="test_reconnecting">Újracsatlakozás…</string>

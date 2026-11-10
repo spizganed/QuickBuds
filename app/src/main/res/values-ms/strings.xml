@@ -477,7 +477,7 @@
     <string name="test_sub">Cuba setiap ciri dan hantar hasilnya</string>
     <string name="test_ask_body">QuickBuds belum disahkan pada fon telinga ini. Ujian ringkas menunjukkan apa yang berfungsi. Tiada apa-apa dihantar sehingga anda mengetik Hantar.</string>
     <string name="test_ask_later">Bukan sekarang</string>
-    <string name="test_intro">Mula menyambung semula fon telinga dan mengosongkan log. Kemudian buka setiap ciri dengan Cuba sekarang, cuba, kembali ke sini dan tandakannya.</string>
+    <string name="test_intro">Mula menyambung semula fon telinga dan mengosongkan log. Kemudian buka setiap ciri dengan Cuba sekarang, cuba, kembali ke sini dan tandakannya. Ujian ini hanya menyemak apa yang QuickBuds sudah lakukan. Untuk menambah atau membaiki ciri, hantar log snoop Bluetooth daripada HeyMelody atau realme Link.</string>
     <string name="test_start">Mula</string>
     <string name="test_restart">Mula semula</string>
     <string name="test_reconnecting">Menyambung semula…</string>

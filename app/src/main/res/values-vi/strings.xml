@@ -479,7 +479,7 @@
     <string name="test_sub">Thử từng tính năng và gửi kết quả</string>
     <string name="test_ask_body">QuickBuds chưa được xác nhận trên tai nghe này. Một bài kiểm tra ngắn cho thấy tính năng nào hoạt động. Không có gì được gửi cho đến khi bạn nhấn Gửi.</string>
     <string name="test_ask_later">Để sau</string>
-    <string name="test_intro">Bắt đầu sẽ kết nối lại tai nghe và xóa nhật ký. Sau đó nhấn Thử ngay để mở từng tính năng, thử tính năng đó, quay lại đây và đánh dấu.</string>
+    <string name="test_intro">Bắt đầu sẽ kết nối lại tai nghe và xóa nhật ký. Sau đó nhấn Thử ngay để mở từng tính năng, thử tính năng đó, quay lại đây và đánh dấu. Bài kiểm tra này chỉ kiểm tra những gì QuickBuds đã làm được. Để thêm hoặc sửa một tính năng, hãy gửi nhật ký snoop Bluetooth của HeyMelody hoặc realme Link.</string>
     <string name="test_start">Bắt đầu</string>
     <string name="test_restart">Bắt đầu lại</string>
     <string name="test_reconnecting">Đang kết nối lại…</string>

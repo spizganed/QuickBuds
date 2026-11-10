@@ -580,7 +580,7 @@
     <string name="test_sub">Try each feature and send the result</string>
     <string name="test_ask_body">QuickBuds is not confirmed on these earbuds yet. A short test shows what works. Nothing is sent until you tap Send.</string>
     <string name="test_ask_later">Not now</string>
-    <string name="test_intro">Start reconnects the earbuds and clears the log. Then open each feature with Try it now, try it, come back and mark it.</string>
+    <string name="test_intro">Start reconnects the earbuds and clears the log. Then open each feature with Try it now, try it, come back and mark it. This test only checks what QuickBuds already does. To add or fix a feature, send a Bluetooth snoop log of HeyMelody or realme Link.</string>
     <string name="test_start">Start</string>
     <string name="test_restart">Start again</string>
     <string name="test_reconnecting">Reconnecting…</string>

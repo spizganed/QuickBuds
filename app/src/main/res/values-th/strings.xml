@@ -479,7 +479,7 @@
     <string name="test_sub">ลองใช้ทุกฟีเจอร์แล้วส่งผลลัพธ์</string>
     <string name="test_ask_body">QuickBuds ยังไม่ได้รับการยืนยันกับหูฟังนี้ การทดสอบสั้น ๆ จะแสดงว่าอะไรใช้งานได้ ไม่มีสิ่งใดถูกส่งจนกว่าคุณจะแตะส่ง</string>
     <string name="test_ask_later">ไม่ใช่ตอนนี้</string>
-    <string name="test_intro">เริ่มจะเชื่อมต่อหูฟังใหม่และล้างบันทึก จากนั้นกดลองเลยเพื่อเปิดแต่ละฟีเจอร์ ลองใช้ แล้วกลับมาทำเครื่องหมาย</string>
+    <string name="test_intro">เริ่มจะเชื่อมต่อหูฟังใหม่และล้างบันทึก จากนั้นกดลองเลยเพื่อเปิดแต่ละฟีเจอร์ ลองใช้ แล้วกลับมาทำเครื่องหมาย การทดสอบนี้ตรวจเฉพาะสิ่งที่ QuickBuds ทำได้อยู่แล้ว หากต้องการเพิ่มหรือแก้ไขฟีเจอร์ ให้ส่ง Bluetooth snoop log ของ HeyMelody หรือ realme Link</string>
     <string name="test_start">เริ่ม</string>
     <string name="test_restart">เริ่มใหม่</string>
     <string name="test_reconnecting">กำลังเชื่อมต่อใหม่…</string>

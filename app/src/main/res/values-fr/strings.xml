@@ -477,7 +477,7 @@
     <string name="test_sub">Essayez chaque fonction et envoyez le résultat</string>
     <string name="test_ask_body">QuickBuds n\'est pas encore confirmé sur ces écouteurs. Un court test montre ce qui fonctionne. Rien n\'est envoyé avant que vous touchiez Envoyer.</string>
     <string name="test_ask_later">Pas maintenant</string>
-    <string name="test_intro">Démarrer reconnecte les écouteurs et efface le journal. Ouvrez ensuite chaque fonction avec « Essayer », essayez-la, revenez ici et notez-la.</string>
+    <string name="test_intro">Démarrer reconnecte les écouteurs et efface le journal. Ouvrez ensuite chaque fonction avec « Essayer », essayez-la, revenez ici et notez-la. Ce test vérifie seulement ce que QuickBuds fait déjà. Pour ajouter ou corriger une fonction, envoyez un journal snoop Bluetooth de HeyMelody ou realme Link.</string>
     <string name="test_start">Démarrer</string>
     <string name="test_restart">Recommencer</string>
     <string name="test_reconnecting">Reconnexion…</string>

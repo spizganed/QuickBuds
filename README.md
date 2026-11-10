@@ -119,13 +119,22 @@ realme Buds Wireless 2S, realme Buds Wireless 3 Neo, realme Buds Wireless 5 ANC,
 
 </details>
 
+### What helps the developer
+
+**Only a Bluetooth snoop log of HeyMelody or realme Link can add or fix a feature.** The developer does not own
+your earbuds. The snoop log shows the exact command that the vendor app sends. Nothing else shows it.
+
+The model test, Settings › Feedback and the app's log only show what QuickBuds already sends. They confirm that a
+feature works. They cannot show a command that QuickBuds does not know. A report with "this setting is missing" or
+"this switch does nothing" and no snoop log stays open until a snoop log arrives.
+
 **Own other buds? Please tell us what works.** In the app, Settings › Test my earbuds reconnects the buds.
 It runs a tour of each feature, shows a diagnosis and adds one JSON line to the report. The desktop uses App settings.
 
 The app offers this test once, after the first connect to a model that is not confirmed. Settings › Feedback
 sends a description and the log, without a GitHub account. Or open an
 [issue](https://github.com/spizganed/QuickBuds/issues). [CONTRIBUTING.md](./docs/CONTRIBUTING.md#reporting-a-model)
-says what to include. Each report lets the next release fix that model.
+says what to include. A report confirms or rules out the features that QuickBuds already has.
 
 The developer can answer a report. The answer shows once in the app, on the next daily count (see Privacy).
 To talk to the developer and other owners, join the [Discord server](https://discord.gg/pvsnEf9TrZ).

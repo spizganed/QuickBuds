@@ -477,7 +477,7 @@
     <string name="test_sub">প্রতিটি ফিচার চেষ্টা করে ফলাফল পাঠান</string>
     <string name="test_ask_body">এই ইয়ারবাডে QuickBuds এখনও নিশ্চিত নয়। একটি ছোট পরীক্ষা দেখায় কী কাজ করে। পাঠান চাপার আগে কিছুই পাঠানো হয় না।</string>
     <string name="test_ask_later">এখন নয়</string>
-    <string name="test_intro">শুরু করুন ইয়ারবাড আবার সংযুক্ত করে এবং লগ মুছে দেয়। তারপর প্রতিটি ফিচার খুলুন, এখনই চেষ্টা করুন চাপুন, চেষ্টা করুন, ফিরে এসে চিহ্নিত করুন।</string>
+    <string name="test_intro">শুরু করুন ইয়ারবাড আবার সংযুক্ত করে এবং লগ মুছে দেয়। তারপর প্রতিটি ফিচার খুলুন, এখনই চেষ্টা করুন চাপুন, চেষ্টা করুন, ফিরে এসে চিহ্নিত করুন। এই পরীক্ষা শুধু দেখে QuickBuds এখন কী করে। কোনো ফিচার যোগ বা ঠিক করতে HeyMelody বা realme Link-এর Bluetooth snoop log পাঠান।</string>
     <string name="test_start">শুরু করুন</string>
     <string name="test_restart">আবার শুরু করুন</string>
     <string name="test_reconnecting">আবার সংযুক্ত হচ্ছে…</string>

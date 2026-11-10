@@ -477,7 +477,7 @@
     <string name="test_sub">各機能を試して結果を送信</string>
     <string name="test_ask_body">QuickBuds はこのイヤホンでまだ確認されていません。短いテストで動く機能がわかります。「送信」をタップするまで何も送信されません。</string>
     <string name="test_ask_later">今はしない</string>
-    <string name="test_intro">「開始」でイヤホンを再接続し、ログを消去します。その後、「今すぐ試す」で各機能を開いて試し、ここに戻って記録してください。</string>
+    <string name="test_intro">「開始」でイヤホンを再接続し、ログを消去します。その後、「今すぐ試す」で各機能を開いて試し、ここに戻って記録してください。このテストは QuickBuds がすでにできることだけを確認します。機能の追加や修正には、HeyMelody または realme Link の Bluetooth スヌープログを送ってください。</string>
     <string name="test_start">開始</string>
     <string name="test_restart">もう一度開始</string>
     <string name="test_reconnecting">再接続しています…</string>

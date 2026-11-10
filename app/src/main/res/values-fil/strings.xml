@@ -477,7 +477,7 @@
     <string name="test_sub">Subukan ang bawat feature at ipadala ang resulta</string>
     <string name="test_ask_body">Hindi pa kumpirmado ang QuickBuds sa earbuds na ito. Ipinapakita ng maikling test kung ano ang gumagana. Walang ipapadala hangga\'t hindi mo pinipindot ang Ipadala.</string>
     <string name="test_ask_later">Hindi ngayon</string>
-    <string name="test_intro">Ang Start ay muling ikinokonekta ang earbuds at binubura ang log. Pagkatapos, buksan ang bawat feature gamit ang Subukan ngayon, subukan ito, bumalik dito at markahan ito.</string>
+    <string name="test_intro">Ang Start ay muling ikinokonekta ang earbuds at binubura ang log. Pagkatapos, buksan ang bawat feature gamit ang Subukan ngayon, subukan ito, bumalik dito at markahan ito. Sinusuri lang ng test na ito ang kaya na ng QuickBuds. Para magdagdag o mag-ayos ng feature, magpadala ng Bluetooth snoop log ng HeyMelody o realme Link.</string>
     <string name="test_start">Simulan</string>
     <string name="test_restart">Simulan ulit</string>
     <string name="test_reconnecting">Muling kumokonekta…</string>

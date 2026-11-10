@@ -477,7 +477,7 @@
     <string name="test_sub">Her özelliği deneyin ve sonucu gönderin</string>
     <string name="test_ask_body">QuickBuds bu kulaklıklarda henüz doğrulanmadı. Kısa bir test neyin çalıştığını gösterir. Gönder\'e dokunana kadar hiçbir şey gönderilmez.</string>
     <string name="test_ask_later">Şimdi değil</string>
-    <string name="test_intro">Başlat, kulaklıkları yeniden bağlar ve günlüğü temizler. Ardından Şimdi dene düğmesiyle her özelliği açın, deneyin, buraya dönün ve işaretleyin.</string>
+    <string name="test_intro">Başlat, kulaklıkları yeniden bağlar ve günlüğü temizler. Ardından Şimdi dene düğmesiyle her özelliği açın, deneyin, buraya dönün ve işaretleyin. Bu test yalnızca QuickBuds uygulamasının zaten yaptıklarını denetler. Bir özellik eklemek veya düzeltmek için HeyMelody ya da realme Link Bluetooth snoop kaydı gönderin.</string>
     <string name="test_start">Başlat</string>
     <string name="test_restart">Yeniden başlat</string>
     <string name="test_reconnecting">Yeniden bağlanıyor…</string>

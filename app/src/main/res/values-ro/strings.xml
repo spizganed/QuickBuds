@@ -477,7 +477,7 @@
     <string name="test_sub">Încearcă fiecare funcție și trimite rezultatul</string>
     <string name="test_ask_body">QuickBuds nu este încă confirmat pe aceste căști. Un test scurt arată ce funcționează. Nu se trimite nimic până nu atingi Trimite.</string>
     <string name="test_ask_later">Nu acum</string>
-    <string name="test_intro">Start reconectează căștile și golește jurnalul. Apoi apasă Încearcă acum pentru a deschide fiecare funcție, încearcă-o, revino aici și marcheaz-o.</string>
+    <string name="test_intro">Start reconectează căștile și golește jurnalul. Apoi apasă Încearcă acum pentru a deschide fiecare funcție, încearcă-o, revino aici și marcheaz-o. Acest test verifică doar ce face deja QuickBuds. Pentru a adăuga sau repara o funcție, trimite un jurnal snoop Bluetooth din HeyMelody sau realme Link.</string>
     <string name="test_start">Start</string>
     <string name="test_restart">Începe din nou</string>
     <string name="test_reconnecting">Se reconectează…</string>

@@ -477,7 +477,7 @@
     <string name="test_sub">각 기능을 사용해 보고 결과를 보내세요</string>
     <string name="test_ask_body">QuickBuds는 아직 이 이어버드에서 확인되지 않았습니다. 짧은 테스트로 작동하는 기능을 알 수 있습니다. 보내기를 누르기 전에는 아무것도 전송되지 않습니다.</string>
     <string name="test_ask_later">나중에</string>
-    <string name="test_intro">시작을 누르면 이어버드를 다시 연결하고 로그를 지웁니다. 그런 다음 지금 사용해 보기를 눌러 각 기능을 열고, 사용해 본 뒤 여기로 돌아와 표시하세요.</string>
+    <string name="test_intro">시작을 누르면 이어버드를 다시 연결하고 로그를 지웁니다. 그런 다음 지금 사용해 보기를 눌러 각 기능을 열고, 사용해 본 뒤 여기로 돌아와 표시하세요. 이 테스트는 QuickBuds가 이미 하는 기능만 확인합니다. 기능을 추가하거나 고치려면 HeyMelody 또는 realme Link의 Bluetooth 스누프 로그를 보내 주세요.</string>
     <string name="test_start">시작</string>
     <string name="test_restart">다시 시작</string>
     <string name="test_reconnecting">다시 연결하는 중…</string>
