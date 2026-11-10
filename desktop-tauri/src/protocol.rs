@@ -231,6 +231,9 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
         0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
         EVT_EQ_CHANGED if !pl.is_empty() => Event::EqCurrent(pl[0]),
+        // `<count> <id> <value>...`; a trailing byte after the last pair is ignored (PROTOCOL.md section 10)
+        0x0503 if !pl.is_empty() && pl.len() >= 1 + pl[0] as usize * 2 =>
+            Event::FeaturePush(pl[1..1 + pl[0] as usize * 2].chunks_exact(2).map(|c| (c[0], c[1])).collect()),
         0x8122 => Event::EqCustom(parse_presets(pl)?),
         0x8115 => Event::Hearing(parse_hearing_active(pl)?),
         0x811E if sub == Some(0) => { let (u, d) = parse_hearing_scan(pl, 1)?; Event::Hearing(HearingEv::ActiveScan(u, d)) }

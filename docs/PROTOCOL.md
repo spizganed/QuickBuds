@@ -48,7 +48,7 @@ The facts here come from captures, logs and tests. Details and per-model rules a
   - Silent: a wrong command number, and `0x0402`, get no reply `[CAPTURE]`. The Air7 Pro lists `0x012A` and never answers it.
     The realme Buds T310 do not answer `0x0124`; they answer `0x012C`. They never push the game-mode change (reports #16 and #73).
     An ANC change is silent until the app subscribes to push `03`.
-  - Exception: the realme Buds T100 answer with their own `Seq`, not ours (report #100).
+  - Exception: the realme Buds T100 and T110 answer with their own `Seq`, not ours (reports #100, #171, #180) `[CAPTURE]`. `models.json` marks them `seqless`. The T200 Lite and T200x also send `04` in byte 2, but echo our `Seq`.
 - **3D (spatial) audio gives no clue that it works.** The realme Buds Air7 Pro play no sound on the `1B` switch (issue #9).
   The OPPO Enco Buds3 Pro list `1B` and report `1B=1` after a write, yet two owners hear no 3D audio (reports #60 and #61).
   The app hides the row on that model.
@@ -481,7 +481,7 @@ app joins the packets until both ears are complete.
 
 ### Feature push `0x0503`
 
-`0x0503 <count> <id> <value>...` reports a changed switch after a `0x0403` write or a buds gesture.
+`0x0503 <count> <id> <value>...` reports a changed switch after a `0x0403` write or a buds gesture. The realme Buds T200 Lite confirm a low-latency write only with it (report #182) `[CAPTURE]`.
 95 frames in ten reports prove the layout, including a 17-pair frame and one extra byte after the last
 pair on OPPO Enco Buds3 Pro `[CAPTURE]`. The app feeds the pairs to the sync engine as a push, so a
 model that reports the new game-mode state only here confirms the write (reports #63 and #73).

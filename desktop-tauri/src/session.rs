@@ -488,6 +488,10 @@ impl<'a> Conn<'a> {
                         let seq = self.take_engine_seq(sync, crate::types::seq_of(&p));
                         changed |= self.exec(sync.engine.report(f, seq, now_ms(), false), sync)?;
                     }
+                    // Confirms a push write, game mode included (realme Buds T200 Lite, report 182).
+                    Some(Event::FeaturePush(f)) => {
+                        changed |= self.exec(sync.engine.report(f, None, now_ms(), true), sync)?;
+                    }
                     Some(Event::GameMode(pl)) => {
                         if let Some(on) = game_on(pl, crate::load_settings()["product_id"].as_str()) {
                             let key = self.s.caps.game_mode_id();
@@ -506,6 +510,7 @@ impl<'a> Conn<'a> {
     }
 
     fn apply(&mut self, e: Event) -> bool {
+        let e = match e { Event::FeaturePush(f) => Event::Features(f), e => e };
         self.holds.retain(|h| h.2 > Instant::now());
         let holds = &self.holds;
         // The value a report may set for a switch: the one just written wins while it is held.

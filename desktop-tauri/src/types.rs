@@ -631,6 +631,8 @@ pub enum Event {
     GameMode(Vec<u8>),
     /// `0x810D`: feature id -> value
     Features(Vec<(u8, u8)>),
+    /// `0x0503`: switches the buds changed, after a `0x0403` write or a gesture.
+    FeaturePush(Vec<(u8, u8)>),
     AlertVolume(u8),
     /// (selected, offered types)
     GameSound(u8, Vec<u8>),
@@ -709,6 +711,7 @@ pub fn describe(e: &Event) -> String {
         Event::HoldMask(k, m) => format!("Hold cycle ({k}) 0x{m:04X}"),
         Event::Preferred(m) => format!("Preferred device {}", m.map_or("automatic".into(), |m| hex(&m))),
         Event::Features(f) => format!("Status {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
+        Event::FeaturePush(f) => format!("Switch push {}", f.iter().map(|(id, v)| format!("{id:02X}={v}")).collect::<Vec<_>>().join(" ")),
     }
 }
 
