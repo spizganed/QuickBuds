@@ -517,7 +517,8 @@ Every answer repeats the request's `Seq` and sets bit 15 of its command.
 - The vendor app does not answer any other push. This includes battery, wearing, ANC and `06`. `0x0501`, `0x0502` and `0x0504` get no answer.
 - The vendor app adds `<zone offset seconds s32 LE>` to the time answer for models its list flags `utcTimeZone`. The list flags none, so the 4-byte form goes out for every model. A newer list may flag some.
 - Buds 4 `[CAPTURE]`: `0x0500` answered within 5 ms, link unchanged.
-- `0x0501` and `0x0502` are the camera state and shutter requests of a feature QuickBuds does not have (decided against).
+- `0x0501` and `0x0502` are the camera state and shutter requests in HeyMelody. HeyMelody passes every `0x0502` to its camera feature (decided against).
+- realme Link reads `0x0502 <action>` as a request from the buds `[VENDOR]`: `05` ring the phone, `06` stop the ring. The ring is the default ringtone on the alarm stream at one step below full volume, with vibration. realme Buds T200 Lite sent `0x0502 06` 23 times in report #189 `[CAPTURE]`; its meaning there is not proven.
 
 **Code:** `protocol/Replies.kt`; `core/src/msg.rs`.
 
@@ -787,6 +788,8 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 | `04` | Wear detection (auto play/pause) | `[CAPTURE]` |
 | `05` | ? | First id in every query; the vendor app ignores the value and never writes it `[VENDOR]` |
 | `06` | Game mode, low latency | the apps call it Low latency mode; all models except where the bitmap has `0x0423`; there it is `28` |
+| `07` | Party mode | realme Link writes `0x0403 07` (setting type 12) `[VENDOR]` |
+| `08` | Auto-answer calls | realme Link writes `0x0403 08` (setting type 16, item `ITEM_AUTO_ANSWER`, 18 of our realme models); the T310 answers `08` in the status read `[VENDOR]` |
 | `09` | Vocal enhancement | `[VENDOR]` |
 | `0B` | Golden Sound; the apps call it Hearing profile | section 20 `[CAPTURE]` |
 | `0C` | Personalised ANC applied | the apps call it Personalised noise cancelling; the buds set it when a result applies |
@@ -802,10 +805,11 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 | `1D` | BassWave | the apps call it Bass boost `[CAPTURE]` |
 | `1E` | Log collection | asked on 16 models; no constant in the code `[VENDOR]` |
 | `21` | Game equalizer | section 18 `[VENDOR]` |
-| `26` | Find phone | realme Link writes `0x0403 26`; the earbuds ring the phone `[VENDOR]` |
+| `26` | Find phone | realme Link writes `0x0403 26` (setting type 42, item `ITEM_FIND_PHONE`, 22 of our realme models). The switch lets a buds gesture ring the phone; the ring request is `0x0502 05` (section 11) `[VENDOR]` |
 | `27` | Game sound; the apps call it game sound effects | the vendor app writes `0x0403 27` when the game-sound switch moves `[VENDOR]` |
 | `28` | Game mode main switch | both default id lists ask it next to `06`; 10 models `[VENDOR]` |
 | `30` `31` `32` `35` `37` `3A` `3B` | Adaptive volume, adaptive ear, conversation awareness, hold volume, Swift Pair, pause when asleep, head gestures | `[VENDOR]`, unverified on buds |
+| `36` | Virtual bass | realme Link writes `0x0403 36` (setting type 46, item `ITEM_VIRTUAL_BASS`, 1 model) `[VENDOR]` |
 | `38` | Hearing optimisation | the vendor UI writes `0x0403 38`; the `adaptive sound` label is unverified `[VENDOR]` |
 
 - **Power saving `17`** `[CAPTURE]`: either write restarts the buds. The link returns about 12 s later and `0x810D` shows the new value. ANC, gestures, wear, codec (LHDC V5 48 kHz / 24-bit) and link parameters do not change. The buds do not bring phone audio back; the app asks for it. HeyMelody does not show this row (China-market feature `[VENDOR]`).
