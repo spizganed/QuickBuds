@@ -184,6 +184,10 @@ class MsgTest {
         assertEquals(Msg.EqCurrent(2), dec(m(0x810F, 0, 2)))
         assertEquals(Msg.EqCurrent(1), Decode.decode(Message(0x0504, 0xFF, b(1))))
         assertEquals(Msg.BassLevel(-2), dec(m(0x8124, 0, 0xFB, 5, 0xFE)))
+        // realme Buds T310 capture: low 3, medium -3, high 2.
+        assertEquals(Msg.BassBands(listOf(1 to 3, 2 to -3, 3 to 2)),
+            dec(m(0x812C, 0, 3, 0xFB, 5, 3, 1, 0xFB, 5, 0xFD, 2, 0xFB, 5, 2, 3)))
+        assertNull(dec(m(0x812C, 0, 2, 0xFB, 5, 3, 1)))
         val body = byteArrayOf(0, 1, 1, 0xFA.toByte(), 6, 4, 4) + "Rock".toByteArray() + b(2, 62, 0, 3, 0xFA, 0, 0xFF)
         val list = (Decode.decode(Message(0x8122, 1, body)) as Msg.EqCustom).list
         assertEquals(EqPreset(4, "Rock", true, -6 to 6, listOf(62 to 3, 250 to -1)), list[0])

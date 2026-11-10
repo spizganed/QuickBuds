@@ -240,6 +240,9 @@ pub fn decode(p: &[u8]) -> Option<Event> {
         0x8132 if pl.len() >= 3 && pl[0] == 0 && pl[1] == 2 => Event::Preferred(if pl[2] == 0 { None } else { Some(pl.get(3..9)?.try_into().ok()?) }),
         // `00 FB 05 <level>`
         0x8124 if sub == Some(0) && pl.len() >= 4 => Event::BassLevel(pl[3] as i8),
+        // `00 <count>`, then `<min> <max> <level> <band>` per band (realme dynamic sound)
+        0x812C if sub == Some(0) && pl.len() >= 2 + pl[1] as usize * 4 =>
+            Event::BassBands(pl[2..2 + pl[1] as usize * 4].chunks_exact(4).map(|c| (c[3], c[2] as i8)).collect()),
         EVT_PUSH => match sub? {
             0x01 => Event::Battery(battery(&pl[1..])?),
             0x02 => Event::Wear(wear_bits(pairs(&pl[1..]).filter(valid_wear)?)),

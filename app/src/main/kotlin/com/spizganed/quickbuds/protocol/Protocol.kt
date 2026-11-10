@@ -53,6 +53,8 @@ object OpoProtocol {
     const val CMD_QUERY_EQ = 0x010F
     const val CMD_QUERY_EQ_ALL = 0x0122
     const val CMD_QUERY_BASSWAVE_LEVEL = 0x0124
+    /** realme dynamic sound: all band levels in one reply (bitmap bit 54). */
+    const val CMD_QUERY_BASS_BANDS = 0x012C
     const val CMD_SET_EQ = 0x0406
     const val CMD_SAVE_CUSTOM_EQ = 0x0418
     const val CMD_SET_BASSWAVE_LEVEL = 0x041B

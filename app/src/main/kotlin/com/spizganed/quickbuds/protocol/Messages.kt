@@ -88,7 +88,7 @@ class Bitmap private constructor(private val cmds: Set<Int>?) {
             listOf(0x0125, 0x041C, 0x0127, 0x041D, 0x041F), listOf(0x0421, 0x0023, 0x0024, 0x0022, 0x0126, 0x0129),
             listOf(0xEF01), listOf(0xEF02), listOf(0xEF03, 0x041E), listOf(0x0420), listOf(0x001C), listOf(),
             listOf(0x0422, 0x012A), listOf(0xEF04), listOf(0x0423, 0x012B), listOf(), listOf(0x0424), listOf(0xEF06),
-            listOf(), listOf(), listOf(0x0425, 0x012E, 0x0426), listOf(0x012F), listOf(0x0427, 0x0130), listOf(0x0131, 0x0428),
+            listOf(), listOf(0x012C), listOf(0x0425, 0x012E, 0x0426), listOf(0x012F), listOf(0x0427, 0x0130), listOf(0x0131, 0x0428),
             listOf(0x0429, 0x0132), listOf(0x0014), listOf(0x042D, 0x0133), listOf(0x042E), listOf(0xEF07),
             listOf(0xEF08, 0x0136, 0x0433), listOf(0xEF09), listOf(0x0431, 0x0134), listOf(0x0432, 0x0135, 0x0435), listOf(0x0117),
         )
@@ -131,6 +131,8 @@ sealed class Msg {
     data class EqCurrent(val id: Int) : Msg()
     data class EqCustom(val list: List<EqPreset>) : Msg()
     data class BassLevel(val level: Int) : Msg()
+    /** `0x812C`: (band 1-3, level) pairs, realme dynamic sound. */
+    data class BassBands(val list: List<Pair<Int, Int>>) : Msg()
     data class AlertVolume(val level: Int) : Msg()
     /** [default] is absent in a push. */
     data class TapLevel(val level: Int, val default: Int?) : Msg()

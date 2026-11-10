@@ -46,7 +46,7 @@ The facts here come from captures, logs and tests. Details and per-model rules a
   - Answers with the value: reads. The reply repeats the `Seq`. The OnePlus Buds 4 echo a status read with a non-zero `Seq`.
   - Acks only: writes. Status `00` can hide a dropped value. The Buds 4 acked `0x0021` and read back `0x0001` `[CAPTURE]`.
   - Silent: a wrong command number, and `0x0402`, get no reply `[CAPTURE]`. The Air7 Pro lists `0x012A` and never answers it.
-    The realme Buds T310 do not answer `0x0124`. They never push the game-mode change (reports #16 and #73).
+    The realme Buds T310 do not answer `0x0124`; they answer `0x012C`. They never push the game-mode change (reports #16 and #73).
     An ANC change is silent until the app subscribes to push `03`.
   - Exception: the realme Buds T100 answer with their own `Seq`, not ours (report #100).
 - **3D (spatial) audio gives no clue that it works.** The realme Buds Air7 Pro play no sound on the `1B` switch (issue #9).
@@ -239,7 +239,7 @@ The table has 69 bits. Bits past the buds' bitmap length are off `[VENDOR]`. Bud
 | 51 | `0x0424` |
 | 52 | `0xEF06` |
 | 53 | - |
-| 54 | - |
+| 54 | `0x012C` (realme Link table only) |
 | 55 | `0x0425` `0x012E` `0x0426` |
 | 56 | `0x012F` |
 | 57 | `0x0427` `0x0130` |
@@ -337,6 +337,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0122` | Custom EQ list | — → `00 <count> <presets>` | 17 |
 | `0x0123` | Codecs offered | — → `00 <u16 LE mask>` | 18 |
 | `0x0124` | BassWave level | — → `00 FB 05 <level>` | 17 |
+| `0x012C` | realme dynamic sound bands | — → `00 <count>`, then `<min> <max> <level> <band>` per band | 17 |
 | `0x0125` | Hearing-enhancement data | — → `00 <kind> <count>`, then `<count>` × 3 bytes | 22 |
 | `0x0126` | Hearing-enhancement frequency | `<start u32> <end u32>` → `00` then the push `09` stream | 22 |
 | `0x0127` | Screen-off broadcast delay | — → `00 <delay>` | 22 |
@@ -867,9 +868,12 @@ push 0x0504 <id>                              the EQ changed
 0x0418 <action> <min> <max> <id> <nameLen> <name> <bands> [<freq u16 LE> <gain s8>]...     reply 8418 00 <id>
 0x0403 1D <01|00>                             BassWave on, off
 0x041B FB 05 <level> [<band>]                 BassWave level, -5..+5; read 0x0124 → 00 FB 05 <level> [<band>]
+0x012C → 812C 00 <count> [FB 05 <level> <band>]...   all bands in one reply
 ```
 
-- realme dynamic sound `[VENDOR]`: a switch (`1D`) and three sliders. Each slider write adds a band byte: `01` low, `02` medium, `03` high frequency. A model without the band byte ignores the write and still answers `00`. `models.json` marks these models with `bassBands` 3. T310 does not answer `0x0124`, so the app shows the last values it wrote.
+- realme dynamic sound `[CAPTURE]` (realme Buds T310): a switch (`1D`) and three sliders. Each slider write adds a band byte: `01` low, `02` medium, `03` high frequency. A model without the band byte ignores the write and still answers `00`. `models.json` marks these models with `bassBands` 3.
+- The T310 does not answer `0x0124`. It answers `0x012C` with all three bands: `00 03 FB 05 03 01 FB 05 FD 02 FB 05 02 03` is low +3, medium -3, high +2 `[CAPTURE]`. Bitmap bit 54 gates `0x012C` in realme Link; the T310 sets it. The app reads it after each EQ read.
+- A built-in preset write (`0x0406`) changes the three bands. Bass Boost on the T310 set +3, -2, +2 `[CAPTURE]`.
 
 - A preset in the list: `<selected> <min> <max> <id> <nameLen> <name> <bands> <bands...>` `[VENDOR]`. `FA 06` is gain -6..+6. `FB 05` is -5..+5. The tag bytes are `FA 06` in every frame seen `[VENDOR]`.
 - `0x0418` actions:

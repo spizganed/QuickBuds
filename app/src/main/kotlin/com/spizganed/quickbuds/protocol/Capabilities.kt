@@ -34,7 +34,7 @@ object Capabilities {
         intArrayOf(0x0421, 0x0023, 0x0024, 0x0022, 0x0126, 0x0129), intArrayOf(0xEF01),
         intArrayOf(0xEF02), intArrayOf(0xEF03, 0x041E), intArrayOf(0x0420), intArrayOf(0x001C),
         intArrayOf(), intArrayOf(0x0422, 0x012A), intArrayOf(0xEF04), intArrayOf(0x0423, 0x012B),
-        intArrayOf(), intArrayOf(0x0424), intArrayOf(0xEF06), intArrayOf(), intArrayOf(),
+        intArrayOf(), intArrayOf(0x0424), intArrayOf(0xEF06), intArrayOf(), intArrayOf(0x012C),
         intArrayOf(0x0425, 0x012E, 0x0426), intArrayOf(0x012F), intArrayOf(0x0427, 0x0130),
         intArrayOf(0x0131, 0x0428), intArrayOf(0x0429, 0x0132), intArrayOf(0x0014),
         intArrayOf(0x042D, 0x0133), intArrayOf(0x042E), intArrayOf(0xEF07), intArrayOf(0xEF08, 0x0136, 0x0433),

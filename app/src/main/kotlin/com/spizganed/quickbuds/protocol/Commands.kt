@@ -312,6 +312,17 @@ internal object Commands {
     /** -> `0x8124` `00 FB 05 <level>`. */
     fun queryBassWaveLevel(): ByteArray = OpoProtocol.buildPacket(OpoProtocol.CMD_QUERY_BASSWAVE_LEVEL)
 
+    /** -> `0x812C` `00 <count>`, then `<min> <max> <level> <band>` per band `[CAPTURE]` (realme Buds T310). */
+    fun queryBassBands(): ByteArray = OpoProtocol.buildPacket(OpoProtocol.CMD_QUERY_BASS_BANDS)
+
+    /** `0x812C` payload -> (band 1-3, level) pairs; null when the status is not `00` or the count does not fit. */
+    fun parseBassBands(p: ByteArray): List<Pair<Int, Int>>? {
+        if (p.size < 2 || p[0].toInt() != 0) return null
+        val n = p[1].toInt() and 0xFF
+        if (p.size < 2 + n * 4) return null
+        return (0 until n).map { i -> (p[2 + i * 4 + 3].toInt() and 0xFF) to p[2 + i * 4 + 2].toInt() }
+    }
+
     // --- Gestures ---
 
     /**

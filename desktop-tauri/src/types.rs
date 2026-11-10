@@ -82,6 +82,8 @@ pub const CMD_QUERY_EQ: u16 = 0x010F;
 pub const CMD_QUERY_EQ_ALL: u16 = 0x0122;
 
 pub const CMD_QUERY_BASSWAVE: u16 = 0x0124;
+/// realme dynamic sound: all band levels in one reply (bitmap bit 54).
+pub const CMD_QUERY_BASS_BANDS: u16 = 0x012C;
 
 pub const CMD_SET_EQ: u16 = 0x0406;
 
@@ -210,7 +212,7 @@ const BIT_COMMANDS: &[&[u16]] = &[
     &[0x011E, 0x011F, 0x0415], &[0x040D], &[], &[0x0121, 0x0417], &[0x0122, 0x0418], &[0x0419],
     &[0x011D, 0x0414], &[0x0123, 0x041A], &[0x0124, 0x041B], &[0x0125, 0x041C, 0x0127, 0x041D, 0x041F],
     &[0x0421, 0x0023, 0x0024, 0x0022, 0x0126, 0x0129], &[0xEF01], &[0xEF02], &[0xEF03, 0x041E], &[0x0420],
-    &[0x001C], &[], &[0x0422, 0x012A], &[0xEF04], &[0x0423, 0x012B], &[], &[0x0424], &[0xEF06], &[], &[],
+    &[0x001C], &[], &[0x0422, 0x012A], &[0xEF04], &[0x0423, 0x012B], &[], &[0x0424], &[0xEF06], &[], &[0x012C],
     &[0x0425, 0x012E, 0x0426], &[0x012F], &[0x0427, 0x0130], &[0x0131, 0x0428], &[0x0429, 0x0132], &[0x0014],
     &[0x042D, 0x0133], &[0x042E], &[0xEF07], &[0xEF08, 0x0136, 0x0433], &[0xEF09], &[0x0431, 0x0134], &[0x0432, 0x0135, 0x0435], &[0x0117],
 ];
@@ -614,6 +616,8 @@ pub enum Event {
     EqCurrent(u8),
     EqCustom(Vec<Preset>),
     BassLevel(i8),
+    /// `0x812C`: `(band 1-3, level)`.
+    BassBands(Vec<(u8, i8)>),
     Caps(Caps),
     ProductId(String),
     /// (index 1 left / 2 right / 3 case, level, charging)
@@ -671,6 +675,7 @@ pub fn describe(e: &Event) -> String {
         Event::EqCurrent(id) => format!("EQ preset {id}"),
         Event::EqCustom(v) => format!("Custom EQ: {}", v.iter().map(|p| format!("{} \"{}\"", p.id, p.name)).collect::<Vec<_>>().join(", ")),
         Event::BassLevel(l) => format!("Bass boost level {l}"),
+        Event::BassBands(v) => format!("Bass bands {}", v.iter().map(|(b, l)| format!("{b}={l}")).collect::<Vec<_>>().join(" ")),
         Event::Caps(_) => "Supported commands".into(),
         Event::ProductId(id) => format!("Product id {id}"),
         Event::Battery(v) => format!("Battery {}", v.iter().map(|(i, l, c)| format!("{}={l}%{}", side(*i), if *c { "+" } else { "" })).collect::<Vec<_>>().join(" ")),
@@ -787,6 +792,7 @@ pub fn cmd_name(cmd: u16) -> Option<&'static str> {
         CMD_QUERY_EQ => "Query EQ",
         CMD_QUERY_EQ_ALL => "Query custom EQ",
         CMD_QUERY_BASSWAVE => "Query bass boost",
+        CMD_QUERY_BASS_BANDS => "Query bass bands",
         CMD_SET_EQ => "Set EQ",
         CMD_SAVE_CUSTOM_EQ => "Save custom EQ",
         CMD_SET_BASSWAVE => "Set bass boost",

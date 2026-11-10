@@ -76,6 +76,8 @@ pub fn features(ids: &[u8]) -> Frame { (0x010D, [&[ids.len() as u8][..], ids].co
 pub fn eq_current() -> Frame { (0x010F, vec![]) }
 pub fn eq_custom() -> Frame { (0x0122, vec![]) }
 pub fn bass_level() -> Frame { (0x0124, vec![]) }
+/// `0x012C`: realme dynamic sound, all band levels in one reply.
+pub fn bass_bands() -> Frame { (0x012C, vec![]) }
 
 // --- Writes ---
 

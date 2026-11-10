@@ -892,7 +892,8 @@ class BudsConnectionManager(private val context: Context) {
                 for ((cmd, read) in listOf(
                         OpoProtocol.CMD_QUERY_EQ to (Commands.queryEq() to "query EQ"),
                         OpoProtocol.CMD_QUERY_EQ_ALL to (Commands.queryEqAll() to "query custom EQ"),
-                        OpoProtocol.CMD_QUERY_BASSWAVE_LEVEL to (Commands.queryBassWaveLevel() to "query BassWave level"))) {
+                        OpoProtocol.CMD_QUERY_BASSWAVE_LEVEL to (Commands.queryBassWaveLevel() to "query BassWave level"),
+                        OpoProtocol.CMD_QUERY_BASS_BANDS to (Commands.queryBassBands() to "query bass bands"))) {
                     if (!Capabilities.supports(context, cmd)) continue
                     sendRawBlocking(read.first, read.second)
                     Thread.sleep(120)
@@ -1631,7 +1632,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x810D ||                             // status query reply
             cmd == 0x8130 ||                             // alert volume reply
             cmd == 0x8112 ||                             // device list reply
-            cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
+            cmd == 0x8122 || cmd == 0x810F || cmd == 0x8124 || cmd == 0x812C || cmd == OpoProtocol.CMD_EQ_CHANGED || // EQ
             cmd == OpoProtocol.CMD_ACTIVE_REPORT ||
             cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION ||   // gesture-config query reply
             cmd == 0x8115 || cmd == 0x8116 || cmd == 0x811E || cmd == 0x811F || // Golden Sound replies
@@ -1817,6 +1818,11 @@ class BudsConnectionManager(private val context: Context) {
             0x8122 -> EqCodec.parseList(payload)?.let { setEq(eqState.withList(it)) }
                 ?: log("EQ: could not parse custom list RAW=[${OpoProtocol.bytesToHex(payload)}]")
             0x8124 -> if (payload.size >= 4 && payload[0].toInt() == 0) setEq(eqState.copy(bassWave = payload[3].toInt()))
+            0x812C -> Commands.parseBassBands(payload)?.let { list ->
+                val bands = eqState.bassBands.toMutableList()
+                for ((band, level) in list) if (band in 1..bands.size) bands[band - 1] = level
+                setEq(eqState.copy(bassBands = bands))
+            }
             OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) reportedEq(payload[0].toInt() and 0xFF)
         }
         // A refused feature write. Status 1 is a switch the buds lack. Status 2 is a switch they have but will not take now
@@ -1848,8 +1854,8 @@ class BudsConnectionManager(private val context: Context) {
 
         // 0x8418 ack: `00 <id>` — the id the preset now has (a created one's id comes from here).
         if (cmd == 0x8418) log("EQ ack: RAW=[${OpoProtocol.bytesToHex(payload)}]")
-        if (cmd == 0x810F || cmd == 0x8122 || cmd == 0x8124 || cmd == OpoProtocol.CMD_EQ_CHANGED) {
-            log("EQ: current=$eqCurrent bassWave=$bassWaveLevel custom=" +
+        if (cmd == 0x810F || cmd == 0x8122 || cmd == 0x8124 || cmd == 0x812C || cmd == OpoProtocol.CMD_EQ_CHANGED) {
+            log("EQ: current=$eqCurrent bassWave=$bassWaveLevel bands=${eqState.bassBands} custom=" +
                 eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
             handler.post { listeners.forEach { it.onEqState() } }
             return

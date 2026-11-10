@@ -48,6 +48,7 @@ object Decode {
             0x810F -> ok(p)?.takeIf { it.isNotEmpty() }?.let { Msg.EqCurrent(u(it, 0)) }
             0x8122 -> EqCodec.parseList(p)?.let { list -> Msg.EqCustom(list.map { preset(it) }) }
             0x8124 -> ok(p)?.takeIf { it.size >= 3 }?.let { Msg.BassLevel(it[2].toInt()) }
+            0x812C -> Commands.parseBassBands(p)?.let { Msg.BassBands(it) }
             0x0503 -> featurePush(p)?.let { Msg.FeaturePush(it) }
             0x0504 -> if (p.isNotEmpty()) Msg.EqCurrent(u(p, 0)) else null
             0x8130 -> ok(p)?.firstOrNull()?.let { Msg.AlertVolume(it.toInt() and 0xFF) }

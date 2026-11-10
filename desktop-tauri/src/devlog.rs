@@ -73,6 +73,7 @@ fn simple_rx(e: &Event) -> Option<String> {
         Event::TapLevel(l, _) => format!("Tap sensitivity {l}"),
         Event::TapPush(l) => format!("Tap sensitivity {l}"),
         Event::BassLevel(l) => format!("Bass boost level {l}"),
+        Event::BassBands(v) => format!("Bass bands {v:?}"),
         Event::EqCurrent(_) => "Equalizer read".into(),
         Event::KeyFunctions(_) => "Gestures read".into(),
         Event::FitResult(l, r) => {

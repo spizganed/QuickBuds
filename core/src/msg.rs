@@ -33,7 +33,7 @@ const BITS: [&[u16]; 69] = [
     &[0x011E, 0x011F, 0x0415], &[0x040D], &[], &[0x0121, 0x0417], &[0x0122, 0x0418], &[0x0419],
     &[0x011D, 0x0414], &[0x0123, 0x041A], &[0x0124, 0x041B], &[0x0125, 0x041C, 0x0127, 0x041D, 0x041F],
     &[0x0421, 0x0023, 0x0024, 0x0022, 0x0126, 0x0129], &[0xEF01], &[0xEF02], &[0xEF03, 0x041E], &[0x0420],
-    &[0x001C], &[], &[0x0422, 0x012A], &[0xEF04], &[0x0423, 0x012B], &[], &[0x0424], &[0xEF06], &[], &[],
+    &[0x001C], &[], &[0x0422, 0x012A], &[0xEF04], &[0x0423, 0x012B], &[], &[0x0424], &[0xEF06], &[], &[0x012C],
     &[0x0425, 0x012E, 0x0426], &[0x012F], &[0x0427, 0x0130], &[0x0131, 0x0428], &[0x0429, 0x0132], &[0x0014],
     &[0x042D, 0x0133], &[0x042E], &[0xEF07], &[0xEF08, 0x0136, 0x0433], &[0xEF09], &[0x0431, 0x0134],
     &[0x0432, 0x0135, 0x0435], &[0x0117],
@@ -169,6 +169,8 @@ pub enum Inbound {
     EqCurrent(u8),
     EqCustom(Vec<EqPreset>),
     BassLevel(i8),
+    /// `0x812C`: `(band 1-3, level)`.
+    BassBands(Vec<(u8, i8)>),
     AlertVolume(u8),
     /// `default` is absent in a push.
     TapLevel { level: u8, default: Option<u8> },
@@ -261,6 +263,7 @@ pub fn decode(m: &Message) -> Option<Inbound> {
         0x810F => Inbound::EqCurrent(*ok(p)?.first()?),
         0x8122 => Inbound::EqCustom(presets(ok(p)?)?),
         0x8124 => match ok(p)? { [_, _, level, ..] => Inbound::BassLevel(*level as i8), _ => return None },
+        0x812C => Inbound::BassBands(bass_bands(ok(p)?)?),
         0x0503 => Inbound::FeaturePush(feature_push(p)?),
         0x0504 => Inbound::EqCurrent(*p.first()?),
         0x8130 => Inbound::AlertVolume(*ok(p)?.first()?),
@@ -390,6 +393,12 @@ fn pairs(p: &[u8]) -> Option<Vec<(u8, u8)>> {
     let (&n, rest) = p.split_first()?;
     // A count of 0 is no list.
     (n > 0 && rest.len() >= n as usize * 2).then(|| rest.chunks_exact(2).take(n as usize).map(|c| (c[0], c[1])).collect())
+}
+
+/// `<count>` then `<min> <max> <level> <band>` per band (`0x812C`). `None` when the records run past the end.
+fn bass_bands(p: &[u8]) -> Option<Vec<(u8, i8)>> {
+    let (&n, rest) = p.split_first()?;
+    (n > 0 && rest.len() >= n as usize * 4).then(|| rest.chunks_exact(4).take(n as usize).map(|c| (c[3], c[2] as i8)).collect())
 }
 
 fn battery(p: &[u8]) -> Option<Vec<Cell>> {

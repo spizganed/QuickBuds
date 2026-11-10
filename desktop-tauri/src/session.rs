@@ -532,6 +532,9 @@ impl<'a> Conn<'a> {
             Event::Offered(o) => s.offered = Some(o),
             Event::EqCustom(list) => s.eq_custom = list,
             Event::BassLevel(l) => s.bass_level = Some(l),
+            Event::BassBands(v) => for (band, level) in v {
+                if (1..=3).contains(&band) { s.bass_bands[band as usize - 1] = Some(level); }
+            },
             Event::Battery(v) => {
                 // Settings › Hide old battery levels: a part the report leaves out is cleared, not kept.
                 if crate::load_settings()["clear_battery"].as_bool() == Some(true) { s.battery = [None; 3]; }
@@ -639,7 +642,7 @@ impl<'a> Conn<'a> {
             self.pump(200, sync)?;
         }
         if batch {
-            reads.extend([CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE].into_iter()
+            reads.extend([CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE, CMD_QUERY_BASS_BANDS].into_iter()
                 .filter(|&c| self.s.caps.supports(c)).map(|c| (c, vec![])));
             if !reads.is_empty() { self.tx(cmd::batch(&reads))?; self.pump(200, sync)?; }
         } else {
@@ -662,7 +665,7 @@ impl<'a> Conn<'a> {
     /// The EQ reads these buds list, in order (`sendThenRead`); after a write too, since only the buds know
     /// the ids after a create or delete.
     fn eq_reads(&mut self, sync: &mut Sync) -> Result<(), String> {
-        for cmd in [CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE] {
+        for cmd in [CMD_QUERY_EQ, CMD_QUERY_EQ_ALL, CMD_QUERY_BASSWAVE, CMD_QUERY_BASS_BANDS] {
             if !self.s.caps.supports(cmd) { continue; }
             self.send(cmd, None, &[])?;
             self.pump(120, sync)?;
