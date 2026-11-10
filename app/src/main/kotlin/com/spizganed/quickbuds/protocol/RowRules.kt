@@ -78,7 +78,8 @@ object RowRules {
         model: JSONObject?,
         reply: Map<Int, Int>?,
         bitmap: Set<Int>?,
-        productAnc: Map<String, Int>? = null
+        productAnc: Map<String, Int>? = null,
+        phoneSpatialOk: Boolean = false
     ): Set<String> {
         val out = linkedSetOf(EARBUDS)
         if (reply == null) return out
@@ -88,7 +89,8 @@ object RowRules {
         if (has(Feature.WIND_NOISE)) out += WIND
         if (GAME_IDS.any { has(it) }) out += GAME
         if (has(Feature.HIRES_CODEC) || codecPicker(model, bitmap)) out += HIRES
-        if ((has(Feature.SPATIAL_SOUND) && !phoneSpatial(model, bitmap)) || spatialByType(model, bitmap)) out += SPATIAL
+        // Phone-made 3D audio shows only where this phone can make it ([phoneSpatialOk]).
+        if ((has(Feature.SPATIAL_SOUND) && (!phoneSpatial(model, bitmap) || phoneSpatialOk)) || spatialByType(model, bitmap)) out += SPATIAL
         if (has(Feature.GOLDEN_SOUND)) out += GOLDEN
         if (eqVisible(model, bitmap)) out += EQ
         if (has(Feature.DUAL_DEVICE)) out += DUAL
@@ -173,8 +175,9 @@ object RowRules {
             ?: if (bitmap != null && OpoProtocol.CMD_GAME_SOUND in bitmap) Feature.GAME_MODE_MAIN else Feature.GAME_MODE
 
     /**
-     * A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect, and only OPPO and OnePlus
-     * phones can (PROTOCOL.md section 18). The `1B` switch then does nothing audible, so the row is hidden.
+     * A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect, and only OPPO, OnePlus and
+     * realme phones can (PROTOCOL.md section 18). The `1B` switch does nothing audible: the row drives the phone's
+     * spatializer ([com.spizganed.quickbuds.bluetooth.PhoneSpatial]) where it exists, else it is hidden.
      */
     fun phoneSpatial(model: JSONObject?, bitmap: Set<Int>?): Boolean {
         val name = model?.optString("name").orEmpty()

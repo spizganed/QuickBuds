@@ -904,6 +904,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun requestSpatial(wantOn: Boolean) {
         if (!::manager.isInitialized) return
         if (spatialByType()) return setSpatial(if (wantOn) 1 else 0)
+        if (MainActivity.phoneSpatial(this)) return requestPhoneSpatial(wantOn)
         if (wantOn == spatialOn()) return
         val dropHires = wantOn && featureOn(Feature.HIRES_CODEC) && !spatialSwitchOnly()
         val write = {
@@ -916,6 +917,19 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             )
         }
         if (dropHires) confirmReconnect(R.string.codec_msg_spatial_drops_hires, write) else write()
+    }
+
+    /**
+     * Phone-made 3D audio: the phone's spatializer, not a buds write. A phone that ignores the switch from a
+     * normal app opens its own Holo Audio settings, where the user turns it on.
+     */
+    private fun requestPhoneSpatial(wantOn: Boolean) {
+        val phone = com.spizganed.quickbuds.bluetooth.PhoneSpatial
+        phone.set(this, wantOn)
+        spatialSwitch?.postDelayed({
+            if (phone.isOn(this) != wantOn) phone.openSettings(this)
+            paintSpatial()
+        }, 600)
     }
 
     /**
@@ -1135,8 +1149,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun spatialSwitchOnly() = MainActivity.spatialSwitchOnly(this)
     private fun spatialHeadTracking() = MainActivity.spatialHeadTracking(this)
 
-    private fun spatialOn() = if (spatialByType()) (manager.spatialType ?: 0) != 0
-        else featureOn(Feature.SPATIAL_SOUND)
+    private fun spatialOn() = when {
+        spatialByType() -> (manager.spatialType ?: 0) != 0
+        MainActivity.phoneSpatial(this) -> com.spizganed.quickbuds.bluetooth.PhoneSpatial.isOn(this)
+        else -> featureOn(Feature.SPATIAL_SOUND)
+    }
 
     /** Spatial and Hi-Res never coexist: turning spatial on with Hi-Res on asks first, then drops Hi-Res. */
     private fun setSpatial(type: Int) {
@@ -1493,8 +1510,14 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             ModelCatalog.current(c)?.json,
             Capabilities.reply(c),
             Capabilities.commands(c),
-            AncModes.of(c).slots().takeIf { it.isNotEmpty() }
+            AncModes.of(c).slots().takeIf { it.isNotEmpty() },
+            com.spizganed.quickbuds.bluetooth.PhoneSpatial.supported(c)
         )
+
+        /** These buds' 3D effect comes from this phone's spatializer, not from the buds (PROTOCOL.md section 18). */
+        fun phoneSpatial(c: Context) =
+            RowRules.phoneSpatial(ModelCatalog.current(c)?.json, Capabilities.commands(c)) &&
+                com.spizganed.quickbuds.bluetooth.PhoneSpatial.supported(c)
 
         /**
          * Spatial audio as HeyMelody picks it (PROTOCOL.md §18): buds whose bitmap has `0x012A` (or a

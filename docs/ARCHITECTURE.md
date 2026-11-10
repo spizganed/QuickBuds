@@ -22,6 +22,11 @@ The desktop app calls the core directly (`desktop-tauri/src/main.rs` re-exports 
 
 `desktop-tauri/src/protocol.rs` is the legacy decoder.
 
+One setting does not go to the buds. Buds whose bitmap lacks `0xEF03` cannot make 3D audio; the phone does.
+`app/.../bluetooth/PhoneSpatial.kt` reads the Android `Spatializer` and writes an OPLUS audio parameter. Only OPPO,
+OnePlus and realme phones have that spatializer, so the row shows only there. Why: the switch on the buds plays
+nothing on other phones (PROTOCOL.md section 18). The desktop app hides the row.
+
 ## The model data
 
 `app/src/main/assets/models.json` lists every model. Each entry has the id, the name, the commands the buds accept,
