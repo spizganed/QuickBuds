@@ -745,11 +745,11 @@ pub fn describe_other(p: &[u8]) -> Option<String> {
         0x8500 => "Time reply".into(),
         0x0501 => "Bud state".into(),
         // Replies named by what the vendor app calls them; the payload is not decoded, so the hex follows.
-        0x8101 => "Protocol version".into(), 0x8102 => "Vendor ID".into(), 0x8107 => "Frame budget".into(),
+        0x8101 => "Remote MTU".into(), 0x8102 => "Vendor ID".into(), 0x8107 => "Upgrade capability".into(),
         0x810B => "Earbuds colour ID".into(), 0x8117 => "Earphone identity".into(), 0x8118 => "Ear restore data".into(),
-        0x8119 => "Zen mode file info".into(), 0x811C => "Status 0x011C".into(), 0x811D => "Wear status".into(),
+        0x8119 => "Zen mode file info".into(), 0x811C => "Related-device info".into(), 0x811D => "Free-dialog recovery time".into(),
         0x8121 => "Ear tone data".into(), 0x8125 => "Account key".into(), 0x8127 => "Screen-off broadcast delay".into(),
-        0x8129 => "Calibrated state".into(), 0x8135 => "GMN config".into(), 0x8136 => "LE/BR switch state".into(),
+        0x8129 => "Spine calibration state".into(), 0x8135 => "GMN config".into(), 0x8136 => "LE/BR switch state".into(),
         // `F1 <side> <button> <action>`
         EVT_PUSH if pl.first() == Some(&0xF1) && pl.len() >= 4 => format!("Button {} {}",
             match pl[1] { 1 => "L", 2 => "R", _ => "?" },

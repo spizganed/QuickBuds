@@ -127,7 +127,7 @@ AA  <TotalLen>  <Slice> 00  <Fsn>  <part of Cmd/Seq/PayLen/Payload>
 - A slice frame has `TotalLen` 4 or more. A whole message has `TotalLen` 7 or more.
 - The receiver reads a byte stream, not separate reads. It discards bytes before `AA`, reads `TotalLen`, and waits for that many bytes. The Kotlin framer treats a `TotalLen` below 4 (slice) or 7 (whole message) as noise: it drops the `AA` and searches on. It drops a frame above 2048 bytes. The core framer drops a `Len` below 2 or above 4096.
 - A read that starts with `AA` begins a new frame. Any other read continues the frame in progress.
-- The sender splits a message when it exceeds the frame budget. The budget is 660 bytes by default. The reply to `0x0107` (`00 <u16 LE>`) can lower it `[VENDOR]`. Some bulk transfers use a larger budget. QuickBuds sends none.
+- The sender splits a message when it exceeds the frame budget. The budget is 660 bytes by default. For the upgrade data command `0x0302`, a value of 1-659 from the buds replaces it `[VENDOR]`. Some bulk transfers use a larger budget. QuickBuds sends none.
 - One write at a time. Wait for the write to finish (5 s limit) and pause a model-specific interval between slices.
 
 **Code:** `protocol/Wire.kt`, `core/src/wire.rs`.
@@ -318,7 +318,7 @@ Details in the sections cited. `—` = empty payload.
 | `0x0104` | Remote protocol version | — (the buds send it) → `00 <UTF-8 version>` | 22 |
 | `0x0105` | Firmware version | — → `00 <count> <triples>` | 6 |
 | `0x0106` | Battery | — → `00 <count> <part> <raw>...` | 13 |
-| `0x0107` | Frame budget | — → `00 <u16 LE>` | 2 |
+| `0x0107` | Upgrade capability | — → `00 <count>`, then `<count>` × 2 bytes | 22 |
 | `0x0108` | Gesture table | — → `00 <count> <entries>` | 15 |
 | `0x0109` | Wearing | — → `00 <count> <part> <state>...` | 13 |
 | `0x010B` | Colour id | — → `00 <colour id>` | 22 |
@@ -331,19 +331,21 @@ Details in the sections cited. `—` = empty payload.
 | `0x0116` / `0x011F` | Golden Sound filters | see section 20 | 20 |
 | `0x0117` | Earphone identity | `<count> <types>`, the vendor asks `03 02 03 04` → `00 <count>` then `<type> <len u16> <value>` | 22 |
 | `0x0118` | Ear-restore data | `<count> <ids>` → `00 <count>` then `<type> <len u16> <data>` | 22 |
+| `0x0119` | Zen-mode file information | — → `00 <file id u32> <file well u32> <name>` | 22 |
 | `0x011A` | Personalised ANC result stored? | — → `00 <exist>` | 20 |
 | `0x011C` | Related-device info | — → `00 <flags u16>` then the push `0D` fields in order | 22 |
+| `0x011D` | Free-dialog recovery time | — → `00 <time>` | 22 |
 | `0x0121` | Tone list | — → `00 <count>` then `<id u32> <valid> <crc u32> <selected> <nameLen> <name>` | 22 |
 | `0x0122` | Custom EQ list | — → `00 <count> <presets>` | 17 |
 | `0x0123` | Codecs offered | — → `00 <u16 LE mask>` | 18 |
 | `0x0124` | BassWave level | — → `00 FB 05 <level>` | 17 |
-| `0x012C` | realme dynamic sound bands | — → `00 <count>`, then `<min> <max> <level> <band>` per band | 17 |
-| `0x0125` | Hearing-enhancement data | — → `00 <kind> <count>`, then `<count>` × 3 bytes | 22 |
-| `0x0126` | Hearing-enhancement frequency | `<start u32> <end u32>` → `00` then the push `09` stream | 22 |
+| `0x0125` | Account key | — → `00 <len> <type> <key, len bytes>` | 22 |
+| `0x0126` | Spine-health history `[GUESS]` | `<start u32> <end u32>` → `00` then the push `09` stream | 22 |
 | `0x0127` | Screen-off broadcast delay | — → `00 <delay>` | 22 |
-| `0x0129` | Zen-mode file information | — → `00 <file id u32> <file well u32> <name>` | 22 |
+| `0x0129` | Spine-health calibration state | — → `00 <state>` | 22 |
 | `0x012A` | Spatial type | — → `00 <type>` | 18 |
 | `0x012B` | Game sound type | — → `00 <selected> <count> <types>` | 18 |
+| `0x012C` | realme dynamic sound bands | — → `00 <count>`, then `<min> <max> <level> <band>` per band | 17 |
 | `0x012E` | AI summary type | — → `00 <AI summary type>` | 22 |
 | `0x012F` | Batch query | see section 12 | 12 |
 | `0x0130` | Alert-sound volume | — → `00 <level>` | 18 |
@@ -1189,7 +1191,7 @@ reads them. The table below gives their wire layouts. All rows are `[VENDOR]`; a
 batch carries is also `[CAPTURE]`. u16 and u32 are little endian unless marked. QuickBuds sends none of them.
 The queries and writes in this table are unread. Their meanings are `[GUESS]` where a row says so.
 The writes are `0x0408`, `0x0414`, `0x0419`, `0x041D`, `0x041F`, `0x042B`, `0x042C`, `0x0430`,
-`0x0432`-`0x0435`. The queries are `0x0117`, `0x0125`-`0x0127`, `0x0129`, `0x012E`, `0x0135`, `0x0136`.
+`0x0432`-`0x0435`. The queries are `0x0107`, `0x0117`, `0x0119`, `0x011D`, `0x0125`-`0x0127`, `0x0129`, `0x012E`, `0x0135`, `0x0136`.
 
 | Command | Payload | Reply | Meaning |
 |---|---|---|---|
@@ -1199,15 +1201,18 @@ The writes are `0x0408`, `0x0414`, `0x0419`, `0x041D`, `0x041F`, `0x042B`, `0x04
 | `0x0101` | `00 02` (u16 512) | `00 <mtu u16>` | Remote MTU. In the Buds 4 batch. |
 | `0x0102` | `FF FF` (65535), or `9A 07` (1946) from another app | `00 <vendor id u16>` | Remote vendor id. In the Buds 4 batch. |
 | `0x0104` | — (the buds send it) | `00 <UTF-8 version>` | Remote protocol version. Always enabled. The vendor app reads the string and discards it. |
+| `0x0107` | — | `00 <count>`, then `<count>` × 2 bytes | Upgrade capability. Bitmap bit 2. Was: frame budget. Is: upgrade capability. |
 | `0x010B` | — | `00 <colour id>` | Buds colour id. In the Buds 4 batch. |
 | `0x0117` | `<count> <types>`; the vendor asks `03 02 03 04` | `00 <count>` then `<type> <len u16> <value>` | Earphone identity. Type `01` brand, `02` left SN, `03` right SN, `04` box SN, `05` model, `06` product date. |
 | `0x0118` | `<count> <ids>` | `00 <count>` then `<type> <len u16> <data>` | Ear-restore data. In the Buds 4 batch as `01 01`. |
+| `0x0119` | — | `00 <file id u32> <file well u32> <name>` | Zen-mode file information. |
 | `0x011C` | — | `00 <flags u16>` then the push `0D` fields in order | Related-device info. The query side of push `0D`. In the Buds 4 batch. |
+| `0x011D` | — | `00 <time>` | Free-dialog recovery time. The query side of `0x0414`. |
 | `0x0121` | — | `00 <count>` then `<id u32> <valid> <crc u32> <selected> <nameLen> <name>` | Tone list. In the Buds 4 batch. |
-| `0x0125` | — | `00 <kind> <count>`, then `<count>` × 3 bytes | Hearing-enhancement data. Each 3-byte entry is one hearing value. |
-| `0x0126` | `<start u32> <end u32>` | `00` then the push `09` stream | Hearing-enhancement frequency data for a time range. |
+| `0x0125` | — | `00 <len> <type> <key, len bytes>` | Account key. The query side of `0x041C`. |
+| `0x0126` | `<start u32> <end u32>` | `00` then the push `09` stream | Spine-health history for a time range `[GUESS]`: the reply decoder has no case for it. |
 | `0x0127` | — | `00 <delay>` | Screen-off broadcast delay. |
-| `0x0129` | — | `00 <file id u32> <file well u32> <name>` | Zen-mode file information. |
+| `0x0129` | — | `00 <state>` | Spine-health calibration state. |
 | `0x012E` | — | `00 <AI summary type>` | AI summary type. |
 | `0x0131` | — | `00 <status>` | AI translation app status. |
 | `0x0135` | — | `00 <bits>`: bit 0 type 0, bit 1 type 1, bit 2 type 2 (highest set bit wins), bit 7 the in-ear music mute flag | Voice-assistant config. |
