@@ -1097,7 +1097,7 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - 30 realme models: the `statusQuery` asks only for `04`, `06`, `0B`, `11`, `18`, `1B` `[VENDOR]`.
 - `06` is game mode on every model except where the bitmap has `0x0423`; there it is `28`. Both default lists ask `06` and `28` next to each other `[VENDOR]`.
 - On a `0x0423` model HeyMelody has two switches `[VENDOR]`. The main page writes `28`, the game mode main switch. The game page writes `06`, low latency, and a game sound type with `0x0423 <type> 01`.
-- OnePlus Buds Pro 3 `064014` acks `0x0403 28 01` with `00`, but every read after it shows `28=0` (reports #150, #179) `[CAPTURE]`. `06` reads `1` in every log. The game sound read says no type is selected (`0x812B 00 00 02 03 00`). The cause is not proven. `models.json` gives the Buds Pro 3 `gameId` 6: the Low latency row writes `06`, the vendor's low-latency switch `[GUESS]`.
+- OnePlus Buds Pro 3 `064014` acks `0x0403 28 01` with `00`, but every read after it shows `28=0` (reports #150, #179) `[CAPTURE]`. `06` reads `1` in every log. The game sound read says no type is selected (`0x812B 00 00 02 03 00`). The cause is not proven. The Buds Pro 3 have no `gameSoundList`, so HeyMelody shows the plain switch and writes `28` too `[VENDOR]`. A snoop log of HeyMelody shows what differs. A model key `gameId` can override the id once a capture proves one.
 - `1E` log collection: asked on 16 models. `0F` zen mode: asked on 6 OnePlus and OPPO models. `13` sound record: asked on 5 models. `16` lost reminder: asked on 2 models (OPPO Enco Clip2 `06E010`, OnePlus Buds Clip `06E410`) `[VENDOR]`.
 - `28` game mode main switch: 10 models `[VENDOR]`.
 

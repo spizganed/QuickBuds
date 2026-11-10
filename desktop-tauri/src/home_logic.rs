@@ -35,8 +35,8 @@ pub(crate) fn spatial_by_type(s: &Snapshot) -> bool {
     exclusive(s) && (s.caps.supports(CMD_QUERY_SPATIAL_TYPE) || s.manual && head_tracking(s))
 }
 
-/// The game-mode id the buds write and read. A model's `gameId` wins: OnePlus Buds Pro 3 ignore `28` and take
-/// low latency on `06` (PROTOCOL.md section 16).
+/// The game-mode id the buds write and read. A model's `gameId` wins, for a model whose capture proves another id
+/// (PROTOCOL.md section 16).
 pub(crate) fn game_id(s: &Snapshot) -> u8 {
     s.model.and_then(|m| m["gameId"].as_u64()).filter(|&g| g > 0).map_or_else(|| s.caps.game_mode_id(), |g| g as u8)
 }

@@ -168,7 +168,7 @@ object RowRules {
 
     /**
      * The game-mode id the buds write and read. One place, for the ask list and the row.
-     * A model's `gameId` wins: OnePlus Buds Pro 3 ignore `28` and take low latency on `06` (PROTOCOL.md section 16).
+     * A model's `gameId` wins, for a model whose capture proves another id (PROTOCOL.md section 16).
      */
     fun gameModeId(bitmap: Set<Int>?, model: JSONObject? = null): Int =
         model?.optInt("gameId")?.takeIf { it > 0 }
