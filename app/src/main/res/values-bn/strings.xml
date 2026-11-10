@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">আপনার ইয়ারবাড এই ফোনটি বাজাচ্ছে</string>
     <string name="row_auto_answer_title">স্বয়ংক্রিয় কল গ্রহণ</string>
     <string name="row_auto_answer_sub">ইয়ারবাড আসা কল নিজে থেকেই ধরে</string>
+    <string name="row_virtual_bass_title">ভার্চুয়াল বেস</string>
+    <string name="row_virtual_bass_sub">ইয়ারবাডের সাউন্ড প্রসেসিংয়ে আরও গভীর বেস</string>
     <string name="row_power_saving_title">পাওয়ার সেভিং</string>
     <string name="row_power_saving_sub">দীর্ঘ ব্যাটারির জন্য অতিরিক্ত ফিচার বন্ধ</string>
     <string name="power_saving_confirm">ইয়ারবাড রিস্টার্ট হবে।</string>

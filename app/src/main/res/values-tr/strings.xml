@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Kulaklıkların bu telefonu çaldırıyor</string>
     <string name="row_auto_answer_title">Aramaları otomatik yanıtla</string>
     <string name="row_auto_answer_sub">Kulaklıklar gelen aramaları otomatik yanıtlar</string>
+    <string name="row_virtual_bass_title">Sanal bas</string>
+    <string name="row_virtual_bass_sub">Kulaklığın ses işlemesiyle daha derin bas</string>
     <string name="row_power_saving_title">Güç tasarrufu</string>
     <string name="row_power_saving_sub">Daha uzun pil ömrü için ekstraları kapatır</string>
     <string name="power_saving_confirm">Kulaklıklar yeniden başlatılacak.</string>

@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Наушники включили звонок этого телефона</string>
     <string name="row_auto_answer_title">Автоответ на звонки</string>
     <string name="row_auto_answer_sub">Наушники сами отвечают на входящие звонки</string>
+    <string name="row_virtual_bass_title">Виртуальный бас</string>
+    <string name="row_virtual_bass_sub">Более глубокий бас за счёт обработки звука в наушниках</string>
     <string name="row_power_saving_title">Энергосбережение</string>
     <string name="row_power_saving_sub">Отключает лишнее для большей автономности</string>
     <string name="power_saving_confirm">Наушники перезагрузятся.</string>

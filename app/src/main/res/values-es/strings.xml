@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Tus auriculares hacen sonar este teléfono</string>
     <string name="row_auto_answer_title">Responder llamadas automáticamente</string>
     <string name="row_auto_answer_sub">Los auriculares responden las llamadas entrantes automáticamente</string>
+    <string name="row_virtual_bass_title">Graves virtuales</string>
+    <string name="row_virtual_bass_sub">Graves más profundos gracias al procesado de sonido de los auriculares</string>
     <string name="row_power_saving_title">Ahorro de energía</string>
     <string name="row_power_saving_sub">Desactiva extras para más autonomía</string>
     <string name="power_saving_confirm">Los auriculares se reiniciarán.</string>

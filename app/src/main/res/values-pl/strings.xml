@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Słuchawki włączyły dzwonek tego telefonu</string>
     <string name="row_auto_answer_title">Automatyczne odbieranie połączeń</string>
     <string name="row_auto_answer_sub">Słuchawki same odbierają połączenia przychodzące</string>
+    <string name="row_virtual_bass_title">Wirtualny bas</string>
+    <string name="row_virtual_bass_sub">Głębszy bas dzięki przetwarzaniu dźwięku w słuchawkach</string>
     <string name="row_power_saving_title">Oszczędzanie energii</string>
     <string name="row_power_saving_sub">Wyłącza dodatki, by bateria działała dłużej</string>
     <string name="power_saving_confirm">Słuchawki uruchomią się ponownie.</string>

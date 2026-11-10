@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Deine Ohrhörer lassen dieses Telefon klingeln</string>
     <string name="row_auto_answer_title">Anrufe automatisch annehmen</string>
     <string name="row_auto_answer_sub">Die Ohrhörer nehmen eingehende Anrufe automatisch an</string>
+    <string name="row_virtual_bass_title">Virtueller Bass</string>
+    <string name="row_virtual_bass_sub">Tieferer Bass durch die Klangverarbeitung der Ohrhörer</string>
     <string name="row_power_saving_title">Energiesparmodus</string>
     <string name="row_power_saving_sub">Schaltet Extras ab für längere Akkulaufzeit</string>
     <string name="power_saving_confirm">Die Ohrhörer werden neu gestartet.</string>

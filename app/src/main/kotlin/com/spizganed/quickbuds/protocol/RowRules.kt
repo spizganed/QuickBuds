@@ -52,6 +52,7 @@ object RowRules {
     const val FAST_PAIR = "fastPair"
     const val POWER_SAVING = "powerSaving"
     const val FIND_PHONE = "findPhone"
+    const val VIRTUAL_BASS = "virtualBass"
 
     // Equalizer screen parts.
     const val EQ_PRESETS = "eqPresets"
@@ -129,6 +130,7 @@ object RowRules {
         if (has(Feature.SWIFT_PAIR)) out += FAST_PAIR
         if (has(Feature.POWER_SAVING)) out += POWER_SAVING
         if (has(Feature.FIND_PHONE)) out += FIND_PHONE
+        if (has(Feature.VIRTUAL_BASS)) out += VIRTUAL_BASS
 
         if (eqPresets(model, bitmap)) out += EQ_PRESETS
         if (eqCustom(model, bitmap)) out += EQ_CUSTOM
@@ -247,6 +249,7 @@ object RowRules {
         if (model.optInt("fastPair") == 1) out += Feature.SWIFT_PAIR
         if (model.optInt("personalAnc") == 1) out += Feature.PERSONAL_NOISE
         if (model.optInt("findPhone") == 1) out += Feature.FIND_PHONE
+        if (model.optInt("virtualBass") == 1) out += Feature.VIRTUAL_BASS
         return out
     }
 }

@@ -812,7 +812,7 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 | `27` | Game sound; the apps call it game sound effects | the vendor app writes `0x0403 27` when the game-sound switch moves `[VENDOR]` |
 | `28` | Game mode main switch | both default id lists ask it next to `06`; 10 models `[VENDOR]` |
 | `30` `31` `32` `35` `37` `3A` `3B` | Adaptive volume, adaptive ear, conversation awareness, hold volume, Swift Pair, pause when asleep, head gestures | `[VENDOR]`, unverified on buds |
-| `36` | Virtual bass | realme Link writes `0x0403 36` (setting type 46, item `ITEM_VIRTUAL_BASS`, 1 model) `[VENDOR]` |
+| `36` | Virtual bass | realme Link writes `0x0403 36` (setting type 46, item `ITEM_VIRTUAL_BASS`, realme Buds Clip) and reads it with `0x010D` id `36`; off by default `[VENDOR]`. QuickBuds asks `36` for the `virtualBass` flag |
 | `38` | Hearing optimisation | the vendor UI writes `0x0403 38`; the `adaptive sound` label is unverified `[VENDOR]` |
 
 - **Power saving `17`** `[CAPTURE]`: either write restarts the buds. The link returns about 12 s later and `0x810D` shows the new value. ANC, gestures, wear, codec (LHDC V5 48 kHz / 24-bit) and link parameters do not change. The buds do not bring phone audio back; the app asks for it. HeyMelody does not show this row (China-market feature `[VENDOR]`).

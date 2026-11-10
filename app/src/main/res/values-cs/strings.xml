@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Sluchátka zvoní na tento telefon</string>
     <string name="row_auto_answer_title">Automatické přijímání hovorů</string>
     <string name="row_auto_answer_sub">Sluchátka sama přijímají příchozí hovory</string>
+    <string name="row_virtual_bass_title">Virtuální basy</string>
+    <string name="row_virtual_bass_sub">Hlubší basy díky zpracování zvuku ve sluchátkách</string>
     <string name="row_power_saving_title">Úspora energie</string>
     <string name="row_power_saving_sub">Vypne doplňky pro delší výdrž</string>
     <string name="power_saving_confirm">Sluchátka se restartují.</string>

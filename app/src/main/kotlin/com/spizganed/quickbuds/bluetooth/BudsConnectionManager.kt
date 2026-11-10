@@ -1095,6 +1095,7 @@ class BudsConnectionManager(private val context: Context) {
         Feature.HEAD_MOTION -> context.getString(R.string.row_head_motion_title)
         Feature.SWIFT_PAIR -> context.getString(R.string.row_swift_pair_title)
         Feature.FIND_PHONE -> context.getString(R.string.row_find_phone_title)
+        Feature.VIRTUAL_BASS -> context.getString(R.string.row_virtual_bass_title)
         else -> "0x%02X".format(key)
     }
 

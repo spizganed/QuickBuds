@@ -137,6 +137,8 @@
     <string name="find_phone_ringing">Your earbuds are ringing this phone</string>
     <string name="row_auto_answer_title">Auto-answer calls</string>
     <string name="row_auto_answer_sub">The earbuds answer incoming calls automatically</string>
+    <string name="row_virtual_bass_title">Virtual bass</string>
+    <string name="row_virtual_bass_sub">Deeper bass from the earbuds\' sound processing</string>
     <string name="row_power_saving_title">Power saving</string>
     <string name="row_power_saving_sub">Turns off extras for longer battery life</string>
     <string name="power_saving_confirm">The earbuds will restart.</string>

@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Seus fones estão fazendo este telefone tocar</string>
     <string name="row_auto_answer_title">Atender chamadas automaticamente</string>
     <string name="row_auto_answer_sub">Os fones atendem as chamadas recebidas automaticamente</string>
+    <string name="row_virtual_bass_title">Grave virtual</string>
+    <string name="row_virtual_bass_sub">Graves mais profundos com o processamento de som dos fones</string>
     <string name="row_power_saving_title">Poupança de energia</string>
     <string name="row_power_saving_sub">Desliga extras para mais autonomia</string>
     <string name="power_saving_confirm">Os auriculares vão reiniciar.</string>

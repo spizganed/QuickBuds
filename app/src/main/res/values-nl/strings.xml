@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Je oordopjes laten deze telefoon overgaan</string>
     <string name="row_auto_answer_title">Oproepen automatisch beantwoorden</string>
     <string name="row_auto_answer_sub">De oordopjes beantwoorden inkomende oproepen automatisch</string>
+    <string name="row_virtual_bass_title">Virtuele bas</string>
+    <string name="row_virtual_bass_sub">Diepere bas door de geluidsverwerking van de oordopjes</string>
     <string name="row_power_saving_title">Energiebesparing</string>
     <string name="row_power_saving_sub">Zet extra\'s uit voor een langere accuduur</string>
     <string name="power_saving_confirm">De oordopjes worden opnieuw opgestart.</string>

@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">หูฟังของคุณกำลังทำให้โทรศัพท์เครื่องนี้ดัง</string>
     <string name="row_auto_answer_title">รับสายอัตโนมัติ</string>
     <string name="row_auto_answer_sub">หูฟังรับสายเรียกเข้าโดยอัตโนมัติ</string>
+    <string name="row_virtual_bass_title">เสียงเบสเสมือน</string>
+    <string name="row_virtual_bass_sub">เบสลึกขึ้นจากการประมวลผลเสียงของหูฟัง</string>
     <string name="row_power_saving_title">ประหยัดพลังงาน</string>
     <string name="row_power_saving_sub">ปิดฟีเจอร์เสริมเพื่อแบตเตอรี่ที่นานขึ้น</string>
     <string name="power_saving_confirm">หูฟังจะรีสตาร์ท</string>

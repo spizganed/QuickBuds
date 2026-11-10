@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Earbud Anda membunyikan ponsel ini</string>
     <string name="row_auto_answer_title">Jawab panggilan otomatis</string>
     <string name="row_auto_answer_sub">Earbud menjawab panggilan masuk secara otomatis</string>
+    <string name="row_virtual_bass_title">Bass virtual</string>
+    <string name="row_virtual_bass_sub">Bass lebih dalam dari pemrosesan suara earbud</string>
     <string name="row_power_saving_title">Hemat daya</string>
     <string name="row_power_saving_sub">Mematikan fitur tambahan agar baterai awet</string>
     <string name="power_saving_confirm">Earbud akan dimulai ulang.</string>

@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Căștile tale fac acest telefon să sune</string>
     <string name="row_auto_answer_title">Răspuns automat la apeluri</string>
     <string name="row_auto_answer_sub">Căștile răspund automat la apelurile primite</string>
+    <string name="row_virtual_bass_title">Bas virtual</string>
+    <string name="row_virtual_bass_sub">Bas mai profund prin procesarea sunetului din căști</string>
     <string name="row_power_saving_title">Economisire energie</string>
     <string name="row_power_saving_sub">Oprește extra pentru o autonomie mai mare</string>
     <string name="power_saving_confirm">Căștile vor reporni.</string>

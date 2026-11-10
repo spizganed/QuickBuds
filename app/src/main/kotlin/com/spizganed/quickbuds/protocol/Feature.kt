@@ -45,6 +45,8 @@ object Feature {
      * app keeps the last tap. Shown only for models with the `autoAnswer` flag (PROTOCOL.md §16).
      */
     const val AUTO_ANSWER = 0x08
+    /** Virtual bass (realme Buds Clip): written and read like any switch. Asked only for the `virtualBass` flag. `[VENDOR]` */
+    const val VIRTUAL_BASS = 0x36
     /**
      * Game equalizer (PROTOCOL.md §18), `[VENDOR]`: switch [GAME_EQ] turns it on, and `0x0420 01 <1|0>` tells the buds
      * a game app came to the foreground or left. No read command for the second one.

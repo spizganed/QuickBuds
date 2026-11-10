@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Навушники вмикають дзвінок цього телефона</string>
     <string name="row_auto_answer_title">Автовідповідь на дзвінки</string>
     <string name="row_auto_answer_sub">Навушники самі відповідають на вхідні дзвінки</string>
+    <string name="row_virtual_bass_title">Віртуальний бас</string>
+    <string name="row_virtual_bass_sub">Глибший бас завдяки обробці звуку в навушниках</string>
     <string name="row_power_saving_title">Енергозбереження</string>
     <string name="row_power_saving_sub">Вимикає зайве для довшої роботи</string>
     <string name="power_saving_confirm">Навушники перезапустяться.</string>

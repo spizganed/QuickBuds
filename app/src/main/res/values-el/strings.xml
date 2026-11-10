@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">Τα ακουστικά σου κάνουν αυτό το τηλέφωνο να χτυπά</string>
     <string name="row_auto_answer_title">Αυτόματη απάντηση κλήσεων</string>
     <string name="row_auto_answer_sub">Τα ακουστικά απαντούν αυτόματα στις εισερχόμενες κλήσεις</string>
+    <string name="row_virtual_bass_title">Εικονικό μπάσο</string>
+    <string name="row_virtual_bass_sub">Πιο βαθύ μπάσο από την επεξεργασία ήχου των ακουστικών</string>
     <string name="row_power_saving_title">Εξοικονόμηση ενέργειας</string>
     <string name="row_power_saving_sub">Κλείνει τα επιπλέον για μεγαλύτερη αυτονομία</string>
     <string name="power_saving_confirm">Τα ακουστικά θα επανεκκινηθούν.</string>

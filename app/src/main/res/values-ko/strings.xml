@@ -111,6 +111,8 @@
     <string name="find_phone_ringing">이어버드가 이 휴대폰을 울리고 있습니다</string>
     <string name="row_auto_answer_title">자동 통화 응답</string>
     <string name="row_auto_answer_sub">이어버드가 수신 전화를 자동으로 받습니다</string>
+    <string name="row_virtual_bass_title">가상 베이스</string>
+    <string name="row_virtual_bass_sub">이어버드의 사운드 처리로 더 깊은 저음</string>
     <string name="row_power_saving_title">절전 모드</string>
     <string name="row_power_saving_sub">배터리 사용 시간을 위해 부가 기능 끄기</string>
     <string name="power_saving_confirm">이어버드가 다시 시작됩니다.</string>

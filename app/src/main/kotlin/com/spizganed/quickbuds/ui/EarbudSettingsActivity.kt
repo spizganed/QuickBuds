@@ -229,6 +229,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 })
             }
         }
+        syncSwitch(Feature.VIRTUAL_BASS, "virtualBass", R.drawable.ic_equalizer,
+            R.string.row_virtual_bass_title, R.string.row_virtual_bass_sub)
         syncSwitch(Feature.SMART_VOLUME, "autoVolume", R.drawable.ic_volume,
             R.string.row_smart_volume_title, R.string.row_smart_volume_sub)
         // Write-only: the buds do not report it, so the last tap is remembered (realme Buds T01, report 25).

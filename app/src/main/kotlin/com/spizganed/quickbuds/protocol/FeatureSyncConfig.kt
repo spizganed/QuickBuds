@@ -30,6 +30,7 @@ object FeatureSyncConfig {
         Feature.HEAD_MOTION,
         Feature.SWIFT_PAIR,
         Feature.FIND_PHONE,
+        Feature.VIRTUAL_BASS,
     )
 
     /**
