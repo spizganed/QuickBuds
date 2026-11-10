@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Останавливает музыку, если вы уснули</string>
     <string name="row_lost_title">Напоминание о потере</string>
     <string name="row_lost_sub">Напоминает, если наушник может потеряться</string>
+    <string name="row_find_phone_title">Найти телефон</string>
+    <string name="row_find_phone_sub">Жест на наушнике включает звонок этого телефона</string>
+    <string name="find_phone_ringing">Наушники включили звонок этого телефона</string>
     <string name="row_power_saving_title">Энергосбережение</string>
     <string name="row_power_saving_sub">Отключает лишнее для большей автономности</string>
     <string name="power_saving_confirm">Наушники перезагрузятся.</string>

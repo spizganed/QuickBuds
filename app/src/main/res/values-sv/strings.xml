@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Stoppar musiken om du somnar</string>
     <string name="row_lost_title">Förlustpåminnelse</string>
     <string name="row_lost_sub">Påminner dig när en hörsnäcka kan gå förlorad</string>
+    <string name="row_find_phone_title">Hitta telefonen</string>
+    <string name="row_find_phone_sub">En gest på hörsnäckan får telefonen att ringa</string>
+    <string name="find_phone_ringing">Dina hörsnäckor får telefonen att ringa</string>
     <string name="row_power_saving_title">Energisparläge</string>
     <string name="row_power_saving_sub">Stänger av extrafunktioner för längre batteritid</string>
     <string name="power_saving_confirm">Hörlurarna startas om.</string>

@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">सो जाने पर संगीत रोकता है</string>
     <string name="row_lost_title">खोने की याद दिलाना</string>
     <string name="row_lost_sub">इयरबड खो सकता हो तो याद दिलाता है</string>
+    <string name="row_find_phone_title">फ़ोन खोजें</string>
+    <string name="row_find_phone_sub">इयरबड जेस्चर से यह फ़ोन बजता है</string>
+    <string name="find_phone_ringing">आपके इयरबड यह फ़ोन बजा रहे हैं</string>
     <string name="row_power_saving_title">पावर सेविंग</string>
     <string name="row_power_saving_sub">लंबी बैटरी के लिए अतिरिक्त फ़ीचर बंद</string>
     <string name="power_saving_confirm">ईयरबड रीस्टार्ट होंगे।</string>

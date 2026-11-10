@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Hinihinto ang musika kapag nakatulog ka</string>
     <string name="row_lost_title">Paalala sa pagkawala</string>
     <string name="row_lost_sub">Nagpapaalala kapag maaaring mawala ang isang earbud</string>
+    <string name="row_find_phone_title">Hanapin ang phone</string>
+    <string name="row_find_phone_sub">Pinapatunog ng isang galaw sa earbud ang phone na ito</string>
+    <string name="find_phone_ringing">Pinapatunog ng iyong earbuds ang phone na ito</string>
     <string name="row_power_saving_title">Power saving</string>
     <string name="row_power_saving_sub">Pinapatay ang mga extra para humaba ang baterya</string>
     <string name="power_saving_confirm">Magre-restart ang earbuds.</string>

@@ -1094,6 +1094,7 @@ class BudsConnectionManager(private val context: Context) {
         Feature.LONG_PRESS_VOLUME -> context.getString(R.string.row_long_press_volume_title)
         Feature.HEAD_MOTION -> context.getString(R.string.row_head_motion_title)
         Feature.SWIFT_PAIR -> context.getString(R.string.row_swift_pair_title)
+        Feature.FIND_PHONE -> context.getString(R.string.row_find_phone_title)
         else -> "0x%02X".format(key)
     }
 
@@ -1665,6 +1666,17 @@ class BudsConnectionManager(private val context: Context) {
         val answer = Replies.answerFor(cmd, seq, payload, now)
         answer?.let { sendRaw(it, "answer %04X".format(cmd)) }
         if (cmd == OpoProtocol.REQ_TIME) return
+        // Find phone (realme): `0x0502 05` rings the phone, `06` stops it. HeyMelody models use 0x0502 for the
+        // camera, so only a model with the `findPhone` flag acts on it (PROTOCOL.md section 11).
+        if (cmd == OpoProtocol.REQ_FIND_PHONE) {
+            val action = payload.firstOrNull()?.toInt()
+            log("FIND PHONE: action=$action")
+            if (ModelCatalog.current(context)?.json?.optInt("findPhone") == 1) when (action) {
+                0x05 -> PhoneRinger.ring(context)
+                0x06 -> PhoneRinger.stop(context)
+            }
+            return
+        }
 
         if (cmd == 0x8200) { offeredEvents = OpoProtocol.offeredEvents(payload); return }
         if (cmd == OpoProtocol.CMD_BATCH_REPLY) {

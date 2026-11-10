@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Leállítja a zenét, ha elalszol</string>
     <string name="row_lost_title">Elvesztés-emlékeztető</string>
     <string name="row_lost_sub">Szól, ha egy fülhallgató elveszhet</string>
+    <string name="row_find_phone_title">Telefon keresése</string>
+    <string name="row_find_phone_sub">Egy fülhallgató-mozdulat megcsörgeti ezt a telefont</string>
+    <string name="find_phone_ringing">A fülhallgatód megcsörgeti ezt a telefont</string>
     <string name="row_power_saving_title">Energiatakarékosság</string>
     <string name="row_power_saving_sub">Kikapcsolja az extrákat a hosszabb üzemidőért</string>
     <string name="power_saving_confirm">A fülhallgatók újraindulnak.</string>

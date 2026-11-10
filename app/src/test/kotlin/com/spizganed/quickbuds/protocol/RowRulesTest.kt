@@ -123,6 +123,18 @@ class RowRulesTest {
         assertEquals(setOf(RowRules.EARBUDS), rows)
     }
 
+    @Test fun findPhoneFlagAddsItsIdAlsoWithoutAModelList() {
+        val listed = JSONObject("""{"id":"X","name":"X","statusQuery":"05 06","findPhone":1}""")
+        assertTrue(Feature.FIND_PHONE in askedIds(listed, null))
+        // No `statusQuery`: the default list plus the flag's id, not the default list alone.
+        val unlisted = JSONObject("""{"id":"Y","name":"Y","findPhone":1}""")
+        assertEquals(RowRules.DEFAULT_IDS + Feature.FIND_PHONE, askedIds(unlisted, null))
+        assertEquals(RowRules.DEFAULT_IDS, askedIds(JSONObject("""{"id":"Z","name":"Z"}"""), null))
+        // The row shows only when the buds answer the id.
+        assertTrue(RowRules.FIND_PHONE in RowRules.rows(unlisted, mapOf(Feature.FIND_PHONE to 0), emptySet()))
+        assertTrue(RowRules.FIND_PHONE !in RowRules.rows(unlisted, mapOf(0x05 to 1), emptySet()))
+    }
+
     @Test fun idInTheReplyMeansHasTheFeatureWhateverItsValue() {
         val m = JSONObject("""{"id":"X","name":"X"}""")
         val rows = RowRules.rows(m, mapOf(0x1B to 0, 0x11 to 0, 0x0B to 0), emptySet())

@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Menghentikan musik jika Anda tertidur</string>
     <string name="row_lost_title">Pengingat kehilangan</string>
     <string name="row_lost_sub">Mengingatkan saat earbud mungkin hilang</string>
+    <string name="row_find_phone_title">Cari ponsel</string>
+    <string name="row_find_phone_sub">Gerakan earbud membunyikan ponsel ini</string>
+    <string name="find_phone_ringing">Earbud Anda membunyikan ponsel ini</string>
     <string name="row_power_saving_title">Hemat daya</string>
     <string name="row_power_saving_sub">Mematikan fitur tambahan agar baterai awet</string>
     <string name="power_saving_confirm">Earbud akan dimulai ulang.</string>

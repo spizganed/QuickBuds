@@ -185,6 +185,9 @@ object OpoProtocol {
     /** Time request `0x0500` from the buds (PROTOCOL.md §11). Moved to [Replies]. */
     const val REQ_TIME = Replies.REQ_TIME
 
+    /** Find phone request from realme buds: `0x0502 05` ring, `06` stop (PROTOCOL.md §11). Not answered. `[VENDOR]` */
+    const val REQ_FIND_PHONE = 0x0502
+
     /** Subscribe one event, for buds without `0x0205` in their bitmap. `[VENDOR]` */
     const val CMD_REGISTER_ONE = 0x0201
 

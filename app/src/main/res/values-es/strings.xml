@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Detiene la música si te duermes</string>
     <string name="row_lost_title">Aviso de pérdida</string>
     <string name="row_lost_sub">Te avisa cuando un auricular podría perderse</string>
+    <string name="row_find_phone_title">Buscar teléfono</string>
+    <string name="row_find_phone_sub">Un gesto del auricular hace sonar este teléfono</string>
+    <string name="find_phone_ringing">Tus auriculares hacen sonar este teléfono</string>
     <string name="row_power_saving_title">Ahorro de energía</string>
     <string name="row_power_saving_sub">Desactiva extras para más autonomía</string>
     <string name="power_saving_confirm">Los auriculares se reiniciarán.</string>

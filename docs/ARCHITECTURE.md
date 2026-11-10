@@ -27,6 +27,10 @@ One setting does not go to the buds. Buds whose bitmap lacks `0xEF03` cannot mak
 OnePlus and realme phones have that spatializer, so the row shows only there. Why: the switch on the buds plays
 nothing on other phones (PROTOCOL.md section 18). The desktop app hides the row.
 
+One request goes the other way: the buds ask the phone to ring. realme buds with the `findPhone` flag send `0x0502 05`
+on a gesture. `app/.../bluetooth/PhoneRinger.kt` plays the default ringtone on the alarm stream and posts a
+notification with a Stop action. Why: the ring needs a phone, so the desktop app has no Find phone row.
+
 ## The model data
 
 `app/src/main/assets/models.json` lists every model. Each entry has the id, the name, the commands the buds accept,

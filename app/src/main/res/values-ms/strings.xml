@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Menghentikan muzik jika anda tertidur</string>
     <string name="row_lost_title">Peringatan kehilangan</string>
     <string name="row_lost_sub">Mengingatkan apabila earbud mungkin hilang</string>
+    <string name="row_find_phone_title">Cari telefon</string>
+    <string name="row_find_phone_sub">Gerak isyarat earbud membunyikan telefon ini</string>
+    <string name="find_phone_ringing">Earbud anda membunyikan telefon ini</string>
     <string name="row_power_saving_title">Penjimatan kuasa</string>
     <string name="row_power_saving_sub">Mematikan ciri tambahan untuk bateri lebih lama</string>
     <string name="power_saving_confirm">Earbud akan dimulakan semula.</string>

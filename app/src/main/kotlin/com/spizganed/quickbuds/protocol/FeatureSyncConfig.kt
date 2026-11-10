@@ -29,6 +29,7 @@ object FeatureSyncConfig {
         Feature.LONG_PRESS_VOLUME,
         Feature.HEAD_MOTION,
         Feature.SWIFT_PAIR,
+        Feature.FIND_PHONE,
     )
 
     /**

@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">眠ってしまったら音楽を停止</string>
     <string name="row_lost_title">紛失リマインダー</string>
     <string name="row_lost_sub">イヤホンを紛失しそうなときに知らせます</string>
+    <string name="row_find_phone_title">スマホを探す</string>
+    <string name="row_find_phone_sub">イヤホンの操作でこのスマホを鳴らします</string>
+    <string name="find_phone_ringing">イヤホンがこのスマホを鳴らしています</string>
     <string name="row_power_saving_title">省電力モード</string>
     <string name="row_power_saving_sub">追加機能をオフにして電池を長持ち</string>
     <string name="power_saving_confirm">イヤホンが再起動します。</string>

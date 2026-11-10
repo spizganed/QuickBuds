@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Stopt de muziek als je in slaap valt</string>
     <string name="row_lost_title">Verliesmelding</string>
     <string name="row_lost_sub">Herinnert je als een oordopje kwijt kan raken</string>
+    <string name="row_find_phone_title">Telefoon zoeken</string>
+    <string name="row_find_phone_sub">Een gebaar op het oordopje laat deze telefoon overgaan</string>
+    <string name="find_phone_ringing">Je oordopjes laten deze telefoon overgaan</string>
     <string name="row_power_saving_title">Energiebesparing</string>
     <string name="row_power_saving_sub">Zet extra\'s uit voor een langere accuduur</string>
     <string name="power_saving_confirm">De oordopjes worden opnieuw opgestart.</string>

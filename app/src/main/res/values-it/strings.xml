@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Ferma la musica se ti addormenti</string>
     <string name="row_lost_title">Promemoria smarrimento</string>
     <string name="row_lost_sub">Ti avvisa quando un auricolare potrebbe andare perso</string>
+    <string name="row_find_phone_title">Trova telefono</string>
+    <string name="row_find_phone_sub">Un gesto sull\'auricolare fa squillare questo telefono</string>
+    <string name="find_phone_ringing">I tuoi auricolari fanno squillare questo telefono</string>
     <string name="row_power_saving_title">Risparmio energetico</string>
     <string name="row_power_saving_sub">Disattiva gli extra per più autonomia</string>
     <string name="power_saving_confirm">Gli auricolari si riavvieranno.</string>

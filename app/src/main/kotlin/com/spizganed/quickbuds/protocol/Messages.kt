@@ -62,7 +62,7 @@ sealed class Request {
     object Capabilities : Request()
     /** `0x051D`: the phone's spatial mode. */
     object SpatialMode : Request()
-    /** `0x0501` and `0x0502`: camera state and shutter. Not answered. */
+    /** `0x0501` and `0x0502`: camera state and shutter in HeyMelody; realme reads `0x0502 05`/`06` as find phone. Not answered. */
     data class Camera(val cmd: Int) : Request()
     /** A command outside the known groups. */
     data class Unknown(val cmd: Int) : Request()

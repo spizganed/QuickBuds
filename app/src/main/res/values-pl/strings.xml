@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Zatrzymuje muzykę, gdy zaśniesz</string>
     <string name="row_lost_title">Przypomnienie o zgubieniu</string>
     <string name="row_lost_sub">Przypomina, gdy słuchawka może się zgubić</string>
+    <string name="row_find_phone_title">Znajdź telefon</string>
+    <string name="row_find_phone_sub">Gest na słuchawce włącza dzwonek tego telefonu</string>
+    <string name="find_phone_ringing">Słuchawki włączyły dzwonek tego telefonu</string>
     <string name="row_power_saving_title">Oszczędzanie energii</string>
     <string name="row_power_saving_sub">Wyłącza dodatki, by bateria działała dłużej</string>
     <string name="power_saving_confirm">Słuchawki uruchomią się ponownie.</string>

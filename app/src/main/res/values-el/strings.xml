@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Σταματά τη μουσική αν αποκοιμηθείτε</string>
     <string name="row_lost_title">Υπενθύμιση απώλειας</string>
     <string name="row_lost_sub">Σε ειδοποιεί όταν ένα ακουστικό μπορεί να χαθεί</string>
+    <string name="row_find_phone_title">Εύρεση τηλεφώνου</string>
+    <string name="row_find_phone_sub">Μια κίνηση στο ακουστικό κάνει αυτό το τηλέφωνο να χτυπά</string>
+    <string name="find_phone_ringing">Τα ακουστικά σου κάνουν αυτό το τηλέφωνο να χτυπά</string>
     <string name="row_power_saving_title">Εξοικονόμηση ενέργειας</string>
     <string name="row_power_saving_sub">Κλείνει τα επιπλέον για μεγαλύτερη αυτονομία</string>
     <string name="power_saving_confirm">Τα ακουστικά θα επανεκκινηθούν.</string>

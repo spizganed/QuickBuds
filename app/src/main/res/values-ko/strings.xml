@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">잠들면 음악을 멈춤</string>
     <string name="row_lost_title">분실 알림</string>
     <string name="row_lost_sub">이어버드를 잃어버릴 수 있을 때 알려 줍니다</string>
+    <string name="row_find_phone_title">휴대폰 찾기</string>
+    <string name="row_find_phone_sub">이어버드 제스처로 이 휴대폰을 울립니다</string>
+    <string name="find_phone_ringing">이어버드가 이 휴대폰을 울리고 있습니다</string>
     <string name="row_power_saving_title">절전 모드</string>
     <string name="row_power_saving_sub">배터리 사용 시간을 위해 부가 기능 끄기</string>
     <string name="power_saving_confirm">이어버드가 다시 시작됩니다.</string>

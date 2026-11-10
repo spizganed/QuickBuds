@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Para a música se adormecer</string>
     <string name="row_lost_title">Aviso de perda</string>
     <string name="row_lost_sub">Avisa quando um fone pode se perder</string>
+    <string name="row_find_phone_title">Encontrar telefone</string>
+    <string name="row_find_phone_sub">Um gesto no fone faz este telefone tocar</string>
+    <string name="find_phone_ringing">Seus fones estão fazendo este telefone tocar</string>
     <string name="row_power_saving_title">Poupança de energia</string>
     <string name="row_power_saving_sub">Desliga extras para mais autonomia</string>
     <string name="power_saving_confirm">Os auriculares vão reiniciar.</string>

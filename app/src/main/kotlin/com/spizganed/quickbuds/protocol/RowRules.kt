@@ -51,6 +51,7 @@ object RowRules {
     const val HEAD_GESTURE_TYPE = "headGestureType"
     const val FAST_PAIR = "fastPair"
     const val POWER_SAVING = "powerSaving"
+    const val FIND_PHONE = "findPhone"
 
     // Equalizer screen parts.
     const val EQ_PRESETS = "eqPresets"
@@ -127,6 +128,7 @@ object RowRules {
         }
         if (has(Feature.SWIFT_PAIR)) out += FAST_PAIR
         if (has(Feature.POWER_SAVING)) out += POWER_SAVING
+        if (has(Feature.FIND_PHONE)) out += FIND_PHONE
 
         if (eqPresets(model, bitmap)) out += EQ_PRESETS
         if (eqCustom(model, bitmap)) out += EQ_CUSTOM
@@ -140,10 +142,12 @@ object RowRules {
 
     /**
      * The ids the app asks in `0x010D`: the model's own list, the ids a model flag names, and both
-     * game-mode ids. Null when the model has no list: the caller uses the default list.
+     * game-mode ids. Null when the model has no list: the caller uses the default list. A model without a list
+     * but with the `findPhone` flag starts from the default list, because the default list lacks that id.
      */
     fun askQuery(model: JSONObject?, bitmap: Set<Int>?): String? {
-        val base = model?.optString("statusQuery")?.takeIf { it.isNotBlank() } ?: return null
+        val base = model?.optString("statusQuery")?.takeIf { it.isNotBlank() }
+            ?: if (model?.optInt("findPhone") == 1) defaultList(model) else return null
         val ids = base.split(' ').mapNotNull { it.toIntOrNull(16) }.toMutableSet()
         askExtras(model).forEach { ids += it }
         return ids.sorted().joinToString(" ") { "%02X".format(it) }
@@ -160,6 +164,10 @@ object RowRules {
         0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
         0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C
     )
+
+    private fun defaultList(model: JSONObject?): String =
+        (DEFAULT_IDS + if (asksWind(model)) setOf(Feature.WIND_NOISE) else emptySet())
+            .joinToString(" ") { "%02X".format(it) }
 
     /** The live ask list: [askQuery] when the model has one, else [DEFAULT_IDS] plus wind. */
     fun liveAskIds(model: JSONObject?, bitmap: Set<Int>?): Set<Int> =
@@ -238,6 +246,7 @@ object RowRules {
         if (model.optInt("holdVolume") == 1) out += Feature.LONG_PRESS_VOLUME
         if (model.optInt("fastPair") == 1) out += Feature.SWIFT_PAIR
         if (model.optInt("personalAnc") == 1) out += Feature.PERSONAL_NOISE
+        if (model.optInt("findPhone") == 1) out += Feature.FIND_PHONE
         return out
     }
 }

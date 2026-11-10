@@ -521,6 +521,7 @@ Every answer repeats the request's `Seq` and sets bit 15 of its command.
 - Buds 4 `[CAPTURE]`: `0x0500` answered within 5 ms, link unchanged.
 - `0x0501` and `0x0502` are the camera state and shutter requests in HeyMelody. HeyMelody passes every `0x0502` to its camera feature (decided against).
 - realme Link reads `0x0502 <action>` as a request from the buds `[VENDOR]`: `05` ring the phone, `06` stop the ring. The ring is the default ringtone on the alarm stream at one step below full volume, with vibration. realme Buds T200 Lite sent `0x0502 06` 23 times in report #189 `[CAPTURE]`; its meaning there is not proven.
+- QuickBuds acts on `0x0502` only for a model with the `findPhone` flag. It plays the same ring and stops it on `06`, on the notification's Stop action or after 30 s. It sends no answer.
 
 **Code:** `protocol/Replies.kt`; `core/src/msg.rs`.
 
@@ -807,7 +808,7 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 | `1D` | BassWave | the apps call it Bass boost `[CAPTURE]` |
 | `1E` | Log collection | asked on 16 models; no constant in the code `[VENDOR]` |
 | `21` | Game equalizer | section 18 `[VENDOR]` |
-| `26` | Find phone | realme Link writes `0x0403 26` (setting type 42, item `ITEM_FIND_PHONE`, 22 of our realme models). The switch lets a buds gesture ring the phone; the ring request is `0x0502 05` (section 11) `[VENDOR]` |
+| `26` | Find phone | realme Link writes `0x0403 26` (setting type 42, item `ITEM_FIND_PHONE`, 22 of our realme models). The switch lets a buds gesture ring the phone; the ring request is `0x0502 05` (section 11) `[VENDOR]`. QuickBuds asks `26` only for the 21 models with the `findPhone` flag |
 | `27` | Game sound; the apps call it game sound effects | the vendor app writes `0x0403 27` when the game-sound switch moves `[VENDOR]` |
 | `28` | Game mode main switch | both default id lists ask it next to `06`; 10 models `[VENDOR]` |
 | `30` `31` `32` `35` `37` `3A` `3B` | Adaptive volume, adaptive ear, conversation awareness, hold volume, Swift Pair, pause when asleep, head gestures | `[VENDOR]`, unverified on buds |

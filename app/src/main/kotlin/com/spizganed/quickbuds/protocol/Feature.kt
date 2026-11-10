@@ -36,6 +36,11 @@ object Feature {
     const val HEARING_OPTIMIZE = 0x38
     const val HEAD_MOTION = 0x3B
     /**
+     * Find phone (realme): the switch lets a buds gesture ring the phone. The buds then send `0x0502 05` (ring)
+     * and `0x0502 06` (stop). Asked only for models with the `findPhone` flag. `[VENDOR]` (PROTOCOL.md §16).
+     */
+    const val FIND_PHONE = 0x26
+    /**
      * Game equalizer (PROTOCOL.md §18), `[VENDOR]`: switch [GAME_EQ] turns it on, and `0x0420 01 <1|0>` tells the buds
      * a game app came to the foreground or left. No read command for the second one.
      */

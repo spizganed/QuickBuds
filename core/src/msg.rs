@@ -97,7 +97,7 @@ pub enum Request {
     Capabilities,
     /// `0x051D`: the phone's spatial mode.
     SpatialMode,
-    /// `0x0501` and `0x0502`: camera state and shutter. Not answered.
+    /// `0x0501` and `0x0502`: camera state and shutter in HeyMelody; realme reads `0x0502 05`/`06` as find phone. Not answered.
     Camera(u16),
     /// A command outside the known groups.
     Unknown(u16),

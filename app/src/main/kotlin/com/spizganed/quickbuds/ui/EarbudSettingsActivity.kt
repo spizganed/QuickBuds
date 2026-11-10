@@ -272,6 +272,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         }
         syncSwitch(Feature.SWIFT_PAIR, "fastPair", R.drawable.ic_devices,
             R.string.row_swift_pair_title, R.string.row_swift_pair_sub)
+        syncSwitch(Feature.FIND_PHONE, "findPhone", R.drawable.ic_find_buds,
+            R.string.row_find_phone_title, R.string.row_find_phone_sub)
         switch(Feature.POWER_SAVING, null, R.drawable.ic_power,
             R.string.row_power_saving_title, R.string.row_power_saving_sub, R.string.power_saving_confirm)
         if (card.childCount == 0) return

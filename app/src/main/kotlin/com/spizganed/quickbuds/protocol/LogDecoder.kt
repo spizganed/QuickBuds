@@ -295,6 +295,12 @@ object LogDecoder {
                 0x06 -> "Left out"
                 else -> "Unknown(0x${"%02X".format(v)})"
             }
+            // realme find phone request; HeyMelody models use 0x0502 for the camera shutter.
+            0x0502 -> "Find phone request: " + when (payload.firstOrNull()?.toInt()) {
+                0x05 -> "ring"
+                0x06 -> "stop"
+                else -> OpoProtocol.bytesToHex(payload)
+            }
             // Acks for the 0x04xx SET commands come back as 0x84xx (cmd | 0x8000). NAMED
             // rather than left to the catch-all, because an unnamed ack is a large part of
             // what made a broken write so hard to read: our successful gesture writes

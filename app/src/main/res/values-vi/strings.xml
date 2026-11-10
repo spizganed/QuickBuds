@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Dừng nhạc nếu bạn ngủ thiếp đi</string>
     <string name="row_lost_title">Nhắc nhở thất lạc</string>
     <string name="row_lost_sub">Nhắc bạn khi tai nghe có thể bị thất lạc</string>
+    <string name="row_find_phone_title">Tìm điện thoại</string>
+    <string name="row_find_phone_sub">Cử chỉ trên tai nghe làm điện thoại này đổ chuông</string>
+    <string name="find_phone_ringing">Tai nghe đang làm điện thoại này đổ chuông</string>
     <string name="row_power_saving_title">Tiết kiệm pin</string>
     <string name="row_power_saving_sub">Tắt tính năng phụ để pin lâu hơn</string>
     <string name="power_saving_confirm">Tai nghe sẽ khởi động lại.</string>

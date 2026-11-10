@@ -106,6 +106,9 @@
     <string name="row_sleep_sub">Oprește muzica dacă adormi</string>
     <string name="row_lost_title">Memento de pierdere</string>
     <string name="row_lost_sub">Te anunță când o cască ar putea fi pierdută</string>
+    <string name="row_find_phone_title">Găsește telefonul</string>
+    <string name="row_find_phone_sub">Un gest pe cască face acest telefon să sune</string>
+    <string name="find_phone_ringing">Căștile tale fac acest telefon să sune</string>
     <string name="row_power_saving_title">Economisire energie</string>
     <string name="row_power_saving_sub">Oprește extra pentru o autonomie mai mare</string>
     <string name="power_saving_confirm">Căștile vor reporni.</string>

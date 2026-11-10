@@ -132,6 +132,9 @@
     <string name="row_sleep_sub">Stops music if you fall asleep</string>
     <string name="row_lost_title">Lost reminder</string>
     <string name="row_lost_sub">Reminds you when an earbud may be lost</string>
+    <string name="row_find_phone_title">Find phone</string>
+    <string name="row_find_phone_sub">An earbud gesture rings this phone</string>
+    <string name="find_phone_ringing">Your earbuds are ringing this phone</string>
     <string name="row_power_saving_title">Power saving</string>
     <string name="row_power_saving_sub">Turns off extras for longer battery life</string>
     <string name="power_saving_confirm">The earbuds will restart.</string>
