@@ -534,7 +534,57 @@
    ]
   },
   {
-   "name": "link restart: no report within 15 s of the ack gives one toast",
+   "name": "link restart: the link drops and does not come back in 15 s: one toast",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": true,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": []
+    },
+    {
+     "ev": "disconnect",
+     "now": 200,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 15049,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 15050,
+     "expect": [
+      "toast:24:no_answer",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "link restart: the link never drops (the buds did not restart): one read after 15 s decides",
    "init": {
     "24": 0
    },
@@ -572,7 +622,18 @@
      "ev": "tick",
      "now": 15050,
      "expect": [
-      "toast:24:no_answer",
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": 2,
+     "now": 15100,
+     "expect": [
+      "changed:24:1",
       "busy:24:off"
      ]
     }

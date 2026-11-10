@@ -913,7 +913,7 @@ Per-model preset lists are in section 21.6.
 - `18` is a quality switch, not a codec switch `[CAPTURE]`. The phone's Bluetooth settings choose the codec. The switch raises the bitrate and the sampling rate only. With LHDC V5: on is 44.1-192 kHz, 400 kbps cap; off is 44.1 / 48 kHz, 256 kbps. The phone chose 48 kHz / 24-bit both times. Buds 4 has no LDAC.
 - On a model with a codec list (`0x0123`), the buds accept `18 01` (`00`) when the phone uses LDAC (3) or LHDC (7, 8). They refuse it (`02`) while the phone plays AAC or SBC `[TESTED 2026-10-24]`. Read `0x0114` first. Report #33's phone played AAC, so the newer rule refuses those writes. The link stays up.
 - Older models accept `18` on AAC `[CAPTURE: realme Buds Air 5 Pro #4, T500 Pro #21, Air7 Pro #27, OnePlus Nord Buds 3 Pro #50]`. The Nord Buds 3 Pro offers only SBC and AAC. The switch turns on, but the sound does not change (report #40).
-- A refused `18` write changes nothing. An accepted write restarts the link. The buds return about 4 s later `[CAPTURE]`.
+- A refused `18` write changes nothing. An accepted write restarts the link. The buds return about 4 s later `[CAPTURE]`. The realme Buds T500 Pro accept it and keep the link up (report 128) `[CAPTURE]`.
 - `18` and `0x8114` are per link `[CAPTURE]`: with dual connection each host reads its own value. Buds 4: phone `18=1`, LHDC V5; PC `18=0`, AAC, at the same time.
 - realme models `[VENDOR]`: 3D sound is feature `1B` alone and Hi-Res is `18` alone, whatever the bitmap says. realme Link never writes one with the other (on some models it only warns).
 - Smart auto-pause (pause only when both buds leave) is an app feature, not firmware. The app sends a media pause key. It and switch `04` are mutually exclusive in the UI.

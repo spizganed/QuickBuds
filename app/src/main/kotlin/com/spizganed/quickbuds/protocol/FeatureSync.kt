@@ -33,6 +33,7 @@ class FeatureSync {
         var readSeq = 0
         var acked = 0               // writes of this operation that got status 0
         var reconnected = false
+        var dropped = false         // the link went down after a restarts write
     }
 
     private val values = HashMap<Int, Int>()
@@ -138,6 +139,14 @@ class FeatureSync {
     fun tick(now: Long): List<Out> {
         val a = active ?: return emptyList()
         if (now < a.deadline) return emptyList()
+        // A restarts write, and the link never dropped: these buds did not restart (realme Buds T500 Pro, report 128).
+        // One read decides.
+        if (a.phase == Phase.RESTART && !a.dropped) {
+            a.readSeq = nextSeq++
+            a.phase = Phase.REPLY
+            a.deadline = now + WAIT_MS
+            return listOf(Out.Read(a.readSeq))
+        }
         val out = mutableListOf<Out>(Out.Toast(a.op.key, ToastKind.NO_ANSWER))
         stop(a, out)
         startNext(now, out)
@@ -148,6 +157,7 @@ class FeatureSync {
         val a = active
         val out = mutableListOf<Out>()
         // A restarts write that was acked keeps waiting across the drop.
+        if (a != null && a.op.restarts && a.phase == Phase.RESTART) a.dropped = true
         if (a != null && !(a.op.restarts && a.phase == Phase.RESTART)) {
             out += Out.Toast(a.op.key, ToastKind.NO_ANSWER)
             stop(a, out)

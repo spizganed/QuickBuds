@@ -95,11 +95,13 @@ struct Active {
     /// Writes of this operation that got status 0.
     acked: u32,
     reconnected: bool,
+    /// The link went down after a restarts write.
+    dropped: bool,
 }
 
 impl Active {
     fn new(op: Operation) -> Self {
-        Active { op, write: 0, phase: Phase::Ack, seq: 0, deadline: 0, read_seq: 0, acked: 0, reconnected: false }
+        Active { op, write: 0, phase: Phase::Ack, seq: 0, deadline: 0, read_seq: 0, acked: 0, reconnected: false, dropped: false }
     }
 }
 
@@ -240,8 +242,18 @@ impl FeatureSync {
 
     pub fn tick(&mut self, now: u64) -> Vec<Out> {
         let mut out = Vec::new();
-        let Some(a) = self.active.take() else { return out };
+        let Some(mut a) = self.active.take() else { return out };
         if now < a.deadline {
+            self.active = Some(a);
+            return out;
+        }
+        // A restarts write, and the link never dropped: these buds did not restart (realme Buds T500 Pro, report 128).
+        // One read decides.
+        if a.phase == Phase::Restart && !a.dropped {
+            a.read_seq = self.next();
+            a.phase = Phase::Reply;
+            a.deadline = now + WAIT_MS;
+            out.push(Out::Read { seq: a.read_seq });
             self.active = Some(a);
             return out;
         }
@@ -253,9 +265,10 @@ impl FeatureSync {
 
     pub fn disconnect(&mut self, _now: u64) -> Vec<Out> {
         let mut out = Vec::new();
-        if let Some(a) = self.active.take() {
+        if let Some(mut a) = self.active.take() {
             // A restarts write that was acked keeps waiting across the drop.
             if a.op.restarts && a.phase == Phase::Restart {
+                a.dropped = true;
                 self.active = Some(a);
             } else {
                 out.push(Out::Toast { key: a.op.key, kind: ToastKind::NoAnswer });

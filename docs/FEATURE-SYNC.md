@@ -42,7 +42,7 @@ Rules:
    - 3c. A read reply that is not ours is never a push. It only updates values. A device showed this on 2026-10-24: a connect-time read ended a game-mode wait with a false toast.
    - 3d. A confirming report ends the operation. The engine sends `busy(key, off)`.
    - 3e. The engine sends one `not_changed` toast if the setting's value is not the one that we wrote.
-4. `tick(now)`: a wait step that reaches 3000 ms ends the operation with the `no_answer` toast. The step is the ack of a write, then the reply or the push. After the ack of a `restarts` write, the limit is 15000 ms.
+4. `tick(now)`: a wait step that reaches 3000 ms ends the operation with the `no_answer` toast. The step is the ack of a write, then the reply or the push. After the ack of a `restarts` write, the limit is 15000 ms. If the link did not drop in that time, the buds did not restart: the engine sends one read, and that reply decides (realme Buds T500 Pro, report 128). If the link dropped and did not come back, the toast is `no_answer`.
 5. When an operation ends, the next operation in the queue starts.
 6. `disconnect`: the active operation ends with the `no_answer` toast. One exception is a `restarts` write that was acked: it waits for the reconnect. Queued operations that sent nothing end silently with `busy off`.
 7. The engine keeps values across a disconnect. The UI shows its neutral, dimmed state while disconnected.
