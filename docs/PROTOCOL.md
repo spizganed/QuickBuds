@@ -906,7 +906,7 @@ Per-model preset lists are in section 21.6.
 | Codec | — | `0x041A <codec> <hiRes> 00` | `hiRes` is set only with codec 3 or 8. The buds restart `[VENDOR]` |
 | Game sound type | `0x012B` → `00 <selected> <count> <types>` | `0x0423 <type> 01` | Type `0` off, `1` a Chinese game, `3` shooting games `[VENDOR]` |
 | Game equalizer | — | `0x0420 01 <state>` | `01` when a game app comes to the foreground, `00` when it leaves. Applies only while feature `21` is on. Bitmap bit 44 `[VENDOR]` |
-| Find my earbuds | — | `0x0400 <01\|00>` | Rings both buds; no side byte; the reply is `8400 00` `[CAPTURE]`. Warn when the buds are in the ears |
+| Find my earbuds | — | `0x0400 <01\|00>` | Rings both buds; no side byte; the reply is `8400 00` `[CAPTURE]`. Warn when the buds are in the ears. realme Buds T200 Lite and T200x list `0x0400` but play no tone (report #162); realme Link has no Find item for them. `models.json` marks them `noFind` |
 
 - Codecs: `1` SBC, `2` AAC, `3` LDAC, `4` aptX, `5` aptX HD, `6` aptX Adaptive, `7` LHDC, `8` LHDC V5. The app lists 8, 7, 3, 6, 5, 4, 2, 1 and drops 7 when 8 is offered `[VENDOR]`.
 - Spatial sound and Hi-Res exclude each other `[VENDOR]`. Spatial on is `1B 01` then `18 00`; Hi-Res on is `1B 00` then `18 01`. HeyMelody warns, then writes this.
@@ -919,6 +919,8 @@ Per-model preset lists are in section 21.6.
 - Smart auto-pause (pause only when both buds leave) is an app feature, not firmware. The app sends a media pause key. It and switch `04` are mutually exclusive in the UI.
 - **Two ways for spatial sound** `[VENDOR]`: if the bitmap has `0x012A` (bit 47), the app writes `0x0422 <type>`. The types are `0` off, `1` fixed and `2` head tracking. It reads `0x012A` → `00 <type>`. The buds push `0x0510 <type>`. Else the app uses feature `1B`. Head tracking only where `spatialModes` has `2` (Buds Pro 2, Buds Pro 3, Enco X3). `0x0422` is wired, unverified.
 - The Air7 Pro lists `0x012A` / `0x0422` but leaves `0x012A` unanswered `[VENDOR]`. Our key `spatialToggle` covers the realme models with 3D sound. It works on the Air7 Pro (its owner, issue #9). It is unverified on the others.
+- **Who makes the 3D effect** `[VENDOR]`: HeyMelody shows the 3D audio row on a model with `spatialTypes` when the bitmap has `0xEF03`: the buds make the effect. Without `0xEF03`, the phone makes it. HeyMelody then shows the row only on Android 13 or later, only on an OPPO or OnePlus phone that supports these buds, and only when the bitmap lacks `0xEF04` (`0xEF04` = the buds have no motion sensor).
+- OnePlus Nord Buds 3r `065854` has no `0xEF03` `[CAPTURE]`. The buds accept `0x0403 1B`, push `1B` and read it back, but no effect plays on other phones (a Redmi pad, reports #99, #142, #187, #188, issue #40). The switch works on the wire; the sound needs an OPPO or OnePlus phone.
 - **3D audio source** `[VENDOR]` (bitmap bit 43, with `0xEF03`): `00` the buds render 3D audio, `01` the phone does. HeyMelody sends only `01`, when the phone's own spatializer takes over. realme Link sends `00` on every connect (no realme model prefers the phone). The apps do the same for `spatialToggle` models. Issue #9's "`1B` changes nothing" was a false alarm: the buds play no sound on the switch.
 - **Codec picker** `[VENDOR]`, wired: models with `hiRes` (Enco X2, Enco Air3 Pro, Enco Free3) and `0x0123` in the bitmap. It replaces the Hi-Res switch. Write `0x041A <codec> <hiRes> 00`; `hiRes` only with codec 3 or 8 (else `0`). The buds restart; the app warns and asks for phone audio on the reconnect.
 
@@ -1093,6 +1095,8 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - 85 HeyMelody models match the 117.6.6 id rule `[VENDOR]`. The lists leave out `22`-`24`, `3C`, `3D` `[VENDOR]`.
 - 30 realme models: the `statusQuery` asks only for `04`, `06`, `0B`, `11`, `18`, `1B` `[VENDOR]`.
 - `06` is game mode on every model except where the bitmap has `0x0423`; there it is `28`. Both default lists ask `06` and `28` next to each other `[VENDOR]`.
+- On a `0x0423` model HeyMelody has two switches `[VENDOR]`. The main page writes `28`, the game mode main switch. The game page writes `06`, low latency, and a game sound type with `0x0423 <type> 01`.
+- OnePlus Buds Pro 3 `064014` acks `0x0403 28 01` with `00`, but every read after it shows `28=0` (reports #150, #179) `[CAPTURE]`. `06` reads `1` in every log. The game sound read says no type is selected (`0x812B 00 00 02 03 00`). The cause is not proven; a snoop log of HeyMelody's game page shows it.
 - `1E` log collection: asked on 16 models. `0F` zen mode: asked on 6 OnePlus and OPPO models. `13` sound record: asked on 5 models. `16` lost reminder: asked on 2 models (OPPO Enco Clip2 `06E010`, OnePlus Buds Clip `06E410`) `[VENDOR]`.
 - `28` game mode main switch: 10 models `[VENDOR]`.
 
