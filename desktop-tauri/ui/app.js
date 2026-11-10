@@ -577,10 +577,18 @@ const remember=c=>{S.recent=[c,...S.recent.filter(x=>x!==c)].slice(0,6);save();}
 
 /* ================= sync controls with the state ================= */
 const STYLES=['material','quickbuds','pixel','glass'],MODES=['wallpaper','accent','palette'],THEMES=['oled','dark','white'];
-function setSeg(key,idx){document.querySelectorAll(`.seg[data-seg="${key}"]`).forEach(s=>{s.style.setProperty('--sel',Math.max(0,idx));s.querySelector('.ind').style.opacity=idx<0?0:1;
+/* Hides the cells these buds lack (flags by cell index; null shows all). setSeg then places the indicator by visible position. */
+function segShow(key,flags){document.querySelectorAll(`.seg[data-seg="${key}"]`).forEach(s=>{const pos=[];let n=0;
+  s.querySelectorAll('.cell').forEach((c,i)=>{const on=!flags||flags[i]!==false;c.classList.toggle('gone',!on);pos.push(on?n++:-1);});
+  s.style.setProperty('--n',Math.max(1,n));s._pos=pos;});}
+/* The one level of buds with a single noise-cancelling level, else -1. */
+function lvOne(){const f=S.lvHas;if(!f)return -1;const on=f.map((x,i)=>x?i:-1).filter(i=>i>=0);return on.length===1?on[0]:-1;}
+function lvMany(){return !S.lvHas||S.lvHas.filter(Boolean).length>1;}
+function setSeg(key,idx){document.querySelectorAll(`.seg[data-seg="${key}"]`).forEach(s=>{const p=idx<0?-1:(s._pos?s._pos[idx]:idx);s.style.setProperty('--sel',Math.max(0,p));s.querySelector('.ind').style.opacity=p<0?0:1;
   s.querySelectorAll('.cell').forEach((c,i)=>c.setAttribute('aria-checked',String(i===idx)));});}
 function sync(p){
-  setSeg('anc',S.anc);setSeg('level',S.level);document.querySelectorAll('.seg.lvls').forEach(x=>slide(x,S.anc===1));
+  segShow('anc',S.ancHas);segShow('level',S.lvHas);
+  setSeg('anc',S.anc);setSeg('level',S.level);document.querySelectorAll('.seg.lvls').forEach(x=>slide(x,S.anc===1&&lvMany()));
   setSeg('style',STYLES.indexOf(S.style));setSeg('colorMode',MODES.indexOf(S.colorMode));setSeg('theme',S.colorMode==='palette'?-1:THEMES.indexOf(activeId()));setSeg('fbtab',S.page==='test'?1:0);
   document.querySelectorAll('.sw[data-k],.qt[data-k]').forEach(b=>b.setAttribute('aria-checked',String(!!S[b.dataset.k])));
   const bt=document.getElementById('bassT');if(bt){bt.value=S.bassLv;bt.style.setProperty('--p',S.bassLv/3*100+'%');document.getElementById('bassTV').textContent='+'+S.bassLv;}
@@ -681,7 +689,9 @@ function knownDialog(){dialog(`<h3>Known issues</h3><div class="group"><div clas
 document.addEventListener('click',ev=>{
   const b=ev.target.closest('[data-act]');if(!b||b.tagName==='SELECT')return;const a=b.dataset.act,v=b.dataset.v,k=b.dataset.k;
   if(a==='pick'){const i=+v;
-    if(k==='anc'){const enter=i===1&&S.anc!==1;S.anc=i;if(enter)S.level=-1;else window.QBLIVE&&QBLIVE.sendAnc();apply();requestAnimationFrame(()=>pixelize(document));return;}
+    if(k==='anc'){const enter=i===1&&S.anc!==1;S.anc=i;
+      // Buds with one level have no level row: noise cancelling goes out at once.
+      if(enter)S.level=lvOne();if(!enter||S.level>=0)window.QBLIVE&&QBLIVE.sendAnc();apply();requestAnimationFrame(()=>pixelize(document));return;}
     if(k==='level'){S.level=i;if(S.anc===1)window.QBLIVE&&QBLIVE.sendAnc();apply();return;}
     if(k==='fbtab'){go(i?'test':'feedback');return;}
     if(k==='style'){reveal(ev,()=>{S.style=STYLES[i];apply();});return;}
@@ -893,6 +903,8 @@ if(window.__TAURI__){
     if(s.status==='on'&&s.anc){
       if(s.anc==='Off')S.anc=0;else if(s.anc.startsWith('ANC')){S.anc=1;const i=LV.indexOf(s.anc);if(i>=0)S.level=i;}
       else if(s.anc==='Adaptive')S.anc=2;else if(s.anc==='Transparency')S.anc=3;}
+    // Only the modes and levels these buds have (report 195). Not connected: all, as a preview.
+    if(s.status==='on'&&s.has){S.ancHas=[s.has.off,s.has.anc,s.has.adaptive,s.has.transparency];S.lvHas=LV.map(l=>(s.levels||[]).includes(l));}
     if(s.lowLatency!=null&&!(S._llHold&&S._llHold.until>Date.now()&&s.lowLatency!==S._llHold.on))S.ll=s.lowLatency;
     if(s.status==='on'){Object.assign(S,s.sw);}
     if(s.status==='on'&&s.eq&&!(QBLIVE.eqHold>Date.now()))takeEq(s.eq);

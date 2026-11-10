@@ -152,6 +152,8 @@ html[data-style="glass"] .cell[aria-checked="true"]{color:var(--on-accent)}
 html[data-style="glass"] .seg.lvls{border-top-color:var(--g-rim)}
 html[data-style="quickbuds"] .seg{--pad:0px}
 html[data-style="quickbuds"] .seg .cell+.cell{box-shadow:-1px 0 0 var(--outline)}
+.seg .cell.gone{display:none}
+.seg .cell.gone:first-child+.cell{box-shadow:none}
 html[data-style="quickbuds"] .seg .ind{border-radius:19px;box-shadow:inset 0 0 0 2px var(--accent);transition:transform calc(200ms*var(--speed)) var(--qb-ease)}
 html[data-style="quickbuds"] .seg.txt .ind{border-radius:12px}
 html[data-style="quickbuds"] .seg.lvls{border-top:1px solid var(--outline)}
