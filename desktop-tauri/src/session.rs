@@ -510,7 +510,6 @@ impl<'a> Conn<'a> {
     }
 
     fn apply(&mut self, e: Event) -> bool {
-        let e = match e { Event::FeaturePush(f) => Event::Features(f), e => e };
         self.holds.retain(|h| h.2 > Instant::now());
         let holds = &self.holds;
         // The value a report may set for a switch: the one just written wins while it is held.
@@ -577,7 +576,8 @@ impl<'a> Conn<'a> {
             Event::Hearing(h) => HEARING.lock().unwrap().push(h),
             Event::KeyFunctions(t) => s.keyfn = Some(t),
             Event::HoldMask(k, m) => match s.hold_masks.iter_mut().find(|x| x.0 == k) { Some(x) => x.1 = m, None => s.hold_masks.push((k, m)) },
-            Event::Features(f) => {
+            // A read reply and a push carry the same `(id, value)` pairs.
+            Event::Features(f) | Event::FeaturePush(f) => {
                 let get = |id: u8| f.iter().find(|x| x.0 == id).map(|x| x.1 == 1);
                 // Game mode and Hi-Res follow the engine: no hold, so only the buds move them.
                 let game = s.caps.game_mode_id();
