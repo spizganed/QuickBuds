@@ -225,6 +225,8 @@ pub fn install(r: &Release, progress: &dyn Fn(u64, u64)) -> Result<(), String> {
         return Err(e.to_string());
     }
     let mut start = host(exe.to_str().ok_or("path")?);
+    // The old copy still runs for a moment: the new one waits for the single-instance port (main.rs).
+    start.arg("--after-update");
     // Its own process group: it outlives whatever started the old one (a terminal, a launcher).
     #[cfg(unix)]
     std::os::unix::process::CommandExt::process_group(&mut start, 0);

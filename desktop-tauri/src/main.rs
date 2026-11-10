@@ -324,7 +324,49 @@ fn check_webview2() {
     std::process::exit(1);
 }
 
+/// One copy of QuickBuds at a time. The close button only hides the window, so a second start found
+/// the RFCOMM link held by the first copy and stayed on "Connecting" (report 190). The first copy
+/// listens on a local port. A second start asks it to show its window, then exits.
+const INSTANCE_ADDR: &str = "127.0.0.1:47391";
+const INSTANCE_HELLO: &[u8] = b"quickbuds-show\n";
+
+/// The listener when this is the first copy. Exits when another copy answers.
+/// A foreign program on the port does not answer `ok`: this copy then runs without the guard.
+fn single_instance() -> Option<std::net::TcpListener> {
+    use std::io::{Read, Write};
+    if let Ok(l) = std::net::TcpListener::bind(INSTANCE_ADDR) { return Some(l); }
+    // After an update the old copy exits within moments: wait for its port, never ask it.
+    if std::env::args().any(|a| a == "--after-update") {
+        for _ in 0..50 {
+            std::thread::sleep(std::time::Duration::from_millis(200));
+            if let Ok(l) = std::net::TcpListener::bind(INSTANCE_ADDR) { return Some(l); }
+        }
+        return None;
+    }
+    let timeout = std::time::Duration::from_secs(1);
+    if let Ok(mut c) = std::net::TcpStream::connect_timeout(&INSTANCE_ADDR.parse().ok()?, timeout) {
+        let _ = c.set_read_timeout(Some(timeout));
+        let mut reply = [0u8; 2];
+        if c.write_all(INSTANCE_HELLO).is_ok() && c.read_exact(&mut reply).is_ok() && &reply == b"ok" { std::process::exit(0); }
+    }
+    None
+}
+
+/// The first copy: each hello from a second start shows the main window.
+fn serve_instance(app: AppHandle, l: std::net::TcpListener) {
+    use std::io::{Read, Write};
+    std::thread::spawn(move || for mut c in l.incoming().flatten() {
+        let _ = c.set_read_timeout(Some(std::time::Duration::from_secs(1)));
+        let mut hello = vec![0u8; INSTANCE_HELLO.len()];
+        if c.read_exact(&mut hello).is_err() || hello != INSTANCE_HELLO { continue; }
+        let _ = c.write_all(b"ok");
+        let h = app.clone();
+        let _ = app.run_on_main_thread(move || show_main(&h));
+    });
+}
+
 fn main() {
+    let instance = single_instance();
     #[cfg(windows)]
     check_webview2();
     // Wayland finds the window icon through the application ID: the program name. `quickbuds.desktop` (install script, AppImage) names the icon.
@@ -332,7 +374,8 @@ fn main() {
     gtk::glib::set_prgname(Some("quickbuds"));
     let app = tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![fit_panel, main_size, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log, support::support_due, support::support_off])
-        .setup(|app| {
+        .setup(move |app| {
+            if let Some(l) = instance { serve_instance(app.handle().clone(), l); }
             hearing::init(app.handle());
             modeltest::init(app.handle());
             link::start(app.handle());
