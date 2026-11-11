@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.spizganed.quickbuds">
+
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
+    <!-- The setup guide offers the system dialog that lets the background service run. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+    <!-- Widget taps tick through the vibrator (Haptics.tick); no view of ours is on screen then. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Game equalizer only: which app is in the foreground. The user grants it in Settings > Usage access. -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <!-- Lets it tell a game from another app without QUERY_ALL_PACKAGES: every app with a launcher icon is visible. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <!--
+      Needed only so the app can hand a downloaded APK to Android's own package
+      installer. The app never installs anything itself, and the user still
+      confirms in the system dialog, so this is the narrow version of the
+      permission rather than an installer role.
+    -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- JobScheduler needs it for the update job's network constraint (UpdateChecker.scheduleBackground). -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+      For two API<=28 paths: the crash log in Download/QuickBuds and the Dev
+      Tools log export. On API 29+ both write through MediaStore, so no runtime
+      prompt is ever shown on a modern device. Do not raise maxSdkVersion.
+    -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!--
+      NO versionCode / versionName here: they are in app/build.gradle.kts defaultConfig, the single
+      source (see the note there). They used to sit on <application>, where Android ignores them, so
+      PC builds up to 2026-09-23 shipped with no version at all.
+    -->
+    <!--
+      NO android:theme on <application>, deliberately.
+
+      Declaring a theme here makes the framework resolve it during Activity
+      attach, which counts as an asset/resources access BEFORE onCreate runs. That
+      left applyOverrideConfiguration() unusable: it threw
+      "getResources() or getAssets() has already been called" on every launch, no
+      matter how early in onCreate it was called (the trace pointed at
+      ContextThemeWrapper.applyOverrideConfiguration).
+
+      The per-activity theme is set by ThemeRes.select() before super.onCreate
+      instead, which runs before this attribute would ever have been read. If a
+      theme is added back here, the app crashes on launch again.
+    -->
+    <application
+        android:name=".QuickBudsApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+
+
+        <!--
+          Every activity below is locked to portrait — 2026-09-22, "the app should be
+          portrait mode only no rotation." No layout in this app has a landscape variant, so an
+          allowed rotation would just stretch/reflow the existing portrait layouts, not show a
+          real landscape design. `screenOrientation` has no `<application>`-level equivalent; it
+          has to be repeated on every `<activity>`.
+        -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.SetupActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.DevToolsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.EqActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.GestureActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.GoldenSoundActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.EarbudSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.DualDeviceActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.HomeLayoutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.NotificationSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.WidgetPageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.ReportActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.KnownIssuesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.ModelTestActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.ThemeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.PresetEditActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.AboutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.UpdateActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.ModelActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.LanguageActivity"
+            android:exported="false"
+            android:configChanges="locale|layoutDirection|keyboard|keyboardHidden|navigation|touchscreen|smallestScreenSize|screenLayout"
+            android:screenOrientation="portrait" />
+
+        <!--
+          FileProvider for the app-update flow. The downloaded APK lives in the
+          app's private cache, which the package installer cannot read directly,
+          so it is handed over as a content:// URI granting temporary read access.
+          Authority must match UpdateActivity's FileProvider.getUriForFile call
+          ("${applicationId}.fileprovider").
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <service
+            android:name=".bluetooth.BudsService"
+            android:foregroundServiceType="connectedDevice"
+            android:stopWithTask="false"
+            android:exported="false" />
+
+        <!--
+          The 6 h update check. BIND_JOB_SERVICE is the platform permission that only JobScheduler
+          holds, so no other app can start this service. The job is not persisted across reboots:
+          that needs RECEIVE_BOOT_COMPLETED, and the app schedules the job again on each open.
+        -->
+        <service
+            android:name=".widget.NoiseTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_mode_anc_medium"
+            android:label="@string/anc_section"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- A long press on the Noise control tile. -->
+        <activity
+            android:name=".widget.NoisePickActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.App.SheetHost">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".widget.OpenAppTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_stat_buds"
+            android:label="@string/widget_open_app"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".widget.LowLatencyTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_bolt"
+            android:label="@string/row_game_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".widget.WindTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_anc"
+            android:label="@string/row_wind_noise_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".widget.DualTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_devices"
+            android:label="@string/row_dual_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".ui.UpdateJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".bluetooth.PhoneRinger$StopReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".bluetooth.KeepAliveReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+                <action android:name="android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED" />
+                <action android:name="android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".widget.AncWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_anc_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.BatteryWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_pages_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.BatteryOnlyWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_battery_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_only_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.BatteryStripWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_strip_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_strip_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.ControlsWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_controls_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_controls_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.NoiseCycleWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_cycle_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_cycle_info" />
+        </receiver>
+
+        <!-- Exported: the launcher opens it when a widget is placed or reconfigured. -->
+        <activity
+            android:name=".widget.NoiseCycleActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".widget.WidgetSetupActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Not exported: only the widgets send to it, with explicit intents. -->
+        <receiver
+            android:name=".widget.WidgetActionReceiver"
+            android:exported="false" />
+
+    </application>
+
+</manifest>
