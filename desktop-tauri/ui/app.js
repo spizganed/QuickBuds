@@ -1238,7 +1238,9 @@ if(document.documentElement.classList.contains('native')&&window.__TAURI__){
     // The quick panel window: show the tray view only and size the window to it.
     document.getElementById('vTray').click();
     const tray=document.getElementById('tray');
-    window.__TAURI__.core.invoke('fit_panel',{height:Math.ceil(tray.scrollHeight)});
+    // The panel follows its content: rows show and hide when the buds answer. Was: sized once at start, so a gap stayed.
+    let lastH=0;const fitPanel=()=>{const h=Math.ceil(tray.scrollHeight);if(h===lastH)return;lastH=h;window.__TAURI__.core.invoke('fit_panel',{height:h});};
+    fitPanel();new ResizeObserver(fitPanel).observe(tray);
   }else{
     document.getElementById('vWin').click();
     const bar=document.createElement('div');bar.id='dragbar';bar.setAttribute('data-tauri-drag-region','');document.getElementById('win').appendChild(bar);
