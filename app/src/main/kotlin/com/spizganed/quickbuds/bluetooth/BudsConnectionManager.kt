@@ -1959,6 +1959,8 @@ class BudsConnectionManager(private val context: Context) {
      * gives the whole battery (issue #18). Not held: one short read beside the link gives the case level when the
      * link gives none or `0` (report #184). The read closes at the first battery message or after 5 s. The next read
      * waits 5 min, so Google Play Services can use the stream too: one phone opens a channel only once.
+     * The same read also starts a 10 s BLE scan for the case level in the advertisement ([AdvertCaseScan]):
+     * the stream fails while Google Play Services holds it.
      */
     private var fastPair: FastPairBattery? = null
     private var fpCase: FastPairStream.Level? = null
@@ -1966,12 +1968,30 @@ class BudsConnectionManager(private val context: Context) {
     /** "Hide old battery levels" is on and the last link report left the case out. */
     private var caseHidden = false
     private var fpCaseReadAt = -FP_CASE_READ_GAP_MS
+    private var advertScan: AdvertCaseScan? = null
 
     private fun readCaseFromFastPair() {
         val now = SystemClock.elapsedRealtime()
         if (fastPair != null || now - fpCaseReadAt < FP_CASE_READ_GAP_MS) return
         fpCaseReadAt = now
         lastDevice?.let { startFastPair(it, held = false) }
+        startAdvertScan()
+    }
+
+    private fun startAdvertScan() {
+        advertScan?.stop()
+        lateinit var me: AdvertCaseScan
+        me = AdvertCaseScan(
+            context.getSystemService(BluetoothManager::class.java)?.adapter, handler, Capabilities.productId(context), ::log
+        ) { level ->
+            if (advertScan !== me) return@AdvertCaseScan
+            advertScan = null
+            fpCase = level
+            fpCaseAt = SystemClock.elapsedRealtime()
+            emitBattery()
+        }
+        advertScan = me
+        if (!me.start()) advertScan = null
     }
 
     private fun startFastPair(device: BluetoothDevice, held: Boolean) {
@@ -1993,7 +2013,6 @@ class BudsConnectionManager(private val context: Context) {
             handler.post {
                 if (fastPair !== me) return@post
                 fastPair = null
-                fpCase = null
                 if (held) listeners.forEach { it.onConnected(false) }
             }
         })
@@ -2005,7 +2024,11 @@ class BudsConnectionManager(private val context: Context) {
     private fun stopFastPair(keepCase: Boolean = false) {
         fastPair?.stop()
         fastPair = null
-        if (!keepCase) fpCase = null
+        if (!keepCase) {
+            fpCase = null
+            advertScan?.stop()
+            advertScan = null
+        }
     }
 
     private fun emitBattery() {

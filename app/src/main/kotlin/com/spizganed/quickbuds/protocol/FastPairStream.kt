@@ -29,12 +29,14 @@ object FastPairStream {
     /** Group `03` (device information), code `03` (battery): left, right, case. */
     fun battery(m: Message): Battery? {
         if (m.group != 3 || m.code != 3 || m.data.size < 3) return null
-        fun level(b: Byte): Level {
-            val v = b.toInt() and 0xFF
-            val pct = v and 0x7F
-            return Level(if (pct > 100) null else pct, v and 0x80 != 0)
-        }
         return Battery(level(m.data[0]), level(m.data[1]), level(m.data[2]))
+    }
+
+    /** One battery byte: `0bSVVVVVVV`, S = charging, a value above 100 (`7F`) = not known. */
+    fun level(b: Byte): Level {
+        val v = b.toInt() and 0xFF
+        val pct = v and 0x7F
+        return Level(if (pct > 100) null else pct, v and 0x80 != 0)
     }
 
     /**

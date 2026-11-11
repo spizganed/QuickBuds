@@ -595,7 +595,7 @@ Every part must be `1`-`3`.
 
 ### Other battery sources `[VENDOR]`
 
-The RFCOMM link is not the only source. HeyMelody reads two more. QuickBuds uses neither yet. No capture confirms them.
+The RFCOMM link is not the only source. HeyMelody reads two more. QuickBuds reads the BLE advertisement for the case level. No capture confirms these sources.
 
 - **BLE advertisement.** No connection is needed. The buds send manufacturer data of company `0x079A` (OPPO) or `0x072F` (OnePlus). realme uses `0xA408`. Numbers are little-endian.
 
@@ -615,6 +615,8 @@ The RFCOMM link is not the only source. HeyMelody reads two more. QuickBuds uses
   - A battery byte has a valid flag in bit 0. When it is 0, the level is unknown. Else the level is `(byte >> 1) & 0x7F`.
   - Earbuds status: bit 0 is lid open. Bits 1 to 4 give the state of each bud (in the ear or in the case). The mapping is unknown.
   - The realme layout is at least 18 bytes. The address is at offset 8 and the lid bit is at offset 14, bit 0. Its battery bytes are unknown.
+  - The Google Fast Pair service data `FE2C` (public spec) also carries battery when the buds are not discoverable. Byte 0 is flags. Then fields `0bLLLLTTTT` follow, each with L bytes. Type 3 (shown) or 4 (hidden) with L = 3 is the battery: left, right, case, in the stream's format.
+  - QuickBuds scans for 10 s when the link gives no case level or `0`, at most once each 5 min. An OPPO packet counts only with the product id of the connected buds. A `FE2C` packet names no model, so it counts only when one sender alone sends a case level.
 - **Call-audio event.** The buds send the AT command `+VDBTY` over the call-audio link. Android turns it into the broadcast `android.bluetooth.headset.action.VENDOR_SPECIFIC_HEADSET_EVENT`. The arguments are `[count, id, level, ...]`. Id 1 is left, 2 is right, 3 is the case. The level is a percent. A level of 0 is dropped. The command `+VDRV` carries the firmware versions.
 - **System level.** Android keeps one battery level for each paired device. It has no left, right or case split.
 
@@ -622,7 +624,7 @@ Open: which models send these, and if the Air3i case level (report #184) is in t
 
 Per-model battery and wearing rules are in section 21.8.
 
-**Code:** `protocol/Battery.kt`; `core/src/msg.rs`.
+**Code:** `protocol/Battery.kt`, `protocol/FastPairAdvert.kt`; `core/src/msg.rs`.
 
 ---
 
