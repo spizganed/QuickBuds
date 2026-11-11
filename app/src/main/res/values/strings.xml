@@ -451,6 +451,7 @@
     <string name="tile_on">On</string>
     <string name="tile_off">Off</string>
     <string name="cycle_intro">Pick at least 2 modes. A tap on the Noise control tile or the Noise cycle button moves to the next mode, in this order.</string>
+    <string name="tile_hold_hint">Hold the %1$s tile to pick any noise mode from a list.</string>
     <string name="settings_cycle_sub">Modes for the tile and the widget button</string>
     <string name="settings_tile_title">Quick Settings tile</string>
     <string name="widget_cycle_name">QuickBuds noise cycle</string>

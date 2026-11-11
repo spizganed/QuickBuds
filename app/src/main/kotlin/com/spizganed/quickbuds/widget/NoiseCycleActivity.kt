@@ -31,7 +31,9 @@ class NoiseCycleActivity : Activity() {
         val root = SettingRowFactory.screen(this)
         root.addView(SettingRowFactory.title(this, if (id != WidgetSettings.NO_ID) R.string.widget_cycle else R.string.settings_tile_title))
         root.addView(TextView(this).apply {
-            setText(R.string.cycle_intro)
+            // The tile's list: a hold on the tile opens the full mode list (NoisePickActivity).
+            text = if (id == WidgetSettings.NO_ID) getString(R.string.cycle_intro) + " " + getString(R.string.tile_hold_hint, getString(R.string.anc_section))
+                else getString(R.string.cycle_intro)
             setTextColor(p.textSecondary)
             textSize = 13f
             setPadding(ThemeRes.dp(this@NoiseCycleActivity, 4f), 0, 0, ThemeRes.dp(this@NoiseCycleActivity, 12f))

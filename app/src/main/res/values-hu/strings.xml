@@ -607,6 +607,7 @@
     <string name="tile_on">Be</string>
     <string name="tile_off">Ki</string>
     <string name="cycle_intro">Válassz legalább 2 módot. A csempe vagy a Zajmód váltása gomb megérintése a következő módra lép, ebben a sorrendben.</string>
+    <string name="tile_hold_hint">Tartsa nyomva a(z) %1$s csempét, és válasszon módot egy listából.</string>
     <string name="settings_cycle_sub">A csempe és a widgetgomb módjai</string>
     <string name="settings_tile_title">Gyorsbeállítások csempe</string>
     <string name="widget_cycle_name">QuickBuds zajmód váltás</string>

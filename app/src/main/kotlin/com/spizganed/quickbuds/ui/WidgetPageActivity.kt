@@ -44,6 +44,13 @@ class WidgetPageActivity : Activity() {
         SettingRowFactory.addRow(card, SettingRowFactory.build(this, R.drawable.ic_mode_transparency, R.string.settings_tile_title,
             R.string.settings_cycle_sub, SettingRowFactory.buildChevron(this)) { startActivity(Intent(this, NoiseCycleActivity::class.java)) })
         root.addView(card)
+        root.addView(android.widget.TextView(this).apply {
+            text = getString(R.string.tile_hold_hint, getString(R.string.anc_section))
+            setTextColor(ThemeRes.palette(this@WidgetPageActivity).textSecondary)
+            textSize = 13f
+            val dp = { v: Float -> ThemeRes.dp(this@WidgetPageActivity, v) }
+            setPadding(dp(4f), dp(8f), 0, dp(4f))
+        })
         placed(manager)?.let {
             root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_placed_section))
             root.addView(it)

@@ -607,6 +607,7 @@
     <string name="tile_on">Hidup</string>
     <string name="tile_off">Mati</string>
     <string name="cycle_intro">Pilih sekurang-kurangnya 2 mod. Ketikan pada jubin atau butang Kitaran bunyi beralih ke mod seterusnya, mengikut urutan ini.</string>
+    <string name="tile_hold_hint">Tekan lama jubin %1$s untuk memilih mod daripada senarai.</string>
     <string name="settings_cycle_sub">Mod untuk jubin dan butang widget</string>
     <string name="settings_tile_title">Jubin Tetapan Pantas</string>
     <string name="widget_cycle_name">QuickBuds kitaran bunyi</string>

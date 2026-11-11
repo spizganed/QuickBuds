@@ -607,6 +607,7 @@
     <string name="tile_on">On</string>
     <string name="tile_off">Off</string>
     <string name="cycle_intro">Pumili ng hindi bababa sa 2 mode. Ang tap sa tile o sa button ng Ikot ng ingay ay lilipat sa susunod na mode, sa ayos na ito.</string>
+    <string name="tile_hold_hint">Pindutin nang matagal ang tile na %1$s para pumili ng mode mula sa listahan.</string>
     <string name="settings_cycle_sub">Mga mode para sa tile at sa button ng widget</string>
     <string name="settings_tile_title">Tile ng Quick Settings</string>
     <string name="widget_cycle_name">QuickBuds ikot ng ingay</string>

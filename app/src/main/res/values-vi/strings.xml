@@ -609,6 +609,7 @@
     <string name="tile_on">Bật</string>
     <string name="tile_off">Tắt</string>
     <string name="cycle_intro">Chọn ít nhất 2 chế độ. Chạm vào ô hoặc nút Chuyển chế độ ồn sẽ chuyển sang chế độ tiếp theo, theo thứ tự này.</string>
+    <string name="tile_hold_hint">Nhấn giữ ô %1$s để chọn chế độ từ danh sách.</string>
     <string name="settings_cycle_sub">Các chế độ cho ô và nút tiện ích</string>
     <string name="settings_tile_title">Ô Cài đặt nhanh</string>
     <string name="widget_cycle_name">QuickBuds chuyển chế độ ồn</string>

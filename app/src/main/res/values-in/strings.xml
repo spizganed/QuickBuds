@@ -609,6 +609,7 @@
     <string name="tile_on">Aktif</string>
     <string name="tile_off">Nonaktif</string>
     <string name="cycle_intro">Pilih minimal 2 mode. Ketukan pada ubin atau tombol Siklus kebisingan pindah ke mode berikutnya, dengan urutan ini.</string>
+    <string name="tile_hold_hint">Tahan ubin %1$s untuk memilih mode dari daftar.</string>
     <string name="settings_cycle_sub">Mode untuk ubin dan tombol widget</string>
     <string name="settings_tile_title">Ubin Setelan Cepat</string>
     <string name="widget_cycle_name">QuickBuds siklus kebisingan</string>

@@ -607,6 +607,7 @@
     <string name="tile_on">On</string>
     <string name="tile_off">Off</string>
     <string name="cycle_intro">Scegli almeno 2 modalità. Un tocco sul riquadro o sul pulsante Ciclo rumore passa alla modalità successiva, in questo ordine.</string>
+    <string name="tile_hold_hint">Tieni premuto il riquadro %1$s per scegliere una modalità da un elenco.</string>
     <string name="settings_cycle_sub">Modalità del riquadro e del pulsante del widget</string>
     <string name="settings_tile_title">Riquadro Impostazioni rapide</string>
     <string name="widget_cycle_name">QuickBuds ciclo rumore</string>

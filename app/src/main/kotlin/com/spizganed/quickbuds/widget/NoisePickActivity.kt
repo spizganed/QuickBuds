@@ -24,6 +24,11 @@ class NoisePickActivity : Activity() {
         theme.applyStyle(R.style.ThemeOverlay_App_SheetHost, true)
         super.onCreate(savedInstanceState)
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        // ThemeRes.select paints the system bars in the app colour; over the shade they stay clear.
+        @Suppress("DEPRECATION")
+        window.statusBarColor = Color.TRANSPARENT
+        @Suppress("DEPRECATION")
+        window.navigationBarColor = Color.TRANSPARENT
         // Android sends the long press of every QuickBuds tile here; only Noise control has a sheet.
         @Suppress("DEPRECATION")
         val tile = intent.getParcelableExtra<ComponentName>(Intent.EXTRA_COMPONENT_NAME)

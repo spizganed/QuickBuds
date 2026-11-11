@@ -607,6 +607,7 @@
     <string name="tile_on">Вкл.</string>
     <string name="tile_off">Выкл.</string>
     <string name="cycle_intro">Выберите не менее 2 режимов. Нажатие на плитку или кнопку смены режима переключает на следующий режим в этом порядке.</string>
+    <string name="tile_hold_hint">Удерживайте плитку «%1$s», чтобы выбрать режим из списка.</string>
     <string name="settings_cycle_sub">Режимы для плитки и кнопки виджета</string>
     <string name="settings_tile_title">Плитка быстрых настроек</string>
     <string name="widget_cycle_name">QuickBuds смена шумоподавления</string>

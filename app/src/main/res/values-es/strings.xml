@@ -607,6 +607,7 @@
     <string name="tile_on">Sí</string>
     <string name="tile_off">No</string>
     <string name="cycle_intro">Elige al menos 2 modos. Al tocar el icono de Control de ruido o el botón Ciclo de ruido pasas al siguiente modo, en este orden.</string>
+    <string name="tile_hold_hint">Mantén pulsado el mosaico %1$s para elegir cualquier modo de una lista.</string>
     <string name="settings_cycle_sub">Modos del icono y del botón del widget</string>
     <string name="settings_tile_title">Icono de Ajustes rápidos</string>
     <string name="widget_cycle_name">QuickBuds ciclo de ruido</string>

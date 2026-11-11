@@ -83,6 +83,14 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowAnimationStyle">@null</item>
     </style>
+    <!-- The manifest theme of NoisePickActivity: Android reads see-through from the manifest, not from setTheme(). -->
+    <style name="Theme.App.SheetHost" parent="Theme.App.Dark">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
     <style name="SheetAnimation">
         <item name="android:windowEnterAnimation">@anim/sheet_in</item>
         <item name="android:windowExitAnimation">@anim/sheet_out</item>

@@ -607,6 +607,7 @@
     <string name="tile_on">オン</string>
     <string name="tile_off">オフ</string>
     <string name="cycle_intro">2つ以上のモードを選んでください。タイルまたはノイズ切替ボタンをタップすると、この順で次のモードに切り替わります。</string>
+    <string name="tile_hold_hint">%1$s のタイルを長押しすると、一覧からモードを選べます。</string>
     <string name="settings_cycle_sub">タイルとウィジェットボタンのモード</string>
     <string name="settings_tile_title">クイック設定タイル</string>
     <string name="widget_cycle_name">QuickBuds ノイズ切替</string>

@@ -607,6 +607,7 @@
     <string name="tile_on">Açık</string>
     <string name="tile_off">Kapalı</string>
     <string name="cycle_intro">En az 2 mod seçin. Kutucuğa veya Gürültü döngüsü düğmesine dokunmak bu sırayla sonraki moda geçer.</string>
+    <string name="tile_hold_hint">Listeden bir mod seçmek için %1$s kutucuğunu basılı tutun.</string>
     <string name="settings_cycle_sub">Kutucuk ve widget düğmesi için modlar</string>
     <string name="settings_tile_title">Hızlı Ayarlar kutucuğu</string>
     <string name="widget_cycle_name">QuickBuds gürültü döngüsü</string>

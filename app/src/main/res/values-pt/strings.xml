@@ -607,6 +607,7 @@
     <string name="tile_on">Ligado</string>
     <string name="tile_off">Desligado</string>
     <string name="cycle_intro">Escolha pelo menos 2 modos. Um toque no bloco ou no botão Ciclo de ruído passa para o próximo modo, nesta ordem.</string>
+    <string name="tile_hold_hint">Mantenha premido o mosaico %1$s para escolher um modo numa lista.</string>
     <string name="settings_cycle_sub">Modos do bloco e do botão do widget</string>
     <string name="settings_tile_title">Bloco de Configurações rápidas</string>
     <string name="widget_cycle_name">QuickBuds ciclo de ruído</string>

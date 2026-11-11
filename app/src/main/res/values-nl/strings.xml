@@ -607,6 +607,7 @@
     <string name="tile_on">Aan</string>
     <string name="tile_off">Uit</string>
     <string name="cycle_intro">Kies minstens 2 modi. Een tik op de tegel of de knop Ruiscyclus gaat naar de volgende modus, in deze volgorde.</string>
+    <string name="tile_hold_hint">Houd de tegel %1$s ingedrukt om een modus uit een lijst te kiezen.</string>
     <string name="settings_cycle_sub">Modi voor de tegel en de widgetknop</string>
     <string name="settings_tile_title">Tegel Snelle instellingen</string>
     <string name="widget_cycle_name">QuickBuds ruiscyclus</string>

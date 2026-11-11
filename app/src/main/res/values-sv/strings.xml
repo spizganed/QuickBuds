@@ -607,6 +607,7 @@
     <string name="tile_on">På</string>
     <string name="tile_off">Av</string>
     <string name="cycle_intro">Välj minst 2 lägen. Ett tryck på rutan eller knappen Brusväxling går till nästa läge, i den här ordningen.</string>
+    <string name="tile_hold_hint">Håll in rutan %1$s för att välja ett läge i en lista.</string>
     <string name="settings_cycle_sub">Lägen för rutan och widgetknappen</string>
     <string name="settings_tile_title">Snabbinställningsruta</string>
     <string name="widget_cycle_name">QuickBuds brusväxling</string>
