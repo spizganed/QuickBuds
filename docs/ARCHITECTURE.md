@@ -31,6 +31,11 @@ One request goes the other way: the buds ask the phone to ring. realme buds with
 on a gesture. `app/.../bluetooth/PhoneRinger.kt` plays the default ringtone on the alarm stream and posts a
 notification with a Stop action. Why: the ring needs a phone, so the desktop app has no Find phone row.
 
+A second link is a fallback. When another app holds `079A` (every try fails fast with `read ret -1`) and the buds' SDP
+lists the Fast Pair Message Stream, `app/.../bluetooth/FastPairBattery.kt` opens that stream and passes its battery
+messages (`protocol/FastPairStream.kt`) to the same listeners. A new connect or a Disconnect closes it. Why: on a
+OnePlus phone the system holds `079A` and cannot be turned off (issue #18); the stream is the only other channel. The desktop app has no fallback.
+
 ## The model data
 
 `app/src/main/assets/models.json` lists every model. Each entry has the id, the name, the commands the buds accept,

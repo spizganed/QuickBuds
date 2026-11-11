@@ -77,6 +77,13 @@ the two UUIDs in the same order and takes the channel from the buds' SDP record.
 
 A case lid close ends the socket (section 13) `[CAPTURE]`.
 
+**Fast Pair Message Stream** (`df21fe2c-2515-4fdb-8886-f12c4d67927c`, Google's public spec). Many models list it in SDP.
+It is a separate RFCOMM service, so it opens while another app holds `079A` `[TESTED]` (Buds 4: secure works, insecure fails).
+Message: `<group> <code> <length u16 BE> <data>`. On open the buds send, without a request `[CAPTURE]`:
+`03 01` model id (Buds 4: `75410D`), `03 02` BLE address (Buds 4: zeros), `03 03` battery `<left> <right> <case>`.
+A battery byte is the level 0-100; `7F` = not known; bit 7 = charging. When every `079A` try fails fast with
+`read ret -1` (another holder) and SDP lists the stream, QuickBuds opens it and shows the battery only. It writes nothing.
+
 **Code:** `protocol/Protocol.kt` holds the UUID constants. The socket code is in `bluetooth/`.
 The core crate has no transport code.
 

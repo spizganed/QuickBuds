@@ -32,6 +32,7 @@ import com.spizganed.quickbuds.protocol.EqSnapshot
 import com.spizganed.quickbuds.protocol.EqState
 import com.spizganed.quickbuds.protocol.GameModeParser
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
+import com.spizganed.quickbuds.protocol.FastPairStream
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.Feature
 import com.spizganed.quickbuds.protocol.FeaturePushParser
@@ -344,6 +345,7 @@ class BudsConnectionManager(private val context: Context) {
         }
         isConnecting = true
         lastDevice = device
+        stopFastPair()
         val generation = ++connectGeneration
         // Starts the attempt, or clears the latch if the setup before it throws.
         val started = try {
@@ -458,6 +460,7 @@ class BudsConnectionManager(private val context: Context) {
                         log("Giving up after $totalTries connect tries. Tap CONNECT to retry manually.")
                         val held = ConnectDiagnostics.heldByOther(failures)
                         if (held) log("Every try failed fast with read ret -1: another device or app probably holds the earbuds.")
+                        if (held) startFastPair(device)
                         if (ConnectPolicy.showTryToast(user))
                             toast(if (held) context.getString(R.string.connect_held_by_other) else context.getString(R.string.connect_gave_up, totalTries))
                     }
@@ -656,6 +659,7 @@ class BudsConnectionManager(private val context: Context) {
     fun disconnect() {
         // A deliberate disconnect must not be undone by a queued reconnect.
         connectGeneration++
+        stopFastPair()
         teardownLink()
     }
 
@@ -2178,6 +2182,30 @@ class BudsConnectionManager(private val context: Context) {
         GestureConfigStore.syncFromDevice(context, table)
         OnCallConfigStore.syncFromDevice(context, table)
         GestureConfigStore.syncHoldFromDevice(context, table, lastHoldAncMasks)
+    }
+
+    /** The battery-only fallback over the Fast Pair stream, while another app holds `079A` (issue #18). */
+    private var fastPair: FastPairBattery? = null
+
+    private fun startFastPair(device: BluetoothDevice) {
+        if (device.uuids?.any { it.uuid.toString().equals(FastPairStream.UUID, true) } != true) return
+        log("Fast Pair stream listed: battery only while the earbuds are held")
+        lateinit var me: FastPairBattery
+        me = FastPairBattery(::log, { b ->
+            handler.post {
+                listeners.forEach { it.onBattery(b.left.level, b.case.level, b.right.level, b.left.charging, b.case.charging, b.right.charging) }
+            }
+        }, {
+            // Only the current fallback clears the levels: a stopped one ends after a new link may be up.
+            handler.post { if (fastPair === me) { fastPair = null; listeners.forEach { it.onConnected(false) } } }
+        })
+        fastPair = me
+        me.start(device)
+    }
+
+    private fun stopFastPair() {
+        fastPair?.stop()
+        fastPair = null
     }
 
     private fun emitBattery() {

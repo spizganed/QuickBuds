@@ -13,7 +13,7 @@ import java.util.UUID
  * It is a test for a fallback when another app holds `079A`. It writes nothing and only logs (`FP PROBE:`).
  */
 object FastPairProbe {
-    private val FP_UUID: UUID = UUID.fromString("df21fe2c-2515-4fdb-8886-f12c4d67927c")
+    private val FP_UUID: UUID = UUID.fromString(com.spizganed.quickbuds.protocol.FastPairStream.UUID)
     private const val CONNECT_TIMEOUT_MS = 8_000L
     private const val READ_MS = 6_000L
 
