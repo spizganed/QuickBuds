@@ -295,8 +295,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         // A2DP / HEADSET state is disconnected, and 5 socket tries would only fail. An unknown state connects as before.
         if (!user && !fromLink) {
             val device = try { BudsDevice.find(this) } catch (_: Exception) { null }
-            val link = device?.let { manager?.audioLinkState(it) } ?: LinkState.UNKNOWN
-            if (!ConnectPolicy.autoConnectAllowed(link)) {
+            if (manager?.mayAutoConnect(device) == false) {
                 statusLog("[SVC] FORCE_CONNECT skipped (the buds have no audio link)")
                 // The sleep kept the connected state and the last levels. The buds left during the lock: clear them (reports 134, 135).
                 if (WidgetStateStore.read(this).connected) onConnected(false)

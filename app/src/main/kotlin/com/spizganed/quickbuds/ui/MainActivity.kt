@@ -28,7 +28,6 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsDevice
 import com.spizganed.quickbuds.bluetooth.BudsService
-import com.spizganed.quickbuds.bluetooth.ConnectPolicy
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.ModelCatalog
@@ -1387,10 +1386,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             toast(getString(R.string.no_buds_paired))
             return
         }
-        // App open: an automatic connect starts only with the live audio link. With the buds in
-        // the closed case Android reports disconnected, and the tries would only fail.
-        if (!ConnectPolicy.autoConnectAllowed(manager.audioLinkState(device))) return
-        manager.connect(device, withAudio = true)
+        // App open: an automatic connect, only with the live audio link.
+        manager.autoConnect(device, withAudio = true)
     }
 
     /**

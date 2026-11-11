@@ -465,11 +465,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     override fun onPersonalNoiseAck(status: Int) = personalNoise.ack(status)
 
     override fun onConnected(connected: Boolean) {}
-    override fun onPacketReceived(bytes: ByteArray) {
-        // A firmware reply (`0x8105`, `00 <count>` + text) that lands while this screen is open.
-        if (bytes.size > 11 && bytes[4].toInt() and 0xFF == 0x05 && bytes[5].toInt() and 0xFF == 0x81 && bytes[9].toInt() == 0)
-            OpoProtocol.firmwareVersion(String(bytes, 11, bytes.size - 11, Charsets.UTF_8))?.let { paintFirmware(it) }
-    }
+    /** A firmware reply that lands while this screen is open. */
+    override fun onFirmware(version: String) = paintFirmware(version)
     override fun onBattery(
         left: Int?, case: Int?, right: Int?,
         chargingLeft: Boolean, chargingCase: Boolean, chargingRight: Boolean

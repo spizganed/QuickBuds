@@ -183,6 +183,8 @@ class BudsConnectionManager(private val context: Context) {
 
         /** The buds reported which commands they accept (`0x8100`), see [Capabilities]. */
         fun onCapabilities() {}
+        /** The firmware version, as HeyMelody shows it (`0x8105`). */
+        fun onFirmware(version: String) {}
     }
 
     private val listeners = CopyOnWriteArrayList<Listener>()
@@ -342,6 +344,20 @@ class BudsConnectionManager(private val context: Context) {
      * [user] is true for the Connect button, the widget tap and Dev tools: only then the tries
      * show toasts. An automatic connect stays silent.
      */
+    /**
+     * An automatic connect: it starts only with the live audio link. With the buds in the closed case Android reports
+     * the audio profiles disconnected, and the socket tries would only fail. An unknown state connects. False: skipped.
+     */
+    fun autoConnect(device: BluetoothDevice, withAudio: Boolean): Boolean {
+        if (!mayAutoConnect(device)) return false
+        connect(device, withAudio)
+        return true
+    }
+
+    /** The rule of [autoConnect]. No device found counts as an unknown state: it connects. */
+    fun mayAutoConnect(device: BluetoothDevice?): Boolean =
+        ConnectPolicy.autoConnectAllowed(device?.let { audioLinkState(it) } ?: LinkState.UNKNOWN)
+
     fun connect(device: BluetoothDevice, withAudio: Boolean = false, user: Boolean = false) {
         if (isConnecting || isConnected()) {
             log("Already connecting/connected, ignoring.")
@@ -1620,7 +1636,10 @@ class BudsConnectionManager(private val context: Context) {
                 val version = msg.parts.filter { it.second == 2 }.joinToString(".") { it.third }.ifEmpty { null }
                 val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
                 log("FIRMWARE: $version text=\"$text\" RAW=[${raw()}]")
-                if (version != null) Capabilities.saveFirmware(context, version)
+                if (version != null) {
+                    Capabilities.saveFirmware(context, version)
+                    handler.post { listeners.forEach { it.onFirmware(version) } }
+                }
             }
 
             // --- Wearing / in-case state: 0x8109 query reply or 0x0204 push ---
