@@ -337,6 +337,8 @@ Details in the sections cited. `—` = empty payload.
 | `0x0105` | Firmware version | — → `00 <count> <triples>` | 6 |
 | `0x0106` | Battery | — → `00 <count> <part> <raw>...` | 13 |
 | `0x0107` | Upgrade capability | — → `00 <count>`, then `<count>` × 2 bytes | 22 |
+| `0x0110` | Unknown; realme Link reads it on connect | — → `00 00` on the T310 `[CAPTURE]` | 22 |
+| `0x0120` | Unknown; realme Link reads it on connect. The Buds 4 firmware names it language `[FIRMWARE]` | — → `00 03` on the T310 `[CAPTURE]` | 22 |
 | `0x0108` | Gesture table | — → `00 <count> <entries>` | 15 |
 | `0x0109` | Wearing | — → `00 <count> <part> <state>...` | 13 |
 | `0x010B` | Colour id | — → `00 <colour id>` | 22 |
