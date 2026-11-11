@@ -651,9 +651,17 @@ function slide(el,open){
   a.onfinish=()=>{el._a=null;el.style.overflow='';if(!open)el.hidden=true;};}
 function moveNav(){const side=document.querySelector('.side'),ind=side&&side.querySelector('.navind'),cur=side&&side.querySelector('.nav[aria-current="page"]');if(!ind||!cur)return;
   ind.style.transform=`translateY(${cur.offsetTop}px)`;ind.style.height=cur.offsetHeight+'px';}
-function go(page){const fwd=ORDER.indexOf(page)>=ORDER.indexOf(S.page);S.page=page;save();document.querySelectorAll('#win .page').forEach(p=>{const on=p.dataset.page===page;p.hidden=!on;
-  if(on){p.classList.remove('slide','slideb');void p.offsetWidth;p.classList.add(fwd?'slide':'slideb');}});
-  document.getElementById('main').scrollTop=0;apply();requestAnimationFrame(()=>{if(page==='eq')renderEq();pixelize(document.querySelector(`.page[data-page="${page}"]`));});}
+/* The slide starts two frames after the page's work (theme, render, first layout and paint). Was: it started first; on a
+   page's first visit that work took longer than the slide, and the page popped in after a wait. */
+function go(page){const fwd=ORDER.indexOf(page)>=ORDER.indexOf(S.page);S.page=page;save();let shown=null;
+  document.querySelectorAll('#win .page').forEach(p=>{const on=p.dataset.page===page;p.hidden=!on;p.classList.remove('slide','slideb');if(on){shown=p;p.style.opacity='0';}});
+  document.getElementById('main').scrollTop=0;apply();if(page==='eq')renderEq();pixelize(shown);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{shown.style.opacity='';if(S.page===page)shown.classList.add(fwd?'slide':'slideb');}));}
+/* Lays out and paints each hidden page once, invisibly, while the app is idle: a first visit then costs no more than a second one. */
+function warmPages(){const pages=[...document.querySelectorAll('#win .page[hidden]')];
+  (function next(){const p=pages.shift();if(!p)return;if(!p.hidden)return next();
+    p.style.cssText+=';position:absolute;inset:0;visibility:hidden;pointer-events:none';p.hidden=false;void p.offsetHeight;pixelize(p);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{if(p.dataset.page!==S.page)p.hidden=true;p.style.position=p.style.inset=p.style.visibility=p.style.pointerEvents='';setTimeout(next,50);}));})();}
 
 /* ================= dialogs (find, fit test, language, known issues) ================= */
 function dialog(html,onOpen,onClose){const host=S.view==='tray'?document.getElementById('tray'):document.getElementById('win');const sc=document.createElement('div');sc.className='scrim';
@@ -1238,6 +1246,7 @@ if(document.documentElement.classList.contains('native')&&window.__TAURI__){
     caps[1].remove();
     caps[0].onclick=()=>w.minimize();caps[2].onclick=()=>w.close();
     window.__TAURI__.core.invoke('main_ready');
+    setTimeout(warmPages,1500);
   }
 }
 
