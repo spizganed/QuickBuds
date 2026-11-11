@@ -67,7 +67,7 @@ Details and how to turn it off: [PRIVACY.md](./docs/PRIVACY.md).
 
 - [CONTRIBUTING.md](./docs/CONTRIBUTING.md): build, tests, translations and the rules.
 - [PROTOCOL.md](./docs/PROTOCOL.md): the wire format, each claim with its source.
-- [ROADMAP.md](./docs/ROADMAP.md): the plan, the ideas and the features decided against.
+- [ROADMAP.md](./docs/ROADMAP.md): the plan and the features decided against.
 - [PACKET-CAPTURE.md](./docs/PACKET-CAPTURE.md): how to capture the earbuds' traffic.
 
 Everything to build and release QuickBuds is in this repository, except the signing key.

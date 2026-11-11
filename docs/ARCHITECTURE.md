@@ -35,7 +35,9 @@ notification with a Stop action. Why: the ring needs a phone, so the desktop app
 A second link is a fallback. When another app holds `079A` (every try fails fast with `read ret -1`) and the buds' SDP
 lists the Fast Pair Message Stream, `app/.../bluetooth/FastPairBattery.kt` opens that stream and passes its battery
 messages (`protocol/FastPairStream.kt`) to the same listeners. A new connect or a Disconnect closes it. Why: on a
-OnePlus phone the system holds `079A` and cannot be turned off (issue #18); the stream is the only other channel. The same stream fills a missing or `0` case level beside the normal link, in one short read every 5 min at most. The desktop app has no fallback.
+OnePlus phone the system holds `079A` and cannot be turned off (issue #18); the stream is the only other channel. The same stream fills a missing or `0` case level beside the normal link, in one short read every 5 min at most.
+The same read starts a 10 s BLE scan (`bluetooth/AdvertCaseScan.kt`, `protocol/FastPairAdvert.kt`): Google Play Services
+can hold the stream, but the advertisement is free to read. The desktop app has no fallback.
 
 ## The model data
 

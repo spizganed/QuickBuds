@@ -6,13 +6,13 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
 
 ## Planned
 
-- **Confirm more models.** The goal is about 100 models, or 80% of the list, confirmed. Today 42 are. Fix what the
+- **Confirm more models.** The goal is about 100 models, or 80% of the list, confirmed. Today 46 are. Fix what the
   model tests and the issues report. A missing feature needs a snoop log and a screen recording
   ([PACKET-CAPTURE.md](./PACKET-CAPTURE.md#send-a-snoop-log-for-a-missing-feature)).
 - **Protocol: merge each verified finding into the one layer.** The layer is `protocol/`. Build a facts ledger. It lists
   every command, push and feature against every model, with the gaps marked. Then add each verified fact to the layer and
   to `docs/PROTOCOL.md`.
-- **Desktop (Tauri):** test the app on Windows. Delete the branch `slint-archive` when the Tauri app has proven itself.
+- **Desktop (Tauri):** test the app on Windows.
 - **Captures wanted:**
   - Buds push `0x050E` and answer `0x012C` (realme Air6, Air7 Pro and Air8): the layouts are unknown, so QuickBuds does
     not use them.
@@ -28,8 +28,9 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
   - Sleep detection, tap level, Spotify Tap and the camera tap.
   - Swift pair: a popup when the case lid opens.
   - A gesture that starts an app.
-- **More battery sources.** Read the BLE advertisement and the call-audio event. Use them as a fallback when another
-  app holds the RFCOMM link, and for the case level. Captures wanted: the advertisement bytes of real buds.
+- **More battery sources.** The BLE advertisement gives the case level when the link gives none or `0`. Left: the
+  call-audio event, and the advertisement as the full battery source when another app holds the link. Captures
+  wanted: the advertisement bytes of real buds.
 - **Refactor before new brands.** Put each brand behind one driver interface (connect, battery, noise control, find,
   gestures). The OPPO protocol becomes the first driver.
 
@@ -46,14 +47,6 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
   The Fast Pair Message Stream reader exists: it gives the battery when another app holds the earbuds (issue #18).
 - **3D audio and high-quality audio tiles:** move the rules that turn one off when the other turns on out of the main
   screen first, so the tiles and the app share them.
-
-## Ideas
-
-Ideas, not plans. Nothing here is promised.
-
-- **Launch an app with an earbud gesture.** A gesture, for example a triple tap on the left bud, starts an app or an
-  action: Spotify, a playlist, or a voice assistant. Open question: do the earbuds report a gesture with no function
-  set? HeyMelody's firmware "Spotify Tap" is a different thing (see "Decided against").
 
 ## Unverified
 
