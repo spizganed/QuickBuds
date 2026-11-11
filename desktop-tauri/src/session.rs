@@ -348,6 +348,8 @@ struct Conn<'a> {
     holds: Vec<(u8, bool, Instant)>,
     /// The feature id of each `0x0403` write by sequence byte, so a refusal in the log names its switch.
     feature_writes: std::collections::HashMap<u8, u8>,
+    /// The last EQ pick: older replies do not move it back ([`crate::eq_logic::PickHold`]).
+    eq_hold: crate::eq_logic::PickHold,
     s: Snapshot,
     emit: &'a Emit,
 }
@@ -357,7 +359,7 @@ impl<'a> Conn<'a> {
         let model = find_model(None, Some(&name));
         let mut s = Snapshot { status: Status::On, name, detected: model, ..Default::default() };
         pick_model(&mut s);
-        Conn { link, addr, framer: Framer::default(), rx: 0, seq: 0, level: None, holds: Vec::new(), feature_writes: Default::default(), s, emit }
+        Conn { link, addr, framer: Framer::default(), rx: 0, seq: 0, level: None, holds: Vec::new(), feature_writes: Default::default(), eq_hold: Default::default(), s, emit }
     }
 
     /// A switch written just now keeps the value written for a moment.
@@ -532,7 +534,7 @@ impl<'a> Conn<'a> {
                 }
             }
             Event::Firmware(f) => s.firmware = Some(f),
-            Event::EqCurrent(id) => s.eq_current = Some(id),
+            Event::EqCurrent(id) => if self.eq_hold.accept(id, now_ms()) { s.eq_current = Some(id) },
             Event::Offered(o) => s.offered = Some(o),
             Event::EqCustom(list) => s.eq_custom = list,
             Event::BassLevel(l) => s.bass_level = Some(l),
@@ -679,15 +681,6 @@ impl<'a> Conn<'a> {
     }
 
     /// A write, then the EQ re-read.
-    /// A preset selection only: a built-in, or a custom preset saved unchanged.
-    fn eq_pick(&self, c: &Cmd) -> bool {
-        match c {
-            Cmd::EqBuiltIn(_) => true,
-            Cmd::EqSave(p) => self.s.eq_custom.contains(p),
-            _ => false,
-        }
-    }
-
     fn eq_write(&mut self, f: Frame, sync: &mut Sync) -> Result<(), String> {
         (self.emit)(self.s.clone());
         self.tx(f)?;
@@ -713,10 +706,9 @@ impl<'a> Conn<'a> {
                 }
             }
             // Quick EQ clicks queue behind a write: only the last pick is sent. A save with changes is kept.
-            let picks: Vec<bool> = cmds.iter().map(|c| self.eq_pick(c)).collect();
-            let last_pick = picks.iter().rposition(|&p| p);
+            let sent = crate::eq_logic::sent(&cmds, &self.s.eq_custom);
             for (i, cmd) in cmds.into_iter().enumerate() {
-                if picks[i] && Some(i) != last_pick { continue; }
+                if !sent[i] { continue; }
                 match cmd {
                     Cmd::Anc(mode) => {
                         // A mode this model does not list is never sent: its bit would be another mode's.
@@ -737,10 +729,12 @@ impl<'a> Conn<'a> {
                     // Each EQ write updates the state first, so the replies before the new values
                     // do not snap the UI back.
                     Cmd::EqBuiltIn(id) => {
+                        self.eq_hold.pick(id, now_ms());
                         self.s.eq_current = Some(id);
                         self.eq_write(cmd::eq_select(id), sync)?;
                     }
                     Cmd::EqSave(p) => {
+                        self.eq_hold.pick(p.id, now_ms());
                         self.s.eq_current = Some(p.id);
                         if let Some(x) = self.s.eq_custom.iter_mut().find(|x| x.id == p.id) { *x = p.clone(); }
                         self.eq_write((CMD_SAVE_CUSTOM_EQ, p.encode(EQ_SAVE)), sync)?;

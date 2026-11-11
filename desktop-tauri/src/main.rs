@@ -9,6 +9,7 @@ mod hearing_logic;
 mod home_logic;
 mod protocol;
 mod row_rules;
+mod eq_logic;
 mod session;
 mod types;
 
