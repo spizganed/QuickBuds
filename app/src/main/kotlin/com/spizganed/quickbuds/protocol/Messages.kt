@@ -71,12 +71,14 @@ sealed class Request {
 /** The commands the buds accept. Before the reply, every command is allowed. */
 class Bitmap private constructor(private val cmds: Set<Int>?) {
     fun allows(cmd: Int) = cmds?.contains(cmd) ?: true
+    /** The commands the buds accept, or null before the reply. */
+    val commands: Set<Int>? get() = cmds
     val known get() = cmds != null
 
     companion object {
         val UNKNOWN = Bitmap(null)
 
-        /** Commands behind each bit of the `0x8100` reply (PROTOCOL.md section 5). */
+        /** Commands behind each bit of the `0x8100` reply (PROTOCOL.md section 5). `core/tests/bitmap_table.json` checks it against core. */
         private val BITS: List<List<Int>> = listOf(
             listOf(0x0105), listOf(0x0106), listOf(0x0107), listOf(0x0108, 0x0401, 0x0416), listOf(0x0109), listOf(0x0400),
             listOf(0x0402), listOf(0x0403), listOf(0x010C, 0x0404), listOf(0x0405), listOf(0x0406, 0x010F), listOf(0x0407),

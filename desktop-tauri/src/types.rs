@@ -203,34 +203,14 @@ pub fn status_query(model: Option<&serde_json::Value>) -> Vec<u8> {
     q
 }
 
-/// Commands behind each bit of the `0x8100` handshake bitmap (same table as `Capabilities.kt`).
-const BIT_COMMANDS: &[&[u16]] = &[
-    &[0x0105], &[0x0106], &[0x0107], &[0x0108, 0x0401, 0x0416], &[0x0109], &[0x0400], &[0x0402], &[0x0403],
-    &[0x010C, 0x0404], &[0x0405], &[0x0406, 0x010F], &[0x0407], &[], &[0x0408], &[0x0409], &[], &[],
-    &[0x0114], &[], &[0x040E, 0x040D, 0x0115, 0x0116], &[0x040F], &[0x0410, 0x0119], &[0x0205], &[0x0F00],
-    &[], &[0x0118, 0x0411], &[0x011A, 0x0412], &[0x011C, 0x0413], &[], &[0x0112, 0x040B],
-    &[0x011E, 0x011F, 0x0415], &[0x040D], &[], &[0x0121, 0x0417], &[0x0122, 0x0418], &[0x0419],
-    &[0x011D, 0x0414], &[0x0123, 0x041A], &[0x0124, 0x041B], &[0x0125, 0x041C, 0x0127, 0x041D, 0x041F],
-    &[0x0421, 0x0023, 0x0024, 0x0022, 0x0126, 0x0129], &[0xEF01], &[0xEF02], &[0xEF03, 0x041E], &[0x0420],
-    &[0x001C], &[], &[0x0422, 0x012A], &[0xEF04], &[0x0423, 0x012B], &[], &[0x0424], &[0xEF06], &[], &[0x012C],
-    &[0x0425, 0x012E, 0x0426], &[0x012F], &[0x0427, 0x0130], &[0x0131, 0x0428], &[0x0429, 0x0132], &[0x0014],
-    &[0x042D, 0x0133], &[0x042E], &[0xEF07], &[0xEF08, 0x0136, 0x0433], &[0xEF09], &[0x0431, 0x0134], &[0x0432, 0x0135, 0x0435], &[0x0117],
-];
-
-const ALWAYS: &[u16] = &[0x0100, 0x0101, 0x0102, 0x0103, 0x0104, 0x0106, 0x010B, 0x010D, 0x0F00, 0x0F03, 0x0F04];
-
 /// What the buds said they accept. Before the handshake reply, everything is assumed (as the phone app does).
 #[derive(Default, Clone)]
 pub struct Caps(pub(crate) Option<Vec<u16>>);
 
 impl Caps {
+    /// The `0x8100` table is `buds_core::msg::Bitmap`'s.
     pub fn parse(payload: &[u8]) -> Option<Caps> {
-        if payload.len() < 2 || payload[0] != 0 { return None; }
-        let mut out = ALWAYS.to_vec();
-        for bit in 0..((payload.len() - 1) * 8).min(BIT_COMMANDS.len()) {
-            if payload[1 + bit / 8] >> (bit % 8) & 1 == 1 { out.extend_from_slice(BIT_COMMANDS[bit]); }
-        }
-        Some(Caps(Some(out)))
+        crate::msg::Bitmap::parse(payload).map(|b| Caps(b.commands().map(<[u16]>::to_vec)))
     }
     pub fn supports(&self, cmd: u16) -> bool { self.0.as_ref().map_or(true, |c| c.contains(&cmd)) }
     /// The buds answered the bitmap query.

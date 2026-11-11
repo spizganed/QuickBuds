@@ -55,6 +55,8 @@ impl Bitmap {
         }
         Some(Bitmap(Some(cmds)))
     }
+    /// The commands the buds accept, or None before the reply.
+    pub fn commands(&self) -> Option<&[u16]> { self.0.as_deref() }
     pub fn allows(&self, cmd: u16) -> bool { self.0.as_ref().map_or(true, |c| c.contains(&cmd)) }
     /// The buds have answered.
     pub fn known(&self) -> bool { self.0.is_some() }

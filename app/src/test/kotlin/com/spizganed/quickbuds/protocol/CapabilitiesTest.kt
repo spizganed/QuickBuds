@@ -1,14 +1,31 @@
 package com.spizganed.quickbuds.protocol
 
+import org.json.JSONArray
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 
-/** The bitmap table holds all 69 bits of PROTOCOL.md section 5. */
+/** The `0x8100` bit table matches `core/tests/bitmap_table.json`, which core checks too. */
 class CapabilitiesTest {
     private fun bytes(vararg v: Int) = ByteArray(v.size) { v[it].toByte() }
     private fun onlyBit(bit: Int) = ByteArray(10).also { it[1 + bit / 8] = (1 shl (bit % 8)).toByte() }
+
+    @Test fun everyBitMatchesCore() {
+        val file = File("../core/tests/bitmap_table.json")
+        assertTrue("missing contract: ${file.absolutePath}", file.isFile)
+        val json = JSONObject(file.readText())
+        fun hex(a: JSONArray) = (0 until a.length()).map { a.getString(it).removePrefix("0x").toInt(16) }
+        val always = hex(json.getJSONArray("always")).toSet()
+        val bits = json.getJSONArray("bits")
+        assertEquals(always, Capabilities.parse(ByteArray(10)))
+        for (bit in 0 until bits.length()) {
+            assertEquals("bit $bit", always + hex(bits.getJSONArray(bit)), Capabilities.parse(onlyBit(bit)))
+        }
+        assertEquals("bits past the table are ignored", always, Capabilities.parse(onlyBit(bits.length())))
+    }
 
     @Test fun lateBitsEnableTheirCommands() {
         assertTrue(0x0419 in Capabilities.parse(onlyBit(35))!!)

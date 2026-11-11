@@ -277,7 +277,7 @@ Bits 35, 64, 67 and 68 enable `0x0419`, `0x0136`, `0x0433`, `0x0432`, `0x0135`, 
 QuickBuds never sends these, because their payloads are unknown. HeyMelody sends nothing else, and
 QuickBuds sends nothing else either `[VENDOR]`.
 
-**Code:** `protocol/Capabilities.kt`; `core/src/msg.rs`.
+**Code:** `core/src/msg.rs` (`Bitmap`); `protocol/Messages.kt` (`Bitmap`). `core/tests/bitmap_table.json` checks both tables.
 
 ---
 
