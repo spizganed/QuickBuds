@@ -35,8 +35,6 @@ import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.protocol.FeatureSync
-import com.spizganed.quickbuds.protocol.FeatureSyncConfig
 import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetSettings
 import com.spizganed.quickbuds.widget.WidgetStateStore
@@ -870,32 +868,19 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
 
     private fun toggleGameMode(next: Boolean) {
         if (!::manager.isInitialized) return
-        val gameId = Capabilities.gameModeId(this)
-        manager.requestSetting(
-            gameId,
-            listOf(gameId to (if (next) 1 else 0)),
-            FeatureSyncConfig.gameConfirm(ModelCatalog.current(this)?.json)
-        )
+        manager.setFeature(Capabilities.gameModeId(this), next)
     }
 
     /** A tap on the Golden Sound switch asks for [wantOn]; the buds' own report moves it. */
     private fun requestGolden(wantOn: Boolean) {
         if (!::manager.isInitialized) return
-        manager.requestSetting(
-            Feature.GOLDEN_SOUND,
-            listOf(Feature.GOLDEN_SOUND to (if (wantOn) 1 else 0)),
-            FeatureSync.Confirm.READ
-        )
+        manager.setFeature(Feature.GOLDEN_SOUND, wantOn)
     }
 
     /** A tap on the wind noise switch asks for [wantOn]; the buds' own report moves it. */
     private fun requestWind(wantOn: Boolean) {
         if (!::manager.isInitialized) return
-        manager.requestSetting(
-            Feature.WIND_NOISE,
-            listOf(Feature.WIND_NOISE to (if (wantOn) 1 else 0)),
-            FeatureSync.Confirm.READ
-        )
+        manager.setFeature(Feature.WIND_NOISE, wantOn)
     }
 
     /**
@@ -908,15 +893,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         if (MainActivity.phoneSpatial(this)) return requestPhoneSpatial(wantOn)
         if (wantOn == spatialOn()) return
         val dropHires = wantOn && featureOn(Feature.HIRES_CODEC) && !spatialSwitchOnly()
-        val write = {
-            manager.requestSetting(
-                Feature.SPATIAL_SOUND,
-                if (dropHires) listOf(Feature.SPATIAL_SOUND to 1, Feature.HIRES_CODEC to 0)
-                else listOf(Feature.SPATIAL_SOUND to (if (wantOn) 1 else 0)),
-                FeatureSync.Confirm.READ,
-                restarts = dropHires
-            )
-        }
+        // The manager adds the Hi-Res write when it drops it; the dialog warns first.
+        val write = { manager.setFeature(Feature.SPATIAL_SOUND, wantOn) }
         if (dropHires) confirmReconnect(R.string.codec_msg_spatial_drops_hires, write) else write()
     }
 
@@ -966,22 +944,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                 if (dropSpatial && spatialByType()) {
                     manager.setSpatialType(0)
                     paintSpatial()
-                    hires.postDelayed({
-                        manager.requestSetting(
-                            Feature.HIRES_CODEC,
-                            listOf(Feature.HIRES_CODEC to 1),
-                            FeatureSync.Confirm.READ,
-                            restarts = true
-                        )
-                    }, 300)
+                    hires.postDelayed({ manager.setFeature(Feature.HIRES_CODEC, true) }, 300)
                 } else {
-                    manager.requestSetting(
-                        Feature.HIRES_CODEC,
-                        if (dropSpatial) listOf(Feature.SPATIAL_SOUND to 0, Feature.HIRES_CODEC to 1)
-                        else listOf(Feature.HIRES_CODEC to (if (wantOn) 1 else 0)),
-                        FeatureSync.Confirm.READ,
-                        restarts = true
-                    )
+                    // The manager adds the 3D audio write when it drops it.
+                    manager.setFeature(Feature.HIRES_CODEC, wantOn)
                 }
             }
         }
@@ -1162,14 +1128,12 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         val dropHires = type != 0 && featureOn(Feature.HIRES_CODEC) && !spatialSwitchOnly()
         val write = {
             spatialSwitch?.let { setSwitchQuiet(it, type != 0) }
-            val hiresOff = Feature.HIRES_CODEC to false
             if (spatialByType()) {
                 manager.setSpatialType(type)
                 paintSpatial()
                 // Spatial first, then the codec, as HeyMelody sends them.
-                if (dropHires) spatialSwitch?.postDelayed({ manager.setFeatures(hiresOff) }, 300)
-            } else if (dropHires) manager.setFeatures(Feature.SPATIAL_SOUND to true, hiresOff)
-            else manager.setFeatures(Feature.SPATIAL_SOUND to (type != 0))
+                if (dropHires) spatialSwitch?.postDelayed({ manager.setFeature(Feature.HIRES_CODEC, false) }, 300)
+            } else manager.setFeature(Feature.SPATIAL_SOUND, type != 0)
         }
         if (!dropHires) return write()
         spatialSwitch?.let { setSwitchQuiet(it, spatialOn()) }

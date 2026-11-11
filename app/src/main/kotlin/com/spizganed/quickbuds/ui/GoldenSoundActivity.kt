@@ -19,7 +19,6 @@ import com.spizganed.quickbuds.protocol.GoldenSound
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.protocol.FeatureSync
 import com.spizganed.quickbuds.protocol.Commands
 import com.spizganed.quickbuds.protocol.HearingCommands
 
@@ -69,11 +68,7 @@ class GoldenSoundActivity : Activity(), BudsConnectionManager.Listener {
         toggle = SettingRowFactory.buildSwitch(this, false)
         // A tap asks for the opposite value; the switch moves only when the buds report one.
         (toggle as RequestSwitch).onRequest = { wantOn ->
-            manager?.requestSetting(
-                Feature.GOLDEN_SOUND,
-                listOf(Feature.GOLDEN_SOUND to (if (wantOn) 1 else 0)),
-                FeatureSync.Confirm.READ
-            )
+            manager?.setFeature(Feature.GOLDEN_SOUND, wantOn)
         }
         toggleRow = SettingRowFactory.build(this@GoldenSoundActivity, R.drawable.ic_hearing,
             R.string.row_golden_title, R.string.row_golden_sub, toggle) { toggle.performClick() }

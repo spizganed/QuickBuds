@@ -33,7 +33,6 @@ import com.spizganed.quickbuds.protocol.EqState
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.protocol.FeatureSync
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -253,11 +252,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         // A tap asks for the opposite value; the switch moves only when the buds report one.
         (bassSwitch as RequestSwitch).onRequest = { wantOn ->
             motion.onUserAction()
-            manager?.requestSetting(
-                Feature.BASSWAVE,
-                listOf(Feature.BASSWAVE to (if (wantOn) 1 else 0)),
-                FeatureSync.Confirm.READ
-            )
+            manager?.setFeature(Feature.BASSWAVE, wantOn)
         }
         bassRow = SettingRowFactory.build(
             this, R.drawable.ic_equalizer, R.string.eq_basswave, R.string.eq_basswave_sub, bassSwitch

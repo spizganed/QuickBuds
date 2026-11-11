@@ -22,7 +22,6 @@ import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.protocol.FeatureSync
 
 /**
  * Earbud settings — the hub for everything about the buds themselves rather than the sound
@@ -162,11 +161,11 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 // Power saving restarts the buds (asks both ways); adaptive sound costs battery (asks only to
                 // turn on). As HeyMelody does.
                 if (confirm == 0 || (!on && id == Feature.HEARING_OPTIMIZE))
-                    return@setOnCheckedChangeListener manager?.setFeatures(id to on) ?: Unit
+                    return@setOnCheckedChangeListener manager?.setFeature(id, on) ?: Unit
                 quiet { sw.isChecked = !on }
                 ConfirmDialog.show(this, getString(title), getString(confirm), getString(R.string.dual_add_ok)) {
                     quiet { sw.isChecked = on }
-                    manager?.setFeatures(id to on)
+                    manager?.setFeature(id, on)
                 }
             }
             addSwitch(id, icon, title, sub, sw)
@@ -190,7 +189,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             featureSwitches[id] = sw
             sw.setOnCheckedChangeListener { _, on ->
                 if (syncing) return@setOnCheckedChangeListener
-                if (!on) return@setOnCheckedChangeListener manager?.setFeatures(id to false) ?: Unit
+                if (!on) return@setOnCheckedChangeListener manager?.setFeature(id, false) ?: Unit
                 quiet { sw.isChecked = false }   // the buds turn it on once a result applies
                 personalNoise.start()
             }
@@ -247,7 +246,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             sw.setOnCheckedChangeListener { _, on ->
                 if (syncing) return@setOnCheckedChangeListener
                 prefs.edit().putBoolean("autoAnswer", on).apply()
-                manager?.setFeatures(Feature.AUTO_ANSWER to on)
+                manager?.setFeature(Feature.AUTO_ANSWER, on)
             }
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
             card.addView(SettingRowFactory.build(this, R.drawable.ic_devices, R.string.row_auto_answer_title,
@@ -292,11 +291,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
     private fun quiet(block: () -> Unit) { syncing = true; block(); syncing = false }
 
     /** One tap on a feature switch: the buds' own report moves the switch. */
-    private fun requestFeature(id: Int, on: Boolean) = manager?.requestSetting(
-        id, listOf(id to (if (on) 1 else 0)), FeatureSync.Confirm.READ,
-        // Power saving restarts the link; without this the switch reports a false "no answer".
-        restarts = id == Feature.POWER_SAVING
-    )
+    private fun requestFeature(id: Int, on: Boolean) = manager?.setFeature(id, on)
 
     /** The engine applies a tap: the row says "Applying…" and its switch stays still. */
     override fun onSettingBusy(key: Int, on: Boolean) {

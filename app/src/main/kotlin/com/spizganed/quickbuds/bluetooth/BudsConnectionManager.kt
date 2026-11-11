@@ -63,6 +63,10 @@ class BudsConnectionManager(private val context: Context) {
         const val KEY_FIRMWARE = "firmwareVersion"
         /** The buds apply a write about a second after the ack; a read sooner returns the old value and the switch flickers. */
         private const val VERIFY_DELAY_MS = 2200L
+        /** The buds do not report these: [setFeature] writes them once. */
+        private val WRITE_ONLY = setOf(Feature.AUTO_ANSWER)
+        /** The buds restart after these writes. */
+        private val RESTARTS = setOf(Feature.POWER_SAVING, Feature.HIRES_CODEC)
         private const val ANC_VERIFY_MS = 900L
         /** For this long after our own write, a read of that switch shows what we wrote. */
         private const val PENDING_MS = 2000L
@@ -942,7 +946,7 @@ class BudsConnectionManager(private val context: Context) {
      */
     fun setVolumeEnhancer(on: Boolean) = sendRaw(Commands.volumeEnhancer(on), "Volume enhancer -> $on")
 
-    fun setFeatures(vararg changes: Pair<Int, Boolean>) {
+    private fun setFeatures(vararg changes: Pair<Int, Boolean>) {
         Thread {
             try {
                 for ((id, on) in changes) {
@@ -960,10 +964,33 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /**
-     * One user action on a setting. The engine sends the writes in order and waits for the confirmation
-     * kind given; [key] is the control that shows "applying". See docs/FEATURE-SYNC.md.
+     * One `0x0403` switch as the user wants it: the one way a screen, widget or tile writes a switch. This picks the
+     * confirmation (game mode by the model's `gameConfirm`, else a status read), the restart (power saving and
+     * high-quality audio restart the buds) and the coupled switch: 3D audio and high-quality audio exclude each other
+     * unless the model has `spatialToggle`, so turning one on turns the other off in the same operation, in
+     * HeyMelody's order (spatial first). A write-only switch (auto-answer) is sent once with no confirmation.
      */
-    fun requestSetting(key: Int, writes: List<Pair<Int, Int>>, confirm: FeatureSync.Confirm, restarts: Boolean = false) {
+    fun setFeature(id: Int, on: Boolean) {
+        if (id in WRITE_ONLY) return setFeatures(id to on)
+        val model = ModelCatalog.current(context)?.json
+        val exclusive = model?.optInt("spatialToggle") != 1
+        val v = if (on) 1 else 0
+        val writes = when {
+            exclusive && on && id == Feature.SPATIAL_SOUND && featureStates[Feature.HIRES_CODEC] == 1 ->
+                listOf(Feature.SPATIAL_SOUND to 1, Feature.HIRES_CODEC to 0)
+            exclusive && on && id == Feature.HIRES_CODEC && featureStates[Feature.SPATIAL_SOUND] == 1 ->
+                listOf(Feature.SPATIAL_SOUND to 0, Feature.HIRES_CODEC to 1)
+            else -> listOf(id to v)
+        }
+        val confirm = if (id == Capabilities.gameModeId(context)) FeatureSyncConfig.gameConfirm(model) else FeatureSync.Confirm.READ
+        requestSetting(id, writes, confirm, restarts = writes.any { it.first in RESTARTS })
+    }
+
+    /**
+     * One user action on a setting. The engine sends the writes in order and waits for the confirmation
+     * kind given; [key] is the control that shows "applying". See docs/FEATURE-SYNC.md. Screens call [setFeature].
+     */
+    private fun requestSetting(key: Int, writes: List<Pair<Int, Int>>, confirm: FeatureSync.Confirm, restarts: Boolean = false) {
         if (key !in FeatureSyncConfig.ENABLED) {
             // This key is switched back to the old path: one write per pair, then a status read.
             setFeatures(*writes.map { it.first to (it.second == 1) }.toTypedArray())

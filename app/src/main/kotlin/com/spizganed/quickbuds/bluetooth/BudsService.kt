@@ -21,8 +21,6 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.protocol.FeatureSync
-import com.spizganed.quickbuds.protocol.FeatureSyncConfig
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.ui.OnCallGesture
 import com.spizganed.quickbuds.ui.ThemeRes
@@ -337,16 +335,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             "OFF" -> { statusLog("<< sending ANC Off"); manager?.sendAnc(AncModes.OFF) }
             "GAME_TOGGLE" -> {
                 statusLog("<< sending Game $gameMode")
-                val gameId = Capabilities.gameModeId(this)
-                manager?.requestSetting(
-                    gameId,
-                    listOf(gameId to (if (gameMode) 1 else 0)),
-                    FeatureSyncConfig.gameConfirm(ModelCatalog.current(this)?.json)
-                )
+                manager?.setFeature(Capabilities.gameModeId(this), gameMode)
             }
             // Dual connection needs its 0x0413 follow-up, so it takes the app's own path.
             "FEATURE" -> if (feature == Feature.DUAL_DEVICE) manager?.setDualDevice(featureOn)
-                else if (feature >= 0) manager?.setFeatures(feature to featureOn)
+                else if (feature >= 0) manager?.setFeature(feature, featureOn)
             else -> statusLog("<< UNKNOWN widget action: '$widgetAction'")
         }
     }

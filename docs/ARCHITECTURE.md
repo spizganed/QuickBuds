@@ -45,8 +45,9 @@ same file to accept a report only for a known model.
 
 ## From a button to the buds and back
 
-1. The user taps a control. The UI calls `requestSetting(key, writes, confirm)` on the connection manager
-   (Android) or sends a `Cmd` to the link thread (desktop).
+1. The user taps a control. The UI calls `setFeature(id, on)` on the connection manager (Android) or sends a
+   `Cmd` to the link thread (desktop). The screens, the widgets and the tiles take this one path. The manager picks
+   the confirmation, the restart and the coupled switch (3D audio and high-quality audio).
 2. The engine in `FeatureSync` takes the operation. It shows "Applying" and sends the first write.
    The control does not move.
 3. The buds ack each write with a status. The next write goes out after status 0.
