@@ -7,6 +7,7 @@ import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.Feature as ProtoFeature
 import com.spizganed.quickbuds.protocol.ModelCatalog
+import com.spizganed.quickbuds.protocol.ModelProfile
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.RowRules
 import org.json.JSONArray
@@ -43,7 +44,7 @@ object ModelTest {
             Capabilities.hasFeature(it, com.spizganed.quickbuds.protocol.Feature.AUTO_PLAY_PAUSE)
         },
         Feature("find", R.string.row_find_title, "Find my earbuds") {
-            Capabilities.supports(it, OpoProtocol.CMD_FIND_BUDS) && ModelCatalog.current(it)?.json?.optInt("noFind") != 1
+            Capabilities.supports(it, OpoProtocol.CMD_FIND_BUDS) && !ModelCatalog.profile(it).noFind
         },
     )
 
@@ -236,8 +237,7 @@ object ModelTest {
      * model that does not answer it is no missing answer: the diagnosis reports only what the model declares. Null when
      * the model has no list, so the whole ask list counts.
      */
-    private fun declaredIds(model: JSONObject?): Set<Int>? = model?.optString("statusQuery")
-        ?.takeIf { it.isNotBlank() }?.split(' ')?.mapNotNull { it.toIntOrNull(16) }?.toSet()
+    private fun declaredIds(model: JSONObject?): Set<Int>? = ModelProfile(model).statusQuery?.split(' ')?.mapNotNull { it.toIntOrNull(16) }?.toSet()
 
     /**
      * The two game-mode ids are alternatives: a model answers one of them. When the reply holds one, the other is
@@ -260,8 +260,7 @@ object ModelTest {
 
     /** The features an owner confirmed on [model] (`models.json` `confirmed`). */
     fun confirmed(model: ModelCatalog.Model): Set<String> {
-        val list = model.json.optJSONArray("confirmed") ?: return emptySet()
-        return (0 until list.length()).map { list.getString(it) }.toSet()
+        return model.profile.confirmed.toSet()
     }
 
     /** The launch prompt asks: a known model, not asked before, with a feature shown that nobody confirmed. */

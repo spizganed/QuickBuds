@@ -110,7 +110,7 @@ class AncModes private constructor(
         fun of(context: Context): AncModes {
             val model = ModelCatalog.current(context) ?: return if (Capabilities.productId(context) == null) BUDS4 else NONE
             cached?.let { if (it.first == model.id) return it.second }
-            val modes = runCatching { model.json.optJSONArray("ancModes")?.let { parse(it) } }.getOrNull() ?: NONE
+            val modes = runCatching { model.profile.ancModes?.let { parse(it) } }.getOrNull() ?: NONE
             cached = model.id to modes
             return modes
         }

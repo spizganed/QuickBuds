@@ -39,5 +39,5 @@ object FeatureSyncConfig {
      * (realme Buds T310, reports #16 and #73). The model entry may override only this, never the write itself.
      */
     fun gameConfirm(model: JSONObject?): FeatureSync.Confirm =
-        if (model?.optString("gameConfirm") == "read") FeatureSync.Confirm.READ else FeatureSync.Confirm.PUSH
+        if (ModelProfile(model).gameConfirmRead) FeatureSync.Confirm.READ else FeatureSync.Confirm.PUSH
 }

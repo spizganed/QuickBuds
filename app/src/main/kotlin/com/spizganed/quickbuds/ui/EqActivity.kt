@@ -63,11 +63,11 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
 
         /** `[VENDOR]` `customEqMax`, else HeyMelody's default of 3. */
         fun maxCustom(context: Context) =
-            ModelCatalog.current(context)?.json?.optInt("customEqLimit")?.takeIf { it > 0 } ?: 3
+            ModelCatalog.profile(context).customEqLimit
 
         /** `[VENDOR]` `customEqFrequency` (10 bands on 8 models), else HeyMelody's six. */
         fun modelFreqs(context: Context): List<Int> =
-            ModelCatalog.current(context)?.json?.optJSONArray("customEqBands")
+            ModelCatalog.profile(context).customEqBands
                 ?.let { a -> (0 until a.length()).map { a.getInt(it) } } ?: EqCodec.DEFAULT_FREQS
     }
 
@@ -104,13 +104,13 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 .let { a -> (0 until a.length()).map { a.getJSONObject(it) } }
         }
         // Types 1-4 have other names on these models (`f(name) == 2` is the `equalizer` field).
-        val alt = model != null && (model.json.optInt("eqAltNames") == 1 || model.json.optInt("eqKind") == 2)
+        val alt = model != null && (model.profile.eqAltNames || model.profile.eqKind == 2)
         return modes.mapNotNull { mode ->
             val name = when (mode.getInt("mode")) {
                 1 -> if (alt) R.string.eq_nature_balance else R.string.eq_classic
                 2 -> if (alt) R.string.eq_bass_boost else R.string.eq_dynamic_bass
                 3, 14, 32 -> R.string.eq_clear_vocals
-                4 -> if (model?.json?.optInt("eqGentle4") == 1) R.string.eq_gentle else R.string.eq_clear
+                4 -> if (model?.profile?.eqGentle4 == true) R.string.eq_gentle else R.string.eq_clear
                 5, 35 -> R.string.eq_default
                 6, 36 -> R.string.eq_dyn_simple
                 7, 37 -> R.string.eq_dyn_warm

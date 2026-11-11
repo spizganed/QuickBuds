@@ -6,6 +6,7 @@ import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
 import com.spizganed.quickbuds.protocol.ModelCatalog
+import com.spizganed.quickbuds.protocol.ModelProfile
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import org.json.JSONArray
 import org.json.JSONObject
@@ -352,21 +353,22 @@ class GestureModel private constructor(
         }
 
         private fun parse(json: JSONObject): GestureModel {
-            val control = json.optJSONArray("gestures") ?: JSONArray()
+            val p = ModelProfile(json)
+            val control = p.gestures ?: JSONArray()
             val rows = LinkedHashMap<Gesture, List<GestureAction>>()
             var holdBits = emptyMap<GestureAction, Int>()
             val levelBits = ArrayList<Int>()
-            val longPressType = json.optInt("holdMask")
+            val longPressType = p.holdMask
             var holdMin = 1
             for (gesture in Gesture.values()) {
                 val entry = (0 until control.length()).map { control.getJSONObject(it) }
                     .firstOrNull { it.getInt("gesture") in gesture.controlActions } ?: continue
                 if (gesture == Gesture.TAP_HOLD) {
-                    holdBits = holdBits(json, if (json.optInt("holdAncOne") == 1) levelBits else null) ?: continue
+                    holdBits = holdBits(json, if (p.holdAncOne) levelBits else null) ?: continue
                     rows[gesture] = holdBits.keys.toList()
                     // `[VENDOR]` the entry's own minimum, else 2 on OnePlus and per-bud holds.
                     holdMin = entry.optInt("minSelected").takeIf { it > 0 }
-                        ?: if (ModelCatalog.brand(json) == "OnePlus" || longPressType != 0) 2 else 1
+                        ?: if (p.brand == "OnePlus" || longPressType != 0) 2 else 1
                 } else {
                     val support = entry.optInt("options")
                     val options = ORDER.filter { support and it != 0 }
@@ -376,16 +378,15 @@ class GestureModel private constructor(
             }
             // `[VENDOR]` a callControl row is only a choice if it offers None (512); the others
             // (36 / 37 and the 32 / 33 of four models) are fixed, with nothing to write.
-            val call = json.optJSONArray("callGestures") ?: JSONArray()
+            val call = p.callGestures ?: JSONArray()
             fun hasCall(action: Int) = (0 until call.length()).map { call.getJSONObject(it) }
                 .any { it.getInt("gesture") == action && it.optInt("options") and 512 != 0 }
             val onCall = OnCallGesture.values().filter { hasCall(it.callAction) }
             // `[VENDOR]` order, without spy tap (8388608), which needs a phone-side feature.
             val holdChoices = if (longPressType == 0) emptyList()
                 else intArrayOf(512, HOLD_NOISE, 1, 8192).filter { longPressType and it != 0 }
-            return GestureModel(rows, holdBits, onCall, json.optInt("oldTrackBytes") == 1,
-                longPressType != 0, holdChoices, holdMin, levelBits, json.optInt("sharedHold") == 1,
-                json.optInt("oneButton") == 1, json.optInt("bothHold") == 1)
+            return GestureModel(rows, holdBits, onCall, p.oldTrackBytes,
+                longPressType != 0, holdChoices, holdMin, levelBits, p.sharedHold, p.oneButton, p.bothHold)
         }
 
         /**
@@ -395,7 +396,7 @@ class GestureModel private constructor(
          * (HeyMelody gives them one label on that model).
          */
         private fun holdBits(json: JSONObject, levelBits: MutableList<Int>?): Map<GestureAction, Int>? {
-            val modes = json.optJSONArray("ancModes") ?: return null
+            val modes = ModelProfile(json).ancModes ?: return null
             val bits = LinkedHashMap<GestureAction, Int>()
             for (i in 0 until modes.length()) {
                 val mode = modes.getJSONObject(i)

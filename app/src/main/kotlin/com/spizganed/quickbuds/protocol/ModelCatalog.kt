@@ -12,7 +12,13 @@ import org.json.JSONObject
  */
 object ModelCatalog {
 
-    class Model(val id: String, val name: String, val json: JSONObject)
+    class Model(val id: String, val name: String, val json: JSONObject) {
+        /** The entry as typed answers ([ModelProfile]). */
+        val profile get() = ModelProfile(json)
+    }
+
+    /** The current model's entry as typed answers; an unknown model answers false and empty. */
+    fun profile(context: Context) = ModelProfile(current(context)?.json)
 
     /** The Bluetooth name of the buds last connected, saved at connect time. */
     const val KEY_DEVICE_NAME = "budsDeviceName"
@@ -43,18 +49,8 @@ object ModelCatalog {
     )
 
     /** The model's own best high-quality codec. Null when the model has no `codecs` key or lists none of them. */
-    /**
-     * The brand: the first word of the name (OnePlus, OPPO, realme, DIZO). Vendor rules that differ by brand (the
-     * hold's minimum, phone-made 3D audio) read it here. Code tests no model name.
-     */
-    fun brand(model: JSONObject?): String = model?.optString("name").orEmpty().substringBefore(' ')
-
-    /** A OnePlus or OPPO model: HeyMelody's list, not realme Link's. */
-    fun heyMelody(model: JSONObject?): Boolean = brand(model) == "OnePlus" || brand(model) == "OPPO"
-
     fun bestHiResCodec(model: JSONObject?): String? {
-        val list = model?.optJSONArray("codecs") ?: return null
-        val tokens = (0 until list.length()).map { list.optString(it) }
+        val tokens = ModelProfile(model).codecs
         return HIRES_CODECS.firstOrNull { it.first in tokens }?.second
     }
 
@@ -119,7 +115,7 @@ object ModelCatalog {
     }
 
     /** realme Link's three-device item: the Dual connection rows say "Triple connection". */
-    fun tripleDevice(context: Context): Boolean = current(context)?.json?.optInt("tripleDevice") == 1
+    fun tripleDevice(context: Context): Boolean = profile(context).tripleDevice
 
     /** The manual pick if there is one, else [detected]. */
     fun current(context: Context): Model? =

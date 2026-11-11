@@ -26,7 +26,7 @@ object KnownIssues {
         val keys = mutableSetOf<String>()
         if (PhoneChecks.isColorOsPhone(Build.MANUFACTURER)) keys += ONEPLUS_LINK
         val model = ModelCatalog.current(c) ?: return ALL.filter { it.key in keys }
-        model.json.optJSONArray("knownIssues")?.let { a -> for (i in 0 until a.length()) keys += a.getString(i) }
+        keys += model.profile.knownIssues
         val hires = MainActivity.rowSupported(c, "hires")
         if (hires && Build.MANUFACTURER.equals("samsung", ignoreCase = true)) keys += "samsung_codec"
         if (hires && MainActivity.rowSupported(c, "spatial") && !MainActivity.spatialSwitchOnly(c)) keys += "hires_spatial"

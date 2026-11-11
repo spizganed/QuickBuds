@@ -1484,7 +1484,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
          * Our own key `spatialToggle` (realme Link data, PROTOCOL.md §18): spatial is feature `1B` alone and
          * Hi-Res `18` alone, never written together, whatever the bitmap says.
          */
-        fun spatialSwitchOnly(c: Context) = ModelCatalog.current(c)?.json?.optInt("spatialToggle") == 1
+        fun spatialSwitchOnly(c: Context) = ModelCatalog.profile(c).spatialToggle
 
         /** `spatialModes` holds `2`: Off / Fixed / Head tracking instead of a plain switch. */
         fun spatialHeadTracking(c: Context) =

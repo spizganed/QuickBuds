@@ -31,6 +31,7 @@ import com.spizganed.quickbuds.protocol.Msg
 import com.spizganed.quickbuds.protocol.Public
 import com.spizganed.quickbuds.protocol.Wire.Message
 import com.spizganed.quickbuds.protocol.ModelCatalog
+import com.spizganed.quickbuds.protocol.ModelProfile
 import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.EqSnapshot
 import com.spizganed.quickbuds.protocol.EqState
@@ -215,7 +216,7 @@ class BudsConnectionManager(private val context: Context) {
      */
     private fun takeEngineSeq(seq: Int): Int? {
         wireToEngine.remove(seq)?.let { return it }
-        if (ModelCatalog.current(context)?.json?.optInt("seqless") != 1) return null
+        if (!ModelCatalog.profile(context).seqless) return null
         val wire = wireToEngine.entries.maxByOrNull { it.value }?.key ?: return null
         log("SYNC: reply seq=0x%02X pairs with request seq=0x%02X (seqless model)".format(seq, wire))
         return wireToEngine.remove(wire)
@@ -642,7 +643,7 @@ class BudsConnectionManager(private val context: Context) {
                 query(OpoProtocol.CMD_QUERY_HEAD_MOTION_TYPE, Commands.queryHeadMotionType(), "query head motion type")
                 if (!batch.isNullOrEmpty()) { delay(200); sendRawBlocking(Replies.batch(batch), "batch query (${batch.size})") }
                 // realme Link hands 3D audio to the buds on every connect; else the `1B` switch can do nothing (issue #9).
-                if (ModelCatalog.current(context)?.json?.optInt("spatialToggle") == 1 &&
+                if (ModelCatalog.profile(context).spatialToggle &&
                     Capabilities.supports(context, OpoProtocol.CMD_SPATIAL_SOURCE)) {
                     delay(200); sendRawBlocking(Commands.spatialOnBuds(),"3D audio on the buds")
                 }
@@ -883,7 +884,7 @@ class BudsConnectionManager(private val context: Context) {
     fun setFeature(id: Int, on: Boolean) {
         if (id in WRITE_ONLY) return setFeatures(id to on)
         val model = ModelCatalog.current(context)?.json
-        val exclusive = model?.optInt("spatialToggle") != 1
+        val exclusive = !ModelProfile(model).spatialToggle
         val v = if (on) 1 else 0
         val writes = when {
             exclusive && on && id == Feature.SPATIAL_SOUND && featureStates[Feature.HIRES_CODEC] == 1 ->
@@ -1597,7 +1598,7 @@ class BudsConnectionManager(private val context: Context) {
         if (cmd == OpoProtocol.REQ_FIND_PHONE) {
             val action = payload.firstOrNull()?.toInt()
             log("FIND PHONE: action=$action")
-            if (ModelCatalog.current(context)?.json?.optInt("findPhone") == 1) when (action) {
+            if (ModelCatalog.profile(context).findPhone) when (action) {
                 0x05 -> PhoneRinger.ring(context)
                 0x06 -> PhoneRinger.stop(context)
             }
