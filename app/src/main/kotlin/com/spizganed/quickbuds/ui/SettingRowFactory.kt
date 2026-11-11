@@ -246,6 +246,35 @@ object SettingRowFactory {
     }
 
     /** Chevron for rows that open another screen: 22dp, accent, no frame. */
+    /** A switch row bound to a boolean in the app prefs. It saves on change. */
+    fun prefSwitch(context: Context, iconRes: Int, titleRes: Int, subRes: Int, key: String, default: Boolean): LinearLayout {
+        val prefs = context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+        val sw = buildSwitch(context, prefs.getBoolean(key, default))
+        sw.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(key, on).apply() }
+        return build(context, iconRes, titleRes, subRes, sw) { sw.performClick() }
+    }
+
+    /** A filled pill with a verb (Setup's "Add"). Without an action it is plain secondary text, aligned with the switches. */
+    fun pillButton(context: Context, textRes: Int, action: (() -> Unit)?): TextView = TextView(context).apply {
+        val dp = { v: Float -> ThemeRes.dp(context, v) }
+        val p = ThemeRes.palette(context)
+        setText(textRes)
+        textSize = 14f
+        typeface = ThemeRes.bold(context)
+        gravity = Gravity.CENTER
+        isSingleLine = true
+        minWidth = dp(72f)
+        setPadding(dp(14f), 0, dp(14f), 0)
+        // The state text has no pill: its right edge meets the switches' (the rows' 16dp padding), not 14dp inside it.
+        if (action == null) { setTextColor(p.textSecondary); setPadding(0, 0, 0, 0); gravity = Gravity.CENTER_VERTICAL or Gravity.END; minWidth = 0 }
+        else {
+            setTextColor(ThemeRes.onFill(context))
+            background = ThemeRes.ripple(context, ThemeRes.pill(context, p.accent, 18f))
+            setOnClickListener { action() }
+        }
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(36f))
+    }
+
     fun buildChevron(context: Context): ImageView {
         val dp = { v: Float -> ThemeRes.dp(context, v) }
         return ImageView(context).apply {

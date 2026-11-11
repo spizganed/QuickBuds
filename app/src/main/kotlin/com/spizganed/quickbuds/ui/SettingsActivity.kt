@@ -19,7 +19,6 @@ class SettingsActivity : Activity() {
         ThemeRes.select(this)
         super.onCreate(savedInstanceState)
 
-        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
         val root = SettingRowFactory.screen(this)
         root.addView(SettingRowFactory.title(this, R.string.settings_title))
 
@@ -33,11 +32,8 @@ class SettingsActivity : Activity() {
         fun link(icon: Int, title: Int, sub: Int, onClick: () -> Unit) =
             SettingRowFactory.build(this, icon, title, sub, SettingRowFactory.buildChevron(this), onClick = onClick)
 
-        fun toggle(icon: Int, title: Int, sub: Int, key: String, default: Boolean): LinearLayout {
-            val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean(key, default))
-            sw.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(key, on).apply() }
-            return SettingRowFactory.build(this, icon, title, sub, sw) { sw.performClick() }
-        }
+        fun toggle(icon: Int, title: Int, sub: Int, key: String, default: Boolean) =
+            SettingRowFactory.prefSwitch(this, icon, title, sub, key, default)
 
         val themeRow = link(R.drawable.ic_palette, R.string.theme_title, 0) {
             startActivity(Intent(this, ThemeActivity::class.java))
@@ -48,28 +44,21 @@ class SettingsActivity : Activity() {
         }
         section(R.string.settings_appearance, themeRow, layoutRow)
 
-        val fullNotifRow = toggle(R.drawable.ic_battery, R.string.settings_full_notif_title, R.string.settings_full_notif_sub,
-            BudsService.PREF_FULL_NOTIFICATION, true)
+        // Notifications and widgets have their own pages (the service, battery and chip rows; the widgets and the tile).
         val general = mutableListOf<android.view.View>(
+            link(R.drawable.ic_notifications, R.string.setup_perm_notif, 0) {
+                startActivity(Intent(this, NotificationSettingsActivity::class.java))
+            },
+            link(R.drawable.ic_widgets, R.string.setup_widgets_title, 0) {
+                startActivity(Intent(this, WidgetPageActivity::class.java))
+            },
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
             toggle(R.drawable.ic_anc, R.string.settings_anc_pick_title, R.string.settings_anc_pick_sub, KEY_ANC_PICK_FIRST, false),
-            backgroundRow(prefs),
             toggle(R.drawable.ic_battery, R.string.settings_clear_battery_title, R.string.settings_clear_battery_sub,
                 BudsService.PREF_CLEAR_BATTERY, false),
-            link(R.drawable.ic_mode_transparency, R.string.settings_tile_title, R.string.settings_cycle_sub) {
-                startActivity(Intent(this, com.spizganed.quickbuds.widget.NoiseCycleActivity::class.java))
-            },
-            fullNotifRow,
-            toggle(R.drawable.ic_battery, R.string.settings_lock_notif_title, R.string.settings_lock_notif_sub,
-                BudsService.PREF_LOCK_NOTIFICATION, false),
             toggle(R.drawable.ic_dev_tools, R.string.settings_devtools_title, R.string.settings_devtools_sub, KEY_DEV_TOOLS_BUTTON, false),
             toggle(R.drawable.ic_info, R.string.settings_ping_title, R.string.settings_ping_sub, UsagePing.KEY_ENABLED, true)
         )
-        // The chip is an Android 16 live update: older versions do not get the row.
-        if (android.os.Build.VERSION.SDK_INT >= 36) {
-            general.add(general.indexOfFirst { it === fullNotifRow } + 1,
-                toggle(R.drawable.ic_battery, R.string.settings_live_chip_title, R.string.settings_live_chip_sub, BudsService.PREF_LIVE_CHIP, false))
-        }
         general.add(0, link(R.drawable.ic_language, R.string.settings_language_title, R.string.settings_language_sub) {
             startActivity(Intent(this, LanguageActivity::class.java))
         })
@@ -107,40 +96,6 @@ class SettingsActivity : Activity() {
     }
 
     private var themeSubtitle: android.widget.TextView? = null
-
-    /**
-     * Background service switch. Turning it off asks first (the widget and the automatic reconnect
-     * need the service); Cancel puts the switch back without saving.
-     */
-    private fun backgroundRow(prefs: android.content.SharedPreferences): LinearLayout {
-        val key = BudsService.PREF_BACKGROUND
-        val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean(key, true))
-        var reverting = false
-        sw.setOnCheckedChangeListener { _, on ->
-            if (reverting) return@setOnCheckedChangeListener
-            if (on) {
-                // The service is still bound by the open main screen, so nothing needs restarting.
-                prefs.edit().putBoolean(key, true).apply()
-                return@setOnCheckedChangeListener
-            }
-            reverting = true
-            sw.isChecked = true
-            reverting = false
-            ConfirmDialog.show(
-                this, getString(R.string.settings_background_warn_title),
-                getString(R.string.settings_background_warn_body),
-                getString(R.string.settings_background_warn_action)
-            ) {
-                prefs.edit().putBoolean(key, false).apply()
-                reverting = true
-                sw.isChecked = false
-                reverting = false
-            }
-        }
-        return SettingRowFactory.build(
-            this, R.drawable.ic_power, R.string.settings_background_title, R.string.settings_background_sub, sw
-        ) { sw.performClick() }
-    }
 
     override fun onResume() {
         super.onResume()

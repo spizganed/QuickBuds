@@ -223,23 +223,7 @@ class SetupActivity : Activity() {
     }
 
     /** A pill button for a row's trailing slot. [action] null draws the quiet "done" label. */
-    private fun pillButton(text: Int, action: (() -> Unit)?) = TextView(this).apply {
-        setText(text)
-        textSize = 14f
-        typeface = ThemeRes.bold(context)
-        gravity = Gravity.CENTER
-        isSingleLine = true
-        minWidth = dp(72f)
-        setPadding(dp(14f), 0, dp(14f), 0)
-        // The state text has no pill: its right edge meets the switches' (the rows' 16dp padding), not 14dp inside it.
-        if (action == null) { setTextColor(p.textSecondary); setPadding(0, 0, 0, 0); gravity = Gravity.CENTER_VERTICAL or Gravity.END; minWidth = 0 }
-        else {
-            setTextColor(ThemeRes.onFill(this@SetupActivity))
-            background = ThemeRes.ripple(this@SetupActivity, ThemeRes.pill(this@SetupActivity, p.accent, 18f))
-            setOnClickListener { action() }
-        }
-        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(36f))
-    }
+    private fun pillButton(text: Int, action: (() -> Unit)?) = SettingRowFactory.pillButton(this, text, action)
 
     private fun welcome() {
         icon()

@@ -141,6 +141,16 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".ui.NotificationSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.WidgetPageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".ui.ReportActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"
