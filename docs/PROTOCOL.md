@@ -817,7 +817,7 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 - The id `05` is asked first for every model. The vendor app ignores the value and never writes it.
 - Feature `1F` is for OPPO and OnePlus phones and is never asked.
 - A game-mode write is confirmed by push `05`, not by a read. The buds apply the change about 1 s after the ack `[CAPTURE 2026-10-24]`.
-- An id in the status reply does not prove the switch. The OPPO Enco Buds3 Pro lists `1B` and reports `1B=1` after a write. Its bitmap has no `0x012A`, and two owners hear no 3D audio (reports #60 #61). QuickBuds hides the row through its `statusQuery` (`05 11 06`) `[CAPTURE]`.
+- An id in the status reply does not prove the switch: see the Enco Buds3 Pro in section 21.5.
 
 | Id | Switch | Notes |
 |---|---|---|
@@ -852,14 +852,6 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 - **Head gesture mapping** `[VENDOR]`: `0x0431 00` = nod answers / shake declines, `01` = the reverse. Read `0x0134` → `00 <type>`, pushed as `F5 <type>`. Bitmap bit 66. Was: "HeyMelody parses only the push". Is: it parses both.
 - **Game sound type** `[VENDOR]`: `0x0423 <type> 01`, Off (`0`) included. Read `0x012B` → `00 <selected> <count> <types>`. Types: `0` Off, `1` a Chinese game, `3` shooting games. Offered: the model's `gameSoundList` types the buds also list.
 
-The id list is per model `[VENDOR]`. `models.json` `statusQuery` holds the list (85 HeyMelody models,
-from HeyMelody 116.9.0's built-in data). Buds 4: `05 04 0B 11 18 06 1B 1D 1C` (matches the capture).
-Enco Buds2: `05 06` `[TESTED]`. Checked against the HeyMelody 117.6.6 id rule, all 85 listed models
-match it. The lists leave out the ids of features the project decided against (`22`-`24`, `3C` neck
-health, `3D` Gemini assistant). A model whose vendor data gives `wearDetection` 1 or 2 has `04` (wear detection) in its
-`statusQuery` id list. The Enco X4 and Buds Pro 4 have 2.
-
-- A model without `statusQuery` (hand-added) gets the 23 ids, plus `1A` where it has `windMode`.
 - **realme models** `[VENDOR]` (realme Link 5.8.811): the per-model screen lists name the rows a model shows. The `statusQuery` for 30 realme models asks only for the ids of those rows: `04` smart play/pause, `06` game mode, `0B` hearing profile, `11` dual connection, `18` Hi-Res, `1B` 3D sound. Only the Air8 Pro, Air7 Pro, Air 5 Pro and Air6 Pro list a hearing profile. The T500 Pro does not (report #21), and its buds do not answer the tones. The Air7 Pro keeps its list: its owner confirmed it `[TESTED]`.
 - A row whose id the model is not asked for does not show (HeyMelody parity: no Power saving or Personalised ANC on Buds 4).
 - Parsed into `featureStates`, logged as `FEATURES:`. The buds' list wins over the model list while connected.
@@ -1098,7 +1090,6 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - OPPO Enco Buds2 (model entry `064810`, reported product id `060C12`): 4-byte bitmap `00 9B 2C 50 80` `[CAPTURE]`. It offers `02 01` and sends no `0x8205`. A long `0x010D` list dropped its link (issue #5). `02 05 0D` kept the link up `[CAPTURE]`.
 - OnePlus Nord Buds 3 Pro `064414`: offered codes `00 02 02 01` (wear, battery) `[CAPTURE]`. It sent no `0x8205` when asked for `01 02 03 04 08 0B`. It pushed an ANC change once without `03`.
 - OnePlus Buds 4 `065414`: `0x8205` ack `01 02 01 00 02 00`; for five ids `01 05 01 00 02 00 03 00 04 00 08 00` `[GUESS]`.
-- OPPO Enco Buds3 Pro `06A850`: the bitmap has no `0x012A`, but the status reply lists `1B` and reports `1B=1` after a write (reports #60 #61) `[CAPTURE]`. Its `statusQuery` is `05 11 06`.
 - OnePlus Buds 4 `065414`: `statusQuery` `05 04 0B 11 18 06 1B 1D 1C` `[CAPTURE]`. The buds answered `00 08 05 00 04 00 0B 01 11 01 18 01 06 00 1B 00 1D 01` (no `1C`) `[CAPTURE]`.
 - OPPO Enco Buds2 (model entry `064810`, reported product id `060C12`): `statusQuery` `05 06` `[TESTED]`.
 - realme Buds T310 `063C12`: the status reply uses status `01` for ids `04 0B 18 27 35`, so the buds lack them `[CAPTURE]`.
@@ -1116,16 +1107,13 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - Buds 4 `065414` tree: `Off 0`, `ANC 1`, `Transparency 2`, `Deep 4`, `Medium 5`, `Light 6`, `Smart 7`, `Adaptive 11` `[CAPTURE]`. Off has a report child at 3. Transparency has one at 8.
 - Tree shape `NC 0, Off 1, Transparency 2` (9 models) `[VENDOR]`: Buds 4's Off bytes turn ANC on there `[VENDOR]`.
 - Tree shape `Off 0, Transparency 1, Light 2, Deep 3` (Enco X `061410`, Buds Z2 `061014`), plus `Smart 4` on Buds Pro `060C14` `[VENDOR]`.
-- A model with no `ancModes` (79 of 143 in `models.json`) gets no noise control. Before detection, the app uses the Buds 4 tree `[VENDOR]`.
 - The app does not offer voice-transparency modes that need a per-bud support read (4 OPPO models) `[VENDOR]`.
-- realme models `[VENDOR]`: the write and report tables are the same. Off `01`, Transparency `02`, Light `04`, Deep and plain ANC `08`, Medium `10`, Smart `20`. As a tree: Off 0, Transparency 1, ANC 3 with children Light 2, Deep 3, Medium 4, Smart 5. Only the levels a model has. T200 `065452`, T300 `062412`, T500 `067052`, T200x `065852` and Wireless 3 `050812` have plain ANC. N1 `064012` and T310 `063C12` have no Smart. 21 realme models have this tree in `models.json`.
-- realme Buds Air7 Pro `064C12`: the owner confirms the table works (issue #8) `[TESTED]`. The others are unverified. Its `0x810C 01 01` value `02` = Transparency.
+- realme models `[VENDOR]` (bits in section 14): as a tree, Off 0, Transparency 1, ANC 3 with children Light 2, Deep 3, Medium 4, Smart 5. Only the levels a model has. T200 `065452`, T300 `062412`, T500 `067052`, T200x `065852` and Wireless 3 `050812` have plain ANC. N1 `064012` and T310 `063C12` have no Smart. 21 realme models have this tree in `models.json`.
 - OnePlus Buds Pro `060C14`: shows `3` / `4` / `7` as one "ANC" option `[VENDOR]`. Its bit is the current level's, or Smart's (bit 4) outside ANC.
 - Buds Z2 `061014` and Enco X `061410`: list strong (4) and weak (3) as their own cycle options `[VENDOR]`.
 - OnePlus Buds 4 `065414`: Smart SET bit 7 is acked and pushed as `0x0080` `[CAPTURE]`. Right after, the buds push `03 04 01 20 00` and `03 04 01 40 00` `[CAPTURE]`.
 - OnePlus Buds 4 `065414`: no bud in an ear refuses a SET with status `0E` `[CAPTURE]`. One bud is enough.
 - realme Buds Air7 Pro `064C12`: its hold cycle is `0A` = ANC + Transparency. The cycle is one mask for both buds: write `0x0404 02 01 <mask>`, read `0x010C 02 01`. Our key `sharedHold` keeps type 1 on a per-bud hold `[VENDOR]`.
-- realme hold models: `holdMask` 8833 (Air7 Pro). The mask is one setting for both buds.
 - OnePlus Buds 4 `065414`: hold mask `0x0007` before Adaptive, `0x0807` after `[CAPTURE]`.
 - OnePlus Buds 4: `0x0021` was acked `00` and read back `0x0001`; level bits are dropped silently `[CAPTURE]`.
 - Enco X `061410`, Buds Z2 `061014`, Buds Pro `060C14`: Smart is bit 4 where the model offers it.
@@ -1141,29 +1129,20 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - Call control (all `btn 06`, `dev 04`): 28/32 = act 1, 29/33/36 = act 2, 30/34 = act 3, 31/35 = act 6. `options` 524288 = answer/end `1D`, 262144 = decline `1C`, 131072 = AI summary. A row without none (512) has one fixed option and writes nothing.
 - OPPO Enco Air5 Pro `06C410`: the `F1` gesture report carries button id `06` `[VENDOR]`.
 - realme models `[VENDOR]` (realme Link, issue #8), wired: per bud, double tap, triple tap and hold, the same `fn` bytes, `dev` 1 / 2, `btn 01`. The Air7 Pro's owner confirms them `[TESTED]`. The others are unverified.
-- realme hold with the noise cycle: `holdMask` 8833 `[VENDOR]`. One mask for both buds: write `0x0404 02 01 <mask>`, read `0x010C 02 01`.
 - Holding both buds (Air 3S `061012`, T01 `064412`, T110 `062812`, T200 Lite `065052`, T200x `065852`): one entry `04 01 04 <fn>`, game mode `11` or none. The buds read it back as its own `dev 04` entry. Our key `bothHold` shows it as a gesture row. The app writes it like an on-call row. Not offered: volume on the noise-cycle hold (T500 `067052`, Air8 `066812`, T200x `065852`), AI options.
 - realme neckbands (Wireless 3 Neo `050C12`, 5 ANC `051412`, 6 `051C52`, 6 ANC `052052`, 6 Neo `051812`): one button written as the left bud, `01 01 <act> <fn>`. Act 1-4 (single, double, triple, hold). Our key `oneButton` hides Left / Right. The app does not offer the noise button of the two ANC ones (`01 04 01 08`, single press = the noise cycle).
 - Per-bud hold (`holdMask`, 28 models) `[VENDOR]`: options 512 none, 128 noise cycle, 1 voice assistant, 8192 game mode. Each bud is written alone (`dev` 1/2, `act 04`). The cycle mask per bud uses type 3 / 4, read with `0x010C 02 03` / `02 04`.
 - Minimum modes in the cycle: `minSelected`, else 2 on OnePlus models and per-bud holds, else 1 (Buds 4: 1) `[VENDOR]`.
-- Top-level ANC levels: Buds Z2 `061014` and Enco X `061410` list strong (4) and weak (3) as their own cycle options. OnePlus Buds Pro `060C14` shows 3 / 4 / 7 as one "ANC" option.
 
 ### 21.5 Feature switches
 
-- OnePlus Buds 4 `065414`: `statusQuery` `05 04 0B 11 18 06 1B 1D 1C`. The buds answered all but `1C` `[CAPTURE]`.
-- OPPO Enco Buds2 `064810`: `statusQuery` `05 06` `[TESTED]`.
-- realme Buds T310 `063C12`: lacks ids `04 0B 18 27 35` (status `01`) `[CAPTURE]`. It has `windMode`.
 - realme Link rows: dynamic sound `1D`, enhance voice `09`, wind noise `1A`, game mode `06`, wear `04`, dual `11`, Hi-Res `18`, 3D sound `1B`; a second enhance voice setter writes `0C`; power saving is reported as `05` `[VENDOR]`.
 - Models with `windMode`: `0x010D` asks `1A` only for them. realme Buds Air7 Pro `064C12`, T310 `063C12` and T500 Pro `066452` have the wind-noise row in realme Link (T500 Pro: issue 30). Report #46 says the vendor app shows it `[VENDOR]`. No capture proves that every `windMode` model answers `[GUESS]`.
 - realme models with a hearing profile `[VENDOR]`: Air8 Pro `066C12`, Air7 Pro `064C12`, Air 5 Pro `061C12`, Air6 Pro `063012`. The T500 Pro `066452` does not list one (report #21), and its buds do not answer the tones.
-- OnePlus Buds 4 `065414`: refuses `18 01` 32 times while the phone plays AAC; accepts it on LHDC V5 `[CAPTURE]`.
 - OPPO Enco Buds3 Pro: `1B` is in the status reply and reports `1B=1`, but `0x012A` is absent; two owners hear no 3D audio (reports #60 #61). The row is hidden through `statusQuery` `05 11 06` `[CAPTURE]`.
-- Enco X4 `06EC10` and Buds Pro 4 `067814`: `wearDetection` 2 `[VENDOR]`.
-- 85 HeyMelody models match the 117.6.6 id rule `[VENDOR]`. The lists leave out `22`-`24`, `3C`, `3D` `[VENDOR]`.
-- 30 realme models: the `statusQuery` asks only for `04`, `06`, `0B`, `11`, `18`, `1B` `[VENDOR]`.
 - `06` is game mode on every model except where the bitmap has `0x0423`; there it is `28`. Both default lists ask `06` and `28` next to each other `[VENDOR]`.
 - On a `0x0423` model HeyMelody has two switches `[VENDOR]`. The main page writes `28`, the game mode main switch. The game page writes `06`, low latency, and a game sound type with `0x0423 <type> 01`.
-- OnePlus Buds Pro 3 `064014` acks `0x0403 28 01` with `00`, but every read after it shows `28=0` (reports #150, #179) `[CAPTURE]`. `06` reads `1` in every log. The game sound read says no type is selected (`0x812B 00 00 02 03 00`). The cause is not proven. The Buds Pro 3 have no `gameSoundList`, so HeyMelody shows the plain switch and writes `28` too `[VENDOR]`. A snoop log of HeyMelody shows what differs. A model key `gameId` can override the id once a capture proves one.
+- OnePlus Buds Pro 3 `064014` acks `0x0403 28 01` with `00`, but every read after it shows `28=0` (reports #150, #179) `[CAPTURE]`. `06` reads `1` in every log. The firmware explains it (section 16). HeyMelody writes `28` too `[VENDOR]`; a snoop log shows what it confirms with.
 - `1E` log collection: asked on 16 models. `0F` zen mode: asked on 6 OnePlus and OPPO models. `13` sound record: asked on 5 models. `16` lost reminder: asked on 2 models (OPPO Enco Clip2 `06E010`, OnePlus Buds Clip `06E410`) `[VENDOR]`.
 - `28` game mode main switch: 10 models `[VENDOR]`.
 
@@ -1205,23 +1184,10 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - OPPO Enco Air5 Pro `06C410`: refuses an ear-scan start (`0x040D 04 01 <id>`) with status `01` on Windows (6 times, report #44) `[CAPTURE]`. The cause is unknown. The wear state is a guess.
 - OnePlus Buds 4 `065414`: fit test takes about 8.6 s and returns `04 01 01 02 01` `[CAPTURE]`.
 - `hearingScan` models `[VENDOR]`: the ear scan is offered only where the list has it.
-- `personalAnc` models (11) `[VENDOR]`: `0x0412` / `0x011A`, bitmap bit 26. Buds 4 `065414` lacks it `[VENDOR]`.
-- realme models with a hearing profile: Air8 Pro `066C12`, Air7 Pro `064C12`, Air 5 Pro `061C12`, Air6 Pro `063012`. The T500 Pro `066452` does not list one (report #21), and its buds do not answer the tones.
 
 ### 21.11 Dual connection
 
-- Models with `dualDevice` (11): bitmap bit 59 `0x0429` / `0x0132`. Buds 4 `065414` lacks it `[VENDOR]`.
 - OnePlus Buds 4 `065414`: after off, `0x0413 08 00 01`; after on, `08 00 00` `[CAPTURE]`. `08 00 01` = auto switch on.
-
-### 21.12 Counts
-
-- `ancModes`: 79 of 143 models in `models.json` have none `[VENDOR]`.
-- `holdMask`: 28 models use a per-bud hold `[VENDOR]`.
-- `eqPresets`: 41 of 143 models have none `[VENDOR]`.
-- `statusQuery`: 85 HeyMelody models, 30 realme models `[VENDOR]`.
-- `dualDevice`: 11 models. `personalAnc`: 11 models `[VENDOR]`.
-- `customEqBands` 10-band: 10 models. `customEqLimit` default: 3 `[VENDOR]`.
-- `hearingScan`: the ear scan exists only where the list has it.
 
 **Code:** `protocol/ModelCatalog.kt`, `protocol/AncModes.kt`, `protocol/RowRules.kt`,
 `protocol/Gestures.kt`; `core/src/cmd.rs`.
@@ -1278,12 +1244,8 @@ The writes are `0x0408`, `0x0414`, `0x0419`, `0x041D`, `0x041F`, `0x042B`, `0x04
 | `0x0135` | — | `00 <bits>`: bit 0 type 0, bit 1 type 1, bit 2 type 2 (highest set bit wins), bit 7 the in-ear music mute flag | Voice-assistant config. |
 | `0x0136` | — | `00 <bits>`: bit 0 state, bit 1 owner, bit 2 reset | LE/BR link switch state. |
 | `0x0402` | — (the buds send it) | `00` from the phone | Free-music request. The phone answers `0x8402 00`; the request has no payload field. |
-| `0x0407` | — | — | No sender and no reply handler in the vendor app `[GUESS]`. |
 | `0x0408` | `<hostType> <host MAC 6> <count>`, then `<type> <MAC 6> <state>` per device; at most 6 devices | — (unhandled) | Related-device list. |
-| `0x0409` | — | — | No sender and no reply handler `[GUESS]`. |
-| `0x040B` | — | — | No sender and no reply handler `[GUESS]`. |
 | `0x0414` | `<time>` | `00` | Free-dialog recovery time. |
-| `0x0416` | — | — | No sender and no reply handler `[GUESS]`. |
 | `0x0419` | `<bits>` | `00` | Host capabilities. |
 | `0x041D` | `<delay>` | `00` | Screen-off broadcast delay write. |
 | `0x041F` | `<len> <UTF-8 model>` | `00` (not parsed) | Device build model. |
@@ -1297,9 +1259,7 @@ The writes are `0x0408`, `0x0414`, `0x0419`, `0x041D`, `0x041F`, `0x042B`, `0x04
 | `0xEF01`-`0xEF09` | — | — | Capability-only bits (41-43, 48, 52, 63-65). `EF08` gates the game-mode main switch and `EF09` gates voice commands. No sender or reader. |
 
 - `0x01F0` and `0x01F2` are not commands. Each is a command byte welded to its Seq. Battery is `0x0106`, wearing `0x0109`.
-- `0x0407`, `0x0409`, `0x040B` and `0x0416` have no sender and no reply handler in the vendor app.
 - The vendor app does not send `0x042B`, `0x042C`, `0x0430` or `0x0434` behind a bitmap bit. They are not gated by the handshake.
-- The `0x03xx` group is the firmware upgrade. QuickBuds does not use it.
 
 **Code:** `protocol/Protocol.kt` (command ids), `protocol/Capabilities.kt`; `core/src/msg.rs`.
 
