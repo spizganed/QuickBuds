@@ -7,7 +7,7 @@ import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.Feature
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.RowRules
-import com.spizganed.quickbuds.ui.MainActivity
+import com.spizganed.quickbuds.ui.Rows
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
@@ -196,10 +196,9 @@ object WidgetSettings {
         prefs(c).edit().putBoolean(KEY_TAP_OPENS + id, on).apply()
     }
 
-    /** The connected buds have button [key]. */
-    fun available(c: Context, key: String): Boolean {
+    /** The connected buds have button [key]. A caller that asks for many keys passes [rows] once ([Rows.of]). */
+    fun available(c: Context, key: String, rows: Set<String> = Rows.of(c)): Boolean {
         val anc = AncModes.of(c)
-        val rows = MainActivity.rowsOf(c)
         val ancCmd = RowRules.ANC in rows
         return when (key) {
             "anc" -> ancCmd && ancPicker(c).isNotEmpty()

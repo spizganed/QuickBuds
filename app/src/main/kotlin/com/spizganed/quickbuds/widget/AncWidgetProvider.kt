@@ -25,6 +25,7 @@ import com.spizganed.quickbuds.bluetooth.WidgetActions
 import com.spizganed.quickbuds.ui.BudsStatusView
 import com.spizganed.quickbuds.ui.MainActivity
 import com.spizganed.quickbuds.ui.Palette
+import com.spizganed.quickbuds.ui.Rows
 import com.spizganed.quickbuds.ui.GlassArt
 import com.spizganed.quickbuds.ui.ThemeRes
 
@@ -800,7 +801,8 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val keys = WidgetSettings.buttons(context, id)
             // The sized shapes show the tiles that fit ([Fit.tiles]); the rest are left out.
             val shown = if (fit.shape.paged) QUICK.size else fit.tiles
-            val qs = QUICK.indices.map { i -> keys.getOrNull(i)?.takeIf { i < shown && WidgetSettings.available(context, it) }?.let { q(it) } }
+            val rows = Rows.of(context)
+            val qs = QUICK.indices.map { i -> keys.getOrNull(i)?.takeIf { i < shown && WidgetSettings.available(context, it, rows) }?.let { q(it) } }
             val mode = qs.filterNotNull().let { l -> labelMode(context, l.map { it.full }, l.map { it.label }, fit) }
             QUICK.forEachIndexed { i, b ->
                 val q = qs[i]

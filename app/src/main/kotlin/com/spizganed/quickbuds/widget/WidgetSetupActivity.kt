@@ -9,6 +9,7 @@ import android.widget.Switch
 import android.widget.TextView
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.ui.Haptics
+import com.spizganed.quickbuds.ui.Rows
 import com.spizganed.quickbuds.ui.SettingRowFactory
 import com.spizganed.quickbuds.ui.ThemeRes
 
@@ -61,7 +62,8 @@ class WidgetSetupActivity : Activity() {
             textSize = 13f
             setPadding(ThemeRes.dp(this@WidgetSetupActivity, 4f), 0, 0, ThemeRes.dp(this@WidgetSetupActivity, 12f))
         })
-        val keys = WidgetSettings.BUTTONS.filter { WidgetSettings.available(this, it) }
+        val rows = Rows.of(this)
+        val keys = WidgetSettings.BUTTONS.filter { WidgetSettings.available(this, it, rows) }
         val picked = WidgetSettings.buttons(this, id).filter { it in keys }.toMutableSet()
         val card = SettingRowFactory.card(this)
         for (key in keys) {

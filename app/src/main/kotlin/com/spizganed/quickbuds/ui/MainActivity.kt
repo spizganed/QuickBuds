@@ -1457,19 +1457,8 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
          */
         fun rowSupported(c: Context, key: String): Boolean = key in rowsOf(c)
 
-        /**
-         * The rows the buds' own answers support ([RowRules]). Nothing read yet = only the
-         * unconditional rows; the last saved reply shows its rows until the fresh one arrives.
-         */
-        fun rowsOf(c: Context): Set<String> = RowRules.rows(
-            ModelCatalog.current(c)?.json,
-            Capabilities.reply(c),
-            Capabilities.commands(c),
-            AncModes.of(c).slots().takeIf { it.isNotEmpty() },
-            com.spizganed.quickbuds.bluetooth.PhoneSpatial.supported(c),
-            manual = ModelCatalog.manual(c) != null,
-            gestures = !GestureModel.of(c).isEmpty
-        )
+        /** The rows the buds' own answers support: [Rows.of]. */
+        fun rowsOf(c: Context): Set<String> = Rows.of(c)
 
         /** These buds' 3D effect comes from this phone's spatializer, not from the buds (PROTOCOL.md section 18). */
         fun phoneSpatial(c: Context) =
