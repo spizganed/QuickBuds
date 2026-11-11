@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Dźwięk 3D nie działa z dźwiękiem wysokiej jakości. Włączenie go przełączy na standardową jakość, a słuchawki rozłączą się na kilka sekund.</string>
     <string name="row_spatial_title">Dźwięk 3D</string>
     <string name="row_spatial_sub">Dźwięk przestrzenny ze śledzeniem ruchu głowy</string>
+    <string name="row_spatial_sub_phone">Ten efekt tworzy telefon. Włącz go w ustawieniach Bluetooth tych słuchawek</string>
     <string name="row_eq_title">Korektor</string>
     <string name="row_eq_sub">Profile dźwięku</string>
     <string name="row_earbuds_title">Ustawienia słuchawek</string>

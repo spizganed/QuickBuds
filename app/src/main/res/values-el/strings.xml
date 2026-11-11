@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Ο ήχος 3D δεν λειτουργεί με τον ήχο υψηλής ποιότητας. Η ενεργοποίησή του αλλάζει σε τυπική ποιότητα και τα ακουστικά θα αποσυνδεθούν για λίγα δευτερόλεπτα.</string>
     <string name="row_spatial_title">Ήχος 3D</string>
     <string name="row_spatial_sub">Χωρικός ήχος με παρακολούθηση κεφαλιού</string>
+    <string name="row_spatial_sub_phone">Το τηλέφωνο δημιουργεί αυτό το εφέ. Ενεργοποιήστε το στις ρυθμίσεις Bluetooth αυτών των ακουστικών</string>
     <string name="row_eq_title">Ισοσταθμιστής</string>
     <string name="row_eq_sub">Προφίλ ήχου</string>
     <string name="row_earbuds_title">Ρυθμίσεις ακουστικών</string>

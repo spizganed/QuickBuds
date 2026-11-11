@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Audio 3D tidak bisa bersama audio kualitas tinggi. Menyalakannya beralih ke kualitas standar, dan earbud terputus beberapa detik.</string>
     <string name="row_spatial_title">Audio 3D</string>
     <string name="row_spatial_sub">Suara spasial dengan pelacakan kepala</string>
+    <string name="row_spatial_sub_phone">Ponsel Anda membuat efek ini. Aktifkan di setelan Bluetooth earbud ini</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Profil suara</string>
     <string name="row_earbuds_title">Pengaturan earbud</string>

@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D ses yüksek kaliteli ses ile çalışmaz. Açmak standart kaliteye geçirir ve kulaklıkların bağlantısı birkaç saniye kesilir.</string>
     <string name="row_spatial_title">3D ses</string>
     <string name="row_spatial_sub">Baş takipli uzamsal ses</string>
+    <string name="row_spatial_sub_phone">Bu efekti telefonunuz oluşturur. Bu kulaklığın Bluetooth ayarlarından açın</string>
     <string name="row_eq_title">Ekolayzer</string>
     <string name="row_eq_sub">Ses profilleri</string>
     <string name="row_earbuds_title">Kulaklık ayarları</string>

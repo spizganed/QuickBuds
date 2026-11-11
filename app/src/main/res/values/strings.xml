@@ -72,6 +72,7 @@
     <string name="codec_msg_spatial_drops_hires">3D audio doesn\'t work with high-quality audio. Turning it on switches to standard quality, and the earbuds will disconnect for a few seconds.</string>
     <string name="row_spatial_title">3D audio</string>
     <string name="row_spatial_sub">Spatial sound with head tracking</string>
+    <string name="row_spatial_sub_phone">Your phone makes this effect. Turn it on in the Bluetooth settings of these buds</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Sound profiles</string>
     <string name="row_earbuds_title">Earbud settings</string>

@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D zvuk nefunguje s vysoce kvalitním zvukem. Zapnutím se přepne na standardní kvalitu a sluchátka se na několik sekund odpojí.</string>
     <string name="row_spatial_title">3D zvuk</string>
     <string name="row_spatial_sub">Prostorový zvuk se sledováním hlavy</string>
+    <string name="row_spatial_sub_phone">Tento efekt vytváří telefon. Zapněte ho v nastavení Bluetooth těchto sluchátek</string>
     <string name="row_eq_title">Ekvalizér</string>
     <string name="row_eq_sub">Zvukové profily</string>
     <string name="row_earbuds_title">Nastavení sluchátek</string>

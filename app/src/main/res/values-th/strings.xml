@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">เสียง 3D ใช้ร่วมกับเสียงคุณภาพสูงไม่ได้ การเปิดจะเปลี่ยนเป็นคุณภาพมาตรฐาน และหูฟังจะตัดการเชื่อมต่อสักครู่</string>
     <string name="row_spatial_title">เสียง 3D</string>
     <string name="row_spatial_sub">เสียงรอบทิศทางพร้อมติดตามศีรษะ</string>
+    <string name="row_spatial_sub_phone">โทรศัพท์ของคุณสร้างเอฟเฟกต์นี้ เปิดได้ในการตั้งค่าบลูทูธของหูฟังนี้</string>
     <string name="row_eq_title">อีควอไลเซอร์</string>
     <string name="row_eq_sub">โปรไฟล์เสียง</string>
     <string name="row_earbuds_title">การตั้งค่าหูฟัง</string>

@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D 音效无法与高音质音频同时使用。开启后将切换为标准音质，耳机会断开几秒钟。</string>
     <string name="row_spatial_title">3D 音效</string>
     <string name="row_spatial_sub">带头部追踪的空间音频</string>
+    <string name="row_spatial_sub_phone">此效果由手机生成。请在这副耳机的蓝牙设置中开启</string>
     <string name="row_eq_title">均衡器</string>
     <string name="row_eq_sub">音效配置</string>
     <string name="row_earbuds_title">耳机设置</string>

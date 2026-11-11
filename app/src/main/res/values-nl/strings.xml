@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D-audio werkt niet met audio van hoge kwaliteit. Inschakelen schakelt over naar standaardkwaliteit en de oordopjes verbreken een paar seconden de verbinding.</string>
     <string name="row_spatial_title">3D-audio</string>
     <string name="row_spatial_sub">Ruimtelijk geluid met hoofdtracking</string>
+    <string name="row_spatial_sub_phone">Je telefoon maakt dit effect. Zet het aan in de Bluetooth-instellingen van deze oordopjes</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Geluidsprofielen</string>
     <string name="row_earbuds_title">Oordopjesinstellingen</string>

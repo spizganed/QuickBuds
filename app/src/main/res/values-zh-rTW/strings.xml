@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D 音效無法與高音質音訊同時使用。開啟後將切換為標準音質，耳機會中斷幾秒鐘。</string>
     <string name="row_spatial_title">3D 音效</string>
     <string name="row_spatial_sub">具頭部追蹤的空間音訊</string>
+    <string name="row_spatial_sub_phone">此效果由手機產生。請在這副耳機的藍牙設定中開啟</string>
     <string name="row_eq_title">等化器</string>
     <string name="row_eq_sub">音效設定檔</string>
     <string name="row_earbuds_title">耳機設定</string>

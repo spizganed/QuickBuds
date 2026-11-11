@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">El audio 3D no funciona con el audio de alta calidad. Al activarlo se cambia a calidad estándar y los auriculares se desconectarán unos segundos.</string>
     <string name="row_spatial_title">Audio 3D</string>
     <string name="row_spatial_sub">Sonido espacial con seguimiento de cabeza</string>
+    <string name="row_spatial_sub_phone">El teléfono crea este efecto. Actívalo en los ajustes de Bluetooth de estos auriculares</string>
     <string name="row_eq_title">Ecualizador</string>
     <string name="row_eq_sub">Perfiles de sonido</string>
     <string name="row_earbuds_title">Ajustes de los auriculares</string>

@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Audio 3D nu funcționează cu audio de înaltă calitate. Activarea lui trece la calitate standard, iar căștile se vor deconecta câteva secunde.</string>
     <string name="row_spatial_title">Audio 3D</string>
     <string name="row_spatial_sub">Sunet spațial cu urmărirea capului</string>
+    <string name="row_spatial_sub_phone">Telefonul creează acest efect. Activează-l în setările Bluetooth ale acestor căști</string>
     <string name="row_eq_title">Egalizator</string>
     <string name="row_eq_sub">Profiluri de sunet</string>
     <string name="row_earbuds_title">Setările căștilor</string>

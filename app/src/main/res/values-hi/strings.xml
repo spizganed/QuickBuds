@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D ऑडियो हाई-क्वालिटी ऑडियो के साथ काम नहीं करता। इसे चालू करने पर स्टैंडर्ड क्वालिटी लागू होगी और ईयरबड्स कुछ सेकंड के लिए डिस्कनेक्ट होंगे।</string>
     <string name="row_spatial_title">3D ऑडियो</string>
     <string name="row_spatial_sub">हेड ट्रैकिंग के साथ स्पेशियल साउंड</string>
+    <string name="row_spatial_sub_phone">यह इफ़ेक्ट आपका फ़ोन बनाता है। इसे इन ईयरबड्स की ब्लूटूथ सेटिंग में चालू करें</string>
     <string name="row_eq_title">इक्वलाइज़र</string>
     <string name="row_eq_sub">साउंड प्रोफ़ाइल</string>
     <string name="row_earbuds_title">ईयरबड सेटिंग्स</string>

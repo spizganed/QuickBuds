@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D-ljud fungerar inte med ljud med hög kvalitet. Om du slår på det byts till standardkvalitet och hörlurarna kopplas från i några sekunder.</string>
     <string name="row_spatial_title">3D-ljud</string>
     <string name="row_spatial_sub">Rumsligt ljud med huvudspårning</string>
+    <string name="row_spatial_sub_phone">Telefonen skapar effekten. Slå på den i Bluetooth-inställningarna för de här hörlurarna</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Ljudprofiler</string>
     <string name="row_earbuds_title">Hörlursinställningar</string>

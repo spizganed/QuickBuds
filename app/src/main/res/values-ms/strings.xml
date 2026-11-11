@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Audio 3D tidak berfungsi dengan audio berkualiti tinggi. Menghidupkannya akan beralih ke kualiti standard, dan fon telinga akan terputus selama beberapa saat.</string>
     <string name="row_spatial_title">Audio 3D</string>
     <string name="row_spatial_sub">Bunyi ruang dengan penjejakan kepala</string>
+    <string name="row_spatial_sub_phone">Telefon anda membuat kesan ini. Hidupkannya dalam tetapan Bluetooth fon telinga ini</string>
     <string name="row_eq_title">Penyama</string>
     <string name="row_eq_sub">Profil bunyi</string>
     <string name="row_earbuds_title">Tetapan fon telinga</string>

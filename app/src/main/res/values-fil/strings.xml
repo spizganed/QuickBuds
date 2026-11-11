@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Hindi gumagana ang 3D audio kasabay ng mataas na kalidad ng audio. Kapag in-on ito, lilipat sa karaniwang kalidad at madidiskonekta ang earbuds nang ilang segundo.</string>
     <string name="row_spatial_title">3D audio</string>
     <string name="row_spatial_sub">Spatial na tunog na may head tracking</string>
+    <string name="row_spatial_sub_phone">Ang phone mo ang gumagawa ng epektong ito. I-on ito sa Bluetooth settings ng earbuds na ito</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Mga profile ng tunog</string>
     <string name="row_earbuds_title">Mga setting ng earbuds</string>

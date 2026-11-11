@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D オーディオは高音質オーディオと併用できません。オンにすると標準音質に切り替わり、イヤホンが数秒間切断されます。</string>
     <string name="row_spatial_title">3D オーディオ</string>
     <string name="row_spatial_sub">ヘッドトラッキング対応の空間オーディオ</string>
+    <string name="row_spatial_sub_phone">この効果はスマートフォンが作ります。このイヤホンの Bluetooth 設定でオンにします</string>
     <string name="row_eq_title">イコライザー</string>
     <string name="row_eq_sub">サウンドプロファイル</string>
     <string name="row_earbuds_title">イヤホンの設定</string>

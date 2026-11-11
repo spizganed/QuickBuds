@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D 오디오는 고음질 오디오와 함께 사용할 수 없습니다. 켜면 표준 음질로 바뀌고 이어버드 연결이 몇 초간 끊깁니다.</string>
     <string name="row_spatial_title">3D 오디오</string>
     <string name="row_spatial_sub">헤드 트래킹 공간 음향</string>
+    <string name="row_spatial_sub_phone">이 효과는 휴대폰이 만듭니다. 이 이어버드의 Bluetooth 설정에서 켜세요</string>
     <string name="row_eq_title">이퀄라이저</string>
     <string name="row_eq_sub">사운드 프로필</string>
     <string name="row_earbuds_title">이어버드 설정</string>

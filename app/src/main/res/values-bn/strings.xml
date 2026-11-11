@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D অডিও উচ্চমানের অডিওর সাথে কাজ করে না। এটি চালু করলে সাধারণ মানে বদলাবে এবং ইয়ারবাড কয়েক সেকেন্ডের জন্য বিচ্ছিন্ন হবে।</string>
     <string name="row_spatial_title">3D অডিও</string>
     <string name="row_spatial_sub">হেড ট্র্যাকিংসহ স্থানিক শব্দ</string>
+    <string name="row_spatial_sub_phone">আপনার ফোন এই এফেক্ট তৈরি করে। এই ইয়ারবাডের Bluetooth সেটিংসে এটি চালু করুন</string>
     <string name="row_eq_title">ইকুয়ালাইজার</string>
     <string name="row_eq_sub">সাউন্ড প্রোফাইল</string>
     <string name="row_earbuds_title">ইয়ারবাড সেটিংস</string>

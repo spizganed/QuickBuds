@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">A 3D hang nem működik a kiváló minőségű hanggal. Bekapcsolása normál minőségre vált, és a fülhallgató néhány másodpercre leválik.</string>
     <string name="row_spatial_title">3D hang</string>
     <string name="row_spatial_sub">Térhatású hang fejkövetéssel</string>
+    <string name="row_spatial_sub_phone">Ezt a hatást a telefon hozza létre. Kapcsolja be a fülhallgató Bluetooth-beállításaiban</string>
     <string name="row_eq_title">Hangszínszabályzó</string>
     <string name="row_eq_sub">Hangprofilok</string>
     <string name="row_earbuds_title">Fülhallgató-beállítások</string>

@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">Âm thanh 3D không dùng được cùng âm thanh chất lượng cao. Bật lên sẽ chuyển sang chất lượng chuẩn và tai nghe ngắt kết nối vài giây.</string>
     <string name="row_spatial_title">Âm thanh 3D</string>
     <string name="row_spatial_sub">Âm thanh không gian theo dõi chuyển động đầu</string>
+    <string name="row_spatial_sub_phone">Điện thoại tạo hiệu ứng này. Bật trong cài đặt Bluetooth của tai nghe này</string>
     <string name="row_eq_title">Bộ chỉnh âm</string>
     <string name="row_eq_sub">Cấu hình âm thanh</string>
     <string name="row_earbuds_title">Cài đặt tai nghe</string>

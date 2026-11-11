@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D-Audio funktioniert nicht mit hochwertigem Klang. Beim Einschalten wird auf Standardqualität gewechselt und die Earbuds werden für einige Sekunden getrennt.</string>
     <string name="row_spatial_title">3D-Audio</string>
     <string name="row_spatial_sub">Raumklang mit Kopf-Tracking</string>
+    <string name="row_spatial_sub_phone">Das Handy erzeugt diesen Effekt. Schalte ihn in den Bluetooth-Einstellungen dieser Kopfhörer ein</string>
     <string name="row_eq_title">Equalizer</string>
     <string name="row_eq_sub">Klangprofile</string>
     <string name="row_earbuds_title">Earbud-Einstellungen</string>

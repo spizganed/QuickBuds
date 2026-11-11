@@ -48,6 +48,7 @@
     <string name="codec_msg_spatial_drops_hires">3D-звук не працює разом зі звуком високої якості. Його ввімкнення поверне стандартну якість, а навушники відключаться на кілька секунд.</string>
     <string name="row_spatial_title">3D-звук</string>
     <string name="row_spatial_sub">Об’ємний звук із відстеженням голови</string>
+    <string name="row_spatial_sub_phone">Цей ефект створює телефон. Увімкніть його в налаштуваннях Bluetooth цих навушників</string>
     <string name="row_eq_title">Еквалайзер</string>
     <string name="row_eq_sub">Звукові профілі</string>
     <string name="row_earbuds_title">Налаштування навушників</string>

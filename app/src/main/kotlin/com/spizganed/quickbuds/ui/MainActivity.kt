@@ -926,6 +926,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
      */
     private fun requestPhoneSpatial(wantOn: Boolean) {
         val phone = com.spizganed.quickbuds.bluetooth.PhoneSpatial
+        if (!phone.writable()) { phone.openSettings(this); return }
         phone.set(this, wantOn)
         spatialSwitch?.postDelayed({
             if (phone.isOn(this) != wantOn) phone.openSettings(this)
@@ -1220,7 +1221,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         if (connectedUi == false) return
         spatialSwitch?.let { setSwitchFromBuds(it, spatialOn()) }
         if (spatialHeadTracking()) spatialSubtitle?.text = spatialLabel(manager.spatialType ?: 0)
-        else spatialSubtitle?.setText(R.string.row_spatial_sub)
+        else spatialSubtitle?.setText(
+            if (MainActivity.phoneSpatial(this) && !com.spizganed.quickbuds.bluetooth.PhoneSpatial.writable()) R.string.row_spatial_sub_phone
+            else R.string.row_spatial_sub)
     }
 
     /** HeyMelody-style warning before any write that makes the buds reconnect. Dismiss = decline. */
