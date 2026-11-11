@@ -19,8 +19,8 @@ import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.GameEqWatcher
 import com.spizganed.quickbuds.protocol.Capabilities
-import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
+import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.Feature
 import com.spizganed.quickbuds.protocol.FeatureSync
 
@@ -80,7 +80,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         root.addView(SettingRowFactory.title(this, R.string.earbuds_title))
 
         val card = cardView()
-        // Only what these buds have (see Capabilities); a model without it never sees the row.
+        // Only what these buds have ([RowRules]); a model without it never sees the row.
+        val rows = MainActivity.rowsOf(this)
         fun link(icon: Int, title: Int, sub: Int, target: Class<*>, supported: Boolean) {
             if (!supported) return
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
@@ -91,36 +92,33 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             )
         }
         link(R.drawable.ic_gesture, R.string.row_gesture_title, R.string.row_gesture_sub, GestureActivity::class.java,
-            Capabilities.supports(this, OpoProtocol.CMD_SET_KEY_FUNCTION) && !GestureModel.of(this).isEmpty)
+            RowRules.CONTROLS in rows)
         // Wear detection, Find my earbuds and the fit test are sheets, as in HeyMelody's More settings.
         fun sheetRow(icon: Int, title: Int, sub: Int, supported: Boolean, open: () -> Unit) {
             if (!supported) return
             if (card.childCount > 0) card.addView(SettingRowFactory.buildDivider(this))
             card.addView(SettingRowFactory.build(this, icon, title, sub, SettingRowFactory.buildChevron(this)) { open() })
         }
-        sheetRow(R.drawable.ic_earbud, R.string.row_wear_title, R.string.row_wear_sub,
-            Capabilities.hasFeature(this, Feature.AUTO_PLAY_PAUSE)) {
+        sheetRow(R.drawable.ic_earbud, R.string.row_wear_title, R.string.row_wear_sub, RowRules.WEAR in rows) {
             wearSheet = WearSheet(this, { requestFeature(Feature.AUTO_PLAY_PAUSE, it) },
                 manager?.featureStates?.get(Feature.AUTO_PLAY_PAUSE)).also { it.show() }
         }
-        sheetRow(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub,
-            Capabilities.supports(this, OpoProtocol.CMD_FIND_BUDS) &&
-            ModelCatalog.current(this)?.json?.optInt("noFind") != 1) {
+        sheetRow(R.drawable.ic_find_buds, R.string.row_find_title, R.string.row_find_sub, RowRules.FIND in rows) {
             FindBudsSheet(this) { on ->
                 startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FIND_BUDS)
                     .putExtra(BudsService.EXTRA_FIND_ON, on))
             }.show()
         }
-        sheetRow(R.drawable.ic_earbud, R.string.fit_title, R.string.fit_sub, Capabilities.supports(this, OpoProtocol.CMD_FIT_TEST)) {
+        sheetRow(R.drawable.ic_earbud, R.string.fit_title, R.string.fit_sub, RowRules.FIT in rows) {
             fitSheet = FitTestSheet(this) { on -> manager?.fitTest(on) }.also { it.show() }
         }
         if (card.childCount > 0) root.addView(card)
-        tapSensitivity(root)
-        features(root)
-        if (Capabilities.supports(this, OpoProtocol.CMD_SET_ALERT_VOLUME)) sounds(root)
+        if (RowRules.TAP_LEVEL in rows) tapSensitivity(root)
+        features(root, rows)
+        if (RowRules.ALERT_VOLUME in rows) sounds(root)
 
         // --- About: the firmware version as HeyMelody shows it (read on connect, `0x0105`) ---
-        if (Capabilities.supports(this, OpoProtocol.CMD_QUERY_FIRMWARE)) {
+        if (RowRules.FIRMWARE in rows) {
             root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_about))
             // No firmware updates here: a failed flash can brick the buds, so a tap
             // points to HeyMelody instead.
@@ -143,9 +141,9 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
 
     /**
      * `0x0403` on/off switches HeyMelody has and Buds 4 lacks (PROTOCOL.md §16), each shown only where
-     * [Capabilities.offered]. Unverified on buds until an owner reads a write back.
+     * [rows] lists it ([RowRules]). Unverified on buds until an owner reads a write back.
      */
-    private fun features(root: LinearLayout) {
+    private fun features(root: LinearLayout, rows: Set<String>) {
         val card = cardView()
         fun addSwitch(id: Int, icon: Int, title: Int, sub: Int, sw: android.widget.Switch) {
             featureSwitches[id] = sw
@@ -156,8 +154,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             card.addView(row)
         }
         /** An old-path switch: it moves on the tap, then one write and a status read go out. */
-        fun switch(id: Int, flag: String?, icon: Int, title: Int, sub: Int, confirm: Int = 0) {
-            if (!Capabilities.offered(this, id, flag)) return
+        fun switch(row: String, id: Int, icon: Int, title: Int, sub: Int, confirm: Int = 0) {
+            if (row !in rows) return
             val sw = SettingRowFactory.buildSwitch(this, manager?.featureStates?.get(id) == 1)
             sw.setOnCheckedChangeListener { _, on ->
                 if (syncing) return@setOnCheckedChangeListener
@@ -174,8 +172,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             addSwitch(id, icon, title, sub, sw)
         }
         /** The feature-sync engine sets it: a tap asks, the buds' report moves the switch. Every dialog stays. */
-        fun syncSwitch(id: Int, flag: String?, icon: Int, title: Int, sub: Int, confirm: Int = 0) {
-            if (!Capabilities.offered(this, id, flag)) return
+        fun syncSwitch(row: String, id: Int, icon: Int, title: Int, sub: Int, confirm: Int = 0) {
+            if (row !in rows) return
             val sw = SettingRowFactory.buildSwitch(this, manager?.featureStates?.get(id) == 1)
             (sw as RequestSwitch).onRequest = { wantOn ->
                 if (confirm == 0 || (!wantOn && id == Feature.HEARING_OPTIMIZE)) requestFeature(id, wantOn)
@@ -186,10 +184,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             addSwitch(id, icon, title, sub, sw)
         }
         // Personalized ANC: off is a plain switch write, on runs HeyMelody's test flow (PROTOCOL.md §20).
-        // The model's flag too: HeyMelody gates on it alone, and Buds 4 list 0x0C without having the feature.
-        if ((ModelCatalog.current(this)?.json?.optInt("personalAnc") ?: 1) == 1 &&
-            Capabilities.offered(this, Feature.PERSONAL_NOISE, "personalAnc") &&
-            (Capabilities.supports(this, OpoProtocol.CMD_PERSONAL_NOISE) || ModelCatalog.manual(this) != null)) {
+        if (RowRules.PERSONAL_ANC in rows) {
             val id = Feature.PERSONAL_NOISE
             val sw = SettingRowFactory.buildSwitch(this, manager?.featureStates?.get(id) == 1)
             featureSwitches[id] = sw
@@ -203,13 +198,12 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 sw.performClick()
             })
         }
-        syncSwitch(Feature.VOCAL_ENHANCE, "voiceBoost", R.drawable.ic_equalizer,
+        syncSwitch(RowRules.VOICE_BOOST, Feature.VOCAL_ENHANCE, R.drawable.ic_equalizer,
             R.string.row_vocal_title, R.string.row_vocal_sub)
-        syncSwitch(Feature.GAME_SOUND, "gameSoundFx", R.drawable.ic_low_latency,
+        syncSwitch(RowRules.GAME_SOUND, Feature.GAME_SOUND, R.drawable.ic_low_latency,
             R.string.row_game_sound_title, R.string.row_game_sound_sub)
         // Which effect it applies: `0x0423 <type> 01`, HeyMelody's radio list (PROTOCOL.md §18).
-        if (featureSwitches.containsKey(Feature.GAME_SOUND) &&
-            (Capabilities.supports(this, OpoProtocol.CMD_GAME_SOUND) || ModelCatalog.manual(this) != null)) {
+        if (RowRules.GAME_SOUND_TYPE in rows) {
             card.addView(SettingRowFactory.buildDivider(this))
             val row = SettingRowFactory.build(this, R.drawable.ic_low_latency, R.string.game_sound_type_title,
                 0, SettingRowFactory.buildChevron(this)) { gameSoundSheet() }
@@ -218,8 +212,8 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             card.addView(row)
         }
         // Game equalizer: the switch, and the Usage access it needs to see which app is open (PROTOCOL.md §18).
-        if (Capabilities.supports(this, OpoProtocol.CMD_GAME_EQ_STATE)) {
-            syncSwitch(Feature.GAME_EQ, null, R.drawable.ic_low_latency,
+        if (RowRules.GAME_EQ in rows) {
+            syncSwitch(RowRules.GAME_EQ, Feature.GAME_EQ, R.drawable.ic_low_latency,
                 R.string.row_game_eq_title, R.string.row_game_eq_sub)
             if (featureSwitches.containsKey(Feature.GAME_EQ) && !GameEqWatcher.hasUsageAccess(this)) {
                 card.addView(SettingRowFactory.buildDivider(this))
@@ -229,12 +223,12 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 })
             }
         }
-        syncSwitch(Feature.VIRTUAL_BASS, "virtualBass", R.drawable.ic_equalizer,
+        syncSwitch(RowRules.VIRTUAL_BASS, Feature.VIRTUAL_BASS, R.drawable.ic_equalizer,
             R.string.row_virtual_bass_title, R.string.row_virtual_bass_sub)
-        syncSwitch(Feature.SMART_VOLUME, "autoVolume", R.drawable.ic_volume,
+        syncSwitch(RowRules.AUTO_VOLUME, Feature.SMART_VOLUME, R.drawable.ic_volume,
             R.string.row_smart_volume_title, R.string.row_smart_volume_sub)
         // Write-only: the buds do not report it, so the last tap is remembered (realme Buds T01, report 25).
-        if (ModelCatalog.current(this)?.json?.optInt("volumeEnhancer") == 1) {
+        if (RowRules.VOLUME_ENHANCER in rows) {
             val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
             val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean("volumeEnhancer", true))
             sw.setOnCheckedChangeListener { _, on ->
@@ -247,7 +241,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
                 R.string.row_volume_enhancer_sub, sw) { sw.performClick() })
         }
         // Write-only too: realme Link never reads it back, so the last tap is remembered. Off by default, as there.
-        if (ModelCatalog.current(this)?.json?.optInt("autoAnswer") == 1) {
+        if (RowRules.AUTO_ANSWER in rows) {
             val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
             val sw = SettingRowFactory.buildSwitch(this, prefs.getBoolean("autoAnswer", false))
             sw.setOnCheckedChangeListener { _, on ->
@@ -259,25 +253,24 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             card.addView(SettingRowFactory.build(this, R.drawable.ic_devices, R.string.row_auto_answer_title,
                 R.string.row_auto_answer_sub, sw) { sw.performClick() })
         }
-        syncSwitch(Feature.ADAPTIVE_VOLUME, null, R.drawable.ic_volume,
+        syncSwitch(RowRules.ADAPTIVE_VOLUME, Feature.ADAPTIVE_VOLUME, R.drawable.ic_volume,
             R.string.row_adaptive_volume_title, R.string.row_adaptive_volume_sub)
-        syncSwitch(Feature.ADAPTIVE_EAR, null, R.drawable.ic_earbud,
+        syncSwitch(RowRules.ADAPTIVE_EAR, Feature.ADAPTIVE_EAR, R.drawable.ic_earbud,
             R.string.row_adaptive_ear_title, R.string.row_adaptive_ear_sub)
-        syncSwitch(Feature.SLEEP_PAUSE, null, R.drawable.ic_earbud,
+        syncSwitch(RowRules.SLEEP_PAUSE, Feature.SLEEP_PAUSE, R.drawable.ic_earbud,
             R.string.row_sleep_title, R.string.row_sleep_sub)
-        syncSwitch(Feature.LOST_REMIND, null, R.drawable.ic_find_buds,
+        syncSwitch(RowRules.LOST_REMINDER, Feature.LOST_REMIND, R.drawable.ic_find_buds,
             R.string.row_lost_title, R.string.row_lost_sub)
-        syncSwitch(Feature.SPEECH_PERCEPTION, null, R.drawable.ic_transparency,
+        syncSwitch(RowRules.SPEECH_PERCEPTION, Feature.SPEECH_PERCEPTION, R.drawable.ic_transparency,
             R.string.row_speech_title, R.string.row_speech_sub)
-        syncSwitch(Feature.HEARING_OPTIMIZE, null, R.drawable.ic_hearing,
+        syncSwitch(RowRules.HEARING_OPTIMIZE, Feature.HEARING_OPTIMIZE, R.drawable.ic_hearing,
             R.string.row_hearing_optimize_title, R.string.row_hearing_optimize_sub, R.string.hearing_optimize_confirm)
-        syncSwitch(Feature.LONG_PRESS_VOLUME, "holdVolume", R.drawable.ic_volume,
+        syncSwitch(RowRules.HOLD_VOLUME, Feature.LONG_PRESS_VOLUME, R.drawable.ic_volume,
             R.string.row_long_press_volume_title, R.string.row_long_press_volume_sub)
-        syncSwitch(Feature.HEAD_MOTION, null, R.drawable.ic_gesture,
+        syncSwitch(RowRules.HEAD_GESTURE, Feature.HEAD_MOTION, R.drawable.ic_gesture,
             R.string.row_head_motion_title, R.string.row_head_motion_sub)
         // Which gesture answers: `0x0431 <type>`, HeyMelody's nod / shake choice (PROTOCOL.md §18).
-        if (featureSwitches.containsKey(Feature.HEAD_MOTION) &&
-            Capabilities.supports(this, OpoProtocol.CMD_SET_HEAD_MOTION_TYPE)) {
+        if (RowRules.HEAD_GESTURE_TYPE in rows) {
             card.addView(SettingRowFactory.buildDivider(this))
             val row = SettingRowFactory.build(this, R.drawable.ic_gesture, R.string.head_motion_type_title,
                 0, SettingRowFactory.buildChevron(this)) { headMotionSheet() }
@@ -285,11 +278,11 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
             paintHeadMotion()
             card.addView(row)
         }
-        syncSwitch(Feature.SWIFT_PAIR, "fastPair", R.drawable.ic_devices,
+        syncSwitch(RowRules.FAST_PAIR, Feature.SWIFT_PAIR, R.drawable.ic_devices,
             R.string.row_swift_pair_title, R.string.row_swift_pair_sub)
-        syncSwitch(Feature.FIND_PHONE, "findPhone", R.drawable.ic_find_buds,
+        syncSwitch(RowRules.FIND_PHONE, Feature.FIND_PHONE, R.drawable.ic_find_buds,
             R.string.row_find_phone_title, R.string.row_find_phone_sub)
-        switch(Feature.POWER_SAVING, null, R.drawable.ic_power,
+        switch(RowRules.POWER_SAVING, Feature.POWER_SAVING, R.drawable.ic_power,
             R.string.row_power_saving_title, R.string.row_power_saving_sub, R.string.power_saving_confirm)
         if (card.childCount == 0) return
         root.addView(SettingRowFactory.sectionLabel(this, R.string.earbuds_section_features))
@@ -415,8 +408,6 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
      * the warning shows below the buds' default, as in HeyMelody (PROTOCOL.md §18).
      */
     private fun tapSensitivity(root: LinearLayout) {
-        if (ModelCatalog.current(this)?.json?.optInt("tapLevel") != 1) return
-        if (!Capabilities.supports(this, OpoProtocol.CMD_SET_TAP_LEVEL) && ModelCatalog.manual(this) == null) return
         val dp = { v: Float -> ThemeRes.dp(this, v) }
         val secondary = ThemeRes.color(this, R.attr.appColorTextSecondary)
         tapSlider = LevelSliderView(this, 1, 5).apply { onRelease = { manager?.setTapLevel(it) } }

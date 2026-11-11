@@ -8,6 +8,7 @@ mod gesture_logic;
 mod hearing_logic;
 mod home_logic;
 mod protocol;
+mod row_rules;
 mod session;
 mod types;
 

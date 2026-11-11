@@ -53,11 +53,15 @@ object RowRules {
     const val POWER_SAVING = "powerSaving"
     const val FIND_PHONE = "findPhone"
     const val VIRTUAL_BASS = "virtualBass"
+    // Write-only: the buds do not report them, so the model flag alone shows the row.
+    const val VOLUME_ENHANCER = "volumeEnhancer"
+    const val AUTO_ANSWER = "autoAnswer"
 
     // Equalizer screen parts.
     const val EQ_PRESETS = "eqPresets"
     const val EQ_CUSTOM = "eqCustom"
     const val BASS_WAVE = "bassWave"
+    const val BASS_BANDS = "bassBands"
 
     // Dual connection screen parts.
     const val DUAL_PRIORITY = "dualPriority"
@@ -75,18 +79,25 @@ object RowRules {
      * nothing, which also shows no conditional row.
      * [bitmap] is the `0x8100` command set. Null means "nothing read yet".
      * [productAnc] names the noise modes the buds reported, when `models.json` has none.
+     * [manual]: the person picked the model. Then the model's data passes where the bitmap would decide
+     * (Personalized ANC, game sound type, tap level, the priority device).
+     * [gestures]: the model has a gesture row this app can write. Null: the model's `gestures` list decides.
      */
     fun rows(
         model: JSONObject?,
         reply: Map<Int, Int>?,
         bitmap: Set<Int>?,
         productAnc: Map<String, Int>? = null,
-        phoneSpatialOk: Boolean = false
+        phoneSpatialOk: Boolean = false,
+        manual: Boolean = false,
+        gestures: Boolean? = null
     ): Set<String> {
         val out = linkedSetOf(EARBUDS)
         if (reply == null) return out
         val caps = bitmap ?: emptySet()
         val has = { id: Int -> reply.containsKey(id) }
+        val accepts = { cmd: Int -> cmd in caps || manual }
+        val flag = { key: String -> model?.optInt(key) == 1 }
 
         if (has(Feature.WIND_NOISE)) out += WIND
         if (GAME_IDS.any { has(it) }) out += GAME
@@ -98,23 +109,21 @@ object RowRules {
         if (has(Feature.DUAL_DEVICE)) out += DUAL
         if (OpoProtocol.CMD_SET_ANC in caps && hasAncTable(model, productAnc)) out += ANC
 
-        if (caps.isNotEmpty()) {
-            if (OpoProtocol.CMD_SET_KEY_FUNCTION in caps && hasArray(model, "gestures")) out += CONTROLS
-        }
+        if (OpoProtocol.CMD_SET_KEY_FUNCTION in caps && (gestures ?: hasArray(model, "gestures"))) out += CONTROLS
         if (has(Feature.AUTO_PLAY_PAUSE)) out += WEAR
         if (OpoProtocol.CMD_FIND_BUDS in caps && model?.optInt("noFind") != 1) out += FIND
         if (OpoProtocol.CMD_FIT_TEST in caps) out += FIT
         if (OpoProtocol.CMD_SET_ALERT_VOLUME in caps) out += ALERT_VOLUME
         if (OpoProtocol.CMD_QUERY_FIRMWARE in caps) out += FIRMWARE
-        if (model?.optInt("tapLevel") == 1 && OpoProtocol.CMD_SET_TAP_LEVEL in caps) out += TAP_LEVEL
-        if (model?.optInt("personalAnc") == 1 && has(Feature.PERSONAL_NOISE) &&
-            OpoProtocol.CMD_PERSONAL_NOISE in caps) out += PERSONAL_ANC
+        if (flag("tapLevel") && accepts(OpoProtocol.CMD_SET_TAP_LEVEL)) out += TAP_LEVEL
+        // The flag too: HeyMelody gates on it, and Buds 4 list 0x0C without having the feature.
+        if (flag("personalAnc") && has(Feature.PERSONAL_NOISE) && accepts(OpoProtocol.CMD_PERSONAL_NOISE)) out += PERSONAL_ANC
         if (has(Feature.VOCAL_ENHANCE)) out += VOICE_BOOST
         if (has(Feature.GAME_SOUND)) {
             out += GAME_SOUND
-            if (OpoProtocol.CMD_GAME_SOUND in caps) out += GAME_SOUND_TYPE
+            if (accepts(OpoProtocol.CMD_GAME_SOUND)) out += GAME_SOUND_TYPE
         }
-        if (OpoProtocol.CMD_GAME_EQ_STATE in caps) out += GAME_EQ
+        if (has(Feature.GAME_EQ) && OpoProtocol.CMD_GAME_EQ_STATE in caps) out += GAME_EQ
         if (has(Feature.SMART_VOLUME)) out += AUTO_VOLUME
         if (has(Feature.ADAPTIVE_VOLUME)) out += ADAPTIVE_VOLUME
         if (has(Feature.ADAPTIVE_EAR)) out += ADAPTIVE_EAR
@@ -131,13 +140,17 @@ object RowRules {
         if (has(Feature.POWER_SAVING)) out += POWER_SAVING
         if (has(Feature.FIND_PHONE)) out += FIND_PHONE
         if (has(Feature.VIRTUAL_BASS)) out += VIRTUAL_BASS
+        if (flag("volumeEnhancer")) out += VOLUME_ENHANCER
+        if (flag("autoAnswer")) out += AUTO_ANSWER
 
         if (eqPresets(model, bitmap)) out += EQ_PRESETS
         if (eqCustom(model, bitmap)) out += EQ_CUSTOM
-        if (model?.optInt("bassEngine") == 1 && OpoProtocol.CMD_SET_BASSWAVE_LEVEL in caps) out += BASS_WAVE
+        if (flag("bassEngine") && OpoProtocol.CMD_SET_BASSWAVE_LEVEL in caps) out += BASS_WAVE
+        // realme dynamic sound: three sliders with a band byte.
+        if (model?.optInt("bassBands") == 3) out += BASS_BANDS
         if (has(Feature.DUAL_DEVICE)) {
             out += DUAL_DEVICES
-            if (dualPriority(model) && OpoProtocol.CMD_MULTI_CONNECT in caps) out += DUAL_PRIORITY
+            if (dualPriority(model) && accepts(OpoProtocol.CMD_MULTI_CONNECT)) out += DUAL_PRIORITY
         }
         return out
     }

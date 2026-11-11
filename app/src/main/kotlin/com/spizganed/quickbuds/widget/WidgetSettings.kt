@@ -6,7 +6,8 @@ import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.Feature
 import com.spizganed.quickbuds.protocol.ModelCatalog
-import com.spizganed.quickbuds.protocol.OpoProtocol
+import com.spizganed.quickbuds.protocol.RowRules
+import com.spizganed.quickbuds.ui.MainActivity
 import com.spizganed.quickbuds.ui.ThemeRes
 
 /**
@@ -198,21 +199,21 @@ object WidgetSettings {
     /** The connected buds have button [key]. */
     fun available(c: Context, key: String): Boolean {
         val anc = AncModes.of(c)
-        val ancCmd = Capabilities.supports(c, OpoProtocol.CMD_SET_ANC)
+        val rows = MainActivity.rowsOf(c)
+        val ancCmd = RowRules.ANC in rows
         return when (key) {
             "anc" -> ancCmd && ancPicker(c).isNotEmpty()
             "trans", "adapt" -> ancCmd && anc.supports(MODES.first { it.key == key }.store)
             "off" -> ancCmd && !anc.isEmpty
             "cycle" -> ancCmd && ancPicker(c).isNotEmpty()
-            "ll" -> Capabilities.hasFeature(c, Capabilities.gameModeId(c))
-            "wind" -> Capabilities.offered(c, Feature.WIND_NOISE, "windMode")
-            "dual" -> Capabilities.offered(c, Feature.DUAL_DEVICE, null)
+            "ll" -> RowRules.GAME in rows
+            "wind" -> RowRules.WIND in rows
+            "dual" -> RowRules.DUAL in rows
             "app" -> true
             else -> false
         }
     }
 
-    /** Feature [id] is on in the buds' last `0x810D` reply (the same prefs the connection manager keeps). */
     /** The name of a [FEATURE_BUTTONS] key: "Triple connection" on `tripleDevice` models. */
     fun featureName(c: Context, key: String): Int = when {
         key == "wind" -> R.string.row_wind_noise_title

@@ -272,10 +272,11 @@ mod tests {
 
     #[test]
     fn status_query_per_model() {
-        // Buds 4: HeyMelody's captured list. Enco Buds2: the short list that keeps their link up (issue #5).
+        // Buds 4: HeyMelody's captured list, plus both game-mode ids, sorted, as the phone asks (`RowRules.askQuery`).
+        // Enco Buds2: the short list that keeps their link up (issue #5).
         let buds4 = find_model(Some("065414"), None);
-        assert_eq!(status_query(buds4), [9, 0x05, 0x04, 0x0B, 0x11, 0x18, 0x06, 0x1B, 0x1D, 0x1C]);
-        assert_eq!(status_query(find_model(Some("064810"), None)), [2, 0x05, 0x06]);
+        assert_eq!(status_query(buds4), [10, 0x04, 0x05, 0x06, 0x0B, 0x11, 0x18, 0x1B, 0x1C, 0x1D, 0x28]);
+        assert_eq!(status_query(find_model(Some("064810"), None)), [3, 0x05, 0x06, 0x28]);
     }
 
     #[test]
@@ -293,9 +294,8 @@ mod tests {
         let Some(Event::Firmware(v)) = rx(0x8105, &fw) else { panic!("no firmware") };
         assert_eq!(v, "138.138.105");
         // Gates: the Enco Buds have no equalizer; a switch list without 0x11 hides Dual connection.
-        assert!(eq_has(find_model(Some("065414"), None), &Caps(None)));
-        assert!(!eq_has(find_model(Some("062410"), None), &Caps(None)));
-        assert!(has_feature(&[], FEATURE_DUAL) && !has_feature(&[(FEATURE_HEARING, 1)], FEATURE_DUAL));
+        let eq = |id| { let (m, b) = (find_model(Some(id), None), Some(&[CMD_SET_EQ, CMD_SAVE_CUSTOM_EQ][..])); crate::row_rules::eq_presets(m, b) || crate::row_rules::eq_custom(m, b) };
+        assert!(eq("065414") && !eq("062410"));
         let b = eq_builtins(find_model(Some("065414"), Some("OnePlus Buds 4")), Some("138.138.105"));
         assert_eq!(b, [(0, "eq_balanced"), (1, "eq_clear_vocals"), (2, "eq_bass")]);
     }

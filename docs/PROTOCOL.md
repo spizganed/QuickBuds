@@ -916,7 +916,7 @@ leaves out an id that the buds do not have.
 Per-model switch lists and flags are in section 21.5.
 
 **Code:** `protocol/Feature.kt`, `protocol/FeatureSync.kt`, `protocol/FeaturePush.kt`,
-`protocol/RowRules.kt`; `core/src/feature_sync.rs`.
+`protocol/RowRules.kt`; `core/src/feature_sync.rs`; `desktop-tauri/src/row_rules.rs`.
 
 ---
 

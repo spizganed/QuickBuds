@@ -95,13 +95,16 @@ pub fn gestures_json(s: &Snapshot) -> Value {
 
 /// The Earbud settings extras: the feature rows, pickers, Personalized ANC and the dialogs' state.
 pub fn earbud_json(s: &Snapshot) -> Value {
-    let flagged = |flag: Option<&str>| s.manual && flag.is_some_and(|f| s.model.is_some_and(|m| m[f] == 1));
+    use crate::row_rules as r;
+    let shown = r::of(s);
+    let row = |k: &str| shown.contains(k);
     let mut rows: Vec<Value> = vec![];
-    for &(id, flag, icon, title, sub, confirm, confirm_off) in ROWS {
-        if id == 0x04 { continue; }
-        let v = match s.features.iter().find(|f| f.0 == id) { Some(f) => f.1, None if flagged(flag) => 0, None => continue };
+    for &(id, _, icon, title, sub, confirm, confirm_off) in ROWS {
+        // A switch row needs the buds' own answer, as before the reply nothing is known about it.
+        let Some(v) = s.features.iter().find(|f| f.0 == id).map(|f| f.1) else { continue };
+        if id == 0x04 || !r::SWITCH_ROWS.iter().any(|&(i, k)| i == id && row(k)) { continue; }
         let pick = match id {
-            0x27 if s.manual || s.caps.supports(CMD_GAME_SOUND) => {
+            0x27 if row(r::GAME_SOUND_TYPE) => {
                 let offered = s.game_sound.as_ref().map(|g| g.1.clone()).filter(|v| !v.is_empty()).unwrap_or(vec![3]);
                 let mut game: Vec<u8> = vec![0];
                 for v in offered { if !game.contains(&v) { game.push(v); } }
@@ -109,7 +112,7 @@ pub fn earbud_json(s: &Snapshot) -> Value {
                     "label": s.game_sound.as_ref().and_then(|g| game_label(g.0)),
                     "choices": game.into_iter().filter_map(|v| Some(json!({ "v": v, "label": game_label(v)? }))).collect::<Vec<_>>() }))
             }
-            0x3B if s.caps.supports(CMD_SET_HEAD_MOTION) => Some(json!({ "kind": 2, "title": tr("head_motion_type_title"), "cur": s.head_motion,
+            0x3B if row(r::HEAD_GESTURE_TYPE) => Some(json!({ "kind": 2, "title": tr("head_motion_type_title"), "cur": s.head_motion,
                 "label": s.head_motion.and_then(head_label),
                 "choices": ([0u8, 1].into_iter().filter_map(|v| Some(json!({ "v": v, "label": head_label(v)? }))).collect::<Vec<_>>()) })),
             _ => None,
@@ -118,15 +121,13 @@ pub fn earbud_json(s: &Snapshot) -> Value {
             "confirm": confirm.map(tr), "confirmOff": confirm_off, "pick": pick }));
     }
     // Game equalizer: the buds list feature 0x21 and accept 0x0420.
-    if let Some(v) = s.features.iter().find(|f| f.0 == FEATURE_GAME_EQ).map(|f| f.1).filter(|_| s.caps.supports(CMD_GAME_EQ_STATE)) {
+    if let Some(v) = s.features.iter().find(|f| f.0 == FEATURE_GAME_EQ).map(|f| f.1).filter(|_| row(r::GAME_EQ)) {
         let at = rows.iter().position(|r| r["id"] == 0x27 || r["id"] == 0x1C).map_or(rows.len(), |p| p + (rows[p]["id"] == 0x27) as usize);
         rows.insert(at, json!({ "id": FEATURE_GAME_EQ, "icon": "bolt", "title": tr("row_game_eq_title"), "sub": tr("row_game_eq_sub"), "on": v == 1,
             "busy": s.busy.contains(&FEATURE_GAME_EQ), "confirm": null, "confirmOff": false, "pick": null }));
     }
     let pnc_listed = s.features.iter().find(|f| f.0 == FEATURE_PERSONAL_NOISE).map(|f| f.1);
-    let pnc = s.model.map_or(true, |m| m["personalAnc"] == 1)
-        && (pnc_listed.is_some() || flagged(Some("personalAnc")))
-        && (s.caps.supports(CMD_PERSONAL_NOISE) || s.manual);
+    let pnc = row(r::PERSONAL_ANC);
     let picker = home_logic::codec_picker(s);
     let hires_on = s.features.contains(&(FEATURE_HIRES, 1));
     json!({
@@ -135,13 +136,13 @@ pub fn earbud_json(s: &Snapshot) -> Value {
         "wornAny": worn(s).1,
         "issues": issues(s),
         "smartPause": crate::load_settings()["smart_auto_pause"].as_bool() == Some(true),
-        "find": s.caps.supports(CMD_FIND_BUDS) && !s.model.is_some_and(|m| m["noFind"] == 1),
-        "fit": s.caps.supports(CMD_FIT_TEST),
+        "find": row(r::FIND),
+        "fit": row(r::FIT),
         "fitState": { "l": s.fit.0, "r": s.fit.1, "seq": s.fit.2 },
         "pncState": { "kind": s.pnc.0, "value": s.pnc.1, "seq": s.pnc.2 },
         "pnc": if pnc { json!({ "on": pnc_listed == Some(1) }) } else { Value::Null },
         "rows": rows,
-        "firmwareRow": s.caps.supports(CMD_QUERY_FIRMWARE),
+        "firmwareRow": row(r::FIRMWARE),
         "firmware": s.firmware,
         "gestures": gestures_json(s)["available"],
         // High-quality audio and 3D audio: the confirmation texts and the pickers of the Overview rows.
@@ -157,7 +158,7 @@ pub fn earbud_json(s: &Snapshot) -> Value {
             "choices": (0..3u8).map(|v| json!({ "v": v, "label": spatial_label(v) })).collect::<Vec<_>>(),
         },
         "wind": {
-            "has": s.features.iter().any(|f| f.0 == FEATURE_WIND_NOISE) || (s.manual && s.model.is_some_and(|m| m["windMode"] == 1)),
+            "has": row(r::WIND),
             "on": s.features.contains(&(FEATURE_WIND_NOISE, 1)),
         },
         "gameBusy": s.busy.contains(&crate::home_logic::game_id(s)),

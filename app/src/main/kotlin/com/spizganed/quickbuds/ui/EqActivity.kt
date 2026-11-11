@@ -31,7 +31,6 @@ import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.EqSnapshot
 import com.spizganed.quickbuds.protocol.EqState
 import com.spizganed.quickbuds.protocol.ModelCatalog
-import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.Feature
 import com.spizganed.quickbuds.protocol.FeatureSync
@@ -51,27 +50,17 @@ import org.json.JSONObject
 class EqActivity : Activity(), BudsConnectionManager.Listener {
 
     companion object {
-        /** The model's flag in HeyMelody's list; nothing detected counts as Buds 4, which has them all. */
-        private fun flag(context: Context, key: String) =
-            ModelCatalog.current(context)?.json?.let { it.optInt(key) == 1 } ?: true
+        /** `[VENDOR]` HeyMelody: the model's `customEqualizer` flag and `0x0418` in the command bitmap ([RowRules]). */
+        fun hasCustom(context: Context) = RowRules.EQ_CUSTOM in MainActivity.rowsOf(context)
 
-        /** `[VENDOR]` HeyMelody: the model's `customEqualizer` flag and `0x0418` in the command bitmap. */
-        fun hasCustom(context: Context) =
-            flag(context, "customEq") && Capabilities.supports(context, OpoProtocol.CMD_SAVE_CUSTOM_EQ)
-
-        /** `[VENDOR]` HeyMelody: the model's `bassEngineSupport` flag and `0x041B` in the command bitmap. */
-        fun hasBassWave(context: Context) =
-            flag(context, "bassEngine") && Capabilities.supports(context, OpoProtocol.CMD_SET_BASSWAVE_LEVEL)
+        /** `[VENDOR]` HeyMelody: the model's `bassEngineSupport` flag and `0x041B` in the command bitmap ([RowRules]). */
+        fun hasBassWave(context: Context) = RowRules.BASS_WAVE in MainActivity.rowsOf(context)
 
         /** `[VENDOR]` realme Link's dynamic sound: three sliders with a band byte (`bassBands` 3). */
-        fun hasBassBands(context: Context) = ModelCatalog.current(context)?.json?.optInt("bassBands") == 3
+        fun hasBassBands(context: Context) = RowRules.BASS_BANDS in MainActivity.rowsOf(context)
 
         /** `[VENDOR]` HeyMelody's EQ row: the model has EQ data and the buds accept its command ([RowRules]). */
-        fun hasEq(context: Context) = RowRules.EQ in RowRules.rows(
-            ModelCatalog.current(context)?.json,
-            Capabilities.reply(context),
-            Capabilities.commands(context)
-        )
+        fun hasEq(context: Context) = RowRules.EQ in MainActivity.rowsOf(context)
 
         /** `[VENDOR]` `customEqMax`, else HeyMelody's default of 3. */
         fun maxCustom(context: Context) =

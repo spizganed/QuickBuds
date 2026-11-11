@@ -73,6 +73,9 @@ fn feat(s: &Snapshot, id: u8) -> bool { s.features.contains(&(id, 1)) }
 fn mac(m: &[u8; 6]) -> String { m.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":") }
 
 fn snapshot_json(s: &Snapshot) -> Value {
+    use crate::row_rules as r;
+    let rows = r::of(s);
+    let row = |k: &str| rows.contains(k);
     let levels = s.modes.levels();
     let builtins: Vec<Value> = if s.caps.supports(CMD_SET_EQ) {
         eq_builtins(s.model, s.firmware.as_deref()).into_iter().map(|(id, key)| json!({ "id": id, "name": crate::tr(key) })).collect()
@@ -104,26 +107,26 @@ fn snapshot_json(s: &Snapshot) -> Value {
             "anc": !levels.is_empty(),
             "adaptive": s.modes.supports(ADAPTIVE),
             "transparency": s.modes.supports(TRANSPARENCY),
-            "hq": has_feature(&s.features, FEATURE_HIRES),
-            "sp": has_feature(&s.features, FEATURE_SPATIAL) && !home_logic::phone_spatial(s),
-            "hp": has_feature(&s.features, FEATURE_HEARING),
-            "dual": has_feature(&s.features, FEATURE_DUAL),
-            "wear": has_feature(&s.features, FEATURE_AUTO_PLAY_PAUSE),
-            "eq": eq_has(s.model, &s.caps),
-            "game": has_feature(&s.features, crate::home_logic::game_id(s)),
-            "controls": s.caps.supports(CMD_SET_KEY_FUNCTION) && !crate::gesture_logic::Model::of(s).rows.is_empty(),
+            "hq": row(r::HIRES),
+            "sp": row(r::SPATIAL),
+            "hp": row(r::GOLDEN),
+            "dual": row(r::DUAL),
+            "wear": row(r::WEAR),
+            "eq": row(r::EQ),
+            "game": row(r::GAME),
+            "controls": row(r::CONTROLS),
         },
         "eq": {
             "current": s.eq_current,
             "builtins": builtins,
             "custom": custom,
-            "hasCustom": eq_has_custom(s.model, &s.caps),
+            "hasCustom": row(r::EQ_CUSTOM),
             "freqs": eq_model_freqs(s.model),
             "max": eq_max_custom(s.model),
             "bass": {
-                "has": eq_has_bass(s.model, &s.caps),
+                "has": row(r::BASS_WAVE),
                 "level": s.bass_level,
-                "threeBands": eq_bass_bands(s.model),
+                "threeBands": row(r::BASS_BANDS),
                 "bands": s.bass_bands,
             },
         },
@@ -134,9 +137,9 @@ fn snapshot_json(s: &Snapshot) -> Value {
         "hearing": { "on": feat(s, FEATURE_HEARING), "hasTest": s.caps.supports(CMD_GOLDEN_DETECT), "state": crate::hearing::json_state() },
         "earbudx": crate::pages::earbud_json(s),
         "earbud": {
-            "hasAlert": s.caps.supports(CMD_SET_ALERT_VOLUME) && s.alert_volume.is_some(),
+            "hasAlert": row(r::ALERT_VOLUME) && s.alert_volume.is_some(),
             "alert": s.alert_volume,
-            "hasTap": s.model.is_some_and(|m| m["tapLevel"] == 1) && (s.manual || s.caps.supports(CMD_SET_TAP_LEVEL) && s.tap_level.is_some()),
+            "hasTap": row(r::TAP_LEVEL) && (s.manual || s.tap_level.is_some()),
             "tap": s.tap_level.map(|(v, d)| json!({ "v": v, "default": d })),
             "devices": s.devices.iter().map(|d| json!({ "mac": mac(&d.mac), "name": d.name, "connected": d.connected, "this": d.this_device })).collect::<Vec<_>>(),
         },

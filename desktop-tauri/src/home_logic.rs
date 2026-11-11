@@ -31,9 +31,7 @@ pub(crate) fn exclusive(s: &Snapshot) -> bool { !s.model.is_some_and(|m| m["spat
 
 /// 3D audio as HeyMelody picks it (PROTOCOL.md section 18): buds whose bitmap has `0x012A` (or a hand-picked model with head
 /// tracking) take a type through `0x0422`, the rest feature `1B`.
-pub(crate) fn spatial_by_type(s: &Snapshot) -> bool {
-    exclusive(s) && (s.caps.supports(CMD_QUERY_SPATIAL_TYPE) || s.manual && head_tracking(s))
-}
+pub(crate) fn spatial_by_type(s: &Snapshot) -> bool { crate::row_rules::spatial_by_type(s.model, Some(crate::row_rules::bitmap(s))) }
 
 /// The game-mode id the buds write and read. A model's `gameId` wins, for a model whose capture proves another id
 /// (PROTOCOL.md section 16).
@@ -43,18 +41,13 @@ pub(crate) fn game_id(s: &Snapshot) -> u8 {
 
 /// A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect, and only OPPO and OnePlus
 /// phones can (PROTOCOL.md section 18). The `1B` switch then does nothing audible, so the row is hidden.
-pub(crate) fn phone_spatial(s: &Snapshot) -> bool {
-    let name = s.model.and_then(|m| m["name"].as_str()).unwrap_or("");
-    (name.starts_with("OnePlus") || name.starts_with("OPPO")) && exclusive(s) && s.caps.read() && !s.caps.supports(0xEF03)
-}
+pub(crate) fn phone_spatial(s: &Snapshot) -> bool { crate::row_rules::phone_spatial(s.model, s.caps.0.as_deref()) }
 
 /// The model's `spatialModes` has `2`: Off / Fixed / Head tracking instead of a plain switch.
-pub(crate) fn head_tracking(s: &Snapshot) -> bool {
-    s.model.is_some_and(|m| m["spatialModes"].as_array().is_some_and(|t| t.iter().any(|v| *v == 2)))
-}
+pub(crate) fn head_tracking(s: &Snapshot) -> bool { crate::row_rules::spatial_head_tracking(s.model) }
 
 /// The codec picker replaces the Hi-Res write on `hiRes` models with the `0x0123` read (PROTOCOL.md section 18).
-pub(crate) fn codec_picker(s: &Snapshot) -> bool { s.model.is_some_and(|m| m["hiRes"] == 1) && s.caps.supports(CMD_QUERY_CODEC_LIST) }
+pub(crate) fn codec_picker(s: &Snapshot) -> bool { crate::row_rules::codec_picker(s.model, Some(crate::row_rules::bitmap(s))) }
 
 pub(crate) fn spatial_on(s: &Snapshot) -> bool {
     if spatial_by_type(s) { s.spatial_type.unwrap_or(0) != 0 } else { s.features.contains(&(FEATURE_SPATIAL, 1)) }

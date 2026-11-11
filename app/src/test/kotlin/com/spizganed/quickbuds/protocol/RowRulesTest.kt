@@ -14,8 +14,8 @@ import java.io.File
 class RowRulesTest {
 
     private val fixtures: List<JSONObject> by lazy {
-        val text = javaClass.classLoader!!.getResourceAsStream("row_fixtures.json")!!
-            .bufferedReader().use { it.readText() }
+        // Shared with the desktop test (desktop-tauri/src/row_rules.rs).
+        val text = File("../testdata/row_fixtures.json").readText()
         val a = JSONObject(text).getJSONArray("fixtures")
         (0 until a.length()).map { a.getJSONObject(it) }
     }
@@ -179,5 +179,20 @@ class RowRulesTest {
         assertTrue(setOf(RowRules.CONTROLS, RowRules.FIND, RowRules.FIT, RowRules.ALERT_VOLUME, RowRules.FIRMWARE).all { it in rows })
         assertFalse(RowRules.GAME_SOUND_TYPE in rows)
         assertFalse(RowRules.POWER_SAVING in rows)
+    }
+
+    @Test fun manualPassesTheBitmapAndWriteOnlyRowsShowByFlag() {
+        val m = JSONObject("""{"tapLevel":1,"personalAnc":1,"autoAnswer":1}""")
+        val reply = mapOf(Feature.PERSONAL_NOISE to 0)
+        val auto = RowRules.rows(m, reply, emptySet())
+        assertTrue(RowRules.TAP_LEVEL !in auto && RowRules.PERSONAL_ANC !in auto && RowRules.AUTO_ANSWER in auto)
+        val manual = RowRules.rows(m, reply, emptySet(), manual = true)
+        assertTrue(RowRules.TAP_LEVEL in manual && RowRules.PERSONAL_ANC in manual)
+    }
+
+    @Test fun gameEqNeedsTheSwitchAndTheCommand() {
+        val reply = mapOf(Feature.GAME_EQ to 1)
+        assertFalse(RowRules.GAME_EQ in RowRules.rows(null, reply, emptySet()))
+        assertTrue(RowRules.GAME_EQ in RowRules.rows(null, reply, setOf(OpoProtocol.CMD_GAME_EQ_STATE)))
     }
 }

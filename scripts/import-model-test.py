@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Turns a model-test report into one entry of app/src/test/resources/row_fixtures.json.
+"""Turns a model-test report into one entry of testdata/row_fixtures.json.
 
 The report must hold the machine-readable line that the app writes on Send:
     MODEL TEST JSON {"id": ...}
@@ -11,7 +11,7 @@ Use: scripts/import-model-test.py report.json            one report, a list, or 
 import json, os, re, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-FIXTURES = os.path.join(ROOT, "app/src/test/resources/row_fixtures.json")
+FIXTURES = os.path.join(ROOT, "testdata/row_fixtures.json")
 MODELS = os.path.join(ROOT, "app/src/main/assets/models.json")
 PREFIX = "MODEL TEST JSON "
 

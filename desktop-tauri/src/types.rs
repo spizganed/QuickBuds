@@ -187,17 +187,9 @@ pub fn best_hires_codec(model: Option<&Value>) -> Option<&'static str> {
     HIRES_NAMES.iter().find(|(token, _)| tokens.iter().any(|v| v.as_str() == Some(token))).map(|(_, name)| *name)
 }
 
-/// `0x010D`: count, then the feature ids (`OpoProtocol.queryStatus`): the model's `statusQuery` (HeyMelody's
-/// per-model list, PROTOCOL.md section 16), else the full list. The `windMode` flag adds [FEATURE_WIND_NOISE].
+/// `0x010D`: count, then the feature ids ([`crate::row_rules::ask_ids`], the phone's `RowRules.askQuery`).
 pub fn status_query(model: Option<&serde_json::Value>) -> Vec<u8> {
-    let mut ids: Vec<u8> = match model.and_then(|m| m["statusQuery"].as_str()) {
-        Some(s) => s.split(' ').filter_map(|h| u8::from_str_radix(h, 16).ok()).collect(),
-        None => vec![
-            0x05, 0x04, 0x0B, 0x11, 0x13, 0x18, 0x06, 0x1B, 0x1C, 0x27, 0x28, 0x1D,
-            0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C,
-        ],
-    };
-    if model.is_some_and(|m| m["windMode"] == 1) { ids.push(FEATURE_WIND_NOISE); }
+    let ids = crate::row_rules::ask_ids(model);
     let mut q = vec![ids.len() as u8];
     q.extend(ids);
     q
@@ -316,6 +308,7 @@ impl AncModes {
     }
 
     pub fn supports(&self, mode: &str) -> bool { self.set.iter().any(|(n, _)| n == mode) }
+    pub fn is_empty(&self) -> bool { self.set.is_empty() }
     pub fn bit(&self, mode: &str) -> Option<u8> { self.set.iter().find(|(n, _)| n == mode).map(|x| x.1) }
     pub fn levels(&self) -> Vec<&'static str> { LEVELS.into_iter().filter(|l| self.supports(l)).collect() }
     /// The level (not Smart) whose SET bit this is.
@@ -376,29 +369,6 @@ impl Preset {
         out
     }
 }
-
-/// A model flag from `models.json`; nothing detected counts as Buds 4, which has them all (as on the phone).
-fn flag(model: Option<&Value>, key: &str) -> bool { model.map_or(true, |m| m[key].as_i64() == Some(1)) }
-
-pub fn eq_has_custom(model: Option<&Value>, caps: &Caps) -> bool {
-    flag(model, "customEq") && caps.supports(CMD_SAVE_CUSTOM_EQ)
-}
-
-/// Any equalizer at all (`EqActivity.hasEq`): custom presets, or built-in ones on a model with `eqKind` 1..4.
-pub fn eq_has(model: Option<&Value>, caps: &Caps) -> bool {
-    eq_has_custom(model, caps)
-        || (1..=4).contains(&model.map_or(1, |m| m["eqKind"].as_i64().unwrap_or(0))) && caps.supports(CMD_SET_EQ)
-}
-
-/// The buds listed switch `id` in their last `0x810D` reply; nothing read yet = yes (`Capabilities.hasFeature`).
-pub fn has_feature(features: &[(u8, u8)], id: u8) -> bool { features.is_empty() || features.iter().any(|f| f.0 == id) }
-
-pub fn eq_has_bass(model: Option<&Value>, caps: &Caps) -> bool {
-    flag(model, "bassEngine") && caps.supports(CMD_SET_BASSWAVE)
-}
-
-/// `bassBands` 3: realme dynamic sound, three sliders with a band byte (PROTOCOL.md section 17).
-pub fn eq_bass_bands(model: Option<&Value>) -> bool { model.map_or(false, |m| m["bassBands"].as_i64() == Some(3)) }
 
 /// `customEqMax`, else 3.
 pub fn eq_max_custom(model: Option<&Value>) -> usize {

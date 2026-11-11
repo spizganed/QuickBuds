@@ -112,5 +112,7 @@ The user can turn the count off in Settings.
 
 - A protocol change updates `core/`, the Kotlin copy and PROTOCOL.md together.
 - Docs change in the same commit as the code.
+- Which rows show, and which ids `0x010D` asks, is one rule set: `protocol/RowRules.kt` and its port
+  `desktop-tauri/src/row_rules.rs`. Every screen, widget and tile asks it. Both run `testdata/row_fixtures.json`.
 - A new user-visible string needs all 26 locales. `scripts/check-locales.py` checks this.
 - A change to `models.json` needs `npx wrangler deploy` in `report-worker/`. Else the Worker rejects reports for the new model.

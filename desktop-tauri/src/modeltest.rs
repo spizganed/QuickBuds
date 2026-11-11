@@ -3,6 +3,7 @@
 //! one "Test" report, always with the log.
 
 use crate::session::{Cmd, Snapshot, Status, LOG};
+use crate::row_rules;
 use crate::tr;
 use crate::types::*;
 use serde_json::{json, Value};
@@ -19,18 +20,16 @@ const FEATURES: &[Feature] = &[
         let m = &s.modes;
         m.supports(OFF) || !m.levels().is_empty() || m.supports(ADAPTIVE) || m.supports(TRANSPARENCY)
     }),
-    ("wind", "row_wind_noise_title", "Wind noise reduction", |s| {
-        listed(s, FEATURE_WIND_NOISE) || s.manual && s.model.is_some_and(|m| m["windMode"] == 1)
-    }),
-    ("game", "row_game_title", "Low latency", |s| has_feature(&s.features, crate::home_logic::game_id(s))),
-    ("hires", "row_hires_title", "High-quality audio", |s| listed(s, FEATURE_HIRES) || crate::home_logic::codec_picker(s)),
-    ("spatial", "row_spatial_title", "3D audio", |s| (listed(s, FEATURE_SPATIAL) && !crate::home_logic::phone_spatial(s)) || crate::home_logic::spatial_by_type(s)),
-    ("golden", "row_golden_title", "Hearing profile", |s| has_feature(&s.features, FEATURE_HEARING)),
-    ("eq", "row_eq_title", "Equalizer", |s| eq_has(s.model, &s.caps)),
-    ("dual", "dual_title", "Dual connection", |s| has_feature(&s.features, FEATURE_DUAL)),
-    ("gestures", "gesture_title", "Gestures", |s| (s.caps.supports(CMD_SET_KEY_FUNCTION) && !crate::gesture_logic::Model::of(s).rows.is_empty())),
-    ("wear", "wear_firmware_title", "Wear detection", |s| listed(s, 0x04)),
-    ("find", "row_find_title", "Find my earbuds", |s| s.caps.supports(CMD_FIND_BUDS) && !s.model.is_some_and(|m| m["noFind"] == 1)),
+    ("wind", "row_wind_noise_title", "Wind noise reduction", |s| row(s, row_rules::WIND)),
+    ("game", "row_game_title", "Low latency", |s| row(s, row_rules::GAME)),
+    ("hires", "row_hires_title", "High-quality audio", |s| row(s, row_rules::HIRES)),
+    ("spatial", "row_spatial_title", "3D audio", |s| row(s, row_rules::SPATIAL)),
+    ("golden", "row_golden_title", "Hearing profile", |s| row(s, row_rules::GOLDEN)),
+    ("eq", "row_eq_title", "Equalizer", |s| row(s, row_rules::EQ)),
+    ("dual", "dual_title", "Dual connection", |s| row(s, row_rules::DUAL)),
+    ("gestures", "gesture_title", "Gestures", |s| row(s, row_rules::CONTROLS)),
+    ("wear", "wear_firmware_title", "Wear detection", |s| row(s, row_rules::WEAR)),
+    ("find", "row_find_title", "Find my earbuds", |s| row(s, row_rules::FIND)),
 ];
 
 /// The automatic check: (key, label, name in the report).
@@ -54,7 +53,8 @@ const HANDSHAKE: Duration = Duration::from_secs(6);
 /// After a connect, the prompt waits for the reads that decide which features show.
 const ASK_DELAY: Duration = Duration::from_secs(3);
 
-fn listed(s: &Snapshot, id: u8) -> bool { s.features.iter().any(|f| f.0 == id) }
+/// The row rule ([`row_rules`]) of one row key.
+fn row(s: &Snapshot, key: &str) -> bool { row_rules::of(s).contains(key) }
 
 /// The start of the machine-readable line. `scripts/import-model-test.py` finds the JSON after it.
 const JSON_PREFIX: &str = "MODEL TEST JSON ";

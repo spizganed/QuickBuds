@@ -1507,7 +1507,7 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         /**
          * Whether the connected buds have a row's feature at all ([RowRules]): a `0x0403`
          * switch must be in their `0x810D` reply, a command in their `0x8100` bitmap. Nothing read
-         * yet = no conditional row. Earbud settings gates its own rows. [ModelTest] lists the same rows.
+         * yet = no conditional row. Every screen, widget and tile asks the same rules. [ModelTest] lists the same rows.
          */
         fun rowSupported(c: Context, key: String): Boolean = key in rowsOf(c)
 
@@ -1520,7 +1520,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             Capabilities.reply(c),
             Capabilities.commands(c),
             AncModes.of(c).slots().takeIf { it.isNotEmpty() },
-            com.spizganed.quickbuds.bluetooth.PhoneSpatial.supported(c)
+            com.spizganed.quickbuds.bluetooth.PhoneSpatial.supported(c),
+            manual = ModelCatalog.manual(c) != null,
+            gestures = !GestureModel.of(c).isEmpty
         )
 
         /** These buds' 3D effect comes from this phone's spatializer, not from the buds (PROTOCOL.md section 18). */
