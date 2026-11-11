@@ -39,7 +39,8 @@ OnePlus phone the system holds `079A` and cannot be turned off (issue #18); the 
 ## The model data
 
 `app/src/main/assets/models.json` lists every model. Each entry has the id, the name, the commands the buds accept,
-and per-model flags (for example `seqless`, `gameConfirm`, `noFind`). Code reads a flag from this file. Code never
+and per-model flags (for example `seqless`, `gameConfirm`, `noFind`). Code reads an entry only through
+`protocol/ModelProfile.kt` and its Rust twin `desktop-tauri/src/profile.rs`. A new key goes there once. Code never
 tests a model name. A new model needs only a new entry ([ADD-A-MODEL.md](./ADD-A-MODEL.md)). The Worker imports the
 same file to accept a report only for a known model.
 

@@ -9,6 +9,7 @@ use std::sync::OnceLock;
 
 use serde_json::Value;
 
+use crate::profile::Profile;
 use crate::session::Snapshot;
 use crate::types::*;
 
@@ -77,14 +78,14 @@ pub struct Input<'a> {
     pub gestures: Option<bool>,
 }
 
-fn flag(model: Option<&Value>, key: &str) -> bool { model.is_some_and(|m| m[key] == 1) }
-fn has_array(model: Option<&Value>, key: &str) -> bool { model.and_then(|m| m[key].as_array()).is_some_and(|a| !a.is_empty()) }
+fn has_array(list: Option<&Vec<Value>>) -> bool { list.is_some_and(|a| !a.is_empty()) }
 fn in_bitmap(bitmap: Option<&[u16]>, cmd: u16) -> bool { bitmap.is_some_and(|b| b.contains(&cmd)) }
 
 pub fn rows(i: &Input) -> BTreeSet<&'static str> {
     let mut out = BTreeSet::from([EARBUDS]);
     let Some(reply) = i.reply else { return out };
     let (m, b) = (i.model, i.bitmap);
+    let p = Profile(m);
     let has = |id: u8| reply.contains_key(&id);
     let caps = |cmd: u16| in_bitmap(b, cmd);
     let accepts = |cmd: u16| caps(cmd) || i.manual;
@@ -97,30 +98,30 @@ pub fn rows(i: &Input) -> BTreeSet<&'static str> {
     add(has(FEATURE_HEARING), GOLDEN);
     add(eq_custom(m, b) || eq_presets(m, b), EQ);
     add(has(FEATURE_DUAL), DUAL);
-    add(caps(CMD_SET_ANC) && (i.product_anc || has_array(m, "ancModes")), ANC);
+    add(caps(CMD_SET_ANC) && (i.product_anc || has_array(p.anc_modes())), ANC);
 
-    add(caps(CMD_SET_KEY_FUNCTION) && i.gestures.unwrap_or_else(|| has_array(m, "gestures")), CONTROLS);
-    add(caps(CMD_FIND_BUDS) && !flag(m, "noFind"), FIND);
+    add(caps(CMD_SET_KEY_FUNCTION) && i.gestures.unwrap_or_else(|| has_array(p.gestures())), CONTROLS);
+    add(caps(CMD_FIND_BUDS) && !p.no_find(), FIND);
     add(caps(CMD_FIT_TEST), FIT);
     add(caps(CMD_SET_ALERT_VOLUME), ALERT_VOLUME);
     add(caps(CMD_QUERY_FIRMWARE), FIRMWARE);
-    add(flag(m, "tapLevel") && accepts(CMD_SET_TAP_LEVEL), TAP_LEVEL);
+    add(p.tap_level() && accepts(CMD_SET_TAP_LEVEL), TAP_LEVEL);
     // The flag too: HeyMelody gates on it, and Buds 4 list 0x0C without having the feature.
-    add(flag(m, "personalAnc") && has(FEATURE_PERSONAL_NOISE) && accepts(CMD_PERSONAL_NOISE), PERSONAL_ANC);
+    add(p.personal_anc() && has(FEATURE_PERSONAL_NOISE) && accepts(CMD_PERSONAL_NOISE), PERSONAL_ANC);
     for (id, key) in SWITCH_ROWS {
         add(has(id) && (id != FEATURE_GAME_EQ || caps(CMD_GAME_EQ_STATE)), key);
     }
     add(has(0x27) && accepts(CMD_GAME_SOUND), GAME_SOUND_TYPE);
     add(has(0x3B) && caps(CMD_SET_HEAD_MOTION), HEAD_GESTURE_TYPE);
-    for (f, key) in WRITE_ONLY_ROWS { add(flag(m, f), key); }
+    for (f, key) in WRITE_ONLY_ROWS { add(p.write_only(f), key); }
 
     add(eq_presets(m, b), EQ_PRESETS);
     add(eq_custom(m, b), EQ_CUSTOM);
-    add(flag(m, "bassEngine") && caps(CMD_SET_BASSWAVE), BASS_WAVE);
+    add(p.bass_engine() && caps(CMD_SET_BASSWAVE), BASS_WAVE);
     // realme dynamic sound: three sliders with a band byte.
-    add(m.is_some_and(|m| m["bassBands"] == 3), BASS_BANDS);
+    add(p.bass_bands() == 3, BASS_BANDS);
     add(has(FEATURE_DUAL), DUAL_DEVICES);
-    let priority = m.and_then(|m| m["dualDevice"].as_array()).is_some_and(|l| l.iter().any(|x| x == "setPriorityDevice"));
+    let priority = p.dual_device("setPriorityDevice");
     add(has(FEATURE_DUAL) && priority && accepts(CMD_MULTI_CONNECT), DUAL_PRIORITY);
     out
 }
@@ -147,22 +148,22 @@ pub fn of(s: &Snapshot) -> BTreeSet<&'static str> {
 }
 
 /// True when the default list adds the wind id: only a model with the `windMode` flag.
-pub fn asks_wind(model: Option<&Value>) -> bool { flag(model, "windMode") }
+pub fn asks_wind(model: Option<&Value>) -> bool { Profile(model).wind_mode() }
 
 /// The ids asked in `0x010D`, in order: the model's `statusQuery` plus the ids its flags name and both game ids,
 /// sorted. A model with no list gets [`DEFAULT_IDS`] (plus wind), or, with `findPhone`, the default list plus its extras.
 pub fn ask_ids(model: Option<&Value>) -> Vec<u8> {
-    let list = model.and_then(|m| m["statusQuery"].as_str()).filter(|s| !s.trim().is_empty());
-    let base: Vec<u8> = match list {
+    let p = Profile(model);
+    let base: Vec<u8> = match p.status_query() {
         Some(s) => s.split(' ').filter_map(|h| u8::from_str_radix(h, 16).ok()).collect(),
-        None if flag(model, "findPhone") => default_ids(model),
+        None if p.find_phone() => default_ids(model),
         None => return default_ids(model),
     };
     let mut ids: BTreeSet<u8> = base.into_iter().collect();
     ids.extend(GAME_IDS);
     for (f, id) in [("windMode", FEATURE_WIND_NOISE), ("voiceBoost", 0x09), ("gameSoundFx", 0x27), ("autoVolume", 0x1C),
         ("holdVolume", 0x35), ("fastPair", 0x37), ("personalAnc", FEATURE_PERSONAL_NOISE), ("findPhone", 0x26), ("virtualBass", 0x36)] {
-        if flag(model, f) { ids.insert(id); }
+        if p.asks(f) { ids.insert(id); }
     }
     ids.into_iter().collect()
 }
@@ -175,31 +176,31 @@ fn default_ids(model: Option<&Value>) -> Vec<u8> {
 
 /// A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect (PROTOCOL.md section 18).
 pub fn phone_spatial(model: Option<&Value>, bitmap: Option<&[u16]>) -> bool {
-    matches!(brand(model), "OnePlus" | "OPPO") && !flag(model, "spatialToggle")
+    Profile(model).hey_melody() && !Profile(model).spatial_toggle()
         && bitmap.is_some_and(|b| !b.is_empty() && !b.contains(&BUDS_SPATIAL))
 }
 
 /// `0x012A` on the buds, or `spatialModes` with `2`: the 3D row takes a type through `0x0422`.
 pub fn spatial_by_type(model: Option<&Value>, bitmap: Option<&[u16]>) -> bool {
-    !flag(model, "spatialToggle") && (in_bitmap(bitmap, CMD_QUERY_SPATIAL_TYPE) || spatial_head_tracking(model))
+    !Profile(model).spatial_toggle() && (in_bitmap(bitmap, CMD_QUERY_SPATIAL_TYPE) || spatial_head_tracking(model))
 }
 
 /// `spatialModes` holds the number 2.
 pub fn spatial_head_tracking(model: Option<&Value>) -> bool {
-    model.and_then(|m| m["spatialModes"].as_array()).is_some_and(|a| a.iter().any(|v| v == 2))
+    Profile(model).spatial_head_tracking()
 }
 
 /// `hiRes` model with the codec list command: the row picks a codec instead of a switch.
 pub fn codec_picker(model: Option<&Value>, bitmap: Option<&[u16]>) -> bool {
-    flag(model, "hiRes") && in_bitmap(bitmap, CMD_QUERY_CODEC_LIST)
+    Profile(model).hi_res() && in_bitmap(bitmap, CMD_QUERY_CODEC_LIST)
 }
 
 pub fn eq_presets(model: Option<&Value>, bitmap: Option<&[u16]>) -> bool {
-    (1..=4).contains(&model.map_or(0, |m| m["eqKind"].as_i64().unwrap_or(0))) && in_bitmap(bitmap, CMD_SET_EQ)
+    (1..=4).contains(&Profile(model).eq_kind()) && in_bitmap(bitmap, CMD_SET_EQ)
 }
 
 pub fn eq_custom(model: Option<&Value>, bitmap: Option<&[u16]>) -> bool {
-    flag(model, "customEq") && in_bitmap(bitmap, CMD_SAVE_CUSTOM_EQ)
+    Profile(model).custom_eq() && in_bitmap(bitmap, CMD_SAVE_CUSTOM_EQ)
 }
 
 #[cfg(test)]

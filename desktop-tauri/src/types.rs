@@ -246,10 +246,6 @@ pub fn find_model(id: Option<&str>, name: Option<&str>) -> Option<&'static Value
     m.iter().find(|x| by_name(x) && by_id(x)).or_else(|| m.iter().find(by_name)).or_else(|| m.iter().find(by_id))
 }
 
-/// The brand: the first word of the name (OnePlus, OPPO, realme, DIZO), the phone's `ModelCatalog.brand`. Vendor rules
-/// that differ by brand read it here. Code tests no model name.
-pub fn brand(model: Option<&Value>) -> &str { model.and_then(|m| m["name"].as_str()).unwrap_or("").split(' ').next().unwrap_or("") }
-
 pub fn is_known_name(name: &str) -> bool { models().iter().any(|m| m["name"].as_str() == Some(name)) }
 
 #[derive(Default, Clone)]
@@ -282,7 +278,7 @@ fn mode_of(v: &Value) -> Option<(&'static str, u8)> {
 impl AncModes {
     /// A model without `ancModes` (or none detected) gets no modes: a wrong bit sets another mode silently.
     pub fn of(model: Option<&Value>) -> AncModes {
-        model.and_then(|m| m["ancModes"].as_array()).map(|a| Self::parse(a)).unwrap_or_default()
+        crate::profile::Profile(model).anc_modes().map(|a| Self::parse(a)).unwrap_or_default()
     }
 
     fn parse(modes: &[Value]) -> AncModes {
@@ -376,11 +372,11 @@ impl Preset {
 
 /// `customEqMax`, else 3.
 pub fn eq_max_custom(model: Option<&Value>) -> usize {
-    model.and_then(|m| m["customEqLimit"].as_u64()).filter(|&n| n > 0).unwrap_or(3) as usize
+    crate::profile::Profile(model).custom_eq_limit()
 }
 
 pub fn eq_model_freqs(model: Option<&Value>) -> Vec<u16> {
-    model.and_then(|m| m["customEqBands"].as_array())
+    crate::profile::Profile(model).custom_eq_bands()
         .map(|a| a.iter().filter_map(|f| f.as_u64().map(|f| f as u16)).collect())
         .unwrap_or_else(|| EQ_DEFAULT_FREQS.to_vec())
 }
@@ -402,14 +398,14 @@ pub fn eq_builtins(model: Option<&Value>, firmware: Option<&str>) -> Vec<(u8, &'
         }
         None => buds4.as_array().unwrap().clone(),
     };
-    let flag = |k: &str| model.is_some_and(|m| m[k] == 1);
-    let alt = flag("eqAltNames") || model.is_some_and(|m| m["eqKind"].as_i64() == Some(2));
+    let p = crate::profile::Profile(model);
+    let alt = p.eq_alt_names() || p.eq_kind() == 2;
     modes.iter().filter_map(|m| {
         let key = match m["mode"].as_i64()? {
             1 => if alt { "eq_nature_balance" } else { "eq_classic" },
             2 => if alt { "eq_bass_boost" } else { "eq_dynamic_bass" },
             3 | 14 | 32 => "eq_clear_vocals",
-            4 => if flag("eqGentle4") { "eq_gentle" } else { "eq_clear" },
+            4 => if p.eq_gentle4() { "eq_gentle" } else { "eq_clear" },
             5 | 35 => "eq_default",
             6 | 36 => "eq_dyn_simple",
             7 | 37 => "eq_dyn_warm",

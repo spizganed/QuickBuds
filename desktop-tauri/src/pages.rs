@@ -26,7 +26,7 @@ pub fn strings() -> Value {
 
 fn wear_offered(s: &Snapshot) -> bool {
     s.features.iter().any(|f| f.0 == 0x04)
-        || s.model.is_some_and(|m| m["confirmed"].as_array().is_some_and(|c| c.iter().any(|x| x.as_str() == Some("wear"))))
+        || crate::profile::Profile(s.model).confirmed("wear")
 }
 
 fn game_label(v: u8) -> Option<String> {
@@ -52,13 +52,13 @@ const HIRES_CODECS: [&str; 6] = ["lhdc5", "lhdc", "ldac", "aptx-adaptive", "aptx
 /// The known issues of the current earbuds: the model's `knownIssues`, Hi-Res with 3D audio when both are offered and are
 /// not one switch each, and Hi-Res on a model whose `codecs` names no high-quality codec. Each is (title, body).
 fn issues(s: &Snapshot) -> Value {
-    let listed = |key: &str| s.model.is_some_and(|m| m["knownIssues"].as_array().is_some_and(|k| k.iter().any(|x| x.as_str() == Some(key))));
+    let listed = |key: &str| crate::profile::Profile(s.model).known_issue(key);
     let offered = |id: u8| s.features.iter().any(|f| f.0 == id);
-    let both = offered(FEATURE_HIRES) && offered(FEATURE_SPATIAL) && s.model.map_or(true, |m| m["spatialToggle"] != 1);
+    let both = offered(FEATURE_HIRES) && offered(FEATURE_SPATIAL) && !crate::profile::Profile(s.model).spatial_toggle();
     let hires_row = offered(FEATURE_HIRES) || home_logic::codec_picker(s);
-    let no_codec = hires_row && s.model.is_some_and(|m| m["codecs"].as_array().is_some_and(|c| {
+    let no_codec = hires_row && crate::profile::Profile(s.model).codecs().is_some_and(|c| {
         !c.iter().any(|x| x.as_str().is_some_and(|t| HIRES_CODECS.contains(&t)))
-    }));
+    });
     let mut out = vec![];
     if listed("spatial_silent") { out.push(json!({ "title": tr("issue_spatial_silent_title"), "body": tr("issue_spatial_silent_body") })); }
     if both { out.push(json!({ "title": tr("issue_hires_spatial_title"), "body": tr("issue_hires_spatial_body") })); }
@@ -193,7 +193,7 @@ pub fn models_json(s: &Snapshot) -> Value {
 
 /// A device-manager function of this model (`dualDevice`), on buds that take `0x0429`.
 fn dual_has(s: &Snapshot, f: &str) -> bool {
-    s.model.and_then(|m| m["dualDevice"].as_array()).is_some_and(|l| l.iter().any(|x| x == f)) && (s.caps.supports(CMD_MULTI_CONNECT) || s.manual)
+    crate::profile::Profile(s.model).dual_device(f) && (s.caps.supports(CMD_MULTI_CONNECT) || s.manual)
 }
 
 /// The rows shown: only connected devices, every device with the device manager.
@@ -212,7 +212,7 @@ pub fn dual_json(s: &Snapshot) -> Value {
         (Some(m), None) => m.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":"),
     };
     json!({
-        "triple": s.model.is_some_and(|m| m["tripleDevice"] == 1),
+        "triple": crate::profile::Profile(s.model).triple_device(),
         "manages": manages, "hasPreferred": dual_has(s, "setPriorityDevice"), "preferred": preferred, "preferredCur": idx.map_or(0, |i| i + 1),
         "preferredChoices": std::iter::once(tr("dual_preferred_auto")).chain(s.devices.iter().map(|d| d.name.clone())).collect::<Vec<_>>(),
         "devices": dual_shown(s).iter().map(|d| json!({

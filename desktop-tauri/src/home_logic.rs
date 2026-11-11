@@ -27,7 +27,7 @@ pub(crate) const ROWS: &[(u8, Option<&str>, &str, &str, &str, Option<&str>, bool
 ];
 
 /// Our `spatialToggle` key (realme): Hi-Res and 3D audio are written alone, never together (PROTOCOL.md section 18).
-pub(crate) fn exclusive(s: &Snapshot) -> bool { !s.model.is_some_and(|m| m["spatialToggle"] == 1) }
+pub(crate) fn exclusive(s: &Snapshot) -> bool { !crate::profile::Profile(s.model).spatial_toggle() }
 
 /// 3D audio as HeyMelody picks it (PROTOCOL.md section 18): buds whose bitmap has `0x012A` (or a hand-picked model with head
 /// tracking) take a type through `0x0422`, the rest feature `1B`.
@@ -36,7 +36,7 @@ pub(crate) fn spatial_by_type(s: &Snapshot) -> bool { crate::row_rules::spatial_
 /// The game-mode id the buds write and read. A model's `gameId` wins, for a model whose capture proves another id
 /// (PROTOCOL.md section 16).
 pub(crate) fn game_id(s: &Snapshot) -> u8 {
-    s.model.and_then(|m| m["gameId"].as_u64()).filter(|&g| g > 0).map_or_else(|| s.caps.game_mode_id(), |g| g as u8)
+    crate::profile::Profile(s.model).game_id().unwrap_or_else(|| s.caps.game_mode_id())
 }
 
 /// A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect, and only OPPO and OnePlus

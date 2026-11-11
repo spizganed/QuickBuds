@@ -87,18 +87,18 @@ impl Model {
     }
 
     pub(crate) fn parse(json: &Value) -> Model {
-        let flag = |k: &str| json[k] == 1;
-        let control: Vec<&Value> = json["gestures"].as_array().into_iter().flatten().collect();
-        let long_press = json["holdMask"].as_i64().unwrap_or(0);
+        let p = crate::profile::Profile(Some(json));
+        let control: Vec<&Value> = p.gestures().into_iter().flatten().collect();
+        let long_press = p.hold_mask();
         let mut m = Model { hold_min: 1, ..Default::default() };
         for (g, (_, _, actions, multi, _)) in GESTURES.iter().enumerate() {
             let Some(entry) = control.iter().find(|e| e["gesture"].as_i64().is_some_and(|a| actions.contains(&a))) else { continue };
             if *multi {
-                let Some(bits) = hold_bits(json, flag("holdAncOne").then_some(&mut m.level_bits)) else { continue };
+                let Some(bits) = hold_bits(json, p.hold_anc_one().then_some(&mut m.level_bits)) else { continue };
                 m.rows.push((g, bits.iter().map(|b| b.0).collect()));
                 m.hold_bits = bits;
                 m.hold_min = entry["minSelected"].as_u64().filter(|n| *n > 0).map(|n| n as usize)
-                    .unwrap_or(if brand(Some(json)) == "OnePlus" || long_press != 0 { 2 } else { 1 });
+                    .unwrap_or(if p.brand() == "OnePlus" || long_press != 0 { 2 } else { 1 });
             } else {
                 let support = entry["options"].as_i64().unwrap_or(0);
                 let options: Vec<usize> = ORDER.iter().filter(|b| support & **b != 0)
@@ -107,14 +107,14 @@ impl Model {
             }
         }
         // A callControl row is only a choice if it offers None (512).
-        let call: Vec<&Value> = json["callGestures"].as_array().into_iter().flatten().collect();
+        let call: Vec<&Value> = p.call_gestures().into_iter().flatten().collect();
         m.on_call = (0..ON_CALL.len()).filter(|&i| call.iter().any(|c| c["gesture"].as_i64() == Some(ON_CALL[i].4)
             && c["options"].as_i64().unwrap_or(0) & 512 != 0)).collect();
-        m.old_track = flag("oldTrackBytes");
+        m.old_track = p.old_track_bytes();
         m.per_bud = long_press != 0;
-        m.shared_mask = json["sharedHold"].as_i64() == Some(1);
-        m.one_button = json["oneButton"].as_i64() == Some(1);
-        m.both_hold = json["bothHold"].as_i64() == Some(1);
+        m.shared_mask = p.shared_hold();
+        m.one_button = p.one_button();
+        m.both_hold = p.both_hold();
         m.hold_choices = if long_press == 0 { vec![] } else { [512, HOLD_NOISE, 1, 8192].into_iter().filter(|b| long_press & b != 0).collect() };
         m
     }
@@ -160,7 +160,7 @@ impl Model {
 /// With `level_bits` (Buds Pro), the levels 3 / 4 / 7 become one "ANC".
 pub(crate) fn hold_bits(json: &Value, mut level_bits: Option<&mut Vec<u8>>) -> Option<Vec<(usize, u8)>> {
     let mut bits: Vec<(usize, u8)> = Vec::new();
-    for mode in json["ancModes"].as_array()? {
+    for mode in crate::profile::Profile(Some(json)).anc_modes()? {
         if mode["decideByEarDevice"].as_bool().unwrap_or(false) { continue; }
         let (t, bit) = (mode["mode"].as_i64()?, mode["slot"].as_u64()? as u8);
         if let Some(l) = level_bits.as_deref_mut().filter(|_| [3, 4, 7].contains(&t)) {

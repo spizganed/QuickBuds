@@ -96,7 +96,7 @@ fn start() {
     let uid = (random() % 0x7FFF_FFFE) as u32 + 1;
     st(|t| { t.uid = uid; t.scan_data.clear(); t.warned = false; });
     // Ear scan only where the model list has it (`hearingScan`).
-    if s.model.is_some_and(|m| m["hearingScan"] == 1) && s.caps.supports(CMD_HEARING_SCAN_DATA) {
+    if crate::profile::Profile(s.model).hearing_scan() && s.caps.supports(CMD_HEARING_SCAN_DATA) {
         st(|t| t.step = Step::Scan);
         show("golden_scanning", Some("golden_scan_hint"), Button::None, false);
         send(vec![cmd::ear_scan(true, uid)]);

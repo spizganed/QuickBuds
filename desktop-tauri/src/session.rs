@@ -388,7 +388,7 @@ impl<'a> Conn<'a> {
     /// answers with its own counter, so the newest outstanding engine request is the one that the reply answers.
     fn take_engine_seq(&self, sync: &mut Sync, seq: u8) -> Option<u32> {
         if let Some(engine) = sync.wire.remove(&seq) { return Some(engine); }
-        if !self.s.model.is_some_and(|m| m["seqless"] == 1) { return None; }
+        if !crate::profile::Profile(self.s.model).seqless() { return None; }
         let wire = *sync.wire.iter().max_by_key(|(_, e)| **e)?.0;
         log("NOTE", Vec::new(), Some(format!("SYNC: reply seq=0x{seq:02X} pairs with request seq=0x{wire:02X} (seqless model)")));
         sync.wire.remove(&wire)
@@ -662,7 +662,7 @@ impl<'a> Conn<'a> {
             self.pump(120, sync)?;
         }
         // realme Link hands 3D audio to the buds on every connect; else the `1B` switch can do nothing (issue #9).
-        if self.s.model.is_some_and(|m| m["spatialToggle"] == 1) && self.s.caps.supports(CMD_SPATIAL_SOURCE) {
+        if crate::profile::Profile(self.s.model).spatial_toggle() && self.s.caps.supports(CMD_SPATIAL_SOURCE) {
             self.tx(cmd::spatial_source(0))?;
             self.pump(120, sync)?;
         }
@@ -721,7 +721,7 @@ impl<'a> Conn<'a> {
                         // One engine operation: the switch moves when the buds push the state.
                         let key = crate::home_logic::game_id(&self.s);
                         // A model whose buds apply the write and never push sets "gameConfirm":"read" (T300, T310).
-                        let confirm = if self.s.model.is_some_and(|m| m["gameConfirm"] == "read") { Confirm::Read } else { Confirm::Push };
+                        let confirm = if crate::profile::Profile(self.s.model).game_confirm_read() { Confirm::Read } else { Confirm::Push };
                         log("NOTE", Vec::new(), Some(format!("SYNC: tap key=0x{key:02X} on={on} confirm={confirm:?}")));
                         let op = Operation { key, writes: vec![(key, on as u8)], confirm, restarts: false };
                         self.exec(sync.engine.tap(op, now_ms()), sync)?;
