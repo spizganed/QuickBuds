@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home tile: battery (SPEC 3.1). Cannot be hidden. BudsStatusView is added to statusSlot in code. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/batteryCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="14dp">
+
+    <FrameLayout
+        android:id="@+id/statusSlot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- The device name, under the rings (moved out of the header 2026-09-27). -->
+    <TextView
+        android:id="@+id/deviceNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/default_device_name"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/appColorTextSecondary" />
+</LinearLayout>

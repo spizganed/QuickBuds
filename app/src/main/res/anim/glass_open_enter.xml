@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Glass: a screen opens by rising a little and fading in. -->
+<set xmlns:android="http://schemas.android.com/apk/res/android" android:interpolator="@android:interpolator/decelerate_cubic">
+    <alpha android:fromAlpha="0" android:toAlpha="1" android:duration="240" />
+    <translate android:fromYDelta="4%" android:toYDelta="0" android:duration="300" />
+</set>

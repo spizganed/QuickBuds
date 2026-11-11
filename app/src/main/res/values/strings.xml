@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">QuickBuds</string>
+
+    <!-- Device title shown before the buds report their name. -->
+    <string name="default_device_name" translatable="false">OnePlus Buds 4</string>
+
+    <!-- Widget picker label. Without a label on the provider receiver some launchers
+         show a blank or unnamed entry, or fail the entry outright. -->
+    <string name="widget_name" translatable="false">QuickBuds</string>
+
+    <!-- Main screen header actions (icon buttons) -->
+    <string name="action_dev_tools">Dev tools</string>
+    <string name="desktop_nav_overview">Overview</string>
+    <string name="desktop_nav_app_settings">App settings</string>
+    <string name="desktop_autostart_title">Start with your computer</string>
+    <string name="desktop_autostart_sub">Opens in the tray when you sign in</string>
+    <string name="desktop_devtools_sub">Show Dev tools in the menu on the left</string>
+    <string name="desktop_copy_log">Copy log</string>
+    <string name="desktop_dual_empty">Connect a device to show it here</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Connection status pill in the header. Short by necessity: it sits beside the
+         device name and must not crowd it out. -->
+    <string name="conn_on">Connected</string>
+    <string name="conn_off">Disconnected</string>
+    <string name="conn_action_connect">Connect</string>
+    <string name="conn_action_disconnect">Disconnect</string>
+    <string name="conn_connecting">Connecting…</string>
+    <string name="conn_disconnecting">Disconnecting…</string>
+    <string name="conn_status_desc">Connection status</string>
+
+    <!-- ==================== Redesigned home screen ==================== -->
+
+
+    <!-- ANC mode chooser. Title is just "ANC"; the options are the three strengths
+         in plain words, not the protocol's long "Noise cancelling - Light" form. -->
+    <!-- Status card (BudsStatusView). -->
+    <string name="status_left">Left</string>
+    <string name="status_case">Case</string>
+    <string name="status_right">Right</string>
+    <string name="status_in_ear">In ear</string>
+    <string name="status_in_case">In case</string>
+    <string name="status_out">Out of ear</string>
+
+    <!-- Noise control (AncSegmentedView). Segment labels must fit a quarter of the screen. -->
+    <string name="anc_section">Noise control</string>
+    <string name="anc_seg_off">Off</string>
+    <string name="anc_seg_anc">Noise cancel</string>
+    <string name="anc_need_ear">Put an earbud in to change noise control</string>
+    <string name="anc_seg_adapt">Adaptive</string>
+    <string name="anc_seg_trans">Transparency</string>
+
+    <string name="anc_mode_low">Low</string>
+    <string name="anc_mode_medium">Medium</string>
+    <string name="anc_mode_high">High</string>
+    <string name="anc_mode_smart">Smart</string>
+
+    <!-- Settings rows: label and one-line description. -->
+    <string name="row_game_title">Low latency mode</string>
+    <string name="row_game_sub">Stays in sync with video</string>
+    <string name="row_hires_title">High-quality audio</string>
+    <string name="row_hires_sub">Raises the bitrate and sampling rate, up to 192 kHz</string>
+    <string name="row_hires_sub_off">Standard bitrate and sampling rate (48 kHz)</string>
+    <string name="row_hires_sub_codec">The phone plays %1$s. For the full effect choose %2$s in the phone\'s Bluetooth settings</string>
+    <string name="hires_needs_codec">First choose %2$s for these earbuds in the phone\'s Bluetooth settings. The phone plays %1$s now.</string>
+    <string name="codec_dialog_title">Earbuds will reconnect</string>
+    <string name="codec_dialog_accept">Accept</string>
+    <string name="codec_dialog_deny">Deny</string>
+    <string name="codec_msg_reconnect">Switching audio quality disconnects the earbuds for a few seconds while they reconnect.</string>
+    <string name="codec_msg_hires_drops_spatial">High-quality audio doesn\'t work with 3D audio. Turning it on turns 3D audio off, and the earbuds will disconnect for a few seconds.</string>
+    <string name="codec_msg_spatial_drops_hires">3D audio doesn\'t work with high-quality audio. Turning it on switches to standard quality, and the earbuds will disconnect for a few seconds.</string>
+    <string name="row_spatial_title">3D audio</string>
+    <string name="row_spatial_sub">Spatial sound with head tracking</string>
+    <string name="row_spatial_sub_phone">Your phone makes this effect. Turn it on in the Bluetooth settings of these buds</string>
+    <string name="row_eq_title">Equalizer</string>
+    <string name="row_eq_sub">Sound profiles</string>
+    <string name="row_earbuds_title">Earbud settings</string>
+    <string name="row_earbuds_sub">Gestures, wear detection, find, sounds</string>
+    <string name="row_dual_title">Dual connection</string>
+    <string name="row_dual_sub">Connect two devices at the same time</string>
+    <string name="dual_title">Dual connection</string>
+    <string name="dual_switch_sub">Stay connected to two devices over Bluetooth and switch between them freely</string>
+    <string name="row_triple_title">Triple connection</string>
+    <string name="row_triple_sub">Connect three devices at the same time</string>
+    <string name="triple_switch_sub">Stay connected to three devices over Bluetooth and switch between them freely</string>
+    <string name="dual_section_devices">Connected devices</string>
+    <string name="dual_connected">Connected</string>
+    <string name="dual_connected_this">Connected (this device)</string>
+    <string name="dual_add_title">Add device</string>
+    <string name="dual_add_message">Put the earbuds in the case and press and hold the pairing button for 2 seconds. Then open the Bluetooth device list on the new device and tap the name of the earbuds to pair.</string>
+    <string name="dual_add_ok">OK</string>
+    <string name="earbuds_title">Earbud settings</string>
+    <string name="earbuds_section_sounds">Sounds</string>
+    <string name="earbuds_section_about">About earbuds</string>
+    <string name="row_firmware_title">Firmware version</string>
+    <string name="firmware_dialog_title">Firmware updates</string>
+    <string name="firmware_dialog_body">QuickBuds does not update the earbuds\' firmware: a failed update can leave them unusable. Update them from HeyMelody.</string>
+    <string name="settings_title">Settings</string>
+    <string name="row_wear_title">Wear detection</string>
+    <string name="row_wear_sub">Pause when you take the earbuds out</string>
+    <string name="row_alert_title">Alert sound volume</string>
+    <string name="wear_title">Wear detection</string>
+    <string name="wear_firmware_title">Auto play/pause</string>
+    <string name="wear_firmware_sub">The earbuds pause when either one is taken out and resume when it is back</string>
+    <string name="wear_smart_title">Smart auto-pause (experimental)</string>
+    <string name="wear_smart_sub">Pause only when both earbuds are out. Never auto-plays. Needs the background service</string>
+    <string name="row_find_title">Find my earbuds</string>
+    <string name="row_find_sub">Ring both earbuds</string>
+    <string name="earbuds_section_features">Features</string>
+    <string name="row_vocal_title">Vocal enhancement</string>
+    <string name="row_vocal_sub">Clearer vocals in songs</string>
+    <string name="row_wind_noise_title">Wind noise reduction</string>
+    <string name="row_wind_noise_sub">Less wind noise outdoors</string>
+    <string name="row_game_eq_title">Game equalizer</string>
+    <string name="row_game_eq_sub">Switches the buds to their game sound while a game is open</string>
+    <string name="game_eq_access_title">Usage access needed</string>
+    <string name="game_eq_access_sub">Tap to allow QuickBuds to see which app is open</string>
+    <string name="row_game_sound_title">Game sound effects</string>
+    <string name="row_game_sound_sub">Enhanced sound when a game starts</string>
+    <string name="spatial_fixed">Fixed</string>
+    <string name="spatial_head_tracking">Head tracking</string>
+    <string name="game_sound_type_title">Game sound type</string>
+    <string name="game_sound_type_shooter">Shooting games</string>
+    <string name="game_sound_type_peace">Peacekeeper Elite</string>
+    <string name="report_title">Help make your buds work</string>
+    <string name="row_smart_volume_title">Smart volume</string>
+    <string name="row_smart_volume_sub">Adjusts volume to ambient noise</string>
+    <string name="row_volume_enhancer_title">Volume enhancer</string>
+    <string name="row_volume_enhancer_sub">Raises the loudness of the earbuds</string>
+    <string name="row_adaptive_volume_title">Adaptive volume</string>
+    <string name="row_adaptive_volume_sub">Follows changes in ambient noise</string>
+    <string name="row_adaptive_ear_title">Adaptive left and right</string>
+    <string name="row_adaptive_ear_sub">Detects which ear each bud is in</string>
+    <string name="row_sleep_title">Pause when asleep</string>
+    <string name="row_sleep_sub">Stops music if you fall asleep</string>
+    <string name="row_lost_title">Lost reminder</string>
+    <string name="row_lost_sub">Reminds you when an earbud may be lost</string>
+    <string name="row_find_phone_title">Find phone</string>
+    <string name="row_find_phone_sub">An earbud gesture rings this phone</string>
+    <string name="find_phone_ringing">Your earbuds are ringing this phone</string>
+    <string name="row_auto_answer_title">Auto-answer calls</string>
+    <string name="row_auto_answer_sub">The earbuds answer incoming calls automatically</string>
+    <string name="row_virtual_bass_title">Virtual bass</string>
+    <string name="row_virtual_bass_sub">Deeper bass from the earbuds\' sound processing</string>
+    <string name="row_power_saving_title">Power saving</string>
+    <string name="row_power_saving_sub">Turns off extras for longer battery life</string>
+    <string name="power_saving_confirm">The earbuds will restart.</string>
+    <string name="row_speech_title">Conversation awareness</string>
+    <string name="row_speech_sub">Lowers the volume while you speak</string>
+    <string name="row_long_press_volume_title">Touch and hold volume</string>
+    <string name="row_long_press_volume_sub">Hold an earbud to change the volume</string>
+    <string name="row_swift_pair_title" translatable="false">Windows Swift Pair</string>
+    <string name="row_swift_pair_sub">Pairing prompt on nearby Windows PCs</string>
+    <string name="row_hearing_optimize_title">Adaptive sound</string>
+    <string name="row_hearing_optimize_sub">Tunes the sound to your ears and fit</string>
+    <string name="hearing_optimize_confirm">This may reduce battery life.</string>
+    <string name="row_head_motion_title">Head gestures</string>
+    <string name="row_head_motion_sub">Nod or shake to answer or decline calls</string>
+    <string name="head_motion_type_title">Answer calls by</string>
+    <string name="head_motion_nod">Nodding</string>
+    <string name="head_motion_shake">Shaking</string>
+    <string name="row_update_title">App update</string>
+
+    <!-- Find my earbuds screen. -->
+    <string name="find_title">Find my earbuds</string>
+    <string name="find_hint">Plays a loud tone on both earbuds at once.</string>
+    <string name="find_stop">Stop</string>
+    <string name="find_play">Play sound</string>
+    <string name="find_warn_title">Earbuds are in your ears</string>
+    <string name="find_warn_msg">The tone is loud. Take the earbuds out before playing it.</string>
+    <string name="find_warn_play">Play anyway</string>
+
+    <!-- Equalizer placeholder. -->
+    <string name="eq_title">Equalizer</string>
+    <string name="eq_not_connected">Connect the earbuds to see and change the EQ.</string>
+    <string name="eq_recommended">Recommended</string>
+    <string name="eq_balanced">Balanced</string>
+    <string name="eq_clear_vocals">Clear Vocals</string>
+    <string name="eq_bass">Bass</string>
+    <string name="eq_classic">Classic</string>
+    <string name="eq_nature_balance">Nature Balance</string>
+    <string name="eq_dynamic_bass">Dynamic bass</string>
+    <string name="eq_bass_boost">Bass boost</string>
+    <string name="eq_bass_boost_plus">Bass Boost+</string>
+    <string name="eq_bright">Bright</string>
+    <string name="eq_clear">Clear</string>
+    <string name="eq_gentle">Gentle</string>
+    <string name="eq_default">Default</string>
+    <string name="eq_dyn_simple">Dynaudio Simple &amp; Clear</string>
+    <string name="eq_dyn_warm">Dynaudio Warm &amp; Soft</string>
+    <string name="eq_dyn_punchy">Dynaudio Punchy</string>
+    <string name="eq_dyn_real">Dynaudio Real</string>
+    <string name="eq_hisaishi">Tuned by Joe Hisaishi</string>
+    <string name="eq_bold">Bold</string>
+    <string name="eq_enco_x_classic">Enco X Classic</string>
+    <string name="eq_reno_dawn">Reno Featured (Dawn)</string>
+    <string name="eq_hans_zimmer">Hans Zimmer Soundscape Tuning</string>
+    <string name="eq_natural_inspiration">Natural Inspiration</string>
+    <string name="eq_reno_sunrise">Reno Featured (Sunrise Glow)</string>
+    <string name="eq_punchy">Punchy</string>
+    <string name="eq_spacious">Spacious</string>
+    <string name="eq_reno_galaxy">Reno Featured (Purple Galaxy)</string>
+    <string name="eq_ultimate">Ultimate sound</string>
+    <string name="eq_hd_clarity">HD clarity</string>
+    <string name="eq_pure_vocals">Pure vocals</string>
+    <string name="eq_thundering_bass">Thundering bass</string>
+    <string name="eq_pure_raw">Pure raw</string>
+    <string name="eq_deep_bass">Deep bass</string>
+    <string name="eq_pure_bass">Pure bass</string>
+    <string name="eq_dyn_featured">Dynaudio featured</string>
+    <string name="eq_galactic">Galactic Monologue</string>
+    <string name="eq_vibrant">Vibrant</string>
+    <string name="eq_dyn_vocal">Dynaudio vocal</string>
+    <string name="eq_clear_crisp">Clear &amp; crisp</string>
+    <string name="eq_basswave">Bass boost</string>
+    <string name="eq_basswave_sub">Deeper bass that adapts to the music</string>
+    <string name="eq_bass_low">Low frequencies</string>
+    <string name="eq_bass_mid">Medium frequencies</string>
+    <string name="eq_bass_high">High frequencies</string>
+    <string name="eq_custom">Custom</string>
+    <string name="eq_rename">Rename</string>
+    <string name="eq_edit">Edit preset</string>
+    <string name="eq_save">Save</string>
+    <string name="eq_delete">Delete</string>
+    <string name="eq_delete_confirm">Delete \"%1$s\"?</string>
+    <string name="eq_add">New</string>
+
+    <!-- App update. -->
+    <string name="update_title">App update</string>
+    <string name="update_installed">Installed</string>
+    <string name="update_latest">Latest</string>
+    <string name="update_unknown" translatable="false">—</string>
+    <string name="update_check">Check again</string>
+    <string name="update_checking">Checking GitHub releases&#8230;</string>
+    <string name="update_up_to_date">You are on the latest version.</string>
+    <string name="update_available">Version %1$s is available.</string>
+    <string name="update_download">Download</string>
+    <string name="update_downloading">Downloading&#8230; %1$d%%</string>
+    <string name="update_downloaded">Downloaded. Tap Install to hand it to Android.</string>
+    <string name="update_install">Install</string>
+    <string name="update_failed">Could not check for updates: %1$s</string>
+    <string name="update_notes">What\'s new</string>
+    <string name="update_no_notes">No release notes.</string>
+    <string name="update_permission_title">Allow installing updates</string>
+    <string name="update_permission_body">Android needs your permission to install updates from QuickBuds.</string>
+    <string name="update_permission_action">Open settings</string>
+    <string name="update_auto_title">Check for updates</string>
+    <string name="update_auto_sub">Every 6 hours, and when the app opens</string>
+    <string name="update_found_title">QuickBuds %1$s is available</string>
+    <string name="update_found_body">You have %1$s. Download it now?</string>
+    <string name="update_found_view">View</string>
+    <string name="update_later">Later</string>
+
+    <!-- ==================== Earbud gestures (gesture config) ==================== -->
+
+    <!-- Home-screen row that opens this screen. Placed above App update. -->
+    <string name="row_gesture_title">Earbud gestures</string>
+    <string name="row_gesture_sub">Bind taps and slides</string>
+
+    <string name="gesture_title">Earbud gestures</string>
+
+    <!-- Bud selector. Two buttons; the selected one is highlighted. -->
+    <string name="gesture_bud_left">Left</string>
+    <string name="gesture_bud_right">Right</string>
+
+    <!-- Section headers. -->
+    <string name="gesture_section_not_in_call">When not on call</string>
+    <string name="gesture_section_on_call">When on call</string>
+
+    <!-- Gesture names. -->
+    <string name="gesture_single">Single tap</string>
+    <string name="gesture_double">Double tap</string>
+    <string name="gesture_triple">Triple tap</string>
+    <string name="gesture_slide">Slide</string>
+    <string name="gesture_hold">Hold</string>
+    <string name="gesture_both_hold">Hold both earbuds</string>
+    <string name="gesture_extra_long">Extra-long hold</string>
+
+    <!--
+      On-call gestures (btn 0x06). Shared between both buds, so this section has no
+      Left/Right selector unlike the rest of the screen — see PROTOCOL.md §15.
+    -->
+    <string name="gesture_on_call_double_tap">Double tap</string>
+    <string name="gesture_on_call_long_hold">Long hold</string>
+    <string name="gesture_on_call_answer_end">Answer / end call</string>
+    <string name="gesture_on_call_decline">Decline call</string>
+
+    <!-- Actions. -->
+    <string name="gesture_action_none">No action</string>
+    <string name="gesture_action_play_pause">Play/Pause</string>
+    <string name="gesture_action_prev">Previous track</string>
+    <string name="gesture_action_next">Next track</string>
+    <string name="gesture_action_assistant">Voice assistant</string>
+    <string name="gesture_action_game">Game mode</string>
+    <string name="gesture_action_volume">Volume control</string>
+    <string name="gesture_action_switch_track">Switch track</string>
+    <string name="gesture_action_volume_up">Volume up</string>
+    <string name="gesture_action_volume_down">Volume down</string>
+    <string name="gesture_action_switch_device">Switch devices</string>
+    <string name="gesture_action_anc_on">Active noise reduction, last used mode</string>
+    <string name="gesture_action_anc_on_short">ANC</string>
+    <string name="gesture_action_anc_adaptive">Adaptive</string>
+    <string name="gesture_action_anc_transparency">Transparency</string>
+    <string name="gesture_action_anc_off">Off</string>
+
+    <!--
+      SHORT forms, used ONLY by the row summary (not the dialog, which shows the
+      full names above). Tap-and-hold joins up to four actions into one line, so
+      "ANC, Adapt, Trans, Off" fits where the full names wrap — and a wrapped
+      summary makes that row taller than every other row.
+    -->
+    <string name="gesture_action_anc_adaptive_short">Adapt</string>
+    <string name="gesture_action_anc_transparency_short">Trans</string>
+    <string name="gesture_action_anc_off_short">Off</string>
+
+    <string name="gesture_not_set">Not set</string>
+    <string name="gesture_done">Done</string>
+    <!--
+      Shown ONLY when the tap-and-hold selection breaks the rule (exactly one
+      action). Deliberately not a permanent hint: the sheet stays quiet until it has
+      something to say.
+    -->
+    <string name="gesture_hold_rule">1 option selected. Touching and holding will not switch modes.</string>
+
+    <!--
+      The status line, and it must stay TRUE. It used to say the selections were
+      stored on the phone only, because the `function` enum was unknown; that is no
+      longer the case, so leaving it would be a plain lie on screen. The `function`
+      bytes are now measured (see GestureAction) and a change IS written to the buds.
+      UPDATED 2026-09-22: the second sentence used to say the buds alone decide which
+      modes the hold's ANC cycle contains. That was true only because the mask write
+      was not wired yet — it now is (see GestureAction.holdMaskBit, PROTOCOL.md §14), so
+      the sentence would be a lie again if left as it was.
+    -->
+    <string name="gesture_write_note">Changes are sent to the earbuds, then read back to confirm.</string>
+
+    <!-- Misc -->
+    <string name="dialog_close">Close</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="crash_title">QuickBuds crashed last time</string>
+    <string name="crash_saved_to">Saved to:\nDownload/QuickBuds/\n\nThis message appears once. Copy or share it if you want to keep it.</string>
+    <string name="crash_share">Share</string>
+    <string name="crash_share_title">Share crash report</string>
+    <string name="perm_title">Bluetooth permission needed</string>
+    <string name="perm_body">QuickBuds needs the Nearby devices permission to talk to your earbuds. Allow it in Settings, then reopen the app.</string>
+    <string name="perm_action">Open settings</string>
+    <string name="disconnect_title">Disconnect %1$s?</string>
+    <string name="disconnect_body">Audio will stop playing on this phone.</string>
+    <string name="eq_done">Done</string>
+    <string name="theme_title">Themes, colors &amp; styles</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_general">General</string>
+    <string name="settings_app">App</string>
+    <string name="settings_layout_title">Home layout</string>
+    <string name="settings_layout_sub">Reorder and hide rows</string>
+    <string name="layout_title">Edit layout</string>
+    <string name="layout_hint">Hold a row and drag it to move it. Tap the eye to show or hide it. Nothing changes until you tap the check.</string>
+    <string name="layout_show">Show</string>
+    <string name="layout_hide">Hide</string>
+    <string name="layout_done">Apply layout</string>
+    <string name="layout_cancel">Cancel</string>
+    <string name="settings_haptics_title">Haptic feedback</string>
+    <string name="settings_haptics_sub">Vibrate when a setting changes</string>
+    <string name="settings_anc_pick_title">Pick the ANC strength first</string>
+    <string name="settings_anc_pick_sub">Tapping ANC waits for Low, Medium or High. Off: ANC uses the last strength.</string>
+    <string name="settings_clear_battery_title">Hide old battery levels</string>
+    <string name="settings_clear_battery_sub">Clear a level the buds stop reporting, like the case after the lid closes</string>
+    <string name="settings_full_notif_title">Battery in the notification</string>
+    <string name="settings_full_notif_sub">Shows the levels. Off: a small notification without a status bar icon</string>
+    <string name="settings_live_chip_title">Status chip</string>
+    <string name="settings_live_chip_sub">Shows the levels of the buds you wear in the status bar. Needs Android 16. Off: battery rings in the notification</string>
+    <string name="settings_lock_notif_title">Lock the notification</string>
+    <string name="settings_lock_notif_sub">The notification cannot be swiped away. Off: it can be swiped away</string>
+    <string name="settings_background_title">Background service</string>
+    <string name="settings_background_sub">Stay connected with the app closed</string>
+    <string name="settings_background_warn_title">Turn off the background service?</string>
+    <string name="settings_background_warn_body">QuickBuds will only stay connected while the app is open. The widget will not work properly and the earbuds will not reconnect by themselves.</string>
+    <string name="settings_background_warn_action">Turn off</string>
+    <string name="settings_devtools_title">Dev tools button</string>
+    <string name="settings_devtools_sub">Show dev tools in the header</string>
+    <string name="settings_update_sub">Installed %1$s</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_about_sub">Version, licenses, GitHub</string>
+    <string name="about_tagline">Control OnePlus, OPPO and realme earbuds directly over Bluetooth. An alternative to HeyMelody and realme Link.</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_kofi" translatable="false">Ko-fi</string>
+    <string name="about_kofi_desc">Support on Ko-fi</string>
+    <string name="about_github_desc">Source code on GitHub</string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_body">QuickBuds is free software under the GNU General Public License v3.0. It builds on the open reverse-engineering work of OppoPodsManager, OppoPods and Pods-Protocol-Reverse-Engineering; the full credits are on GitHub.</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="theme_builtin">Themes</string>
+    <string name="theme_auto">Match system</string>
+    <string name="theme_auto_sub">%1$s in light mode, %2$s in dark mode</string>
+    <string name="theme_wallpaper">Wallpaper colors</string>
+    <string name="theme_wallpaper_sub">Built-in themes take their colors from your wallpaper</string>
+    <string name="theme_glass_gradient">Background</string>
+    <string name="theme_colors_title">Colors</string>
+    <string name="colors_wallpaper">Wallpaper</string>
+    <string name="colors_accent">Accent</string>
+    <string name="colors_palette">Palette</string>
+    <string name="theme_glass_gradient_sub">A soft gradient behind the glass</string>
+    <string name="glass_bg_midnight">Midnight</string>
+    <string name="glass_bg_aurora">Aurora</string>
+    <string name="glass_bg_sunset">Sunset</string>
+    <string name="glass_bg_ocean">Ocean</string>
+    <string name="glass_bg_accent">Accent color</string>
+    <string name="glass_bg_none">None</string>
+    <string name="theme_oled_black">OLED Black</string>
+    <string name="theme_classic_dark">Classic Dark</string>
+    <string name="theme_white">White</string>
+    <string name="theme_accent">Accent color</string>
+    <string name="theme_accent_sub" translatable="false">%1$s · %2$s</string>
+    <string name="theme_custom">Custom · %1$d of %2$d</string>
+    <string name="theme_new">New preset</string>
+    <string name="theme_new_sub">Starts from the current theme · %1$d slots left</string>
+    <string name="theme_new_sub_one">Starts from the current theme · 1 slot left</string>
+    <string name="theme_new_full">Maximum 3 presets</string>
+    <string name="theme_footer">A preset sets 6 colors: background, card, accent, text, secondary text and outline.</string>
+    <string name="theme_new_name">Custom %1$d</string>
+    <string name="theme_copy_name">%1$s copy</string>
+    <string name="theme_edit">Edit preset</string>
+    <string name="preset_title">Edit preset</string>
+    <string name="preset_name">Name</string>
+    <string name="preset_preview">Preview</string>
+    <string name="preset_colors">Colors</string>
+    <string name="preset_duplicate">Duplicate</string>
+    <string name="preset_delete">Delete</string>
+    <string name="preset_delete_title">Delete %1$s?</string>
+    <string name="preset_delete_active">This preset is in use. The app switches to OLED Black.</string>
+    <string name="token_background">Background</string>
+    <string name="token_card">Card</string>
+    <string name="token_accent">Accent</string>
+    <string name="token_text">Text</string>
+    <string name="token_text_secondary">Secondary text</string>
+    <string name="token_outline">Outline</string>
+    <string name="contrast_warning">%1$s:1 on %2$s · may be hard to read</string>
+    <string name="preset_hue">Hue</string>
+    <string name="preset_saturation">Saturation</string>
+    <string name="preset_brightness">Brightness</string>
+    <string name="preset_recent">Recent</string>
+    <string name="preset_hex">Hex colour</string>
+
+    <!-- Widgets and widget settings -->
+    <string name="widget_style_title">Style</string>
+    <string name="widget_background_title">Widget background</string>
+    <string name="widget_background_sub">Off: the widget sits on your wallpaper</string>
+    <string name="widget_open_app">Open QuickBuds</string>
+    <string name="widget_cycle">Noise cycle</string>
+    <string name="tile_on">On</string>
+    <string name="tile_off">Off</string>
+    <string name="cycle_intro">Pick at least 2 modes. A tap on the Noise control tile or the Noise cycle button moves to the next mode, in this order.</string>
+    <string name="tile_hold_hint">Hold the %1$s tile to pick any noise mode from a list.</string>
+    <string name="settings_cycle_sub">Modes for the tile and the widget button</string>
+    <string name="settings_tile_title">Quick Settings tile</string>
+    <string name="widget_cycle_name">QuickBuds noise cycle</string>
+    <string name="widget_tap_opens_title">Tap opens QuickBuds</string>
+    <string name="widget_tap_opens_sub">A tap on the widget opens the app</string>
+    <string name="widget_style_classic" translatable="false">QuickBuds</string>
+    <string name="widget_style_nothing" translatable="false">Pixel art</string>
+    <string name="widget_style_material" translatable="false">Material</string>
+    <string name="widget_style_glass" translatable="false">Glass</string>
+    <string name="widget_mode_anc_low">ANC Low</string>
+    <string name="widget_mode_anc_medium">ANC Medium</string>
+    <string name="widget_mode_anc_high">ANC High</string>
+    <string name="widget_mode_anc_smart">ANC Smart</string>
+    <string name="widget_low_latency">Low latency</string>
+    <string name="widget_battery_name">QuickBuds battery</string>
+    <string name="widget_strip_name">QuickBuds battery strip</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_sub">App language</string>
+    <string name="language_system">System default</string>
+
+    <!-- Model list (ModelActivity) -->
+    <string name="model_brand_oneplus" translatable="false">OnePlus</string>
+    <string name="model_brand_oppo" translatable="false">OPPO</string>
+    <string name="model_brand_realme" translatable="false">realme</string>
+    <string name="model_brand_dizo" translatable="false">DIZO</string>
+    <string name="model_title">Model</string>
+    <string name="model_auto">Automatic</string>
+    <string name="model_detected">Detected: %1$s</string>
+    <string name="model_not_detected">Not detected yet</string>
+    <string name="no_buds_paired">No paired OPPO, OnePlus or realme buds found. Pair them in Bluetooth settings first.</string>
+    <!-- Hearing profile (HeyMelody's "Golden Sound", renamed: not our trademark) and the earbud fit test ([VENDOR] wording where HeyMelody has it) -->
+    <string name="row_golden_title">Hearing profile</string>
+    <string name="row_golden_sub">Sound tuned to your hearing test</string>
+    <string name="fit_title">Earbud fit test</string>
+    <string name="fit_sub">Choose ear tips that make a good seal with your ear canals for better noise canceling.</string>
+    <string name="fit_hint">Ensure that your ear tips make a good seal with your ear canals for better noise canceling. Tap \"Play\" to start the test.</string>
+    <string name="fit_play">Play</string>
+    <string name="fit_playing">Playing...</string>
+    <string name="fit_keep">Keep your earbuds inserted</string>
+    <string name="fit_good">Good</string>
+    <string name="fit_average">Average</string>
+    <string name="fit_poor">Poor</string>
+    <string name="fit_perfect">Perfect fit!</string>
+    <string name="fit_adjust">Adjust your earbuds</string>
+    <string name="fit_adjust_tips">Adjust the position of the %1$s or try a different-sized ear tip, and then perform the test again.</string>
+    <string name="fit_both">earbuds</string>
+    <string name="fit_left">left earbud</string>
+    <string name="fit_right">right earbud</string>
+    <string name="fit_again">Check again</string>
+    <string name="fit_insert">Insert your earbuds</string>
+    <string name="fit_failed">Test failed. Please try again.</string>
+    <string name="golden_profiles">Profiles</string>
+    <string name="golden_none">No profiles yet</string>
+    <string name="golden_test_row">Take the hearing test</string>
+    <string name="golden_test_sub">About 3 minutes, in a quiet place</string>
+    <string name="golden_test_title">Hearing test</string>
+    <string name="golden_prepare">Find a quiet place, pause any audio and put both earbuds in. You will hear 6 tones in each ear.</string>
+    <string name="golden_start">Start</string>
+    <string name="golden_scanning">Scanning your ears</string>
+    <string name="golden_scan_hint">Keep still for a few seconds.</string>
+    <string name="golden_left">Left ear</string>
+    <string name="golden_right">Right ear</string>
+    <string name="golden_step">Tone %1$d of 6. Move the slider to where the tone only just disappears.</string>
+    <string name="golden_next">Next</string>
+    <string name="golden_finish">Finish</string>
+    <string name="golden_loud">This is loud. Lower it if it is uncomfortable.</string>
+    <string name="golden_creating">Creating your profile</string>
+    <string name="golden_saved">Profile saved</string>
+    <string name="golden_saved_msg">This profile is on now.</string>
+    <string name="golden_stopped">Test stopped</string>
+    <string name="golden_stopped_music">Audio started playing. Pause it and try again.</string>
+    <string name="golden_stopped_wear">An earbud came out. Put both in and try again.</string>
+    <string name="golden_scan_failed">The ear scan did not finish. Try again.</string>
+    <string name="golden_refused">The earbuds did not start the test. Try again.</string>
+    <string name="golden_again">Try again</string>
+    <string name="golden_boost">Boost</string>
+    <string name="pnc_title">Personalized noise cancellation</string>
+    <string name="pnc_sub">Tuned to your ear canals and fit</string>
+    <string name="pnc_wear">Wear both earbuds first</string>
+    <string name="pnc_stored_title">Use your previous result?</string>
+    <string name="pnc_stored_body">These earbuds kept the result of an earlier ear canal test. You can use it now or test again.</string>
+    <string name="pnc_use">Use</string>
+    <string name="pnc_test_again">Test again</string>
+    <string name="pnc_test_title">Ear canal test</string>
+    <string name="pnc_test_body">Pause any audio, stay somewhere with a little background noise and keep still during the test.</string>
+    <string name="pnc_start">Start test</string>
+    <string name="pnc_testing">Testing… The noise cancellation may sound different for a moment.</string>
+    <string name="pnc_done">Personalized noise cancellation is on</string>
+    <string name="pnc_failed">Test failed</string>
+    <string name="pnc_retry">Try again</string>
+    <string name="pnc_fail_quiet">It is too quiet here. Try somewhere with a little background noise.</string>
+    <string name="pnc_fail_fit">Adjust the earbuds or change the ear tip size, then try again.</string>
+    <string name="pnc_fail_wind">Avoid strong wind during the test.</string>
+    <string name="pnc_fail_still">Keep still: no talking, swallowing or head movements during the test.</string>
+    <string name="pnc_fail_audio">Do not play audio or take calls during the test.</string>
+    <string name="tap_level_title">Tap sensitivity</string>
+    <string name="tap_level_hint">For double and triple taps. A lower level triggers more easily.</string>
+    <string name="tap_level_warning">Below the default level, taps can trigger by accident, for example with a hat or glasses, when touching your hair or during exercise.</string>
+    <string name="dual_section_all">Devices</string>
+    <string name="dual_not_connected">Not connected</string>
+    <string name="dual_connect_q">Connect %1$s?</string>
+    <string name="dual_disconnect_q">Disconnect %1$s?</string>
+    <string name="dual_preferred">Preferred device</string>
+    <string name="dual_preferred_auto">Automatic</string>
+    <string name="dual_preferred_sub">When it is in range, the earbuds connect to it first.</string>
+    <string name="widget_pages_name">QuickBuds battery and controls</string>
+    <string name="widget_controls_name">QuickBuds controls</string>
+    <string name="widget_settings_title">Widget settings</string>
+    <string name="widget_setup_title">Widget buttons</string>
+    <string name="widget_setup_hint">Pick up to 4 buttons. The widget shows them in this order.</string>
+    <string name="problem_title">Feedback</string>
+    <string name="problem_sub">Send feedback to the developer</string>
+    <string name="problem_intro">No account needed. Nothing is sent until you tap Send.</string>
+    <string name="problem_model">Earbuds model</string>
+    <string name="problem_category">What is wrong</string>
+    <string name="problem_cat_ui">Layout or look</string>
+    <string name="problem_cat_lag">Slow or laggy</string>
+    <string name="problem_cat_connection">Connection</string>
+    <string name="problem_cat_feature">A feature does not work</string>
+    <string name="problem_cat_battery">Battery</string>
+    <string name="problem_cat_other">Something else</string>
+    <string name="problem_description">Description</string>
+    <string name="problem_description_hint">What did you do, and what happened?</string>
+    <string name="problem_log_title">Attach the log</string>
+    <string name="problem_log_sub">Without Bluetooth addresses or this phone\'s name</string>
+    <string name="problem_preview">See what is sent</string>
+    <string name="problem_send">Send</string>
+    <string name="problem_sending">Sending…</string>
+    <string name="problem_sent">Feedback sent. Thank you!</string>
+    <string name="problem_failed">Could not send the feedback. Check the internet connection and try again.</string>
+    <string name="problem_unsupported">QuickBuds supports OnePlus, OPPO and realme earbuds only. Pick your model from the list.</string>
+    <string name="problem_supported_list">See all supported earbuds</string>
+    <string name="problem_log_empty">The log is empty: your buds did not connect yet. Connect your buds first, then send your feedback.</string>
+    <string name="problem_capture_hint">A feature does not work or is missing? The app log is not enough. Open a GitHub issue with a Bluetooth snoop log of HeyMelody or realme Link and a screen recording.</string>
+    <string name="problem_capture_link">How to make a snoop log</string>
+    <string name="capture_ask_title">Help fix this feature</string>
+    <string name="capture_ask_body">The app log is not enough to fix a feature that does not work or is missing. Open a GitHub issue with a Bluetooth snoop log of HeyMelody or realme Link, and a screen recording of that app. The issue form shows the steps.</string>
+    <string name="capture_ask_open">Open a GitHub issue</string>
+    <string name="test_title">Test my earbuds</string>
+    <string name="test_sub">Try each feature and send the result</string>
+    <string name="test_ask_body">QuickBuds is not confirmed on these earbuds yet. A short test shows what works. Nothing is sent until you tap Send.</string>
+    <string name="test_ask_later">Not now</string>
+    <string name="test_intro">Start reconnects the earbuds and clears the log. Then open each feature with Try it now, try it, come back and mark it. This test only checks what QuickBuds already does. To add or fix a feature, send a Bluetooth snoop log of HeyMelody or realme Link.</string>
+    <string name="test_start">Start</string>
+    <string name="test_restart">Start again</string>
+    <string name="test_reconnecting">Reconnecting…</string>
+    <string name="test_failed">The earbuds did not reconnect. Check that they are on and near, then try again.</string>
+    <string name="test_section_check">Automatic check</string>
+    <string name="test_check_battery">Battery level</string>
+    <string name="test_check_features">Feature list</string>
+    <string name="test_check_states">Feature states</string>
+    <string name="test_answered">Answered</string>
+    <string name="test_no_answer">No answer</string>
+    <string name="test_section_diff">Diagnosis</string>
+    <string name="test_diff_missing">Asked, no answer: %1$s</string>
+    <string name="test_diff_extra">Answered, not asked: %1$s</string>
+    <string name="test_diff_hidden">Marked works, no row: %1$s</string>
+    <string name="test_section_features">Features</string>
+    <string name="test_try">Try it now</string>
+    <string name="test_step_battery">Open the home screen and compare the battery levels with the earbuds.</string>
+    <string name="test_step_anc">On the home screen, change Noise control to another mode.</string>
+    <string name="test_step_wind">On the home screen, turn Wind noise reduction on and off.</string>
+    <string name="test_step_game">On the home screen, turn Low latency on and off.</string>
+    <string name="test_step_hires">On the home screen, turn High-quality audio on and off.</string>
+    <string name="test_step_spatial">On the home screen, turn 3D audio on and off.</string>
+    <string name="test_step_golden">Open Hearing profile and turn it on.</string>
+    <string name="test_step_eq">Open Equalizer and pick another preset.</string>
+    <string name="test_step_dual">On the home screen, turn Dual connection on and off.</string>
+    <string name="test_step_gestures">Open Gestures and change one gesture.</string>
+    <string name="test_step_wear">Open Earbud settings and turn Wear detection on and off.</string>
+    <string name="test_step_find">Open Earbud settings and tap Find my earbuds.</string>
+    <string name="test_works">Works</string>
+    <string name="test_broken">Doesn\'t work</string>
+    <string name="test_skip">Skip</string>
+    <string name="test_skipped">Skipped</string>
+    <string name="test_not_marked">Not marked</string>
+    <string name="test_broken_hint">What happened? One line is enough.</string>
+    <string name="test_mark_all">Mark every feature to send the result.</string>
+    <string name="about_privacy_title">Privacy</string>
+    <string name="about_privacy_body">Once a day QuickBuds sends its platform, its version number (for example \"Android 5.2.1\") and a random install ID to count active users. The ID ties to no device, account or address, and the app sends no earbud data. Reports carry the same ID and are sent only when you send them.</string>
+    <string name="about_privacy_reset">Reset install ID</string>
+    <string name="welcome_title">Welcome to QuickBuds</string>
+    <string name="welcome_body">A few steps set QuickBuds up. You can change every choice later in Settings.</string>
+    <string name="welcome_done">Done</string>
+    <string name="setup_perm_title">Permissions</string>
+    <string name="setup_perm_body">QuickBuds needs Bluetooth to talk to your earbuds. Android requires a notification for the background service, so please allow Notifications too.</string>
+    <string name="setup_perm_bt">Bluetooth</string>
+    <string name="setup_perm_notif">Notifications</string>
+    <string name="setup_allow">Allow</string>
+    <string name="setup_allowed">Allowed</string>
+    <string name="setup_next">Next</string>
+    <string name="setup_back">Back</string>
+    <string name="setup_skip">Skip</string>
+    <string name="settings_setup_title">Setup guide</string>
+    <string name="setup_bg_title">Stay connected</string>
+    <string name="setup_bg_body">The background service keeps the widgets working and reconnects the earbuds. It sleeps while the phone is locked.</string>
+    <string name="setup_look_title">Pick a look</string>
+    <string name="setup_look_body">Choose a style and a theme. You can change both in Settings.</string>
+    <string name="setup_earbuds_title">Your earbuds</string>
+    <string name="setup_earbuds_body">Pick your earbuds. If they show Not connected, connect them in Bluetooth settings.</string>
+    <string name="setup_earbuds_none">No paired earbuds found.</string>
+    <string name="setup_earbuds_pair">Open Bluetooth settings</string>
+    <string name="setup_earbuds_known">Known model</string>
+    <string name="setup_earbuds_unknown">Not in the list yet. You can still try them.</string>
+    <string name="setup_earbuds_need_bt">Allow Bluetooth on the previous page to see your earbuds.</string>
+    <string name="setup_battery_title">Battery optimization</string>
+    <string name="setup_battery_sub">Lets the background service keep running</string>
+    <string name="setup_widgets_title">Widgets</string>
+    <string name="setup_widgets_body">Put QuickBuds on your home screen. If a button does nothing, long-press the home screen and open Widgets.</string>
+    <string name="setup_widgets_add">Add</string>
+    <string name="widget_placed_section">On your home screen</string>
+    <string name="setup_feedback_title">Feedback and tests</string>
+    <string name="setup_feedback_body">Tell the developer what works and what does not. Nothing is sent until you tap Send. Both tools are in Settings.</string>
+    <string name="settings_ping_title">Count my install</string>
+    <string name="settings_ping_sub">Send the daily count with the install ID</string>
+    <string name="setup_earbuds_connected">Connected</string>
+    <string name="setup_earbuds_disconnected">Not connected</string>
+    <string name="setup_ready_title">You are ready</string>
+    <string name="setup_ready_body">Connect your earbuds and open QuickBuds. Every choice here stays in Settings.</string>
+    <string name="settings_issues_title">Known issues</string>
+    <string name="settings_issues_sub">Limits of your earbuds and phone</string>
+    <string name="issues_none">No known issues for your earbuds and phone.</string>
+    <string name="issues_dialog_body">Your earbuds or your phone have known limits. You can read them in Settings.</string>
+    <string name="issues_dialog_action">Show</string>
+    <string name="issue_spatial_silent_title">3D audio may sound the same</string>
+    <string name="issue_spatial_silent_body">Some owners hear no spatial effect on this model. We do not know yet if the earbuds or the app cause it.</string>
+    <string name="issue_hires_no_codec_title">High-quality audio changes nothing</string>
+    <string name="issue_hires_no_codec_body">This model supports only SBC and AAC, so the earbuds have no high-quality codec. The switch turns on, but the sound does not change.</string>
+    <string name="feature_applying">Applying…</string>
+    <string name="feature_refused_missing">%1$s: these earbuds do not have this setting</string>
+    <string name="feature_refused_now">%1$s: the earbuds refuse it right now</string>
+    <string name="feature_not_changed">%1$s: the earbuds did not change it</string>
+    <string name="feature_no_answer">%1$s: the earbuds did not answer</string>
+    <string name="issue_samsung_codec_title">No codec choice on Samsung phones</string>
+    <string name="issue_samsung_codec_body">Samsung phones do not show the codec choice in Bluetooth settings. High-quality audio may do nothing.</string>
+    <string name="issue_oneplus_title">The system can block the connection</string>
+    <string name="oneplus_hint">On OnePlus, OPPO and realme phones, the system\'s own earbud settings can hold the earbuds\' link and block QuickBuds. If QuickBuds does not connect, use the earbud settings in Settings › Bluetooth › your earbuds.</string>
+    <string name="issue_hires_spatial_title">High-quality audio and 3D audio</string>
+    <string name="issue_hires_spatial_body">The earbuds run only one of them. Turning one on turns the other off.</string>
+    <string name="setup_issues_body">Settings lists the limits of your earbuds and phone. QuickBuds also tells you once when your model has any.</string>
+    <string name="reply_title">Reply from the developer</string>
+    <string name="about_discord" translatable="false">Discord</string>
+    <string name="about_discord_desc">Chat with the developer on Discord</string>
+    <string name="about_privacy_reply">The ID also lets the developer answer a report you sent. The answer comes with the daily count.</string>
+    <string name="connect_try_failed">Could not connect (try %1$d of %2$d)</string>
+    <string name="connect_gave_up">Could not connect after %1$d tries. Tap Connect to try again.</string>
+    <string name="connect_held_by_other">Another device or app holds the earbuds. Disconnect them there or close that app, then tap Connect.</string>
+    <string name="tray_open">Open QuickBuds</string>
+    <string name="tray_quit">Quit</string>
+    <string name="support_kofi_title">Enjoying QuickBuds?</string>
+    <string name="support_kofi_body">QuickBuds is free and made by one person. If it helps you, a small tip on Ko-fi keeps it going.</string>
+    <string name="support_kofi_action">Support on Ko-fi</string>
+    <string name="support_github_title">Like QuickBuds?</string>
+    <string name="support_github_body">A star on GitHub helps other earbud owners find the app.</string>
+    <string name="support_github_action">Star on GitHub</string>
+    <string name="support_later">Later</string>
+    <string name="support_never">Do not ask again</string>
+</resources>

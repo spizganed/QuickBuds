@@ -1,0 +1,55 @@
+name: Model report
+description: How QuickBuds works with your OnePlus, OPPO, realme or DIZO earbuds.
+labels: [model report]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        QuickBuds supports OnePlus, OPPO, realme and DIZO earbuds only. Other brands use a different
+        protocol, and QuickBuds cannot connect to them.
+        A model report confirms what QuickBuds already does. It cannot add or fix a feature.
+        Only a Bluetooth snoop log of HeyMelody or realme Link can do that: use the Missing feature form.
+  - type: dropdown
+    id: brand
+    attributes:
+      label: Brand
+      options: [OnePlus, OPPO, realme, DIZO]
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Earbuds model
+      description: As in the README's Supported earbuds list.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Phone or PC
+      description: Model and Android, Windows or Linux version.
+    validations:
+      required: true
+  - type: textarea
+    id: works
+    attributes:
+      label: What works and what does not
+      description: '"The switch flips but nothing changes on the buds" is useful.'
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: >-
+        Prefer Settings › Feedback › Report a problem. It sends the log to the developer privately,
+        with the Bluetooth addresses and the device names removed. If you attach a log here, everyone
+        can read it: remove the addresses and the names of your other devices first.
+  - type: textarea
+    id: snoop
+    attributes:
+      label: Snoop log
+      description: >-
+        A switch that does nothing on the buds needs a Bluetooth snoop log of HeyMelody or realme Link, with a
+        screen recording. For a setting that QuickBuds lacks, use the Missing feature form instead. Steps:
+        https://github.com/spizganed/QuickBuds/blob/main/docs/PACKET-CAPTURE.md#send-a-snoop-log-for-a-missing-feature

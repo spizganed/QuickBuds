@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CHARGING CASE — developer artwork (PC-only), path data copied VERBATIM.
+  Viewport is the source's own viewBox (0 0 496 400). Single white evenOdd path holding
+  the lid band, the body, and the LED dot (kept at the user's request).
+
+  INTRINSIC SIZE — matched to the layout box (`battery_case_width` x `battery_wear_height`),
+  so fitCenter scales by 1. 119:96 = 1.240 vs the source's 496:400 = 1.240.
+
+  NEVER put the viewBox numbers in android:width/height: the widget rasterises these
+  into bitmaps for RemoteViews, and a large intrinsic size once crashed the app on connect
+  with "RemoteViews for widget update exceeds maximum bitmap memory usage".
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="119dp" android:height="96dp"
+    android:viewportWidth="496" android:viewportHeight="400">
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M241 3.6a363 363 0 0 0-59.8 6.6 313 313 0 0 0-55.6 16.7 252 252 0 0 0-46.4 25.5 198 198 0 0 0-35 32.2 178 178 0 0 0-25.8 41l-6 15h471.2q-3-8-6.4-15.8a180 180 0 0 0-64.7-75.4 222 222 0 0 0-32-18 265 265 0 0 0-36.7-14 309 309 0 0 0-57.6-11.7 408 408 0 0 0-45.1-2M8.7 152.6Q6 162.9 4.3 173a174 174 0 0 0 6.6 82.5 183 183 0 0 0 29.2 55.1 182 182 0 0 0 45 41.2 229 229 0 0 0 39.8 21 281 281 0 0 0 46 14.9 332 332 0 0 0 105.5 7.6 320 320 0 0 0 98.2-24 253 253 0 0 0 40-22 190 190 0 0 0 45.3-44 185 185 0 0 0 27.3-56.8 182 182 0 0 0 4.4-76.2c-1-6.6-2.8-13.1-4.2-19.6zm247.9 163.9a9 9 0 0 1-5.6 8.3 9 9 0 0 1-6.9 0 9 9 0 0 1-4.8-4.9 9 9 0 0 1 0-6.9 9 9 0 0 1 4.8-4.9 9 9 0 0 1 7 0 9 9 0 0 1 5.5 8.4" />
+</vector>

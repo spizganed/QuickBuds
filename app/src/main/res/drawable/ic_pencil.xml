@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pencil: rename, edit. One filled diagonal narrowing to the tip (DotArt.pencil). White, tinted at runtime. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,21 L4.6,15.2 L15.6,4.2 L19.8,8.4 L8.8,19.4 Z" />
+</vector>

@@ -1,0 +1,243 @@
+package com.spizganed.quickbuds.widget
+
+import android.content.Context
+import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.AncModes
+import com.spizganed.quickbuds.protocol.Capabilities
+import com.spizganed.quickbuds.protocol.Feature
+import com.spizganed.quickbuds.protocol.ModelCatalog
+import com.spizganed.quickbuds.protocol.RowRules
+import com.spizganed.quickbuds.ui.MainActivity
+import com.spizganed.quickbuds.ui.ThemeRes
+
+/**
+ * Widget settings, shared by every placed widget. setBackground repaints all widgets.
+ * Also holds the per-widget "mode list is open" stamp.
+ */
+object WidgetSettings {
+
+    /**
+     * One noise mode. [key] is the target [WidgetActionReceiver] takes, [store] the name
+     * [WidgetStateStore] keeps. [name] is the full name ("ANC Low"), [short] the grid label ("Low").
+     */
+    class Mode(val key: String, val store: String, val name: Int, val short: Int, val icon: Int)
+
+    val MODES = listOf(
+        Mode("low", "ANC-Light", R.string.widget_mode_anc_low, R.string.anc_mode_low, R.drawable.ic_mode_anc_low),
+        Mode("med", "ANC-Medium", R.string.widget_mode_anc_medium, R.string.anc_mode_medium, R.drawable.ic_mode_anc_medium),
+        Mode("high", "ANC-Deep", R.string.widget_mode_anc_high, R.string.anc_mode_high, R.drawable.ic_mode_anc_high),
+        Mode("smart", AncModes.SMART, R.string.widget_mode_anc_smart, R.string.anc_mode_smart, R.drawable.ic_mode_anc_smart),
+        Mode("trans", "Transparency", R.string.anc_seg_trans, R.string.anc_seg_trans, R.drawable.ic_mode_transparency),
+        Mode("adapt", "Adaptive", R.string.anc_seg_adapt, R.string.anc_seg_adapt, R.drawable.ic_mode_adaptive),
+        Mode("off", "Off", R.string.anc_seg_off, R.string.anc_seg_off, R.drawable.ic_mode_off)
+    )
+    /**
+     * How long a tap waits for a second one. Was: 200 ms; a real double tap often missed it (issue 26).
+     * Is: 300 ms, Android's own double tap timeout. 400 ms felt slow.
+     */
+    const val DOUBLE_TAP_MS = 300L
+
+    private const val KEY_LIST_AT = "widgetListAt_"
+    private const val KEY_PAGE = "widgetPage_"
+    private const val KEY_CHILD = "widgetChild_"
+    private const val KEY_BUTTONS = "widgetButtons_"
+    private const val KEY_TAP_OPENS = "widgetTapOpens_"
+
+    /**
+     * The controls page's buttons, in setup screen order: "anc" opens the level list, "trans" / "adapt" / "off"
+     * select a mode, "cycle" steps through the Noise cycle modes ([cycleNext]), "ll" toggles low latency,
+     * a [FEATURE_BUTTONS] key toggles that `0x0403` switch.
+     */
+    val BUTTONS = listOf("anc", "trans", "adapt", "off", "cycle", "ll", "wind", "dual", "app")
+    /** Feature buttons: key -> `0x0403` id. */
+    val FEATURE_BUTTONS = mapOf("wind" to Feature.WIND_NOISE, "dual" to Feature.DUAL_DEVICE)
+    /** Buttons a widget shows before its setup screen saves a choice. */
+    val DEFAULT_BUTTONS = listOf("anc", "trans", "adapt", "ll")
+    /** Slots on the controls page. */
+    const val MAX_BUTTONS = 4
+
+    private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
+
+    /** The mode a stored ANC name shows as; an ANC name without a known level counts as Medium. */
+    fun modeOf(ancMode: String): Mode =
+        MODES.firstOrNull { it.store == ancMode } ?: MODES.first { it.key == if (ancMode.isEmpty()) "off" else "med" }
+
+    /**
+     * The controls page's ANC level picker: the levels these buds have, no Off (the lit
+     * level turns ANC off, as a lit T or A button does).
+     */
+    fun ancPicker(c: Context): List<Mode> {
+        val anc = AncModes.of(c)
+        return MODES.filter { it.key in PICKER && anc.supports(it.store) }
+    }
+    private val PICKER = setOf("low", "med", "high", "smart")
+
+    /** The Noise cycle screen's order, which is also the step order. */
+    val CYCLE_ORDER = listOf("off", "trans", "adapt", "low", "med", "high", "smart")
+    private const val KEY_CYCLE = "noiseCycle"
+
+    /** The cycle modes the connected buds have. */
+    fun cycleOffered(c: Context): List<String> =
+        CYCLE_ORDER.filter { k -> if (k == "off") available(c, "off") else AncModes.of(c).supports(MODES.first { it.key == k }.store) }
+
+    /**
+     * The modes picked on the Noise cycle screen: widget [id]'s own list, else the tile's list (Settings).
+     * Default: Off and Medium.
+     */
+    fun cyclePicked(c: Context, id: Int = NO_ID): Set<String> {
+        val own = if (id != NO_ID) prefs(c).getString(KEY_CYCLE + id, null) else null
+        return (own ?: prefs(c).getString(KEY_CYCLE, null))?.split(',')?.filter { it in CYCLE_ORDER }?.toSet() ?: setOf("off", "med")
+    }
+
+    /** Saves the list of widget [id], or the tile's list when [id] is [NO_ID]. */
+    fun setCyclePicked(c: Context, keys: Collection<String>, id: Int = NO_ID) {
+        prefs(c).edit().putString(if (id != NO_ID) KEY_CYCLE + id else KEY_CYCLE, CYCLE_ORDER.filter { it in keys }.joinToString(",")).apply()
+    }
+
+    /**
+     * The modes a tap steps through, in [CYCLE_ORDER]: the picked modes these buds have. Fewer than 2: Off and
+     * Medium, or Off and the buds' first level.
+     */
+    fun cycleModes(c: Context, id: Int = NO_ID): List<String> {
+        val list = cycleOffered(c).filter { it in cyclePicked(c, id) }
+        if (list.size >= 2) return list
+        val levels = ancPicker(c)
+        return listOfNotNull("off", (levels.firstOrNull { it.key == "med" } ?: levels.firstOrNull())?.key)
+    }
+
+    /** The mode key after [current] in [cycleModes]; the first mode when [current] is not in the list. */
+    fun cycleNext(c: Context, current: Mode, id: Int = NO_ID): String {
+        val list = cycleModes(c, id)
+        val i = list.indexOf(current.key)
+        return if (i < 0) list.first() else list[(i + 1) % list.size]
+    }
+
+    /** No widget: the tile's own settings. */
+    const val NO_ID = android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID
+
+    /**
+     * True: the Nothing style (no boxes, tighter inset, Nothing OS's Ndot digits; layouts `widget_*_n`).
+     * The app's style ([ThemeRes.nothing], set in Theme & colors), shared with the app.
+     */
+    fun nothingStyle(c: Context) = ThemeRes.nothing(c)
+
+    /** The Material style ([ThemeRes.material]): Classic layouts on one background, only a selection filled, no outlines. */
+    fun materialStyle(c: Context) = ThemeRes.material(c)
+
+    private const val KEY_BACKGROUND = "widgetBackground_"
+
+    /** Material style: widget [id]'s box is drawn (default) or left out, so the content sits on the wallpaper as on Google's widgets. */
+    fun background(c: Context, id: Int) = !materialStyle(c) || prefs(c).getBoolean(KEY_BACKGROUND + id, true)
+
+    fun setBackground(c: Context, id: Int, on: Boolean) {
+        prefs(c).edit().putBoolean(KEY_BACKGROUND + id, on).apply()
+        QuickBudsWidget.refreshAll(c)
+    }
+
+    /** Material style with wallpaper colours: the widget takes the system's widget roles, as Google's widgets do. */
+    fun systemRoles(c: Context) = materialStyle(c) && com.spizganed.quickbuds.ui.PaletteStore.wallpaper(c)
+
+    /**
+     * The widget's palette. With [systemRoles]: the wallpaper's secondary tones for the box, its primary
+     * tones for text and accent (dark: box tone 20, text 90; light mirrored). Else the app's palette.
+     */
+    fun palette(c: Context): com.spizganed.quickbuds.ui.Palette {
+        val app = ThemeRes.palette(c)
+        // Glass: a widget sits on the launcher, not on the gradient, so its box is a solid deep tone and the surfaces stay translucent whites.
+        // The box is a near-opaque plate in the glass's own tone: deep blue-black (OLED Black: neutral black) or pale; the preset's accent and
+        // its light or dark choice come through, as in the app.
+        if (app.glass) {
+            val box = if (app.glassLight) 0xF2F4F6FF.toInt() else if (app.id == com.spizganed.quickbuds.ui.PaletteStore.DARK) 0xF2262836.toInt() else 0xF20D0E1A.toInt()
+            return app.copy(background = box, card = box)
+        }
+        if (!systemRoles(c) || android.os.Build.VERSION.SDK_INT < 31) return app
+        fun s(res: Int) = c.getColor(res)
+        return if (app.isLight) app.copy(
+            background = s(android.R.color.system_accent2_50), card = s(android.R.color.system_accent2_50),
+            accent = s(android.R.color.system_accent1_600), text = s(android.R.color.system_accent1_900),
+            textSecondary = s(android.R.color.system_accent2_700), outline = s(android.R.color.system_accent2_200))
+        else app.copy(
+            background = s(android.R.color.system_accent2_800), card = s(android.R.color.system_accent2_800),
+            accent = s(android.R.color.system_accent1_200), text = s(android.R.color.system_accent1_100),
+            textSecondary = s(android.R.color.system_accent2_200), outline = s(android.R.color.system_accent2_600))
+    }
+
+    /** [systemRoles]: a selected button's fill (primary container). */
+    @android.annotation.TargetApi(31)
+    fun systemSelected(c: Context, light: Boolean) = c.getColor(if (light) android.R.color.system_accent1_100 else android.R.color.system_accent1_700)
+
+    /** The page widget [id] shows, BATTERY or CONTROLS; [default] is its provider's own. */
+    fun page(c: Context, id: Int, default: QuickBudsWidget.Kind): QuickBudsWidget.Kind =
+        prefs(c).getString(KEY_PAGE + id, null)?.let { runCatching { QuickBudsWidget.Kind.valueOf(it) }.getOrNull() } ?: default
+
+    fun setPage(c: Context, id: Int, page: QuickBudsWidget.Kind?) {
+        prefs(c).edit().apply { if (page == null) remove(KEY_PAGE + id) else putString(KEY_PAGE + id, page.name) }.apply()
+    }
+
+    /** The child widget [id] last showed (QuickBudsWidget.update: 0 battery, 1 controls, 2 list), -1 when unknown. */
+    fun shownChild(c: Context, id: Int) = prefs(c).getInt(KEY_CHILD + id, -1)
+
+    fun setShownChild(c: Context, id: Int, child: Int?) {
+        prefs(c).edit().apply { if (child == null) remove(KEY_CHILD + id) else putInt(KEY_CHILD + id, child) }.apply()
+    }
+
+    /** Widget [id]'s buttons ([BUTTONS] keys), at most [MAX_BUTTONS]. */
+    fun buttons(c: Context, id: Int): List<String> =
+        prefs(c).getString(KEY_BUTTONS + id, null)?.split(',')?.filter { it in BUTTONS }?.take(MAX_BUTTONS) ?: DEFAULT_BUTTONS
+
+    fun setButtons(c: Context, id: Int, keys: List<String>) {
+        prefs(c).edit().putString(KEY_BUTTONS + id, keys.joinToString(",")).apply()
+    }
+
+    /** A tap on a one-page widget opens the app (off by default; two-page widgets use the "app" button). */
+    fun tapOpens(c: Context, id: Int) = prefs(c).getBoolean(KEY_TAP_OPENS + id, false)
+
+    fun setTapOpens(c: Context, id: Int, on: Boolean) {
+        prefs(c).edit().putBoolean(KEY_TAP_OPENS + id, on).apply()
+    }
+
+    /** The connected buds have button [key]. */
+    fun available(c: Context, key: String): Boolean {
+        val anc = AncModes.of(c)
+        val rows = MainActivity.rowsOf(c)
+        val ancCmd = RowRules.ANC in rows
+        return when (key) {
+            "anc" -> ancCmd && ancPicker(c).isNotEmpty()
+            "trans", "adapt" -> ancCmd && anc.supports(MODES.first { it.key == key }.store)
+            "off" -> ancCmd && !anc.isEmpty
+            "cycle" -> ancCmd && ancPicker(c).isNotEmpty()
+            "ll" -> RowRules.GAME in rows
+            "wind" -> RowRules.WIND in rows
+            "dual" -> RowRules.DUAL in rows
+            "app" -> true
+            else -> false
+        }
+    }
+
+    /** The name of a [FEATURE_BUTTONS] key: "Triple connection" on `tripleDevice` models. */
+    fun featureName(c: Context, key: String): Int = when {
+        key == "wind" -> R.string.row_wind_noise_title
+        ModelCatalog.tripleDevice(c) -> R.string.row_triple_title
+        else -> R.string.row_dual_title
+    }
+
+    fun featureIcon(key: String): Int = if (key == "dual") R.drawable.ic_devices else R.drawable.ic_anc
+
+    fun featureOn(c: Context, id: Int) = Capabilities.featureOn(c, id)
+
+    /** Drops everything stored for widget [id] (removed from the home screen). */
+    fun forget(c: Context, id: Int) {
+        prefs(c).edit().apply {
+            for (k in listOf(KEY_LIST_AT, KEY_PAGE, KEY_CHILD, KEY_BUTTONS, KEY_BACKGROUND, KEY_TAP_OPENS, KEY_CYCLE)) remove(k + id)
+        }.apply()
+    }
+
+    /** When widget [id]'s list was opened, 0 when closed. */
+    fun listOpenedAt(c: Context, id: Int) = prefs(c).getLong(KEY_LIST_AT + id, 0L)
+
+    fun listOpen(c: Context, id: Int) = listOpenedAt(c, id) != 0L
+
+    fun setListOpenedAt(c: Context, id: Int, at: Long) {
+        prefs(c).edit().apply { if (at == 0L) remove(KEY_LIST_AT + id) else putLong(KEY_LIST_AT + id, at) }.apply()
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "QuickBuds",
+  "version": "6.0.0",
+  "identifier": "app.quickbuds.desktop",
+  "build": { "frontendDist": "./ui" },
+  "app": {
+    "windows": [{ "label": "main", "create": false, "title": "QuickBuds", "width": 800, "height": 600, "resizable": false, "maximizable": false, "transparent": true, "decorations": false, "shadow": true },
+      { "label": "panel", "create": false, "title": "QuickBuds panel", "url": "index.html?view=tray", "width": 350, "height": 430, "visible": false, "resizable": true, "maximizable": false, "minimizable": false, "decorations": false, "transparent": true, "alwaysOnTop": true, "skipTaskbar": true, "shadow": false }],
+    "withGlobalTauri": true, "security": { "csp": null }
+  },
+  "bundle": { "active": true, "targets": ["appimage"], "icon": ["icons/icon.png"] }
+}

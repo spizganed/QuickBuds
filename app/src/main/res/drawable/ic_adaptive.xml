@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Noise control: adaptive. 24x24 viewport, 2.2 stroke, round caps and joins. White, tinted at runtime.
+     The star (y 3 to 17) moved down 2, so it sits in the middle of the viewport. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <group android:translateY="2">
+        <path
+            android:pathData="M12,3l1.9,5.1L19,10l-5.1,1.9L12,17l-1.9,-5.1L5,10l5.1,-1.9z"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2.2"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>

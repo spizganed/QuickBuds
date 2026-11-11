@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QuickBuds</title><script>if(window.__TAURI_INTERNALS__)document.documentElement.classList.add("native","off");if(/[?&]view=tray/.test(location.search))document.documentElement.classList.add("traywin")</script><link rel="stylesheet" href="app.css"></head><body>
+
+
+
+
+
+
+<div class="wrap">
+  <header class="proto">
+    <h1>QuickBuds desktop<span>A working preview. The wallpaper here stands in for your desktop's.</span></h1>
+    <div class="ctl" role="group" aria-label="View"><b>View</b>
+      <button class="pc" id="vWin" aria-pressed="true">Window</button>
+      <button class="pc" id="vTray" aria-pressed="false">Tray</button>
+    </div>
+    <div class="ctl" role="group" aria-label="Window size" id="szSeg"><b>Size</b>
+      <button class="pc" data-v="l">800 × 600</button><button class="pc" data-v="s">600 × 400</button>
+    </div>
+    <div class="ctl" role="group" aria-label="Desktop wallpaper"><b>Wallpaper</b>
+      <span id="wps" class="ctl"></span>
+      <label class="pc up" for="wpFile">Upload<input id="wpFile" type="file" accept="image/*"></label>
+    </div>
+    <div class="ctl" role="group" aria-label="Earbud state" id="bsSeg"><b>Earbuds</b>
+      <button class="pc" data-v="case">In case</button><button class="pc" data-v="ears">In ears</button><button class="pc" data-v="mixed">One of each</button>
+    </div>
+    <div class="ctl" role="group" aria-label="System appearance"><b>System</b>
+      <button class="pc" id="sysMode" aria-pressed="false">Dark mode</button>
+    </div>
+  </header>
+  <div class="desk" id="desk">
+    <div class="win app" id="win"></div>
+    <div class="tray app" id="tray" hidden></div>
+    <div class="taskbar" aria-hidden="true"><span class="ti" id="tbIcon"></span><span>12:34</span></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+
+</body></html>

@@ -1,0 +1,51 @@
+[package]
+name = "quickbuds-tauri"
+version = "6.0.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "QuickBuds for Windows and Linux, Tauri UI"
+
+# The binary is named quickbuds on both systems: the updater of every earlier version looks for that file name in the download.
+[[bin]]
+name = "quickbuds"
+path = "src/main.rs"
+
+[dependencies]
+buds-core = { path = "../core" }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+serde_json = "1"
+sys-locale = "0.3"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+resvg = { version = "0.48", default-features = false }
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
+panic = "abort"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+gtk = "0.18"
+gdk = "0.18"
+gtk-layer-shell = { version = "0.8", features = ["v0_6"] }
+webkit2gtk = { version = "2.0", features = ["v2_16"] }
+dbus = "0.9"
+libc = "0.2"
+ksni = { version = "0.3", default-features = false, features = ["async-io", "blocking"] }
+gdkwayland-sys = "0.18"
+wayland-client = "0.31"
+wayland-backend = { version = "0.3", features = ["client_system"] }
+wayland-protocols-plasma = { version = "0.3", features = ["client"] }
+wayland-protocols = { version = "0.32", features = ["client", "staging"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Networking_WinSock",
+    "Win32_Devices_Bluetooth",
+    "Win32_System_SystemInformation",
+    "Win32_System_Console",
+    "Win32_UI_WindowsAndMessaging",
+] }

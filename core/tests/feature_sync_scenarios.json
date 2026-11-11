@@ -1,0 +1,1432 @@
+{
+ "about": "One rule for every setting that writes to and reads from the buds. Events: tap{key,writes[[id,value]],confirm,restarts}, ack{seq,status}, report{values,seq,push} (seq set = a reply to OUR read; push true = an event the buds sent on their own; neither = any other read reply, which only updates values), tick, disconnect, reconnect. Output tokens, in order: busy:<key>:on|off, send:<id>:<value>:s<seq>, read:s<seq>, changed:<id>:<value>, toast:<key>:refused_missing|refused_now|not_changed|no_answer. The engine numbers every send and every read from s1 within a scenario. confirm: read (our read reply decides), push (the first real push for the key decides; a read reply never does; a push of the wanted value before the ack confirms at the ack), ack (the ack decides). Timeouts: 3000 ms per wait step (ack, then reply or push); 15000 ms after the last ack of a write with restarts. One operation at a time; the others wait in a queue. docs/FEATURE-SYNC.md has the rules.",
+ "scenarios": [
+  {
+   "name": "read-confirmed: the value moves once, at our own read reply",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": 2,
+     "now": 120,
+     "expect": [
+      "changed:24:1",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "read-confirmed: accepted but the buds report the old value: no move, one toast",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 0
+     },
+     "seq": 2,
+     "now": 120,
+     "expect": [
+      "toast:24:not_changed",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "push-confirmed (game mode): the value moves at the push, however late",
+   "init": {
+    "6": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 6,
+     "writes": [
+      [
+       6,
+       1
+      ]
+     ],
+     "confirm": "push",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:6:on",
+      "send:6:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 60,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "6": 1
+     },
+     "seq": null,
+     "now": 2500,
+     "expect": [
+      "changed:6:1",
+      "busy:6:off"
+     ],
+     "push": true
+    }
+   ]
+  },
+  {
+   "name": "push-confirmed (game mode): a push before the ack confirms at the ack",
+   "init": {
+    "6": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 6,
+     "writes": [
+      [
+       6,
+       1
+      ]
+     ],
+     "confirm": "push",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:6:on",
+      "send:6:1:s1"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "6": 1
+     },
+     "seq": null,
+     "now": 151,
+     "expect": [
+      "changed:6:1"
+     ],
+     "push": true
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 186,
+     "expect": [
+      "busy:6:off"
+     ]
+    },
+    {
+     "ev": "tick",
+     "now": 3200,
+     "expect": []
+    }
+   ]
+  },
+  {
+   "name": "push-confirmed: a push with the old value is a refusal",
+   "init": {
+    "6": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 6,
+     "writes": [
+      [
+       6,
+       1
+      ]
+     ],
+     "confirm": "push",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:6:on",
+      "send:6:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 60,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "6": 0
+     },
+     "seq": null,
+     "now": 200,
+     "expect": [
+      "toast:6:not_changed",
+      "busy:6:off"
+     ],
+     "push": true
+    }
+   ]
+  },
+  {
+   "name": "push-confirmed: no push in 3 s after the ack gives one toast",
+   "init": {
+    "6": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 6,
+     "writes": [
+      [
+       6,
+       1
+      ]
+     ],
+     "confirm": "push",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:6:on",
+      "send:6:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 60,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 3059,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 3060,
+     "expect": [
+      "toast:6:no_answer",
+      "busy:6:off"
+     ]
+    },
+    {
+     "ev": "tick",
+     "now": 9000,
+     "expect": []
+    }
+   ]
+  },
+  {
+   "name": "push-confirmed: a status-read reply that is not a push does not confirm (it only updates values)",
+   "init": {
+    "6": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 6,
+     "writes": [
+      [
+       6,
+       1
+      ]
+     ],
+     "confirm": "push",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:6:on",
+      "send:6:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 20,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "6": 0
+     },
+     "seq": null,
+     "push": false,
+     "now": 60,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "6": 1
+     },
+     "seq": null,
+     "push": true,
+     "now": 900,
+     "expect": [
+      "changed:6:1",
+      "busy:6:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "ack-confirmed (the buds can report nothing): the value moves at the ack",
+   "init": {
+    "9": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 9,
+     "writes": [
+      [
+       9,
+       1
+      ]
+     ],
+     "confirm": "ack",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:9:on",
+      "send:9:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 60,
+     "expect": [
+      "changed:9:1",
+      "busy:9:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "refused, status 1 (the buds lack the switch): the value never moves",
+   "init": {
+    "4": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 4,
+     "writes": [
+      [
+       4,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:4:on",
+      "send:4:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 1,
+     "now": 40,
+     "expect": [
+      "toast:4:refused_missing",
+      "busy:4:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "refused, status 2 (a condition fails)",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 2,
+     "now": 40,
+     "expect": [
+      "toast:24:refused_now",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "refused, any other non-zero status counts as refused now",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 3,
+     "now": 40,
+     "expect": [
+      "toast:24:refused_now",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "link restart: busy stays across the drop, the first report after the reconnect confirms",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": true,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": []
+    },
+    {
+     "ev": "disconnect",
+     "now": 200,
+     "expect": []
+    },
+    {
+     "ev": "reconnect",
+     "now": 4200,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": null,
+     "now": 4300,
+     "expect": [
+      "changed:24:1",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "link restart: the link drops and does not come back in 15 s: one toast",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": true,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": []
+    },
+    {
+     "ev": "disconnect",
+     "now": 200,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 15049,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 15050,
+     "expect": [
+      "toast:24:no_answer",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "link restart: the link never drops (the buds did not restart): one read after 15 s decides",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": true,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 15049,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 15050,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": 2,
+     "now": 15100,
+     "expect": [
+      "changed:24:1",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "link restart: the buds come back with the old value",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": true,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": []
+    },
+    {
+     "ev": "disconnect",
+     "now": 200,
+     "expect": []
+    },
+    {
+     "ev": "reconnect",
+     "now": 4200,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 0
+     },
+     "seq": null,
+     "now": 4300,
+     "expect": [
+      "toast:24:not_changed",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "a report that is not our read reply updates values but does not confirm",
+   "init": {
+    "24": 0,
+    "27": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 0,
+      "27": 1
+     },
+     "seq": null,
+     "now": 60,
+     "expect": [
+      "changed:27:1"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1,
+      "27": 1
+     },
+     "seq": 2,
+     "now": 120,
+     "expect": [
+      "changed:24:1",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "a stale ack (not the current seq) is ignored",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 7,
+     "status": 0,
+     "now": 20,
+     "expect": []
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "a second tap on a busy setting is ignored",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       0
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 10,
+     "expect": []
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": 2,
+     "now": 100,
+     "expect": [
+      "changed:24:1",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "two settings: the second waits in the queue and starts when the first ends",
+   "init": {
+    "24": 0,
+    "27": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "tap",
+     "key": 27,
+     "writes": [
+      [
+       27,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 10,
+     "expect": [
+      "busy:27:on"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1,
+      "27": 0
+     },
+     "seq": 2,
+     "now": 100,
+     "expect": [
+      "changed:24:1",
+      "busy:24:off",
+      "send:27:1:s3"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 3,
+     "status": 0,
+     "now": 150,
+     "expect": [
+      "read:s4"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1,
+      "27": 1
+     },
+     "seq": 4,
+     "now": 200,
+     "expect": [
+      "changed:27:1",
+      "busy:27:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "one action with two writes (Hi-Res on drops 3D audio): one confirmation at the end",
+   "init": {
+    "24": 0,
+    "27": 1
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       27,
+       0
+      ],
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:27:0:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 40,
+     "expect": [
+      "send:24:1:s2"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 2,
+     "status": 0,
+     "now": 80,
+     "expect": [
+      "read:s3"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1,
+      "27": 0
+     },
+     "seq": 3,
+     "now": 150,
+     "expect": [
+      "changed:24:1",
+      "changed:27:0",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "two writes: the second is refused, so one read re-syncs what the first changed",
+   "init": {
+    "24": 0,
+    "27": 1
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       27,
+       0
+      ],
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:27:0:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 40,
+     "expect": [
+      "send:24:1:s2"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 2,
+     "status": 2,
+     "now": 80,
+     "expect": [
+      "toast:24:refused_now",
+      "busy:24:off",
+      "read:s3"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 0,
+      "27": 0
+     },
+     "seq": 3,
+     "now": 150,
+     "expect": [
+      "changed:27:0"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "slider: the buds clamp the value, the slider follows the buds and one toast says so",
+   "init": {
+    "40": 5
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 40,
+     "writes": [
+      [
+       40,
+       9
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:40:on",
+      "send:40:9:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "40": 8
+     },
+     "seq": 2,
+     "now": 120,
+     "expect": [
+      "changed:40:8",
+      "toast:40:not_changed",
+      "busy:40:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "no ack in 3 s: one toast, and the next queued setting starts",
+   "init": {
+    "24": 0,
+    "27": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "tap",
+     "key": 27,
+     "writes": [
+      [
+       27,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 5,
+     "expect": [
+      "busy:27:on"
+     ]
+    },
+    {
+     "ev": "tick",
+     "now": 2999,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 3000,
+     "expect": [
+      "toast:24:no_answer",
+      "busy:24:off",
+      "send:27:1:s2"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "ack but no read reply in 3 s: one toast",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 100,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "tick",
+     "now": 3099,
+     "expect": []
+    },
+    {
+     "ev": "tick",
+     "now": 3100,
+     "expect": [
+      "toast:24:no_answer",
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "a late ack after the timeout is ignored",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "tick",
+     "now": 3000,
+     "expect": [
+      "toast:24:no_answer",
+      "busy:24:off"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 3100,
+     "expect": []
+    }
+   ]
+  },
+  {
+   "name": "disconnect: the sent write gets a toast, the queued one is dropped silently",
+   "init": {
+    "24": 0,
+    "27": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "tap",
+     "key": 27,
+     "writes": [
+      [
+       27,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 5,
+     "expect": [
+      "busy:27:on"
+     ]
+    },
+    {
+     "ev": "disconnect",
+     "now": 30,
+     "expect": [
+      "toast:24:no_answer",
+      "busy:24:off",
+      "busy:27:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "a push while idle moves the value at once; the same value does nothing",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": null,
+     "now": 0,
+     "expect": [
+      "changed:24:1"
+     ],
+     "push": true
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": null,
+     "now": 10,
+     "expect": [],
+     "push": true
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": 99,
+     "now": 20,
+     "expect": []
+    }
+   ]
+  },
+  {
+   "name": "a push before the ack only updates the value; the ack then asks for the read",
+   "init": {
+    "24": 0
+   },
+   "events": [
+    {
+     "ev": "tap",
+     "key": 24,
+     "writes": [
+      [
+       24,
+       1
+      ]
+     ],
+     "confirm": "read",
+     "restarts": false,
+     "now": 0,
+     "expect": [
+      "busy:24:on",
+      "send:24:1:s1"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": null,
+     "now": 20,
+     "expect": [
+      "changed:24:1"
+     ]
+    },
+    {
+     "ev": "ack",
+     "seq": 1,
+     "status": 0,
+     "now": 50,
+     "expect": [
+      "read:s2"
+     ]
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": 2,
+     "now": 90,
+     "expect": [
+      "busy:24:off"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "after a disconnect the idle value is kept",
+   "init": {
+    "24": 1
+   },
+   "events": [
+    {
+     "ev": "disconnect",
+     "now": 0,
+     "expect": []
+    },
+    {
+     "ev": "reconnect",
+     "now": 5000,
+     "expect": []
+    },
+    {
+     "ev": "report",
+     "values": {
+      "24": 1
+     },
+     "seq": null,
+     "now": 5100,
+     "expect": []
+    }
+   ]
+  }
+ ]
+}

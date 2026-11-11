@@ -1,0 +1,27 @@
+# The problem-report Worker (README: Report a problem). Deploy: npx wrangler deploy (README.md here).
+name = "quickbuds-report"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "quickbuds-reports"
+database_id = "2dd2a67f-4627-4c4c-84dc-bebb9299fc76"
+
+# Cache for the update check: the apps read the latest release from here, not from GitHub.
+[[kv_namespaces]]
+binding = "QUICKBUDS_KV"
+id = "c90187b0cdb34a5180fbbe2d1b36fbe7"
+
+# One queue for the report digest. The cron fills it; the consumer posts to Discord.
+[[queues.producers]]
+queue = "quickbuds-digest"
+binding = "DIGEST"
+
+[[queues.consumers]]
+queue = "quickbuds-digest"
+max_batch_size = 10
+max_batch_timeout = 5
+
+[triggers]
+crons = ["*/15 * * * *"]

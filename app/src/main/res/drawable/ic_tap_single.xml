@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Single tap: a fingertip with one ripple above it. White, tinted in code. The dot style draws its own (DotArt.taps).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5 23.5 V14 A2.5 2.5 0 0 1 14.5 14 V23.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M6.11 10.25 A6.5 6.5 0 0 1 17.89 10.25 L16.44 10.93 A4.9 4.9 0 0 0 7.56 10.93 Z" />
+</vector>

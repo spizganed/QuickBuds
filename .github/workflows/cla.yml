@@ -1,0 +1,29 @@
+# Blocks a pull request until its author ticks the Contributor License Agreement box (docs/CLA.md).
+# It reads only the pull request text. It never runs the pull request's code.
+name: CLA
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  cla:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check the agreement box
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          if [ "$AUTHOR" = "spizganed" ]; then exit 0; fi
+          if printf '%s' "$BODY" | grep -Eiq '^[[:space:]]*-[[:space:]]*\[[xX]\][[:space:]]+I agree to the \[Contributor License Agreement\]'; then
+            echo "CLA box ticked."
+          elif printf '%s' "$BODY" | grep -Fq 'I agree to docs/CLA.md'; then
+            echo "CLA sentence found."
+          else
+            echo "::error::Tick the CLA box in the pull request text, or write: I agree to docs/CLA.md"
+            exit 1
+          fi

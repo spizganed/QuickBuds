@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+: the icon's background follows the wallpaper's accent (white glyph on a dark accent tone). -->
+    <color name="ic_launcher_background">@android:color/system_accent1_700</color>
+</resources>

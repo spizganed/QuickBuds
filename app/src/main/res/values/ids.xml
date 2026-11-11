@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Marks a view that [Entrance] gave the press feel. -->
+    <item name="glass_feel" type="id" />
+    <item name="switch_painted" type="id" />
+</resources>

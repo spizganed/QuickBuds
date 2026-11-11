@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Triple tap: a fingertip with three ripples above it, fading outwards.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5 23.5 V14 A2.5 2.5 0 0 1 14.5 14 V23.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M7.47 10.89 A5 5 0 0 1 16.53 10.89 L15.26 11.48 A3.6 3.6 0 0 0 8.74 11.48 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.7"
+        android:pathData="M4.75 9.62 A8 8 0 0 1 19.25 9.62 L17.98 10.21 A6.6 6.6 0 0 0 6.02 10.21 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M2.03 8.35 A11 11 0 0 1 21.97 8.35 L20.7 8.94 A9.6 9.6 0 0 0 3.3 8.94 Z" />
+</vector>

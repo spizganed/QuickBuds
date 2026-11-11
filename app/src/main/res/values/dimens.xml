@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Header icon button size (settings cog / dev tools). -->
+    <dimen name="header_icon_button">44dp</dimen>
+
+    <!-- Header title size, matched to the widget's primary label weight. -->
+    <dimen name="header_title_size">19sp</dimen>
+</resources>

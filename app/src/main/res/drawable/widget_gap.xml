@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The gap between a resizable widget's panels and tiles: a LinearLayout divider (scripts/widget-layouts.py GAP). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <size android:width="5dp" android:height="5dp" />
+    <solid android:color="@android:color/transparent" />
+</shape>

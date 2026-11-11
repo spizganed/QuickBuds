@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 1x1 widget (NoiseCycleWidgetProvider): the Noise cycle button only. Under 110dp high, QuickBudsWidget.fit picks the
+     strip shape with one tile. updatePeriodMillis 0: the service pushes every change (AncWidgetProvider.refreshAll). -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
+    android:resizeMode="horizontal|vertical"
+    android:minResizeWidth="40dp"
+    android:minResizeHeight="40dp"
+    android:maxResizeHeight="109dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_strip"
+    android:configure="com.spizganed.quickbuds.widget.NoiseCycleActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:widgetCategory="home_screen" />

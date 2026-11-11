@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Main screen.
+
+  PAINT: nothing here carries a hardcoded colour. Colours come from the six token
+  attributes (?attr/appColor*), and shapes are built in code (ThemeRes).
+
+  STRUCTURE: the header, then a scrolling column of TILES, each its own include
+  layout with a stable root id (batteryCard, ancRow, featureList). The sound
+  settings rows are built in code (buildFeatureRows) and ordered / hidden one by
+  one from Settings > Home layout (layoutFeatureRows).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/appColorBg">
+
+    <!-- Header. Left action intentionally absent: the redesign drops it. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!--
+          CONNECTION STATUS PILL.
+
+          A small stadium-shaped box holding a dot and a word, beside the device name.
+          Why a pill and not just a coloured dot: the dot alone is ambiguous the first
+          time it is seen (is green "connected" or "connected AND something else"?),
+          and the word is what makes it self-explanatory. The dot is what makes it
+          readable at a glance without reading.
+
+          ORDER: dot, then label. The dot is tinted in code (ThemeRes.tint) because
+          it is a vector and its colour is connection STATE, not a theme surface — it
+          must stay green/grey in every theme. The LABEL colour comes from the same
+          state colours, set in MainActivity.renderConnectionPill.
+
+          LEFT side of the header since 2026-09-27: the device name moved into the
+          battery tile, so long translations of "Disconnect" no longer cut it off. A minimum
+          width keeps Connect / Disconnect from making the pill jump in size much.
+        -->
+        <!-- Opens the model list (ModelActivity), 2026-09-27. -->
+        <ImageButton
+            android:id="@+id/btnModel"
+            android:layout_width="@dimen/header_icon_button"
+            android:layout_height="@dimen/header_icon_button"
+            android:layout_marginEnd="8dp"
+            android:padding="11dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_model_list"
+            android:contentDescription="@string/model_title" />
+
+        <LinearLayout
+            android:id="@+id/connPill"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/header_icon_button"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:minWidth="128dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="18dp"
+            android:layout_marginEnd="8dp">
+
+            <ImageView
+                android:id="@+id/connDot"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_status_dot_empty"
+                android:contentDescription="@string/conn_status_desc" />
+
+            <TextView
+                android:id="@+id/connText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/conn_off"
+                android:textColor="?attr/appColorTextSecondary" />
+        </LinearLayout>
+
+        <!-- Empty on the main screen (a spacer); Home layout puts its title here. -->
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginEnd="8dp"
+            android:textSize="@dimen/header_title_size"
+            android:textStyle="bold"
+            android:textColor="?attr/appColorTextPrimary" />
+
+        <ImageButton
+            android:id="@+id/btnDevTools"
+            android:layout_width="@dimen/header_icon_button"
+            android:layout_height="@dimen/header_icon_button"
+            android:padding="11dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_dev_tools"
+            android:contentDescription="@string/action_dev_tools" />
+
+        <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="@dimen/header_icon_button"
+            android:layout_height="@dimen/header_icon_button"
+            android:layout_marginStart="8dp"
+            android:padding="11dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_settings_cog"
+            android:contentDescription="@string/action_settings" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/mainScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/tiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/tile_battery" />
+            <include layout="@layout/tile_noise" />
+            <include layout="@layout/tile_settings" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

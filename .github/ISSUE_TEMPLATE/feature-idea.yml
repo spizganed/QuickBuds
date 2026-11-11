@@ -1,0 +1,39 @@
+name: Feature idea
+description: An idea for a new feature in QuickBuds.
+labels: [idea]
+title: "[Idea] "
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        A setting that HeyMelody or realme Link has, and QuickBuds does not: use the Missing feature form.
+        It needs a Bluetooth snoop log and a screen recording.
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: One or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem it solves
+      description: For example, a task that takes too many taps.
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Earbuds model
+      description: Only if the idea depends on a model. As in the README's Supported earbuds list.
+  - type: textarea
+    id: use
+    attributes:
+      label: How you would use it
+      description: For example, the app and the gesture that you have in mind.
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you already tried
+      description: For example, a HeyMelody setting.

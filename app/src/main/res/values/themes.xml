@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The three built-in presets, as compiled styles.
+
+  Every colour in the app comes from the six token attributes below. Each style
+  sets all six; ThemeRes.color() resolves them against the CURRENT theme, and XML
+  references them as ?attr/appColor*. Custom presets have no style: ThemeRes picks
+  the base style with the right light/dark window, then substitutes the preset's
+  values at inflation time (ThemeRes.PaletteFactory) and in ThemeRes.color().
+  PaletteStore.builtIn() reads these styles back, so the built-in values live only here.
+
+  HISTORY, so this is not undone:
+    attempt 1  applyOverrideConfiguration(uiMode) -> crashed on launch, five times
+    attempt 2  setTheme() alone -> no crash, but colours never changed
+    attempt 3  this: attributes resolve per theme, and setTheme() selects them
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <attr name="appColorBg" format="color" />
+    <attr name="appColorCard" format="color" />
+    <attr name="appColorAccent" format="color" />
+    <attr name="appColorTextPrimary" format="color" />
+    <attr name="appColorTextSecondary" format="color" />
+    <attr name="appColorOutline" format="color" />
+
+    <style name="Theme.App.Base" parent="android:Theme.DeviceDefault.NoActionBar">
+        <!-- One font for the whole app: DeviceDefault text follows the OEM font, while code-set
+             typefaces (DEFAULT_BOLD, sans-serif-medium) are sans-serif, so screens mixed two. -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:windowBackground">?attr/appColorBg</item>
+        <item name="android:colorBackground">?attr/appColorBg</item>
+        <item name="android:statusBarColor">?attr/appColorBg</item>
+        <item name="android:navigationBarColor">?attr/appColorBg</item>
+        <item name="android:colorAccent">?attr/appColorAccent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+    </style>
+
+    <!-- Dot matrix style (ThemeRes.nothing): applied over any preset. Doto is bundled (res/font, SIL OFL). -->
+    <style name="ThemeOverlay.App.Nothing" parent="">
+        <item name="android:fontFamily">@font/doto</item>
+    </style>
+
+    <!-- OLED Black (default). True black so the panel shuts pixels off. -->
+    <style name="Theme.App.OLED" parent="Theme.App.Base">
+        <item name="appColorBg">#000000</item>
+        <item name="appColorCard">#000000</item>
+        <item name="appColorAccent">#D71920</item>
+        <item name="appColorTextPrimary">#FFFFFF</item>
+        <item name="appColorTextSecondary">#9B9B9B</item>
+        <item name="appColorOutline">#2E2E30</item>
+    </style>
+
+    <!-- Classic Dark. Off-black so the cards have something to sit against. -->
+    <style name="Theme.App.Dark" parent="Theme.App.Base">
+        <item name="appColorBg">#121214</item>
+        <item name="appColorCard">#232327</item>
+        <item name="appColorAccent">#D71920</item>
+        <item name="appColorTextPrimary">#FFFFFF</item>
+        <item name="appColorTextSecondary">#A0A0A5</item>
+        <item name="appColorOutline">#34343A</item>
+    </style>
+
+    <!-- White (redesigned 2026-09-27). A cool grey page so the white cards stand off it, near-black
+         text, and an outline just dark enough to draw the cards' edges. Light bars, so the system
+         icons flip to dark. The light-theme derived colours (switches) are in Palette. -->
+    <style name="Theme.App.Light" parent="Theme.App.Base">
+        <item name="appColorBg">#ECECF0</item>
+        <item name="appColorCard">#FFFFFF</item>
+        <item name="appColorAccent">#D71920</item>
+        <item name="appColorTextPrimary">#17171A</item>
+        <item name="appColorTextSecondary">#6A6A72</item>
+        <item name="appColorOutline">#DCDCE2</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+    </style>
+
+    <!-- Window animation for the bottom sheets (BottomSheetDialog, the EQ editor). -->
+    <!-- NoisePickActivity: a see-through host, so only its sheet shows over the shade. -->
+    <style name="ThemeOverlay.App.SheetHost" parent="">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+    <!-- The manifest theme of NoisePickActivity: Android reads see-through from the manifest, not from setTheme(). -->
+    <style name="Theme.App.SheetHost" parent="Theme.App.Dark">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    <style name="SheetAnimation">
+        <item name="android:windowEnterAnimation">@anim/sheet_in</item>
+        <item name="android:windowExitAnimation">@anim/sheet_out</item>
+    </style>
+    <!-- Glass: screens rise and fade instead of the platform's slide ([Entrance]). -->
+    <style name="GlassWindowAnim">
+        <item name="android:activityOpenEnterAnimation">@anim/glass_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/glass_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/glass_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/glass_close_exit</item>
+    </style>
+</resources>

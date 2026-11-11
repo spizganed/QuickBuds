@@ -1,0 +1,32 @@
+# Android / Gradle
+.gradle/
+build/
+app/build/
+local.properties
+*.iml
+.idea/
+.cxx/
+captures/
+
+# CodeAssist leftovers
+.platform/
+module.toml
+*.class
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs and local working files
+*.log
+local/
+
+# Desktop (Rust)
+desktop-tauri/dist/
+
+# Screenshots are taken by hand; the script and its output stay local
+scripts/readme-screenshots.sh
+docs/screenshots/
+
+# Wrangler cache (holds the Cloudflare account)
+.wrangler/

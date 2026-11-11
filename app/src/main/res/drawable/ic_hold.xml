@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Press and hold: a fingertip inside a closed ring. The dot style draws its own (DotArt.hold).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5 23.5 V14 A2.5 2.5 0 0 1 14.5 14 V23.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M3.5 13 A8.5 8.5 0 1 0 20.5 13 A8.5 8.5 0 1 0 3.5 13 Z M5.1 13 A6.9 6.9 0 1 0 18.9 13 A6.9 6.9 0 1 0 5.1 13 Z" />
+</vector>

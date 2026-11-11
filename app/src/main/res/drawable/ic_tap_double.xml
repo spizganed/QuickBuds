@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Double tap: a fingertip with two ripples above it, the outer one fainter.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5 23.5 V14 A2.5 2.5 0 0 1 14.5 14 V23.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M6.56 10.46 A6 6 0 0 1 17.44 10.46 L16.08 11.1 A4.5 4.5 0 0 0 7.92 11.1 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.55"
+        android:pathData="M2.94 8.77 A10 10 0 0 1 21.06 8.77 L19.7 9.41 A8.5 8.5 0 0 0 4.3 9.41 Z" />
+</vector>
