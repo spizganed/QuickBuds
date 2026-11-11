@@ -15,7 +15,7 @@ interoperability only). This file describes the code. It does not describe the v
 - `[CAPTURE]`: a frame in a capture on our own buds.
 - `[TESTED]`: a manual test on our own buds.
 - `[REPORT]`: a line in a user's report log.
-- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds 3 (IN v121), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3). realme: Buds T500 Pro (IN 1.1.0.89) and Buds T200 Lite (IN 1.1.0.61).
+- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds 3 (IN v121), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3). realme: Buds T200 Lite (IN 1.1.0.61).
 - `[GUESS]`: unverified.
 
 Never promote a claim without evidence. Never remove a `[GUESS]` tag to tidy up.
@@ -1193,7 +1193,7 @@ Every rule in this section names the model id, the byte and the value. A topic s
 
 - OnePlus Buds 4 `065414`: after off, `0x0413 08 00 01`; after on, `08 00 00` `[CAPTURE]`. `08 00 01` = auto switch on.
 - Triple connection: realme Link item `ITEM_TRIBBLE_DEVICE_CONNECT_CONFIG` on 6 models (flag `tripleDevice`). The buds keep 3 devices. The switch is `11`, the same as dual. With 2 other devices connected, realme Link asks to disconnect one before it connects a third `[VENDOR]`. QuickBuds changes only the row names.
-- realme Buds T500 Pro `066452`, firmware 1.1.0.89: no `0x0429` or `0x0132` in the bitmap `[REPORT]`. Its command table ends at `0x0428` `[FIRMWARE]`. QuickBuds cannot connect or disconnect other devices on it.
+- realme Buds T500 Pro `066452`, firmware 1.1.0.89: no `0x0429` or `0x0132` in the bitmap `[REPORT]`. QuickBuds cannot connect or disconnect other devices on it.
 
 **Code:** `protocol/ModelCatalog.kt`, `protocol/AncModes.kt`, `protocol/RowRules.kt`,
 `protocol/Gestures.kt`; `core/src/cmd.rs`.
