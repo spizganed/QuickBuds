@@ -5,6 +5,7 @@ import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.Feature
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.ui.ThemeRes
 
@@ -46,9 +47,9 @@ object WidgetSettings {
      * select a mode, "cycle" steps through the Noise cycle modes ([cycleNext]), "ll" toggles low latency,
      * a [FEATURE_BUTTONS] key toggles that `0x0403` switch.
      */
-    val BUTTONS = listOf("anc", "trans", "adapt", "off", "cycle", "ll", "wind", "app")
+    val BUTTONS = listOf("anc", "trans", "adapt", "off", "cycle", "ll", "wind", "dual", "app")
     /** Feature buttons: key -> `0x0403` id. */
-    val FEATURE_BUTTONS = mapOf("wind" to Feature.WIND_NOISE)
+    val FEATURE_BUTTONS = mapOf("wind" to Feature.WIND_NOISE, "dual" to Feature.DUAL_DEVICE)
     /** Buttons a widget shows before its setup screen saves a choice. */
     val DEFAULT_BUTTONS = listOf("anc", "trans", "adapt", "ll")
     /** Slots on the controls page. */
@@ -205,12 +206,22 @@ object WidgetSettings {
             "cycle" -> ancCmd && ancPicker(c).isNotEmpty()
             "ll" -> Capabilities.hasFeature(c, Capabilities.gameModeId(c))
             "wind" -> Capabilities.offered(c, Feature.WIND_NOISE, "windMode")
+            "dual" -> Capabilities.offered(c, Feature.DUAL_DEVICE, null)
             "app" -> true
             else -> false
         }
     }
 
     /** Feature [id] is on in the buds' last `0x810D` reply (the same prefs the connection manager keeps). */
+    /** The name of a [FEATURE_BUTTONS] key: "Triple connection" on `tripleDevice` models. */
+    fun featureName(c: Context, key: String): Int = when {
+        key == "wind" -> R.string.row_wind_noise_title
+        ModelCatalog.tripleDevice(c) -> R.string.row_triple_title
+        else -> R.string.row_dual_title
+    }
+
+    fun featureIcon(key: String): Int = if (key == "dual") R.drawable.ic_devices else R.drawable.ic_anc
+
     fun featureOn(c: Context, id: Int) = prefs(c).getString(Capabilities.KEY_FEATURES, null).orEmpty()
         .split(',').any { it == "$id=1" }
 

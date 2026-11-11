@@ -50,7 +50,7 @@ abstract class LiveTileService : TileService() {
 
         /** Asks the system to repaint the tiles that are not listening now. */
         fun refresh(c: Context) {
-            for (cls in listOf(NoiseTileService::class.java, LowLatencyTileService::class.java, WindTileService::class.java)) {
+            for (cls in listOf(NoiseTileService::class.java, LowLatencyTileService::class.java, WindTileService::class.java, DualTileService::class.java)) {
                 runCatching { requestListeningState(c, ComponentName(c, cls)) }
             }
         }
@@ -87,12 +87,13 @@ class NoiseTileService : LiveTileService() {
 
 /** An on/off switch of the buds. Unavailable while the buds are not connected or lack the switch. */
 abstract class SwitchTileService(private val label: Int, private val icon: Int) : LiveTileService() {
+    open fun label(): Int = label
     abstract fun available(): Boolean
     abstract fun isOn(): Boolean
     abstract fun tap(): Intent
 
     override fun paint(tile: Tile) {
-        tile.label = getString(label)
+        tile.label = getString(label())
         tile.icon = Icon.createWithResource(this, icon)
         tile.state = when {
             !connected() || !available() -> Tile.STATE_UNAVAILABLE
@@ -122,6 +123,14 @@ class WindTileService : SwitchTileService(R.string.row_wind_noise_title, R.drawa
     override fun available() = WidgetSettings.available(this, "wind")
     override fun isOn() = WidgetSettings.featureOn(this, Feature.WIND_NOISE)
     override fun tap() = Intent(WidgetActions.ACTION_FEATURE_TOGGLE).putExtra(WidgetActions.EXTRA_FEATURE, Feature.WIND_NOISE)
+}
+
+/** Dual connection (`0x11`), as the widget's "dual" button. "Triple connection" on `tripleDevice` models. */
+class DualTileService : SwitchTileService(R.string.row_dual_title, R.drawable.ic_devices) {
+    override fun label() = WidgetSettings.featureName(this, "dual")
+    override fun available() = WidgetSettings.available(this, "dual")
+    override fun isOn() = WidgetSettings.featureOn(this, Feature.DUAL_DEVICE)
+    override fun tap() = Intent(WidgetActions.ACTION_FEATURE_TOGGLE).putExtra(WidgetActions.EXTRA_FEATURE, Feature.DUAL_DEVICE)
 }
 
 /** Opens QuickBuds. */

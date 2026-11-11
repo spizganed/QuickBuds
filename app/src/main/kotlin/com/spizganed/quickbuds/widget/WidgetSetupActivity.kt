@@ -110,6 +110,7 @@ class WidgetSetupActivity : Activity() {
             "cycle" to (R.drawable.ic_mode_transparency to R.string.widget_cycle),
             "ll" to (R.drawable.ic_low_latency to R.string.row_game_title),
             "wind" to (R.drawable.ic_anc to R.string.row_wind_noise_title),
+            "dual" to (R.drawable.ic_devices to R.string.row_dual_title),
             "app" to (R.drawable.ic_earbud to R.string.widget_open_app)
         )
     }

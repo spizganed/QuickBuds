@@ -20,6 +20,7 @@ import android.view.KeyEvent
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.Capabilities
+import com.spizganed.quickbuds.protocol.Feature
 import com.spizganed.quickbuds.protocol.FeatureSync
 import com.spizganed.quickbuds.protocol.FeatureSyncConfig
 import com.spizganed.quickbuds.protocol.OpoProtocol
@@ -343,7 +344,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
                     FeatureSyncConfig.gameConfirm(ModelCatalog.current(this)?.json)
                 )
             }
-            "FEATURE" -> if (feature >= 0) manager?.setFeatures(feature to featureOn)
+            // Dual connection needs its 0x0413 follow-up, so it takes the app's own path.
+            "FEATURE" -> if (feature == Feature.DUAL_DEVICE) manager?.setDualDevice(featureOn)
+                else if (feature >= 0) manager?.setFeatures(feature to featureOn)
             else -> statusLog("<< UNKNOWN widget action: '$widgetAction'")
         }
     }

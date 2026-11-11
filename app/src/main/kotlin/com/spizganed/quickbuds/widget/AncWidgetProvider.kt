@@ -791,8 +791,9 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 "app" -> Q(false, R.drawable.ic_earbud, "QB", context.getString(R.string.widget_open_app), openAppPI(context))
                 else -> {
                     val f = WidgetSettings.FEATURE_BUTTONS.getValue(key)
-                    Q(WidgetSettings.featureOn(context, f), R.drawable.ic_anc, initials(R.string.row_wind_noise_title),
-                        context.getString(R.string.row_wind_noise_title),
+                    val name = WidgetSettings.featureName(context, key)
+                    Q(WidgetSettings.featureOn(context, f), WidgetSettings.featureIcon(key), initials(name),
+                        context.getString(name),
                         receiverPI(context, WidgetActions.ACTION_FEATURE_TOGGLE, id, key, swap, f))
                 }
             }
