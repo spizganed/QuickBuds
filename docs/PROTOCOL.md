@@ -14,7 +14,7 @@ interoperability only). This file describes the code. It does not describe the v
 - `[VENDOR]`: HeyMelody's behaviour, or realme Link's where a line says so. The project studied the vendor apps for interoperability only.
 - `[CAPTURE]`: a frame in a capture on our own buds.
 - `[TESTED]`: a manual test on our own buds.
-- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3).
+- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds 3 (IN v121), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3).
 - `[GUESS]`: unverified.
 
 Never promote a claim without evidence. Never remove a `[GUESS]` tag to tidy up.
@@ -663,6 +663,8 @@ What the Buds 4 firmware does with a SET `[FIRMWARE]`:
 - Bits `0x001` and `0x008` both mean Off. `0x002` is ANC at the last level. `0x004` is Transparency of the last kind.
   `0x100` is plain Transparency and `0x200` the second Transparency kind (voice enhance).
 - The Buds 4 accept `0x200` although their mode tree has no voice-enhance child. Not tested by ear.
+- Buds Pro 3 and Nord Buds 4 Pro use the same bits up to `0x200`; neither has Adaptive (`0x800`). Without the voice-enhance
+  feature, `0x200` becomes `0x100`. The Nord Buds 4 Pro hold-cycle write takes `<arg>` `01` shared, `03` left, `04` right.
 
 ### Report table
 
@@ -739,7 +741,8 @@ that matches no slot is refused loudly. The diff baseline is persisted (`QuickBu
 On Buds 4 a `fn` the buds do not support is accepted with status `00` and stored as none `[FIRMWARE]`. Only a read
 of `0x0108` proves a gesture. The first refused entry stops the write with status `02`. The Buds 4 support `fn`
 `01 02 03 04 05 06 08 09 0B 0C 0D 11 12 15 19 1A 1B 1C 1D`; `07` and `0A` only on the slide. `04` and `15` have
-their own actions, with no known name. `04` is not an alias of `05`.
+their own actions, with no known name. `04` is not an alias of `05`. The Buds 3 map the same `fn` up to `15` and have
+no AI functions; the Buds Pro 3 add `19 1A 1B`. Their menus in the model list use only `fn` the firmware has.
 
 `0x0402` is ignored without any reply `[CAPTURE]`. A wrong command number fails silently, so the app reads the
 table again after every write and compares.
@@ -899,6 +902,7 @@ leaves out an id that the buds do not have.
 | Buds 4 | `02 04 05 06 0B 0C 0D 11 12 14 16 17 18 19 1B 1D 1E` (no `1C`) |
 | Nord Buds 4 Pro | `02 04 05 06 0B 0C 0D 11 12 13 14 15 16 18 19 1B 1D 27 28 34 37`; `1F` set only; no `1E` |
 | Buds Pro 3 | `02 04 05 06 0B 0C 0D 11 12 13 14 15 16 18 19 1D 22 23 24 27 28`; `0F 1E 1F` set only; no `1B` `1C` |
+| Buds 3 | `02 04 05 06 0B 0C 0D 11 12 14 16 17 18 19 1B 1D 27 28` (no `1C`) |
 
 - `02` and `12` are plain stored bytes. No firmware code acts on them, and HeyMelody never asks for them.
 - `18 01` (Hi-Res on) works only while the phone plays LHDC. Else status `02`. This is why a PC always refuses it.
