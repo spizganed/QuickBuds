@@ -59,8 +59,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 class BudsConnectionManager(private val context: Context) {
 
     companion object {
-        /** Last firmware version read, as HeyMelody shows it ([OpoProtocol.firmwareVersion]). */
-        const val KEY_FIRMWARE = "firmwareVersion"
         /** The buds apply a write about a second after the ack; a read sooner returns the old value and the switch flickers. */
         private const val VERIFY_DELAY_MS = 2200L
         /** The buds do not report these: [setFeature] writes them once. */
@@ -896,23 +894,14 @@ class BudsConnectionManager(private val context: Context) {
     /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §18. */
     fun setFindTone(on: Boolean) = sendRaw(Commands.findTone(on),"Find tone -> $on")
 
-    private val FEATURES_KEY = Capabilities.KEY_FEATURES
-
     /**
      * Latest `0x810D` reply as feature id -> value (PROTOCOL.md §16). Persisted, so the switches
      * open at the last known state instead of jumping when the connect-time read lands.
      */
-    @Volatile var featureStates: Map<Int, Int> = featurePrefs().getString(FEATURES_KEY, "")!!
-        .split(',').mapNotNull { e ->
-            val kv = e.split('=')
-            val k = kv[0].toIntOrNull(); val v = kv.getOrNull(1)?.toIntOrNull()
-            if (k != null && v != null) k to v else null
-        }.toMap()
+    @Volatile var featureStates: Map<Int, Int> = Capabilities.reply(context).orEmpty()
         private set(value) {
             field = value
-            featurePrefs().edit()
-                .putString(FEATURES_KEY, value.entries.joinToString(",") { "${it.key}=${it.value}" })
-                .apply()
+            Capabilities.saveReply(context, value)
         }
 
     /**
@@ -929,9 +918,8 @@ class BudsConnectionManager(private val context: Context) {
         if (name == null) return
         val prefs = featurePrefs()
         if (prefs.getString(ModelCatalog.KEY_DEVICE_NAME, null) == name) return
-        prefs.edit().putString(ModelCatalog.KEY_DEVICE_NAME, name)
-            .remove(Capabilities.KEY_PRODUCT_ID).remove(ModelCatalog.KEY_MANUAL)
-            .remove(Capabilities.KEY_COMMANDS).remove(Capabilities.KEY_FEATURES).apply()
+        prefs.edit().putString(ModelCatalog.KEY_DEVICE_NAME, name).remove(ModelCatalog.KEY_MANUAL).apply()
+        Capabilities.forget(context)
         // The in-memory copy is the saved reply of the old buds: drop it too, until the first fresh reply.
         featureStates = emptyMap()
     }
@@ -1726,7 +1714,7 @@ class BudsConnectionManager(private val context: Context) {
                 val version = msg.parts.filter { it.second == 2 }.joinToString(".") { it.third }.ifEmpty { null }
                 val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
                 log("FIRMWARE: $version text=\"$text\" RAW=[${raw()}]")
-                if (version != null) featurePrefs().edit().putString(KEY_FIRMWARE, version).apply()
+                if (version != null) Capabilities.saveFirmware(context, version)
             }
 
             // --- Wearing / in-case state: 0x8109 query reply or 0x0204 push ---
@@ -1933,7 +1921,7 @@ class BudsConnectionManager(private val context: Context) {
             }
 
             // --- Game mode changed on the buds: push 05, for our own write and for a buds gesture ---
-            is Msg.GameMode -> msg.state(featurePrefs().getString(Capabilities.KEY_PRODUCT_ID, null))?.let { on ->
+            is Msg.GameMode -> msg.state(Capabilities.productId(context))?.let { on ->
                 log("GAME EVT: ${if (on) "ON" else "OFF"}")
                 handler.post { listeners.forEach { it.onGameModeState(on) } }
                 // Also a push report for the engine: it confirms a game-mode operation.
@@ -2013,11 +2001,8 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     private fun onProductId(id: String) {
-        val prefs = featurePrefs()
         // Other buds than last time: a model picked by hand was for those.
-        val edit = prefs.edit().putString(Capabilities.KEY_PRODUCT_ID, id)
-        if (prefs.getString(Capabilities.KEY_PRODUCT_ID, null) != id) edit.remove(ModelCatalog.KEY_MANUAL)
-        edit.apply()
+        if (Capabilities.saveProductId(context, id)) featurePrefs().edit().remove(ModelCatalog.KEY_MANUAL).apply()
         val anc = AncModes.of(context)
         log("PRODUCT ID: $id, model: ${ModelCatalog.current(context)?.name ?: "unknown"} (${if (ModelCatalog.manual(context) != null) "picked by hand" else ModelCatalog.rule(context)}), ANC: " + (listOf(AncModes.OFF, AncModes.TRANSPARENCY, AncModes.ADAPTIVE) +
             AncModes.LEVELS).filter { anc.supports(it) }.joinToString { "$it=${anc.bit(it)}" }.ifEmpty { "none" })

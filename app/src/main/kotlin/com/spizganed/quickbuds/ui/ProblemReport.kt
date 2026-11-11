@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import com.spizganed.quickbuds.bluetooth.BudsConnectionManager
 import com.spizganed.quickbuds.bluetooth.PacketLogger
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.ModelCatalog
@@ -33,8 +32,8 @@ object ProblemReport {
     fun header(c: Context): String {
         val p = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
         val model = ModelCatalog.current(c)?.name ?: p.getString(ModelCatalog.KEY_DEVICE_NAME, null) ?: "unknown buds"
-        val id = p.getString(Capabilities.KEY_PRODUCT_ID, null) ?: "?"
-        val fw = p.getString(BudsConnectionManager.KEY_FIRMWARE, null) ?: "?"
+        val id = Capabilities.productId(c) ?: "?"
+        val fw = Capabilities.firmware(c) ?: "?"
         return "QuickBuds ${UpdateChecker.installed(c)} | ${Build.MANUFACTURER} ${Build.MODEL} | " +
             "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}) | $model ($id) firmware $fw"
     }

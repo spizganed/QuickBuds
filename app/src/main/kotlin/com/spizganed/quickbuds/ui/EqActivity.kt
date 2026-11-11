@@ -97,10 +97,9 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
      */
     private fun builtInPresets(): List<Pair<Int, Int>> {
         val model = ModelCatalog.current(this)
-        val prefs = getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
         val modes = when {
-            model != null -> modelModes(model.json, prefs.getString(BudsConnectionManager.KEY_FIRMWARE, null))
-            prefs.getString(Capabilities.KEY_PRODUCT_ID, null) != null -> return emptyList()
+            model != null -> modelModes(model.json, Capabilities.firmware(this))
+            Capabilities.productId(this) != null -> return emptyList()
             else -> JSONArray("""[{"mode":11,"slot":0},{"mode":14,"slot":1},{"mode":12,"slot":2}]""")
                 .let { a -> (0 until a.length()).map { a.getJSONObject(it) } }
         }

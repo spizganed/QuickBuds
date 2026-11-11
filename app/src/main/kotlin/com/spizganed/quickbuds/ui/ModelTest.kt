@@ -72,9 +72,9 @@ object ModelTest {
      * and makes a row fixture from it.
      */
     fun jsonLine(c: Context, s: State, features: List<Feature>, log: String): String = jsonLine(
-        id = prefs(c).getString(Capabilities.KEY_PRODUCT_ID, null).orEmpty(),
+        id = Capabilities.productId(c).orEmpty(),
         name = ModelCatalog.current(c)?.name ?: "unknown model",
-        firmware = prefs(c).getString(BudsConnectionManager.KEY_FIRMWARE, null).orEmpty(),
+        firmware = Capabilities.firmware(c).orEmpty(),
         caps = Capabilities.commands(c).orEmpty(),
         status = Capabilities.reply(c).orEmpty(),
         shown = features.map { it.key },

@@ -133,8 +133,7 @@ class EarbudSettingsActivity : Activity(), BudsConnectionManager.Listener {
         setContentView(ScrollView(this).apply { addView(root) })
     }
 
-    private fun paintFirmware(version: String? = getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
-        .getString(BudsConnectionManager.KEY_FIRMWARE, null)) {
+    private fun paintFirmware(version: String? = Capabilities.firmware(this)) {
         firmwareText?.text = version ?: "—"
     }
 

@@ -100,7 +100,7 @@ object ModelCatalog {
     /** Which rule of [find] chose the detected model, for the log: "name+id", "name", "id", "squashed name" or "none". */
     fun rule(context: Context): String {
         val p = prefs(context)
-        val id = p.getString(Capabilities.KEY_PRODUCT_ID, null)
+        val id = Capabilities.productId(context)
         val name = p.getString(KEY_DEVICE_NAME, null)
         val models = all(context)
         return when {
@@ -115,7 +115,7 @@ object ModelCatalog {
     /** The detected model, ignoring a manual pick. Null = nothing read yet, or not in the list. */
     fun detected(context: Context): Model? {
         val p = prefs(context)
-        return find(all(context), p.getString(Capabilities.KEY_PRODUCT_ID, null), p.getString(KEY_DEVICE_NAME, null))
+        return find(all(context), Capabilities.productId(context), p.getString(KEY_DEVICE_NAME, null))
     }
 
     /** realme Link's three-device item: the Dual connection rows say "Triple connection". */

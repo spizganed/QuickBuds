@@ -223,8 +223,7 @@ object WidgetSettings {
 
     fun featureIcon(key: String): Int = if (key == "dual") R.drawable.ic_devices else R.drawable.ic_anc
 
-    fun featureOn(c: Context, id: Int) = prefs(c).getString(Capabilities.KEY_FEATURES, null).orEmpty()
-        .split(',').any { it == "$id=1" }
+    fun featureOn(c: Context, id: Int) = Capabilities.featureOn(c, id)
 
     /** Drops everything stored for widget [id] (removed from the home screen). */
     fun forget(c: Context, id: Int) {

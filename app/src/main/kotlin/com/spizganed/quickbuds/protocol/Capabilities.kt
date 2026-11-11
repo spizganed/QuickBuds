@@ -17,10 +17,12 @@ import com.spizganed.quickbuds.ui.ThemeRes
  */
 object Capabilities {
 
-    const val KEY_COMMANDS = "budsCommands"
-    const val KEY_PRODUCT_ID = "budsProductId"
-    /** Written by BudsConnectionManager from every `0x810D` reply, as `id=value,...`. */
-    const val KEY_FEATURES = "lastFeatureStates"
+    // The saved answers of the last buds. Only this object reads or writes them; callers get typed values.
+    private const val KEY_COMMANDS = "budsCommands"
+    private const val KEY_PRODUCT_ID = "budsProductId"
+    /** The last `0x810D` reply, as `id=value,...`. */
+    private const val KEY_FEATURES = "lastFeatureStates"
+    private const val KEY_FIRMWARE = "firmwareVersion"
 
     /** `0x8100` payload `00 <bitmap>` -> the commands it enables, or null if malformed. The table is [Bitmap]'s. */
     fun parse(payload: ByteArray): Set<Int>? = Bitmap.parse(payload)?.commands
@@ -37,6 +39,32 @@ object Capabilities {
 
     /** The 24-bit product id as text, colour variants folded. */
     fun productId(id: Int): String = "%06X".format(ModelCatalog.normalise(id))
+
+    /** The saved product id ("065414"), or null when the buds have not said it. */
+    fun productId(context: Context): String? = prefs(context).getString(KEY_PRODUCT_ID, null)
+
+    /** Saves [id]. True when it differs from the saved one: other buds than last time. */
+    fun saveProductId(context: Context, id: String): Boolean {
+        val changed = productId(context) != id
+        prefs(context).edit().putString(KEY_PRODUCT_ID, id).apply()
+        return changed
+    }
+
+    /** The last firmware version read, as HeyMelody shows it ([OpoProtocol.firmwareVersion]). */
+    fun firmware(context: Context): String? = prefs(context).getString(KEY_FIRMWARE, null)
+
+    fun saveFirmware(context: Context, version: String) = prefs(context).edit().putString(KEY_FIRMWARE, version).apply()
+
+    /** Saves the last `0x810D` reply. */
+    fun saveReply(context: Context, reply: Map<Int, Int>) =
+        prefs(context).edit().putString(KEY_FEATURES, reply.entries.joinToString(",") { "${it.key}=${it.value}" }).apply()
+
+    /** Other buds: their product id, bitmap and reply go, so no saved row of the old buds shows ([RowRules]). */
+    fun forget(context: Context) =
+        prefs(context).edit().remove(KEY_PRODUCT_ID).remove(KEY_COMMANDS).remove(KEY_FEATURES).apply()
+
+    /** Switch [id] is on in the last `0x810D` reply. */
+    fun featureOn(context: Context, id: Int): Boolean = reply(context)?.get(id) == 1
 
     fun supports(context: Context, cmd: Int): Boolean {
         val saved = prefs(context).getString(KEY_COMMANDS, null) ?: return true
@@ -65,13 +93,6 @@ object Capabilities {
 
     /** The buds listed [id] in their last `0x810D` reply. Nothing read yet means no. */
     fun hasFeature(context: Context, id: Int): Boolean = reply(context)?.containsKey(id) == true
-
-    /**
-     * The buds listed [id] in their last `0x810D` reply. [flag] only decides WHAT TO ASK
-     * ([RowRules.askQuery]); it never shows a row on its own.
-     */
-    @Suppress("UNUSED_PARAMETER")
-    fun offered(context: Context, id: Int, flag: String?): Boolean = reply(context)?.containsKey(id) == true
 
     fun save(context: Context, commands: Set<Int>) {
         prefs(context).edit().putString(KEY_COMMANDS, commands.sorted().joinToString(",")).apply()

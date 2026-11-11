@@ -1,7 +1,6 @@
 package com.spizganed.quickbuds.protocol
 
 import android.content.Context
-import com.spizganed.quickbuds.ui.ThemeRes
 import org.json.JSONArray
 
 /**
@@ -109,8 +108,7 @@ class AncModes private constructor(
          * mode silently.
          */
         fun of(context: Context): AncModes {
-            val model = ModelCatalog.current(context) ?: return if (context.getSharedPreferences(
-                    ThemeRes.PREFS_NAME, Context.MODE_PRIVATE).getString(Capabilities.KEY_PRODUCT_ID, null) == null) BUDS4 else NONE
+            val model = ModelCatalog.current(context) ?: return if (Capabilities.productId(context) == null) BUDS4 else NONE
             cached?.let { if (it.first == model.id) return it.second }
             val modes = runCatching { model.json.optJSONArray("ancModes")?.let { parse(it) } }.getOrNull() ?: NONE
             cached = model.id to modes

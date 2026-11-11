@@ -344,8 +344,7 @@ class GestureModel private constructor(
         fun of(context: Context): GestureModel {
             val model = ModelCatalog.current(context)
                 ?: ModelCatalog.all(context).firstOrNull { it.id == BUDS4 }?.takeIf {
-                    context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
-                        .getString(Capabilities.KEY_PRODUCT_ID, null) == null
+                    Capabilities.productId(context) == null
                 }
                 ?: return EMPTY
             cached?.let { if (it.first == model.id) return it.second }
