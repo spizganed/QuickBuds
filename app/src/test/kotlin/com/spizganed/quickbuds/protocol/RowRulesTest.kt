@@ -190,6 +190,13 @@ class RowRulesTest {
         assertTrue(RowRules.TAP_LEVEL in manual && RowRules.PERSONAL_ANC in manual)
     }
 
+    @Test fun personalAncWithoutAModelEntryCountsAsFlagOn() {
+        val reply = mapOf(Feature.PERSONAL_NOISE to 0)
+        val caps = setOf(OpoProtocol.CMD_PERSONAL_NOISE)
+        assertTrue(RowRules.PERSONAL_ANC in RowRules.rows(null, reply, caps))
+        assertFalse(RowRules.PERSONAL_ANC in RowRules.rows(JSONObject("""{"id":"X"}"""), reply, caps))
+    }
+
     @Test fun gameEqNeedsTheSwitchAndTheCommand() {
         val reply = mapOf(Feature.GAME_EQ to 1)
         assertFalse(RowRules.GAME_EQ in RowRules.rows(null, reply, emptySet()))

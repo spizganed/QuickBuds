@@ -117,7 +117,8 @@ object RowRules {
         if (OpoProtocol.CMD_QUERY_FIRMWARE in caps) out += FIRMWARE
         if (p.tapLevel && accepts(OpoProtocol.CMD_SET_TAP_LEVEL)) out += TAP_LEVEL
         // The flag too: HeyMelody gates on it, and Buds 4 list 0x0C without having the feature.
-        if (p.personalAnc && has(Feature.PERSONAL_NOISE) && accepts(OpoProtocol.CMD_PERSONAL_NOISE)) out += PERSONAL_ANC
+        // No models.json entry counts as flag on: the buds' reply and bitmap decide.
+        if ((!p.known || p.personalAnc) && has(Feature.PERSONAL_NOISE) && accepts(OpoProtocol.CMD_PERSONAL_NOISE)) out += PERSONAL_ANC
         if (has(Feature.VOCAL_ENHANCE)) out += VOICE_BOOST
         if (has(Feature.GAME_SOUND)) {
             out += GAME_SOUND

@@ -107,7 +107,8 @@ pub fn rows(i: &Input) -> BTreeSet<&'static str> {
     add(caps(CMD_QUERY_FIRMWARE), FIRMWARE);
     add(p.tap_level() && accepts(CMD_SET_TAP_LEVEL), TAP_LEVEL);
     // The flag too: HeyMelody gates on it, and Buds 4 list 0x0C without having the feature.
-    add(p.personal_anc() && has(FEATURE_PERSONAL_NOISE) && accepts(CMD_PERSONAL_NOISE), PERSONAL_ANC);
+    // No models.json entry counts as flag on: the buds' reply and bitmap decide.
+    add((m.is_none() || p.personal_anc()) && has(FEATURE_PERSONAL_NOISE) && accepts(CMD_PERSONAL_NOISE), PERSONAL_ANC);
     for (id, key) in SWITCH_ROWS {
         add(has(id) && (id != FEATURE_GAME_EQ || caps(CMD_GAME_EQ_STATE)), key);
     }
@@ -247,6 +248,16 @@ mod tests {
         assert!(!auto.contains(TAP_LEVEL) && !auto.contains(PERSONAL_ANC) && auto.contains("autoAnswer"));
         let manual = rows(&Input { manual: true, ..base });
         assert!(manual.contains(TAP_LEVEL) && manual.contains(PERSONAL_ANC));
+    }
+
+    #[test]
+    fn personal_anc_without_a_model_entry_counts_as_flag_on() {
+        let reply = HashMap::from([(FEATURE_PERSONAL_NOISE, 0)]);
+        let caps = [CMD_PERSONAL_NOISE];
+        assert!(rows(&Input { reply: Some(&reply), bitmap: Some(&caps), ..Default::default() }).contains(PERSONAL_ANC));
+        let known = serde_json::json!({ "id": "X" });
+        assert!(!rows(&Input { model: Some(&known), reply: Some(&reply), bitmap: Some(&caps), ..Default::default() })
+            .contains(PERSONAL_ANC));
     }
 
     #[test]
