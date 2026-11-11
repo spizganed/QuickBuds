@@ -1,0 +1,301 @@
+package com.spizganed.quickbuds.protocol
+
+// ===== KeyFunctionParser =====
+
+/**
+ * Parser for the `0x8108` reply to `getKeyFunction` (`0x0108`) — the CURRENT
+ * gesture bindings, as the buds themselves report them.
+ *
+ * WHY THIS EXISTS: it answers "what are the buds currently bound to?" without an
+ * HCI capture, and it is the read half of the gesture write's verification — a
+ * wrong command number is ignored in complete silence, so a write is only ever
+ * trusted after a read-back and diff. It is a READ, so it cannot change a binding.
+ *
+ * THE LAYOUT IS NOW [CAPTURE], AND THE FIRST READING OF IT WAS WRONG.
+ * The `[OSS]` shape `<count> <4-byte entries>` omitted a LEADING STATUS BYTE, so
+ * the first real reply printed `count=0 parsed=18 !LAYOUT`. The payload is:
+ *
+ *     <status> <count> <deviceType, button, buttonAction, function>...
+ *      0x00     0x12     4 bytes each
+ *
+ * Evidence: a 74-byte payload, `00 12 ...`, where 2 + 0x12*4 = 74 EXACTLY. The
+ * count is the second byte. `KeyFunctionItem.cs` does not model this: it describes
+ * ONE entry's bytes, not the payload around it — which is exactly how the off-by-one
+ * got in. See PROTOCOL.md §15.
+ *
+ * THE ENTRY FIELD ORDER IS AS THAT FILE SAYS, and the reply supports it: the third
+ * byte is a small value (1..6, one per action this button supports) and the fourth
+ * is the function (`0x00`, `0x05`, `0x06`, `0x08`, `0x11` seen). Swapping them would
+ * make the "action" set `{0x00, 0x05, 0x06, 0x08, 0x11}` and the "function" set
+ * `{1..6}`, which is the less plausible reading.
+ *
+ * The `function` VALUES were unknown for a long time and are now MEASURED — see
+ * `GestureAction.functionByte` and PROTOCOL.md §15. Do not re-derive them.
+ *
+ * THE `buttonAction` NUMBERS ARE MEASURED, not guessed: 1 single, 2 double, 3 triple,
+ * 4 hold, 5 slide, 6 long hold (PROTOCOL.md §15). They are NOT the `0x0204`
+ * subType `0xF1` action numbers: `F1` reports single tap as `0x00` and long press as
+ * `0x04`, and this reply binds `0x01` as well as `0x04`.
+ *
+ * The field is still printed as a NUMBER ONLY, so the line needs no name table.
+ * Guessing ANC bits already cost this project a regression (PROTOCOL.md §14).
+ *
+ * Because the layout is exactly the thing that was once wrong here, the log line
+ * still ends with `RAW=[...]`, so a capture stays readable by eye even if a future
+ * firmware reshapes the reply.
+ */
+object KeyFunctionParser {
+
+    /** Bytes per entry: deviceType, button, buttonAction, function. [OSS]+[CAPTURE] */
+    const val ENTRY_SIZE = 4
+
+    /**
+     * Bytes before the first entry: a status/result byte, then the count.
+     * `[CAPTURE]` — see the class comment. The count is NOT `payload[0]`.
+     */
+    const val HEADER_SIZE = 2
+
+    /**
+     * The physical-button group: what every `F1` frame this project has captured reports
+     * (`btn=0x01` on both buds), so it is where the user's taps and holds live.
+     *
+     * It is NOT the only group a gesture writes to, and treating it as such was a real bug
+     * — see [BUTTON_ON_CALL] and `writeGestureBinding()`.
+     */
+    const val BUTTON_PRIMARY = 0x01
+
+    /**
+     * `btn 0x06` — the on-call bindings. `[CAPTURE]` 2026-09-22 (see
+     * PACKET-CAPTURE.md Option C), no longer a guess: an HCI capture of HeyMelody itself
+     * caught it writing this exact group while he toggled its on-call section on/off/on/off,
+     * twice over, with the `0x8108` read-back diffing exactly the slot he touched each time.
+     *
+     * Two rows exist in HeyMelody, confirmed: **double tap** (`None` / `Answer + end
+     * call`, one combined option) and **long hold** (`None` / `Decline call`). Measured from
+     * the capture:
+     *
+     *     act 0x02  fn 0x00 <-> 0x1D   (toggled twice — double tap)
+     *     act 0x06  fn 0x00 <-> 0x1C   (toggled twice — long hold)
+     *
+     * `act 0x03` is untouched in every capture — a third slot this group has but HeyMelody's
+     * UI never exercised, so its meaning is still unknown.
+     *
+     * **THE BYTES ARE MEASURED; THE ENGLISH LABELS ARE `[TESTED]`.** The two rows are
+     * double tap (`None` / `Answer + end call`) and long hold (`None` / `Decline call`),
+     * confirmed on a real call (PROTOCOL.md §15). Writing these bytes back is safe:
+     * they are HeyMelody's own, byte-for-byte.
+     *
+     * `act 0x02` and `act 0x03` also exist in `btn 0x01` (the primary group) with UNRELATED
+     * meanings (primary double tap / triple tap). A write that matched on (side, action)
+     * alone, ignoring the button group, would silently re-bind the wrong gesture — which is
+     * exactly why [BUTTON_PRIMARY]-scoped writes ([writeGestureBinding]) and on-call writes
+     * ([Commands.setOnCall]) are separate code
+     * paths that never share a table diff.
+     */
+    const val BUTTON_ON_CALL = 0x06
+
+    /**
+     * `deviceType = 0x04` — "both buds", WRITE-ONLY. `[CAPTURE]` 2026-09-22: every on-call
+     * write HeyMelody sent used this single value instead of two separate `0x01`/`0x02`
+     * entries, and the very next `0x8108` read-back always expanded it into identical `fn`
+     * values on BOTH `dev=0x01` and `dev=0x02` — never `dev=0x04` itself on a READ.
+     *
+     * The hold's ANC-cycle membership (`setSupportNoiseReduction`, PROTOCOL.md §14) is a
+     * DIFFERENT command with no `deviceType` byte in its payload at all — its shared-both-buds
+     * behaviour is a property of that command itself, not this alias. Do not assume the two
+     * are the same mechanism.
+     */
+    const val DEVICE_TYPE_BOTH = 0x04
+
+    data class Entry(
+        val deviceType: Int,
+        val button: Int,
+        val action: Int,
+        val function: Int
+    )
+
+    /**
+     * Named `Table`, not `Result` — a nested class called `Result` collided with
+     * `kotlin.Result` and failed to compile ("inferred type is Result but Result
+     * was expected"). Do not rename it back.
+     */
+    data class Table(
+        /** `payload[0]` — a status/result byte, `0x00` in every reply so far. */
+        val status: Int,
+        val count: Int,
+        val entries: List<Entry>,
+        /** Bytes left over after `entries` — non-empty means the layout is wrong. */
+        val trailing: ByteArray,
+        /** True when `count` disagrees with the number of whole entries found. */
+        val layoutMismatch: Boolean
+    )
+
+    /**
+     * Structured read. Tolerant by design: it reads as many whole 4-byte entries as
+     * the payload holds and reports any shortfall instead of throwing, so a reshaped
+     * reply still prints something a human can read.
+     */
+    fun parse(payload: ByteArray): Table {
+        if (payload.size < HEADER_SIZE) {
+            return Table(-1, 0, emptyList(), payload.copyOf(), true)
+        }
+        val status = payload[0].toInt() and 0xFF
+        val count = payload[1].toInt() and 0xFF
+        val body = payload.copyOfRange(HEADER_SIZE, payload.size)
+
+        val whole = body.size / ENTRY_SIZE
+        val entries = ArrayList<Entry>(whole)
+        for (i in 0 until whole) {
+            val o = i * ENTRY_SIZE
+            entries.add(
+                Entry(
+                    deviceType = body[o].toInt() and 0xFF,
+                    button = body[o + 1].toInt() and 0xFF,
+                    action = body[o + 2].toInt() and 0xFF,
+                    function = body[o + 3].toInt() and 0xFF
+                )
+            )
+        }
+        val trailing = body.copyOfRange(whole * ENTRY_SIZE, body.size)
+        // The count byte should account for every entry AND leave nothing over.
+        val mismatch = count != whole || trailing.isNotEmpty()
+        return Table(status, count, entries, trailing, mismatch)
+    }
+
+    /**
+     * One log line for the reply, GROUPED PER DEVICE/BUTTON and ending with the raw
+     * payload:
+     *
+     *     getKeyFunction reply: status=0x00 count=18 parsed=18
+     *       dev=0x01/btn=0x01[01:00 02:11 ...] dev=0x01/btn=0x06[...] ...
+     *
+     * `act:fn` pairs, both as raw numbers. The grouping is the point: the reply is
+     * read in order to be COMPARED with one taken after a HeyMelody change, and a
+     * per-button list makes the single entry that moved obvious. Groups are sorted by
+     * (device, button) so each bud's rows sit together; the entries inside a group
+     * keep the buds' own order, which is itself a fact about their action enum.
+     */
+    fun describe(payload: ByteArray): String {
+        val raw = OpoProtocol.bytesToHex(payload)
+        if (payload.isEmpty()) return "getKeyFunction reply: EMPTY payload RAW=[]"
+
+        val r = parse(payload)
+        val sb = StringBuilder("getKeyFunction reply: status=0x")
+        sb.append("%02X".format(r.status)).append(" count=").append(r.count)
+            .append(" parsed=").append(r.entries.size)
+        if (r.entries.isEmpty()) {
+            sb.append(" (no whole ").append(ENTRY_SIZE).append("-byte entries)")
+        }
+        val groups = sortedMapOf<Int, StringBuilder>()
+        for (e in r.entries) {
+            val key = (e.deviceType shl 8) or e.button
+            val g = groups.getOrPut(key) { StringBuilder() }
+            if (g.isNotEmpty()) g.append(' ')
+            g.append("%02X:%02X".format(e.action, e.function))
+        }
+        for ((key, g) in groups) {
+            sb.append(" dev=0x").append("%02X".format((key shr 8) and 0xFF))
+                .append("/btn=0x").append("%02X".format(key and 0xFF))
+                .append('[').append(g).append(']')
+        }
+        if (r.trailing.isNotEmpty()) {
+            sb.append(" trailing=[").append(OpoProtocol.bytesToHex(r.trailing))
+            sb.append(']')
+        }
+        if (r.layoutMismatch) {
+            sb.append(" !LAYOUT expected ").append(HEADER_SIZE).append('+').append(r.count)
+                .append('*').append(ENTRY_SIZE)
+                .append(" bytes, got ").append(payload.size)
+        }
+        sb.append(" RAW=[").append(raw).append(']')
+        return sb.toString()
+    }
+
+    /**
+     * Canonical, order-independent signature of a reading: one
+     * `dev=0x01/btn=0x01 act=0x02 -> 0x11` token per entry, sorted.
+     *
+     * A PLAIN STRING on purpose, so it can be STORED between connections. The
+     * experiment this exists for requires disconnecting our app — the vendor app needs
+     * the RFCOMM socket — and reconnecting it, which may restart the process. An
+     * in-memory baseline would be lost exactly in the gap it exists to span, and a lost
+     * baseline is indistinguishable from "nothing changed".
+     */
+    fun signature(table: Table): String =
+        table.entries
+            .map { slotOf(it) + " -> " + "0x%02X".format(it.function) }
+            .sorted()
+            .joinToString("; ")
+
+    /** `dev=0x01/btn=0x01 act=0x02` — the part of an entry a function is bound TO. */
+    private fun slotOf(e: Entry): String =
+        "dev=0x%02X/btn=0x%02X act=0x%02X".format(e.deviceType, e.button, e.action)
+
+    /**
+     * Describes ONLY what moved between two readings, which is the whole reason the
+     * reply is read: change ONE gesture in the vendor app and the single `fn` that
+     * moved names that function's value. The line is built for exactly that reading:
+     *
+     *     dev=0x01/btn=0x01 act=0x02: 0x00 -> 0x12
+     *
+     * A slot present in only ONE of the two is reported as added/removed, because a
+     * missing entry is a different fact from a changed one — and on this firmware a
+     * slot does appear and disappear as a binding is cleared.
+     *
+     * NO CHANGE is stated explicitly rather than returning an empty string, because it
+     * is a REAL RESULT here: rebinding the ANC-cycle HOLD cannot move `fn` at all (the
+     * ANC-cycle hold is offered only the ANC modes, so that hold cannot be bound to voice
+     * assistant), so "nothing moved" is the expected outcome of that particular experiment
+     * and must not be readable as a failure to run.
+     */
+    fun diff(previous: String, current: String): String {
+        val before = parseSignature(previous)
+        val after = parseSignature(current)
+        if (before.isEmpty() && after.isEmpty()) return "unreadable baseline and reading"
+
+        val changed = ArrayList<String>()
+        for (slot in (before.keys + after.keys).sorted()) {
+            val a = before[slot]
+            val b = after[slot]
+            when {
+                a == null -> changed.add("$slot added: 0x%02X".format(b!!))
+                b == null -> changed.add("$slot removed (was 0x%02X)".format(a))
+                a != b -> changed.add("$slot: 0x%02X -> 0x%02X".format(a, b))
+            }
+        }
+        return if (changed.isEmpty()) {
+            "NO CHANGE (${after.size} slots identical)"
+        } else {
+            changed.joinToString(" | ")
+        }
+    }
+
+    /** `dev=0x01/btn=0x01 act=0x02 -> 0x11` tokens -> slot to function. */
+    private fun parseSignature(sig: String): Map<String, Int> {
+        val out = HashMap<String, Int>()
+        for (token in sig.split(';')) {
+            if (token.isBlank()) continue
+            val at = token.lastIndexOf(" -> ")
+            if (at <= 0) continue
+            val fn = parseHex(token.substring(at + 4)) ?: continue
+            out[token.substring(0, at).trim()] = fn
+        }
+        return out
+    }
+
+    /**
+     * Reads a `0x`-prefixed hex byte out of a signature, or null if it is not one.
+     *
+     * WHY NOT `toIntOrNull(16)`: that delegates to `Integer.parseInt`, which REJECTS a
+     * `0x` prefix. Since [signature] writes exactly that prefix, the naive call returns
+     * null for EVERY field, so [parseSignature] yields an empty map for both readings and
+     * every diff silently reports "unreadable baseline and reading" — a failure that
+     * looks like an inconclusive experiment rather than a bug. Strip the prefix first.
+     */
+    private fun parseHex(s: String): Int? {
+        val t = s.trim()
+        val body = if (t.startsWith("0x", ignoreCase = true)) t.substring(2) else t
+        if (body.isEmpty()) return null
+        return body.toIntOrNull(16)
+    }
+}

@@ -1,0 +1,149 @@
+package com.spizganed.quickbuds.ui
+
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+import android.view.View
+import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.GoldenSound
+
+/**
+ * The hearing profile as HeyMelody draws it: a radar over the test frequencies
+ * ([GoldenSound.AXES], 80 at the top, clockwise), one ear at a time, 10 = no change at the rim.
+ * Dots in the Nothing style.
+ */
+class HearingRadarView(context: Context) : View(context) {
+
+    /** Radii 0..10 per axis, null = not read yet. */
+    var values: FloatArray? = null
+        set(v) {
+            val old = field
+            if (v != null && old != null && v.contentEquals(old)) return
+            field = v
+            morph?.cancel()
+            // A new set of values (the other ear): the shape grows from the old one into the new one, it does not snap.
+            if (v == null || shown == null || shown!!.size != v.size || width == 0) { shown = v?.copyOf(); invalidate(); return }
+            val from = shown!!.copyOf()
+            morph = android.animation.ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = 320
+                interpolator = android.view.animation.OvershootInterpolator(1.1f)
+                addUpdateListener { a ->
+                    val t = a.animatedValue as Float
+                    shown = FloatArray(v.size) { i -> from[i] + (v[i] - from[i]) * t }
+                    postInvalidateOnAnimation()
+                }
+                start()
+            }
+        }
+
+    /** What is drawn: [values] while it morphs from the last ones. */
+    private var shown: FloatArray? = null
+    private var morph: android.animation.ValueAnimator? = null
+
+    private fun dp(v: Float) = ThemeRes.dp(context, v).toFloat()
+    private val nothing = ThemeRes.nothing(context)
+    private val glass = ThemeRes.palette(context).glass && !nothing
+    private val ink = ThemeRes.palette(context).text
+    private val accent = ThemeRes.color(context, R.attr.appColorAccent)
+    private val secondary = ThemeRes.color(context, R.attr.appColorTextSecondary)
+    private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = if (nothing) 0f else dp(1f)
+        // Glass: a light grid on the glass surface, as the design.
+        color = if (glass) Palette.withAlpha(ink, 0.5f) else ThemeRes.color(context, R.attr.appColorOutline)
+    }
+    /**
+     * Dots draw without antialiasing, so a diagonal stroke thinner than a cell skips cells. A hairline (0)
+     * is one connected cell wide on the dot grid.
+     */
+    private val stroke = if (nothing) 0f else dp(2f)
+    private val shapePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeJoin = Paint.Join.ROUND }
+    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = dp(11f)
+        color = secondary
+        textAlign = Paint.Align.CENTER
+        typeface = ThemeRes.regular(context)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val w = MeasureSpec.getSize(widthMeasureSpec)
+        setMeasuredDimension(w, minOf(w, ThemeRes.dp(context, 260f)) + ThemeRes.dp(context, LEGEND_DP))
+    }
+
+    private val chartH get() = height - dp(LEGEND_DP)
+    private val cx get() = width / 2f
+    private val cy get() = chartH / 2f
+    private val radius get() = minOf(width.toFloat(), chartH) / 2f - dp(30f)
+    private val legend = context.getString(R.string.golden_boost)
+    /** The legend's swatch: a short line left of the text, centred together under the chart. */
+    private val swatchW get() = dp(16f)
+    private val legendX get() = (width - swatchW - dp(6f) - labelPaint.measureText(legend)) / 2
+    private val legendY get() = height - dp(LEGEND_DP) / 2
+
+    private fun point(i: Int, r: Float): Pair<Float, Float> {
+        val a = -2 * Math.PI / 3 + i * 2 * Math.PI / GoldenSound.AXES.size
+        return (cx + Math.cos(a) * radius * r / 10).toFloat() to (cy + Math.sin(a) * radius * r / 10).toFloat()
+    }
+
+    private fun polygon(values: FloatArray): Path = Path().apply {
+        values.forEachIndexed { i, v -> point(i, v).let { (x, y) -> if (i == 0) moveTo(x, y) else lineTo(x, y) } }
+        close()
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        if (nothing) DotArt.draw(context, canvas, width, height) { shapes(it) } else shapes(canvas)
+        GoldenSound.AXES.forEachIndexed { i, f ->
+            val (x, y) = point(i, 12.2f)
+            val label = if (f >= 1000) "${f / 1000.0}".removeSuffix(".0") + " kHz" else "$f Hz"
+            canvas.drawText(label, x, y + labelPaint.textSize / 3, labelPaint)
+        }
+        labelPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText(legend, legendX + swatchW + dp(6f), legendY + labelPaint.textSize / 3, labelPaint)
+        labelPaint.textAlign = Paint.Align.CENTER
+    }
+
+    private fun shapes(canvas: Canvas) {
+        val boost = polygon(FloatArray(GoldenSound.AXES.size) { 10f })
+        val profile = (shown ?: values)?.let { polygon(it) }
+        shapePaint.style = Paint.Style.FILL
+        // Glass: a faint white plate; other styles: the secondary colour at 10%.
+        shapePaint.color = if (glass) Palette.withAlpha(ink, 0.10f) else secondary and 0x00FFFFFF or 0x1A000000
+        canvas.drawPath(boost, shapePaint)
+        // Glass: the profile under the grid, so the design's lines read through the shape.
+        if (glass && profile != null) {
+            shapePaint.color = accent and 0x00FFFFFF or 0x40000000
+            canvas.drawPath(profile, shapePaint)
+        }
+        shapePaint.style = Paint.Style.STROKE
+        shapePaint.strokeWidth = stroke
+        if (!glass) {
+            shapePaint.color = secondary
+            canvas.drawPath(boost, shapePaint)
+            canvas.drawLine(legendX, legendY, legendX + swatchW, legendY, shapePaint)
+        }
+        for (ring in listOf(2.5f, 5f, 7.5f)) canvas.drawPath(polygon(FloatArray(GoldenSound.AXES.size) { ring }), gridPaint)
+        GoldenSound.AXES.indices.forEach { i ->
+            val (x, y) = point(i, 10f)
+            canvas.drawLine(cx, cy, x, y, gridPaint)
+        }
+        if (glass) {
+            // Glass: a bright rim round the boost area, and the legend line in the same light.
+            shapePaint.color = Palette.withAlpha(ink, 0.75f)
+            canvas.drawPath(boost, shapePaint)
+            canvas.drawLine(legendX, legendY, legendX + swatchW, legendY, shapePaint)
+        }
+        if (profile == null) return
+        if (!glass) {
+            shapePaint.style = Paint.Style.FILL
+            shapePaint.color = accent and 0x00FFFFFF or 0x40000000
+            canvas.drawPath(profile, shapePaint)
+            shapePaint.style = Paint.Style.STROKE
+            shapePaint.strokeWidth = stroke
+        }
+        shapePaint.color = accent
+        canvas.drawPath(profile, shapePaint)
+    }
+
+    private companion object { const val LEGEND_DP = 24f }
+}

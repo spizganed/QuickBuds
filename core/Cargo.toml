@@ -1,0 +1,21 @@
+[package]
+name = "buds-core"
+version = "0.1.0"
+edition = "2021"
+description = "Sans-IO core of QuickBuds: frames, typed messages, commands. No dependencies."
+license = "GPL-3.0-or-later"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+strip = true
+codegen-units = 1
+
+[dependencies]
+
+[dev-dependencies]
+serde_json = "1"
