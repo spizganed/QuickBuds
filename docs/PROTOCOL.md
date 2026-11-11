@@ -14,6 +14,7 @@ interoperability only). This file describes the code. It does not describe the v
 - `[VENDOR]`: HeyMelody's behaviour, or realme Link's where a line says so. The project studied the vendor apps for interoperability only.
 - `[CAPTURE]`: a frame in a capture on our own buds.
 - `[TESTED]`: a manual test on our own buds.
+- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3).
 - `[GUESS]`: unverified.
 
 Never promote a claim without evidence. Never remove a `[GUESS]` tag to tidy up.
@@ -77,6 +78,12 @@ the two UUIDs in the same order and takes the channel from the buds' SDP record.
 
 A case lid close ends the socket (section 13) `[CAPTURE]`.
 
+**RFCOMM servers in the firmware** `[FIRMWARE]`:
+- Buds 4: `079A` on channel 15, a plain SPP `1101` on channel 12, and one more SPP server on channel 29.
+- Buds Pro 3: `1101` on channel 12, `079A` on channel 15, `079B` on channel 24 (a sound-record service).
+- Nord Buds 4 Pro: `079A` takes 2 links (two phones). `1101` takes the chip maker's own tool frames, not this protocol: a write there gets no reply. `079B` is listed but has no server.
+- Only `079A` carries this protocol. A phone opens a channel only once, so a second app on the same phone cannot share it.
+
 **Fast Pair Message Stream** (`df21fe2c-2515-4fdb-8886-f12c4d67927c`, Google's public spec). Many models list it in SDP.
 It is a separate RFCOMM service, so it opens while another app holds `079A` `[TESTED]` (Buds 4: secure works, insecure fails).
 Message: `<group> <code> <length u16 BE> <data>`. On open the buds send, without a request `[CAPTURE]`:
@@ -137,6 +144,7 @@ AA  <TotalLen>  <Slice> 00  <Fsn>  <part of Cmd/Seq/PayLen/Payload>
 - The receiver reads a byte stream, not separate reads. It discards bytes before `AA`, reads `TotalLen`, and waits for that many bytes. The Kotlin framer treats a `TotalLen` below 4 (slice) or 7 (whole message) as noise: it drops the `AA` and searches on. It drops a frame above 2048 bytes. The core framer drops a `Len` below 2 or above 4096.
 - A read that starts with `AA` begins a new frame. Any other read continues the frame in progress.
 - The sender splits a message when it exceeds the frame budget. The budget is 660 bytes by default. For the upgrade data command `0x0302`, a value of 1-659 from the buds replaces it `[VENDOR]`. Some bulk transfers use a larger budget. QuickBuds sends none.
+- `Slice` bit 3 (`0x08`) adds 2 bytes after the payload, probably a check value `[FIRMWARE]` (Buds 4). QuickBuds never sets it.
 - One write at a time. Wait for the write to finish (5 s limit) and pause a model-specific interval between slices.
 
 **Code:** `protocol/Wire.kt`, `core/src/wire.rs`.
@@ -645,8 +653,16 @@ model list, never the mode's position in a list.
 | Smart | 7 | `01 01 80` |
 | Adaptive | 11 | `01 01 00 08` |
 
-Adaptive is bit 11 (mask `0x0800`), not bit 8. Bit 8 gives `01 01 00 01`, a different mode. Take the bit
+Adaptive is bit 11 (mask `0x0800`), not bit 8. Bit 8 gives `01 01 00 01`: plain Transparency `[FIRMWARE]` (Buds 4). Take the bit
 from the model's `slot`, never from a mode's position in a list.
+
+What the Buds 4 firmware does with a SET `[FIRMWARE]`:
+- Payload `<type> <arg> <mask u16 LE>`. 2 bytes or fewer: status `01`. `<arg>` other than `01`: status `02`.
+- Type `01` sets the mode. Type `02` sets the hold cycle (the same bits) and always succeeds. Any other type: status `01`.
+- Both buds out of the ear: status `0E`. A failed mode change: status `01`.
+- Bits `0x001` and `0x008` both mean Off. `0x002` is ANC at the last level. `0x004` is Transparency of the last kind.
+  `0x100` is plain Transparency and `0x200` the second Transparency kind (voice enhance).
+- The Buds 4 accept `0x200` although their mode tree has no voice-enhance child. Not tested by ear.
 
 ### Report table
 
@@ -719,6 +735,11 @@ entry is 4 bytes: `<dev> <button> <act> <fn>` `[CAPTURE]`. The read reply has a 
 A write carries the whole table `[CAPTURE]`: the entries that do not change come from the last good read. A reply
 with no entries replaces nothing. The app re-reads the table and diffs it after every write. A write
 that matches no slot is refused loudly. The diff baseline is persisted (`QuickBudsKeyFnDiff`).
+
+On Buds 4 a `fn` the buds do not support is accepted with status `00` and stored as none `[FIRMWARE]`. Only a read
+of `0x0108` proves a gesture. The first refused entry stops the write with status `02`. The Buds 4 support `fn`
+`01 02 03 04 05 06 08 09 0B 0C 0D 11 12 15 19 1A 1B 1C 1D`; `07` and `0A` only on the slide. `04` and `15` have
+their own actions, with no known name. `04` is not an alias of `05`.
 
 `0x0402` is ignored without any reply `[CAPTURE]`. A wrong command number fails silently, so the app reads the
 table again after every write and compares.
@@ -866,6 +887,31 @@ to `09`, `1A` and `1D`. No device test exists.
 
 Ids `09`-`3B` without a `[CAPTURE]` are `[VENDOR]`, wired, unverified on buds. A row shows where
 `0x810D` lists the id, or a hand-picked model has the flag.
+
+### What the firmware accepts `[FIRMWARE]`
+
+A `0x0403` write calls the firmware's set function for the id. No set function: status `01`. The function says
+no: status `02`. Else `00`, and the buds read the value back and send it to the other bud. A `0x010D` read
+leaves out an id that the buds do not have.
+
+| Model | Ids the buds set and read |
+|---|---|
+| Buds 4 | `02 04 05 06 0B 0C 0D 11 12 14 16 17 18 19 1B 1D 1E` (no `1C`) |
+| Nord Buds 4 Pro | `02 04 05 06 0B 0C 0D 11 12 13 14 15 16 18 19 1B 1D 27 28 34 37`; `1F` set only; no `1E` |
+| Buds Pro 3 | `02 04 05 06 0B 0C 0D 11 12 13 14 15 16 18 19 1D 22 23 24 27 28`; `0F 1E 1F` set only; no `1B` `1C` |
+
+- `02` and `12` are plain stored bytes. No firmware code acts on them, and HeyMelody never asks for them.
+- `18 01` (Hi-Res on) works only while the phone plays LHDC. Else status `02`. This is why a PC always refuses it.
+- `06` is always accepted and applies after a 500 ms timer.
+- Nord Buds 4 Pro: `28` (game mode on buds with `0x0423`) gets status `02` while no device counts as audio-connected.
+  A PC with only the data link can get this.
+- Buds Pro 3: `28` follows the same rule. An accepted `28` goes into the record of the phone that wrote it. If the buds
+  find no record for that phone, they store nothing and still answer `00`. If the record is in a second mode, the value
+  goes into the record, while a read of `28` returns another byte. So `28 01` can ack and still read `0` (reports #150, #179).
+  The read does not confirm game mode on these buds.
+- Buds 4: power saving `17` refuses `02 14 18 19` while it is on. Turning it on saves and clears those
+  switches; turning it off puts them back.
+- Buds 4 also have `0D` (tap to take a photo) and `16` (lost reminder).
 
 Per-model switch lists and flags are in section 21.5.
 
@@ -1280,7 +1326,7 @@ The writes are `0x0408`, `0x0414`, `0x0419`, `0x041D`, `0x041F`, `0x042B`, `0x04
 - Hold cycle mask: bit 1 alone has never been cleared (section 14).
 - Push `F1` `act 00`; `F3` (HeyMelody ignores both).
 - The recurring `F1` family `AA 0D 00 00 04 02 FF 06 00 F1 01 01 XX YY 02`, and `02 01 08 0C 02` / `02 01 07 0B 02` (non-multiples of ten; maybe a fine battery field). **Do not guess these from a few samples.**
-- `0x0404` with a level form `01 02 <level>` `[GUESS]`. Unverified.
+- `0x0404` type `02` is the hold cycle, not a level form `[FIRMWARE]` (Buds 4). No level form exists in that firmware.
 - Switch `05`: HeyMelody never uses its value.
 - Other models' ANC bits, gesture writes and `[VENDOR]` features: unverified until an owner reads a write back.
 
