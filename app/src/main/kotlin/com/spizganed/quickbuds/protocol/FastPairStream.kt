@@ -36,4 +36,12 @@ object FastPairStream {
         }
         return Battery(level(m.data[0]), level(m.data[1]), level(m.data[2]))
     }
+
+    /**
+     * The stream's case level that stands in for the link's, or null. It stands in only when the link gives no case
+     * level or `0`, and only while it is younger than [maxAgeMs]. [caseHidden]: "Hide old battery levels" is on and
+     * the last link report left the case out, so no case level shows.
+     */
+    fun caseStandIn(stream: Level?, ageMs: Long, maxAgeMs: Long, linkCase: Int?, caseHidden: Boolean): Level? =
+        stream?.takeIf { ageMs < maxAgeMs && (linkCase == null || linkCase == 0) && !caseHidden }
 }

@@ -38,4 +38,15 @@ class FastPairStreamTest {
     @Test fun otherMessagesAreNoBattery() {
         assertNull(FastPairStream.battery(FastPairStream.split(capture).first[0]))
     }
+
+    @Test fun caseStandIn() {
+        val level = FastPairStream.Level(70, false)
+        val gap = 300_000L
+        assertEquals(level, FastPairStream.caseStandIn(level, 1_000, gap, null, false))
+        assertEquals(level, FastPairStream.caseStandIn(level, 1_000, gap, 0, false))
+        assertNull(FastPairStream.caseStandIn(level, 1_000, gap, 40, false))
+        assertNull(FastPairStream.caseStandIn(level, gap, gap, null, false))
+        assertNull(FastPairStream.caseStandIn(level, 1_000, gap, null, true))
+        assertNull(FastPairStream.caseStandIn(null, 1_000, gap, null, false))
+    }
 }
