@@ -15,7 +15,7 @@ interoperability only). This file describes the code. It does not describe the v
 - `[CAPTURE]`: a frame in a capture on our own buds.
 - `[TESTED]`: a manual test on our own buds.
 - `[REPORT]`: a line in a user's report log.
-- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds 3 (IN v121), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3).
+- `[FIRMWARE]`: read from the model's published firmware image, for interoperability. It shows what the buds accept and answer, not what an app sends. The models: OnePlus Buds 4 (EU v108), Buds 3 (IN v121), Buds Pro 3 (IN v143; data section copied from flash at boot), Nord Buds 4 Pro (IN v158; the same image serves Enco Air5 Pro and Buds Ace 3). realme: Buds T500 Pro (IN 1.1.0.89) and Buds T200 Lite (IN 1.1.0.61).
 - `[GUESS]`: unverified.
 
 Never promote a claim without evidence. Never remove a `[GUESS]` tag to tidy up.
@@ -853,6 +853,7 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 - **Head gesture mapping** `[VENDOR]`: `0x0431 00` = nod answers / shake declines, `01` = the reverse. Read `0x0134` → `00 <type>`, pushed as `F5 <type>`. Bitmap bit 66. Was: "HeyMelody parses only the push". Is: it parses both.
 - **Game sound type** `[VENDOR]`: `0x0423 <type> 01`, Off (`0`) included. Read `0x012B` → `00 <selected> <count> <types>`. Types: `0` Off, `1` a Chinese game, `3` shooting games. Offered: the model's `gameSoundList` types the buds also list.
 
+- **realme JieLi models** `[FIRMWARE]` (Buds T200 Lite): `0x0403` stores any id up to `0x28`, and `0x010D` reads it back. A read-back proves only the store, not the feature. The firmware handles `0x0100`-`0x0114`, `0x0120`, `0x0122`, `0x0200`-`0x0205`, `0x0400`-`0x040C` and `0x0418`.
 - **realme models** `[VENDOR]` (realme Link 5.8.811): the per-model screen lists name the rows a model shows. The `statusQuery` for 30 realme models asks only for the ids of those rows: `04` smart play/pause, `06` game mode, `0B` hearing profile, `11` dual connection, `18` Hi-Res, `1B` 3D sound. Only the Air8 Pro, Air7 Pro, Air 5 Pro and Air6 Pro list a hearing profile. The T500 Pro does not (report #21), and its buds do not answer the tones. The Air7 Pro keeps its list: its owner confirmed it `[TESTED]`.
 - A row whose id the model is not asked for does not show (HeyMelody parity: no Power saving or Personalised ANC on Buds 4).
 - Parsed into `featureStates`, logged as `FEATURES:`. The buds' list wins over the model list while connected.
@@ -1190,7 +1191,7 @@ Every rule in this section names the model id, the byte and the value. A topic s
 
 - OnePlus Buds 4 `065414`: after off, `0x0413 08 00 01`; after on, `08 00 00` `[CAPTURE]`. `08 00 01` = auto switch on.
 - Triple connection: realme Link item `ITEM_TRIBBLE_DEVICE_CONNECT_CONFIG` on 6 models (flag `tripleDevice`). The buds keep 3 devices. The switch is `11`, the same as dual. With 2 other devices connected, realme Link asks to disconnect one before it connects a third `[VENDOR]`. QuickBuds changes only the row names.
-- realme Buds T500 Pro `066452`, firmware 1.1.0.89: no `0x0429` or `0x0132` in the bitmap. QuickBuds cannot connect or disconnect other devices on it `[REPORT]`.
+- realme Buds T500 Pro `066452`, firmware 1.1.0.89: no `0x0429` or `0x0132` in the bitmap `[REPORT]`. Its command table ends at `0x0428` `[FIRMWARE]`. QuickBuds cannot connect or disconnect other devices on it.
 
 **Code:** `protocol/ModelCatalog.kt`, `protocol/AncModes.kt`, `protocol/RowRules.kt`,
 `protocol/Gestures.kt`; `core/src/cmd.rs`.
