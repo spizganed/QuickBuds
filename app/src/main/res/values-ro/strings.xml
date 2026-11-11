@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgeturi</string>
     <string name="setup_widgets_body">Pune QuickBuds pe ecranul principal. Dacă un buton nu face nimic, ține apăsat pe ecranul principal și deschide Widgeturi.</string>
     <string name="setup_widgets_add">Adaugă</string>
+    <string name="widget_placed_section">Pe ecranul de pornire</string>
     <string name="setup_feedback_title">Feedback și teste</string>
     <string name="setup_feedback_body">Spune dezvoltatorului ce merge și ce nu. Nimic nu se trimite până nu atingi Trimite. Ambele instrumente sunt în Setări.</string>
     <string name="settings_ping_title">Numără instalarea mea</string>

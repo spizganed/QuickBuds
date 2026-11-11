@@ -661,6 +661,7 @@
     <string name="setup_widgets_title">Widgets</string>
     <string name="setup_widgets_body">Put QuickBuds on your home screen. If a button does nothing, long-press the home screen and open Widgets.</string>
     <string name="setup_widgets_add">Add</string>
+    <string name="widget_placed_section">On your home screen</string>
     <string name="setup_feedback_title">Feedback and tests</string>
     <string name="setup_feedback_body">Tell the developer what works and what does not. Nothing is sent until you tap Send. Both tools are in Settings.</string>
     <string name="settings_ping_title">Count my install</string>

@@ -560,6 +560,7 @@
     <string name="setup_widgets_title">小工具</string>
     <string name="setup_widgets_body">把 QuickBuds 放到主畫面。如果按鈕沒反應，請長按主畫面並開啟小工具。</string>
     <string name="setup_widgets_add">新增</string>
+    <string name="widget_placed_section">在主畫面上</string>
     <string name="setup_feedback_title">意見回饋與測試</string>
     <string name="setup_feedback_body">告訴開發者哪些能用、哪些不能用。點選傳送之前不會傳送任何內容。兩個工具都在設定中。</string>
     <string name="settings_ping_title">統計我的安裝</string>

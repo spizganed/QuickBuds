@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgetar</string>
     <string name="setup_widgets_body">Lägg QuickBuds på startskärmen. Om en knapp inte gör något, håll in startskärmen och öppna Widgetar.</string>
     <string name="setup_widgets_add">Lägg till</string>
+    <string name="widget_placed_section">På hemskärmen</string>
     <string name="setup_feedback_title">Feedback och tester</string>
     <string name="setup_feedback_body">Berätta för utvecklaren vad som fungerar och inte. Inget skickas förrän du trycker på Skicka. Båda verktygen finns i Inställningar.</string>
     <string name="settings_ping_title">Räkna min installation</string>

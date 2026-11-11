@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">ウィジェット</string>
     <string name="setup_widgets_body">QuickBuds をホーム画面に置きます。ボタンが反応しないときは、ホーム画面を長押ししてウィジェットを開いてください。</string>
     <string name="setup_widgets_add">追加</string>
+    <string name="widget_placed_section">ホーム画面上</string>
     <string name="setup_feedback_title">フィードバックとテスト</string>
     <string name="setup_feedback_body">動くものと動かないものを開発者に伝えます。送信をタップするまで何も送られません。どちらのツールも設定にあります。</string>
     <string name="settings_ping_title">インストールを数える</string>

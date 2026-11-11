@@ -560,6 +560,7 @@
     <string name="setup_widgets_title">विजेट</string>
     <string name="setup_widgets_body">QuickBuds को होम स्क्रीन पर रखें। कोई बटन कुछ न करे तो होम स्क्रीन को देर तक दबाएँ और विजेट खोलें।</string>
     <string name="setup_widgets_add">जोड़ें</string>
+    <string name="widget_placed_section">आपकी होम स्क्रीन पर</string>
     <string name="setup_feedback_title">फ़ीडबैक और टेस्ट</string>
     <string name="setup_feedback_body">डेवलपर को बताएँ कि क्या चलता है और क्या नहीं। भेजें दबाने तक कुछ नहीं भेजा जाता। दोनों टूल सेटिंग में हैं।</string>
     <string name="settings_ping_title">मेरा इंस्टॉल गिनें</string>

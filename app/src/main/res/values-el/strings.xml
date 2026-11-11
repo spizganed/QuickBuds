@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widget</string>
     <string name="setup_widgets_body">Βάλε το QuickBuds στην αρχική οθόνη. Αν ένα κουμπί δεν κάνει τίποτα, πάτα παρατεταμένα την αρχική οθόνη και άνοιξε τα Widget.</string>
     <string name="setup_widgets_add">Προσθήκη</string>
+    <string name="widget_placed_section">Στην αρχική οθόνη</string>
     <string name="setup_feedback_title">Σχόλια και δοκιμές</string>
     <string name="setup_feedback_body">Πες στον προγραμματιστή τι λειτουργεί και τι όχι. Τίποτα δεν στέλνεται πριν πατήσεις Αποστολή. Και τα δύο εργαλεία είναι στις Ρυθμίσεις.</string>
     <string name="settings_ping_title">Μέτρηση της εγκατάστασής μου</string>

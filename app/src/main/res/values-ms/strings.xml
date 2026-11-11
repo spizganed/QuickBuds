@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widget</string>
     <string name="setup_widgets_body">Letakkan QuickBuds pada skrin utama. Jika butang tidak berfungsi, tekan lama skrin utama dan buka Widget.</string>
     <string name="setup_widgets_add">Tambah</string>
+    <string name="widget_placed_section">Pada skrin utama</string>
     <string name="setup_feedback_title">Maklum balas dan ujian</string>
     <string name="setup_feedback_body">Beritahu pembangun apa yang berfungsi dan tidak. Tiada apa dihantar sehingga anda mengetik Hantar. Kedua-dua alat ada dalam Tetapan.</string>
     <string name="settings_ping_title">Kira pemasangan saya</string>

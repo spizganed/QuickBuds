@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgets</string>
     <string name="setup_widgets_body">Zet QuickBuds op je startscherm. Doet een knop niets, houd dan het startscherm ingedrukt en open Widgets.</string>
     <string name="setup_widgets_add">Toevoegen</string>
+    <string name="widget_placed_section">Op je startscherm</string>
     <string name="setup_feedback_title">Feedback en tests</string>
     <string name="setup_feedback_body">Vertel de ontwikkelaar wat werkt en wat niet. Er wordt niets verstuurd tot je op Verzenden tikt. Beide hulpmiddelen staan in Instellingen.</string>
     <string name="settings_ping_title">Mijn installatie meetellen</string>

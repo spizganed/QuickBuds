@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgety</string>
     <string name="setup_widgets_body">Dejte QuickBuds na domovskou obrazovku. Když tlačítko nic neudělá, dlouze stiskněte domovskou obrazovku a otevřete Widgety.</string>
     <string name="setup_widgets_add">Přidat</string>
+    <string name="widget_placed_section">Na domovské obrazovce</string>
     <string name="setup_feedback_title">Zpětná vazba a testy</string>
     <string name="setup_feedback_body">Řekněte vývojáři, co funguje a co ne. Nic se neodešle, dokud nepoklepete na Odeslat. Oba nástroje jsou v Nastavení.</string>
     <string name="settings_ping_title">Započítat mou instalaci</string>

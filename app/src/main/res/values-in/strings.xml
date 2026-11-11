@@ -560,6 +560,7 @@
     <string name="setup_widgets_title">Widget</string>
     <string name="setup_widgets_body">Taruh QuickBuds di layar utama. Jika tombol tidak berfungsi, tekan lama layar utama lalu buka Widget.</string>
     <string name="setup_widgets_add">Tambah</string>
+    <string name="widget_placed_section">Di layar utama</string>
     <string name="setup_feedback_title">Masukan dan uji coba</string>
     <string name="setup_feedback_body">Beri tahu pengembang apa yang berfungsi dan tidak. Tidak ada yang dikirim sampai kamu mengetuk Kirim. Kedua alat ada di Pengaturan.</string>
     <string name="settings_ping_title">Hitung instalasi saya</string>

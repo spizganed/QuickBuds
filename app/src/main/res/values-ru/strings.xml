@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Виджеты</string>
     <string name="setup_widgets_body">Добавьте QuickBuds на главный экран. Если кнопка не работает, удерживайте главный экран и откройте «Виджеты».</string>
     <string name="setup_widgets_add">Добавить</string>
+    <string name="widget_placed_section">На главном экране</string>
     <string name="setup_feedback_title">Отзывы и тесты</string>
     <string name="setup_feedback_body">Расскажите разработчику, что работает, а что нет. Ничего не отправляется, пока вы не нажмёте «Отправить». Оба инструмента есть в настройках.</string>
     <string name="settings_ping_title">Учитывать мою установку</string>

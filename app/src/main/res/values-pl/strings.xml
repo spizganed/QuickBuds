@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widżety</string>
     <string name="setup_widgets_body">Umieść QuickBuds na ekranie głównym. Jeśli przycisk nic nie robi, przytrzymaj ekran główny i otwórz Widżety.</string>
     <string name="setup_widgets_add">Dodaj</string>
+    <string name="widget_placed_section">Na ekranie głównym</string>
     <string name="setup_feedback_title">Opinie i testy</string>
     <string name="setup_feedback_body">Powiedz deweloperowi, co działa, a co nie. Nic nie zostanie wysłane, dopóki nie dotkniesz Wyślij. Oba narzędzia są w Ustawieniach.</string>
     <string name="settings_ping_title">Policz moją instalację</string>

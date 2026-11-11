@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgets</string>
     <string name="setup_widgets_body">Lege QuickBuds auf deinen Startbildschirm. Tut eine Taste nichts, halte den Startbildschirm gedrückt und öffne Widgets.</string>
     <string name="setup_widgets_add">Hinzufügen</string>
+    <string name="widget_placed_section">Auf dem Startbildschirm</string>
     <string name="setup_feedback_title">Feedback und Tests</string>
     <string name="setup_feedback_body">Sag dem Entwickler, was funktioniert und was nicht. Nichts wird gesendet, bevor du auf Senden tippst. Beide Werkzeuge sind in den Einstellungen.</string>
     <string name="settings_ping_title">Meine Installation zählen</string>

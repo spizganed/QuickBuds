@@ -560,6 +560,7 @@
     <string name="setup_widgets_title">Tiện ích</string>
     <string name="setup_widgets_body">Đặt QuickBuds lên màn hình chính. Nếu nút không phản hồi, hãy nhấn giữ màn hình chính và mở Tiện ích.</string>
     <string name="setup_widgets_add">Thêm</string>
+    <string name="widget_placed_section">Trên màn hình chính</string>
     <string name="setup_feedback_title">Phản hồi và kiểm tra</string>
     <string name="setup_feedback_body">Cho nhà phát triển biết điều gì hoạt động và điều gì không. Không có gì được gửi cho đến khi bạn chạm Gửi. Cả hai công cụ đều có trong Cài đặt.</string>
     <string name="settings_ping_title">Đếm lượt cài của tôi</string>

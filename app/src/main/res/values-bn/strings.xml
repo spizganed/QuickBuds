@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">উইজেট</string>
     <string name="setup_widgets_body">QuickBuds হোম স্ক্রিনে রাখুন। কোনো বোতাম কাজ না করলে হোম স্ক্রিনে দীর্ঘক্ষণ চেপে উইজেট খুলুন।</string>
     <string name="setup_widgets_add">যোগ করুন</string>
+    <string name="widget_placed_section">আপনার হোম স্ক্রিনে</string>
     <string name="setup_feedback_title">মতামত ও পরীক্ষা</string>
     <string name="setup_feedback_body">কী কাজ করে আর কী করে না, ডেভেলপারকে জানান। পাঠান চাপার আগে কিছুই পাঠানো হয় না। দুটি টুলই সেটিংসে আছে।</string>
     <string name="settings_ping_title">আমার ইনস্টল গণনা করুন</string>

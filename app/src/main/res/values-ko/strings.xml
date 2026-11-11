@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">위젯</string>
     <string name="setup_widgets_body">QuickBuds를 홈 화면에 놓으세요. 버튼이 반응하지 않으면 홈 화면을 길게 눌러 위젯을 여세요.</string>
     <string name="setup_widgets_add">추가</string>
+    <string name="widget_placed_section">홈 화면에 있음</string>
     <string name="setup_feedback_title">피드백과 테스트</string>
     <string name="setup_feedback_body">무엇이 되고 안 되는지 개발자에게 알려 주세요. 보내기를 누르기 전에는 아무것도 전송되지 않습니다. 두 도구 모두 설정에 있습니다.</string>
     <string name="settings_ping_title">내 설치 집계</string>

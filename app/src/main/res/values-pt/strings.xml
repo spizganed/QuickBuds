@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgets</string>
     <string name="setup_widgets_body">Coloque o QuickBuds na tela inicial. Se um botão não fizer nada, toque e segure a tela inicial e abra Widgets.</string>
     <string name="setup_widgets_add">Adicionar</string>
+    <string name="widget_placed_section">No ecrã principal</string>
     <string name="setup_feedback_title">Feedback e testes</string>
     <string name="setup_feedback_body">Conte ao desenvolvedor o que funciona e o que não funciona. Nada é enviado até você tocar em Enviar. As duas ferramentas estão em Configurações.</string>
     <string name="settings_ping_title">Contar minha instalação</string>

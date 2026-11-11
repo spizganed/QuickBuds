@@ -560,6 +560,7 @@
     <string name="setup_widgets_title">小组件</string>
     <string name="setup_widgets_body">把 QuickBuds 放到主屏幕。如果按钮没反应，请长按主屏幕并打开小组件。</string>
     <string name="setup_widgets_add">添加</string>
+    <string name="widget_placed_section">在主屏幕上</string>
     <string name="setup_feedback_title">反馈和测试</string>
     <string name="setup_feedback_body">告诉开发者哪些能用、哪些不能用。点按发送之前不会发送任何内容。两个工具都在设置中。</string>
     <string name="settings_ping_title">统计我的安装</string>

@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Mga widget</string>
     <string name="setup_widgets_body">Ilagay ang QuickBuds sa home screen. Kung walang ginagawa ang isang button, pindutin nang matagal ang home screen at buksan ang Widgets.</string>
     <string name="setup_widgets_add">Idagdag</string>
+    <string name="widget_placed_section">Sa iyong home screen</string>
     <string name="setup_feedback_title">Feedback at mga test</string>
     <string name="setup_feedback_body">Sabihin sa developer kung ano ang gumagana at hindi. Walang ipapadala hangga’t hindi mo pinipindot ang Send. Nasa Settings ang dalawang tool.</string>
     <string name="settings_ping_title">Bilangin ang aking install</string>

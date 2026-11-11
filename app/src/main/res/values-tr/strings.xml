@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widget’lar</string>
     <string name="setup_widgets_body">QuickBuds’ı ana ekrana koy. Bir düğme bir şey yapmıyorsa ana ekrana uzun bas ve Widget’ları aç.</string>
     <string name="setup_widgets_add">Ekle</string>
+    <string name="widget_placed_section">Ana ekranınızda</string>
     <string name="setup_feedback_title">Geri bildirim ve testler</string>
     <string name="setup_feedback_body">Geliştiriciye neyin çalıştığını ve neyin çalışmadığını söyle. Gönder’e dokunana kadar hiçbir şey gönderilmez. İki araç da Ayarlar’da.</string>
     <string name="settings_ping_title">Kurulumumu say</string>

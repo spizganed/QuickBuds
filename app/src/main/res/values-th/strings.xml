@@ -560,6 +560,7 @@
     <string name="setup_widgets_title">วิดเจ็ต</string>
     <string name="setup_widgets_body">วาง QuickBuds บนหน้าจอหลัก หากปุ่มไม่ทำงาน ให้กดหน้าจอหลักค้างแล้วเปิดวิดเจ็ต</string>
     <string name="setup_widgets_add">เพิ่ม</string>
+    <string name="widget_placed_section">บนหน้าจอหลัก</string>
     <string name="setup_feedback_title">ความคิดเห็นและการทดสอบ</string>
     <string name="setup_feedback_body">บอกผู้พัฒนาว่าอะไรใช้ได้และไม่ได้ จะไม่มีอะไรถูกส่งจนกว่าคุณจะแตะส่ง เครื่องมือทั้งสองอยู่ในการตั้งค่า</string>
     <string name="settings_ping_title">นับการติดตั้งของฉัน</string>

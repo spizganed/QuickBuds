@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widgetek</string>
     <string name="setup_widgets_body">Tedd a QuickBudsot a kezdőképernyőre. Ha egy gomb nem csinál semmit, nyomd hosszan a kezdőképernyőt, és nyisd meg a Widgeteket.</string>
     <string name="setup_widgets_add">Hozzáadás</string>
+    <string name="widget_placed_section">A kezdőképernyőn</string>
     <string name="setup_feedback_title">Visszajelzés és tesztek</string>
     <string name="setup_feedback_body">Mondd el a fejlesztőnek, mi működik és mi nem. A Küldés megérintéséig semmi sem megy el. Mindkét eszköz a Beállításokban van.</string>
     <string name="settings_ping_title">Telepítésem számlálása</string>

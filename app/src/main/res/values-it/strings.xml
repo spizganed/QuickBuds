@@ -558,6 +558,7 @@
     <string name="setup_widgets_title">Widget</string>
     <string name="setup_widgets_body">Metti QuickBuds nella schermata Home. Se un pulsante non fa nulla, tieni premuta la Home e apri Widget.</string>
     <string name="setup_widgets_add">Aggiungi</string>
+    <string name="widget_placed_section">Nella schermata Home</string>
     <string name="setup_feedback_title">Feedback e test</string>
     <string name="setup_feedback_body">Dì allo sviluppatore cosa funziona e cosa no. Non viene inviato nulla finché non tocchi Invia. Entrambi gli strumenti sono nelle Impostazioni.</string>
     <string name="settings_ping_title">Conta la mia installazione</string>
