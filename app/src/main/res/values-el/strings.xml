@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Σύνδεση σε δύο συσκευές ταυτόχρονα</string>
     <string name="dual_title">Διπλή σύνδεση</string>
     <string name="dual_switch_sub">Μείνετε συνδεδεμένοι σε δύο συσκευές μέσω Bluetooth και εναλλάξτε ελεύθερα μεταξύ τους</string>
+    <string name="row_triple_title">Τριπλή σύνδεση</string>
+    <string name="row_triple_sub">Σύνδεση σε τρεις συσκευές ταυτόχρονα</string>
+    <string name="triple_switch_sub">Μείνετε συνδεδεμένοι σε τρεις συσκευές μέσω Bluetooth και εναλλάξτε ελεύθερα μεταξύ τους</string>
     <string name="dual_section_devices">Συνδεδεμένες συσκευές</string>
     <string name="dual_connected">Συνδεδεμένη</string>
     <string name="dual_connected_this">Συνδεδεμένη (αυτή η συσκευή)</string>

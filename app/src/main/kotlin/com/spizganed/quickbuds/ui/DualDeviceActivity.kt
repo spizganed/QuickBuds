@@ -69,7 +69,8 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
 
         val dp = { v: Float -> ThemeRes.dp(this, v) }
         val root = SettingRowFactory.screen(this)
-        root.addView(SettingRowFactory.title(this, R.string.dual_title))
+        val title = if (ModelCatalog.tripleDevice(this)) R.string.row_triple_title else R.string.dual_title
+        root.addView(SettingRowFactory.title(this, title))
 
         dualSwitch = SettingRowFactory.buildSwitch(this, false)
         dualSwitch.setOnCheckedChangeListener { _, on ->
@@ -78,7 +79,8 @@ class DualDeviceActivity : Activity(), BudsConnectionManager.Listener {
         root.addView(cardView().apply {
             addView(
                 SettingRowFactory.build(
-                    this@DualDeviceActivity, 0, R.string.dual_title, R.string.dual_switch_sub, dualSwitch
+                    this@DualDeviceActivity, 0, title,
+                    if (title == R.string.row_triple_title) R.string.triple_switch_sub else R.string.dual_switch_sub, dualSwitch
                 ) { dualSwitch.performClick() }
             )
         })

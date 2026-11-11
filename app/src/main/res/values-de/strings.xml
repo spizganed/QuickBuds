@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Zwei Geräte gleichzeitig verbinden</string>
     <string name="dual_title">Dual-Verbindung</string>
     <string name="dual_switch_sub">Über Bluetooth mit zwei Geräten verbunden bleiben und frei zwischen ihnen wechseln</string>
+    <string name="row_triple_title">Triple-Verbindung</string>
+    <string name="row_triple_sub">Drei Geräte gleichzeitig verbinden</string>
+    <string name="triple_switch_sub">Über Bluetooth mit drei Geräten verbunden bleiben und frei zwischen ihnen wechseln</string>
     <string name="dual_section_devices">Verbundene Geräte</string>
     <string name="dual_connected">Verbunden</string>
     <string name="dual_connected_this">Verbunden (dieses Gerät)</string>

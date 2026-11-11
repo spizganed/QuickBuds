@@ -56,6 +56,9 @@
     <string name="row_dual_sub">同時連線兩台裝置</string>
     <string name="dual_title">雙裝置連線</string>
     <string name="dual_switch_sub">透過藍牙同時連線兩台裝置，並在兩者間自由切換</string>
+    <string name="row_triple_title">三裝置連線</string>
+    <string name="row_triple_sub">同時連線三台裝置</string>
+    <string name="triple_switch_sub">透過藍牙同時連線三台裝置，並在其間自由切換</string>
     <string name="dual_section_devices">已連線的裝置</string>
     <string name="dual_connected">已連線</string>
     <string name="dual_connected_this">已連線（本裝置）</string>

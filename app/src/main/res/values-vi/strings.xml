@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Kết nối hai thiết bị cùng lúc</string>
     <string name="dual_title">Kết nối kép</string>
     <string name="dual_switch_sub">Kết nối với hai thiết bị qua Bluetooth và chuyển đổi tự do</string>
+    <string name="row_triple_title">Kết nối ba thiết bị</string>
+    <string name="row_triple_sub">Kết nối ba thiết bị cùng lúc</string>
+    <string name="triple_switch_sub">Kết nối với ba thiết bị qua Bluetooth và chuyển đổi tự do</string>
     <string name="dual_section_devices">Thiết bị đã kết nối</string>
     <string name="dual_connected">Đã kết nối</string>
     <string name="dual_connected_this">Đã kết nối (thiết bị này)</string>

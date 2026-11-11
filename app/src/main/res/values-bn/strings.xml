@@ -56,6 +56,9 @@
     <string name="row_dual_sub">একই সময়ে দুটি ডিভাইসে সংযোগ করুন</string>
     <string name="dual_title">ডুয়াল সংযোগ</string>
     <string name="dual_switch_sub">Bluetooth-এ দুটি ডিভাইসে সংযুক্ত থাকুন এবং এদের মধ্যে স্বাধীনভাবে বদল করুন</string>
+    <string name="row_triple_title">ট্রিপল সংযোগ</string>
+    <string name="row_triple_sub">একই সময়ে তিনটি ডিভাইসে সংযোগ করুন</string>
+    <string name="triple_switch_sub">Bluetooth-এ তিনটি ডিভাইসে সংযুক্ত থাকুন এবং এদের মধ্যে স্বাধীনভাবে বদল করুন</string>
     <string name="dual_section_devices">সংযুক্ত ডিভাইস</string>
     <string name="dual_connected">সংযুক্ত</string>
     <string name="dual_connected_this">সংযুক্ত (এই ডিভাইস)</string>

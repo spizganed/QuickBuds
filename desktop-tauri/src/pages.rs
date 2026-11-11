@@ -211,6 +211,7 @@ pub fn dual_json(s: &Snapshot) -> Value {
         (Some(m), None) => m.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":"),
     };
     json!({
+        "triple": s.model.is_some_and(|m| m["tripleDevice"] == 1),
         "manages": manages, "hasPreferred": dual_has(s, "setPriorityDevice"), "preferred": preferred, "preferredCur": idx.map_or(0, |i| i + 1),
         "preferredChoices": std::iter::once(tr("dual_preferred_auto")).chain(s.devices.iter().map(|d| d.name.clone())).collect::<Vec<_>>(),
         "devices": dual_shown(s).iter().map(|d| json!({

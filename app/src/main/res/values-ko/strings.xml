@@ -56,6 +56,9 @@
     <string name="row_dual_sub">두 기기에 동시에 연결</string>
     <string name="dual_title">듀얼 연결</string>
     <string name="dual_switch_sub">Bluetooth로 두 기기에 연결된 상태를 유지하고 자유롭게 전환합니다</string>
+    <string name="row_triple_title">트리플 연결</string>
+    <string name="row_triple_sub">세 기기에 동시에 연결</string>
+    <string name="triple_switch_sub">Bluetooth로 세 기기에 연결된 상태를 유지하고 자유롭게 전환합니다</string>
     <string name="dual_section_devices">연결된 기기</string>
     <string name="dual_connected">연결됨</string>
     <string name="dual_connected_this">연결됨(이 기기)</string>

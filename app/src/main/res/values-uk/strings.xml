@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Підключення до двох пристроїв одночасно</string>
     <string name="dual_title">Подвійне підключення</string>
     <string name="dual_switch_sub">Залишатися підключеними до двох пристроїв через Bluetooth і вільно перемикатися між ними</string>
+    <string name="row_triple_title">Потрійне підключення</string>
+    <string name="row_triple_sub">Підключення до трьох пристроїв одночасно</string>
+    <string name="triple_switch_sub">Залишатися підключеними до трьох пристроїв через Bluetooth і вільно перемикатися між ними</string>
     <string name="dual_section_devices">Підключені пристрої</string>
     <string name="dual_connected">Підключено</string>
     <string name="dual_connected_this">Підключено (цей пристрій)</string>

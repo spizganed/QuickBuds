@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Verbind twee apparaten tegelijk</string>
     <string name="dual_title">Dubbele verbinding</string>
     <string name="dual_switch_sub">Blijf via Bluetooth met twee apparaten verbonden en wissel vrij tussen ze</string>
+    <string name="row_triple_title">Drievoudige verbinding</string>
+    <string name="row_triple_sub">Verbind drie apparaten tegelijk</string>
+    <string name="triple_switch_sub">Blijf via Bluetooth met drie apparaten verbonden en wissel vrij tussen ze</string>
     <string name="dual_section_devices">Verbonden apparaten</string>
     <string name="dual_connected">Verbonden</string>
     <string name="dual_connected_this">Verbonden (dit apparaat)</string>

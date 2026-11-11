@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Hubungkan dua perangkat sekaligus</string>
     <string name="dual_title">Koneksi ganda</string>
     <string name="dual_switch_sub">Tetap terhubung ke dua perangkat lewat Bluetooth dan beralih dengan bebas</string>
+    <string name="row_triple_title">Koneksi tiga perangkat</string>
+    <string name="row_triple_sub">Hubungkan tiga perangkat sekaligus</string>
+    <string name="triple_switch_sub">Tetap terhubung ke tiga perangkat lewat Bluetooth dan beralih dengan bebas</string>
     <string name="dual_section_devices">Perangkat terhubung</string>
     <string name="dual_connected">Terhubung</string>
     <string name="dual_connected_this">Terhubung (perangkat ini)</string>

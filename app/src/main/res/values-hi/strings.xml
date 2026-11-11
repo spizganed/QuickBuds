@@ -56,6 +56,9 @@
     <string name="row_dual_sub">एक साथ दो डिवाइस कनेक्ट करें</string>
     <string name="dual_title">डुअल कनेक्शन</string>
     <string name="dual_switch_sub">ब्लूटूथ से दो डिवाइस से जुड़े रहें और उनके बीच आसानी से स्विच करें</string>
+    <string name="row_triple_title">ट्रिपल कनेक्शन</string>
+    <string name="row_triple_sub">एक साथ तीन डिवाइस कनेक्ट करें</string>
+    <string name="triple_switch_sub">ब्लूटूथ से तीन डिवाइस से जुड़े रहें और उनके बीच आसानी से स्विच करें</string>
     <string name="dual_section_devices">कनेक्टेड डिवाइस</string>
     <string name="dual_connected">कनेक्टेड</string>
     <string name="dual_connected_this">कनेक्टेड (यह डिवाइस)</string>

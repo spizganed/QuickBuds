@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Aynı anda iki cihaza bağlanın</string>
     <string name="dual_title">Çift bağlantı</string>
     <string name="dual_switch_sub">Bluetooth ile iki cihaza bağlı kalın ve aralarında serbestçe geçiş yapın</string>
+    <string name="row_triple_title">Üçlü bağlantı</string>
+    <string name="row_triple_sub">Aynı anda üç cihaza bağlanın</string>
+    <string name="triple_switch_sub">Bluetooth ile üç cihaza bağlı kalın ve aralarında serbestçe geçiş yapın</string>
     <string name="dual_section_devices">Bağlı cihazlar</string>
     <string name="dual_connected">Bağlı</string>
     <string name="dual_connected_this">Bağlı (bu cihaz)</string>

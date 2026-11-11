@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Conectează două dispozitive în același timp</string>
     <string name="dual_title">Conexiune dublă</string>
     <string name="dual_switch_sub">Rămâi conectat la două dispozitive prin Bluetooth și comută liber între ele</string>
+    <string name="row_triple_title">Conexiune triplă</string>
+    <string name="row_triple_sub">Conectează trei dispozitive în același timp</string>
+    <string name="triple_switch_sub">Rămâi conectat la trei dispozitive prin Bluetooth și comută liber între ele</string>
     <string name="dual_section_devices">Dispozitive conectate</string>
     <string name="dual_connected">Conectat</string>
     <string name="dual_connected_this">Conectat (acest dispozitiv)</string>

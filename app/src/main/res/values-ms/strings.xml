@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Sambung dua peranti serentak</string>
     <string name="dual_title">Sambungan dwi</string>
     <string name="dual_switch_sub">Kekal bersambung dengan dua peranti melalui Bluetooth dan bertukar antara keduanya dengan bebas</string>
+    <string name="row_triple_title">Sambungan tiga peranti</string>
+    <string name="row_triple_sub">Sambung tiga peranti serentak</string>
+    <string name="triple_switch_sub">Kekal bersambung dengan tiga peranti melalui Bluetooth dan bertukar antaranya dengan bebas</string>
     <string name="dual_section_devices">Peranti bersambung</string>
     <string name="dual_connected">Disambungkan</string>
     <string name="dual_connected_this">Disambungkan (peranti ini)</string>

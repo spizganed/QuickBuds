@@ -117,6 +117,7 @@ const STRINGS: &[&str] = &[
     "tray_open", "tray_quit",
     // Desktop-only rows and the Tauri pages.
     "desktop_autostart_title", "desktop_autostart_sub", "desktop_devtools_sub", "desktop_copy_log", "desktop_dual_empty", "about_privacy_reset", "problem_capture_hint", "row_dual_title",
+    "row_triple_title", "triple_switch_sub",
 ];
 
 fn attr<'a>(tag: &'a str, name: &str) -> Option<&'a str> {

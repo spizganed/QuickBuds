@@ -56,6 +56,9 @@
     <string name="row_dual_sub">เชื่อมต่อสองอุปกรณ์พร้อมกัน</string>
     <string name="dual_title">เชื่อมต่อสองเครื่อง</string>
     <string name="dual_switch_sub">เชื่อมต่อกับสองอุปกรณ์ผ่านบลูทูธและสลับได้อย่างอิสระ</string>
+    <string name="row_triple_title">เชื่อมต่อสามเครื่อง</string>
+    <string name="row_triple_sub">เชื่อมต่อสามอุปกรณ์พร้อมกัน</string>
+    <string name="triple_switch_sub">เชื่อมต่อกับสามอุปกรณ์ผ่านบลูทูธและสลับได้อย่างอิสระ</string>
     <string name="dual_section_devices">อุปกรณ์ที่เชื่อมต่อ</string>
     <string name="dual_connected">เชื่อมต่อแล้ว</string>
     <string name="dual_connected_this">เชื่อมต่อแล้ว (อุปกรณ์นี้)</string>

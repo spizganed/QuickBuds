@@ -1339,6 +1339,11 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
             if (key !in hidden && key in rows) SettingRowFactory.addRow(featureList, row)
         }
         featureList.visibility = if (featureList.childCount == 0) View.GONE else View.VISIBLE
+        val triple = ModelCatalog.tripleDevice(this)
+        featureRows["dual"]?.let {
+            it.findViewWithTag<TextView>(SettingRowFactory.TITLE_TAG)?.setText(if (triple) R.string.row_triple_title else R.string.row_dual_title)
+            it.findViewWithTag<TextView>(SettingRowFactory.SUBTITLE_TAG)?.setText(if (triple) R.string.row_triple_sub else R.string.row_dual_sub)
+        }
         ancRow.visibility = if (RowRules.ANC in rows) View.VISIBLE else View.GONE
         setEnabledDeep(featureList, connectedUi != false)
     }

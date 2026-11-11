@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Anslut två enheter samtidigt</string>
     <string name="dual_title">Dubbel anslutning</string>
     <string name="dual_switch_sub">Håll anslutningen till två enheter via Bluetooth och växla fritt mellan dem</string>
+    <string name="row_triple_title">Trippel anslutning</string>
+    <string name="row_triple_sub">Anslut tre enheter samtidigt</string>
+    <string name="triple_switch_sub">Håll anslutningen till tre enheter via Bluetooth och växla fritt mellan dem</string>
     <string name="dual_section_devices">Anslutna enheter</string>
     <string name="dual_connected">Ansluten</string>
     <string name="dual_connected_this">Ansluten (den här enheten)</string>

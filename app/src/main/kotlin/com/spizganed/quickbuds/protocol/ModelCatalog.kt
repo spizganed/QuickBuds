@@ -109,6 +109,9 @@ object ModelCatalog {
         return find(all(context), p.getString(Capabilities.KEY_PRODUCT_ID, null), p.getString(KEY_DEVICE_NAME, null))
     }
 
+    /** realme Link's three-device item: the Dual connection rows say "Triple connection". */
+    fun tripleDevice(context: Context): Boolean = current(context)?.json?.optInt("tripleDevice") == 1
+
     /** The manual pick if there is one, else [detected]. */
     fun current(context: Context): Model? =
         manual(context)?.let { id -> all(context).firstOrNull { it.id == id } } ?: detected(context)

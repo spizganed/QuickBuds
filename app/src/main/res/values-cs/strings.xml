@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Připojení ke dvěma zařízením současně</string>
     <string name="dual_title">Duální připojení</string>
     <string name="dual_switch_sub">Zůstaňte připojeni ke dvěma zařízením přes Bluetooth a volně mezi nimi přepínejte</string>
+    <string name="row_triple_title">Trojité připojení</string>
+    <string name="row_triple_sub">Připojení ke třem zařízením současně</string>
+    <string name="triple_switch_sub">Zůstaňte připojeni ke třem zařízením přes Bluetooth a volně mezi nimi přepínejte</string>
     <string name="dual_section_devices">Připojená zařízení</string>
     <string name="dual_connected">Připojeno</string>
     <string name="dual_connected_this">Připojeno (toto zařízení)</string>

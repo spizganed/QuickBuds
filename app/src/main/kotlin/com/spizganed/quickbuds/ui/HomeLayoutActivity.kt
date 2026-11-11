@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.spizganed.quickbuds.R
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
 /**
@@ -80,7 +81,10 @@ class HomeLayoutActivity : Activity() {
         list = findViewById(R.id.featureList)
         list.background = ThemeRes.group(this)
         list.clipToOutline = true
-        ROWS.forEach { (key, def) -> rows[key] = previewRow(key, def) }
+        val triple = ModelCatalog.tripleDevice(this)
+        ROWS.forEach { (key, def) ->
+            rows[key] = previewRow(key, if (key == "dual" && triple) Triple(def.first, R.string.row_triple_title, R.string.row_triple_sub) else def)
+        }
         list.setOnDragListener { _, e -> onDrag(e) }
         render()
     }

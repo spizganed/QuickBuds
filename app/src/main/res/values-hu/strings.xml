@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Két eszköz egyidejű csatlakoztatása</string>
     <string name="dual_title">Kettős kapcsolat</string>
     <string name="dual_switch_sub">Maradjon két eszközhöz csatlakozva Bluetooth-on, és váltson szabadon közöttük</string>
+    <string name="row_triple_title">Hármas kapcsolat</string>
+    <string name="row_triple_sub">Három eszköz egyidejű csatlakoztatása</string>
+    <string name="triple_switch_sub">Maradjon három eszközhöz csatlakozva Bluetooth-on, és váltson szabadon közöttük</string>
     <string name="dual_section_devices">Csatlakoztatott eszközök</string>
     <string name="dual_connected">Csatlakoztatva</string>
     <string name="dual_connected_this">Csatlakoztatva (ez az eszköz)</string>

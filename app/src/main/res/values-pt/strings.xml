@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Ligue dois dispositivos ao mesmo tempo</string>
     <string name="dual_title">Ligação dupla</string>
     <string name="dual_switch_sub">Mantenha-se ligado a dois dispositivos por Bluetooth e alterne livremente entre eles</string>
+    <string name="row_triple_title">Ligação tripla</string>
+    <string name="row_triple_sub">Ligue três dispositivos ao mesmo tempo</string>
+    <string name="triple_switch_sub">Mantenha-se ligado a três dispositivos por Bluetooth e alterne livremente entre eles</string>
     <string name="dual_section_devices">Dispositivos ligados</string>
     <string name="dual_connected">Ligado</string>
     <string name="dual_connected_this">Ligado (este dispositivo)</string>

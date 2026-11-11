@@ -56,6 +56,9 @@
     <string name="row_dual_sub">Kumonekta sa dalawang device nang sabay</string>
     <string name="dual_title">Dual na koneksyon</string>
     <string name="dual_switch_sub">Manatiling nakakonekta sa dalawang device sa Bluetooth at malayang magpalipat-lipat sa mga ito</string>
+    <string name="row_triple_title">Triple na koneksyon</string>
+    <string name="row_triple_sub">Kumonekta sa tatlong device nang sabay</string>
+    <string name="triple_switch_sub">Manatiling nakakonekta sa tatlong device sa Bluetooth at malayang magpalipat-lipat sa mga ito</string>
     <string name="dual_section_devices">Mga nakakonektang device</string>
     <string name="dual_connected">Nakakonekta</string>
     <string name="dual_connected_this">Nakakonekta (device na ito)</string>

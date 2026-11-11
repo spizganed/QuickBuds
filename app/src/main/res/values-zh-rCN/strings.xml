@@ -56,6 +56,9 @@
     <string name="row_dual_sub">同时连接两台设备</string>
     <string name="dual_title">双设备连接</string>
     <string name="dual_switch_sub">通过蓝牙同时连接两台设备，并在两者间自由切换</string>
+    <string name="row_triple_title">三设备连接</string>
+    <string name="row_triple_sub">同时连接三台设备</string>
+    <string name="triple_switch_sub">通过蓝牙同时连接三台设备，并在其间自由切换</string>
     <string name="dual_section_devices">已连接的设备</string>
     <string name="dual_connected">已连接</string>
     <string name="dual_connected_this">已连接（本设备）</string>

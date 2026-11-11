@@ -56,6 +56,9 @@
     <string name="row_dual_sub">2 台のデバイスに同時に接続</string>
     <string name="dual_title">デュアル接続</string>
     <string name="dual_switch_sub">Bluetooth で 2 台のデバイスに接続したまま、自由に切り替えます</string>
+    <string name="row_triple_title">トリプル接続</string>
+    <string name="row_triple_sub">3 台のデバイスに同時に接続</string>
+    <string name="triple_switch_sub">Bluetooth で 3 台のデバイスに接続したまま、自由に切り替えます</string>
     <string name="dual_section_devices">接続中のデバイス</string>
     <string name="dual_connected">接続済み</string>
     <string name="dual_connected_this">接続済み（このデバイス）</string>

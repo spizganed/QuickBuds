@@ -375,7 +375,7 @@ function buildWindow(){
         <div class="row" id="alertRow">${ic('volume')}<div class="txt"><div class="t">${$t('row_alert_title')}</div></div><input class="range short" id="alertR" type="range" min="0" max="100" aria-label="${$t('row_alert_title')}"></div></div></div>
       <div id="tapBox"><div class="lbl">${$t('tap_level_title')}</div><div class="group"><div class="row" style="flex-wrap:wrap"><div class="txt" style="flex-basis:100%"><div class="s wrapok">${$t('tap_level_hint')}</div></div><input class="range" id="tapR" type="range" min="1" max="5" step="1" style="flex:1" aria-label="${$t('tap_level_title')}"><span class="v" id="tapV" style="width:20px;text-align:right">3</span><div class="s wrapok" id="tapWarn" style="flex-basis:100%" hidden>${$t('tap_level_warning')}</div></div></div></div>
       <div id="earFeatBox"><div class="lbl">${$t('earbuds_section_features')}</div><div class="group" id="earFeat"></div></div>
-      <div><div class="lbl">${$t('dual_title')}</div><div class="card dualw" id="dualW">
+      <div><div class="lbl" id="dualLbl">${$t('dual_title')}</div><div class="card dualw" id="dualW">
         <div class="row">${ic('devices')}<div class="txt"><div class="t">${$t('dual_title')}</div><div class="s">${$t('dual_switch_sub')}</div></div>${sw('dual')}</div>
         <div class="devs" id="devs"></div></div></div>
       <div id="fwBox"><div class="lbl">${$t('earbuds_section_about')}</div><div class="group"><button class="row press" data-act="fwinfo">${ic('info')}<div class="txt"><div class="t">${$t('row_firmware_title')}</div></div><span class="v mono">–</span>${ic('chev','ch')}</button></div></div>
@@ -1012,6 +1012,10 @@ if(window.__TAURI__){
     const hq=document.querySelector('#win .sw[data-k="hq"]');if(hq)hq.style.opacity=ex.hq.locked?.4:'',hq&&(hq.style.pointerEvents=ex.hq.locked?'none':'');}
   function dualRender(){
     const d=QBLIVE.dual,box=byId('devs');if(!d||!box)return;
+    // realme Link's three-device models: the Dual connection rows say "Triple connection".
+    const tri=!!d.triple;byId('dualLbl').textContent=$t(tri?'row_triple_title':'dual_title');
+    document.querySelectorAll('#win .sw[data-k="dual"]').forEach(e=>{const r=e.closest('.row');if(!r)return;const t=r.querySelector('.t'),u=r.querySelector('.s');
+      if(t)t.textContent=$t(tri?'row_triple_title':r.closest('#dualW')?'dual_title':'row_dual_title');if(u)u.textContent=$t(tri?'triple_switch_sub':'dual_switch_sub');});
     box.innerHTML=(d.devices.length?'':`<div class="devempty">${ic('devices')}<div class="s">${esc($t('desktop_dual_empty'))}</div></div>`)+d.devices.map((v,i)=>`<${v.can?'button':'div'} class="dev${v.can?' press':''}" ${v.can?`data-act="devtoggle" data-i="${i}"`:''}><span class="dd" style="${v.connected?'':'background:var(--text2)'}"></span><div class="txt"><div class="t">${esc(v.name)}</div><div class="s">${esc(v.state)}</div></div>${v.can?`<span class="v">${esc(v.action)}</span>`:''}</${v.can?'button':'div'}>`).join('')
       +(d.manages?`<button class="dev add press" data-act="devadd">${ic('plus')}<div class="txt"><div class="t">${esc($t('dual_add_title'))}</div></div>${ic('chev','ch')}</button>`:'')
       +(d.hasPreferred?`<button class="dev press" data-act="devpref">${ic('devices')}<div class="txt"><div class="t">${esc($t('dual_preferred'))}</div><div class="s">${esc(d.preferred)}</div></div>${ic('chev','ch')}</button>`:'');
