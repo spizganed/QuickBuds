@@ -203,9 +203,7 @@ object RowRules {
      * spatializer ([com.spizganed.quickbuds.bluetooth.PhoneSpatial]) where it exists, else it is hidden.
      */
     fun phoneSpatial(model: JSONObject?, bitmap: Set<Int>?): Boolean {
-        val name = model?.optString("name").orEmpty()
-        val heyMelody = name.startsWith("OnePlus") || name.startsWith("OPPO")
-        return heyMelody && model?.optInt("spatialToggle") != 1 && !bitmap.isNullOrEmpty() && BUDS_SPATIAL !in bitmap
+        return ModelCatalog.heyMelody(model) && model?.optInt("spatialToggle") != 1 && !bitmap.isNullOrEmpty() && BUDS_SPATIAL !in bitmap
     }
 
     /** Bitmap bit 43: the buds make the 3D effect themselves. */

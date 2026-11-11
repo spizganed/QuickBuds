@@ -246,6 +246,10 @@ pub fn find_model(id: Option<&str>, name: Option<&str>) -> Option<&'static Value
     m.iter().find(|x| by_name(x) && by_id(x)).or_else(|| m.iter().find(by_name)).or_else(|| m.iter().find(by_id))
 }
 
+/// The brand: the first word of the name (OnePlus, OPPO, realme, DIZO), the phone's `ModelCatalog.brand`. Vendor rules
+/// that differ by brand read it here. Code tests no model name.
+pub fn brand(model: Option<&Value>) -> &str { model.and_then(|m| m["name"].as_str()).unwrap_or("").split(' ').next().unwrap_or("") }
+
 pub fn is_known_name(name: &str) -> bool { models().iter().any(|m| m["name"].as_str() == Some(name)) }
 
 #[derive(Default, Clone)]
@@ -398,14 +402,14 @@ pub fn eq_builtins(model: Option<&Value>, firmware: Option<&str>) -> Vec<(u8, &'
         }
         None => buds4.as_array().unwrap().clone(),
     };
-    let name = model.and_then(|m| m["name"].as_str()).unwrap_or("");
-    let alt = name == "OPPO Enco R" || name == "OPPO Enco Air2" || model.is_some_and(|m| m["eqKind"].as_i64() == Some(2));
+    let flag = |k: &str| model.is_some_and(|m| m[k] == 1);
+    let alt = flag("eqAltNames") || model.is_some_and(|m| m["eqKind"].as_i64() == Some(2));
     modes.iter().filter_map(|m| {
         let key = match m["mode"].as_i64()? {
             1 => if alt { "eq_nature_balance" } else { "eq_classic" },
             2 => if alt { "eq_bass_boost" } else { "eq_dynamic_bass" },
             3 | 14 | 32 => "eq_clear_vocals",
-            4 => if name == "OPPO Enco R" { "eq_gentle" } else { "eq_clear" },
+            4 => if flag("eqGentle4") { "eq_gentle" } else { "eq_clear" },
             5 | 35 => "eq_default",
             6 | 36 => "eq_dyn_simple",
             7 | 37 => "eq_dyn_warm",

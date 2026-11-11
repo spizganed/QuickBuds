@@ -943,7 +943,7 @@ push 0x0504 <id>                              the EQ changed
   - `02` save and select. Send the whole preset, every time, also on every drag step and every rename.
   - `03` delete. The selection falls back to `00`.
 - Ids are renumbered after create and delete. Read `0x0122` again each time `[CAPTURE]`.
-- Built-in presets differ per model `[VENDOR]`: `eqPresets` lists `{mode, slot}`; `slot` is the `0x0406` id. Buds 4: 0 Balanced, 1 Clear Vocals, 2 Bass. Nord Buds 2r: 0, 1 Bold, 2. Types 1-4 are named differently where `eqKind` is `2` (or Enco R / Air2). 41 of 143 models have none.
+- Built-in presets differ per model `[VENDOR]`: `eqPresets` lists `{mode, slot}`; `slot` is the `0x0406` id. Buds 4: 0 Balanced, 1 Clear Vocals, 2 Bass. Nord Buds 2r: 0, 1 Bold, 2. Types 1-4 are named differently where `eqKind` is `2` or the model has `eqAltNames`. 41 of 143 models have none.
 - Firmware-gated lists drop entries whose `minFirmware` is above the buds' firmware `[VENDOR]` (the lower non-zero of left and right, `138` on Buds 4, unreadable = 0). Use `eqPresetsCompat`, else `eqPresetsByFirmware`, else `eqPresets`. Stable sort by `order` (0 if absent).
 - realme models `[VENDOR]`: four built-ins. `0x0406` ids: 0 Pure Raw, 1 Deep Bass, 2 Pure Voice, 3 Pure Bass. 28 realme models have them, not in HeyMelody's list. `models.json` gives them our own types 101-104, `eqKind` 1. T110 and T01 have three other presets with unknown ids: no EQ until a capture.
 - A model shows custom presets with `customEq` and `0x0418` in the bitmap `[VENDOR]`, and BassWave with `bassEngine` and `0x041B`. An EQ row shows where `eqKind` is 1-4 or custom presets exist. New presets use the model's `customEqBands` (10 bands `31 62 125 250 500 1k 2k 4k 8k 16k` on 10 models), else 6 bands `62 250 1k 4k 8k 16k`. `customEqLimit` caps presets (default 3). Reads go out only where the bitmap lists them.
@@ -1087,6 +1087,7 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - OnePlus Nord Buds 3 Pro `064414` (issue #2) `[CAPTURE]`.
 - OnePlus Buds Pro `060C14` `[VENDOR]`.
 - OnePlus Buds `060414`. OnePlus Buds Z `060814` `[VENDOR]`.
+- Our keys for per-model exceptions (code tests no model name): `oldTrackBytes` (OnePlus Buds, Buds Z: previous and next track are `fn` 4 and 5), `holdAncOne` (Buds Pro `060C14`: the hold shows its ANC levels as one ANC), `eqAltNames` (Enco R, Enco Air2: types 1-4 have other names), `eqGentle4` (Enco R: type 4 is Gentle) `[VENDOR]`.
 
 ### 21.2 Bitmap and command support
 

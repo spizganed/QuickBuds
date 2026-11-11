@@ -175,8 +175,7 @@ fn default_ids(model: Option<&Value>) -> Vec<u8> {
 
 /// A OnePlus or OPPO model whose bitmap lacks `0xEF03`: the phone makes the 3D effect (PROTOCOL.md section 18).
 pub fn phone_spatial(model: Option<&Value>, bitmap: Option<&[u16]>) -> bool {
-    let name = model.and_then(|m| m["name"].as_str()).unwrap_or("");
-    (name.starts_with("OnePlus") || name.starts_with("OPPO")) && !flag(model, "spatialToggle")
+    matches!(brand(model), "OnePlus" | "OPPO") && !flag(model, "spatialToggle")
         && bitmap.is_some_and(|b| !b.is_empty() && !b.contains(&BUDS_SPATIAL))
 }
 

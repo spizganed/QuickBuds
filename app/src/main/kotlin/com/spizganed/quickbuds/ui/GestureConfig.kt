@@ -248,7 +248,7 @@ class GestureModel private constructor(
     private val holdBits: Map<GestureAction, Int>,
     /** The on-call rows this model has. */
     val onCall: List<OnCallGesture>,
-    /** OnePlus Buds / Buds Z number previous / next track 4 / 5 (see [functionByte]). */
+    /** `oldTrackBytes` (OnePlus Buds, Buds Z): previous / next track are 4 / 5 (see [functionByte]). */
     private val oldTrackBytes: Boolean,
     /** `[VENDOR]` `longPressType` set: each bud has its own hold, written and read per side. */
     val perBudHold: Boolean = false,
@@ -329,8 +329,6 @@ class GestureModel private constructor(
 
     companion object {
         private const val BUDS4 = "065414"
-        /** `[VENDOR]` OnePlus Buds Pro (HeyMelody's `396308`), whose hold shows its levels as one ANC. */
-        private const val BUDS_PRO = "060C14"
         /** The noise cycle's bit among [holdChoices]. */
         const val HOLD_NOISE = 128
         /** `[VENDOR]` HeyMelody's option order (`f2769a`), limited to the options the app has. */
@@ -351,10 +349,10 @@ class GestureModel private constructor(
                 }
                 ?: return EMPTY
             cached?.let { if (it.first == model.id) return it.second }
-            return runCatching { parse(model.json, model.name, model.id) }.getOrDefault(EMPTY).also { cached = model.id to it }
+            return runCatching { parse(model.json) }.getOrDefault(EMPTY).also { cached = model.id to it }
         }
 
-        private fun parse(json: JSONObject, name: String, id: String): GestureModel {
+        private fun parse(json: JSONObject): GestureModel {
             val control = json.optJSONArray("gestures") ?: JSONArray()
             val rows = LinkedHashMap<Gesture, List<GestureAction>>()
             var holdBits = emptyMap<GestureAction, Int>()
@@ -365,11 +363,11 @@ class GestureModel private constructor(
                 val entry = (0 until control.length()).map { control.getJSONObject(it) }
                     .firstOrNull { it.getInt("gesture") in gesture.controlActions } ?: continue
                 if (gesture == Gesture.TAP_HOLD) {
-                    holdBits = holdBits(json, if (id == BUDS_PRO) levelBits else null) ?: continue
+                    holdBits = holdBits(json, if (json.optInt("holdAncOne") == 1) levelBits else null) ?: continue
                     rows[gesture] = holdBits.keys.toList()
                     // `[VENDOR]` the entry's own minimum, else 2 on OnePlus and per-bud holds.
                     holdMin = entry.optInt("minSelected").takeIf { it > 0 }
-                        ?: if (name.startsWith("OnePlus") || longPressType != 0) 2 else 1
+                        ?: if (ModelCatalog.brand(json) == "OnePlus" || longPressType != 0) 2 else 1
                 } else {
                     val support = entry.optInt("options")
                     val options = ORDER.filter { support and it != 0 }
@@ -386,7 +384,7 @@ class GestureModel private constructor(
             // `[VENDOR]` order, without spy tap (8388608), which needs a phone-side feature.
             val holdChoices = if (longPressType == 0) emptyList()
                 else intArrayOf(512, HOLD_NOISE, 1, 8192).filter { longPressType and it != 0 }
-            return GestureModel(rows, holdBits, onCall, name == "OnePlus Buds" || name == "OnePlus Buds Z",
+            return GestureModel(rows, holdBits, onCall, json.optInt("oldTrackBytes") == 1,
                 longPressType != 0, holdChoices, holdMin, levelBits, json.optInt("sharedHold") == 1,
                 json.optInt("oneButton") == 1, json.optInt("bothHold") == 1)
         }

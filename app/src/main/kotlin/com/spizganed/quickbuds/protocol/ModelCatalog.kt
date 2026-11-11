@@ -43,6 +43,15 @@ object ModelCatalog {
     )
 
     /** The model's own best high-quality codec. Null when the model has no `codecs` key or lists none of them. */
+    /**
+     * The brand: the first word of the name (OnePlus, OPPO, realme, DIZO). Vendor rules that differ by brand (the
+     * hold's minimum, phone-made 3D audio) read it here. Code tests no model name.
+     */
+    fun brand(model: JSONObject?): String = model?.optString("name").orEmpty().substringBefore(' ')
+
+    /** A OnePlus or OPPO model: HeyMelody's list, not realme Link's. */
+    fun heyMelody(model: JSONObject?): Boolean = brand(model) == "OnePlus" || brand(model) == "OPPO"
+
     fun bestHiResCodec(model: JSONObject?): String? {
         val list = model?.optJSONArray("codecs") ?: return null
         val tokens = (0 until list.length()).map { list.optString(it) }

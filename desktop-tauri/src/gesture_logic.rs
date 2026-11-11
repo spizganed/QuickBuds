@@ -87,19 +87,18 @@ impl Model {
     }
 
     pub(crate) fn parse(json: &Value) -> Model {
-        let name = json["name"].as_str().unwrap_or("");
-        let id = json["id"].as_str().unwrap_or("");
+        let flag = |k: &str| json[k] == 1;
         let control: Vec<&Value> = json["gestures"].as_array().into_iter().flatten().collect();
         let long_press = json["holdMask"].as_i64().unwrap_or(0);
         let mut m = Model { hold_min: 1, ..Default::default() };
         for (g, (_, _, actions, multi, _)) in GESTURES.iter().enumerate() {
             let Some(entry) = control.iter().find(|e| e["gesture"].as_i64().is_some_and(|a| actions.contains(&a))) else { continue };
             if *multi {
-                let Some(bits) = hold_bits(json, (id == "060C14").then_some(&mut m.level_bits)) else { continue };
+                let Some(bits) = hold_bits(json, flag("holdAncOne").then_some(&mut m.level_bits)) else { continue };
                 m.rows.push((g, bits.iter().map(|b| b.0).collect()));
                 m.hold_bits = bits;
                 m.hold_min = entry["minSelected"].as_u64().filter(|n| *n > 0).map(|n| n as usize)
-                    .unwrap_or(if name.starts_with("OnePlus") || long_press != 0 { 2 } else { 1 });
+                    .unwrap_or(if brand(Some(json)) == "OnePlus" || long_press != 0 { 2 } else { 1 });
             } else {
                 let support = entry["options"].as_i64().unwrap_or(0);
                 let options: Vec<usize> = ORDER.iter().filter(|b| support & **b != 0)
@@ -111,7 +110,7 @@ impl Model {
         let call: Vec<&Value> = json["callGestures"].as_array().into_iter().flatten().collect();
         m.on_call = (0..ON_CALL.len()).filter(|&i| call.iter().any(|c| c["gesture"].as_i64() == Some(ON_CALL[i].4)
             && c["options"].as_i64().unwrap_or(0) & 512 != 0)).collect();
-        m.old_track = name == "OnePlus Buds" || name == "OnePlus Buds Z";
+        m.old_track = flag("oldTrackBytes");
         m.per_bud = long_press != 0;
         m.shared_mask = json["sharedHold"].as_i64() == Some(1);
         m.one_button = json["oneButton"].as_i64() == Some(1);
