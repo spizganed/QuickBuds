@@ -1,0 +1,144 @@
+package com.spizganed.quickbuds.ui
+
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.Gravity
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import com.spizganed.quickbuds.R
+
+/**
+ * About: icon, name, version and tagline, a GitHub button and a Ko-fi one (both open the
+ * phone's default browser; no Ko-fi button while [KOFI_URL] is null), and the license with a pointer to the credits.
+ */
+class AboutActivity : Activity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        ThemeRes.select(this)
+        super.onCreate(savedInstanceState)
+        val p = ThemeRes.palette(this)
+        val dp = { v: Float -> ThemeRes.dp(this, v) }
+        val root = SettingRowFactory.screen(this)
+
+        root.addView(ImageView(this).apply {
+            setImageDrawable(ThemeRes.tint(this@AboutActivity, R.drawable.ic_launcher_foreground, ThemeRes.palette(this@AboutActivity).accent))
+            background = ThemeRes.pill(this@AboutActivity, ThemeRes.palette(this@AboutActivity).card, 60f)
+            layoutParams = LinearLayout.LayoutParams(dp(120f), dp(120f)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                topMargin = dp(12f)
+            }
+        })
+        root.addView(TextView(this).apply {
+            setText(R.string.app_name)
+            textSize = 24f
+            typeface = ThemeRes.headline(context)
+            setTextColor(p.text)
+            gravity = Gravity.CENTER
+            setPadding(0, dp(10f), 0, 0)
+        })
+        root.addView(TextView(this).apply {
+            text = getString(R.string.about_version, UpdateChecker.installed(this@AboutActivity))
+            textSize = 14f
+            setTextColor(p.textSecondary)
+            gravity = Gravity.CENTER
+        })
+        root.addView(TextView(this).apply {
+            setText(R.string.about_tagline)
+            textSize = 15f
+            setTextColor(p.text)
+            gravity = Gravity.CENTER
+            setPadding(dp(8f), dp(14f), dp(8f), 0)
+        })
+
+        // GitHub and Ko-fi, side by side.
+        fun linkButton(icon: Int, label: Int, desc: Int, url: String) = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            background = ThemeRes.ripple(this@AboutActivity, ThemeRes.card(this@AboutActivity, 18f))
+            layoutParams = LinearLayout.LayoutParams(0, dp(52f), 1f)
+            contentDescription = getString(desc)
+            addView(ImageView(this@AboutActivity).apply {
+                setImageDrawable(ThemeRes.tint(this@AboutActivity, icon, p.accent))
+                layoutParams = LinearLayout.LayoutParams(dp(22f), dp(22f)).apply { marginEnd = dp(10f) }
+            })
+            addView(TextView(this@AboutActivity).apply {
+                setText(label)
+                textSize = 15f
+                typeface = ThemeRes.medium(context)
+                setTextColor(p.text)
+            })
+            setOnClickListener { open(url) }
+        }
+        root.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dp(20f), 0, 0)
+            addView(linkButton(R.drawable.ic_github, R.string.about_github, R.string.about_github_desc, GITHUB_URL))
+            KOFI_URL?.let { url ->
+                addView(linkButton(R.drawable.ic_kofi, R.string.about_kofi, R.string.about_kofi_desc, url).apply {
+                    (layoutParams as LinearLayout.LayoutParams).marginStart = dp(10f)
+                })
+            }
+        })
+
+        root.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dp(10f), 0, 0)
+            addView(linkButton(R.drawable.ic_chat, R.string.about_discord, R.string.about_discord_desc, DISCORD_URL))
+        })
+
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.about_license_title))
+        root.addView(SettingRowFactory.card(this).apply {
+            setPadding(dp(16f), dp(14f), dp(16f), dp(14f))
+            addView(TextView(this@AboutActivity).apply {
+                setText(R.string.about_license_body)
+                textSize = 14f
+                setTextColor(p.textSecondary)
+                setLineSpacing(0f, 1.15f)
+            })
+        })
+
+        root.addView(SettingRowFactory.sectionLabel(this, R.string.about_privacy_title))
+        root.addView(SettingRowFactory.card(this).apply {
+            setPadding(dp(16f), dp(14f), dp(16f), dp(14f))
+            addView(TextView(this@AboutActivity).apply {
+                text = getString(R.string.about_privacy_body) + " " + getString(R.string.about_privacy_reply)
+                textSize = 14f
+                setTextColor(p.textSecondary)
+                setLineSpacing(0f, 1.15f)
+            })
+            addView(TextView(this@AboutActivity).apply {
+                setText(R.string.about_privacy_reset)
+                textSize = 15f
+                typeface = ThemeRes.medium(context)
+                setTextColor(p.accent)
+                setPadding(0, dp(14f), 0, 0)
+                setOnClickListener {
+                    UsagePing.resetId(this@AboutActivity)
+                    isEnabled = false
+                    alpha = 0.4f
+                }
+            })
+        })
+
+        setContentView(ScrollView(this).apply {
+            setBackgroundColor(p.background)
+            addView(root)
+        })
+    }
+
+    /** Hands the link to the default browser; a phone with none just does nothing. */
+    private fun open(url: String) {
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+    }
+
+    companion object {
+        const val GITHUB_URL = "https://github.com/spizganed/QuickBuds"
+        const val DISCORD_URL = "https://discord.gg/pvsnEf9TrZ"
+        /** Null hides the button (it was hidden until the page existed). */
+        val KOFI_URL: String? = "https://ko-fi.com/spizganed"
+    }
+}
