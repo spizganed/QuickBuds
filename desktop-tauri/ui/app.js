@@ -106,7 +106,7 @@ const LANGS=['System default','English','简体中文','繁體中文','日本語
 
 /* ================= state ================= */
 const DEF={fblog:true,view:'window',page:'overview',style:'glass',theme:'oled',auto:true,autoDark:'oled',sysLight:false,colorMode:'wallpaper',accent:null,presets:[],active:null,editTok:2,
-  glassBg:'none',wall:0,uploadSeed:null,anc:1,level:1,ll:false,hq:true,sp:false,hp:true,dual:false,wear:false,smart:false,svc:true,hide:false,devtools:false,tray:true,count:true,upd:true,
+  glassBg:'none',wall:0,uploadSeed:null,anc:1,level:1,lvLast:-1,ancPick:false,ll:false,hq:true,sp:false,hp:true,dual:false,wear:false,smart:false,svc:true,hide:false,devtools:false,tray:true,count:true,upd:true,
   eqPreset:'GoodEQ',custom:['GoodEQ',null,null],cg:{GoodEQ:[-1,-1,1,3,2,6]},budState:'case',gains:[-1,-1,1,3,2,6],bass:true,bassLv:2,alert:85,showL:true,showR:true,lang:0,recent:[],model:'auto',size:'l',
   gest:{L:['none','play','none','vol','off','none','none'],R:['none','play','none','vol','off','none','none']}};
 let S=JSON.parse(JSON.stringify(DEF)), uploadUrl=null;
@@ -425,6 +425,7 @@ function buildWindow(){
     <div class="group">
       <div class="row">${ic('language')}<div class="txt"><div class="t">${$t('settings_language_title')}</div></div><button class="sel press pick" data-act="langdlg" id="langBtn" style="width:200px">${$t('language_system')}</button></div>
       ${swRow('power',$t('desktop_autostart_title','Start with your computer'),$t('desktop_autostart_sub','Opens in the tray when you sign in'),'svc')}
+      ${swRow('anc',$t('settings_anc_pick_title'),$t('settings_anc_pick_sub'),'ancPick')}
       ${swRow('battery',$t('settings_clear_battery_title'),$t('settings_clear_battery_sub'),'hide')}
       ${swRow('dev',$t('settings_devtools_title'),$t('desktop_devtools_sub','Show Dev tools in the menu on the left'),'devtools')}
       ${swRow('info',$t('settings_ping_title'),$t('settings_ping_sub'),'count')}
@@ -583,6 +584,9 @@ function segShow(key,flags){document.querySelectorAll(`.seg[data-seg="${key}"]`)
   s.style.setProperty('--n',Math.max(1,n));s._pos=pos;});}
 /* The one level of buds with a single noise-cancelling level, else -1. */
 function lvOne(){const f=S.lvHas;if(!f)return -1;const on=f.map((x,i)=>x?i:-1).filter(i=>i>=0);return on.length===1?on[0]:-1;}
+/* The level ANC applies: the last one used, else the middle one of the buds (Smart left out). */
+function lvLast(){const f=S.lvHas,ok=i=>i>=0&&(!f||f[i]);if(ok(S.lvLast))return S.lvLast;
+  const on=[0,1,2].filter(ok);return on.length?on[Math.floor(on.length/2)]:lvOne();}
 function lvMany(){return !S.lvHas||S.lvHas.filter(Boolean).length>1;}
 function setSeg(key,idx){document.querySelectorAll(`.seg[data-seg="${key}"]`).forEach(s=>{const p=idx<0?-1:(s._pos?s._pos[idx]:idx);s.style.setProperty('--sel',Math.max(0,p));s.querySelector('.ind').style.opacity=p<0?0:1;
   s.querySelectorAll('.cell').forEach((c,i)=>c.setAttribute('aria-checked',String(i===idx)));});}
@@ -690,9 +694,9 @@ document.addEventListener('click',ev=>{
   const b=ev.target.closest('[data-act]');if(!b||b.tagName==='SELECT')return;const a=b.dataset.act,v=b.dataset.v,k=b.dataset.k;
   if(a==='pick'){const i=+v;
     if(k==='anc'){const enter=i===1&&S.anc!==1;S.anc=i;
-      // Buds with one level have no level row: noise cancelling goes out at once.
-      if(enter)S.level=lvOne();if(!enter||S.level>=0)window.QBLIVE&&QBLIVE.sendAnc();apply();requestAnimationFrame(()=>pixelize(document));return;}
-    if(k==='level'){S.level=i;if(S.anc===1)window.QBLIVE&&QBLIVE.sendAnc();apply();return;}
+      // ANC applies the last level. With "pick first" and more than one level, nothing goes out until a level is picked.
+      if(enter)S.level=S.ancPick&&lvMany()?-1:lvLast();if(!enter||S.level>=0)window.QBLIVE&&QBLIVE.sendAnc();apply();requestAnimationFrame(()=>pixelize(document));return;}
+    if(k==='level'){S.level=S.lvLast=i;if(S.anc===1)window.QBLIVE&&QBLIVE.sendAnc();apply();return;}
     if(k==='fbtab'){go(i?'test':'feedback');return;}
     if(k==='style'){reveal(ev,()=>{S.style=STYLES[i];apply();});return;}
     if(k==='colorMode'){reveal(ev,()=>{S.colorMode=MODES[i];if(S.colorMode==='palette'&&!S.active&&S.presets[0])S.active=S.presets[0].id;apply();renderColorPanel();});return;}
@@ -901,7 +905,7 @@ if(window.__TAURI__){
     document.querySelectorAll('[data-cn]').forEach(e=>e.textContent=s.model||s.name||'QuickBuds');
     document.documentElement.classList.toggle('cing',s.status==='connecting');
     if(s.status==='on'&&s.anc){
-      if(s.anc==='Off')S.anc=0;else if(s.anc.startsWith('ANC')){S.anc=1;const i=LV.indexOf(s.anc);if(i>=0)S.level=i;}
+      if(s.anc==='Off')S.anc=0;else if(s.anc.startsWith('ANC')){S.anc=1;const i=LV.indexOf(s.anc);if(i>=0)S.level=S.lvLast=i;}
       else if(s.anc==='Adaptive')S.anc=2;else if(s.anc==='Transparency')S.anc=3;}
     // Only the modes and levels these buds have (report 195). Not connected: all, as a preview.
     if(s.status==='on'&&s.has){S.ancHas=[s.has.off,s.has.anc,s.has.adaptive,s.has.transparency];S.lvHas=LV.map(l=>(s.levels||[]).includes(l));}
@@ -1118,7 +1122,7 @@ if(window.__TAURI__){
   // ---- app settings, update, feedback, test, about ----
   let AS=null;   // get_settings
   const loadSettings=()=>T.core.invoke('get_settings').then(st=>{AS=st;
-    S.count=st.usage_ping;S.hide=st.clear_battery;S.devtools=st.dev_tools_button;S.upd=st.update_auto;S.svc=st.autostart;S.lang=st.language;
+    S.ancPick=st.anc_pick_first;S.count=st.usage_ping;S.hide=st.clear_battery;S.devtools=st.dev_tools_button;S.upd=st.update_auto;S.svc=st.autostart;S.lang=st.language;
     const iv=byId('updInst');if(iv)iv.textContent=st.version;
     const ab=byId('aboutVer');if(ab)ab.textContent=$t('about_version').replace('%1$s',st.version);
     const rp=byId('replyBox');if(rp){rp.hidden=!st.reply;if(st.reply)rp.querySelector('.prose').textContent=st.reply;}
@@ -1129,7 +1133,7 @@ if(window.__TAURI__){
     dialog(`<h3>${esc(c.title)}</h3><div class="s" style="text-align:center;margin:0;white-space:pre-line">${esc(c.body)}</div><div class="acts two"><button class="btn press" data-close>${esc(c.later)}</button><button class="btn pri press" id="spOk">${esc(c.action)}</button></div><div class="acts"><button class="btn press" id="spNever">${esc(c.never)}</button></div>`,
       (d,close)=>{d.querySelector('#spOk').addEventListener('click',()=>{T.core.invoke('support_off',{card:c.card});T.core.invoke('open_url',{url:c.url});close();});
         d.querySelector('#spNever').addEventListener('click',()=>{T.core.invoke('support_off',{card:c.card});close();});});});
-  const SETKEY={count:'usage_ping',hide:'clear_battery',devtools:'dev_tools_button',upd:'update_auto'};
+  const SETKEY={ancPick:'anc_pick_first',count:'usage_ping',hide:'clear_battery',devtools:'dev_tools_button',upd:'update_auto'};
   QBLIVE.setting=(k,on)=>{if(SETKEY[k])T.core.invoke('set_setting',{key:SETKEY[k],value:on});if(k==='svc')T.core.invoke('set_autostart',{on});};
   QBLIVE.langDialog=()=>pickDialog($t('settings_language_title'),LANGS.map((l,i)=>[i,i===0?$t('language_system'):l]),AS?AS.language:0,v=>T.core.invoke('set_language',{index:+v}),'scroll');
   QBLIVE.issuesDialog=function(){const list=(this.ex&&this.ex.issues)||[];

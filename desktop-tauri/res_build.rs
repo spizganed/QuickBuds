@@ -42,7 +42,7 @@ const STRINGS: &[&str] = &[
     "support_kofi_title", "support_kofi_body", "support_kofi_action", "support_github_title", "support_github_body", "support_github_action", "support_later", "support_never",
     "update_available", "update_install", "update_failed", "update_auto_title", "update_auto_sub", "settings_clear_battery_title",
     "settings_clear_battery_sub", "update_found_title",
-    "settings_layout_title", "settings_layout_sub", "settings_haptics_title", "settings_haptics_sub",
+    "settings_layout_title", "settings_layout_sub", "settings_haptics_title", "settings_haptics_sub", "settings_anc_pick_title", "settings_anc_pick_sub",
     "settings_background_title", "settings_background_sub", "settings_background_warn_title", "settings_background_warn_body",
     "settings_background_warn_action", "settings_devtools_title", "settings_devtools_sub", "settings_update_sub", "row_update_title",
     "settings_ping_title", "settings_ping_sub", "settings_setup_title", "row_gesture_title", "row_wear_title", "row_wear_sub",

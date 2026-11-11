@@ -13,7 +13,7 @@ pub const LANGUAGES: &[&str] = &[
 ];
 
 /// The settings the page may write, with the type each one holds.
-const KEYS: &[&str] = &["usage_ping", "clear_battery", "dev_tools_button", "update_auto"];
+const KEYS: &[&str] = &["anc_pick_first", "usage_ping", "clear_battery", "dev_tools_button", "update_auto"];
 
 /// A reply of the developer to a report of this install, from the daily count.
 static REPLY: Mutex<Option<String>> = Mutex::new(None);
@@ -48,6 +48,7 @@ pub fn get_settings() -> Value {
         "language": LANGUAGES.iter().position(|l| *l == lang).unwrap_or(0),
         "usage_ping": flag("usage_ping", true),
         "clear_battery": flag("clear_battery", false),
+        "anc_pick_first": flag("anc_pick_first", false),
         "dev_tools_button": flag("dev_tools_button", false),
         "update_auto": flag("update_auto", true),
         "autostart": autostart_on(),
