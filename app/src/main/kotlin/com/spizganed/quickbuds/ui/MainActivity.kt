@@ -791,14 +791,14 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun openLevels(animate: Boolean) {
         if (levelsOpen) return
         levelsOpen = true
-        if (animate) Motion.slide(levelView, true) else levelView.visibility = View.VISIBLE
+        if (animate) Motion.slide(levelView, true, LEVELS_OPEN_MS) else levelView.visibility = View.VISIBLE
     }
 
     /** The chooser folds up. */
     private fun closeLevels(animate: Boolean) {
         if (!::levelView.isInitialized || !levelsOpen) return
         levelsOpen = false
-        if (animate) Motion.slide(levelView, false) else levelView.visibility = View.GONE
+        if (animate) Motion.slide(levelView, false, LEVELS_CLOSE_MS) else levelView.visibility = View.GONE
     }
 
     /**
@@ -1443,6 +1443,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         )
 
         private const val KEY_ANC_LEVEL = "homeAncLevel"
+        /** The level chooser moves as fast as the ANC selector's own motion (AncSegmentedView): 200 ms in, 150 ms out. */
+        private const val LEVELS_OPEN_MS = 200L
+        private const val LEVELS_CLOSE_MS = 150L
         /** Home screen sound-settings rows: order and hidden set, by row key (Settings › Home layout). */
         const val KEY_ROW_ORDER = "homeRowOrder"
         const val KEY_ROW_HIDDEN = "homeRowHidden"
