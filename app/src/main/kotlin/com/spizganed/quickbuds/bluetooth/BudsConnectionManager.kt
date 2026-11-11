@@ -343,11 +343,6 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /**
-     * Starts the socket tries. [withAudio] brings the phone audio up (a user connect only).
-     * [user] is true for the Connect button, the widget tap and Dev tools: only then the tries
-     * show toasts. An automatic connect stays silent.
-     */
-    /**
      * An automatic connect: it starts only with the live audio link. With the buds in the closed case Android reports
      * the audio profiles disconnected, and the socket tries would only fail. An unknown state connects. False: skipped.
      */
@@ -361,6 +356,11 @@ class BudsConnectionManager(private val context: Context) {
     fun mayAutoConnect(device: BluetoothDevice?): Boolean =
         ConnectPolicy.autoConnectAllowed(device?.let { audioLinkState(it) } ?: LinkState.UNKNOWN)
 
+    /**
+     * Starts the socket tries. [withAudio] brings the phone audio up (a user connect only).
+     * [user] is true for the Connect button, the widget tap and Dev tools: only then the tries
+     * show toasts. An automatic connect stays silent.
+     */
     fun connect(device: BluetoothDevice, withAudio: Boolean = false, user: Boolean = false) {
         if (isConnecting || isConnected()) {
             log("Already connecting/connected, ignoring.")

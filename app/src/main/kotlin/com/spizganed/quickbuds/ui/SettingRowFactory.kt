@@ -245,7 +245,6 @@ object SettingRowFactory {
         switchMinWidth = dp(52f)
     }
 
-    /** Chevron for rows that open another screen: 22dp, accent, no frame. */
     /** A switch row bound to a boolean in the app prefs. It saves on change. */
     fun prefSwitch(context: Context, iconRes: Int, titleRes: Int, subRes: Int, key: String, default: Boolean): LinearLayout {
         val prefs = context.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
@@ -275,6 +274,7 @@ object SettingRowFactory {
         layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(36f))
     }
 
+    /** Chevron for rows that open another screen: 22dp, accent, no frame. */
     fun buildChevron(context: Context): ImageView {
         val dp = { v: Float -> ThemeRes.dp(context, v) }
         return ImageView(context).apply {

@@ -75,7 +75,6 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
-    <!-- Window animation for the bottom sheets (BottomSheetDialog, the EQ editor). -->
     <!-- NoisePickActivity: a see-through host, so only its sheet shows over the shade. -->
     <style name="ThemeOverlay.App.SheetHost" parent="">
         <item name="android:windowIsTranslucent">true</item>
@@ -91,6 +90,7 @@
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+    <!-- Window animation for the bottom sheets (BottomSheetDialog, the EQ editor). -->
     <style name="SheetAnimation">
         <item name="android:windowEnterAnimation">@anim/sheet_in</item>
         <item name="android:windowExitAnimation">@anim/sheet_out</item>
