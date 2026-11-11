@@ -25,24 +25,24 @@ import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.protocol.BatteryParser
 import com.spizganed.quickbuds.protocol.LogDecoder
 import com.spizganed.quickbuds.protocol.Capabilities
+import com.spizganed.quickbuds.protocol.Anc
 import com.spizganed.quickbuds.protocol.Decode
+import com.spizganed.quickbuds.protocol.Msg
+import com.spizganed.quickbuds.protocol.Public
+import com.spizganed.quickbuds.protocol.Wire.Message
 import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.EqCodec
 import com.spizganed.quickbuds.protocol.EqSnapshot
 import com.spizganed.quickbuds.protocol.EqState
-import com.spizganed.quickbuds.protocol.GameModeParser
 import com.spizganed.quickbuds.protocol.KeyFunctionParser
 import com.spizganed.quickbuds.protocol.FastPairStream
 import com.spizganed.quickbuds.protocol.OpoProtocol
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.protocol.FeaturePushParser
 import com.spizganed.quickbuds.protocol.FeatureSync
 import com.spizganed.quickbuds.protocol.FeatureSyncConfig
-import com.spizganed.quickbuds.protocol.GoldenSound
 import com.spizganed.quickbuds.protocol.OppoPacketFramer
 import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.UserInteractionParser
-import com.spizganed.quickbuds.protocol.WearingStatusParser
 import com.spizganed.quickbuds.ui.GestureConfigStore
 import com.spizganed.quickbuds.ui.GestureModel
 import com.spizganed.quickbuds.ui.OnCallConfigStore
@@ -767,29 +767,6 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     fun refreshPreferred() = sendRaw(Commands.queryPreferred(), "query preferred")
-
-    /**
-     * `[count]` then per device `[MAC, 6 bytes reversed][entry length][state][flags][nameLen][name UTF-8]`.
-     * State `02` = connected, `00` = not. Flags `[VENDOR]`: bit 0 this phone, bit 2 audio playing
-     * (bit 1 the main audio device, bits 3-5 the device type). PROTOCOL.md §19.
-     */
-    private fun parseDevices(p: ByteArray, start: Int): List<PairedDevice>? {
-        if (p.size <= start) return null
-        val count = p[start].toInt() and 0xFF
-        var o = start + 1
-        val out = ArrayList<PairedDevice>()
-        repeat(count) {
-            if (o + 10 > p.size) return null
-            val mac = (5 downTo 0).joinToString(":") { "%02X".format(p[o + it]) }
-            val connected = p[o + 7].toInt() == 0x02
-            val flags = p[o + 8].toInt()
-            val len = p[o + 9].toInt() and 0xFF
-            if (o + 10 + len > p.size) return null
-            out += PairedDevice(mac, String(p, o + 10, len, Charsets.UTF_8), connected, flags and 1 != 0)
-            o += 10 + len
-        }
-        return out
-    }
 
     // --- Equalizer (PROTOCOL.md §17). Read on demand by the EQ screen, re-read after every write. ---
     /** The events these buds offer (`0x8200`), once read; reset on each connect. */
@@ -1649,7 +1626,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
             cmd == 0x811A || cmd == 0x8133 || cmd == 0x8132 || // personalized ANC, tap sensitivity, preferred device
             cmd == 0x0500 ||                             // time request from the buds, answered (answer 0500)
-            cmd == OpoProtocol.CMD_FEATURE_PUSH ||        // feature push, decoded by FeaturePushParser
+            cmd == OpoProtocol.CMD_FEATURE_PUSH ||        // feature push
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd in LogDecoder.REPLY_NAMES                // decoded elsewhere, see there
         if (explained) return
@@ -1659,7 +1636,10 @@ class BudsConnectionManager(private val context: Context) {
             "head=[$head] ancFlush=${if (System.currentTimeMillis() - lastAncFlushAt < 4000) "YES" else "no"}")
     }
 
-    /** [batched]: one answer unpacked from a `0x812F` batch reply, as if it came on its own. */
+    /**
+     * One frame from the buds. [Decode] is the only parser: this function answers requests, unpacks a batch, and passes
+     * the typed [Msg] to [apply]. [batched]: one answer unpacked from a `0x812F` batch reply, as if it came on its own.
+     */
     private fun handlePacket(packet: ByteArray, batched: Boolean = false) {
         log("${if (batched) "RX[batch]" else "RX"}: ${OpoProtocol.bytesToHex(packet)}")
         noteUnattributed(packet)
@@ -1687,450 +1667,246 @@ class BudsConnectionManager(private val context: Context) {
             return
         }
 
-        if (cmd == 0x8200) { offeredEvents = OpoProtocol.offeredEvents(payload); return }
+        val message = Message(cmd, seq, payload)
         if (cmd == OpoProtocol.CMD_BATCH_REPLY) {
-            for ((c, p) in Replies.batchReplies(payload))
-                handlePacket(OpoProtocol.buildPacket(c, packet[6].toInt() and 0xFF, p), batched = true)
+            for (m in Decode.unbatch(message)) handlePacket(OpoProtocol.buildPacket(m.cmd, m.seq, m.payload), batched = true)
             return
         }
+        // An empty write ack counts as status 0, as before the decoder took over.
+        val msg = Decode.decode(message)
+            ?: if (cmd and 0xFF00 == 0x8400) Msg.Ack(cmd and 0x7FFF, 0, emptyList()) else return
+        apply(msg, cmd, seq, payload)
+    }
 
-        // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
-        if (cmd == 0x8100) {
-            val commands = Capabilities.parse(payload)
-            if (commands != null) {
+    /** What one decoded message changes. [payload] is only for the log lines. */
+    private fun apply(msg: Msg, cmd: Int, seq: Int, payload: ByteArray) {
+        val push = cmd == Decode.PUSH
+        fun raw() = OpoProtocol.bytesToHex(payload)
+        fun featuresChanged() = handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
+        when (msg) {
+            is Msg.Offered -> offeredEvents = msg.codes.toSet()
+
+            // --- What these buds are and accept: handshake 0x8100 and product id 0x8103 ---
+            is Msg.BitmapReply -> msg.bitmap.commands?.let { commands ->
                 Capabilities.save(context, commands)
                 log("CAPABILITIES: " + commands.sorted().joinToString(" ") { "%04X".format(it) })
                 handler.post { listeners.forEach { it.onCapabilities() } }
             }
-            return
-        }
-        if (cmd == 0x8103) {
-            Capabilities.productId(payload)?.let { onProductId(it) }
-            return
-        }
+            is Msg.ProductId -> onProductId(Capabilities.productId(msg.id))
 
-        // `00 <count>` + UTF-8 `deviceType,versionType,version` triples (PROTOCOL.md §7), shown in the
-        // Earbud settings hub the way HeyMelody shows it.
-        if (cmd == 0x8105) {
-            val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
-            val version = OpoProtocol.firmwareVersion(text)
-            log("FIRMWARE: $version text=\"$text\" RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            if (payload.firstOrNull()?.toInt() == 0 && version != null)
-                featurePrefs().edit().putString(KEY_FIRMWARE, version).apply()
-            return
-        }
+            // Firmware triples (PROTOCOL.md §7), shown in the Earbud settings hub the way HeyMelody shows it.
+            is Msg.Firmware -> {
+                val version = msg.parts.filter { it.second == 2 }.joinToString(".") { it.third }.ifEmpty { null }
+                val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
+                log("FIRMWARE: $version text=\"$text\" RAW=[${raw()}]")
+                if (version != null) featurePrefs().edit().putString(KEY_FIRMWARE, version).apply()
+            }
 
-        // --- Wearing / in-case state: 0x8109 query response OR 0x0204 spontaneous event ---
-        var wearing: WearingStatusParser.Result? = null
-        var fromEvent = false
-        if (cmd == OpoProtocol.CMD_RESP_WEARING) {
-            wearing = WearingStatusParser.parseQueryResponse(payload)
-        } else if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.isNotEmpty() &&
-                   payload[0].toInt() and 0xFF == OpoProtocol.EVT_WEARING) {
-            wearing = WearingStatusParser.parseActiveReport(payload)
-            fromEvent = true
-        }
-        if (wearing != null) {
-            if (wearing.leftValid) {
-                lastLeftStatus = wearing.leftStatus
+            // --- Wearing / in-case state: 0x8109 query reply or 0x0204 push ---
+            is Msg.Wear -> {
+                val parts = msg.parts.toMap()
+                parts[1]?.let { lastLeftStatus = it }
+                parts[2]?.let { lastRightStatus = it }
+                parts[3]?.let { lastCaseStatus = it }
+                caseClosing = push && parts[3] == 0 && parts[1] == 0 && parts[2] == 0
+                log("WEAR ${if (push) "EVT" else "QRY"}: " +
+                    "L=${wearLabel(lastLeftStatus)} R=${wearLabel(lastRightStatus)} case=${wearLabel(lastCaseStatus)}")
+                handler.post { listeners.forEach { it.onWearState(lastLeftStatus, lastRightStatus, lastCaseStatus) } }
             }
-            if (wearing.rightValid) {
-                lastRightStatus = wearing.rightStatus
+
+            // --- 0x8108: the CURRENT gesture bindings ---
+            // A setKeyFunction payload carries the WHOLE table, so the entries we do not change come from here.
+            // writeGestureBinding() refuses to run without lastKeyFnTable rather than invent the other entries.
+            is Msg.Gestures -> {
+                log("KEYFN: ${KeyFunctionParser.describe(payload)}")
+                val entries = msg.table.map { KeyFunctionParser.Entry(it.dev, it.button, it.act, it.func) }
+                val trailing = ByteArray(msg.trailing.size) { msg.trailing[it].toByte() }
+                onKeyFunctions(KeyFunctionParser.Table(msg.status, entries.size, entries, trailing, trailing.isNotEmpty()))
             }
-            if (wearing.caseStatus >= 0) lastCaseStatus = wearing.caseStatus
-            caseClosing = fromEvent && wearing.caseStatus == 0 &&
-                wearing.leftStatus == 0 && wearing.rightStatus == 0
-            log("WEAR ${if (fromEvent) "EVT" else "QRY"}: " +
-                "L=${wearLabel(lastLeftStatus)} " +
-                "R=${wearLabel(lastRightStatus)} " +
-                "case=${wearLabel(lastCaseStatus)}")
-            handler.post {
-                listeners.forEach {
-                    it.onWearState(lastLeftStatus, lastRightStatus, lastCaseStatus)
+
+            // --- ANC: the 0x810C reply and the 0x0204 push 03 share one shape (PROTOCOL.md §14) ---
+            is Msg.AncMsg -> when (val anc = msg.anc) {
+                // A push arrives only on a CHANGE, so the reply to the connect-time read corrects a stale value.
+                // An echo of our own write is a no-op: BudsService drops a mode equal to the stored one.
+                // A mode that cannot be named is logged but not pushed, so no mode is invented.
+                is Anc.Mode -> {
+                    val mode = AncModes.of(context).modeForRaw(anc.mask, lastAncLevelSent)
+                    if (push) log("ANC EVT: ${AncEventParser.describe(payload)} -> ${mode ?: "unknown for this model"}")
+                    else if (mode != null) log("ANC QUERY: raw=0x%04X -> %s".format(anc.mask, mode))
+                    if (mode != null) handler.post { listeners.forEach { it.onAncModeState(mode) } }
                 }
-            }
-            return
-        }
-
-        // --- getKeyFunction reply: 0x8108, the CURRENT gesture bindings ---
-        // This reply is BOTH a diagnostic and the source of truth a write is built from:
-        // a setKeyFunction payload carries the WHOLE table, so the entries we are not
-        // changing have to come from here. The last good reading is parked in
-        // lastKeyFnTable for exactly that, and writeGestureBinding() refuses to run
-        // without it rather than inventing the other entries.
-        if (cmd == OpoProtocol.CMD_RESP_KEY_FUNCTION) {
-            log("KEYFN: ${KeyFunctionParser.describe(payload)}")
-            onKeyFunctions(KeyFunctionParser.parse(payload))
-            return
-        }
-
-        // --- ANC query reply: 0x810C, carries several questions (see OpoProtocol) ---
-        // Shape for both branches below: `[status][echo x2][value LE]`, `[CAPTURE]`.
-        if (cmd == 0x810C && payload.size >= 4) {
-            val echo1 = payload[1].toInt() and 0xFF
-            val echo2 = payload[2].toInt() and 0xFF
-            // The value is as long as it needs to be (`NoiseReductionInfo`, 1-4 bytes LE).
-            var value = 0
-            for (i in minOf(payload.size, 7) - 1 downTo 3) value = (value shl 8) or (payload[i].toInt() and 0xFF)
-
-            // Current-mode answer, echo `01 01` — queried once on every connect
-            // (OpoProtocol.queryAncMode()). A push arrives only on a CHANGE, so without this reply a
-            // reconnect where nothing changed keeps a stale persisted value on screen. Reading it
-            // corrects the display on every connect.
-            if (echo1 == 0x01 && echo2 == 0x01) {
-                val mode = AncModes.of(context).modeForRaw(value, lastAncLevelSent)
-                if (mode != null) {
-                    log("ANC QUERY: raw=0x%04X -> %s".format(value, mode))
-                    handler.post { listeners.forEach { it.onAncModeState(mode) } }
+                is Anc.Smart -> onSmartMask(anc.mask)
+                // The hold's switch list, echo `02 01`/`02 03`/`02 04` (Commands.holdAncModes). The push `03 02 ...`
+                // is the echo of our own mask write and changes nothing.
+                is Anc.HoldCycle -> if (!push) {
+                    lastHoldAncMasks[anc.kind] = anc.mask
+                    log("HOLD MODES (${anc.kind}): mask=0x%04X".format(anc.mask))
+                    // The mask usually arrives after the key-function table, so this repaint is the one that fires.
+                    lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, lastHoldAncMasks) }
                 }
+                is Anc.Level -> {}
             }
 
-            if (echo1 == 0x04 && echo2 == 0x01) onSmartMask(value)
+            // --- A button or gesture on the buds: push F1. Named only, for captures. ---
+            is Msg.Gesture -> log("BTN EVT: ${UserInteractionParser.describe(payload)}")
 
-            // Hold's switch-list answer, echo `02 01`/`02 03`/`02 04` — see OpoProtocol.setHoldAncModes().
-            if (echo1 == 0x02) {
-                lastHoldAncMasks[echo2] = value
-                log("HOLD MODES ($echo2): mask=0x%04X".format(value))
-                // Same repaint as GestureConfigStore.syncFromDevice() above, from the other
-                // direction: the mask usually arrives AFTER the key-function table in the init
-                // sequence, so this is the hook that actually fires the hold's sync in practice.
-                lastKeyFnTable?.let { GestureConfigStore.syncHoldFromDevice(context, it, lastHoldAncMasks) }
+            // --- Equalizer replies and push, [CAPTURE] 2026-09-23 ---
+            is Msg.EqCurrent -> { reportedEq(msg.id); eqChanged() }
+            is Msg.EqCustom -> {
+                setEq(eqState.withList(msg.list.map {
+                    EqCodec.Preset(it.id, it.name, it.bands.map { b -> b.first }, it.bands.map { b -> b.second }, it.selected,
+                        byteArrayOf(it.range.first.toByte(), it.range.second.toByte()))
+                }))
+                eqChanged()
             }
-        }
-
-        // --- User-interaction (button/gesture) report: 0x0204 subType 0xF1 ---
-        // This is the F1 family that has been sitting unexplained in the captures.
-        // We now at least NAME it, so an ANC-gesture capture can answer the question
-        // "nothing arrived" vs "a frame arrived that we don't decode".
-        // Handled before the game-mode branch because both are 2..6 byte payloads.
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT &&
-            UserInteractionParser.isUserInteractionEvent(payload)) {
-            log("BTN EVT: ${UserInteractionParser.describe(payload)}")
-            return
-        }
-
-        // --- ANC changed on the buds: 0x0204 spontaneous event, subType 0x03 ---
-        // Raised by an ANC gesture on either bud. Mapped and confirmed — see
-        // AncEventParser for the frame shape and the four known values.
-        //
-        // Handled BEFORE the length-based checks below because the payload is only
-        // 5 bytes.
-        //
-        // The event reflects the buds' real state whether the change came from a
-        // gesture or from our own command, so there is deliberately NO suppression
-        // of "our own" echoes: BudsService drops a mode equal to the stored one, so
-        // an echo is a no-op and a genuine external change always lands.
-        //
-        // A mode that cannot be named (unrecognised value) is logged but NOT pushed,
-        // so we never invent a mode the buds did not report.
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT &&
-            AncEventParser.isAncEvent(payload)) {
-            val mode = AncModes.of(context).modeForRaw(AncEventParser.rawValue(payload), lastAncLevelSent)
-            log("ANC EVT: ${AncEventParser.describe(payload)} -> ${mode ?: "unknown for this model"}")
-            if (mode != null) {
-                handler.post { listeners.forEach { it.onAncModeState(mode) } }
-            }
-            return
-        }
-
-        // --- Equalizer replies and push, [CAPTURE] 2026-09-23 ---
-        when (cmd) {
-            0x810F -> if (payload.size >= 2 && payload[0].toInt() == 0) reportedEq(payload[1].toInt() and 0xFF)
-            0x8122 -> EqCodec.parseList(payload)?.let { setEq(eqState.withList(it)) }
-                ?: log("EQ: could not parse custom list RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            0x8124 -> if (payload.size >= 4 && payload[0].toInt() == 0) setEq(eqState.copy(bassWave = payload[3].toInt()))
-            0x812C -> Commands.parseBassBands(payload)?.let { list ->
+            is Msg.BassLevel -> { setEq(eqState.copy(bassWave = msg.level)); eqChanged() }
+            is Msg.BassBands -> {
                 val bands = eqState.bassBands.toMutableList()
-                for ((band, level) in list) if (band in 1..bands.size) bands[band - 1] = level
+                for ((band, level) in msg.list) if (band in 1..bands.size) bands[band - 1] = level
                 setEq(eqState.copy(bassBands = bands))
+                eqChanged()
             }
-            OpoProtocol.CMD_EQ_CHANGED -> if (payload.isNotEmpty()) reportedEq(payload[0].toInt() and 0xFF)
-        }
-        // A refused feature write. Status 1 is a switch the buds lack. Status 2 is a switch they have but will not take now
-        // (high-quality audio needs an LDAC or LHDC link on buds that offer a codec list; reports #33, #42, #44).
-        if (cmd == OpoProtocol.CMD_SET_FEATURE or 0x8000) {
-            val status = payload.firstOrNull()?.toInt()?.and(0xFF) ?: 0
-            val engineSeq = takeEngineSeq(seq)
-            log("SYNC: write ack seq=0x%02X status=%d %s".format(seq, status, if (engineSeq != null) "engine request" else "no engine request"))
-            if (engineSeq != null) {
-                // Sent by the feature-sync engine: it decides what the refusal means and what to toast.
-                featureWrites.remove(seq)
-                syncHandler.post { execute(sync.ack(engineSeq, status, SystemClock.elapsedRealtime())) }
-            } else {
-                // An old path: keep its log line.
-                val id = featureWrites.remove(seq)
-                if (id != null && status != 0)
-                    log("FEATURE REFUSED: id=0x%02X status=%d codec=%s offered=%s".format(id, status, codec, codecs))
+
+            is Msg.Ack -> onAck(msg, seq, payload)
+
+            // --- Preferred device, [VENDOR] ---
+            is Msg.Preferred -> {
+                val mac = msg.mac?.joinToString(":") { "%02X".format(it) }
+                log("PREFERRED: ${mac ?: "auto"}")
+                handler.post { listeners.forEach { it.onPreferred(mac) } }
             }
-        }
-        // A refused ANC write (status 14 with no bud in an ear): read the real mode back (PROTOCOL.md section 14).
-        if (cmd == OpoProtocol.CMD_SET_ANC or 0x8000 && payload.isNotEmpty() && payload[0].toInt() != 0) {
-            log("ANC write refused (status ${payload[0].toInt() and 0xFF}), re-reading")
-            sendRaw(Commands.queryAncMode(), "query anc")
-            // From the app or the widget alike: say why the mode did not change.
-            if (payload[0].toInt() == 0x0E) handler.post {
-                Toast.makeText(context, R.string.anc_need_ear, Toast.LENGTH_SHORT).show()
+
+            // --- Paired devices: read reply 0x8112 or push 06 ---
+            is Msg.Devices -> {
+                val list = msg.list.map { d -> PairedDevice(d.mac.joinToString(":") { "%02X".format(it) }, d.name, d.connected, d.thisPhone) }
+                devices = list
+                log("DEVICES: " + list.joinToString { "${it.name} ${it.mac} ${if (it.connected) "on" else "off"}" })
+                handler.post { listeners.forEach { it.onDevices(list) } }
             }
-        }
 
-        // 0x8418 ack: `00 <id>` — the id the preset now has (a created one's id comes from here).
-        if (cmd == 0x8418) log("EQ ack: RAW=[${OpoProtocol.bytesToHex(payload)}]")
-        if (cmd == 0x810F || cmd == 0x8122 || cmd == 0x8124 || cmd == 0x812C || cmd == OpoProtocol.CMD_EQ_CHANGED) {
-            log("EQ: current=$eqCurrent bassWave=$bassWaveLevel bands=${eqState.bassBands} custom=" +
-                eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
-            handler.post { listeners.forEach { it.onEqState() } }
-            return
-        }
+            is Msg.AlertVolume -> onAlertVolume(msg.level, "ALERT VOLUME: ${msg.level}")
 
-        // --- Preferred device: `00 02 <00 auto | 01 <MAC>>`, [VENDOR] ---
-        if (cmd == 0x8132 && payload.size >= 3 && payload[0].toInt() == 0 && payload[1].toInt() == 2) {
-            val mac = if (payload[2].toInt() == 0 || payload.size < 9) null
-                else (3..8).joinToString(":") { "%02X".format(payload[it]) }
-            log("PREFERRED: ${mac ?: "auto"}")
-            handler.post { listeners.forEach { it.onPreferred(mac) } }
-            return
-        }
-
-        // --- Paired devices: read reply 0x8112 `00 <list>`, or push 0x0204 subType 06 `06 <list>` ---
-        val deviceList = when {
-            cmd == 0x8112 && payload.isNotEmpty() && payload[0].toInt() == 0 -> parseDevices(payload, 1)
-            cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.isNotEmpty() && payload[0].toInt() == 0x06 ->
-                parseDevices(payload, 1)
-            else -> null
-        }
-        if (deviceList != null) {
-            devices = deviceList
-            log("DEVICES: " + deviceList.joinToString { "${it.name} ${it.mac} ${if (it.connected) "on" else "off"}" })
-            handler.post { listeners.forEach { it.onDevices(deviceList) } }
-            return
-        }
-
-        // --- Alert volume: read reply 0x8130 and set ack 0x8427, both `00 <level>` ---
-        if ((cmd == 0x8130 || cmd == 0x8427) && payload.size >= 2 && payload[0].toInt() == 0) {
-            val level = payload[1].toInt() and 0xFF
-            alertVolume = level
-            log("ALERT VOLUME: $level")
-            handler.post { listeners.forEach { it.onAlertVolume(level) } }
-            return
-        }
-
-        // --- Status reply: [status][count] then [featureId][value] pairs, [CAPTURE] 2026-09-23 ---
-        if (cmd == 0x810D && payload.size >= 2 && payload[0].toInt() == 0) {
-            val count = payload[1].toInt() and 0xFF
-            // The raw values from the buds: the engine compares these, not the pending-faked ones.
-            val raw = (0 until count).mapNotNull { i ->
-                val o = 2 + i * 2
-                if (o + 1 < payload.size) (payload[o].toInt() and 0xFF) to (payload[o + 1].toInt() and 0xFF)
-                else null
-            }.toMap()
-            val states = withPending(raw)
-            featureStates = states
-            log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(java.util.Locale.ROOT, it.key, it.value) })
-            // Game mode has its own push (0x0204 subType 0x05) but none at connect time; this is
-            // the connect-time read, fed through the same path so the widget follows too.
-            val game = states[Capabilities.gameModeId(context)]
-            handler.post {
-                listeners.forEach {
-                    it.onFeatureStates(states)
-                    if (game != null) it.onGameModeState(game == 1)
+            // --- Status reply: (feature id, value) pairs, [CAPTURE] 2026-09-23 ---
+            is Msg.Features -> {
+                // The raw values from the buds: the engine compares these, not the pending-faked ones.
+                val raw = msg.list.toMap()
+                val states = withPending(raw)
+                featureStates = states
+                log("FEATURES: " + states.entries.joinToString(" ") { "%02X=%d".format(java.util.Locale.ROOT, it.key, it.value) })
+                // Game mode has its own push but none at connect time; this read feeds the same path, so the widget follows.
+                val game = states[Capabilities.gameModeId(context)]
+                handler.post {
+                    listeners.forEach {
+                        it.onFeatureStates(states)
+                        if (game != null) it.onGameModeState(game == 1)
+                    }
                 }
-            }
-            // A reply to our own read carries the engine's number back to it (null for any other read).
-            val engineSeq = takeEngineSeq(seq)
-            if (engineSeq != null) log("SYNC: status reply seq=0x%02X answers engine read".format(seq))
-            syncHandler.post {
-                // The first reply of a connection primes the engine silently: a report with equal
-                // values emits nothing, so the old-path switches keep their own paint.
-                if (!syncPrimed) { sync.init(raw); syncPrimed = true }
-                execute(sync.report(raw, engineSeq, SystemClock.elapsedRealtime()))
-            }
-            return
-        }
-
-        // --- Spatial type: read reply 0x812A `00 <type>`, push 0x0510 `<type>`; game sound 0x812B ---
-        val spatial = when {
-            cmd == 0x812A && payload.size >= 2 && payload[0].toInt() == 0 -> payload[1].toInt() and 0xFF
-            cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH && payload.isNotEmpty() -> payload[0].toInt() and 0xFF
-            else -> null
-        }
-        if (spatial != null) {
-            spatialType = spatial
-            log("SPATIAL TYPE: $spatial RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
-            return
-        }
-        if (cmd == 0x8114 && payload.size >= 2 && payload[0].toInt() == 0) {
-            codec = payload[1].toInt() and 0xFF
-            log("CODEC: $codec RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
-            return
-        }
-        if (cmd == 0x8123 && payload.size >= 3 && payload[0].toInt() == 0) {
-            val mask = OpoProtocol.u16(payload, 1)
-            // HeyMelody drops LHDC (7) when LHDC V5 (8) is offered too.
-            codecs = Decode.codecsOf(mask)
-            log("CODECS: $codecs RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
-            return
-        }
-        // The level Smart chose: push `03 04 01 <mask LE>`.
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 4 &&
-            payload[0].toInt() == 0x03 && payload[1].toInt() == 0x04 && payload[2].toInt() == 0x01) {
-            var mask = 0
-            for (i in minOf(payload.size, 7) - 1 downTo 3) mask = (mask shl 8) or (payload[i].toInt() and 0xFF)
-            onSmartMask(mask)
-            return
-        }
-        if (cmd == 0x812B && payload.size >= 3 && payload[0].toInt() == 0) {
-            val count = payload[2].toInt() and 0xFF
-            gameSoundType = payload[1].toInt() and 0xFF
-            gameSoundTypes = (3 until minOf(payload.size, 3 + count)).map { payload[it].toInt() and 0xFF }
-            log("GAME SOUND: type=$gameSoundType offered=$gameSoundTypes RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
-            return
-        }
-
-        // The push `F5 <type>` and the `0x8134` reply `00 <type>`.
-        if (payload.size >= 2 && (cmd == OpoProtocol.CMD_QUERY_HEAD_MOTION_TYPE or 0x8000 && payload[0].toInt() == 0 ||
-            cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload[0].toInt() and 0xFF == OpoProtocol.EVT_HEAD_MOTION_TYPE)) {
-            headMotionType = payload[1].toInt() and 0xFF
-            log("HEAD MOTION TYPE: $headMotionType RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            handler.post { listeners.forEach { it.onFeatureStates(featureStates) } }
-            return
-        }
-
-        // --- Golden Sound (PROTOCOL.md §20) ---
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 3 && payload[0].toInt() == OpoProtocol.EVT_GOLDEN_STATUS) {
-            val kind = payload[1].toInt() and 0xFF
-            val status = payload[2].toInt() and 0xFF
-            log("GOLDEN STATUS: kind=$kind status=$status")
-            handler.post { listeners.forEach { it.onGoldenStatus(kind, status) } }
-            return
-        }
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.isNotEmpty() && payload[0].toInt() == OpoProtocol.EVT_EAR_SCAN) {
-            val scan = GoldenSound.parseScan(payload, 1)
-            log("EAR SCAN: uid=${scan?.first?.let { "%08X".format(it) }} len=${scan?.second?.size}")
-            if (scan != null) handler.post { listeners.forEach { it.onEarScan(scan.first, scan.second) } }
-            return
-        }
-        if (cmd == 0x8116 && payload.size >= 10 && payload[0].toInt() == 0) {
-            val uid = ((payload[1].toInt() and 0xFF) shl 24) or ((payload[2].toInt() and 0xFF) shl 16) or
-                ((payload[3].toInt() and 0xFF) shl 8) or (payload[4].toInt() and 0xFF)
-            val type = payload[9].toInt() and 0xFF
-            val curves = GoldenSound.parseCurves(payload, scan = false)
-            log("GOLDEN FILTER: uid=${"%08X".format(uid)} enhanceType=$type floats=${curves?.second?.size?.times(2)}")
-            handler.post {
-                listeners.forEach {
-                    it.onGoldenFilter(uid, type)
-                    if (curves != null) it.onGoldenCurves(uid, false, curves.first, curves.second, curves.third)
-                }
-            }
-            return
-        }
-        if (cmd == 0x811F && payload.size >= 11 && payload[0].toInt() == 0) {
-            val curves = GoldenSound.parseCurves(payload, scan = true)
-            val uid = GoldenSound.uidAt(payload, 1)
-            log("GOLDEN SCAN FILTER: uid=${"%08X".format(uid)} fs=${curves?.first} floats=${curves?.second?.size?.times(2)}")
-            if (curves != null) handler.post { listeners.forEach { it.onGoldenCurves(uid, true, curves.first, curves.second, curves.third) } }
-            return
-        }
-        if (cmd == 0x8115) {
-            val active = GoldenSound.parseActive(payload)
-            log("GOLDEN ACTIVE: ${active?.let { "%08X \"%s\" %s".format(it.first, it.second, it.third.joinToString(",")) } ?: "none"} RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            if (active != null) handler.post { listeners.forEach { it.onGoldenActive(active.first, active.second, active.third) } }
-            return
-        }
-        if (cmd == 0x811E) {
-            val scan = if (payload.firstOrNull()?.toInt() == 0) GoldenSound.parseScan(payload, 1) else null
-            log("GOLDEN ACTIVE SCAN: uid=${scan?.first?.let { "%08X".format(it) }} len=${scan?.second?.size}")
-            if (scan != null) handler.post { listeners.forEach { it.onGoldenActiveScan(scan.first, scan.second) } }
-            return
-        }
-
-        // --- Personalized ANC, [VENDOR] (PROTOCOL.md §20) ---
-        if (cmd == 0x811A && payload.size >= 2 && payload[0].toInt() == 0) {
-            log("PERSONAL ANC stored=${payload[1]}")
-            handler.post { listeners.forEach { it.onPersonalNoiseStored(payload[1].toInt() != 0) } }
-            return
-        }
-        if (cmd == 0x8133 && payload.size >= 3 && payload[0].toInt() == 0) {
-            tapLevelDefault = payload[2].toInt()
-            log("TAP LEVEL: ${payload[1]} default ${payload[2]}")
-            handler.post { listeners.forEach { it.onTapLevel(payload[1].toInt(), payload[2].toInt()) } }
-            return
-        }
-        // Public event `0F <flags u16 LE> <data>` (PROTOCOL.md section 10): the first flag that matches wins. Bit 0: the alert-sound
-        // volume changed on the buds; bit 1: nothing; bit 2: handheld-device info (not used here); bit 4: a tap level change.
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 4 && payload[0].toInt() == OpoProtocol.EVT_PUBLIC) {
-            val flags = (payload[1].toInt() and 0xFF) or ((payload[2].toInt() and 0xFF) shl 8)
-            if (flags and OpoProtocol.PUBLIC_FLAG_ALERT_VOLUME != 0) {
-                val level = payload[3].toInt() and 0xFF
-                alertVolume = level
-                log("ALERT VOLUME push: $level RAW=[${OpoProtocol.bytesToHex(payload)}]")
-                handler.post { listeners.forEach { it.onAlertVolume(level) } }
-                return
-            }
-            if (flags and 0x06 == 0 && flags and OpoProtocol.PUBLIC_FLAG_TAP_LEVEL != 0) {
-                log("TAP LEVEL push: ${payload[3]} RAW=[${OpoProtocol.bytesToHex(payload)}]")
-                handler.post { listeners.forEach { it.onTapLevel(payload[3].toInt(), tapLevelDefault) } }
-                return
-            }
-        }
-        if ((cmd == 0x840D || cmd == 0x840E) && payload.isNotEmpty() && payload[0].toInt() != 0) {
-            val status = payload[0].toInt() and 0xFF
-            log("GOLDEN REFUSED: cmd=0x${"%04X".format(cmd)} status=$status")
-            handler.post { listeners.forEach { it.onGoldenRefused(status) } }
-            return
-        }
-        if (cmd == 0x8412 && payload.isNotEmpty()) {
-            handler.post { listeners.forEach { it.onPersonalNoiseAck(payload[0].toInt() and 0xFF) } }
-            return
-        }
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 2 &&
-            payload[0].toInt() == OpoProtocol.EVT_PERSONAL_NOISE) {
-            log("PERSONAL ANC result=${payload[1]} RAW=[${OpoProtocol.bytesToHex(payload)}]")
-            handler.post { listeners.forEach { it.onPersonalNoiseResult(payload[1].toInt() and 0xFF) } }
-            return
-        }
-
-        // --- Fit test result: 0x0204 subType 0x04, `04 [dev status] [dev status]` [VENDOR] ---
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT && payload.size >= 5 &&
-            payload[0].toInt() == OpoProtocol.EVT_FIT_TEST) {
-            var left = -1
-            var right = -1
-            for (i in intArrayOf(1, 3)) when (payload[i].toInt()) {
-                1 -> left = payload[i + 1].toInt() and 0xFF
-                2 -> right = payload[i + 1].toInt() and 0xFF
-            }
-            log("FIT: left=$left right=$right")
-            handler.post { listeners.forEach { it.onFitResult(left, right) } }
-            return
-        }
-
-        // --- Feature changed: 0x0503 `<count> <id> <value>...`, [CAPTURE] reports #2 #4 #63 ---
-        // The buds send this after a 0x0403 write (before or after the ack) and on a buds gesture.
-        // It is the push that confirms a "push" write, game mode included.
-        if (cmd == OpoProtocol.CMD_FEATURE_PUSH) {
-            val pushed = FeaturePushParser.parse(payload)
-            if (pushed != null) {
-                log("FEATURE PUSH: " + pushed.entries.joinToString(" ") { "%02X=%d".format(it.key, it.value) })
+                // A reply to our own read carries the engine's number back to it (null for any other read).
+                val engineSeq = takeEngineSeq(seq)
+                if (engineSeq != null) log("SYNC: status reply seq=0x%02X answers engine read".format(seq))
                 syncHandler.post {
-                    execute(sync.report(pushed, null, SystemClock.elapsedRealtime(), push = true))
+                    // The first reply of a connection primes the engine silently: a report with equal
+                    // values emits nothing, so the old-path switches keep their own paint.
+                    if (!syncPrimed) { sync.init(raw); syncPrimed = true }
+                    execute(sync.report(raw, engineSeq, SystemClock.elapsedRealtime()))
                 }
             }
-            return
-        }
 
-        // --- Game mode changed on the buds: 0x0204 spontaneous event, subType 0x05 ---
-        // Raised for BOTH our own game-mode write and the user's buds gesture, so this
-        // is what keeps the widget/app buttons honest. Previously this frame fell
-        // through to the battery checks below, matched neither, and was discarded —
-        // which is why the buttons never updated after a gesture.
-        // Payload is only 2 bytes, so this must come before any length assumption.
-        if (cmd == OpoProtocol.CMD_ACTIVE_REPORT &&
-            GameModeParser.isGameModeEvent(payload)) {
-            val on = GameModeParser.parseActive(payload, featurePrefs().getString(Capabilities.KEY_PRODUCT_ID, null))
-            if (on != null) {
+            // --- Spatial type, codec, codec list, game sound, head motion type ---
+            is Msg.Spatial -> { spatialType = msg.type; log("SPATIAL TYPE: ${msg.type} RAW=[${raw()}]"); featuresChanged() }
+            is Msg.Codec -> { codec = msg.codec; log("CODEC: ${msg.codec} RAW=[${raw()}]"); featuresChanged() }
+            is Msg.CodecMask -> {
+                // HeyMelody drops LHDC (7) when LHDC V5 (8) is offered too.
+                codecs = Decode.codecsOf(msg.mask)
+                log("CODECS: $codecs RAW=[${raw()}]")
+                featuresChanged()
+            }
+            is Msg.GameSound -> {
+                gameSoundType = msg.selected
+                gameSoundTypes = msg.offered
+                log("GAME SOUND: type=$gameSoundType offered=$gameSoundTypes RAW=[${raw()}]")
+                featuresChanged()
+            }
+            is Msg.HeadGesture -> { headMotionType = msg.type; log("HEAD MOTION TYPE: ${msg.type} RAW=[${raw()}]"); featuresChanged() }
+
+            // --- Golden Sound (PROTOCOL.md §20) ---
+            is Msg.Hearing -> {
+                log("GOLDEN STATUS: kind=${msg.kind} status=${msg.status}")
+                handler.post { listeners.forEach { it.onGoldenStatus(msg.kind, msg.status) } }
+            }
+            is Msg.EarScan -> {
+                log("EAR SCAN: uid=${"%08X".format(msg.id)} len=${msg.data.size}")
+                val data = bytes(msg.data)
+                handler.post { listeners.forEach { it.onEarScan(msg.id, data) } }
+            }
+            is Msg.GoldenFilter -> {
+                val c = msg.curves
+                log("GOLDEN FILTER: uid=${"%08X".format(msg.id)} enhanceType=${msg.enhance} floats=${c?.let { it.left.size * 2 }}")
+                handler.post {
+                    listeners.forEach {
+                        it.onGoldenFilter(msg.id, msg.enhance)
+                        if (c != null) it.onGoldenCurves(msg.id, false, c.rate, c.left.toFloatArray(), c.right.toFloatArray())
+                    }
+                }
+            }
+            is Msg.GoldenScanFilter -> {
+                val c = msg.curves
+                log("GOLDEN SCAN FILTER: uid=${"%08X".format(msg.id)} fs=${c.rate} floats=${c.left.size * 2}")
+                handler.post { listeners.forEach { it.onGoldenCurves(msg.id, true, c.rate, c.left.toFloatArray(), c.right.toFloatArray()) } }
+            }
+            is Msg.GoldenRecord -> {
+                log("GOLDEN ACTIVE: %08X \"%s\" %s RAW=[%s]".format(msg.id, msg.name, msg.values.joinToString(","), raw()))
+                handler.post { listeners.forEach { it.onGoldenActive(msg.id, msg.name, msg.values.toIntArray()) } }
+            }
+            is Msg.GoldenScan -> {
+                log("GOLDEN ACTIVE SCAN: uid=${"%08X".format(msg.id)} len=${msg.data.size}")
+                val data = bytes(msg.data)
+                handler.post { listeners.forEach { it.onGoldenActiveScan(msg.id, data) } }
+            }
+
+            // --- Personalized ANC and tap level, [VENDOR] (PROTOCOL.md §20) ---
+            is Msg.PersonalAncStored -> {
+                log("PERSONAL ANC stored=${if (msg.stored) 1 else 0}")
+                handler.post { listeners.forEach { it.onPersonalNoiseStored(msg.stored) } }
+            }
+            is Msg.PersonalAnc -> {
+                log("PERSONAL ANC result=${msg.result} RAW=[${raw()}]")
+                handler.post { listeners.forEach { it.onPersonalNoiseResult(msg.result) } }
+            }
+            is Msg.TapLevel -> {
+                val default = msg.default ?: tapLevelDefault
+                tapLevelDefault = default
+                log("TAP LEVEL: ${msg.level} default $default")
+                handler.post { listeners.forEach { it.onTapLevel(msg.level, default) } }
+            }
+            // Public event (PROTOCOL.md section 10): the first flag that matches wins.
+            is Msg.PublicMsg -> when (val e = msg.event) {
+                is Public.AlertVolume -> onAlertVolume(e.level, "ALERT VOLUME push: ${e.level} RAW=[${raw()}]")
+                is Public.TapLevel -> {
+                    log("TAP LEVEL push: ${e.level} RAW=[${raw()}]")
+                    handler.post { listeners.forEach { it.onTapLevel(e.level, tapLevelDefault) } }
+                }
+                else -> {}
+            }
+
+            // --- Fit test result: push 04 `[dev status] [dev status]` [VENDOR] ---
+            is Msg.FitTest -> if (msg.left != null || msg.right != null) {
+                val left = msg.left ?: -1
+                val right = msg.right ?: -1
+                log("FIT: left=$left right=$right")
+                handler.post { listeners.forEach { it.onFitResult(left, right) } }
+            }
+
+            // --- Feature changed: 0x0503, [CAPTURE] reports #2 #4 #63 ---
+            // The buds send this after a 0x0403 write (before or after the ack) and on a buds gesture.
+            // It is the push that confirms a "push" write, game mode included.
+            is Msg.FeaturePush -> {
+                log("FEATURE PUSH: " + msg.values.entries.joinToString(" ") { "%02X=%d".format(it.key, it.value) })
+                syncHandler.post { execute(sync.report(msg.values, null, SystemClock.elapsedRealtime(), push = true)) }
+            }
+
+            // --- Game mode changed on the buds: push 05, for our own write and for a buds gesture ---
+            is Msg.GameMode -> msg.state(featurePrefs().getString(Capabilities.KEY_PRODUCT_ID, null))?.let { on ->
                 log("GAME EVT: ${if (on) "ON" else "OFF"}")
                 handler.post { listeners.forEach { it.onGameModeState(on) } }
                 // Also a push report for the engine: it confirms a game-mode operation.
@@ -2139,20 +1915,73 @@ class BudsConnectionManager(private val context: Context) {
                     execute(sync.report(mapOf(gameId to (if (on) 1 else 0)), null, SystemClock.elapsedRealtime(), push = true))
                 }
             }
-            return
+
+            is Msg.Battery -> {
+                val cell = msg.cells.associateBy { it.part }
+                fun info(part: Int) = cell[part]?.let { BatteryParser.Info(it.level, it.charging) }
+                // Settings › Hide old battery levels: a part the report leaves out is cleared, not kept.
+                val clear = BudsService.clearMissingBattery(context)
+                info(1).let { if (it != null || clear) lastLeft = it }
+                info(2).let { if (it != null || clear) lastRight = it }
+                info(3).let { if (it != null || clear) lastCase = it }
+                emitBattery()
+                if (lastCase == null || lastCase?.level == 0) readCaseFromFastPair()
+            }
+
+            else -> {}
         }
+    }
 
-        val battery = BatteryParser.parse(packet)
-        val activeBattery = BatteryParser.parseActive(packet)
+    private fun bytes(list: List<Int>) = ByteArray(list.size) { list[it].toByte() }
 
-        (battery ?: activeBattery)?.let { b ->
-            // Settings › Hide old battery levels: a part the report leaves out is cleared, not kept.
-            val clear = BudsService.clearMissingBattery(context)
-            if (b.left != null || clear) lastLeft = b.left
-            if (b.right != null || clear) lastRight = b.right
-            if (b.case != null || clear) lastCase = b.case
-            emitBattery()
-            if (lastCase == null || lastCase?.level == 0) readCaseFromFastPair()
+    private fun eqChanged() {
+        log("EQ: current=$eqCurrent bassWave=$bassWaveLevel bands=${eqState.bassBands} custom=" +
+            eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
+        handler.post { listeners.forEach { it.onEqState() } }
+    }
+
+    private fun onAlertVolume(level: Int, line: String) {
+        alertVolume = level
+        log(line)
+        handler.post { listeners.forEach { it.onAlertVolume(level) } }
+    }
+
+    /** A write ack `0x84xx`: [ack]`.cmd` is the write command. */
+    private fun onAck(ack: Msg.Ack, seq: Int, payload: ByteArray) {
+        val status = ack.status
+        when (ack.cmd) {
+            // A refused feature write. Status 1 is a switch the buds lack. Status 2 is a switch they have but will not
+            // take now (high-quality audio needs an LDAC or LHDC link on buds that offer a codec list; reports #33, #42, #44).
+            OpoProtocol.CMD_SET_FEATURE -> {
+                val engineSeq = takeEngineSeq(seq)
+                log("SYNC: write ack seq=0x%02X status=%d %s".format(seq, status, if (engineSeq != null) "engine request" else "no engine request"))
+                if (engineSeq != null) {
+                    // Sent by the feature-sync engine: it decides what the refusal means and what to toast.
+                    featureWrites.remove(seq)
+                    syncHandler.post { execute(sync.ack(engineSeq, status, SystemClock.elapsedRealtime())) }
+                } else {
+                    // An old path: keep its log line.
+                    val id = featureWrites.remove(seq)
+                    if (id != null && status != 0)
+                        log("FEATURE REFUSED: id=0x%02X status=%d codec=%s offered=%s".format(id, status, codec, codecs))
+                }
+            }
+            // A refused ANC write (status 14 with no bud in an ear): read the real mode back (PROTOCOL.md section 14).
+            OpoProtocol.CMD_SET_ANC -> if (status != 0) {
+                log("ANC write refused (status $status), re-reading")
+                sendRaw(Commands.queryAncMode(), "query anc")
+                // From the app or the widget alike: say why the mode did not change.
+                if (status == 0x0E) handler.post { Toast.makeText(context, R.string.anc_need_ear, Toast.LENGTH_SHORT).show() }
+            }
+            // `00 <id>`: the id the preset now has (a created one's id comes from here).
+            0x0418 -> log("EQ ack: RAW=[${OpoProtocol.bytesToHex(payload)}]")
+            // The set ack carries the level, as the read reply does.
+            0x0427 -> if (status == 0 && ack.data.isNotEmpty()) onAlertVolume(ack.data[0], "ALERT VOLUME: ${ack.data[0]}")
+            0x040D, 0x040E -> if (status != 0) {
+                log("GOLDEN REFUSED: cmd=0x${"%04X".format(ack.cmd or 0x8000)} status=$status")
+                handler.post { listeners.forEach { it.onGoldenRefused(status) } }
+            }
+            0x0412 -> handler.post { listeners.forEach { it.onPersonalNoiseAck(status) } }
         }
     }
 

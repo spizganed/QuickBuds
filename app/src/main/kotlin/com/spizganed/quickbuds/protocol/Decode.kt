@@ -268,7 +268,7 @@ object Decode {
         return when {
             code == 0x01 -> BatteryParser.parseActive(frame(m))?.let { Msg.Battery(cells(it)) }
             code == 0x02 -> WearingStatusParser.parseActiveReport(p)?.let { Msg.Wear(wear(it)) }
-            code == 0x03 -> if (AncEventParser.isAncEvent(p)) Msg.AncMsg(Anc.Mode(AncEventParser.rawValue(p))) else null
+            code == 0x03 -> anc(p, 1)?.let { Msg.AncMsg(it) }
             code == 0x04 -> {
                 val r = (0 until n / 2).map { d(it * 2) to d(it * 2 + 1) }
                 Msg.FitTest(r.firstOrNull { it.first == 1 }?.second, r.firstOrNull { it.first == 2 }?.second)
