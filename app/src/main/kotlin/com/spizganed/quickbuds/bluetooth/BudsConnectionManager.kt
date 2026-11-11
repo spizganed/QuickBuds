@@ -68,6 +68,8 @@ class BudsConnectionManager(private val context: Context) {
         private const val PENDING_MS = 2000L
         /** A blocked socket.connect() gets its socket closed after this long, so the try can fail. */
         private const val CONNECT_TIMEOUT_MS = 12_000L
+        /** The shortest gap between two case reads over the Fast Pair stream. */
+        private const val FP_CASE_READ_GAP_MS = 5 * 60_000L
         /** A fresh UUID query gets this long for its answer, then its receiver goes away. */
         private const val UUID_REFRESH_TIMEOUT_MS = 10_000L
     }
@@ -460,7 +462,7 @@ class BudsConnectionManager(private val context: Context) {
                         log("Giving up after $totalTries connect tries. Tap CONNECT to retry manually.")
                         val held = ConnectDiagnostics.heldByOther(failures)
                         if (held) log("Every try failed fast with read ret -1: another device or app probably holds the earbuds.")
-                        if (held) startFastPair(device)
+                        if (held) startFastPair(device, held = true)
                         if (ConnectPolicy.showTryToast(user))
                             toast(if (held) context.getString(R.string.connect_held_by_other) else context.getString(R.string.connect_gave_up, totalTries))
                     }
@@ -681,6 +683,8 @@ class BudsConnectionManager(private val context: Context) {
         connectedThread?.cancel()
         connectedThread = null
         bluetoothSocket = null
+        stopFastPair()
+        fpCaseReadAt = -FP_CASE_READ_GAP_MS
         handler.post { listeners.forEach { it.onConnected(false) } }
         syncPrimed = false
         syncHandler.post { execute(sync.disconnect(SystemClock.elapsedRealtime())) }
@@ -2148,6 +2152,7 @@ class BudsConnectionManager(private val context: Context) {
             if (b.right != null || clear) lastRight = b.right
             if (b.case != null || clear) lastCase = b.case
             emitBattery()
+            if (lastCase == null || lastCase?.level == 0) readCaseFromFastPair()
         }
     }
 
@@ -2184,37 +2189,65 @@ class BudsConnectionManager(private val context: Context) {
         GestureConfigStore.syncHoldFromDevice(context, table, lastHoldAncMasks)
     }
 
-    /** The battery-only fallback over the Fast Pair stream, while another app holds `079A` (issue #18). */
+    /**
+     * The Fast Pair stream (PROTOCOL.md section 1). Held: another app holds `079A`, so the stream is the only link and
+     * gives the whole battery (issue #18). Not held: one short read beside the link gives the case level when the
+     * link gives none or `0` (report #184). The read closes at once and waits 5 min before the next one, so
+     * Google Play Services can use the stream too: one phone opens a channel only once.
+     */
     private var fastPair: FastPairBattery? = null
+    private var fpCase: FastPairStream.Level? = null
+    private var fpCaseReadAt = -FP_CASE_READ_GAP_MS
 
-    private fun startFastPair(device: BluetoothDevice) {
+    private fun readCaseFromFastPair() {
+        val now = SystemClock.elapsedRealtime()
+        if (fastPair != null || now - fpCaseReadAt < FP_CASE_READ_GAP_MS) return
+        fpCaseReadAt = now
+        lastDevice?.let { startFastPair(it, held = false) }
+    }
+
+    private fun startFastPair(device: BluetoothDevice, held: Boolean) {
+        if (fastPair != null) return
         if (device.uuids?.any { it.uuid.toString().equals(FastPairStream.UUID, true) } != true) return
-        log("Fast Pair stream listed: battery only while the earbuds are held")
+        log(if (held) "Fast Pair stream listed: battery only while the earbuds are held" else "Fast Pair stream listed: case level beside the link")
         lateinit var me: FastPairBattery
         me = FastPairBattery(::log, { b ->
             handler.post {
-                listeners.forEach { it.onBattery(b.left.level, b.case.level, b.right.level, b.left.charging, b.case.charging, b.right.charging) }
+                if (fastPair !== me) return@post
+                if (held) listeners.forEach { it.onBattery(b.left.level, b.case.level, b.right.level, b.left.charging, b.case.charging, b.right.charging) }
+                else {
+                    if (b.case.level != null) { fpCase = b.case; emitBattery() }
+                    stopFastPair(keepCase = true)
+                }
             }
         }, {
-            // Only the current fallback clears the levels: a stopped one ends after a new link may be up.
-            handler.post { if (fastPair === me) { fastPair = null; listeners.forEach { it.onConnected(false) } } }
+            // Only the current stream acts on its end: a stopped one can end after a new link is up.
+            handler.post {
+                if (fastPair !== me) return@post
+                fastPair = null
+                fpCase = null
+                if (held) listeners.forEach { it.onConnected(false) }
+            }
         })
         fastPair = me
         me.start(device)
     }
 
-    private fun stopFastPair() {
+    private fun stopFastPair(keepCase: Boolean = false) {
         fastPair?.stop()
         fastPair = null
+        if (!keepCase) fpCase = null
     }
 
     private fun emitBattery() {
         handler.post {
             listeners.forEach {
+                // The link's case level wins, except none or 0: then the Fast Pair stream's level, if it has one.
+                val fromStream = fpCase?.takeIf { lastCase == null || lastCase?.level == 0 }
                 it.onBattery(
-                    lastLeft?.level, lastCase?.level, lastRight?.level,
+                    lastLeft?.level, fromStream?.level ?: lastCase?.level, lastRight?.level,
                     lastLeft?.isCharging ?: false,
-                    lastCase?.isCharging ?: false,
+                    fromStream?.charging ?: lastCase?.isCharging ?: false,
                     lastRight?.isCharging ?: false
                 )
             }

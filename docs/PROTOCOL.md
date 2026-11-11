@@ -82,7 +82,9 @@ It is a separate RFCOMM service, so it opens while another app holds `079A` `[TE
 Message: `<group> <code> <length u16 BE> <data>`. On open the buds send, without a request `[CAPTURE]`:
 `03 01` model id (Buds 4: `75410D`), `03 02` BLE address (Buds 4: zeros), `03 03` battery `<left> <right> <case>`.
 A battery byte is the level 0-100; `7F` = not known; bit 7 = charging. When every `079A` try fails fast with
-`read ret -1` (another holder) and SDP lists the stream, QuickBuds opens it and shows the battery only. It writes nothing.
+`read ret -1` (another holder) and SDP lists the stream, QuickBuds opens it and shows the battery only. It writes nothing. With the normal link up, a case level that is missing or `0`
+starts one short read of the stream: the stream's case level wins, the stream closes at once, and the next read waits 5 min.
+Why short: a phone opens a channel only once, and Google Play Services uses the same stream.
 
 **Code:** `protocol/Protocol.kt` holds the UUID constants. The socket code is in `bluetooth/`.
 The core crate has no transport code.
