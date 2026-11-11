@@ -8,7 +8,7 @@ import java.net.URL
 
 /**
  * Counts active installs: at most once a day the app tells the report Worker its platform, its version and its random install ID
- * (see the README, Privacy). A failed send is tried again on the next start.
+ * (see docs/PRIVACY.md). A failed send is tried again on the next start.
  */
 object UsagePing {
     private const val KEY_ID = "appId"

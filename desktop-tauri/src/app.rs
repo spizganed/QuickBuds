@@ -20,7 +20,7 @@ static REPLY: Mutex<Option<String>> = Mutex::new(None);
 /// The release the last update check found.
 static FOUND: Mutex<Option<Release>> = Mutex::new(None);
 
-/// Counts this install once a day: platform, version and the install ID (README, Privacy).
+/// Counts this install once a day: platform, version and the install ID (docs/PRIVACY.md).
 pub fn ping() {
     let st = crate::load_settings();
     if st["usage_ping"].as_bool() == Some(false) { return; }

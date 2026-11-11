@@ -6,7 +6,7 @@ body:
     id: model
     attributes:
       label: Earbuds model
-      description: OnePlus, OPPO or realme, as in the README's Supported earbuds list.
+      description: OnePlus, OPPO or realme, as in docs/MODELS.md.
     validations:
       required: true
   - type: input

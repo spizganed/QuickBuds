@@ -20,7 +20,7 @@ body:
     id: model
     attributes:
       label: Earbuds model
-      description: As in the README's Supported earbuds list.
+      description: As in docs/MODELS.md.
     validations:
       required: true
   - type: input

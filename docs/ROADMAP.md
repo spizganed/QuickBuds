@@ -47,6 +47,14 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
 - **3D audio and high-quality audio tiles:** move the rules that turn one off when the other turns on out of the main
   screen first, so the tiles and the app share them.
 
+## Ideas
+
+Ideas, not plans. Nothing here is promised.
+
+- **Launch an app with an earbud gesture.** A gesture, for example a triple tap on the left bud, starts an app or an
+  action: Spotify, a playlist, or a voice assistant. Open question: do the earbuds report a gesture with no function
+  set? HeyMelody's firmware "Spotify Tap" is a different thing (see "Decided against").
+
 ## Unverified
 
 These work in code but no owner has confirmed them. They count as working until an issue says otherwise.
