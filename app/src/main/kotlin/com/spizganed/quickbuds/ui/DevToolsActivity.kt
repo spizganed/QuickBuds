@@ -122,6 +122,10 @@ class DevToolsActivity : Activity() {
             startService(Intent(this, BudsService::class.java).setAction(BudsService.ACTION_FORCE_DISCONNECT))
             showInLog("disconnect requested (FORCE_DISCONNECT)")
         })
+        actions.addView(action(R.drawable.ic_info, "FP probe") {
+            com.spizganed.quickbuds.bluetooth.FastPairProbe.run()
+            showInLog("Fast Pair stream probe started")
+        })
         root.addView(actions, spaced(dp(12f)))
 
         logText = TextView(this).apply {
