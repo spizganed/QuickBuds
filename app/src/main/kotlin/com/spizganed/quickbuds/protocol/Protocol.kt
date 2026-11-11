@@ -210,16 +210,6 @@ object OpoProtocol {
     const val CMD_GOLDEN_ACTIVE_SCAN = 0x011E // the ear-scan data on the buds
 
     /**
-     * The `0x8105` text as HeyMelody shows it: the `versionType` 2 versions in reply order, joined
-     * with dots. Buds 4 `1,2,138,2,2,138,3,1,01,3,2,105` -> `138.138.105`, as on HeyMelody's own
-     * screen `[CAPTURE]` 2026-09-27. Null when there is none.
-     */
-    fun firmwareVersion(text: String): String? = text.split(',').chunked(3)
-        .filter { it.size == 3 && it[1].trim() == "2" }
-        .joinToString(".") { it[2].trim() }
-        .ifEmpty { null }
-
-    /**
      * The hold cycle's noise type, the second byte of [Commands.holdAncModes] and [Commands.queryNoiseSwitchModes].
      * `[VENDOR]`: 1 for one cycle shared by both buds, 3 (left) / 4
      * (right) on models whose `longPressType` gives each bud its own hold.

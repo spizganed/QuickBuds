@@ -50,7 +50,7 @@ object Capabilities {
         return changed
     }
 
-    /** The last firmware version read, as HeyMelody shows it ([OpoProtocol.firmwareVersion]). */
+    /** The last firmware version read, as HeyMelody shows it ([Msg.Firmware.version]). */
     fun firmware(context: Context): String? = prefs(context).getString(KEY_FIRMWARE, null)
 
     fun saveFirmware(context: Context, version: String) = prefs(context).edit().putString(KEY_FIRMWARE, version).apply()

@@ -38,7 +38,8 @@ class MsgTest {
         assertEquals(Msg.Offered(listOf(2, 1)), dec(m(0x8200, 0, 2, 2, 1)))
         val text = "1,2,138,2,2,138,3,1,01,3,2,105".toByteArray()
         val fw = Decode.decode(Message(0x8105, 1, byteArrayOf(0, 4) + text)) as Msg.Firmware
-        assertEquals("138.138.105", fw.parts.filter { it.second == 2 }.joinToString(".") { it.third })
+        assertEquals("138.138.105", fw.version())
+        assertNull(Msg.Firmware(listOf(Triple(3, 1, "01"))).version())
         assertEquals(Msg.Registered, dec(m(0x8205, 1, 2, 1, 0, 2, 0)))
     }
 

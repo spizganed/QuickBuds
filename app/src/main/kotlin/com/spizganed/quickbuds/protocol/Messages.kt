@@ -115,7 +115,14 @@ sealed class Msg {
     /** 24-bit product id, as the buds send it. */
     data class ProductId(val id: Int) : Msg()
     /** (device, version type, version); device 1 left, 2 right, 3 case. */
-    data class Firmware(val parts: List<Triple<Int, Int, String>>) : Msg()
+    data class Firmware(val parts: List<Triple<Int, Int, String>>) : Msg() {
+        /**
+         * The version as HeyMelody shows it: the `versionType` 2 versions in reply order, joined with dots.
+         * Buds 4 `1,2,138,2,2,138,3,1,01,3,2,105` -> `138.138.105` `[CAPTURE]`. Null when there is none.
+         * Same rule as `firmware_text` in `core/src/cmd.rs`.
+         */
+        fun version(): String? = parts.filter { it.second == 2 }.joinToString(".") { it.third }.ifEmpty { null }
+    }
     data class Offered(val codes: List<Int>) : Msg()
     /** The `0x8205` reply. */
     object Registered : Msg() { override fun toString() = "Registered" }

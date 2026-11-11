@@ -1636,7 +1636,7 @@ class BudsConnectionManager(private val context: Context) {
 
             // Firmware triples (PROTOCOL.md §7), shown in the Earbud settings hub the way HeyMelody shows it.
             is Msg.Firmware -> {
-                val version = msg.parts.filter { it.second == 2 }.joinToString(".") { it.third }.ifEmpty { null }
+                val version = msg.version()
                 val text = if (payload.size > 2) String(payload, 2, payload.size - 2, Charsets.UTF_8) else ""
                 log("FIRMWARE: $version text=\"$text\" RAW=[${raw()}]")
                 if (version != null) {
