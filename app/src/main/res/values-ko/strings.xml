@@ -278,6 +278,8 @@
     <string name="layout_cancel">취소</string>
     <string name="settings_haptics_title">햅틱 피드백</string>
     <string name="settings_haptics_sub">설정이 바뀔 때 진동</string>
+    <string name="settings_anc_pick_title">ANC 강도 먼저 선택</string>
+    <string name="settings_anc_pick_sub">ANC를 탭하면 낮음, 중간, 높음 선택을 기다립니다. 끄기: ANC는 마지막 강도를 사용합니다.</string>
     <string name="settings_clear_battery_title">오래된 배터리 잔량 숨기기</string>
     <string name="settings_clear_battery_sub">이어버드가 더 이상 보고하지 않는 잔량을 지웁니다(뚜껑을 닫은 후의 케이스 등)</string>
     <string name="settings_full_notif_title">알림에 배터리 표시</string>

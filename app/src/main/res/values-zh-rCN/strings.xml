@@ -278,6 +278,8 @@
     <string name="layout_cancel">取消</string>
     <string name="settings_haptics_title">触感反馈</string>
     <string name="settings_haptics_sub">更改设置时振动</string>
+    <string name="settings_anc_pick_title">先选择降噪强度</string>
+    <string name="settings_anc_pick_sub">点按 ANC 后等待选择低、中或高。关闭：ANC 使用上次的强度。</string>
     <string name="settings_clear_battery_title">隐藏过时的电量</string>
     <string name="settings_clear_battery_sub">清除耳机不再报告的电量，例如合上盖子后的充电盒</string>
     <string name="settings_full_notif_title">在通知中显示电量</string>

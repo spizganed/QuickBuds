@@ -278,6 +278,8 @@
     <string name="layout_cancel">Скасувати</string>
     <string name="settings_haptics_title">Тактильний відгук</string>
     <string name="settings_haptics_sub">Вібрація під час зміни налаштування</string>
+    <string name="settings_anc_pick_title">Спершу вибирати силу ANC</string>
+    <string name="settings_anc_pick_sub">Натискання ANC чекає вибору: низька, середня або висока. Вимк.: ANC бере останню силу.</string>
     <string name="settings_clear_battery_title">Приховувати старий заряд</string>
     <string name="settings_clear_battery_sub">Скидати рівень, про який навушники перестали повідомляти, наприклад кейса після закриття</string>
     <string name="settings_full_notif_title">Батарея в сповіщенні</string>

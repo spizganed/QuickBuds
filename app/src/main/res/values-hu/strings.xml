@@ -278,6 +278,8 @@
     <string name="layout_cancel">Mégse</string>
     <string name="settings_haptics_title">Haptikus visszajelzés</string>
     <string name="settings_haptics_sub">Rezgés beállítás módosításakor</string>
+    <string name="settings_anc_pick_title">Előbb az ANC erősségének választása</string>
+    <string name="settings_anc_pick_sub">Az ANC koppintás után Alacsony, Közepes vagy Magas választásra vár. Ki: az ANC az utolsó erősséget használja.</string>
     <string name="settings_clear_battery_title">Régi akkuszintek elrejtése</string>
     <string name="settings_clear_battery_sub">Törli azt a szintet, amelyet a fülhallgató már nem jelent, pl. a tokét a fedél zárása után</string>
     <string name="settings_full_notif_title">Akkumulátor az értesítésben</string>

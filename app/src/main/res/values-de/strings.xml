@@ -278,6 +278,8 @@
     <string name="layout_cancel">Abbrechen</string>
     <string name="settings_haptics_title">Haptisches Feedback</string>
     <string name="settings_haptics_sub">Vibrieren, wenn sich eine Einstellung ändert</string>
+    <string name="settings_anc_pick_title">Zuerst ANC-Stärke wählen</string>
+    <string name="settings_anc_pick_sub">Ein Tipp auf ANC wartet auf Niedrig, Mittel oder Hoch. Aus: ANC nutzt die letzte Stärke.</string>
     <string name="settings_clear_battery_title">Alte Akkustände ausblenden</string>
     <string name="settings_clear_battery_sub">Einen Stand löschen, den die Earbuds nicht mehr melden, etwa das Case nach dem Schließen</string>
     <string name="settings_full_notif_title">Akku in der Benachrichtigung</string>

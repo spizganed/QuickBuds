@@ -830,11 +830,12 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         PacketLogger.log("ANC TAP: circle=$circle current=$activeAncMode")
 
         when (circle) {
-            // ANC opens the level picker unconditionally, lit or not, as the widget's button does.
-            // More than one level: the widget's picker. One: apply it.
-            // ANC lights up and the strength chooser drops down; nothing is sent until a strength is picked.
-            "ANC" -> if (ancModes.levels.size > 1) {
-                if (activeAncMode !in ancModes.levels) { ancAwaitingPick = true; renderAnc(activeAncMode) }
+            // ANC applies the last strength; the chooser drops down under it. With the "pick first" setting
+            // and more than one level, ANC lights up and nothing is sent until a strength is picked.
+            "ANC" -> if (activeAncMode in ancModes.levels) Unit
+            else if (ancModes.levels.size > 1 && getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE)
+                    .getBoolean(SettingsActivity.KEY_ANC_PICK_FIRST, false)) {
+                ancAwaitingPick = true; renderAnc(activeAncMode)
             } else selectAnc(lastAncLevel)
             "Off" -> selectAnc("Off")
             // Adaptive is a plain state, not a chooser: unlike ANC it has no

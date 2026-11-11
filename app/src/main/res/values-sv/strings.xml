@@ -278,6 +278,8 @@
     <string name="layout_cancel">Avbryt</string>
     <string name="settings_haptics_title">Haptisk återkoppling</string>
     <string name="settings_haptics_sub">Vibrera när en inställning ändras</string>
+    <string name="settings_anc_pick_title">Välj ANC-styrka först</string>
+    <string name="settings_anc_pick_sub">Ett tryck på ANC väntar på Låg, Medel eller Hög. Av: ANC använder den senaste styrkan.</string>
     <string name="settings_clear_battery_title">Dölj gamla batterinivåer</string>
     <string name="settings_clear_battery_sub">Rensa en nivå som hörlurarna slutar rapportera, som fodralet när locket stängts</string>
     <string name="settings_full_notif_title">Batteri i aviseringen</string>

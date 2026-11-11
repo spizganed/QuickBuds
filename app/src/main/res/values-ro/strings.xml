@@ -278,6 +278,8 @@
     <string name="layout_cancel">Anulează</string>
     <string name="settings_haptics_title">Feedback haptic</string>
     <string name="settings_haptics_sub">Vibrează când se schimbă o setare</string>
+    <string name="settings_anc_pick_title">Alege întâi intensitatea ANC</string>
+    <string name="settings_anc_pick_sub">Atingerea ANC așteaptă Scăzută, Medie sau Ridicată. Oprit: ANC folosește ultima intensitate.</string>
     <string name="settings_clear_battery_title">Ascunde nivelurile vechi ale bateriei</string>
     <string name="settings_clear_battery_sub">Șterge un nivel pe care căștile nu-l mai raportează, de ex. carcasa după închidere</string>
     <string name="settings_full_notif_title">Baterie în notificare</string>

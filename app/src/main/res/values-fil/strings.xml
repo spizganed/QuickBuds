@@ -278,6 +278,8 @@
     <string name="layout_cancel">Kanselahin</string>
     <string name="settings_haptics_title">Haptic feedback</string>
     <string name="settings_haptics_sub">Mag-vibrate kapag nagbago ang isang setting</string>
+    <string name="settings_anc_pick_title">Piliin muna ang lakas ng ANC</string>
+    <string name="settings_anc_pick_sub">Ang pag-tap sa ANC ay naghihintay ng Low, Medium o High. Off: ginagamit ng ANC ang huling lakas.</string>
     <string name="settings_clear_battery_title">Itago ang lumang antas ng baterya</string>
     <string name="settings_clear_battery_sub">Burahin ang antas na hindi na iniuulat ng buds, gaya ng case pagkasara ng takip</string>
     <string name="settings_full_notif_title">Baterya sa notification</string>

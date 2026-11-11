@@ -278,6 +278,8 @@
     <string name="layout_cancel">キャンセル</string>
     <string name="settings_haptics_title">触覚フィードバック</string>
     <string name="settings_haptics_sub">設定が変わるときに振動</string>
+    <string name="settings_anc_pick_title">先に ANC の強さを選ぶ</string>
+    <string name="settings_anc_pick_sub">ANC をタップすると、弱・中・強の選択を待ちます。オフ: ANC は前回の強さを使います。</string>
     <string name="settings_clear_battery_title">古いバッテリー残量を隠す</string>
     <string name="settings_clear_battery_sub">イヤホンが報告しなくなった残量を消去します（ふたを閉じた後のケースなど）</string>
     <string name="settings_full_notif_title">通知にバッテリーを表示</string>

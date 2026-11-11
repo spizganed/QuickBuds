@@ -278,6 +278,8 @@
     <string name="layout_cancel">Zrušit</string>
     <string name="settings_haptics_title">Haptická odezva</string>
     <string name="settings_haptics_sub">Vibrovat při změně nastavení</string>
+    <string name="settings_anc_pick_title">Nejprve vybrat sílu ANC</string>
+    <string name="settings_anc_pick_sub">Klepnutí na ANC čeká na volbu Nízká, Střední nebo Vysoká. Vypnuto: ANC použije poslední sílu.</string>
     <string name="settings_clear_battery_title">Skrýt staré úrovně baterie</string>
     <string name="settings_clear_battery_sub">Vymazat úroveň, kterou sluchátka přestanou hlásit, např. pouzdro po zavření víka</string>
     <string name="settings_full_notif_title">Baterie v oznámení</string>

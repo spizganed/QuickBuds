@@ -793,7 +793,7 @@ plays AAC. It accepts the same write while the phone plays LHDC V5.
 | `06` | Game mode, low latency | the apps call it Low latency mode; all models except where the bitmap has `0x0423`; there it is `28` |
 | `07` | Party mode | realme Link writes `0x0403 07` (setting type 12) `[VENDOR]` |
 | `08` | Auto-answer calls | realme Link writes `0x0403 08` (setting type 16, item `ITEM_AUTO_ANSWER`, 17 of our realme models); the T310 answers `08` in the status read `[VENDOR]`. realme Link never reads it back, so QuickBuds keeps the last tap for models with the `autoAnswer` flag |
-| `09` | Vocal enhancement | `[VENDOR]` |
+| `09` | Vocal enhancement; realme Link calls it Enhance voices | realme Buds T310: `0x0403 09 01` on, `09 00` off, both answer `00`; the status read answers `09 00` when off. realme Link reads it only at connect `[CAPTURE]` |
 | `0B` | Golden Sound; the apps call it Hearing profile | section 20 `[CAPTURE]` |
 | `0C` | Personalised ANC applied | the apps call it Personalised noise cancelling; the buds set it when a result applies |
 | `0F` | Zen mode | not built; asked on 6 OnePlus and OPPO models, and no code reads the reply `[VENDOR]` |

@@ -278,6 +278,8 @@
     <string name="layout_cancel">ยกเลิก</string>
     <string name="settings_haptics_title">การสั่นตอบสนอง</string>
     <string name="settings_haptics_sub">สั่นเมื่อมีการเปลี่ยนการตั้งค่า</string>
+    <string name="settings_anc_pick_title">เลือกระดับ ANC ก่อน</string>
+    <string name="settings_anc_pick_sub">แตะ ANC แล้วรอเลือก ต่ำ กลาง หรือ สูง ปิด: ANC ใช้ระดับล่าสุด</string>
     <string name="settings_clear_battery_title">ซ่อนระดับแบตเตอรี่เก่า</string>
     <string name="settings_clear_battery_sub">ล้างระดับที่หูฟังหยุดรายงาน เช่น เคสหลังปิดฝา</string>
     <string name="settings_full_notif_title">แบตเตอรี่ในการแจ้งเตือน</string>

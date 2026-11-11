@@ -52,6 +52,7 @@ class SettingsActivity : Activity() {
             BudsService.PREF_FULL_NOTIFICATION, true)
         val general = mutableListOf<android.view.View>(
             toggle(R.drawable.ic_haptics, R.string.settings_haptics_title, R.string.settings_haptics_sub, KEY_HAPTICS, true),
+            toggle(R.drawable.ic_anc, R.string.settings_anc_pick_title, R.string.settings_anc_pick_sub, KEY_ANC_PICK_FIRST, false),
             backgroundRow(prefs),
             toggle(R.drawable.ic_battery, R.string.settings_clear_battery_title, R.string.settings_clear_battery_sub,
                 BudsService.PREF_CLEAR_BATTERY, false),
@@ -148,6 +149,8 @@ class SettingsActivity : Activity() {
 
     companion object {
         const val KEY_HAPTICS = "haptics"
+        /** On: the ANC segment waits for a strength pick. Off (default): it applies the last strength. */
+        const val KEY_ANC_PICK_FIRST = "ancPickFirst"
         const val KEY_DEV_TOOLS_BUTTON = "devToolsButton"
     }
 }

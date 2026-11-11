@@ -278,6 +278,8 @@
     <string name="layout_cancel">Annuler</string>
     <string name="settings_haptics_title">Retour haptique</string>
     <string name="settings_haptics_sub">Vibrer quand un réglage change</string>
+    <string name="settings_anc_pick_title">Choisir d\'abord l\'intensité ANC</string>
+    <string name="settings_anc_pick_sub">Toucher ANC attend Faible, Moyenne ou Élevée. Désactivé : l\'ANC reprend la dernière intensité.</string>
     <string name="settings_clear_battery_title">Masquer les anciens niveaux de batterie</string>
     <string name="settings_clear_battery_sub">Effacer un niveau que les écouteurs ne signalent plus, comme le boîtier une fois fermé</string>
     <string name="settings_full_notif_title">Batterie dans la notification</string>

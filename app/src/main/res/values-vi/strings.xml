@@ -278,6 +278,8 @@
     <string name="layout_cancel">Hủy</string>
     <string name="settings_haptics_title">Phản hồi xúc giác</string>
     <string name="settings_haptics_sub">Rung khi thay đổi cài đặt</string>
+    <string name="settings_anc_pick_title">Chọn mức ANC trước</string>
+    <string name="settings_anc_pick_sub">Chạm ANC sẽ chờ chọn Thấp, Vừa hoặc Cao. Tắt: ANC dùng mức gần nhất.</string>
     <string name="settings_clear_battery_title">Ẩn mức pin cũ</string>
     <string name="settings_clear_battery_sub">Xóa mức pin mà tai nghe ngừng báo, như hộp sạc sau khi đóng nắp</string>
     <string name="settings_full_notif_title">Pin trong thông báo</string>

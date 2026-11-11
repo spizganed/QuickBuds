@@ -278,6 +278,8 @@
     <string name="layout_cancel">Anuluj</string>
     <string name="settings_haptics_title">Wibracje przy dotyku</string>
     <string name="settings_haptics_sub">Wibruj przy zmianie ustawienia</string>
+    <string name="settings_anc_pick_title">Najpierw wybierz siłę ANC</string>
+    <string name="settings_anc_pick_sub">Dotknięcie ANC czeka na wybór Niska, Średnia lub Wysoka. Wyłączone: ANC używa ostatniej siły.</string>
     <string name="settings_clear_battery_title">Ukryj stare poziomy baterii</string>
     <string name="settings_clear_battery_sub">Czyść poziom, którego słuchawki już nie zgłaszają, np. etui po zamknięciu</string>
     <string name="settings_full_notif_title">Bateria w powiadomieniu</string>

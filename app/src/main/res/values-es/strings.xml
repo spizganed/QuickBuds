@@ -278,6 +278,8 @@
     <string name="layout_cancel">Cancelar</string>
     <string name="settings_haptics_title">Respuesta háptica</string>
     <string name="settings_haptics_sub">Vibrar al cambiar un ajuste</string>
+    <string name="settings_anc_pick_title">Elegir primero la intensidad de ANC</string>
+    <string name="settings_anc_pick_sub">Al tocar ANC, espera a Baja, Media o Alta. Desactivado: ANC usa la última intensidad.</string>
     <string name="settings_clear_battery_title">Ocultar niveles de batería antiguos</string>
     <string name="settings_clear_battery_sub">Borrar un nivel que los auriculares dejan de informar, como el estuche al cerrar la tapa</string>
     <string name="settings_full_notif_title">Batería en la notificación</string>

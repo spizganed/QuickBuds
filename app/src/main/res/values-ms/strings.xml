@@ -278,6 +278,8 @@
     <string name="layout_cancel">Batal</string>
     <string name="settings_haptics_title">Maklum balas haptik</string>
     <string name="settings_haptics_sub">Bergetar apabila tetapan berubah</string>
+    <string name="settings_anc_pick_title">Pilih kekuatan ANC dahulu</string>
+    <string name="settings_anc_pick_sub">Mengetik ANC menunggu Rendah, Sederhana atau Tinggi. Mati: ANC guna kekuatan terakhir.</string>
     <string name="settings_clear_battery_title">Sembunyikan aras bateri lama</string>
     <string name="settings_clear_battery_sub">Kosongkan aras yang tidak lagi dilaporkan oleh earbud, seperti bekas selepas penutup ditutup</string>
     <string name="settings_full_notif_title">Bateri dalam pemberitahuan</string>

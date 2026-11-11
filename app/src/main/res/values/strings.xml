@@ -358,6 +358,8 @@
     <string name="layout_cancel">Cancel</string>
     <string name="settings_haptics_title">Haptic feedback</string>
     <string name="settings_haptics_sub">Vibrate when a setting changes</string>
+    <string name="settings_anc_pick_title">Pick the ANC strength first</string>
+    <string name="settings_anc_pick_sub">Tapping ANC waits for Low, Medium or High. Off: ANC uses the last strength.</string>
     <string name="settings_clear_battery_title">Hide old battery levels</string>
     <string name="settings_clear_battery_sub">Clear a level the buds stop reporting, like the case after the lid closes</string>
     <string name="settings_full_notif_title">Battery in the notification</string>
