@@ -75,9 +75,10 @@ object RowRules {
      *
      * [model] is the model's `models.json` object, or null when no model is known.
      * [reply] is the last `0x810D` reply as id -> value. Null means "nothing read yet": then no
-     * conditional row shows, because a row needs the buds' answer. Empty means the buds answered
-     * nothing, which also shows no conditional row.
-     * [bitmap] is the `0x8100` command set. Null means "nothing read yet".
+     * feature row shows, because a feature row needs the buds' answer. Empty means the buds answered
+     * nothing, which also shows no feature row. The command-only rows ([commandRows]) do not need it.
+     * [bitmap] is the `0x8100` command set. Null means "nothing read yet": a command-only row shows,
+     * as [Capabilities.supports] allows every command before the bitmap is read.
      * [productAnc] names the noise modes the buds reported, when `models.json` has none.
      * [manual]: the person picked the model. Then the model's data passes where the bitmap would decide
      * (Personalized ANC, game sound type, tap level, the priority device).
@@ -93,6 +94,7 @@ object RowRules {
         gestures: Boolean? = null
     ): Set<String> {
         val out = linkedSetOf(EARBUDS)
+        out += commandRows(model, bitmap, manual, gestures)
         if (reply == null) return out
         val caps = bitmap ?: emptySet()
         val has = { id: Int -> reply.containsKey(id) }
@@ -109,13 +111,7 @@ object RowRules {
         if (has(Feature.DUAL_DEVICE)) out += DUAL
         if (OpoProtocol.CMD_SET_ANC in caps && hasAncTable(model, productAnc)) out += ANC
 
-        if (OpoProtocol.CMD_SET_KEY_FUNCTION in caps && (gestures ?: ((p.gestures?.length() ?: 0) > 0))) out += CONTROLS
         if (has(Feature.AUTO_PLAY_PAUSE)) out += WEAR
-        if (OpoProtocol.CMD_FIND_BUDS in caps && !p.noFind) out += FIND
-        if (OpoProtocol.CMD_FIT_TEST in caps) out += FIT
-        if (OpoProtocol.CMD_SET_ALERT_VOLUME in caps) out += ALERT_VOLUME
-        if (OpoProtocol.CMD_QUERY_FIRMWARE in caps) out += FIRMWARE
-        if (p.tapLevel && accepts(OpoProtocol.CMD_SET_TAP_LEVEL)) out += TAP_LEVEL
         // The flag too: HeyMelody gates on it, and Buds 4 list 0x0C without having the feature.
         // No models.json entry counts as flag on: the buds' reply and bitmap decide.
         if ((!p.known || p.personalAnc) && has(Feature.PERSONAL_NOISE) && accepts(OpoProtocol.CMD_PERSONAL_NOISE)) out += PERSONAL_ANC
@@ -153,6 +149,23 @@ object RowRules {
             out += DUAL_DEVICES
             if (dualPriority(model) && accepts(OpoProtocol.CMD_MULTI_CONNECT)) out += DUAL_PRIORITY
         }
+        return out
+    }
+
+    /**
+     * The Earbud settings rows that send a command and read no `0x810D` switch: controls, find, fit,
+     * alert volume, firmware and tap level. The bitmap alone decides. An unread bitmap allows every command.
+     */
+    private fun commandRows(model: JSONObject?, bitmap: Set<Int>?, manual: Boolean, gestures: Boolean?): Set<String> {
+        val p = ModelProfile(model)
+        val cmd = { c: Int -> bitmap == null || c in bitmap }
+        val out = linkedSetOf<String>()
+        if (cmd(OpoProtocol.CMD_SET_KEY_FUNCTION) && (gestures ?: ((p.gestures?.length() ?: 0) > 0))) out += CONTROLS
+        if (cmd(OpoProtocol.CMD_FIND_BUDS) && !p.noFind) out += FIND
+        if (cmd(OpoProtocol.CMD_FIT_TEST)) out += FIT
+        if (cmd(OpoProtocol.CMD_SET_ALERT_VOLUME)) out += ALERT_VOLUME
+        if (cmd(OpoProtocol.CMD_QUERY_FIRMWARE)) out += FIRMWARE
+        if (p.tapLevel && (cmd(OpoProtocol.CMD_SET_TAP_LEVEL) || manual)) out += TAP_LEVEL
         return out
     }
 

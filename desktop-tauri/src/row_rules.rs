@@ -64,7 +64,8 @@ pub const DEFAULT_IDS: [u8; 23] = [
     0x09, 0x17, 0x30, 0x31, 0x3A, 0x32, 0x35, 0x37, 0x38, 0x3B, 0x0C,
 ];
 
-/// What the rules read. `reply` None: nothing read yet, so no conditional row. `bitmap` None: not read yet.
+/// What the rules read. `reply` None: nothing read yet, so no feature row; the command-only rows ([`command_rows`])
+/// do not need it. `bitmap` None: not read yet, so a command-only row shows (every command allowed).
 /// `product_anc`: the buds reported noise modes where `models.json` has none. `manual`: the person picked the model,
 /// so its data passes where the bitmap would decide. `gestures`: None lets the model's `gestures` list decide.
 #[derive(Default)]
@@ -83,6 +84,7 @@ fn in_bitmap(bitmap: Option<&[u16]>, cmd: u16) -> bool { bitmap.is_some_and(|b| 
 
 pub fn rows(i: &Input) -> BTreeSet<&'static str> {
     let mut out = BTreeSet::from([EARBUDS]);
+    out.extend(command_rows(i));
     let Some(reply) = i.reply else { return out };
     let (m, b) = (i.model, i.bitmap);
     let p = Profile(m);
@@ -100,12 +102,6 @@ pub fn rows(i: &Input) -> BTreeSet<&'static str> {
     add(has(FEATURE_DUAL), DUAL);
     add(caps(CMD_SET_ANC) && (i.product_anc || has_array(p.anc_modes())), ANC);
 
-    add(caps(CMD_SET_KEY_FUNCTION) && i.gestures.unwrap_or_else(|| has_array(p.gestures())), CONTROLS);
-    add(caps(CMD_FIND_BUDS) && !p.no_find(), FIND);
-    add(caps(CMD_FIT_TEST), FIT);
-    add(caps(CMD_SET_ALERT_VOLUME), ALERT_VOLUME);
-    add(caps(CMD_QUERY_FIRMWARE), FIRMWARE);
-    add(p.tap_level() && accepts(CMD_SET_TAP_LEVEL), TAP_LEVEL);
     // The flag too: HeyMelody gates on it, and Buds 4 list 0x0C without having the feature.
     // No models.json entry counts as flag on: the buds' reply and bitmap decide.
     add((m.is_none() || p.personal_anc()) && has(FEATURE_PERSONAL_NOISE) && accepts(CMD_PERSONAL_NOISE), PERSONAL_ANC);
@@ -125,6 +121,21 @@ pub fn rows(i: &Input) -> BTreeSet<&'static str> {
     let priority = p.dual_device("setPriorityDevice");
     add(has(FEATURE_DUAL) && priority && accepts(CMD_MULTI_CONNECT), DUAL_PRIORITY);
     out
+}
+
+/// The Earbud settings rows that send a command and read no `0x810D` switch: controls, find, fit, alert volume,
+/// firmware and tap level. The bitmap alone decides. An unread bitmap allows every command.
+fn command_rows(i: &Input) -> Vec<&'static str> {
+    let p = Profile(i.model);
+    let cmd = |c: u16| i.bitmap.is_none_or(|b| b.contains(&c));
+    [
+        (cmd(CMD_SET_KEY_FUNCTION) && i.gestures.unwrap_or_else(|| has_array(p.gestures())), CONTROLS),
+        (cmd(CMD_FIND_BUDS) && !p.no_find(), FIND),
+        (cmd(CMD_FIT_TEST), FIT),
+        (cmd(CMD_SET_ALERT_VOLUME), ALERT_VOLUME),
+        (cmd(CMD_QUERY_FIRMWARE), FIRMWARE),
+        (p.tap_level() && (cmd(CMD_SET_TAP_LEVEL) || i.manual), TAP_LEVEL),
+    ].into_iter().filter_map(|(on, key)| on.then_some(key)).collect()
 }
 
 /// Every command of the `0x8100` table: the bitmap of buds that have not answered yet.
@@ -234,9 +245,20 @@ mod tests {
     }
 
     #[test]
-    fn nothing_read_shows_only_earbuds() {
+    fn nothing_read_shows_earbuds_and_the_command_only_rows() {
         let m = find_model(Some("065414"), None);
-        assert_eq!(rows(&Input { model: m, ..Default::default() }), BTreeSet::from([EARBUDS]));
+        let got = rows(&Input { model: m, ..Default::default() });
+        for key in [EARBUDS, FIND, FIT, ALERT_VOLUME, FIRMWARE] { assert!(got.contains(key), "{key}"); }
+        for key in [WIND, GAME, ANC, EQ, WEAR, PERSONAL_ANC] { assert!(!got.contains(key), "{key}"); }
+    }
+
+    #[test]
+    fn command_only_rows_follow_a_read_bitmap() {
+        let reply = HashMap::new();
+        let got = rows(&Input { reply: Some(&reply), bitmap: Some(&[CMD_FIT_TEST]), ..Default::default() });
+        assert!(got.contains(FIT) && !got.contains(FIND) && !got.contains(FIRMWARE));
+        let unread = rows(&Input { reply: Some(&reply), bitmap: None, ..Default::default() });
+        assert!(unread.contains(FIND) && unread.contains(FIRMWARE));
     }
 
     #[test]

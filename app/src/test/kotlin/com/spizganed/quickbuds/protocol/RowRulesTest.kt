@@ -95,9 +95,23 @@ class RowRulesTest {
         assertEquals(Feature.GAME_MODE_MAIN, RowRules.gameModeId(setOf(OpoProtocol.CMD_GAME_SOUND), JSONObject("{}")))
     }
 
-    @Test fun nothingReadShowsNoConditionalRow() {
-        assertEquals(setOf(RowRules.EARBUDS), RowRules.rows(model("OnePlus Buds 4"), null, null))
-        assertEquals(setOf(RowRules.EARBUDS), RowRules.rows(null, null, null))
+    @Test fun nothingReadShowsOnlyTheCommandOnlyRows() {
+        val commandOnly = setOf(
+            RowRules.CONTROLS, RowRules.FIND, RowRules.FIT, RowRules.ALERT_VOLUME, RowRules.FIRMWARE, RowRules.TAP_LEVEL
+        )
+        val buds4 = RowRules.rows(model("OnePlus Buds 4"), null, null)
+        assertTrue(RowRules.EARBUDS in buds4 && RowRules.FIND in buds4 && RowRules.FIRMWARE in buds4)
+        assertTrue((buds4 - RowRules.EARBUDS).all { it in commandOnly })
+        val none = RowRules.rows(null, null, null)
+        assertEquals(setOf(RowRules.EARBUDS, RowRules.FIND, RowRules.FIT, RowRules.ALERT_VOLUME, RowRules.FIRMWARE), none)
+    }
+
+    @Test fun replyWithoutBitmapAllowsTheCommandOnlyRows() {
+        val m = JSONObject("""{"id":"X","name":"X","gestures":[{"gesture":1}],"tapLevel":1}""")
+        val unread = RowRules.rows(m, emptyMap(), null)
+        assertTrue(setOf(RowRules.CONTROLS, RowRules.FIND, RowRules.FIT, RowRules.FIRMWARE, RowRules.TAP_LEVEL).all { it in unread })
+        val read = RowRules.rows(m, emptyMap(), setOf(OpoProtocol.CMD_FIT_TEST))
+        assertTrue(RowRules.FIT in read && RowRules.FIND !in read && RowRules.TAP_LEVEL !in read)
     }
 
     @Test fun everyGameIdIsAskedAndOneIdIsUsed() {
