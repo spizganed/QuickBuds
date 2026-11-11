@@ -43,10 +43,9 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
   4. Anker (Soundcore, issue #32).
 - **Generic fallback (issue #22):** battery and connection state from Fast Pair and the standard battery service, for
   earbuds that QuickBuds does not know. Experimental, after the other brands.
+  The Fast Pair Message Stream reader exists: it gives the battery when another app holds the earbuds (issue #18).
 - **3D audio and high-quality audio tiles:** move the rules that turn one off when the other turns on out of the main
   screen first, so the tiles and the app share them.
-- **realme Link `0x0403` extras** (vocal enhance, `0x0403 09`; PROTOCOL.md §11): no data
-  says which realme models have them. Start when a realme owner can test them (issue #8).
 
 ## Unverified
 
