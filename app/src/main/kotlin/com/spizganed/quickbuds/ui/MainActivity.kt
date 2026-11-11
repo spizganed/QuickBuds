@@ -888,7 +888,15 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
     private fun requestSpatial(wantOn: Boolean) {
         if (!::manager.isInitialized) return
         if (spatialByType()) return setSpatial(if (wantOn) 1 else 0)
-        if (MainActivity.phoneSpatial(this)) return requestPhoneSpatial(wantOn)
+        if (MainActivity.phoneSpatial(this)) {
+            // Phone-made 3D audio excludes Hi-Res too: turning it on asks first, then Hi-Res goes off after it.
+            val dropHires = wantOn && featureOn(Feature.HIRES_CODEC) && !spatialSwitchOnly()
+            if (!dropHires) return requestPhoneSpatial(wantOn)
+            return confirmReconnect(R.string.codec_msg_spatial_drops_hires) {
+                requestPhoneSpatial(true)
+                manager.setFeature(Feature.HIRES_CODEC, false)
+            }
+        }
         if (wantOn == spatialOn()) return
         val dropHires = wantOn && featureOn(Feature.HIRES_CODEC) && !spatialSwitchOnly()
         // The manager adds the Hi-Res write when it drops it; the dialog warns first.
@@ -943,6 +951,10 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
                     manager.setSpatialType(0)
                     paintSpatial()
                     hires.postDelayed({ manager.setFeature(Feature.HIRES_CODEC, true) }, 300)
+                } else if (dropSpatial && MainActivity.phoneSpatial(this)) {
+                    // Phone-made 3D audio: the phone's spatializer goes off, then Hi-Res goes on.
+                    requestPhoneSpatial(false)
+                    manager.setFeature(Feature.HIRES_CODEC, true)
                 } else {
                     // The manager adds the 3D audio write when it drops it.
                     manager.setFeature(Feature.HIRES_CODEC, wantOn)

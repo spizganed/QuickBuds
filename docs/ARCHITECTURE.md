@@ -26,6 +26,7 @@ One setting does not go to the buds. Buds whose bitmap lacks `0xEF03` cannot mak
 `app/.../bluetooth/PhoneSpatial.kt` reads the Android `Spatializer` and writes an OPLUS audio parameter. Only OPPO,
 OnePlus and realme phones have that spatializer, so the row shows only there. Why: the switch on the buds plays
 nothing on other phones (PROTOCOL.md section 18). The desktop app hides the row.
+Phone-made 3D audio and high-quality audio exclude each other, as on the buds: one turns the other off after a dialog.
 
 One request goes the other way: the buds ask the phone to ring. realme buds with the `findPhone` flag send `0x0502 05`
 on a gesture. `app/.../bluetooth/PhoneRinger.kt` plays the default ringtone on the alarm stream and posts a
