@@ -41,7 +41,7 @@ import org.json.JSONObject
  * Every command is `[CAPTURE]` 2026-09-23 (PROTOCOL.md §17).
  *
  * The screen shows the BUDS' state, never its own guess: it binds the service, reads the EQ on
- * open, and every write is followed by a re-read ([BudsConnectionManager.sendThenRead]) that
+ * open, and every write is followed by a re-read ([Equalizer]) that
  * repaints through [onEqState]. Tapping a custom preset selects it AND opens its editor sheet
  * ([showEditor]), because `0x0418` selects and saves in the same frame — a preset that is not
  * selected cannot be edited. Create / delete are the same command, action `01` / `03`.

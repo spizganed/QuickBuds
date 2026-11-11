@@ -552,9 +552,7 @@ class BudsConnectionManager(private val context: Context) {
         reconnectAttempts = 0
         connectedAt = System.currentTimeMillis()
         caseClosing = false
-        eqMac = audioDevice?.address
-        if (eqMac != null) eqState = EqState.forLink(eqSnapshot, eqMac)
-        eqReadGate.onLinkUp()
+        equalizer.onLinkUp(audioDevice?.address)
         if (audioDevice != null && audioAfterRestart) { audioAfterRestart = false; setPhoneAudio(audioDevice, on = true) }
         (audioDevice ?: lastDevice)?.let { audioCheck(it, connectGeneration) }
         handler.post { listeners.forEach { it.onConnected(true) } }
@@ -680,8 +678,7 @@ class BudsConnectionManager(private val context: Context) {
         pendingRetry = null
         isReady = false
         isConnecting = false
-        eqMac = null
-        eqReadGate.onLinkDown()
+        equalizer.onLinkDown()
         connectedThread?.cancel()
         connectedThread = null
         bluetoothSocket = null
@@ -774,122 +771,31 @@ class BudsConnectionManager(private val context: Context) {
     /** The events these buds offer (`0x8200`), once read; reset on each connect. */
     @Volatile private var offeredEvents: Set<Int>? = null
 
-    /**
-     * The saved snapshot, read at construction. It paints the screen before the bind.
-     * It is used for a link only when its MAC matches the device ([EqState.forLink]).
-     */
-    @Volatile private var eqSnapshot: EqSnapshot? =
-        EqSnapshot.decode(featurePrefs().getString(EqSnapshot.KEY, null))
-    /** The EQ values the screen reads. Before a link: the snapshot, so a bind repaints no blank. See [EqState]. */
-    @Volatile private var eqState = EqState.beforeLink(eqSnapshot)
-    /** The whole state, so one render paints one version of it. */
-    val eq: EqState get() = eqState
-    val eqCurrent: Int? get() = eqState.current
-    val eqCustom: List<EqCodec.Preset> get() = eqState.custom
-    val bassWaveLevel: Int? get() = eqState.bassWave
-
-    /** The MAC of the linked buds; null while no link is up. */
-    @Volatile private var eqMac: String? = null
-    private val eqReadGate = EqReadGate()
-
-    /** Stores [next] and writes the snapshot. Every EQ change goes through here. */
-    private fun setEq(next: EqState) {
-        eqState = next
-        val mac = eqMac ?: return
-        EqSnapshot(mac, next.current, next.bassWave, next.custom, next.bassBands).also {
-            eqSnapshot = it
-            featurePrefs().edit().putString(EqSnapshot.KEY, it.encode()).apply()
-        }
-    }
-
-    /** One EQ read set per link: the bind ask before the link up sends nothing. */
-    fun refreshEq() { if (eqReadGate.take()) sendThenRead() }
-
-    // Each write updates the cached state FIRST, then sends and re-reads. The three replies land one
-    // by one and each repaints; without this, the replies that arrive before the new values snapped
-    // the UI back to the old ones for a moment.
-
-    /** The preset last picked, and when. Reads of earlier picks land after it: they must not move the selection back. */
-    @Volatile private var eqPicked: Int? = null
-    @Volatile private var eqPickedAt = 0L
-
-    private fun picked(id: Int): EqState {
-        eqPicked = id
-        eqPickedAt = System.currentTimeMillis()
-        return eqState.copy(current = id)
-    }
-
-    /** The buds report [id] as current: kept unless an unconfirmed pick of another preset is under 4 s old. */
-    private fun reportedEq(id: Int) {
-        val want = eqPicked
-        if (want != null && want != id && System.currentTimeMillis() - eqPickedAt < 4000) return
-        eqPicked = null
-        setEq(eqState.copy(current = id))
-    }
-
-    /** Counts picks: a queued pick that a newer one replaced is not sent. */
-    @Volatile private var eqPickSeq = 0
-
-    fun selectBuiltInEq(id: Int) {
-        setEq(picked(id))
-        sendThenRead(Commands.setBuiltInEq(id) to "EQ built-in $id", ++eqPickSeq)
-    }
-
-    /** Selects a custom preset unchanged: the same frame as a save, but a newer pick may replace it. */
-    fun selectCustomEq(p: EqCodec.Preset) {
-        setEq(picked(p.id))
-        sendThenRead(Commands.customEq(EqCodec.ACTION_SAVE, p) to "EQ custom ${p.id} '${p.name}'", ++eqPickSeq)
-    }
-
-    /** Selects AND saves a custom preset — `0x0418` is both (a band edit or rename is the same frame). */
-    fun saveCustomEq(p: EqCodec.Preset) {
-        val next = picked(p.id)
-        setEq(next.withList(next.custom.map { if (it.id == p.id) p else it }))
-        sendThenRead(Commands.customEq(EqCodec.ACTION_SAVE, p) to "EQ custom ${p.id} '${p.name}'")
-    }
-
-    /** No local update for create/delete: the buds assign and renumber ids, so only the re-read knows. */
-    fun createCustomEq(name: String, freqs: List<Int>) =
-        sendThenRead(Commands.customEq(EqCodec.ACTION_CREATE,EqCodec.newPreset(name, freqs)) to "EQ create '$name'")
-
-    fun deleteCustomEq(p: EqCodec.Preset) =
-        sendThenRead(Commands.customEq(EqCodec.ACTION_DELETE,p) to "EQ delete ${p.id} '${p.name}'")
-
-    fun setBassWaveLevel(level: Int) {
-        setEq(eqState.copy(bassWave = level))
-        sendThenRead(Commands.setBassWaveLevel(level) to "BassWave level $level")
-    }
-
-    /** realme dynamic sound: [band] 1 low, 2 medium, 3 high. */
-    fun setBassBand(band: Int, level: Int) {
-        setEq(eqState.copy(bassBands = eqState.bassBands.toMutableList().also { it[band - 1] = level }))
-        sendThenRead(Commands.setBassWaveLevel(level, band) to "BassWave band $band level $level")
-    }
-
-    /** Optional write, then the EQ reads these buds list (see Capabilities), in order on one thread. */
-    /** EQ writes go out one at a time, in order: a thread each let a quick second pick overtake the first. */
+    /** The equalizer: state, snapshot and pick rules ([Equalizer]). Its writes go out on [eqQueue], in order. */
     private val eqQueue = java.util.concurrent.Executors.newSingleThreadExecutor()
+    private val equalizer = Equalizer(
+        now = System::currentTimeMillis,
+        send = { frame, label -> sendRawBlocking(frame, label) },
+        supports = { Capabilities.supports(context, it) },
+        saved = featurePrefs().getString(EqSnapshot.KEY, null),
+        save = { featurePrefs().edit().putString(EqSnapshot.KEY, it).apply() },
+        onThread = { eqQueue.execute(it) },
+        log = ::log,
+    )
+    /** The whole state, so one render paints one version of it. */
+    val eq: EqState get() = equalizer.state
+    val eqCurrent: Int? get() = equalizer.state.current
+    val eqCustom: List<EqCodec.Preset> get() = equalizer.state.custom
+    val bassWaveLevel: Int? get() = equalizer.state.bassWave
 
-    /** [pick]: the pick's number; the write is skipped when a newer pick is queued. */
-    private fun sendThenRead(write: Pair<ByteArray, String>? = null, pick: Int? = null) {
-        eqQueue.execute {
-            if (pick != null && pick != eqPickSeq) return@execute
-            try {
-                if (write != null) { sendRawBlocking(write.first, write.second); Thread.sleep(400) }
-                for ((cmd, read) in listOf(
-                        OpoProtocol.CMD_QUERY_EQ to (Commands.queryEq() to "query EQ"),
-                        OpoProtocol.CMD_QUERY_EQ_ALL to (Commands.queryEqAll() to "query custom EQ"),
-                        OpoProtocol.CMD_QUERY_BASSWAVE_LEVEL to (Commands.queryBassWaveLevel() to "query BassWave level"),
-                        OpoProtocol.CMD_QUERY_BASS_BANDS to (Commands.queryBassBands() to "query bass bands"))) {
-                    if (!Capabilities.supports(context, cmd)) continue
-                    sendRawBlocking(read.first, read.second)
-                    Thread.sleep(120)
-                }
-            } catch (e: Exception) {
-                log("EQ: ${e.message}")
-            }
-        }
-    }
+    fun refreshEq() = equalizer.refresh()
+    fun selectBuiltInEq(id: Int) = equalizer.selectBuiltIn(id)
+    fun selectCustomEq(p: EqCodec.Preset) = equalizer.selectCustom(p)
+    fun saveCustomEq(p: EqCodec.Preset) = equalizer.saveCustom(p)
+    fun createCustomEq(name: String, freqs: List<Int>) = equalizer.createCustom(name, freqs)
+    fun deleteCustomEq(p: EqCodec.Preset) = equalizer.deleteCustom(p)
+    fun setBassWaveLevel(level: Int) = equalizer.setBassWave(level)
+    fun setBassBand(band: Int, level: Int) = equalizer.setBassBand(band, level)
 
     /** Find my earbuds: both buds' own locator tone. `[CAPTURE]` 2026-09-23, PROTOCOL.md §18. */
     fun setFindTone(on: Boolean) = sendRaw(Commands.findTone(on),"Find tone -> $on")
@@ -1766,21 +1672,16 @@ class BudsConnectionManager(private val context: Context) {
             is Msg.Gesture -> log("BTN EVT: ${UserInteractionParser.describe(payload)}")
 
             // --- Equalizer replies and push, [CAPTURE] 2026-09-23 ---
-            is Msg.EqCurrent -> { reportedEq(msg.id); eqChanged() }
+            is Msg.EqCurrent -> { equalizer.onCurrent(msg.id); eqChanged() }
             is Msg.EqCustom -> {
-                setEq(eqState.withList(msg.list.map {
+                equalizer.onCustom(msg.list.map {
                     EqCodec.Preset(it.id, it.name, it.bands.map { b -> b.first }, it.bands.map { b -> b.second }, it.selected,
                         byteArrayOf(it.range.first.toByte(), it.range.second.toByte()))
-                }))
+                })
                 eqChanged()
             }
-            is Msg.BassLevel -> { setEq(eqState.copy(bassWave = msg.level)); eqChanged() }
-            is Msg.BassBands -> {
-                val bands = eqState.bassBands.toMutableList()
-                for ((band, level) in msg.list) if (band in 1..bands.size) bands[band - 1] = level
-                setEq(eqState.copy(bassBands = bands))
-                eqChanged()
-            }
+            is Msg.BassLevel -> { equalizer.onBassLevel(msg.level); eqChanged() }
+            is Msg.BassBands -> { equalizer.onBassBands(msg.list); eqChanged() }
 
             is Msg.Ack -> onAck(msg, seq, payload)
 
@@ -1950,7 +1851,7 @@ class BudsConnectionManager(private val context: Context) {
     private fun bytes(list: List<Int>) = ByteArray(list.size) { list[it].toByte() }
 
     private fun eqChanged() {
-        log("EQ: current=$eqCurrent bassWave=$bassWaveLevel bands=${eqState.bassBands} custom=" +
+        log("EQ: current=$eqCurrent bassWave=$bassWaveLevel bands=${eq.bassBands} custom=" +
             eqCustom.joinToString { "${it.id}:${it.name}${if (it.selected) "*" else ""}${it.gains}" })
         handler.post { listeners.forEach { it.onEqState() } }
     }
