@@ -73,6 +73,8 @@ class BudsConnectionManager(private val context: Context) {
         private const val CONNECT_TIMEOUT_MS = 12_000L
         /** The shortest gap between two case reads over the Fast Pair stream. */
         private const val FP_CASE_READ_GAP_MS = 5 * 60_000L
+        /** A case read beside the link closes after this time, also when the buds send no battery message. */
+        private const val FP_CASE_READ_MS = 5_000L
         /** A fresh UUID query gets this long for its answer, then its receiver goes away. */
         private const val UUID_REFRESH_TIMEOUT_MS = 10_000L
     }
@@ -1954,8 +1956,8 @@ class BudsConnectionManager(private val context: Context) {
     /**
      * The Fast Pair stream (PROTOCOL.md section 1). Held: another app holds `079A`, so the stream is the only link and
      * gives the whole battery (issue #18). Not held: one short read beside the link gives the case level when the
-     * link gives none or `0` (report #184). The read closes at once and waits 5 min before the next one, so
-     * Google Play Services can use the stream too: one phone opens a channel only once.
+     * link gives none or `0` (report #184). The read closes at the first battery message or after 5 s. The next read
+     * waits 5 min, so Google Play Services can use the stream too: one phone opens a channel only once.
      */
     private var fastPair: FastPairBattery? = null
     private var fpCase: FastPairStream.Level? = null
@@ -1993,6 +1995,7 @@ class BudsConnectionManager(private val context: Context) {
         })
         fastPair = me
         me.start(device)
+        if (!held) handler.postDelayed({ if (fastPair === me) stopFastPair(keepCase = true) }, FP_CASE_READ_MS)
     }
 
     private fun stopFastPair(keepCase: Boolean = false) {
