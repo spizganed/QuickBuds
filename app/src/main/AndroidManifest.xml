@@ -236,6 +236,19 @@
             </intent-filter>
         </service>
 
+        <!-- A long press on the Noise control tile. -->
+        <activity
+            android:name=".widget.NoisePickActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.App.Dark">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".widget.OpenAppTileService"
             android:exported="true"
