@@ -9,7 +9,6 @@ import android.os.Looper
 import android.util.Log
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
-import com.spizganed.quickbuds.protocol.AncModes
 import com.spizganed.quickbuds.ui.Haptics
 
 class WidgetActionReceiver : BroadcastReceiver() {
@@ -56,19 +55,9 @@ class WidgetActionReceiver : BroadcastReceiver() {
             }
             WidgetActions.ACTION_ANC_SELECT -> {
                 val target = intent.getStringExtra(WidgetActions.EXTRA_ANC_TARGET) ?: return
-                when (target) {
-                    "off"   -> { state.ancMode = "Off";          shortAction = "OFF" }
-                    "trans" -> { state.ancMode = "Transparency"; shortAction = "TRANS" }
-                    "low"   -> { state.ancMode = "ANC-Light";    shortAction = "ANC_CYCLE" }
-                    "med"   -> { state.ancMode = "ANC-Medium";   shortAction = "ANC_CYCLE" }
-                    "high"  -> { state.ancMode = "ANC-Deep";     shortAction = "ANC_CYCLE" }
-                    "smart" -> { state.ancMode = AncModes.SMART; shortAction = "ANC_CYCLE" }
-                    // Routed through ANC_CYCLE like the three levels above: the
-                    // service already resolves an ANC mode NAME to a command there,
-                    // so Adaptive needs no new action string and the widget and the
-                    // service cannot drift apart on how it is sent.
-                    "adapt" -> { state.ancMode = "Adaptive";     shortAction = "ANC_CYCLE" }
-                }
+                // A widget key ("low") names one mode ([WidgetSettings.MODES]); the service gets the mode name.
+                state.ancMode = WidgetSettings.MODES.firstOrNull { it.key == target }?.store ?: return
+                shortAction = "ANC"
                 sendAncMode = state.ancMode
                 // After a strength pick the widget goes back to its first screen, in every style.
                 // The cycle button stays on the controls page.
@@ -91,8 +80,7 @@ class WidgetActionReceiver : BroadcastReceiver() {
             }
         }
 
-        WidgetStateStore.write(context, state)
-        AncWidgetProvider.refreshAll(context)
+        WidgetStateStore.update(context) { it.ancMode = state.ancMode; it.gameMode = state.gameMode }
 
         val finalShort = shortAction ?: return
 

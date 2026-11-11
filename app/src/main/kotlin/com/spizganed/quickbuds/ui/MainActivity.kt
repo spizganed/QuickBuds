@@ -35,7 +35,6 @@ import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.protocol.Capabilities
 import com.spizganed.quickbuds.protocol.RowRules
 import com.spizganed.quickbuds.protocol.Feature
-import com.spizganed.quickbuds.widget.AncWidgetProvider
 import com.spizganed.quickbuds.widget.WidgetSettings
 import com.spizganed.quickbuds.widget.WidgetStateStore
 
@@ -958,26 +957,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         } else apply()
     }
 
-    /**
-     * Pushes our optimistic state into the store and REPAINTS THE WIDGET.
-     *
-     * The refreshAll() call is the whole reason this method exists. Writing the
-     * store is not enough on its own: the widget renders from it only when
-     * something asks it to, and MainActivity's own storeListener posts a callback
-     * rather than raising one. Without the explicit refresh, a tap in the APP
-     * updated the store but left the widget showing stale icons until some other
-     * event happened to refresh it — which is exactly the one-way sync that was
-     * reported (widget -> app worked, app -> widget did not).
-     *
-     * BudsService does the same thing after a buds-side event; both directions
-     * must refresh, so keep these two calls in step.
-     */
+    /** Pushes our optimistic state to the widgets ([WidgetStateStore.update] saves and repaints). */
     private fun syncWidgetState() {
-        val state = WidgetStateStore.read(this)
-        state.ancMode = activeAncMode
-        state.gameMode = gameModeOn
-        WidgetStateStore.write(this, state)
-        AncWidgetProvider.refreshAll(this)
+        WidgetStateStore.update(this) { it.ancMode = activeAncMode; it.gameMode = gameModeOn }
     }
 
     // ==================== Settings rows ====================

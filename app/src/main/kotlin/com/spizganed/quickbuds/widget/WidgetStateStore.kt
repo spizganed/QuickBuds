@@ -91,6 +91,18 @@ object WidgetStateStore {
         return s
     }
 
+    /**
+     * The one way the app, the service and the widget change the state: [change] edits it, then the store saves it
+     * and repaints every widget. A write alone leaves the widgets stale until another event repaints them.
+     */
+    fun update(context: Context, change: (State) -> Unit): State {
+        val st = read(context)
+        change(st)
+        write(context, st)
+        AncWidgetProvider.refreshAll(context)
+        return st
+    }
+
     fun write(context: Context, state: State) {
         prefs(context).edit()
             .putString(KEY_ANC, state.ancMode)

@@ -329,10 +329,8 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
 
         when (widgetAction) {
-            // ANC_CYCLE carries a mode name (levels and Adaptive); the manager picks the model's bit.
-            "ANC_CYCLE" -> ancMode?.let { statusLog("<< sending ANC $it"); manager?.sendAnc(it) }
-            "TRANS" -> { statusLog("<< sending Transparency"); manager?.sendAnc(AncModes.TRANSPARENCY) }
-            "OFF" -> { statusLog("<< sending ANC Off"); manager?.sendAnc(AncModes.OFF) }
+            // ANC carries the mode name ([AncModes]); the manager picks the model's bit.
+            "ANC" -> ancMode?.let { statusLog("<< sending ANC $it"); manager?.sendAnc(it) }
             "GAME_TOGGLE" -> {
                 statusLog("<< sending Game $gameMode")
                 manager?.setFeature(Capabilities.gameModeId(this), gameMode)
@@ -558,17 +556,14 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     ) {
         statusLog("[SVC] Battery: L=$left C=$case R=$right " +
                 "(chg: $chargingLeft/$chargingCase/$chargingRight)")
-        val st = WidgetStateStore.read(this)
         val clear = clearMissingBattery(this)
-        if (left != null || clear) st.leftBattery = left ?: -1
-        if (case != null || clear) st.caseBattery = case ?: -1
-        if (case != null) {
+        WidgetStateStore.update(this) { st ->
+            if (left != null || clear) st.leftBattery = left ?: -1
+            if (case != null || clear) st.caseBattery = case ?: -1
             // heartbeat: a closed lid stops these, so freshness == lid open
-            st.caseBatteryAt = System.currentTimeMillis()
+            if (case != null) st.caseBatteryAt = System.currentTimeMillis()
+            if (right != null || clear) st.rightBattery = right ?: -1
         }
-        if (right != null || clear) st.rightBattery = right ?: -1
-        WidgetStateStore.write(this, st)
-        AncWidgetProvider.refreshAll(this)
         updateNotification()
     }
 
@@ -594,8 +589,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         }
         if (changed || firstWorn) {
             statusLog("[SVC] Wear state: L=$left R=$right case=$caseSt")
-            WidgetStateStore.write(this, st)
-            AncWidgetProvider.refreshAll(this)
+            WidgetStateStore.update(this) { it.leftStatus = st.leftStatus; it.leftInBox = st.leftInBox; it.rightStatus = st.rightStatus; it.rightInBox = st.rightInBox }
             updateNotification()
         }
         if (wasWorn && !isWorn(st.leftStatus) && !isWorn(st.rightStatus)) smartPause()
@@ -625,12 +619,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
      * its WidgetStateStore listener — no view code has to know about this event.
      */
     override fun onGameModeState(on: Boolean) {
-        val st = WidgetStateStore.read(this)
-        if (st.gameMode == on) return
-        st.gameMode = on
+        if (WidgetStateStore.read(this).gameMode == on) return
         statusLog("[SVC] Game mode (from buds): ${if (on) "ON" else "OFF"}")
-        WidgetStateStore.write(this, st)
-        AncWidgetProvider.refreshAll(this)
+        WidgetStateStore.update(this) { it.gameMode = on }
     }
 
     /**
@@ -656,12 +647,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     }
 
     override fun onAncModeState(mode: String) {
-        val st = WidgetStateStore.read(this)
-        if (st.ancMode == mode) return
-        st.ancMode = mode
+        if (WidgetStateStore.read(this).ancMode == mode) return
         statusLog("[SVC] ANC mode (from buds): $mode")
-        WidgetStateStore.write(this, st)
-        AncWidgetProvider.refreshAll(this)
+        WidgetStateStore.update(this) { it.ancMode = mode }
     }
 
     companion object {
