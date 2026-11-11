@@ -20,7 +20,7 @@ The Android app does not call the core. `app/.../protocol/` holds a Kotlin copy 
 The desktop app calls the core directly (`desktop-tauri/src/main.rs` re-exports `cmd`, `msg` and `wire`).
 `core/src/ffi.rs` offers a C interface. Nothing uses it yet.
 
-`desktop-tauri/src/protocol.rs` is the legacy decoder.
+Both apps decode a frame in one place. Android: `Decode.decode`, then `BudsConnectionManager.apply`. Desktop: `buds_core::msg::decode`, mapped to the session's `Event` in `desktop-tauri/src/protocol.rs`.
 
 One setting does not go to the buds. Buds whose bitmap lacks `0xEF03` cannot make 3D audio; the phone does.
 `app/.../bluetooth/PhoneSpatial.kt` reads the Android `Spatializer` and writes an OPLUS audio parameter. Only OPPO,

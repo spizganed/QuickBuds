@@ -1,6 +1,6 @@
 //! The wire format (docs/PROTOCOL.md section 2): `AA <TotalLen LEB128> 00 00 <cmd lo> <cmd hi> <seq> <len lo> <len hi> <payload>`.
 //! TotalLen counts everything after itself: 7 + payload.
-//! Framing, decoders and answers of the old link. `newproto.rs` bridges the new protocol in `buds_core`; the tests use it. The old builders also stay as the
+//! Framing, the decode bridge to `buds_core::msg`, and the answers. The old builders also stay as the
 //! reference of the core tests; the senders use `buds_core::cmd`. Shared ids and types are in `types.rs`.
 #![allow(dead_code)]
 
@@ -19,18 +19,11 @@ pub fn anc_payload(bit: u8) -> Vec<u8> {
 /// `0x0205` payload: count, then the ids.
 pub fn register_payload(ids: &[u8]) -> Vec<u8> { [&[ids.len() as u8][..], ids].concat() }
 
-/// `0x8200` = `00 <count> <codes>`.
-pub fn offered_events(pl: &[u8]) -> Option<Vec<u8>> {
-    match pl { [0, n, codes @ ..] => codes.get(..*n as usize).map(<[u8]>::to_vec), _ => None }
-}
-
 /// `<codec> <hiRes> 00`: Hi-Res only with LDAC (3) or LHDC V5 (8), as HeyMelody sends it.
 pub fn codec_payload(codec: u8, hires: bool) -> [u8; 3] { [codec, (hires && (codec == 3 || codec == 8)) as u8, 0] }
 
-/// `0x8103` `00 <id LE, 3 bytes>` -> "065414", old OnePlus ids folded as `ModelCatalog.normalise` does.
-pub fn product_id(payload: &[u8]) -> Option<String> {
-    if payload.len() != 4 || payload[0] != 0 { return None; }
-    let id = u32::from_le_bytes([payload[1], payload[2], payload[3], 0]);
+/// The 24-bit product id as text, colour variants folded.
+pub fn product_text(id: u32) -> String {
     let id = match id {
         0x100100..=0x100102 => 0x060414,
         0x100200..=0x100202 => 0x060814,
@@ -38,40 +31,7 @@ pub fn product_id(payload: &[u8]) -> Option<String> {
         0x108200..=0x108202 => 0x068814,
         x => x,
     };
-    Some(format!("{id:06X}"))
-}
-
-/// `0x8122` payload: `<status> <count>` then `<flag> <tag 2B> <id> <nameLen> <name> <bands> [freq, gain]...`.
-pub fn parse_presets(p: &[u8]) -> Option<Vec<Preset>> {
-    if p.len() < 2 || p[0] != 0 { return None; }
-    let mut o = 2;
-    let mut out = Vec::new();
-    for _ in 0..p[1] {
-        let head = p.get(o..o + 5)?;
-        let name_len = head[4] as usize;
-        let name = String::from_utf8_lossy(p.get(o + 5..o + 5 + name_len)?).into_owned();
-        o += 5 + name_len;
-        let bands = *p.get(o)? as usize;
-        o += 1;
-        let data = p.get(o..o + bands * 3)?;
-        o += bands * 3;
-        out.push(Preset {
-            id: head[3],
-            name,
-            freqs: data.chunks_exact(3).map(|c| u16::from_le_bytes([c[0], c[1]])).collect(),
-            gains: data.chunks_exact(3).map(|c| c[2] as i8).collect(),
-            selected: head[0] == 1,
-            tag: [head[1], head[2]],
-        });
-    }
-    Some(out)
-}
-
-/// `0x8105` text `1,2,138,2,2,138,3,1,01,3,2,105` -> "138.138.105" (the `versionType` 2 entries).
-pub fn firmware_version(text: &str) -> Option<String> {
-    let parts: Vec<&str> = text.split(',').collect();
-    let v: Vec<&str> = parts.chunks(3).filter(|c| c.len() == 3 && c[1].trim() == "2").map(|c| c[2].trim()).collect();
-    (!v.is_empty()).then(|| v.join("."))
+    format!("{id:06X}")
 }
 
 /// 12 x `<side> <freq> <value>`: left 1..6 then right 1..6.
@@ -110,44 +70,6 @@ pub fn hearing_apply(uid: u32, name: &str, values: &[i8; 12], scan: &[u8], desc:
     out
 }
 
-fn be32(p: &[u8], i: usize) -> Option<u32> { Some(u32::from_be_bytes(p.get(i..i + 4)?.try_into().ok()?)) }
-
-fn le16(p: &[u8], i: usize) -> Option<usize> { Some(u16::from_le_bytes(p.get(i..i + 2)?.try_into().ok()?) as usize) }
-
-/// `0x8115` `00 03 0C <12 x side freq value> <uid> <name>`.
-fn parse_hearing_active(p: &[u8]) -> Option<HearingEv> {
-    if p.len() < 3 || p[0] != 0 || p[2] != 12 { return None; }
-    let end = 3 + 36;
-    let uid = be32(p, end)?;
-    let mut values = [0i8; 12];
-    for c in p[3..end].chunks_exact(3) {
-        if !(1..=2).contains(&c[0]) || !(1..=6).contains(&c[1]) { return None; }
-        values[(c[0] as usize - 1) * 6 + c[1] as usize - 1] = c[2] as i8;
-    }
-    Some(HearingEv::Active(uid, String::from_utf8_lossy(&p[end + 4..]).into_owned(), values))
-}
-
-/// `<action> <length LE> <data> <uid>` from `from` (push `0E` after its id, `0x811E` after its status).
-fn parse_hearing_scan(p: &[u8], from: usize) -> Option<(u32, Vec<u8>)> {
-    let len = le16(p, from + 1)?;
-    let start = from + 3;
-    if len == 0 { return None; }
-    Some((be32(p, start + len)?, p[start..start + len].to_vec()))
-}
-
-/// Filter replies, both ears (type `04`), floats LE, left half then right:
-/// `0x8116` `00 <uid> 04 <count LE> <packet> <enhance type> <floats>`,
-/// `0x811F` `00 <uid> 04 <rate LE> <count LE> <packet> <floats>`. Returns (rate, left, right).
-fn parse_curves(p: &[u8], scan: bool) -> Option<Curves> {
-    if p.len() < 11 || p[5] != 4 { return None; }
-    let fs = if scan { le16(p, 6)? as u32 } else { 44100 };
-    let count = if scan { le16(p, 8)? } else { le16(p, 6)? };
-    let start = if scan { 11 } else { 10 };
-    if count == 0 || count % 12 != 0 { return None; }
-    let f: Vec<f32> = p.get(start..start + count * 4)?.chunks_exact(4).map(|c| f32::from_le_bytes(c.try_into().unwrap())).collect();
-    Some((fs, f[..count / 2].to_vec(), f[count / 2..].to_vec()))
-}
-
 /// `0x0401 <count> <entries>`.
 pub fn key_function_payload(table: &[[u8; 4]]) -> Vec<u8> {
     std::iter::once(table.len() as u8).chain(table.iter().flatten().copied()).collect()
@@ -159,120 +81,64 @@ pub fn hold_modes_payload(mask: u32, kind: u8) -> Vec<u8> {
     [&[2, kind][..], &mask.to_le_bytes()[..len]].concat()
 }
 
-/// `<count>`, then `<MAC reversed, 6> <len> <state> <flags> <nameLen> <name>` per device; state `02` connected.
-pub fn parse_devices(b: &[u8]) -> Option<Vec<PairedDevice>> {
-    let (&count, mut rest) = b.split_first()?;
-    let mut out = Vec::new();
-    for _ in 0..count {
-        let h = rest.get(..10)?;
-        let n = h[9] as usize;
-        let name = String::from_utf8_lossy(rest.get(10..10 + n)?).into_owned();
-        let mut mac: [u8; 6] = h[..6].try_into().ok()?;
-        mac.reverse();
-        out.push(PairedDevice { mac, name, connected: h[7] == 2, this_device: h[8] & 1 != 0 });
-        rest = &rest[10 + n..];
-    }
-    Some(out)
-}
-
-/// `<a> <b>` pairs with no count byte.
-fn pairs_n(b: &[u8]) -> Vec<(u8, u8)> { b.chunks_exact(2).map(|c| (c[0], c[1])).collect() }
-
-fn pairs(b: &[u8]) -> Option<Vec<(u8, u8)>> {
-    let (&count, rest) = b.split_first()?;
-    (rest.len() >= count as usize * 2).then(|| rest.chunks_exact(2).take(count as usize).map(|c| (c[0], c[1])).collect())
-}
-
-/// 1-4 bytes little-endian (`NoiseReductionInfo`).
-fn le(b: &[u8]) -> u32 { b[..b.len().min(4)].iter().rev().fold(0, |v, &x| v << 8 | x as u32) }
-
-/// PROTOCOL.md section 13: status bits 0 out of the case, 1 in ear, 2 lid open; bit 3 is a flag we drop.
-/// PROTOCOL.md section 13: a wearing list has parts and every part is 1 (left), 2 (right) or 3 (case).
-fn valid_wear(v: &Vec<(u8, u8)>) -> bool { !v.is_empty() && v.iter().all(|x| (1..=3).contains(&x.0)) }
-
-fn wear_bits(v: Vec<(u8, u8)>) -> Vec<(u8, u8)> { v.into_iter().map(|(i, st)| (i, st & 7)).collect() }
-
+/// One frame as an [`Event`]. `buds_core::msg::decode` is the only parser; this maps its message to what the
+/// session and the log use.
 pub fn decode(p: &[u8]) -> Option<Event> {
+    use crate::msg::{Anc, Inbound, Public};
+    let cmd = cmd_of(p);
     let pl = payload_of(p);
-    let sub = pl.first().copied();
-    Some(match cmd_of(p) {
-        0x8100 => Event::Caps(Caps::parse(pl)?),
-        0x8103 => Event::ProductId(product_id(pl)?),
-        0x8200 => Event::Offered(offered_events(pl)?),
-        // `[status][count][pairs]`
-        0x8106 if sub == Some(0) => Event::Battery(battery(&pl[1..])?),
-        0x8109 => {
-            // `[count][pairs]`, or `[status][count][pairs]` (WearingStatusParser tries both).
-            Event::Wear(wear_bits(pairs(pl).filter(valid_wear).or_else(|| pairs(pl.get(1..)?).filter(valid_wear))?))
+    let curves = |c: crate::msg::Curves| (c.rate, c.left, c.right);
+    Some(match crate::msg::decode(&crate::wire::Message { cmd, seq: seq_of(p), payload: pl.to_vec() })? {
+        Inbound::Bitmap(b) => Event::Caps(Caps(b.commands().map(<[u16]>::to_vec))),
+        Inbound::ProductId(id) => Event::ProductId(product_text(id)),
+        Inbound::Offered(o) => Event::Offered(o),
+        Inbound::Firmware(parts) => {
+            let v: Vec<String> = parts.into_iter().filter(|x| x.1 == 2).map(|x| x.2).collect();
+            if v.is_empty() { return None; }
+            Event::Firmware(v.join("."))
         }
-        // `[status][01 01][value LE, 1-4 bytes]`
-        0x810C if pl.len() >= 4 && pl[1] == 1 && pl[2] == 1 => {
-            Event::AncRaw(pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
-        }
-        0x810C if pl.len() >= 4 && pl[1] == 4 && pl[2] == 1 => Event::SmartLevel(le(&pl[3..])),
-        0x810C if pl.len() >= 4 && pl[1] == 2 => {
-            Event::HoldMask(pl[2], pl[3..pl.len().min(7)].iter().rev().fold(0, |v, &b| v << 8 | b as u32))
-        }
-        // A reply with no entries never replaces a table (a write is built from it).
-        0x8108 if sub == Some(0) && pl.len() >= 6 => Event::KeyFunctions(pl[2..].chunks_exact(4).map(|c| [c[0], c[1], c[2], c[3]]).collect()),
-        0x810D if sub == Some(0) => Event::Features(pairs(&pl[1..])?),
-        0x8130 | 0x8427 if sub == Some(0) && pl.len() >= 2 => Event::AlertVolume(pl[1]),
-        0x8133 if sub == Some(0) && pl.len() >= 3 => Event::TapLevel(pl[1], pl[2]),
-        0x811A if sub == Some(0) && pl.len() >= 2 => Event::PncStored(pl[1] != 0),
-        0x8412 if !pl.is_empty() => Event::PncAck(pl[0]),
-        0x840D | 0x840E if pl.first().is_some_and(|&s| s != 0) => Event::Hearing(HearingEv::Refused(pl[0])),
-        0x8134 if sub == Some(0) && pl.len() >= 2 => Event::HeadMotion(pl[1]),
-        0x812A if sub == Some(0) && pl.len() >= 2 => Event::SpatialType(pl[1]),
-        EVT_SPATIAL_TYPE if !pl.is_empty() => Event::SpatialType(pl[0]),
-        0x8114 if sub == Some(0) && pl.len() >= 2 => Event::Codec(pl[1]),
-        0x8123 if sub == Some(0) && pl.len() >= 3 => Event::Codecs(codecs_of(u16::from_le_bytes([pl[1], pl[2]]))),
-        0x812B if sub == Some(0) && pl.len() >= 3 => Event::GameSound(pl[1], pl[3..pl.len().min(3 + pl[2] as usize)].to_vec()),
-        // `00 <count>` + UTF-8 `deviceType,versionType,version` triples
-        0x8105 if pl.len() > 2 => Event::Firmware(firmware_version(&String::from_utf8_lossy(&pl[2..]))?),
-        0x810F if sub == Some(0) && pl.len() >= 2 => Event::EqCurrent(pl[1]),
-        EVT_EQ_CHANGED if !pl.is_empty() => Event::EqCurrent(pl[0]),
-        // `<count> <id> <value>...`; a trailing byte after the last pair is ignored (PROTOCOL.md section 10)
-        0x0503 if !pl.is_empty() && pl.len() >= 1 + pl[0] as usize * 2 =>
-            Event::FeaturePush(pl[1..1 + pl[0] as usize * 2].chunks_exact(2).map(|c| (c[0], c[1])).collect()),
-        0x8122 => Event::EqCustom(parse_presets(pl)?),
-        0x8115 => Event::Hearing(parse_hearing_active(pl)?),
-        0x811E if sub == Some(0) => { let (u, d) = parse_hearing_scan(pl, 1)?; Event::Hearing(HearingEv::ActiveScan(u, d)) }
-        0x8116 if sub == Some(0) && pl.len() >= 10 => Event::Hearing(HearingEv::Filter(be32(pl, 1)?, pl[9], parse_curves(pl, false))),
-        0x811F if sub == Some(0) => Event::Hearing(HearingEv::ScanCurves(be32(pl, 1)?, parse_curves(pl, true)?)),
-        0x8112 if sub == Some(0) => Event::Devices(parse_devices(&pl[1..])?),
-        0x8132 if pl.len() >= 3 && pl[0] == 0 && pl[1] == 2 => Event::Preferred(if pl[2] == 0 { None } else { Some(pl.get(3..9)?.try_into().ok()?) }),
-        // `00 FB 05 <level>`
-        0x8124 if sub == Some(0) && pl.len() >= 4 => Event::BassLevel(pl[3] as i8),
-        // `00 <count>`, then `<min> <max> <level> <band>` per band (realme dynamic sound)
-        0x812C if sub == Some(0) && pl.len() >= 2 + pl[1] as usize * 4 =>
-            Event::BassBands(pl[2..2 + pl[1] as usize * 4].chunks_exact(4).map(|c| (c[3], c[2] as i8)).collect()),
-        EVT_PUSH => match sub? {
-            0x01 => Event::Battery(battery(&pl[1..])?),
-            0x02 => Event::Wear(wear_bits(pairs(&pl[1..]).filter(valid_wear)?)),
-            // `03 01 01 <mode LE, 1-4 bytes>` (PROTOCOL.md §14)
-            0x03 if pl.len() >= 4 && pl[1] == 1 && pl[2] == 1 => Event::AncRaw(le(&pl[3..])),
-            0x03 if pl.len() >= 4 && pl[1] == 4 && pl[2] == 1 => Event::SmartLevel(le(&pl[3..])),
-            0x05 if pl.len() >= 2 => Event::GameMode(pl.to_vec()),
-            // `04 <dev> <s> <dev> <s>`, dev 01 left / 02 right
-            0x04 => {
-                let r = pairs_n(&pl[1..]);
-                let of = |d| r.iter().find(|x| x.0 == d).map_or(0xFF, |x| x.1);
-                Event::FitResult(of(1), of(2))
-            }
-            0xF5 if pl.len() >= 2 => Event::HeadMotion(pl[1]),
-            // `0F <flags u16 LE> <data>` (PROTOCOL.md §10): the first flag wins. Bit 0 alert-sound volume; bits 1 and 2 are not used here; bit 4 tap level.
-            0x0F if pl.len() >= 4 => {
-                let flags = pl[1] as u16 | (pl[2] as u16) << 8;
-                if flags & 1 != 0 { Event::AlertVolume(pl[3]) }
-                else if flags & 6 == 0 && flags & 0x10 != 0 { Event::TapPush(pl[3]) }
-                else { return None }
-            }
-            0x0B if pl.len() >= 2 => Event::PncResult(pl[1]),
-            0x06 => Event::Devices(parse_devices(&pl[1..])?),
-            0x08 if pl.len() >= 3 => Event::Hearing(HearingEv::Status(pl[1], pl[2])),
-            0x0E => { let (u, d) = parse_hearing_scan(pl, 1)?; Event::Hearing(HearingEv::EarScan(u, d)) }
-            _ => return None,
-        },
+        Inbound::Battery(cells) => Event::Battery(cells.into_iter().map(|c| (c.part, c.level, c.charging)).collect()),
+        Inbound::Wear(v) => Event::Wear(v),
+        Inbound::Anc(Anc::Mode(m)) => Event::AncRaw(m),
+        Inbound::Anc(Anc::Smart(m)) => Event::SmartLevel(m),
+        // The push `03 02 ...` is the echo of our own mask write: only the reply counts.
+        Inbound::Anc(Anc::HoldCycle { kind, mask }) if cmd != EVT_PUSH => Event::HoldMask(kind, mask),
+        Inbound::Gestures(b) => Event::KeyFunctions(b.into_iter().map(|x| [x.dev, x.button, x.act, x.func]).collect()),
+        Inbound::Features(f) => Event::Features(f),
+        Inbound::FeaturePush(f) => Event::FeaturePush(f.into_iter().collect()),
+        Inbound::AlertVolume(l) | Inbound::Public(Public::AlertVolume(l)) => Event::AlertVolume(l),
+        Inbound::TapLevel { level, default: Some(d) } => Event::TapLevel(level, d),
+        Inbound::TapLevel { level, default: None } | Inbound::Public(Public::TapLevel(level)) => Event::TapPush(level),
+        Inbound::PersonalAncStored(s) => Event::PncStored(s),
+        Inbound::PersonalAnc(r) => Event::PncResult(r),
+        Inbound::HeadGesture(t) => Event::HeadMotion(t),
+        Inbound::Spatial(t) => Event::SpatialType(t),
+        Inbound::Codec(c) => Event::Codec(c),
+        Inbound::CodecMask(m) => Event::Codecs(codecs_of(m)),
+        Inbound::GameSound { selected, offered } => Event::GameSound(selected, offered),
+        Inbound::GameMode { .. } => Event::GameMode(pl.to_vec()),
+        Inbound::EqCurrent(id) => Event::EqCurrent(id),
+        Inbound::EqCustom(list) => Event::EqCustom(list.into_iter().map(|e| Preset {
+            id: e.id, name: e.name, selected: e.selected, tag: [e.range.0 as u8, e.range.1 as u8],
+            freqs: e.bands.iter().map(|b| b.0).collect(), gains: e.bands.iter().map(|b| b.1).collect(),
+        }).collect()),
+        Inbound::BassLevel(l) => Event::BassLevel(l),
+        Inbound::BassBands(v) => Event::BassBands(v),
+        Inbound::Devices(list) => Event::Devices(list.into_iter().map(|d| PairedDevice {
+            this_device: d.this_phone(), mac: d.mac, name: d.name, connected: d.connected,
+        }).collect()),
+        Inbound::Preferred(m) => Event::Preferred(m),
+        Inbound::FitTest { left, right } => Event::FitResult(left.unwrap_or(0xFF), right.unwrap_or(0xFF)),
+        Inbound::Hearing { kind, status } => Event::Hearing(HearingEv::Status(kind, status)),
+        Inbound::EarScan { id, data } => Event::Hearing(HearingEv::EarScan(id, data)),
+        Inbound::GoldenRecord { id, name, values } => Event::Hearing(HearingEv::Active(id, name, values)),
+        Inbound::GoldenScan { id, data } => Event::Hearing(HearingEv::ActiveScan(id, data)),
+        Inbound::GoldenFilter { id, enhance, curves: c } => Event::Hearing(HearingEv::Filter(id, enhance, c.map(curves))),
+        Inbound::GoldenScanFilter { id, curves: c } => Event::Hearing(HearingEv::ScanCurves(id, curves(c))),
+        // The set ack carries the level, as the read reply does.
+        Inbound::Ack { cmd: 0x0427, status: 0, data } => Event::AlertVolume(*data.first()?),
+        Inbound::Ack { cmd: 0x0412, status, .. } => Event::PncAck(status),
+        Inbound::Ack { cmd: 0x040D | 0x040E, status, .. } if status != 0 => Event::Hearing(HearingEv::Refused(status)),
         _ => return None,
     })
 }
@@ -372,25 +238,18 @@ impl Framer {
     }
 }
 
-/// Battery (PROTOCOL.md section 13): `<count>` then `<index> <raw>` pairs, 1 left, 2 right, 3 case; level `raw & 7F`, charging `raw & 80`.
-/// A count of 0, or a list that runs past the end, is no list (None).
-pub fn battery(payload: &[u8]) -> Option<Vec<(u8, u8, bool)>> {
-    let (&count, rest) = payload.split_first()?;
-    if count == 0 || rest.len() < count as usize * 2 { return None; }
-    // Level 0 is "not known" (the Air7 Pro's closed case, issue #9): left out, as HeyMelody hides it.
-    Some(rest.chunks_exact(2).take(count as usize).filter(|c| c[1] & 0x7F != 0).map(|c| (c[0], c[1] & 0x7F, c[1] & 0x80 != 0)).collect())
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn rx(cmd: u16, payload: &[u8]) -> Option<Event> { decode(&build_packet(cmd, 1, payload)) }
+
     #[test]
     fn battery_level_zero_is_left_out() {
-        assert_eq!(battery(&[3, 1, 0x46, 2, 0xC6, 3, 0]).unwrap(), [(1, 0x46, false), (2, 0x46, true)]);
-        assert_eq!(battery(&[0]), None);
-        assert_eq!(battery(&[0, 1, 0x46]), None);
-        assert_eq!(battery(&[3, 1, 0x46, 2]), None);
+        let Some(Event::Battery(v)) = rx(0x8106, &[0, 3, 1, 0x46, 2, 0xC6, 3, 0]) else { panic!("no battery") };
+        assert_eq!(v, [(1, 0x46, false), (2, 0x46, true)]);
+        assert!(rx(0x8106, &[0, 1, 0x46]).is_none());
+        assert!(rx(0x8106, &[0, 3, 1, 0x46, 2]).is_none());
     }
 
     #[test]
@@ -427,9 +286,12 @@ mod tests {
         let mut entry = p.encode(1);
         entry[0] = 1;
         list.extend(entry);
-        assert_eq!(parse_presets(&list), Some(vec![p.clone()]));
+        let Some(Event::EqCustom(got)) = rx(0x8122, &list) else { panic!("no preset list") };
+        assert_eq!(got, [p.clone()]);
         assert_eq!(&p.encode(EQ_SAVE)[..5], [2, 0xFA, 0x06, 4, 7]);
-        assert_eq!(firmware_version("1,2,138,2,2,138,3,1,01,3,2,105").as_deref(), Some("138.138.105"));
+        let fw = [&[0u8, 4][..], b"1,2,138,2,2,138,3,1,01,3,2,105"].concat();
+        let Some(Event::Firmware(v)) = rx(0x8105, &fw) else { panic!("no firmware") };
+        assert_eq!(v, "138.138.105");
         // Gates: the Enco Buds have no equalizer; a switch list without 0x11 hides Dual connection.
         assert!(eq_has(find_model(Some("065414"), None), &Caps(None)));
         assert!(!eq_has(find_model(Some("062410"), None), &Caps(None)));
@@ -443,7 +305,9 @@ mod tests {
         // Replies the Buds 4 sent to the spike.
         let caps = Caps::parse(&[0x00, 0xFF, 0x77, 0x5A, 0xEA, 0x67, 0x0E, 0x20, 0x07]).unwrap();
         assert_eq!(caps.game_mode_id(), FEATURE_GAME_MODE);
-        assert_eq!(product_id(&[0x00, 0x14, 0x54, 0x06]).as_deref(), Some("065414"));
+        let Some(Event::ProductId(id)) = rx(0x8103, &[0x00, 0x14, 0x54, 0x06]) else { panic!("no product id") };
+        assert_eq!(id, "065414");
+        assert_eq!(product_text(0x100101), "060414");
         let anc = AncModes::of(find_model(Some("065414"), Some("OnePlus Buds 4")));
         // A renamed device keeps its model by id; a factory name beats a reused id (issue #5: the Enco
         // Buds2 report the Q2s id 060C12).
@@ -456,7 +320,7 @@ mod tests {
         assert_eq!(anc.mode_for_raw(1 << 3, None).as_deref(), Some(OFF));
         assert_eq!(anc.levels().len(), 4);
         // Nord Buds 3 Pro offers battery and wear only: nothing else is asked for (issue #2).
-        let offered = offered_events(&[0, 2, 2, 1]).unwrap();
+        let Some(Event::Offered(offered)) = rx(0x8200, &[0, 2, 2, 1]) else { panic!("no offered list") };
         assert_eq!(notify_ids(&Caps(None), Some(&offered)), [1, 2]);
         assert_eq!(notify_ids(&Caps(None), None), [1, 2, 3, 4, 8, 0x0B]);
         assert_eq!(register_payload(&[1, 2]), [2, 1, 2]);
@@ -579,7 +443,7 @@ mod tests {
         let got = f.push(y);
         assert_eq!(got, vec![a.clone(), a]);
         assert_eq!(f.discarded.len(), 2);
-        assert_eq!(battery(payload_of(&got[0])).unwrap(), [(1, 100, false), (2, 100, false), (3, 80, true)]);
+        assert_eq!(payload_of(&got[0]), [3, 1, 0x64, 2, 0x64, 3, 0xD0]);
     }
 
     #[test]
