@@ -21,7 +21,8 @@ import com.spizganed.quickbuds.R
 
 /**
  * Find phone: the buds ask the phone to ring (`0x0502 05`) or to stop (`0x0502 06`), PROTOCOL.md section 11.
- * The ring is the default ringtone on the alarm stream at one step below full volume, with vibration.
+ * The ring is the default ringtone on the alarm stream at one step below full volume, with vibration. When the
+ * ringtone does not play, the default alarm sound plays, then the notification sound.
  * A notification carries a Stop action. The ring stops by itself after [LIMIT_MS].
  */
 object PhoneRinger {
@@ -32,6 +33,8 @@ object PhoneRinger {
 
     private val main = Handler(Looper.getMainLooper())
     private var player: MediaPlayer? = null
+    /** True from a ring to its stop, also when no sound plays. */
+    private var ringing = false
     private var vibrator: Vibrator? = null
     /** The alarm volume before the ring, put back on stop. -1: nothing to put back. */
     private var savedVolume = -1
@@ -43,7 +46,8 @@ object PhoneRinger {
     fun stop(context: Context) = main.post { stopNow(context.applicationContext) }
 
     private fun ringNow(c: Context) {
-        if (player != null) return
+        if (ringing) return
+        ringing = true
         app = c
         val audio = c.getSystemService(AudioManager::class.java)
         runCatching {
@@ -55,16 +59,22 @@ object PhoneRinger {
             .setUsage(AudioAttributes.USAGE_ALARM)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
-        player = runCatching {
-            MediaPlayer().apply {
-                setAudioAttributes(attrs)
-                setDataSource(c, RingtoneManager.getActualDefaultRingtoneUri(c, RingtoneManager.TYPE_RINGTONE)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
-                isLooping = true
-                prepare()
-                start()
-            }
-        }.getOrNull()
+        val sounds = listOfNotNull(
+            RingtoneManager.getActualDefaultRingtoneUri(c, RingtoneManager.TYPE_RINGTONE),
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        )
+        player = sounds.firstNotNullOfOrNull { uri ->
+            val mp = MediaPlayer()
+            runCatching {
+                mp.setAudioAttributes(attrs)
+                mp.setDataSource(c, uri)
+                mp.isLooping = true
+                mp.prepare()
+                mp.start()
+                mp
+            }.onFailure { mp.release() }.getOrNull()
+        }
         vibrator = vibratorOf(c)?.also {
             runCatching { it.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 800, 800), 0), attrs) }
         }
@@ -74,6 +84,7 @@ object PhoneRinger {
 
     private fun stopNow(c: Context) {
         main.removeCallbacks(timeout)
+        ringing = false
         player?.let { runCatching { it.stop() }; it.release() }
         player = null
         vibrator?.cancel()
