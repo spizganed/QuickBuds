@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Gravity
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.bluetooth.WidgetActions
 import com.spizganed.quickbuds.ui.BottomSheetDialog
@@ -47,6 +48,19 @@ class NoisePickActivity : Activity() {
                     .putExtra(WidgetActions.EXTRA_ANC_TARGET, key))
             }
         }
+        fitWindowToSheet(items.size)
         BottomSheetDialog(this).title(getString(R.string.anc_section)).items(items).onDismiss { finish() }.show()
+    }
+
+    /**
+     * The system UI grows a held tile to the window bounds of the screen it opens. A full-screen window gave a gray
+     * full-screen box before the sheet. This window takes the place and size of the sheet card, so the tile grows into it.
+     * The height follows the card in [BottomSheetDialog]: top and bottom padding, the title, 52 dp for each row.
+     */
+    private fun fitWindowToSheet(rows: Int) {
+        val dp = { v: Float -> ThemeRes.dp(this, v) }
+        val width = minOf(resources.displayMetrics.widthPixels - dp(48f), dp(420f))
+        window.setLayout(width, dp(64f) + rows * dp(52f))
+        window.setGravity(Gravity.CENTER)
     }
 }
