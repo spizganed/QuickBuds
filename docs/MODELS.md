@@ -18,7 +18,7 @@ A model is confirmed when its owner sends a model test from the app. To confirm 
 ### OnePlus (16 models)
 
 - **OnePlus Buds 3**: confirmed by its owner on Android, Windows and Linux: battery, noise control, low latency, high-quality audio, 3D audio, hearing profile, equalizer, dual connection, gestures, wear detection, find my earbuds.
-- **OnePlus Buds 4**: fully working. Every feature is tested on a Nothing Phone (3a), Android 16, and on Windows and Linux.
+- **OnePlus Buds 4**: fully working. Every feature is tested on an Android 16 phone, and on Windows and Linux.
 - **OnePlus Buds Ace**: confirmed by its owner on Android: noise control, low latency.
 - **OnePlus Buds Clip**: confirmed by its owner on Android and Windows: battery, low latency, high-quality audio, 3D audio, equalizer, dual connection, gestures, wear detection, find my earbuds.
 - **OnePlus Buds Pro 2**: confirmed by its owner on Windows: battery, noise control, find my earbuds. Low latency and high-quality audio do not work yet.

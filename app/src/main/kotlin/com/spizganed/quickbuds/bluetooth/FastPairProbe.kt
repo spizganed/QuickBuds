@@ -43,7 +43,7 @@ object FastPairProbe {
 
     @SuppressLint("MissingPermission")
     private fun probe(device: BluetoothDevice, log: (String) -> Unit) {
-        log("${device.name}: SDP lists the stream = ${device.uuids?.contains(ParcelUuid(FP_UUID)) == true}")
+        log("SDP lists the stream = ${device.uuids?.contains(ParcelUuid(FP_UUID)) == true}")
         for (insecure in listOf(true, false)) {
             val kind = if (insecure) "insecure" else "secure"
             var socket: BluetoothSocket? = null

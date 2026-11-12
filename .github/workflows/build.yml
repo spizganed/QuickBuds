@@ -106,7 +106,7 @@ jobs:
   checksums:
     # One SHA256SUMS for the whole release: the updater and the Linux installer verify against it.
     needs: [android, desktop]
-    if: ${{ always() && needs.desktop.result == 'success' }}
+    if: ${{ always() && needs.desktop.result == 'success' && (inputs.appimage_only || needs.android.result == 'success') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6

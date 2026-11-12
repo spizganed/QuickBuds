@@ -70,14 +70,9 @@ async function report(req, env) {
     .bind(sender, since).first();
   if (n >= PER_HOUR) return answer(429, "Too many reports. Try again in an hour.");
 
-  const inserted = await env.DB.prepare(
+  await env.DB.prepare(
     "INSERT INTO reports (at, sender, app, model, categories, description, crash, log, app_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
   ).bind(new Date().toISOString(), sender, app, model, categories.join(", "), description, crash ? 1 : 0, log, appId).run();
-  // The Dev Tools crash check throws on purpose. Mark it so it never sits in the inbox as a real crash.
-  if (crash && log && log.includes("Crash test from Dev Tools")) {
-    await env.DB.prepare("UPDATE reports SET status = 'done', note = 'Crash logger test from Dev tools; not a defect.' WHERE id = ?")
-      .bind(inserted.meta.last_row_id).run();
-  }
   return answer(200, "Sent. Thank you.");
 }
 
@@ -206,7 +201,7 @@ async function takeReply(env, id, markSeen) {
 }
 
 /**
- * The developer's counts: GET /?stats=1[&days=30] with the key in the Authorization header. Per day and platform: the
+ * The developer's counts: GET /reports?stats=1[&days=30] with the key in the Authorization header. Per day and platform: the
  * active installs (distinct IDs), the new installs, and the ping count (which includes apps without an ID). Totals:
  * installs, seen in the last 7 and 30 days.
  */

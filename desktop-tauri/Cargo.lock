@@ -2830,7 +2830,6 @@ dependencies = [
  "buds-core",
  "dbus",
  "gdk",
- "gdkwayland-sys",
  "gtk",
  "gtk-layer-shell",
  "ksni",

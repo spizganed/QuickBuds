@@ -4,4 +4,3 @@ pub mod feature_sync;
 mod json;
 pub mod msg;
 pub mod wire;
-pub mod ffi;

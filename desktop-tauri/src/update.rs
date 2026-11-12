@@ -16,7 +16,7 @@ fn appimage() -> Option<PathBuf> { if cfg!(windows) { None } else { std::env::va
 
 /// The release file this build updates from.
 fn asset() -> &'static str {
-    if cfg!(windows) { "-windows-x64.zip" } else if appimage().is_some() { "-linux-x64.AppImage" } else { "-linux-x64.tar.gz" }
+    if cfg!(windows) { "-windows-x64.zip" } else { "-linux-x64.AppImage" }
 }
 
 pub struct Release { pub version: String, pub url: String, pub sums: Option<String>, pub notes: String }
@@ -79,8 +79,9 @@ fn exe() -> Option<PathBuf> { appimage().or_else(|| std::env::current_exe().ok()
 
 fn old(exe: &Path) -> PathBuf { exe.with_extension("old") }
 
-/// Whether [install] can replace the running binary: its folder is writable.
+/// Whether [install] can replace the running binary: its folder is writable. On Linux only an AppImage updates itself.
 pub fn can_install() -> bool {
+    if !cfg!(windows) && appimage().is_none() { return false; }
     let Some(dir) = exe().and_then(|e| e.parent().map(Path::to_path_buf)) else { return false };
     let probe = dir.join(".quickbuds-write-test");
     let ok = std::fs::write(&probe, b"").is_ok();
@@ -211,7 +212,7 @@ pub fn install(r: &Release, progress: &dyn Fn(u64, u64)) -> Result<(), String> {
         std::fs::set_permissions(&new, std::os::unix::fs::PermissionsExt::from_mode(0o755)).map_err(|e| e.to_string())?;
         new
     } else {
-        let archive = tmp.join(if cfg!(windows) { "update.zip" } else { "update.tar.gz" });
+        let archive = tmp.join("update.zip");
         download(&r.url, &archive, progress)?;
         verify(&archive, &r.url, &sums)?;
         let ok = quiet("tar").arg("-xf").arg(&archive).arg("-C").arg(&tmp).status().map_err(|e| format!("tar: {e}"))?;

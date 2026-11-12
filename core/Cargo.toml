@@ -6,7 +6,7 @@ description = "Sans-IO core of QuickBuds: frames, typed messages, commands. No d
 license = "GPL-3.0-or-later"
 
 [lib]
-crate-type = ["rlib", "cdylib"]
+crate-type = ["rlib"]
 
 [profile.release]
 opt-level = "z"

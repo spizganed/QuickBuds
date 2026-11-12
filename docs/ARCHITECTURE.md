@@ -18,7 +18,6 @@ This keeps the core testable without a device.
 The Android app does not call the core. `app/.../protocol/` holds a Kotlin copy of the same rules
 (`Wire.kt`, `Commands.kt`, `Messages.kt`, `FeatureSync.kt`). A protocol change updates both copies and PROTOCOL.md.
 The desktop app calls the core directly (`desktop-tauri/src/main.rs` re-exports `cmd`, `msg` and `wire`).
-`core/src/ffi.rs` offers a C interface. Nothing uses it yet.
 
 Both apps decode a frame in one place. Android: `Decode.decode`, then `BudsConnectionManager.apply`. Desktop: `buds_core::msg::decode`, mapped to the session's `Event` in `desktop-tauri/src/protocol.rs`.
 

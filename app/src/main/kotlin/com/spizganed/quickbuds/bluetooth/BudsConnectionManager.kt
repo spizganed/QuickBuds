@@ -376,7 +376,7 @@ class BudsConnectionManager(private val context: Context) {
             // ACL receiver, retries, reconnect after loss — leaves audio to Android: asking for A2DP
             // while the system is auto-connecting raced it and left audio stuck.
             if (withAudio) setPhoneAudio(device, on = true)
-            log("Initiating RFCOMM connection to ${device.name}...")
+            log("Initiating RFCOMM connection...")
             rememberDeviceName(device)
             context.getSystemService(BluetoothManager::class.java)?.adapter?.cancelDiscovery()
             true

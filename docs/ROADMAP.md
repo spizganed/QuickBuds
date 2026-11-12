@@ -18,7 +18,6 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
     not use them.
   - realme Buds Air8: announcement and tap sounds. `0x0132` belongs to the device manager. `0x0131` reads the AI
     translation setting (`0x0428`).
-  - Find my phone (issue #24): the frame the buds send for the tap action.
 
 - **Features that read the buds and act on the phone.** Rule: no server and no vendor system app. Hide each one
   behind a model flag until an owner confirms it.
@@ -45,8 +44,8 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
 - **Generic fallback (issue #22):** battery and connection state from Fast Pair and the standard battery service, for
   earbuds that QuickBuds does not know. Experimental, after the other brands.
   The Fast Pair Message Stream reader exists: it gives the battery when another app holds the earbuds (issue #18).
-- **3D audio and high-quality audio tiles:** move the rules that turn one off when the other turns on out of the main
-  screen first, so the tiles and the app share them.
+- **3D audio and high-quality audio tiles:** the connection manager holds the rule that turns one off when the other
+  turns on, so a tile can use the same rule.
 
 ## Unverified
 
