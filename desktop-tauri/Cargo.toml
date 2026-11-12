@@ -34,6 +34,7 @@ webkit2gtk = { version = "2.0", features = ["v2_16"] }
 dbus = "0.9"
 libc = "0.2"
 ksni = { version = "0.3", default-features = false, features = ["async-io", "blocking"] }
+gdkwayland-sys = "0.18"
 wayland-client = "0.31"
 wayland-backend = { version = "0.3", features = ["client_system"] }
 wayland-protocols-plasma = { version = "0.3", features = ["client"] }
