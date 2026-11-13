@@ -1877,6 +1877,7 @@ class BudsConnectionManager(private val context: Context) {
                 info(1).let { if (it != null || clear) lastLeft = it }
                 info(2).let { if (it != null || clear) lastRight = it }
                 info(3).let { if (it != null || clear) lastCase = it }
+                info(3)?.level?.takeIf { it > 0 }?.let { saveCaseLevel(it) }
                 caseHidden = clear && info(3) == null
                 emitBattery()
                 if (!caseHidden && (lastCase == null || lastCase?.level == 0)) readCaseFromAdvert()
@@ -2037,6 +2038,24 @@ class BudsConnectionManager(private val context: Context) {
         advertScan = null
     }
 
+    /**
+     * Case level 0 = the buds cannot read the case: no bud sits in the open case (issue #47).
+     * Then the last real level of these buds shows, so the case never reads 0 %.
+     */
+    private fun linkCaseLevel(): Int? {
+        val level = lastCase?.level ?: return null
+        if (level != 0) return level
+        val key = caseKey() ?: return 0
+        return featurePrefs().getInt(key, -1).takeIf { it > 0 } ?: 0
+    }
+
+    private fun saveCaseLevel(level: Int) {
+        val key = caseKey() ?: return
+        featurePrefs().edit().putInt(key, level).apply()
+    }
+
+    private fun caseKey() = lastDevice?.address?.let { "lastCaseLevel_$it" }
+
     private fun emitBattery() {
         handler.post {
             listeners.forEach {
@@ -2045,7 +2064,7 @@ class BudsConnectionManager(private val context: Context) {
                     fpCase, SystemClock.elapsedRealtime() - fpCaseAt, FP_CASE_READ_GAP_MS, lastCase?.level, caseHidden
                 )
                 it.onBattery(
-                    lastLeft?.level, fromStream?.level ?: lastCase?.level, lastRight?.level,
+                    lastLeft?.level, fromStream?.level ?: linkCaseLevel(), lastRight?.level,
                     lastLeft?.isCharging ?: false,
                     fromStream?.charging ?: lastCase?.isCharging ?: false,
                     lastRight?.isCharging ?: false

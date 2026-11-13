@@ -37,6 +37,8 @@ messages (`protocol/FastPairStream.kt`) to the same listeners. A new connect or 
 OnePlus phone the system holds `079A` and cannot be turned off (issue #18); the stream is the only other channel. A missing or `0` case level beside the normal link starts a 10 s BLE scan, at most once every 5 min
 (`bluetooth/AdvertCaseScan.kt`, `protocol/FastPairAdvert.kt`). Why: Google Play Services holds the stream, but the
 advertisement is free to read. Was: a short stream read beside the link. Is: the scan only. The desktop app has no fallback.
+With no fresh scan level, a `0` case level shows the last real level of these buds (kept per address). Why: the buds
+report `0` while no bud sits in the open case (issue #47).
 
 ## The model data
 
