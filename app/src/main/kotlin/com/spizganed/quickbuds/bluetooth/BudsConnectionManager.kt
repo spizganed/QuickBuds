@@ -75,6 +75,8 @@ class BudsConnectionManager(private val context: Context) {
         private const val FP_CASE_READ_GAP_MS = 5 * 60_000L
         /** A case read beside the link closes after this time, also when the buds send no battery message. */
         private const val FP_CASE_READ_MS = 5_000L
+        /** The battery read interval while the link is up: some buds push no case change (issue #47). */
+        private const val BATTERY_POLL_MS = 5 * 60_000L
         /** A fresh UUID query gets this long for its answer, then its receiver goes away. */
         private const val UUID_REFRESH_TIMEOUT_MS = 10_000L
     }
@@ -579,6 +581,14 @@ class BudsConnectionManager(private val context: Context) {
         syncHandler.post { execute(sync.reconnect(SystemClock.elapsedRealtime())) }
         log("Ready for commands. Running init sequence...")
         runInitSequence()
+        handler.removeCallbacks(batteryPoll)
+        handler.postDelayed(batteryPoll, BATTERY_POLL_MS)
+    }
+
+    private val batteryPoll: Runnable = Runnable {
+        if (!isReady) return@Runnable
+        if (Capabilities.supports(context, OpoProtocol.CMD_QUERY_BATTERY)) sendRaw(Commands.queryBattery(), "poll battery")
+        handler.postDelayed(batteryPoll, BATTERY_POLL_MS)
     }
 
     /**
@@ -697,6 +707,7 @@ class BudsConnectionManager(private val context: Context) {
         pendingRetry = null
         isReady = false
         isConnecting = false
+        handler.removeCallbacks(batteryPoll)
         equalizer.onLinkDown()
         connectedThread?.cancel()
         connectedThread = null
@@ -1652,6 +1663,9 @@ class BudsConnectionManager(private val context: Context) {
                 parts[2]?.let { lastRightStatus = it }
                 parts[3]?.let { lastCaseStatus = it }
                 caseClosing = push && parts[3] == 0 && parts[1] == 0 && parts[2] == 0
+                // The lid closes: read the case level before the link drops, so the last level is not 0 or blank.
+                if (caseClosing && Capabilities.supports(context, OpoProtocol.CMD_QUERY_BATTERY))
+                    sendRaw(Commands.queryBattery(), "battery on lid close")
                 log("WEAR ${if (push) "EVT" else "QRY"}: " +
                     "L=${wearLabel(lastLeftStatus)} R=${wearLabel(lastRightStatus)} case=${wearLabel(lastCaseStatus)}")
                 handler.post { listeners.forEach { it.onWearState(lastLeftStatus, lastRightStatus, lastCaseStatus) } }

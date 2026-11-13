@@ -73,6 +73,8 @@ The buds are the only source of truth. The app is a remote control.
    spatial type, codec, game sound. Models with the batch command get these reads in one frame.
 5. Replies arrive as frames. `Decode` and `Messages` turn them into typed values. The manager tells its listeners:
    `BudsService` (notification, chip), the activities, the widgets and the tiles.
+   The Android manager reads the battery again every 5 min while the link is up, and when the lid closes.
+   Some buds push no case change (issue #47). The desktop does not do this yet.
 6. A link that drops without our request reconnects with growing delays. The service parks when the link is idle.
 
 The desktop link thread (`desktop-tauri/src/session.rs`) runs the same sequence and the same rules.
