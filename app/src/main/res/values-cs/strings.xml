@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD čistota</string>
     <string name="eq_pure_vocals">Čisté vokály</string>
     <string name="eq_thundering_bass">Hromové basy</string>
-    <string name="eq_pure_raw">Čistý originál</string>
-    <string name="eq_deep_bass">Hluboké basy</string>
-    <string name="eq_pure_bass">Čisté basy</string>
+    <string name="eq_clear_bass">Čisté basy</string>
     <string name="eq_dyn_featured">Dynaudio doporučuje</string>
     <string name="eq_galactic">Galaktický monolog</string>
     <string name="eq_vibrant">Živý</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Dát hvězdičku na GitHubu</string>
     <string name="support_later">Později</string>
     <string name="support_never">Už se neptat</string>
+    <string name="notif_buttons_title">Tlačítka v oznámení</string>
+    <string name="notif_buttons_sub">Až 3 tlačítka v oznámení</string>
+    <string name="notif_buttons_hint">Vyberte až 3 tlačítka. Oznámení je ukáže v tomto pořadí.</string>
+    <string name="setup_notif_title">Oznámení</string>
+    <string name="setup_notif_body">Android vyžaduje toto oznámení, dokud QuickBuds drží spojení. Může ukazovat baterii, čip ve stavovém řádku a až 3 tlačítka.</string>
+    <string name="setup_tiles_title">Dlaždice rychlého nastavení</string>
+    <string name="setup_tiles_body">Přidejte dlaždice QuickBuds do rychlého panelu. Klepnutí přepne nastavení. Podržením Ovládání hluku vyberete libovolný režim.</string>
+    <string name="setup_tiles_old">Dvakrát přejeďte dolů, klepněte na tužku a přetáhněte dlaždice QuickBuds do panelu.</string>
 </resources>

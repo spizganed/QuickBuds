@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD-klarhet</string>
     <string name="eq_pure_vocals">Rena vokaler</string>
     <string name="eq_thundering_bass">Dånande bas</string>
-    <string name="eq_pure_raw">Rent original</string>
-    <string name="eq_deep_bass">Djup bas</string>
-    <string name="eq_pure_bass">Ren bas</string>
+    <string name="eq_clear_bass">Klar bas</string>
     <string name="eq_dyn_featured">Dynaudio utvald</string>
     <string name="eq_galactic">Galaktisk monolog</string>
     <string name="eq_vibrant">Livfull</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Ge en stjärna på GitHub</string>
     <string name="support_later">Senare</string>
     <string name="support_never">Fråga inte igen</string>
+    <string name="notif_buttons_title">Aviseringsknappar</string>
+    <string name="notif_buttons_sub">Upp till 3 knappar i aviseringen</string>
+    <string name="notif_buttons_hint">Välj upp till 3 knappar. Aviseringen visar dem i den här ordningen.</string>
+    <string name="setup_notif_title">Aviseringen</string>
+    <string name="setup_notif_body">Android kräver den här aviseringen medan QuickBuds håller anslutningen. Den kan visa batteriet, ett chip i statusfältet och upp till 3 knappar.</string>
+    <string name="setup_tiles_title">Rutor i Snabbinställningar</string>
+    <string name="setup_tiles_body">Lägg till QuickBuds-rutor i snabbpanelen. Ett tryck växlar inställningen. Håll ned Brusreglering för att välja ett läge.</string>
+    <string name="setup_tiles_old">Svep nedåt två gånger, tryck på pennan och dra QuickBuds-rutorna till panelen.</string>
 </resources>

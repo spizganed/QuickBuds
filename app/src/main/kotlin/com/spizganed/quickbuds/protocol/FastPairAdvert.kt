@@ -50,5 +50,15 @@ object FastPairAdvert {
         return null
     }
 
+    /**
+     * The one Fast Pair sender with a case level whose left and right levels equal the link's.
+     * Null when no link level is known, or when not exactly one sender matches.
+     */
+    fun matchLink(senders: Collection<Battery>, left: Int?, right: Int?): Battery? {
+        if (left == null && right == null) return null
+        return senders.filter { it.case != null && (left == null || it.left == left) && (right == null || it.right == right) }
+            .singleOrNull()
+    }
+
     private fun u8(b: ByteArray, i: Int) = b[i].toInt() and 0xFF
 }

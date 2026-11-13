@@ -95,7 +95,7 @@ const STRINGS: &[&str] = &[
     "eq_bass_boost", "eq_clear", "eq_gentle", "eq_default", "eq_dyn_simple", "eq_dyn_warm", "eq_dyn_punchy",
     "eq_dyn_real", "eq_hisaishi", "eq_bold", "eq_enco_x_classic", "eq_reno_dawn", "eq_hans_zimmer",
     "eq_natural_inspiration", "eq_reno_sunrise", "eq_punchy", "eq_spacious", "eq_reno_galaxy", "eq_ultimate",
-    "eq_hd_clarity", "eq_pure_vocals", "eq_thundering_bass", "eq_pure_raw", "eq_deep_bass", "eq_pure_bass", "eq_dyn_featured", "eq_galactic", "eq_vibrant",
+    "eq_hd_clarity", "eq_pure_vocals", "eq_thundering_bass", "eq_clear_bass", "eq_dyn_featured", "eq_galactic", "eq_vibrant",
     "eq_dyn_vocal", "eq_clear_crisp",
     // Setup guide, Home layout, Edit preset, Test, Feedback, App update and the sheets.
     "welcome_title", "welcome_body", "welcome_done", "setup_look_title", "setup_look_body", "setup_perm_title",

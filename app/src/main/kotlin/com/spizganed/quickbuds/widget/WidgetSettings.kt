@@ -48,13 +48,32 @@ object WidgetSettings {
      * select a mode, "cycle" steps through the Noise cycle modes ([cycleNext]), "ll" toggles low latency,
      * a [FEATURE_BUTTONS] key toggles that `0x0403` switch.
      */
-    val BUTTONS = listOf("anc", "trans", "adapt", "off", "cycle", "ll", "wind", "dual", "app")
+    val BUTTONS = listOf("anc", "trans", "adapt", "off", "cycle", "ll", "spatial", "wind", "dual", "app")
     /** Feature buttons: key -> `0x0403` id. */
-    val FEATURE_BUTTONS = mapOf("wind" to Feature.WIND_NOISE, "dual" to Feature.DUAL_DEVICE)
+    val FEATURE_BUTTONS = mapOf("spatial" to Feature.SPATIAL_SOUND, "wind" to Feature.WIND_NOISE, "dual" to Feature.DUAL_DEVICE)
     /** Buttons a widget shows before its setup screen saves a choice. */
     val DEFAULT_BUTTONS = listOf("anc", "trans", "adapt", "ll")
     /** Slots on the controls page. */
     const val MAX_BUTTONS = 4
+
+    /**
+     * The service notification's buttons: [BUTTONS] without the level list ("anc") and "app" (a tap on the
+     * notification opens the app). Android shows 3 actions at most. Its Noise cycle has its own list ([NOTIFICATION_ID]).
+     */
+    val NOTIFICATION_BUTTONS = BUTTONS - setOf("anc", "app")
+    const val MAX_NOTIFICATION_BUTTONS = 3
+    /** The id the notification's buttons and Noise cycle list use in place of a widget id. */
+    const val NOTIFICATION_ID = -2
+    private const val KEY_NOTIFICATION_BUTTONS = "notificationButtons"
+
+    /** The notification's buttons, none by default. */
+    fun notificationButtons(c: Context): List<String> =
+        prefs(c).getString(KEY_NOTIFICATION_BUTTONS, null)?.split(',')?.filter { it in NOTIFICATION_BUTTONS }
+            ?.take(MAX_NOTIFICATION_BUTTONS).orEmpty()
+
+    fun setNotificationButtons(c: Context, keys: List<String>) {
+        prefs(c).edit().putString(KEY_NOTIFICATION_BUTTONS, keys.joinToString(",")).apply()
+    }
 
     private fun prefs(c: Context) = c.getSharedPreferences(ThemeRes.PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -206,6 +225,10 @@ object WidgetSettings {
             "off" -> ancCmd && !anc.isEmpty
             "cycle" -> ancCmd && ancPicker(c).isNotEmpty()
             "ll" -> RowRules.GAME in rows
+            // Only a plain switch: no phone-made effect, no type list, and no Hi-Res drop (that one asks first).
+            "spatial" -> RowRules.SPATIAL in rows && !com.spizganed.quickbuds.ui.MainActivity.phoneSpatial(c) &&
+                !com.spizganed.quickbuds.ui.MainActivity.spatialByType(c) &&
+                (ModelCatalog.profile(c).spatialToggle || RowRules.HIRES !in rows)
             "wind" -> RowRules.WIND in rows
             "dual" -> RowRules.DUAL in rows
             "app" -> true
@@ -215,12 +238,17 @@ object WidgetSettings {
 
     /** The name of a [FEATURE_BUTTONS] key: "Triple connection" on `tripleDevice` models. */
     fun featureName(c: Context, key: String): Int = when {
+        key == "spatial" -> R.string.row_spatial_title
         key == "wind" -> R.string.row_wind_noise_title
         ModelCatalog.tripleDevice(c) -> R.string.row_triple_title
         else -> R.string.row_dual_title
     }
 
-    fun featureIcon(key: String): Int = if (key == "dual") R.drawable.ic_devices else R.drawable.ic_anc
+    fun featureIcon(key: String): Int = when (key) {
+        "dual" -> R.drawable.ic_devices
+        "spatial" -> R.drawable.ic_spatial
+        else -> R.drawable.ic_anc
+    }
 
     fun featureOn(c: Context, id: Int) = Capabilities.featureOn(c, id)
 

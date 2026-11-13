@@ -19,8 +19,14 @@ object LogDecoder {
         0x8116 to "Hearing profile", 0x811A to "Personalised ANC", 0x811E to "Hearing profile",
         0x811F to "Hearing profile", 0x8123 to "Codec list", 0x8124 to "Bass level", 0x812C to "Bass bands", 0x812A to "Spatial type",
         0x812B to "Game sound", 0x812F to "Batch reply (answers follow as RX[batch])", 0x8132 to "Preferred device",
-        0x8133 to "Tap sensitivity", 0x8134 to "Head gestures", 0x8200 to "Offered events", 0x8205 to "Notifications registered",
+        0x8133 to "Tap sensitivity", 0x8134 to "Head gestures", 0x8200 to "Offered events", 0x8205 to "Notifications registered", 0x8201 to "One event registered",
         0x8427 to "Alert volume ack",
+        // Pushes and requests from the buds (PROTOCOL.md section 11), and our answers.
+        0x0500 to "Time request (answered)", 0x8500 to "Time answer", 0x050C to "App list request (answered)",
+        0x850C to "App list answer", 0x051C to "Capabilities request (answered)", 0x851C to "Capabilities answer",
+        0x051D to "Spatial mode request (answered: not known)", 0x851D to "Spatial mode answer",
+        0x0503 to "Feature changed", 0x0504 to "EQ changed", 0x0510 to "Spatial type changed",
+        0x0506 to "Custom EQ list changed", 0x0508 to "Bass band changed",
         // Named by what the vendor app calls them (2026-10-23); the payload is not decoded, so the hex follows.
         0x8101 to "Remote MTU", 0x8102 to "Vendor ID", 0x8107 to "Upgrade capability", 0x810B to "Earbuds colour ID",
         0x8117 to "Earphone identity", 0x8118 to "Ear restore data", 0x8119 to "Zen mode file info", 0x811C to "Related-device info",
@@ -32,7 +38,9 @@ object LogDecoder {
     private val PUSH_NAMES = mapOf(
         0x06 to "dual connection devices", OpoProtocol.EVT_GOLDEN_STATUS to "hearing test status",
         OpoProtocol.EVT_PERSONAL_NOISE to "personalised ANC result", OpoProtocol.EVT_EAR_SCAN to "ear scan",
-        0xF2 to "request (answered)", 0xF4 to "JSON request (answered)", OpoProtocol.EVT_HEAD_MOTION_TYPE to "head motion type", OpoProtocol.EVT_PUBLIC to "public event"
+        0xF2 to "request (answered)", 0xF4 to "JSON request (answered)", OpoProtocol.EVT_HEAD_MOTION_TYPE to "head motion type", OpoProtocol.EVT_PUBLIC to "public event",
+        0x0A to "zen-mode switch state", 0x0D to "related-device info", 0xF6 to "head-motion try result",
+        0xF7 to "voice-assist control type", 0xF8 to "LE / BR link switch state"
     )
 
     enum class Direction { TX, RX, STATUS }
@@ -288,7 +296,7 @@ object LogDecoder {
             0x8122 -> "EQ query response ($cmdHex)"
             0x8130 -> "Alert volume response ($cmdHex): ${OpoProtocol.bytesToHex(data)}"
             // Byte values observed, not confirmed.
-            0x0501 -> if (payload.isEmpty()) "Bud state (unparsed)" else "Bud state: " + when (val v = payload[0].toInt() and 0xFF) {
+            0x0501 -> if (payload.isEmpty()) "Camera state request (not answered)" else "Bud state: " + when (val v = payload[0].toInt() and 0xFF) {
                 0x00 -> "Both in case"
                 0x01, 0x02 -> "Both out"
                 0x05 -> "Right out"

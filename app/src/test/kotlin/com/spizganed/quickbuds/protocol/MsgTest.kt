@@ -34,6 +34,8 @@ class MsgTest {
     @Test fun repliesFromTheBuds4Capture() {
         assertEquals(Msg.ProductId(0x065414), dec(m(0x8103, 0, 0x14, 0x54, 0x06)))
         assertNull(dec(m(0x8103, 1, 0, 0, 0)))
+        // realme Buds T200 (report #205): three more bytes after the id.
+        assertEquals(Msg.ProductId(0x065452), dec(m(0x8103, 0, 0x52, 0x54, 0x06, 0x20, 0x45, 0x04)))
         assertEquals(Msg.Offered(listOf(1, 2, 3, 4, 8, 0x0B, 0xF1, 0xF2, 0xF3)), dec(m(0x8200, 0, 9, 1, 2, 3, 4, 8, 0x0B, 0xF1, 0xF2, 0xF3)))
         assertEquals(Msg.Offered(listOf(2, 1)), dec(m(0x8200, 0, 2, 2, 1)))
         val text = "1,2,138,2,2,138,3,1,01,3,2,105".toByteArray()
@@ -188,6 +190,12 @@ class MsgTest {
         assertEquals(Msg.BassBands(listOf(1 to 3, 2 to -3, 3 to 2)),
             dec(m(0x812C, 0, 3, 0xFB, 5, 3, 1, 0xFB, 5, 0xFD, 2, 0xFB, 5, 2, 3)))
         assertNull(dec(m(0x812C, 0, 2, 0xFB, 5, 3, 1)))
+        // realme Buds T500 Pro capture (2026-11-13): pushes after a change. One band; the custom list without a status byte.
+        assertEquals(Msg.BassBands(listOf(2 to -1)), Decode.decode(Message(0x0508, 0xFF, b(0xFB, 5, 0xFF, 2))))
+        assertNull(Decode.decode(Message(0x0508, 0xFF, b(0xFB, 5, 0xFF))))
+        val push = b(1, 1, 0xFA, 6, 4, 3) + "one".toByteArray() + b(6, 0x3E, 0, 6, 0xFA, 0, 0xFA, 0xE8, 3, 1, 0xA0, 0x0F, 0xFE, 0x40, 0x1F, 3, 0x80, 0x3E, 0xFC)
+        val pushed = (Decode.decode(Message(0x0506, 0xFF, push)) as Msg.EqCustom).list
+        assertEquals(EqPreset(4, "one", true, -6 to 6, listOf(62 to 6, 250 to -6, 1000 to 1, 4000 to -2, 8000 to 3, 16000 to -4)), pushed[0])
         val body = byteArrayOf(0, 1, 1, 0xFA.toByte(), 6, 4, 4) + "Rock".toByteArray() + b(2, 62, 0, 3, 0xFA, 0, 0xFF)
         val list = (Decode.decode(Message(0x8122, 1, body)) as Msg.EqCustom).list
         assertEquals(EqPreset(4, "Rock", true, -6 to 6, listOf(62 to 3, 250 to -1)), list[0])

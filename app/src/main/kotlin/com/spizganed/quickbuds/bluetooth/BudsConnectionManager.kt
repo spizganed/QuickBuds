@@ -74,7 +74,6 @@ class BudsConnectionManager(private val context: Context) {
         /** The shortest gap between two case reads over the Fast Pair stream. */
         private const val FP_CASE_READ_GAP_MS = 5 * 60_000L
         /** A case read beside the link closes after this time, also when the buds send no battery message. */
-        private const val FP_CASE_READ_MS = 5_000L
         /** The battery read interval while the link is up: some buds push no case change (issue #47). */
         private const val BATTERY_POLL_MS = 5 * 60_000L
         /** A fresh UUID query gets this long for its answer, then its receiver goes away. */
@@ -485,7 +484,7 @@ class BudsConnectionManager(private val context: Context) {
                         log("Giving up after $totalTries connect tries. Tap CONNECT to retry manually.")
                         val held = ConnectDiagnostics.heldByOther(failures)
                         if (held) log("Every try failed fast with read ret -1: another device or app probably holds the earbuds.")
-                        if (held) startFastPair(device, held = true)
+                        if (held) startFastPair(device)
                         if (ConnectPolicy.showTryToast(user))
                             toast(if (held) context.getString(R.string.connect_held_by_other) else context.getString(R.string.connect_gave_up, totalTries))
                     }
@@ -999,7 +998,8 @@ class BudsConnectionManager(private val context: Context) {
                 // Hi-Res refused now: the phone plays no LDAC or LHDC (reports #33 #42 #44) and the
                 // model names a better codec. Without that name the generic text is used.
                 val best = if (key == Feature.HIRES_CODEC) ModelCatalog.hiresBestCodec(context, codecs) else null
-                val played = codec?.takeIf { it != 3 && it != 7 && it != 8 }
+                // The `0x0114` codec counts only with a codec list (report #205: SBC reported while LDAC played).
+                val played = codec?.takeIf { it != 3 && it != 7 && it != 8 && codecs.isNotEmpty() }
                 if (best != null && played != null)
                     context.getString(R.string.hires_needs_codec, codecName(played), best)
                 else context.getString(R.string.feature_refused_now, name)
@@ -1577,6 +1577,7 @@ class BudsConnectionManager(private val context: Context) {
             cmd == 0x812A || cmd == 0x812B || cmd == OpoProtocol.CMD_SPATIAL_TYPE_PUSH || // spatial / game sound type
             cmd == 0x811A || cmd == 0x8133 || cmd == 0x8132 || // personalized ANC, tap sensitivity, preferred device
             cmd == 0x0500 ||                             // time request from the buds, answered (answer 0500)
+            cmd == 0x0501 || cmd == 0x0502 ||            // camera state / shutter (realme: find phone), not answered (PROTOCOL.md §11)
             cmd == OpoProtocol.CMD_FEATURE_PUSH ||        // feature push
             cmd in 0x8400..0x84FF ||                     // acks for 0x04xx set commands
             cmd in LogDecoder.REPLY_NAMES                // decoded elsewhere, see there
@@ -1878,7 +1879,7 @@ class BudsConnectionManager(private val context: Context) {
                 info(3).let { if (it != null || clear) lastCase = it }
                 caseHidden = clear && info(3) == null
                 emitBattery()
-                if (!caseHidden && (lastCase == null || lastCase?.level == 0)) readCaseFromFastPair()
+                if (!caseHidden && (lastCase == null || lastCase?.level == 0)) readCaseFromAdvert()
             }
 
             else -> {}
@@ -1969,12 +1970,10 @@ class BudsConnectionManager(private val context: Context) {
     }
 
     /**
-     * The Fast Pair stream (PROTOCOL.md section 1). Held: another app holds `079A`, so the stream is the only link and
-     * gives the whole battery (issue #18). Not held: one short read beside the link gives the case level when the
-     * link gives none or `0` (report #184). The read closes at the first battery message or after 5 s. The next read
-     * waits 5 min, so Google Play Services can use the stream too: one phone opens a channel only once.
-     * The same read also starts a 10 s BLE scan for the case level in the advertisement ([AdvertCaseScan]):
-     * the stream fails while Google Play Services holds it.
+     * The Fast Pair stream (PROTOCOL.md section 1), only while another app holds `079A`: then the stream is the only
+     * link and gives the whole battery (issue #18). When the link gives no case level or `0` (report #184), a 10 s
+     * BLE scan reads it from the advertisement ([AdvertCaseScan]), at most once in 5 min.
+     * Was: a short stream read beside the link. Is: no stream beside the link; Google Play Services holds it.
      */
     private var fastPair: FastPairBattery? = null
     private var fpCase: FastPairStream.Level? = null
@@ -1984,11 +1983,10 @@ class BudsConnectionManager(private val context: Context) {
     private var fpCaseReadAt = -FP_CASE_READ_GAP_MS
     private var advertScan: AdvertCaseScan? = null
 
-    private fun readCaseFromFastPair() {
+    private fun readCaseFromAdvert() {
         val now = SystemClock.elapsedRealtime()
         if (fastPair != null || now - fpCaseReadAt < FP_CASE_READ_GAP_MS) return
         fpCaseReadAt = now
-        lastDevice?.let { startFastPair(it, held = false) }
         startAdvertScan()
     }
 
@@ -1996,7 +1994,8 @@ class BudsConnectionManager(private val context: Context) {
         advertScan?.stop()
         lateinit var me: AdvertCaseScan
         me = AdvertCaseScan(
-            context.getSystemService(BluetoothManager::class.java)?.adapter, handler, Capabilities.productId(context), ::log
+            context.getSystemService(BluetoothManager::class.java)?.adapter, handler, Capabilities.productId(context), ::log,
+            { lastLeft?.level to lastRight?.level }
         ) { level ->
             if (advertScan !== me) return@AdvertCaseScan
             advertScan = null
@@ -2008,41 +2007,34 @@ class BudsConnectionManager(private val context: Context) {
         if (!me.start()) advertScan = null
     }
 
-    private fun startFastPair(device: BluetoothDevice, held: Boolean) {
+    private fun startFastPair(device: BluetoothDevice) {
         if (fastPair != null) return
         if (device.uuids?.any { it.uuid.toString().equals(FastPairStream.UUID, true) } != true) return
-        log(if (held) "Fast Pair stream listed: battery only while the earbuds are held" else "Fast Pair stream listed: case level beside the link")
+        log("Fast Pair stream listed: battery only while the earbuds are held")
         lateinit var me: FastPairBattery
         me = FastPairBattery(::log, { b ->
             handler.post {
                 if (fastPair !== me) return@post
-                if (held) listeners.forEach { it.onBattery(b.left.level, b.case.level, b.right.level, b.left.charging, b.case.charging, b.right.charging) }
-                else {
-                    if (b.case.level != null) { fpCase = b.case; fpCaseAt = SystemClock.elapsedRealtime(); emitBattery() }
-                    stopFastPair(keepCase = true)
-                }
+                listeners.forEach { it.onBattery(b.left.level, b.case.level, b.right.level, b.left.charging, b.case.charging, b.right.charging) }
             }
         }, {
             // Only the current stream acts on its end: a stopped one can end after a new link is up.
             handler.post {
                 if (fastPair !== me) return@post
                 fastPair = null
-                if (held) listeners.forEach { it.onConnected(false) }
+                listeners.forEach { it.onConnected(false) }
             }
         })
         fastPair = me
         me.start(device)
-        if (!held) handler.postDelayed({ if (fastPair === me) stopFastPair(keepCase = true) }, FP_CASE_READ_MS)
     }
 
-    private fun stopFastPair(keepCase: Boolean = false) {
+    private fun stopFastPair() {
         fastPair?.stop()
         fastPair = null
-        if (!keepCase) {
-            fpCase = null
-            advertScan?.stop()
-            advertScan = null
-        }
+        fpCase = null
+        advertScan?.stop()
+        advertScan = null
     }
 
     private fun emitBattery() {

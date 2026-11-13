@@ -169,6 +169,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         registerReceiver(bluetoothStateReceiver, IntentFilter(android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED))
         scheduleIdleCheck(if (bluetoothOff()) BT_OFF_MS else IDLE_MS)
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(prefListener)
+        WidgetStateStore.addListener(stateListener)
         // Started by a Bluetooth event while locked: stay asleep until the unlock.
         if (backgroundAllowed(this) && shouldSleep()) asleep = true
         // A new service has no link. A connected state from an earlier process is stale (report 158); the sleep keeps it on purpose.
@@ -404,7 +405,41 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             }
             b.setCustomContentView(v).setStyle(Notification.DecoratedCustomViewStyle())
         }
+        if (st.connected && linkUp()) actions(st).forEach { b.addAction(it) }
         return b.build()
+    }
+
+    /**
+     * Settings › Notifications › Notification buttons: up to 3 actions, the widget's buttons ([WidgetSettings.NOTIFICATION_BUTTONS])
+     * the buds have. A tap goes to [WidgetActionReceiver] as a widget tap with [WidgetSettings.NOTIFICATION_ID], so the
+     * Noise cycle uses the notification's own list. A lit button ends with "· On".
+     */
+    private fun actions(st: WidgetStateStore.State): List<Notification.Action> {
+        val rows = com.spizganed.quickbuds.ui.Rows.of(this)
+        val current = WidgetSettings.modeOf(st.ancMode)
+        val on = getString(R.string.tile_on)
+        return WidgetSettings.notificationButtons(this).filter { WidgetSettings.available(this, it, rows) }.map { key ->
+            val feature = WidgetSettings.FEATURE_BUTTONS[key] ?: -1
+            val (action, label, lit) = when (key) {
+                "cycle" -> Triple(WidgetActions.ACTION_QUICK, getString(R.string.widget_cycle) + ": " + getString(current.name), false)
+                "ll" -> Triple(WidgetActions.ACTION_GAME_TOGGLE, getString(R.string.row_game_title), st.gameMode)
+                "trans", "adapt", "off" -> WidgetSettings.MODES.first { it.key == key }.let {
+                    Triple(WidgetActions.ACTION_QUICK, getString(it.name), current.key == key) }
+                else -> Triple(WidgetActions.ACTION_FEATURE_TOGGLE, getString(WidgetSettings.featureName(this, key)),
+                    WidgetSettings.featureOn(this, feature))
+            }
+            val intent = Intent(this, com.spizganed.quickbuds.widget.WidgetActionReceiver::class.java).apply {
+                this.action = action
+                data = android.net.Uri.parse("quickbuds-notification://$key")
+                putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetSettings.NOTIFICATION_ID)
+                putExtra(WidgetActions.EXTRA_ANC_TARGET, key)
+                if (feature >= 0) putExtra(WidgetActions.EXTRA_FEATURE, feature)
+            }
+            val pi = android.app.PendingIntent.getBroadcast(this, 0, intent,
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE)
+            Notification.Action.Builder(android.graphics.drawable.Icon.createWithResource(this, R.drawable.ic_stat_buds),
+                if (lit) "$label · $on" else label, pi).build()
+        }
     }
 
     /**
@@ -421,7 +456,11 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     /** Reposts the notification when the shown levels or the connection changed. */
     private fun updateNotification() {
         val st = WidgetStateStore.read(this)
-        val key = "$goodbye ${linkUp()} ${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus}"
+        // The buttons' state too: a mode or switch change relabels them.
+        val buttons = WidgetSettings.notificationButtons(this).let { keys ->
+            if (keys.isEmpty()) "" else "$keys ${st.ancMode} ${st.gameMode} " + WidgetSettings.FEATURE_BUTTONS.values.map { WidgetSettings.featureOn(this, it) }
+        }
+        val key = "$goodbye ${linkUp()} ${st.connected} ${st.leftBattery} ${st.caseBattery} ${st.rightBattery} ${st.leftStatus} ${st.rightStatus} $buttons"
         if (key == shownLevels) return
         shownLevels = key
         try {
@@ -458,9 +497,14 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     private fun fullNotification() =
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_FULL_NOTIFICATION, true)
 
+    /** A noise mode or low latency change (a widget tap, the buds, the app) relabels the notification's buttons. */
+    private val stateListener: (WidgetStateStore.State) -> Unit = { handler.post { updateNotification() } }
+
     /** Settings › Full notification: repost on the other channel at once. */
     private val prefListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == PREF_FULL_NOTIFICATION || key == PREF_LIVE_CHIP || key == PREF_LOCK_NOTIFICATION) { shownLevels = null; updateNotification() }
+        // The notification's buttons changed (Settings › Notifications › Notification buttons).
+        else if (key == "notificationButtons") updateNotification()
     }
 
     /** Settings › Lock the notification: the user cannot swipe the service notification away (issue 36). */
@@ -507,6 +551,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         try { unregisterReceiver(screenReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(bluetoothStateReceiver) } catch (_: Exception) {}
         getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(prefListener)
+        WidgetStateStore.removeListener(stateListener)
         super.onDestroy()
     }
 
@@ -643,6 +688,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         if (now == widgetFeatures) return
         widgetFeatures = now
         AncWidgetProvider.refreshAll(this)
+        updateNotification()
     }
 
     override fun onAncModeState(mode: String) {

@@ -1205,8 +1205,9 @@ class MainActivity : Activity(), BudsConnectionManager.Listener {
         val codec = manager.codec.takeIf { codecPicker() }
         if (codec != null) hiresSubtitle?.text = codecName(codec)
         // Quality switch on, but the phone plays another codec than LHDC: name the model's best codec
-        // (report #17). Without a known best codec the hint stays off.
-        val played = manager.codec
+        // (report #17). Without a known best codec the hint stays off. The `0x0114` codec counts only from buds
+        // that answer the codec list (`0x0123`): the realme Buds T200 answer SBC while the phone plays LDAC (report #205).
+        val played = manager.codec?.takeIf { manager.codecs.isNotEmpty() }
         val best = hiresBestCodec()
         if (codec == null && best != null && played != null && played != 7 && played != 8 && states[Feature.HIRES_CODEC] == 1)
             hiresSubtitle?.text = getString(R.string.row_hires_sub_codec, codecName(played), best)

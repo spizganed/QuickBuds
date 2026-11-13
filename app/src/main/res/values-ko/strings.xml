@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD 선명도</string>
     <string name="eq_pure_vocals">퓨어 보컬</string>
     <string name="eq_thundering_bass">강력한 베이스</string>
-    <string name="eq_pure_raw">퓨어 로우</string>
-    <string name="eq_deep_bass">딥 베이스</string>
-    <string name="eq_pure_bass">퓨어 베이스</string>
+    <string name="eq_clear_bass">선명한 저음</string>
     <string name="eq_dyn_featured">Dynaudio 추천</string>
     <string name="eq_galactic">은하의 독백</string>
     <string name="eq_vibrant">생동감</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">GitHub에서 별 주기</string>
     <string name="support_later">나중에</string>
     <string name="support_never">다시 묻지 않기</string>
+    <string name="notif_buttons_title">알림 버튼</string>
+    <string name="notif_buttons_sub">알림에 최대 3개 버튼</string>
+    <string name="notif_buttons_hint">버튼을 최대 3개 선택하세요. 알림에 이 순서로 표시됩니다.</string>
+    <string name="setup_notif_title">알림</string>
+    <string name="setup_notif_body">QuickBuds가 연결을 유지하는 동안 Android에는 이 알림이 필요합니다. 배터리, 상태 표시줄 칩, 최대 3개 버튼을 표시할 수 있습니다.</string>
+    <string name="setup_tiles_title">빠른 설정 타일</string>
+    <string name="setup_tiles_body">빠른 패널에 QuickBuds 타일을 추가하세요. 탭하면 설정이 바뀝니다. 노이즈 컨트롤을 길게 누르면 모드를 고를 수 있습니다.</string>
+    <string name="setup_tiles_old">아래로 두 번 스와이프하고 연필을 탭한 다음 QuickBuds 타일을 패널로 끌어오세요.</string>
 </resources>

@@ -90,10 +90,8 @@ It is a separate RFCOMM service, so it opens while another app holds `079A` `[TE
 Message: `<group> <code> <length u16 BE> <data>`. On open the buds send, without a request `[CAPTURE]`:
 `03 01` model id (Buds 4: `75410D`), `03 02` BLE address (Buds 4: zeros), `03 03` battery `<left> <right> <case>`.
 A battery byte is the level 0-100; `7F` = not known; bit 7 = charging. When every `079A` try fails fast with
-`read ret -1` (another holder) and SDP lists the stream, QuickBuds opens it and shows the battery only. It writes nothing. With the normal link up, a case level that is missing or `0`
-starts one short read of the stream: the stream's case level wins for 5 min.
-With "Hide old battery levels" on, a report without the case shows no case level and starts no read. The stream closes at the first battery message or after 5 s. The next read waits 5 min.
-Why short: a phone opens a channel only once, and Google Play Services uses the same stream.
+`read ret -1` (another holder) and SDP lists the stream, QuickBuds opens it and shows the battery only. It writes nothing.
+With the normal link up, QuickBuds does not open the stream. Google Play Services holds it, and a read fails at once with `read ret -1` (Buds 4, 2026-11-13) `[CAPTURE]`. Was: one short read for a missing case level. Is: the BLE scan below.
 
 **Code:** `protocol/Protocol.kt` holds the UUID constants. The socket code is in `bluetooth/`.
 The core crate has no transport code.
@@ -307,7 +305,7 @@ Was: a keep-alive poll. Is: none. No stale link seen `[TESTED]`.
 ### What the buds are and accept
 
 - **Bitmap** `0x8100` (section 5) `[VENDOR]`: `00`, then bytes read LSB first. Bit n enables a fixed list of commands. The app checks every command against the bitmap. It does not send a command with no bit.
-- **Product id** `0x8103` `[CAPTURE]`: `00 <id, 3 bytes LE>`. Buds 4: `00 14 54 06` is `065414`. Four colour ranges fold into one id before the model lookup `[VENDOR]`: `100100`-`100102` → `060414`, `100200`-`100202` → `060814`, `108100`-`108102` → `068414`, `108200`-`108202` → `068814`.
+- **Product id** `0x8103` `[CAPTURE]`: `00 <id, 3 bytes LE>`. Buds 4: `00 14 54 06` is `065414`. realme Buds T200 add 3 bytes that change between replies (`20 45 04`, `06 00 04`) `[CAPTURE]`. Only the first 3 id bytes count. Four colour ranges fold into one id before the model lookup `[VENDOR]`: `100100`-`100102` → `060414`, `100200`-`100202` → `060814`, `108100`-`108102` → `068414`, `108200`-`108202` → `068814`.
 - **Model lookup** `[VENDOR]`: an entry whose `name` equals the Bluetooth name exactly. Also an entry whose `id` equals the product id. An entry that matches both wins, then the first name match, then the first id match. A model picked by hand overrides it until other buds connect. Name before id matters: OPPO Enco Buds2 report `060C12`, the realme Buds Q2s id (issue #5) `[CAPTURE]`. A renamed device matches no name and falls back to its id.
 - **Firmware** `0x0105` → `0x8105` `[CAPTURE]`: `00 <count>` then UTF-8 `deviceType,versionType,version` triples, joined by commas. Buds 4: `00 04` + `1,2,138,2,2,138,3,1,01,3,2,105`. Device types: `1` left, `2` right, `3` case `[VENDOR]`. The app shows the `versionType` 2 versions in reply order, joined by dots: `138.138.105`.
 - **Offered codes** `0x8200` = `00 <count> <codes>`. Buds 4 `[CAPTURE]`: `00 09 01 02 03 04 08 0B F1 F2 F3`. Read it before deciding that an event does not exist: silence usually means "not subscribed". Nord Buds 3 Pro (`064414`) offers only `00 02 02 01` (wear, battery) `[CAPTURE]`. OPPO Enco Buds2 (`060C12`) also offers `02 01` `[CAPTURE]`.
@@ -387,7 +385,7 @@ Details in the sections cited. `—` = empty payload.
 | Cmd | Name | Payload |
 |---|---|---|
 | `0x0200` | Query broadcast codes | — → `0x8200` = `00 <count> <codes>` |
-| `0x0201` | Subscribe one event | `<code>` |
+| `0x0201` | Subscribe one event | `<code>` → `8201 00 <code>` (realme Buds Air 3S, report #203) `[CAPTURE]` |
 | `0x0204` | Push | Seq `FF`, `payload[0]` = event code (section 10) |
 | `0x0205` | Subscribe | `<count> <codes...>`, count first |
 
@@ -509,7 +507,7 @@ app joins the packets until both ears are complete.
 pair on OPPO Enco Buds3 Pro `[CAPTURE]`. The app feeds the pairs to the sync engine as a push, so a
 model that reports the new game-mode state only here confirms the write (reports #63 and #73).
 
-`0x0504 <id>` reports that the EQ changed. `0x0510 <type>` reports that the spatial type changed.
+`0x0504 <id>` reports that the EQ changed. `0x0510 <type>` reports that the spatial type changed. `0x0506` (custom EQ list) and `0x0508` (one bass band) report EQ edits (section 17) `[CAPTURE]`.
 
 Per-model push rules are in section 21.9 and the sections it names.
 
@@ -617,7 +615,7 @@ The RFCOMM link is not the only source. HeyMelody reads two more. QuickBuds read
   - Earbuds status: bit 0 is lid open. Bits 1 to 4 give the state of each bud (in the ear or in the case). The mapping is unknown.
   - The realme layout is at least 18 bytes. The address is at offset 8 and the lid bit is at offset 14, bit 0. Its battery bytes are unknown.
   - The Google Fast Pair service data `FE2C` (public spec) also carries battery when the buds are not discoverable. Byte 0 is flags. Then fields `0bLLLLTTTT` follow, each with L bytes. Type 3 (shown) or 4 (hidden) with L = 3 is the battery: left, right, case, in the stream's format.
-  - QuickBuds scans for 10 s when the link gives no case level or `0`, at most once each 5 min. An OPPO packet counts only with the product id of the connected buds. A `FE2C` packet names no model, so it counts only when one sender alone sends a case level.
+  - QuickBuds scans for 10 s when the link gives no case level or `0`, at most once each 5 min. An OPPO packet counts only with the product id of the connected buds. A `FE2C` packet names no model. It counts when one sender alone sends a case level, or when one sender alone has the link's left and right levels. Buds 4 at 2026-11-13: three senders, one with the link's 90 / 90 `[CAPTURE]`. The found case level counts for 5 min. With "Hide old battery levels" on, a report without the case starts no scan.
 - **Call-audio event.** The buds send the AT command `+VDBTY` over the call-audio link. Android turns it into the broadcast `android.bluetooth.headset.action.VENDOR_SPECIFIC_HEADSET_EVENT`. The arguments are `[count, id, level, ...]`. Id 1 is left, 2 is right, 3 is the case. The level is a percent. A level of 0 is dropped. The command `+VDRV` carries the firmware versions.
 - **System level.** Android keeps one battery level for each paired device. It has no left, right or case split.
 
@@ -935,9 +933,11 @@ push 0x0504 <id>                              the EQ changed
 0x0403 1D <01|00>                             BassWave on, off
 0x041B FB 05 <level> [<band>]                 BassWave level, -5..+5; read 0x0124 → 00 FB 05 <level> [<band>]
 0x012C → 812C 00 <count> [FB 05 <level> <band>]...   all bands in one reply
+push 0x0506 <count> <presets>                 the custom list changed (no status byte)
+push 0x0508 FB 05 <level> <band>              one band changed
 ```
 
-- realme dynamic sound `[CAPTURE]` (realme Buds T310): a switch (`1D`) and three sliders. Each slider write adds a band byte: `01` low, `02` medium, `03` high frequency. A model without the band byte ignores the write and still answers `00`. `models.json` marks these models with `bassBands` 3.
+- realme dynamic sound `[CAPTURE]` (realme Buds T310): a switch (`1D`) and three sliders. Each slider write adds a band byte: `01` low, `02` medium, `03` high frequency. A model without the band byte ignores the write and still answers `00`. `models.json` marks these models with `bassBands` 3. realme Link 5.8.811 shows the three sliders on 16 models (item `ITEM_DYNAMIC_SOUND_EFFECT`) `[VENDOR]`. realme Buds T500 Pro `[CAPTURE]` (2026-11-13): the same writes. Each `0x041B` gets `841B 00 01`, then push `0x0508` with the new band. The switch is `0x0403 1D 00|01`. The buds answer `0x012C`, not `0x0124`. Seven models get one slider without a band byte (item `ITEM_DYNAMIC_LOW_SOUND`). That is the BassWave write, so `models.json` gives them `bassEngine`.
 - The T310 does not answer `0x0124`. It answers `0x012C` with all three bands: `00 03 FB 05 03 01 FB 05 FD 02 FB 05 02 03` is low +3, medium -3, high +2 `[CAPTURE]`. Bitmap bit 54 gates `0x012C` in realme Link; the T310 sets it. The app reads it after each EQ read.
 - A built-in preset write (`0x0406`) changes the three bands. Bass Boost on the T310 set +3, -2, +2 `[CAPTURE]`.
 
@@ -947,9 +947,10 @@ push 0x0504 <id>                              the EQ changed
   - `02` save and select. Send the whole preset, every time, also on every drag step and every rename.
   - `03` delete. The selection falls back to `00`.
 - Ids are renumbered after create and delete. Read `0x0122` again each time `[CAPTURE]`.
+- realme Buds T500 Pro `[CAPTURE]` (2026-11-13): 6 bands, `FA 06`, the layout above. New ids are `04`, `05`, `06`. After each `0x0418` the buds push `0x0506` with the whole list. realme Link shows no custom EQ for this model. The phone's system earbud screen does. The screen allows 3 custom presets. Deleting the selected preset selects id `03` (Clear Bass) and pushes `0x0504 03`.
 - Built-in presets differ per model `[VENDOR]`: `eqPresets` lists `{mode, slot}`; `slot` is the `0x0406` id. Buds 4: 0 Balanced, 1 Clear Vocals, 2 Bass. Nord Buds 2r: 0, 1 Bold, 2. Types 1-4 are named differently where `eqKind` is `2` or the model has `eqAltNames`. 41 of 143 models have none.
 - Firmware-gated lists drop entries whose `minFirmware` is above the buds' firmware `[VENDOR]` (the lower non-zero of left and right, `138` on Buds 4, unreadable = 0). Use `eqPresetsCompat`, else `eqPresetsByFirmware`, else `eqPresets`. Stable sort by `order` (0 if absent).
-- realme models `[VENDOR]`: four built-ins. `0x0406` ids: 0 Pure Raw, 1 Deep Bass, 2 Pure Voice, 3 Pure Bass. 28 realme models have them, not in HeyMelody's list. `models.json` gives them our own types 101-104, `eqKind` 1. T110 and T01 have three other presets with unknown ids: no EQ until a capture.
+- realme models `[VENDOR]`: four built-ins. `0x0406` ids: 0 Nature Balance, 1 Bass Boost, 2 Clear Vocals, 3 Clear Bass (realme Link 5.8.811 names). 28 realme models have them, not in HeyMelody's list. `models.json` gives them our own types 101-104, `eqKind` 1. T110 and T01 have three other presets with unknown ids: no EQ until a capture.
 - A model shows custom presets with `customEq` and `0x0418` in the bitmap `[VENDOR]`, and BassWave with `bassEngine` and `0x041B`. An EQ row shows where `eqKind` is 1-4 or custom presets exist. New presets use the model's `customEqBands` (10 bands `31 62 125 250 500 1k 2k 4k 8k 16k` on 10 models), else 6 bands `62 250 1k 4k 8k 16k`. `customEqLimit` caps presets (default 3). Reads go out only where the bitmap lists them.
 
 Per-model preset lists are in section 21.6.
@@ -967,7 +968,7 @@ Per-model preset lists are in section 21.6.
 | Head gesture | `0x0134` → `00 <type>`, push `F5` | `0x0431 <type>` | `00` nod answers and shake declines, `01` the reverse. Bitmap bit 66 `[VENDOR]` |
 | Spatial type | `0x012A` → `00 <type>`, push `0x0510 <type>` | `0x0422 <type>` | `0` off, `1` fixed, `2` head tracking (Buds Pro 2, Buds Pro 3, Enco X3). Bitmap bit 47. Wired, unverified `[VENDOR]` |
 | 3D audio source | — | `0x041E <source>` | `00` the buds render 3D audio, `01` the phone does. Bitmap bit 43, with `0xEF03`. HeyMelody sends only `01`; realme Link sends `00` on connect `[VENDOR]` |
-| Current codec | `0x0114` → `00 <codec>` | — | Buds 4 `00 08` = LHDC V5 `[CAPTURE]` |
+| Current codec | `0x0114` → `00 <codec>` | — | Buds 4 `00 08` = LHDC V5 `[CAPTURE]`. realme Buds T200 (no `0x0123`) answer `00 01` while the phone plays LDAC (report #205). QuickBuds trusts it only from buds that answer `0x0123` |
 | Codecs offered | `0x0123` → `00 <u16 LE mask>` | — | Bit k = codec k + 1. Buds 4 answers `00 46 01`, which decodes to AAC, LDAC and LHDC; the maker lists LHDC 5.0, AAC and SBC only. Trust the mask only on `hiRes` models `[CAPTURE]` |
 | Codec | — | `0x041A <codec> <hiRes> 00` | `hiRes` is set only with codec 3 or 8. The buds restart `[VENDOR]` |
 | Game sound type | `0x012B` → `00 <selected> <count> <types>` | `0x0423 <type> 01` | Type `0` off, `1` a Chinese game, `3` shooting games `[VENDOR]` |
@@ -1161,7 +1162,7 @@ Every rule in this section names the model id, the byte and the value. A topic s
 - Nord Buds 2r `062C14`: built-ins 0, 1 Bold, 2 `[VENDOR]`.
 - Types 1-4 are named differently where `eqKind` is `2` (or Enco R `063010` / Air2 `063410`) `[VENDOR]`.
 - 41 of 143 models have no built-in presets `[VENDOR]`.
-- realme: 28 models have four built-ins, not in HeyMelody's list. `0x0406` ids: 0 Pure Raw, 1 Deep Bass, 2 Pure Voice, 3 Pure Bass. `models.json` uses types 101-104, `eqKind` 1 `[VENDOR]`.
+- realme: 28 models have four built-ins, not in HeyMelody's list. `0x0406` ids: 0 Nature Balance, 1 Bass Boost, 2 Clear Vocals, 3 Clear Bass (realme Link 5.8.811 names). `models.json` uses types 101-104, `eqKind` 1 `[VENDOR]`.
 - realme T110 `062812` and T01 `064412`: three other presets with unknown ids. No EQ until a capture `[VENDOR]`.
 - Firmware gate: drop an entry whose `minFirmware` is above the buds' firmware (the lower non-zero of left and right; `138` on Buds 4; unreadable = 0). Use `eqPresetsCompat`, else `eqPresetsByFirmware`, else `eqPresets`. Stable sort by `order` (0 if absent) `[VENDOR]`.
 - 10 models use the 10-band custom EQ `[VENDOR]` `31 62 125 250 500 1k 2k 4k 8k 16k`. The others use 6 bands `62 250 1k 4k 8k 16k`. `customEqLimit` defaults to 3 `[VENDOR]`.

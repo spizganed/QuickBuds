@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Chiarezza HD</string>
     <string name="eq_pure_vocals">Voci pure</string>
     <string name="eq_thundering_bass">Bassi tonanti</string>
-    <string name="eq_pure_raw">Suono puro</string>
-    <string name="eq_deep_bass">Bassi profondi</string>
-    <string name="eq_pure_bass">Bassi puri</string>
+    <string name="eq_clear_bass">Bassi chiari</string>
     <string name="eq_dyn_featured">Dynaudio in evidenza</string>
     <string name="eq_galactic">Monologo galattico</string>
     <string name="eq_vibrant">Vivace</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Dai una stella su GitHub</string>
     <string name="support_later">Più tardi</string>
     <string name="support_never">Non chiedere più</string>
+    <string name="notif_buttons_title">Pulsanti della notifica</string>
+    <string name="notif_buttons_sub">Fino a 3 pulsanti nella notifica</string>
+    <string name="notif_buttons_hint">Scegli fino a 3 pulsanti. La notifica li mostra in questo ordine.</string>
+    <string name="setup_notif_title">La notifica</string>
+    <string name="setup_notif_body">Android richiede questa notifica mentre QuickBuds mantiene la connessione. Può mostrare la batteria, un chip nella barra di stato e fino a 3 pulsanti.</string>
+    <string name="setup_tiles_title">Riquadri Impostazioni rapide</string>
+    <string name="setup_tiles_body">Aggiungi i riquadri QuickBuds al pannello rapido. Un tocco cambia l’impostazione. Tieni premuto Controllo rumore per scegliere una modalità.</string>
+    <string name="setup_tiles_old">Scorri due volte verso il basso, tocca la matita e trascina i riquadri QuickBuds nel pannello.</string>
 </resources>

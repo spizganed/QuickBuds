@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Claridad de alta definición</string>
     <string name="eq_pure_vocals">Voz pura</string>
     <string name="eq_thundering_bass">Graves atronadores</string>
-    <string name="eq_pure_raw">Sonido puro</string>
-    <string name="eq_deep_bass">Graves profundos</string>
-    <string name="eq_pure_bass">Graves puros</string>
+    <string name="eq_clear_bass">Graves claros</string>
     <string name="eq_dyn_featured">Dynaudio destacado</string>
     <string name="eq_galactic">Monólogo galáctico</string>
     <string name="eq_vibrant">Vibrante</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Dar una estrella en GitHub</string>
     <string name="support_later">Más tarde</string>
     <string name="support_never">No volver a preguntar</string>
+    <string name="notif_buttons_title">Botones de la notificación</string>
+    <string name="notif_buttons_sub">Hasta 3 botones en la notificación</string>
+    <string name="notif_buttons_hint">Elige hasta 3 botones. La notificación los muestra en este orden.</string>
+    <string name="setup_notif_title">La notificación</string>
+    <string name="setup_notif_body">Android necesita esta notificación mientras QuickBuds mantiene la conexión. Puede mostrar la batería, un chip en la barra de estado y hasta 3 botones.</string>
+    <string name="setup_tiles_title">Mosaicos de Ajustes rápidos</string>
+    <string name="setup_tiles_body">Añade mosaicos de QuickBuds al panel rápido. Un toque cambia el ajuste. Mantén pulsado Control de ruido para elegir cualquier modo.</string>
+    <string name="setup_tiles_old">Desliza hacia abajo dos veces, toca el lápiz y arrastra los mosaicos de QuickBuds al panel.</string>
 </resources>

@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD स्पष्टता</string>
     <string name="eq_pure_vocals">शुद्ध स्वर</string>
     <string name="eq_thundering_bass">थंडरिंग बास</string>
-    <string name="eq_pure_raw">शुद्ध मूल</string>
-    <string name="eq_deep_bass">गहरा बेस</string>
-    <string name="eq_pure_bass">शुद्ध बेस</string>
+    <string name="eq_clear_bass">साफ़ बास</string>
     <string name="eq_dyn_featured">Dynaudio चुनिंदा</string>
     <string name="eq_galactic">गैलेक्टिक मोनोलॉग</string>
     <string name="eq_vibrant">जीवंत</string>
@@ -621,4 +619,12 @@
     <string name="support_github_action">GitHub पर स्टार दें</string>
     <string name="support_later">बाद में</string>
     <string name="support_never">फिर न पूछें</string>
+    <string name="notif_buttons_title">सूचना बटन</string>
+    <string name="notif_buttons_sub">सूचना में 3 बटन तक</string>
+    <string name="notif_buttons_hint">3 बटन तक चुनें। सूचना उन्हें इसी क्रम में दिखाती है।</string>
+    <string name="setup_notif_title">सूचना</string>
+    <string name="setup_notif_body">QuickBuds कनेक्शन बनाए रखता है तब Android को यह सूचना चाहिए। यह बैटरी, स्टेटस बार चिप और 3 बटन तक दिखा सकती है।</string>
+    <string name="setup_tiles_title">क्विक सेटिंग्स टाइल</string>
+    <string name="setup_tiles_body">क्विक पैनल में QuickBuds टाइल जोड़ें। एक टैप सेटिंग बदलता है। कोई भी मोड चुनने के लिए नॉइज़ कंट्रोल दबाकर रखें।</string>
+    <string name="setup_tiles_old">दो बार नीचे स्वाइप करें, पेंसिल पर टैप करें, फिर QuickBuds टाइल पैनल में खींचें।</string>
 </resources>

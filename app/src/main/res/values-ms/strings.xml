@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Kejelasan HD</string>
     <string name="eq_pure_vocals">Vokal tulen</string>
     <string name="eq_thundering_bass">Bes bergemuruh</string>
-    <string name="eq_pure_raw">Asli tulen</string>
-    <string name="eq_deep_bass">Bes dalam</string>
-    <string name="eq_pure_bass">Bes tulen</string>
+    <string name="eq_clear_bass">Bass Jelas</string>
     <string name="eq_dyn_featured">Pilihan Dynaudio</string>
     <string name="eq_galactic">Monolog galaksi</string>
     <string name="eq_vibrant">Bertenaga ceria</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Beri bintang di GitHub</string>
     <string name="support_later">Nanti</string>
     <string name="support_never">Jangan tanya lagi</string>
+    <string name="notif_buttons_title">Butang pemberitahuan</string>
+    <string name="notif_buttons_sub">Sehingga 3 butang dalam pemberitahuan</string>
+    <string name="notif_buttons_hint">Pilih sehingga 3 butang. Pemberitahuan menunjukkannya mengikut susunan ini.</string>
+    <string name="setup_notif_title">Pemberitahuan</string>
+    <string name="setup_notif_body">Android memerlukan pemberitahuan ini semasa QuickBuds mengekalkan sambungan. Ia boleh menunjukkan bateri, cip bar status dan sehingga 3 butang.</string>
+    <string name="setup_tiles_title">Jubin Tetapan Pantas</string>
+    <string name="setup_tiles_body">Tambah jubin QuickBuds pada panel pantas. Satu ketikan menukar tetapan. Tahan Kawalan bunyi untuk memilih mana-mana mod.</string>
+    <string name="setup_tiles_old">Leret ke bawah dua kali, ketik pensel, kemudian seret jubin QuickBuds ke panel.</string>
 </resources>

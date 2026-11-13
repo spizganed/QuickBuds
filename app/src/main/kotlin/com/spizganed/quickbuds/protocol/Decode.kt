@@ -29,7 +29,7 @@ object Decode {
         if (m.cmd == PUSH) return push(m)
         return when (m.cmd) {
             0x8100 -> Bitmap.parse(p)?.let { Msg.BitmapReply(it) }
-            0x8103 -> if (p.size == 4 && p[0].toInt() == 0) Msg.ProductId(u(p, 1) or (u(p, 2) shl 8) or (u(p, 3) shl 16)) else null
+            0x8103 -> if (p.size >= 4 && p[0].toInt() == 0) Msg.ProductId(u(p, 1) or (u(p, 2) shl 8) or (u(p, 3) shl 16)) else null
             0x8105 -> firmware(p)?.let { Msg.Firmware(it) }
             0x8200 -> if (p.size >= 2 && p[0].toInt() == 0 && p.size >= 2 + u(p, 1)) Msg.Offered(ints(p, 2).take(u(p, 1))) else null
             0x8205 -> Msg.Registered
@@ -51,6 +51,9 @@ object Decode {
             0x812C -> Commands.parseBassBands(p)?.let { Msg.BassBands(it) }
             0x0503 -> featurePush(p)?.let { Msg.FeaturePush(it) }
             0x0504 -> if (p.isNotEmpty()) Msg.EqCurrent(u(p, 0)) else null
+            // Pushes after a change (realme Buds T500 Pro capture): the custom list without a status byte, one band.
+            0x0506 -> EqCodec.parseList(byteArrayOf(0) + p)?.let { list -> Msg.EqCustom(list.map { preset(it) }) }
+            0x0508 -> if (p.size >= 4) Msg.BassBands(listOf(u(p, 3) to p[2].toInt())) else null
             0x8130 -> ok(p)?.firstOrNull()?.let { Msg.AlertVolume(it.toInt() and 0xFF) }
             0x8133 -> ok(p)?.takeIf { it.size >= 2 }?.let { Msg.TapLevel(u(it, 0), u(it, 1)) }
             0x812A -> ok(p)?.firstOrNull()?.let { Msg.Spatial(it.toInt() and 0xFF) }

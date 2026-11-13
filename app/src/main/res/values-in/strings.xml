@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Kejelasan HD</string>
     <string name="eq_pure_vocals">Vokal jernih</string>
     <string name="eq_thundering_bass">Bass yang menggelegar</string>
-    <string name="eq_pure_raw">Asli murni</string>
-    <string name="eq_deep_bass">Bass dalam</string>
-    <string name="eq_pure_bass">Bass murni</string>
+    <string name="eq_clear_bass">Bass Jernih</string>
     <string name="eq_dyn_featured">Dynaudio unggulan</string>
     <string name="eq_galactic">Monolog Galaksi</string>
     <string name="eq_vibrant">Cerah</string>
@@ -621,4 +619,12 @@
     <string name="support_github_action">Beri bintang di GitHub</string>
     <string name="support_later">Nanti</string>
     <string name="support_never">Jangan tanya lagi</string>
+    <string name="notif_buttons_title">Tombol notifikasi</string>
+    <string name="notif_buttons_sub">Hingga 3 tombol di notifikasi</string>
+    <string name="notif_buttons_hint">Pilih hingga 3 tombol. Notifikasi menampilkannya dalam urutan ini.</string>
+    <string name="setup_notif_title">Notifikasi</string>
+    <string name="setup_notif_body">Android memerlukan notifikasi ini selama QuickBuds menjaga koneksi. Notifikasi dapat menampilkan baterai, chip di bilah status, dan hingga 3 tombol.</string>
+    <string name="setup_tiles_title">Ubin Setelan Cepat</string>
+    <string name="setup_tiles_body">Tambahkan ubin QuickBuds ke panel cepat. Satu ketukan mengubah setelan. Tahan Kontrol bising untuk memilih mode apa pun.</string>
+    <string name="setup_tiles_old">Geser ke bawah dua kali, ketuk pensil, lalu seret ubin QuickBuds ke panel.</string>
 </resources>

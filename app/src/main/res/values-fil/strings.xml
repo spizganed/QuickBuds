@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD na linaw</string>
     <string name="eq_pure_vocals">Purong boses</string>
     <string name="eq_thundering_bass">Dumadagundong na bass</string>
-    <string name="eq_pure_raw">Purong orihinal</string>
-    <string name="eq_deep_bass">Malalim na bass</string>
-    <string name="eq_pure_bass">Purong bass</string>
+    <string name="eq_clear_bass">Malinaw na Bass</string>
     <string name="eq_dyn_featured">Dynaudio featured</string>
     <string name="eq_galactic">Monologo ng kalawakan</string>
     <string name="eq_vibrant">Masigla</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Mag-star sa GitHub</string>
     <string name="support_later">Mamaya</string>
     <string name="support_never">Huwag nang magtanong</string>
+    <string name="notif_buttons_title">Mga button sa notification</string>
+    <string name="notif_buttons_sub">Hanggang 3 button sa notification</string>
+    <string name="notif_buttons_hint">Pumili ng hanggang 3 button. Ipinapakita ng notification ang mga ito sa ganitong ayos.</string>
+    <string name="setup_notif_title">Ang notification</string>
+    <string name="setup_notif_body">Kailangan ng Android ang notification na ito habang pinapanatili ng QuickBuds ang koneksyon. Maaari itong magpakita ng baterya, chip sa status bar at hanggang 3 button.</string>
+    <string name="setup_tiles_title">Mga tile ng Quick Settings</string>
+    <string name="setup_tiles_body">Magdagdag ng mga tile ng QuickBuds sa quick panel. Binabago ng isang tap ang setting. Pindutin nang matagal ang Noise control para pumili ng mode.</string>
+    <string name="setup_tiles_old">Mag-swipe pababa nang dalawang beses, i-tap ang lapis, at i-drag ang mga tile ng QuickBuds sa panel.</string>
 </resources>

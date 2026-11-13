@@ -42,4 +42,14 @@ class FastPairAdvertTest {
         assertNull(FastPairAdvert.google(bytes(0x75, 0x41, 0x0D)))
         assertNull(FastPairAdvert.google(bytes(0x00, 0x40, 1, 2, 3, 4, 0x11, 0xAB)))
     }
+
+    @Test fun matchLinkPicksTheSenderWithTheLinkLevels() {
+        // Buds 4 log 2026-11-13: three senders, the link gives L 90 R 90.
+        val own = FastPairAdvert.Battery(null, 90, 90, 100, false)
+        val others = listOf(FastPairAdvert.Battery(null, null, 99, 97, false), FastPairAdvert.Battery(null, 100, 90, 80, false))
+        assertEquals(own, FastPairAdvert.matchLink(others + own, 90, 90))
+        assertEquals(own, FastPairAdvert.matchLink(others + own, 90, null))
+        assertNull(FastPairAdvert.matchLink(others + own, null, 90))  // two senders have R 90
+        assertNull(FastPairAdvert.matchLink(others + own, null, null))
+    }
 }

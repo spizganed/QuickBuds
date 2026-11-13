@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD স্পষ্টতা</string>
     <string name="eq_pure_vocals">বিশুদ্ধ কণ্ঠ</string>
     <string name="eq_thundering_bass">গর্জনশীল বেস</string>
-    <string name="eq_pure_raw">বিশুদ্ধ মূল</string>
-    <string name="eq_deep_bass">গভীর বেস</string>
-    <string name="eq_pure_bass">বিশুদ্ধ বেস</string>
+    <string name="eq_clear_bass">স্পষ্ট বেস</string>
     <string name="eq_dyn_featured">Dynaudio বিশেষ</string>
     <string name="eq_galactic">ছায়াপথের স্বগতোক্তি</string>
     <string name="eq_vibrant">প্রাণবন্ত</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">GitHub-এ স্টার দিন</string>
     <string name="support_later">পরে</string>
     <string name="support_never">আর জিজ্ঞাসা করবেন না</string>
+    <string name="notif_buttons_title">নোটিফিকেশন বোতাম</string>
+    <string name="notif_buttons_sub">নোটিফিকেশনে সর্বোচ্চ ৩টি বোতাম</string>
+    <string name="notif_buttons_hint">সর্বোচ্চ ৩টি বোতাম বেছে নিন। নোটিফিকেশন এই ক্রমে দেখায়।</string>
+    <string name="setup_notif_title">নোটিফিকেশন</string>
+    <string name="setup_notif_body">QuickBuds সংযোগ ধরে রাখার সময় Android এই নোটিফিকেশন চায়। এটি ব্যাটারি, স্ট্যাটাস বারের চিপ এবং সর্বোচ্চ ৩টি বোতাম দেখাতে পারে।</string>
+    <string name="setup_tiles_title">দ্রুত সেটিংস টাইল</string>
+    <string name="setup_tiles_body">দ্রুত প্যানেলে QuickBuds টাইল যোগ করুন। একটি ট্যাপ সেটিং বদলায়। যেকোনো মোড বেছে নিতে নয়েজ কন্ট্রোল চেপে ধরুন।</string>
+    <string name="setup_tiles_old">দুবার নিচে সোয়াইপ করুন, পেন্সিলে ট্যাপ করুন, তারপর QuickBuds টাইল প্যানেলে টেনে আনুন।</string>
 </resources>

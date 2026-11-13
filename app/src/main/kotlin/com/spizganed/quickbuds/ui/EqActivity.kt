@@ -141,10 +141,10 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
                 40 -> R.string.eq_dyn_vocal
                 41 -> R.string.eq_clear_crisp
                 // realme Link's four presets; HeyMelody has none, so the types are ours (PROTOCOL.md §17).
-                101 -> R.string.eq_pure_raw
-                102 -> R.string.eq_deep_bass
-                103 -> R.string.eq_pure_vocals
-                104 -> R.string.eq_pure_bass
+                101 -> R.string.eq_nature_balance
+                102 -> R.string.eq_bass_boost
+                103 -> R.string.eq_clear_vocals
+                104 -> R.string.eq_clear_bass
                 // realme Buds T01 (report 25): 0x0406 ids 0, 1, 2 are Bass Boost+, Balanced, Bright.
                 105 -> R.string.eq_bass_boost_plus
                 106 -> R.string.eq_bright

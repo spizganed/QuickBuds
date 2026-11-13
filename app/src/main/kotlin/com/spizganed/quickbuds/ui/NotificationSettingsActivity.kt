@@ -9,7 +9,7 @@ import com.spizganed.quickbuds.bluetooth.BudsService
 
 /**
  * Settings › Notifications: the background service (its notification keeps the link), the battery notification,
- * the Android 16 status chip and the lock. Same layout as Settings: title, then one card.
+ * the Android 16 status chip, the lock and the notification's buttons. Same layout as Settings: title, then one card.
  */
 class NotificationSettingsActivity : Activity() {
 
@@ -25,6 +25,11 @@ class NotificationSettingsActivity : Activity() {
             backgroundRow(prefs),
             toggle(R.string.settings_full_notif_title, R.string.settings_full_notif_sub, BudsService.PREF_FULL_NOTIFICATION, true),
             toggle(R.string.settings_lock_notif_title, R.string.settings_lock_notif_sub, BudsService.PREF_LOCK_NOTIFICATION, false),
+            SettingRowFactory.build(this, R.drawable.ic_mode_transparency, R.string.notif_buttons_title, R.string.notif_buttons_sub,
+                SettingRowFactory.buildChevron(this)) {
+                startActivity(android.content.Intent(this, com.spizganed.quickbuds.widget.WidgetSetupActivity::class.java)
+                    .putExtra(com.spizganed.quickbuds.widget.WidgetSetupActivity.EXTRA_NOTIFICATION, true))
+            },
         )
         // The chip is an Android 16 live update: older versions do not get the row.
         if (android.os.Build.VERSION.SDK_INT >= 36)

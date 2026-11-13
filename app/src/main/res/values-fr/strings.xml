@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Clarté HD</string>
     <string name="eq_pure_vocals">Voix pures</string>
     <string name="eq_thundering_bass">Basses tonitruantes</string>
-    <string name="eq_pure_raw">Son pur</string>
-    <string name="eq_deep_bass">Basses profondes</string>
-    <string name="eq_pure_bass">Basses pures</string>
+    <string name="eq_clear_bass">Basses claires</string>
     <string name="eq_dyn_featured">Dynaudio en vedette</string>
     <string name="eq_galactic">Monologue galactique</string>
     <string name="eq_vibrant">Vibrant</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Mettre une étoile sur GitHub</string>
     <string name="support_later">Plus tard</string>
     <string name="support_never">Ne plus demander</string>
+    <string name="notif_buttons_title">Boutons de la notification</string>
+    <string name="notif_buttons_sub">Jusqu’à 3 boutons dans la notification</string>
+    <string name="notif_buttons_hint">Choisissez jusqu’à 3 boutons. La notification les affiche dans cet ordre.</string>
+    <string name="setup_notif_title">La notification</string>
+    <string name="setup_notif_body">Android exige cette notification tant que QuickBuds garde la connexion. Elle peut afficher la batterie, une puce dans la barre d’état et jusqu’à 3 boutons.</string>
+    <string name="setup_tiles_title">Vignettes des réglages rapides</string>
+    <string name="setup_tiles_body">Ajoutez les vignettes QuickBuds au panneau rapide. Un appui change le réglage. Maintenez Contrôle du bruit pour choisir un mode.</string>
+    <string name="setup_tiles_old">Balayez deux fois vers le bas, touchez le crayon, puis faites glisser les vignettes QuickBuds dans le panneau.</string>
 </resources>

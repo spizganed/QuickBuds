@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">ความคมชัดระดับ HD</string>
     <string name="eq_pure_vocals">เสียงร้องที่ชัดเจน</string>
     <string name="eq_thundering_bass">เสียงเบสที่ดังกึกก้อง</string>
-    <string name="eq_pure_raw">เสียงดั้งเดิมบริสุทธิ์</string>
-    <string name="eq_deep_bass">เบสลึก</string>
-    <string name="eq_pure_bass">เบสบริสุทธิ์</string>
+    <string name="eq_clear_bass">เสียงเบสชัด</string>
     <string name="eq_dyn_featured">ฟีเจอร์ของ Dynaudio</string>
     <string name="eq_galactic">Galactic Monologue</string>
     <string name="eq_vibrant">มีชีวิตชีวา</string>
@@ -621,4 +619,12 @@
     <string name="support_github_action">ให้ดาวบน GitHub</string>
     <string name="support_later">ไว้ทีหลัง</string>
     <string name="support_never">ไม่ต้องถามอีก</string>
+    <string name="notif_buttons_title">ปุ่มในการแจ้งเตือน</string>
+    <string name="notif_buttons_sub">ปุ่มในการแจ้งเตือนสูงสุด 3 ปุ่ม</string>
+    <string name="notif_buttons_hint">เลือกปุ่มได้สูงสุด 3 ปุ่ม การแจ้งเตือนจะแสดงตามลำดับนี้</string>
+    <string name="setup_notif_title">การแจ้งเตือน</string>
+    <string name="setup_notif_body">Android ต้องใช้การแจ้งเตือนนี้ขณะที่ QuickBuds รักษาการเชื่อมต่อ แสดงแบตเตอรี่ ชิปในแถบสถานะ และปุ่มได้สูงสุด 3 ปุ่ม</string>
+    <string name="setup_tiles_title">ไทล์การตั้งค่าด่วน</string>
+    <string name="setup_tiles_body">เพิ่มไทล์ QuickBuds ในแผงด่วน แตะเพื่อสลับการตั้งค่า กดค้างที่การควบคุมเสียงรบกวนเพื่อเลือกโหมด</string>
+    <string name="setup_tiles_old">ปัดลงสองครั้ง แตะดินสอ แล้วลากไทล์ QuickBuds ไปที่แผง</string>
 </resources>

@@ -205,9 +205,7 @@
     <string name="eq_hd_clarity">HD clarity</string>
     <string name="eq_pure_vocals">Pure vocals</string>
     <string name="eq_thundering_bass">Thundering bass</string>
-    <string name="eq_pure_raw">Pure raw</string>
-    <string name="eq_deep_bass">Deep bass</string>
-    <string name="eq_pure_bass">Pure bass</string>
+    <string name="eq_clear_bass">Clear Bass</string>
     <string name="eq_dyn_featured">Dynaudio featured</string>
     <string name="eq_galactic">Galactic Monologue</string>
     <string name="eq_vibrant">Vibrant</string>
@@ -709,4 +707,12 @@
     <string name="support_github_action">Star on GitHub</string>
     <string name="support_later">Later</string>
     <string name="support_never">Do not ask again</string>
+    <string name="notif_buttons_title">Notification buttons</string>
+    <string name="notif_buttons_sub">Up to 3 buttons in the notification</string>
+    <string name="notif_buttons_hint">Pick up to 3 buttons. The notification shows them in this order.</string>
+    <string name="setup_notif_title">The notification</string>
+    <string name="setup_notif_body">Android needs this notification while QuickBuds keeps the connection. It can show the battery, a status bar chip and up to 3 buttons.</string>
+    <string name="setup_tiles_title">Quick Settings tiles</string>
+    <string name="setup_tiles_body">Add QuickBuds tiles to the quick panel. A tap switches the setting. Hold Noise control to pick any mode.</string>
+    <string name="setup_tiles_old">Swipe down twice, tap the pencil, then drag the QuickBuds tiles into the panel.</string>
 </resources>

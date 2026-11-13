@@ -242,7 +242,7 @@ pub fn decode(m: &Message) -> Option<Inbound> {
     // A write reply or a status-led reply starts with a status byte; a non-zero one carries no data.
     Some(match m.cmd {
         0x8100 => Inbound::Bitmap(Bitmap::parse(p)?),
-        0x8103 => match p { [0, a, b, c] => Inbound::ProductId(u32::from_le_bytes([*a, *b, *c, 0])), _ => return None },
+        0x8103 => match p { [0, a, b, c, ..] => Inbound::ProductId(u32::from_le_bytes([*a, *b, *c, 0])), _ => return None },
         0x8105 => Inbound::Firmware(firmware(p)?),
         0x8200 => match p { [0, n, codes @ ..] => Inbound::Offered(codes.get(..*n as usize)?.to_vec()), _ => return None },
         0x8205 => Inbound::Registered,
@@ -268,6 +268,9 @@ pub fn decode(m: &Message) -> Option<Inbound> {
         0x812C => Inbound::BassBands(bass_bands(ok(p)?)?),
         0x0503 => Inbound::FeaturePush(feature_push(p)?),
         0x0504 => Inbound::EqCurrent(*p.first()?),
+        // Pushes after a change (realme Buds T500 Pro capture): the custom list without a status byte, one band.
+        0x0506 => Inbound::EqCustom(presets(p)?),
+        0x0508 => match p { [_, _, level, band, ..] => Inbound::BassBands(vec![(*band, *level as i8)]), _ => return None },
         0x8130 => Inbound::AlertVolume(*ok(p)?.first()?),
         0x8133 => match ok(p)? { [level, default, ..] => Inbound::TapLevel { level: *level, default: Some(*default) }, _ => return None },
         0x812A => Inbound::Spatial(*ok(p)?.first()?),

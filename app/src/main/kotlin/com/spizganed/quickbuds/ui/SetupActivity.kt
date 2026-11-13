@@ -45,12 +45,13 @@ internal inline fun attemptStart(start: () -> Unit): SecurityException? =
     try { start(); null } catch (e: SecurityException) { e }
 
 /**
- * First-run setup, once: welcome, look, permissions, the earbuds, the background service, widgets, feedback, known issues, privacy, done.
+ * First-run setup, once: welcome, look, permissions, the earbuds, the background service, the notification, widgets,
+ * Quick Settings tiles, feedback, known issues, privacy, done.
  * Every choice stays in Settings. The crash report and the model test keep their own prompts (they depend on what just happened).
  */
 class SetupActivity : Activity() {
 
-    private val total = 10
+    private val total = 12
     private var page = 0
     private lateinit var body: LinearLayout
     private lateinit var back: TextView
@@ -169,7 +170,9 @@ class SetupActivity : Activity() {
             PERMISSIONS -> permissions()
             EARBUDS -> earbuds()
             BACKGROUND -> background()
+            NOTIFICATION -> notification()
             WIDGETS -> widgets()
+            TILES -> tiles()
             FEEDBACK -> feedback()
             ISSUES -> issues()
             PRIVACY -> privacy()
@@ -436,7 +439,58 @@ class SetupActivity : Activity() {
         body.addView(SettingRowFactory.card(this).apply {
             addView(row(R.string.widget_name, AncWidgetProvider::class.java))
             addView(row(R.string.widget_pages_name, BatteryWidgetProvider::class.java))
+            addView(row(R.string.widget_battery_name, com.spizganed.quickbuds.widget.BatteryOnlyWidgetProvider::class.java))
+            addView(row(R.string.widget_strip_name, com.spizganed.quickbuds.widget.BatteryStripWidgetProvider::class.java))
+            addView(row(R.string.widget_controls_name, com.spizganed.quickbuds.widget.ControlsWidgetProvider::class.java))
+            addView(row(R.string.widget_cycle_name, com.spizganed.quickbuds.widget.NoiseCycleWidgetProvider::class.java))
         })
+    }
+
+    /** The service notification: the battery, the Android 16 status chip, the lock and up to 3 buttons. Same rows as Settings › Notifications. */
+    private fun notification() {
+        heading(R.string.setup_notif_title, R.string.setup_notif_body)
+        body.addView(SettingRowFactory.card(this).apply {
+            addView(switchRow(R.drawable.ic_battery, R.string.settings_full_notif_title, R.string.settings_full_notif_sub, BudsService.PREF_FULL_NOTIFICATION, true))
+            if (Build.VERSION.SDK_INT >= 36)
+                addView(switchRow(R.drawable.ic_battery, R.string.settings_live_chip_title, R.string.settings_live_chip_sub, BudsService.PREF_LIVE_CHIP, false))
+            addView(switchRow(R.drawable.ic_battery, R.string.settings_lock_notif_title, R.string.settings_lock_notif_sub, BudsService.PREF_LOCK_NOTIFICATION, false))
+            addView(SettingRowFactory.build(this@SetupActivity, R.drawable.ic_mode_transparency, R.string.notif_buttons_title, R.string.notif_buttons_sub,
+                SettingRowFactory.buildChevron(this@SetupActivity)) {
+                startActivity(Intent(this@SetupActivity, com.spizganed.quickbuds.widget.WidgetSetupActivity::class.java)
+                    .putExtra(com.spizganed.quickbuds.widget.WidgetSetupActivity.EXTRA_NOTIFICATION, true))
+            })
+        })
+    }
+
+    /**
+     * The Quick Settings tiles. Android 13+ adds one with a system prompt ("Add"); older versions only through
+     * the panel's edit mode, which the text explains.
+     */
+    private fun tiles() {
+        heading(R.string.setup_tiles_title, R.string.setup_tiles_body)
+        val canAdd = Build.VERSION.SDK_INT >= 33
+        if (!canAdd) body.addView(TextView(this).apply {
+            setText(R.string.setup_tiles_old)
+            textSize = 14f
+            setTextColor(p.textSecondary)
+            setPadding(dp(4f), 0, dp(4f), dp(12f))
+        })
+        fun row(icon: Int, name: Int, service: Class<*>) = SettingRowFactory.build(this, icon, name, 0, null,
+            value = if (canAdd) pillButton(R.string.setup_widgets_add) { addTile(service, name, icon) } else null)
+        body.addView(SettingRowFactory.card(this).apply {
+            addView(row(R.drawable.ic_mode_anc_medium, R.string.anc_section, com.spizganed.quickbuds.widget.NoiseTileService::class.java))
+            addView(row(R.drawable.ic_bolt, R.string.row_game_title, com.spizganed.quickbuds.widget.LowLatencyTileService::class.java))
+            addView(row(R.drawable.ic_anc, R.string.row_wind_noise_title, com.spizganed.quickbuds.widget.WindTileService::class.java))
+            addView(row(R.drawable.ic_devices, R.string.row_dual_title, com.spizganed.quickbuds.widget.DualTileService::class.java))
+            addView(row(R.drawable.ic_stat_buds, R.string.widget_open_app, com.spizganed.quickbuds.widget.OpenAppTileService::class.java))
+        })
+    }
+
+    @android.annotation.TargetApi(33)
+    private fun addTile(service: Class<*>, name: Int, icon: Int) {
+        getSystemService(android.app.StatusBarManager::class.java).requestAddTileService(
+            ComponentName(this, service), getString(name), android.graphics.drawable.Icon.createWithResource(this, icon),
+            mainExecutor) { }
     }
 
     /** What the two feedback tools in Settings do. Nothing is sent from here. */
@@ -484,10 +538,12 @@ class SetupActivity : Activity() {
         private const val PERMISSIONS = 2
         private const val EARBUDS = 3
         private const val BACKGROUND = 4
-        private const val WIDGETS = 5
-        private const val FEEDBACK = 6
-        private const val ISSUES = 7
-        private const val PRIVACY = 8
+        private const val NOTIFICATION = 5
+        private const val WIDGETS = 6
+        private const val TILES = 7
+        private const val FEEDBACK = 8
+        private const val ISSUES = 9
+        private const val PRIVACY = 10
         fun done(a: Activity) = a.getSharedPreferences(ThemeRes.PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_DONE, false)
 
         /**

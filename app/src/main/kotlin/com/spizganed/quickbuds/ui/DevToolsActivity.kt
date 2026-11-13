@@ -229,7 +229,7 @@ class DevToolsActivity : Activity() {
     private fun showInLog(message: String) {
         logText.append("\n[dev] $message\n")
         lastVersion = PacketLogger.version
-        scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
+        scroll.post { scroll.scrollTo(0, logText.height) }
     }
 
     private fun refreshLog() {
@@ -248,13 +248,16 @@ class DevToolsActivity : Activity() {
                 if (gen != generation || isDestroyed) return@post
                 // Follow only if the user is already at the bottom.
                 val wasAtBottom = !scroll.canScrollVertically(1)
+                val oldY = scroll.scrollY
                 // Some devices reject the params with IllegalArgumentException (report #92). Set the text without them.
                 try {
                     TextViewCompat.setPrecomputedText(logText, text)
                 } catch (e: IllegalArgumentException) {
                     logText.text = text
                 }
-                if (wasAtBottom) scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
+                // A selectable TextView keeps its cursor at 0, and new text or focus brings it into view: a jump
+                // to the top. Was: fullScroll (moves focus) and only for a reader at the bottom. Is: scrollTo, every reader.
+                scroll.post { if (wasAtBottom) scroll.scrollTo(0, logText.height) else scroll.scrollTo(0, oldY) }
             }
         }
     }

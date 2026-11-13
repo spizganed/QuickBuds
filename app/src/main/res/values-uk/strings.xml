@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Чіткість HD</string>
     <string name="eq_pure_vocals">Чистий вокал</string>
     <string name="eq_thundering_bass">Громовий бас</string>
-    <string name="eq_pure_raw">Чистий звук</string>
-    <string name="eq_deep_bass">Глибокий бас</string>
-    <string name="eq_pure_bass">Чистий бас</string>
+    <string name="eq_clear_bass">Чіткий бас</string>
     <string name="eq_dyn_featured">Рекомендоване налаштування Dynaudio</string>
     <string name="eq_galactic">Галактичний монолог</string>
     <string name="eq_vibrant">Яскравий</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Поставити зірку на GitHub</string>
     <string name="support_later">Пізніше</string>
     <string name="support_never">Більше не питати</string>
+    <string name="notif_buttons_title">Кнопки сповіщення</string>
+    <string name="notif_buttons_sub">До 3 кнопок у сповіщенні</string>
+    <string name="notif_buttons_hint">Виберіть до 3 кнопок. Сповіщення показує їх у цьому порядку.</string>
+    <string name="setup_notif_title">Сповіщення</string>
+    <string name="setup_notif_body">Android вимагає це сповіщення, поки QuickBuds тримає з’єднання. Воно може показувати заряд, чип у рядку стану й до 3 кнопок.</string>
+    <string name="setup_tiles_title">Плитки швидких налаштувань</string>
+    <string name="setup_tiles_body">Додайте плитки QuickBuds на швидку панель. Дотик перемикає налаштування. Утримуйте «Шумозаглушення», щоб вибрати режим.</string>
+    <string name="setup_tiles_old">Проведіть вниз двічі, торкніться олівця й перетягніть плитки QuickBuds на панель.</string>
 </resources>

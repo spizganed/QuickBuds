@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD-helderheid</string>
     <string name="eq_pure_vocals">Heldere zang</string>
     <string name="eq_thundering_bass">Heavy bass</string>
-    <string name="eq_pure_raw">Puur origineel</string>
-    <string name="eq_deep_bass">Diepe bas</string>
-    <string name="eq_pure_bass">Pure bas</string>
+    <string name="eq_clear_bass">Heldere lage tonen</string>
     <string name="eq_dyn_featured">Dynaudio-modus</string>
     <string name="eq_galactic">Galactic Monologue</string>
     <string name="eq_vibrant">Levendig</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Geef een ster op GitHub</string>
     <string name="support_later">Later</string>
     <string name="support_never">Niet meer vragen</string>
+    <string name="notif_buttons_title">Meldingsknoppen</string>
+    <string name="notif_buttons_sub">Tot 3 knoppen in de melding</string>
+    <string name="notif_buttons_hint">Kies tot 3 knoppen. De melding toont ze in deze volgorde.</string>
+    <string name="setup_notif_title">De melding</string>
+    <string name="setup_notif_body">Android heeft deze melding nodig zolang QuickBuds de verbinding houdt. Ze kan de batterij, een chip in de statusbalk en tot 3 knoppen tonen.</string>
+    <string name="setup_tiles_title">Snelle-instellingentegels</string>
+    <string name="setup_tiles_body">Voeg QuickBuds-tegels toe aan het snelle paneel. Een tik schakelt de instelling. Houd Ruisregeling ingedrukt om een modus te kiezen.</string>
+    <string name="setup_tiles_old">Veeg twee keer omlaag, tik op het potlood en sleep de QuickBuds-tegels naar het paneel.</string>
 </resources>

@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Claritate HD</string>
     <string name="eq_pure_vocals">Voci pure</string>
     <string name="eq_thundering_bass">Bas tunător</string>
-    <string name="eq_pure_raw">Sunet pur</string>
-    <string name="eq_deep_bass">Bas profund</string>
-    <string name="eq_pure_bass">Bas pur</string>
+    <string name="eq_clear_bass">Bas clar</string>
     <string name="eq_dyn_featured">Dynaudio recomandat</string>
     <string name="eq_galactic">Monolog galactic</string>
     <string name="eq_vibrant">Vibrant</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Dă o stea pe GitHub</string>
     <string name="support_later">Mai târziu</string>
     <string name="support_never">Nu mai întreba</string>
+    <string name="notif_buttons_title">Butoanele notificării</string>
+    <string name="notif_buttons_sub">Până la 3 butoane în notificare</string>
+    <string name="notif_buttons_hint">Alege până la 3 butoane. Notificarea le arată în această ordine.</string>
+    <string name="setup_notif_title">Notificarea</string>
+    <string name="setup_notif_body">Android cere această notificare cât timp QuickBuds ține conexiunea. Poate arăta bateria, un cip în bara de stare și până la 3 butoane.</string>
+    <string name="setup_tiles_title">Plăci Setări rapide</string>
+    <string name="setup_tiles_body">Adaugă plăcile QuickBuds în panoul rapid. O atingere schimbă setarea. Ține apăsat Controlul zgomotului pentru a alege un mod.</string>
+    <string name="setup_tiles_old">Glisează în jos de două ori, atinge creionul, apoi trage plăcile QuickBuds în panou.</string>
 </resources>

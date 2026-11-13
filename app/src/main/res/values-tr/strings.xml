@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD netliği</string>
     <string name="eq_pure_vocals">Saf vokaller</string>
     <string name="eq_thundering_bass">Gür bas ses</string>
-    <string name="eq_pure_raw">Saf orijinal</string>
-    <string name="eq_deep_bass">Derin bas</string>
-    <string name="eq_pure_bass">Saf bas</string>
+    <string name="eq_clear_bass">Net Bas</string>
     <string name="eq_dyn_featured">Dynaudio özellikli</string>
     <string name="eq_galactic">Galaktik monolog</string>
     <string name="eq_vibrant">Enerjik</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">GitHub\'da yıldız ver</string>
     <string name="support_later">Sonra</string>
     <string name="support_never">Bir daha sorma</string>
+    <string name="notif_buttons_title">Bildirim düğmeleri</string>
+    <string name="notif_buttons_sub">Bildirimde en fazla 3 düğme</string>
+    <string name="notif_buttons_hint">En fazla 3 düğme seçin. Bildirim bunları bu sırayla gösterir.</string>
+    <string name="setup_notif_title">Bildirim</string>
+    <string name="setup_notif_body">QuickBuds bağlantıyı korurken Android bu bildirimi ister. Pil, durum çubuğu çipi ve en fazla 3 düğme gösterebilir.</string>
+    <string name="setup_tiles_title">Hızlı Ayarlar kutucukları</string>
+    <string name="setup_tiles_body">QuickBuds kutucuklarını hızlı panele ekleyin. Bir dokunuş ayarı değiştirir. Bir mod seçmek için Gürültü kontrolüne basılı tutun.</string>
+    <string name="setup_tiles_old">İki kez aşağı kaydırın, kaleme dokunun ve QuickBuds kutucuklarını panele sürükleyin.</string>
 </resources>

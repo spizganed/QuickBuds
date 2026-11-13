@@ -17,14 +17,20 @@ import com.spizganed.quickbuds.ui.ThemeRes
  * A widget's setup screen: which buttons its controls page shows, up to [WidgetSettings.MAX_BUTTONS], in the
  * order of [WidgetSettings.BUTTONS]. Only the buttons the buds have are listed. Each switch saves at once and
  * repaints the widget. Opens when the widget is placed (optional from Android 12) and from its long-press menu.
+ * With [EXTRA_NOTIFICATION]: the service notification's buttons (Settings › Notifications), up to
+ * [WidgetSettings.MAX_NOTIFICATION_BUTTONS].
  */
 class WidgetSetupActivity : Activity() {
 
     private val switches = LinkedHashMap<String, Switch>()
 
+    /** The most buttons this screen lets the user pick. */
+    private var max = WidgetSettings.MAX_BUTTONS
+
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeRes.select(this)
         super.onCreate(savedInstanceState)
+        if (intent.getBooleanExtra(EXTRA_NOTIFICATION, false)) return notificationButtons()
         val id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
         if (id == AppWidgetManager.INVALID_APPWIDGET_ID) return finish()
         // OK from the start: Back keeps the widget, with the buttons picked so far.
@@ -55,16 +61,36 @@ class WidgetSetupActivity : Activity() {
             setContentView(ScrollView(this).apply { setBackgroundColor(p.background); addView(root) })
             return
         }
-        root.addView(SettingRowFactory.sectionLabel(this, R.string.widget_setup_title))
+        buttonList(root, R.string.widget_setup_title, R.string.widget_setup_hint, WidgetSettings.BUTTONS,
+            WidgetSettings.buttons(this, id), id) { WidgetSettings.setButtons(this, id, it); QuickBudsWidget.refreshAll(this) }
+    }
+
+    /** Settings › Notifications › Notification buttons. */
+    private fun notificationButtons() {
+        max = WidgetSettings.MAX_NOTIFICATION_BUTTONS
+        val root = SettingRowFactory.screen(this)
+        root.addView(SettingRowFactory.title(this, R.string.notif_buttons_title))
+        buttonList(root, 0, R.string.notif_buttons_hint, WidgetSettings.NOTIFICATION_BUTTONS,
+            WidgetSettings.notificationButtons(this), WidgetSettings.NOTIFICATION_ID) { WidgetSettings.setNotificationButtons(this, it) }
+    }
+
+    /**
+     * The button switches of [all] that the buds have, [stored] on, then the Noise cycle row when "cycle" is listed.
+     * [id] is the widget (or [WidgetSettings.NOTIFICATION_ID]) whose cycle list the row opens. [save] gets the keys in order.
+     */
+    private fun buttonList(root: android.widget.LinearLayout, label: Int, hint: Int, all: List<String>, stored: List<String>, id: Int,
+                           save: (List<String>) -> Unit) {
+        val p = ThemeRes.palette(this)
+        if (label != 0) root.addView(SettingRowFactory.sectionLabel(this, label))
         root.addView(TextView(this).apply {
-            setText(R.string.widget_setup_hint)
+            setText(hint)
             setTextColor(p.textSecondary)
             textSize = 13f
             setPadding(ThemeRes.dp(this@WidgetSetupActivity, 4f), 0, 0, ThemeRes.dp(this@WidgetSetupActivity, 12f))
         })
         val rows = Rows.of(this)
-        val keys = WidgetSettings.BUTTONS.filter { WidgetSettings.available(this, it, rows) }
-        val picked = WidgetSettings.buttons(this, id).filter { it in keys }.toMutableSet()
+        val keys = all.filter { WidgetSettings.available(this, it, rows) }
+        val picked = stored.filter { it in keys }.toMutableSet()
         val card = SettingRowFactory.card(this)
         for (key in keys) {
             val (icon, title) = ROWS.getValue(key)
@@ -72,8 +98,7 @@ class WidgetSetupActivity : Activity() {
             switches[key] = sw
             sw.setOnCheckedChangeListener { v, on ->
                 if (on) picked.add(key) else picked.remove(key)
-                WidgetSettings.setButtons(this, id, keys.filter { it in picked })
-                QuickBudsWidget.refreshAll(this)
+                save(keys.filter { it in picked })
                 Haptics.commit(v)
                 limit(picked.size)
             }
@@ -81,10 +106,11 @@ class WidgetSetupActivity : Activity() {
             card.addView(SettingRowFactory.build(this, icon, title, 0, sw) { if (sw.isEnabled) sw.performClick() })
         }
         root.addView(card)
-        // This widget's own Noise cycle modes.
+        // This widget's (or the notification's) own Noise cycle modes.
         if ("cycle" in keys) {
             root.addView(android.view.View(this), android.widget.LinearLayout.LayoutParams(1, ThemeRes.dp(this, 16f)))
-            val row = SettingRowFactory.build(this, R.drawable.ic_mode_transparency, R.string.widget_cycle, R.string.settings_cycle_sub,
+            val sub = if (id == WidgetSettings.NOTIFICATION_ID) 0 else R.string.settings_cycle_sub
+            val row = SettingRowFactory.build(this, R.drawable.ic_mode_transparency, R.string.widget_cycle, sub,
                 SettingRowFactory.buildChevron(this)) {
                 startActivity(Intent(this, NoiseCycleActivity::class.java).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id))
             }
@@ -99,10 +125,13 @@ class WidgetSetupActivity : Activity() {
 
     /** At the limit, only the picked switches can change. */
     private fun limit(count: Int) {
-        for (sw in switches.values) sw.isEnabled = sw.isChecked || count < WidgetSettings.MAX_BUTTONS
+        for (sw in switches.values) sw.isEnabled = sw.isChecked || count < max
     }
 
-    private companion object {
+    companion object {
+        /** Opens the notification's button list instead of a widget's. */
+        const val EXTRA_NOTIFICATION = "notification"
+
         /** Button key -> (icon, title). */
         val ROWS = mapOf(
             "anc" to (R.drawable.ic_mode_anc_medium to R.string.anc_section),
@@ -111,6 +140,7 @@ class WidgetSetupActivity : Activity() {
             "off" to (R.drawable.ic_mode_off to R.string.anc_seg_off),
             "cycle" to (R.drawable.ic_mode_transparency to R.string.widget_cycle),
             "ll" to (R.drawable.ic_low_latency to R.string.row_game_title),
+            "spatial" to (R.drawable.ic_spatial to R.string.row_spatial_title),
             "wind" to (R.drawable.ic_anc to R.string.row_wind_noise_title),
             "dual" to (R.drawable.ic_devices to R.string.row_dual_title),
             "app" to (R.drawable.ic_earbud to R.string.widget_open_app)

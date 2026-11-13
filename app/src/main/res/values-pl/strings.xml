@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Wyrazistość HD</string>
     <string name="eq_pure_vocals">Czysty głos</string>
     <string name="eq_thundering_bass">Dudniący bas</string>
-    <string name="eq_pure_raw">Czysty oryginał</string>
-    <string name="eq_deep_bass">Głęboki bas</string>
-    <string name="eq_pure_bass">Czysty bas</string>
+    <string name="eq_clear_bass">Czysty bas</string>
     <string name="eq_dyn_featured">Dynaudio: polecane</string>
     <string name="eq_galactic">Galaktyczny monolog</string>
     <string name="eq_vibrant">Wigor</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Daj gwiazdkę na GitHubie</string>
     <string name="support_later">Później</string>
     <string name="support_never">Nie pytaj ponownie</string>
+    <string name="notif_buttons_title">Przyciski powiadomienia</string>
+    <string name="notif_buttons_sub">Do 3 przycisków w powiadomieniu</string>
+    <string name="notif_buttons_hint">Wybierz do 3 przycisków. Powiadomienie pokazuje je w tej kolejności.</string>
+    <string name="setup_notif_title">Powiadomienie</string>
+    <string name="setup_notif_body">Android wymaga tego powiadomienia, gdy QuickBuds utrzymuje połączenie. Może pokazywać baterię, chip na pasku stanu i do 3 przycisków.</string>
+    <string name="setup_tiles_title">Kafelki Szybkich ustawień</string>
+    <string name="setup_tiles_body">Dodaj kafelki QuickBuds do szybkiego panelu. Dotknięcie przełącza ustawienie. Przytrzymaj Kontrolę szumów, aby wybrać tryb.</string>
+    <string name="setup_tiles_old">Przesuń dwa razy w dół, dotknij ołówka i przeciągnij kafelki QuickBuds na panel.</string>
 </resources>

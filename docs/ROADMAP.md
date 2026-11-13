@@ -52,7 +52,7 @@ The parked and unverified work. Finished work leaves this file. Protocol finding
 These work in code but no owner has confirmed them. They count as working until an issue says otherwise.
 
 - realme Link data (noise control, gestures, wind noise) on the realme models that are not confirmed.
-- The realme built-in EQ presets (Pure Raw, Deep Bass, Pure Voice, Pure Bass) on the realme models that are not confirmed.
+- The realme built-in EQ presets (Nature Balance, Bass Boost, Clear Vocals, Clear Bass) on the realme models that are not confirmed.
 - Personalized ANC, the dual-connection device manager and the preferred device.
 
 ## Decided against — do not suggest again

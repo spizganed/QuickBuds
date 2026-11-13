@@ -14,14 +14,16 @@ import com.spizganed.quickbuds.protocol.FastPairStream
 
 /**
  * One short BLE scan for the case level in the buds' advertisement ([FastPairAdvert]). It runs on [handler].
- * The OPPO packet must carry [productId]. The Fast Pair packet names no model, so it counts only when one
- * sender alone sent it in the whole scan. [onCase] gets the level once, or never.
+ * The OPPO packet must carry [productId]. The Fast Pair packet names no model, so it counts when one sender
+ * alone sent it in the whole scan, or when one sender alone has the link's left and right levels ([linkLevels]).
+ * [onCase] gets the level once, or never.
  */
 class AdvertCaseScan(
     private val adapter: BluetoothAdapter?,
     private val handler: Handler,
     private val productId: String?,
     private val log: (String) -> Unit,
+    private val linkLevels: () -> Pair<Int?, Int?>,
     private val onCase: (FastPairStream.Level) -> Unit,
 ) {
     private var done = false
@@ -69,12 +71,16 @@ class AdvertCaseScan(
         }
     }
 
-    /** At the end of the scan: the Fast Pair level, when one sender alone sent a case level. */
+    /** At the end of the scan: the Fast Pair level of the one sender, or of the one sender that matches the link. */
     private fun finish() {
         if (done) return
         val senders = google.values.filter { it.case != null }
         if (senders.size == 1) { deliver(FastPairStream.Level(senders[0].case, senders[0].caseCharging)); return }
-        if (senders.size > 1) log("BLE ADV: ${senders.size} Fast Pair senders, none used")
+        if (senders.size > 1) {
+            val (l, r) = linkLevels()
+            FastPairAdvert.matchLink(senders, l, r)?.let { log("BLE ADV: Fast Pair sender with L=$l R=$r"); deliver(FastPairStream.Level(it.case, it.caseCharging)); return }
+            log("BLE ADV: ${senders.size} Fast Pair senders, none used")
+        }
         stop()
     }
 

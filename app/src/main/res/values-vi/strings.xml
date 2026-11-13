@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">Độ rõ HD</string>
     <string name="eq_pure_vocals">Giọng hát thuần khiết</string>
     <string name="eq_thundering_bass">Bass uy lực</string>
-    <string name="eq_pure_raw">Nguyên bản thuần khiết</string>
-    <string name="eq_deep_bass">Bass sâu</string>
-    <string name="eq_pure_bass">Bass thuần khiết</string>
+    <string name="eq_clear_bass">Âm trầm rõ ràng</string>
     <string name="eq_dyn_featured">Dynaudio đặc biệt</string>
     <string name="eq_galactic">Độc thoại ngân hà</string>
     <string name="eq_vibrant">Sôi động</string>
@@ -621,4 +619,12 @@
     <string name="support_github_action">Gắn sao trên GitHub</string>
     <string name="support_later">Để sau</string>
     <string name="support_never">Không hỏi lại</string>
+    <string name="notif_buttons_title">Nút trong thông báo</string>
+    <string name="notif_buttons_sub">Tối đa 3 nút trong thông báo</string>
+    <string name="notif_buttons_hint">Chọn tối đa 3 nút. Thông báo hiển thị chúng theo thứ tự này.</string>
+    <string name="setup_notif_title">Thông báo</string>
+    <string name="setup_notif_body">Android cần thông báo này khi QuickBuds giữ kết nối. Thông báo có thể hiện pin, chip trên thanh trạng thái và tối đa 3 nút.</string>
+    <string name="setup_tiles_title">Ô Cài đặt nhanh</string>
+    <string name="setup_tiles_body">Thêm ô QuickBuds vào bảng nhanh. Chạm để chuyển cài đặt. Giữ Kiểm soát tiếng ồn để chọn chế độ bất kỳ.</string>
+    <string name="setup_tiles_old">Vuốt xuống hai lần, chạm vào bút chì, rồi kéo các ô QuickBuds vào bảng.</string>
 </resources>

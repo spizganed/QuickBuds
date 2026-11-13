@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD クラリティ</string>
     <string name="eq_pure_vocals">ピュアボーカル</string>
     <string name="eq_thundering_bass">サンダリングベース</string>
-    <string name="eq_pure_raw">ピュアロー</string>
-    <string name="eq_deep_bass">ディープベース</string>
-    <string name="eq_pure_bass">ピュアベース</string>
+    <string name="eq_clear_bass">はっきりとした低音</string>
     <string name="eq_dyn_featured">Dynaudio フィーチャード</string>
     <string name="eq_galactic">銀河のモノローグ</string>
     <string name="eq_vibrant">刺激的</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">GitHub でスターを付ける</string>
     <string name="support_later">後で</string>
     <string name="support_never">今後は表示しない</string>
+    <string name="notif_buttons_title">通知のボタン</string>
+    <string name="notif_buttons_sub">通知に最大3つのボタン</string>
+    <string name="notif_buttons_hint">ボタンを最大3つ選んでください。通知はこの順に表示します。</string>
+    <string name="setup_notif_title">通知</string>
+    <string name="setup_notif_body">QuickBuds が接続を保つ間、Android にはこの通知が必要です。バッテリー、ステータスバーのチップ、最大3つのボタンを表示できます。</string>
+    <string name="setup_tiles_title">クイック設定タイル</string>
+    <string name="setup_tiles_body">クイックパネルに QuickBuds のタイルを追加します。タップで設定を切り替えます。ノイズコントロールを長押しすると任意のモードを選べます。</string>
+    <string name="setup_tiles_old">2回下にスワイプし、鉛筆をタップして、QuickBuds のタイルをパネルにドラッグします。</string>
 </resources>

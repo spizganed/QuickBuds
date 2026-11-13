@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">HD tisztaság</string>
     <string name="eq_pure_vocals">Tiszta ének</string>
     <string name="eq_thundering_bass">Dörgő basszus</string>
-    <string name="eq_pure_raw">Tiszta eredeti</string>
-    <string name="eq_deep_bass">Mély basszus</string>
-    <string name="eq_pure_bass">Tiszta basszus</string>
+    <string name="eq_clear_bass">Tiszta basszus</string>
     <string name="eq_dyn_featured">Dynaudio ajánlata</string>
     <string name="eq_galactic">Galaktikus monológ</string>
     <string name="eq_vibrant">Élénk</string>
@@ -619,4 +617,12 @@
     <string name="support_github_action">Csillag a GitHubon</string>
     <string name="support_later">Később</string>
     <string name="support_never">Ne kérdezz újra</string>
+    <string name="notif_buttons_title">Értesítés gombjai</string>
+    <string name="notif_buttons_sub">Legfeljebb 3 gomb az értesítésben</string>
+    <string name="notif_buttons_hint">Válassz legfeljebb 3 gombot. Az értesítés ebben a sorrendben mutatja őket.</string>
+    <string name="setup_notif_title">Az értesítés</string>
+    <string name="setup_notif_body">Az Androidnak szüksége van erre az értesítésre, amíg a QuickBuds tartja a kapcsolatot. Mutathatja az akkut, egy chipet az állapotsorban és legfeljebb 3 gombot.</string>
+    <string name="setup_tiles_title">Gyorsbeállítás csempék</string>
+    <string name="setup_tiles_body">Add hozzá a QuickBuds csempéket a gyorspanelhez. Egy koppintás átkapcsolja a beállítást. Tartsd nyomva a Zajszabályzást bármely mód kiválasztásához.</string>
+    <string name="setup_tiles_old">Húzz le kétszer, koppints a ceruzára, majd húzd a QuickBuds csempéket a panelre.</string>
 </resources>

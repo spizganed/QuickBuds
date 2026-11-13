@@ -172,9 +172,7 @@
     <string name="eq_hd_clarity">高解析音質</string>
     <string name="eq_pure_vocals">純享人聲</string>
     <string name="eq_thundering_bass">澎湃低音</string>
-    <string name="eq_pure_raw">純淨原聲</string>
-    <string name="eq_deep_bass">深沉低音</string>
-    <string name="eq_pure_bass">純淨低音</string>
+    <string name="eq_clear_bass">純淨低音</string>
     <string name="eq_dyn_featured">丹拿特調</string>
     <string name="eq_galactic">星河獨白</string>
     <string name="eq_vibrant">活力動感</string>
@@ -621,4 +619,12 @@
     <string name="support_github_action">在 GitHub 上加星號</string>
     <string name="support_later">稍後再說</string>
     <string name="support_never">不再詢問</string>
+    <string name="notif_buttons_title">通知按鈕</string>
+    <string name="notif_buttons_sub">通知中最多 3 個按鈕</string>
+    <string name="notif_buttons_hint">最多選擇 3 個按鈕。通知會依此順序顯示。</string>
+    <string name="setup_notif_title">通知</string>
+    <string name="setup_notif_body">QuickBuds 保持連線時 Android 需要此通知。它可以顯示電量、狀態列膠囊和最多 3 個按鈕。</string>
+    <string name="setup_tiles_title">快速設定圖塊</string>
+    <string name="setup_tiles_body">將 QuickBuds 圖塊加入快速面板。輕觸即可切換設定。長按降噪控制可選擇任何模式。</string>
+    <string name="setup_tiles_old">下滑兩次，輕觸鉛筆圖示，然後將 QuickBuds 圖塊拖入面板。</string>
 </resources>
