@@ -576,6 +576,7 @@ The parsers ignore the message and clear nothing.
 - A part left out keeps its last level unless the "Hide old battery levels" setting is on.
 - The case, and a bud inside it, report only while the lid is open. With the lid closed, the query returns only the bud outside (`01 01 5A`) and the buds push nothing `[CAPTURE]`. The app does not show case charging, by decision.
 - Pushes come every 1-6 minutes on the buds' own clock, not tied to `0x0500` `[CAPTURE]`.
+- Android QuickBuds also sends `0x0106` every 5 min and at the lid-close wear push (issue #47). Some buds push no case change. No capture proves that the lid-close read lands before the link drops.
 
 **Wearing** — query `0x0109`, reply `0x8109`, push `02`. Payload: `<count> <part> <state>...`. A reply can put a status byte
 before the count. The receiver accepts both, at offset 0 and at offset 1 `[CAPTURE]`. Query replies and pushes both need at least one part.
