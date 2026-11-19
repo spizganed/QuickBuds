@@ -227,6 +227,7 @@ fn panel_corner(p: &WebviewWindow) -> (bool, bool) {
 /// The SNI host sends the click in logical pixels, as GDK counts them.
 #[cfg(target_os = "linux")]
 fn corner_at(_p: &WebviewWindow, x: f64, y: f64) -> Option<(bool, bool)> {
+    use gtk::gdk::prelude::MonitorExt;
     let g = gtk::gdk::Display::default()?.monitor_at_point(x as i32, y as i32)?.geometry();
     Some((x - (g.x() as f64) < g.width() as f64 / 2.0, y - (g.y() as f64) < g.height() as f64 / 2.0))
 }
