@@ -969,7 +969,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         private fun glyphTint(context: Context, p: Palette, slot: Int, status: Int, k: Float): Int {
             val nothing = WidgetSettings.nothingStyle(context)
             val live = if (nothing) nothingTint(p, slot == 1, status)
-                else if (p.glass) Palette.withAlpha(p.ink, if (slot == 1 || status == 3 || status == 7) 0.95f else if (status == 4 || status == 0) 0.45f else 0.7f)
+                else if (p.glass) Palette.withAlpha(p.ink, if (slot == 1 || status < 0 || status == 3 || status == 7) 0.95f else if (status == 4 || status == 0) 0.45f else 0.7f)
                 else BudsStatusView.wearTint(p, slot == 1, status, ThemeRes.material(context))
             if (k >= 1f) return live
             val ghost = if (nothing) nothingTint(p, false, 4) else Palette.withAlpha(p.textSecondary, 0.45f)
@@ -1252,7 +1252,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          */
         fun nothingTint(p: Palette, isCase: Boolean, status: Int): Int = when {
             // The accent for a bud in the ear and the case; darker out of the ear, darkest in the case (as in the other styles).
-            isCase || status == 3 || status == 7 -> p.accent
+            isCase || status < 0 || status == 3 || status == 7 -> p.accent
             status == 4 || status == 0 -> Palette.blend(boxColor(p), p.accent, 0.3f)
             else -> Palette.blend(boxColor(p), p.accent, 0.6f)
         }

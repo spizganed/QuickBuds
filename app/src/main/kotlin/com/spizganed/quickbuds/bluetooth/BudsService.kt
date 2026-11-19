@@ -44,6 +44,12 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         Log.d("BudsConn", msg)
     }
 
+    /** Sleep, wake, park and connect choices also go to the report log: they explain a gap in the battery levels (issue #47). */
+    private fun svcLog(msg: String) {
+        Log.d("BudsConn", msg)
+        PacketLogger.log(msg)
+    }
+
     private val widgetCommandReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_NOTIF_DISMISSED) {
@@ -92,7 +98,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     }
 
     private fun park() {
-        statusLog("[SVC] Park: nothing connected (bluetooth off=${bluetoothOff()})")
+        svcLog("[SVC] Park: nothing connected (bluetooth off=${bluetoothOff()})")
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -115,7 +121,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     private fun sleep() {
         if (asleep) return
         asleep = true
-        statusLog("[SVC] Sleep (screen locked)")
+        svcLog("[SVC] Sleep (screen locked)")
         handler.removeCallbacksAndMessages(null)
         // The game-EQ poll must not wake the phone every 2 s.
         gameEq.stop()
@@ -125,7 +131,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
     private fun wake() {
         if (!asleep) return
         asleep = false
-        statusLog("[SVC] Wake (unlocked)")
+        svcLog("[SVC] Wake (unlocked)")
         // Start the poll again only when game EQ is on; the link comes up after this call.
         gameEq.update()
         if (backgroundAllowed(this)) forceConnect(false)
@@ -283,9 +289,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     private fun forceConnect(withAudio: Boolean, user: Boolean = false, fromLink: Boolean = false) {
         // A missed unlock broadcast must never leave the service asleep: check the real state.
-        if (asleep && !shouldSleep()) { asleep = false; statusLog("[SVC] Wake (state check)") }
+        if (asleep && !shouldSleep()) { asleep = false; svcLog("[SVC] Wake (state check)") }
         if (asleep) {
-            statusLog("[SVC] FORCE_CONNECT ignored (asleep, screen locked)")
+            svcLog("[SVC] FORCE_CONNECT ignored (asleep, screen locked)")
             return
         }
         if (manager?.isConnected() == true) {
@@ -297,18 +303,18 @@ class BudsService : Service(), BudsConnectionManager.Listener {
         if (!user && !fromLink) {
             val device = try { BudsDevice.find(this) } catch (_: Exception) { null }
             if (manager?.mayAutoConnect(device) == false) {
-                statusLog("[SVC] FORCE_CONNECT skipped (the buds have no audio link)")
+                svcLog("[SVC] FORCE_CONNECT skipped (the buds have no audio link)")
                 // The sleep kept the connected state and the last levels. The buds left during the lock: clear them (reports 134, 135).
                 if (WidgetStateStore.read(this).connected) onConnected(false)
                 return
             }
         }
-        statusLog("[SVC] FORCE_CONNECT: connecting...")
+        svcLog("[SVC] FORCE_CONNECT: connecting...")
         AncWidgetProvider.setConnecting(this, true)
         try {
             val device = BudsDevice.find(this)
             if (device != null) manager?.connect(device, withAudio, user)
-            else { statusLog("[SVC] No paired OPPO / OnePlus / realme buds found"); AncWidgetProvider.setConnecting(this, false) }
+            else { svcLog("[SVC] No paired OPPO / OnePlus / realme buds found"); AncWidgetProvider.setConnecting(this, false) }
         } catch (e: Exception) {
             statusLog("[SVC] Force connect failed: ${e.message}")
         }
@@ -557,7 +563,7 @@ class BudsService : Service(), BudsConnectionManager.Listener {
 
     override fun onConnected(connected: Boolean) {
         // Our own sleep, not a lost link: the widget keeps showing the connected state and the last levels until the unlock reconnects.
-        if (!connected && asleep) { statusLog("[SVC] Sleep: widget state kept"); updateNotification(); return }
+        if (!connected && asleep) { svcLog("[SVC] Sleep: widget state kept"); updateNotification(); return }
         val st = WidgetStateStore.read(this)
         val before = st.copy()
         st.connected = connected
@@ -567,6 +573,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             st.caseLidClosed = false
             st.leftDocked = false
             st.rightDocked = false
+            // The wear state of the last link is old. The wear query or the next wear event sets it again (reports 211, 212).
+            st.leftStatus = -1; st.leftInBox = false
+            st.rightStatus = -1; st.rightInBox = false
         } else {
             statusLog("[SVC] Disconnected")
             st.leftBattery = -1

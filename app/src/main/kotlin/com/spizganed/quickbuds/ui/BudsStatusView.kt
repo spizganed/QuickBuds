@@ -153,7 +153,7 @@ class BudsStatusView(context: Context) : View(context) {
 
     /** Glass glyphs are white: bright in the ear and for the case, softer out of the ear, softest in the case. */
     private fun glassTint(isCase: Boolean, status: Int): Int = Palette.withAlpha(p.ink, when {
-        isCase || status == 3 || status == 7 -> 0.95f
+        isCase || status < 0 || status == 3 || status == 7 -> 0.95f
         status == 4 || status == 0 -> 0.45f
         else -> 0.7f
     })
@@ -237,10 +237,11 @@ class BudsStatusView(context: Context) : View(context) {
     companion object {
         /**
          * Glyph colour by wear: accent in the ear (and the case), darker out of the ear, darkest in the case. Shared with the widgets.
+         * An unknown wear state (-1) takes the accent: models with no wear query report wear only on a change (reports 211, 212).
          */
         fun wearTint(p: Palette, isCase: Boolean, status: Int, material: Boolean = false): Int = when {
             // The accent for a bud in the ear and for the case; the bud out of the ear and in the case take it darker, in two steps.
-            isCase || status == 3 || status == 7 -> p.accent
+            isCase || status < 0 || status == 3 || status == 7 -> p.accent
             status == 4 || status == 0 -> androidx.core.graphics.ColorUtils.blendARGB(p.card, p.accent, 0.28f)
             else -> androidx.core.graphics.ColorUtils.blendARGB(p.card, p.accent, 0.55f)
         }
