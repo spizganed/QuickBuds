@@ -42,7 +42,7 @@ An APK from another site is genuine only with this signing certificate (SHA-256,
 
 ## Supported earbuds
 
-QuickBuds knows all 140 models of the HeyMelody and realme Link lists. Owners confirmed 46 of them.
+QuickBuds knows all 140 models of the HeyMelody and realme Link lists. Owners confirmed 49 of them.
 It works on any Android phone, not only on OnePlus, OPPO and realme phones.
 The full list: [MODELS.md](./docs/MODELS.md).
 
