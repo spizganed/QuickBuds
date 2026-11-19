@@ -1,5 +1,6 @@
 //! The Linux tray icon (StatusNotifierItem). The Tauri tray reports no clicks on Linux, so this one does.
 //! A left click and a right click both open the quick panel; there is no menu.
+//! The panel opens in the screen corner nearest to the click point.
 
 use tauri::AppHandle;
 
@@ -20,8 +21,9 @@ impl ksni::Tray for Tray {
     fn id(&self) -> String { "quickbuds".into() }
     fn title(&self) -> String { "QuickBuds".into() }
     fn icon_pixmap(&self) -> Vec<ksni::Icon> { vec![ksni::Icon { width: self.icon.width, height: self.icon.height, data: self.icon.data.clone() }] }
-    fn activate(&mut self, _x: i32, _y: i32) { self.open_panel(); }
+    fn activate(&mut self, x: i32, y: i32) { crate::tray_click(x as f64, y as f64); self.open_panel(); }
     // The host asks for the menu on a right click. The menu is empty, so the panel opens instead.
+    // The right click sends no point: the panel keeps the corner of the last left click.
     fn menu_about_to_show(&mut self) { self.open_panel(); }
 }
 

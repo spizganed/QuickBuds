@@ -158,10 +158,10 @@ fn style(w: &WebviewWindow, label: &str) {
             if let Some(st) = wv.inner().settings() { st.set_hardware_acceleration_policy(HardwareAccelerationPolicy::Always); }
         });
         let gw = w.gtk_window().expect("gtk window");
-        // The panel sits in the bottom right corner, pinned by the compositor (KDE, wlroots). Others place it themselves.
+        // The compositor pins the panel to a corner (KDE, wlroots). Others place it themselves ([place_panel]).
         if label == "panel" && gtk_layer_shell::is_supported() {
             use gtk::prelude::WidgetExt;
-            use gtk_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
+            use gtk_layer_shell::{KeyboardMode, Layer, LayerShell};
             // The layer role needs a window that is not realized, and the compositor needs a size to map it.
             gw.unrealize();
             gw.set_size_request(350, 360);
@@ -169,9 +169,7 @@ fn style(w: &WebviewWindow, label: &str) {
             gw.set_layer(Layer::Overlay);
             gw.set_namespace("quickbuds-panel");
             gw.set_keyboard_mode(KeyboardMode::OnDemand);
-            // The compositor already keeps the panel clear of the taskbar: a small bottom margin leaves a small gap, not a wide one.
-            gw.set_anchor(Edge::Bottom, true); gw.set_layer_shell_margin(Edge::Bottom, 0);
-            gw.set_anchor(Edge::Right, true); gw.set_layer_shell_margin(Edge::Right, 12);
+            anchor_panel(&gw, panel_corner(w));
         }
         blur::enable(&gw, radius(label));
     }
@@ -211,13 +209,65 @@ fn show_panel(app: &AppHandle) {
     if fresh { PANEL.pending.store(true, SeqCst); } else { place_panel(&p); }
 }
 
-/// Puts the panel in the bottom right corner of the work area, above the taskbar, and shows it.
+/// Where the user last clicked the tray icon, in screen coordinates. None: no click point is known.
+static TRAY_AT: std::sync::Mutex<Option<(f64, f64)>> = std::sync::Mutex::new(None);
+
+/// Keeps the tray click point. The panel opens in the screen corner nearest to it (issue #46).
+pub fn tray_click(x: f64, y: f64) {
+    // Some tray hosts send 0, 0 for every click: that is no point.
+    *TRAY_AT.lock().unwrap() = (x != 0.0 || y != 0.0).then_some((x, y));
+}
+
+/// The panel's corner as (left, top): the half of the screen with the tray click. With no click point, the bottom right.
+fn panel_corner(p: &WebviewWindow) -> (bool, bool) {
+    let Some((x, y)) = *TRAY_AT.lock().unwrap() else { return (false, false) };
+    corner_at(p, x, y).unwrap_or((false, false))
+}
+
+/// The SNI host sends the click in logical pixels, as GDK counts them.
+#[cfg(target_os = "linux")]
+fn corner_at(_p: &WebviewWindow, x: f64, y: f64) -> Option<(bool, bool)> {
+    let g = gtk::gdk::Display::default()?.monitor_at_point(x as i32, y as i32)?.geometry();
+    Some((x - (g.x() as f64) < g.width() as f64 / 2.0, y - (g.y() as f64) < g.height() as f64 / 2.0))
+}
+
+/// Windows sends the click in physical pixels.
+#[cfg(not(target_os = "linux"))]
+fn corner_at(p: &WebviewWindow, x: f64, y: f64) -> Option<(bool, bool)> {
+    let m = p.available_monitors().ok()?.into_iter().find(|m| {
+        let (mp, ms) = (m.position(), m.size());
+        x >= mp.x as f64 && y >= mp.y as f64 && x < mp.x as f64 + ms.width as f64 && y < mp.y as f64 + ms.height as f64
+    })?;
+    let (mp, ms) = (m.position(), m.size());
+    Some((x - (mp.x as f64) < ms.width as f64 / 2.0, y - (mp.y as f64) < ms.height as f64 / 2.0))
+}
+
+/// Pins the layer-shell panel to a corner. The compositor keeps it clear of the taskbar, so the edge margin is 0.
+#[cfg(target_os = "linux")]
+fn anchor_panel(gw: &gtk::ApplicationWindow, (left, top): (bool, bool)) {
+    use gtk_layer_shell::{Edge, LayerShell};
+    gw.set_anchor(Edge::Top, top); gw.set_anchor(Edge::Bottom, !top);
+    gw.set_anchor(Edge::Left, left); gw.set_anchor(Edge::Right, !left);
+    gw.set_layer_shell_margin(if top { Edge::Top } else { Edge::Bottom }, 0);
+    gw.set_layer_shell_margin(if left { Edge::Left } else { Edge::Right }, 12);
+}
+
+/// Puts the panel in a corner of the work area ([panel_corner]), clear of the taskbar, and shows it.
 fn place_panel(p: &WebviewWindow) {
+    let (left, top) = panel_corner(p);
+    #[cfg(target_os = "linux")]
+    {
+        use gtk_layer_shell::LayerShell;
+        let win = p.clone();
+        let _ = p.run_on_main_thread(move || {
+            if let Ok(g) = win.gtk_window() { if g.is_layer_window() { anchor_panel(&g, (left, top)); } }
+        });
+    }
     if let (Ok(Some(m)), Ok(size)) = (p.current_monitor(), p.outer_size()) {
         let wa = m.work_area();
         let margin = (12.0 * m.scale_factor()) as i32;
-        let x = wa.position.x + wa.size.width as i32 - size.width as i32 - margin;
-        let y = wa.position.y + wa.size.height as i32 - size.height as i32 - margin;
+        let x = if left { wa.position.x + margin } else { wa.position.x + wa.size.width as i32 - size.width as i32 - margin };
+        let y = if top { wa.position.y + margin } else { wa.position.y + wa.size.height as i32 - size.height as i32 - margin };
         let _ = p.set_position(PhysicalPosition::new(x, y));
     }
     let _ = p.show();
@@ -358,7 +408,8 @@ fn main() {
                 .icon(tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png")).expect("tray icon"))
                 .tooltip("QuickBuds")
                 .on_tray_icon_event(|tray, e| {
-                    if let tauri::tray::TrayIconEvent::Click { button_state: tauri::tray::MouseButtonState::Up, .. } = e {
+                    if let tauri::tray::TrayIconEvent::Click { button_state: tauri::tray::MouseButtonState::Up, position, .. } = e {
+                        tray_click(position.x, position.y);
                         show_panel(tray.app_handle());
                     }
                 })
