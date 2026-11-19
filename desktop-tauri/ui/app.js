@@ -475,6 +475,8 @@ function renderBuds(){const d=window.QBLIVE?QBLIVE.buds():(BUDS[S.budState]||BUD
   const lab=(g,st,name)=>g!=='case'&&st?st:name;
   const one=(g,[pct,st],name)=>`<div class="bud">${ring(g,pct,name,'')}<div class="bst"><span class="t">${esc(lab(g,st,name))}</span></div></div>`;
   document.querySelectorAll('[data-buds]').forEach(w=>{
+    w.classList.toggle('one',!!d.neck);
+    if(d.neck){w.innerHTML=one('budL',[d.L[0],''],$t('problem_cat_battery'));w._built=false;return;}
     // A ring that exists is updated, so its arc moves to the new value; the dot style draws again.
     if(S.style!=='pixel'&&w.children.length===3&&w._built){
       [d.L,d.C,d.R].forEach(([pct,st],i)=>{const bud=w.children[i],ring=bud.querySelector('.ring'),none=pct==null,v=none?0:pct;
@@ -867,7 +869,8 @@ if(window.__TAURI__){
     sendAnc(){const m=S.anc===0?'Off':S.anc===1?LV[S.level]:S.anc===2?'Adaptive':'Transparency';this.send({t:'anc',mode:m});},
     buds(){const b=snap&&snap.status==='on'?snap.battery:[null,null,null],w=snap?snap.wear:[0,0,0];
       const one=(i)=>[b[i]?b[i].level:null,i===2?'':wearText(w[i],b[i]&&b[i].charging)];
-      return {L:one(0),R:one(1),C:one(2)};},
+      // A neckband (oneButton): one battery, no wear state (report 223).
+      return {L:one(0),R:one(1),C:one(2),neck:!!(this.gest&&this.gest.oneButton)};},
     eqPick(name){const e=this.eq,b=e.builtins.find(x=>x.name===name),c=e.custom.find(x=>x.name===name);
       if(b)this.send({t:'eq_builtin',id:b.id});else if(c)this.send({t:'eq_select',id:c.id});},
     // New and delete show at once; the buds' re-read takes about a second and would show the old list first.

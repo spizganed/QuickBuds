@@ -494,6 +494,7 @@ html[data-style="pixel"] .qt[aria-checked="true"]>.dzb{color:var(--accent)}
 .budsw{padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px}
 .bwh{display:flex;align-items:center;gap:6px}
 .bwr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bwr.one{grid-template-columns:minmax(0,1fr)}
 .bud{display:flex;flex-direction:column;align-items:center;gap:8px}
 .bud .ring{--rs:110px}
 .bud .rtx{margin-top:2px}

@@ -115,6 +115,10 @@ class BudsStatusView(context: Context) : View(context) {
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), dp(if (nothing) 131f else 152f).toInt())
     }
 
+    /** A neckband (`oneButton`): one battery and no wear state. The buds still send a left, right and case state. */
+    private var neckband = false
+    private val batteryName = context.getString(R.string.problem_cat_battery)
+
     /** Feed the current store values; rings animate only when a level actually changes. */
     fun setState(left: Int, case: Int, right: Int, leftStatus: Int, rightStatus: Int) {
         val levels = intArrayOf(left, case, right)
@@ -133,7 +137,9 @@ class BudsStatusView(context: Context) : View(context) {
                 }
             }
         }
+        neckband = ModelCatalog.profile(context).oneButton
         // The wear state is read out too: the Nothing style does not draw it.
+        if (neckband) { contentDescription = "$batteryName ${pctText(left)}"; invalidate(); return }
         noWearLabel = !ModelCatalog.wearSensorSeen(context)
         val wear = { st: Int -> if (connected) wearLabel(st)?.let { " $it" } ?: "" else "" }
         contentDescription = "${names[0]} ${pctText(left)}${wear(leftStatus)}, ${names[1]} ${pctText(case)}, ${names[2]} ${pctText(right)}${wear(rightStatus)}"
@@ -179,7 +185,9 @@ class BudsStatusView(context: Context) : View(context) {
         // Until a bud reports its wear the buds draw dim, so the case does too (it would be the one bright glyph).
         val budsKnown = slots[0].status != -1 || slots[2].status != -1
         slots.forEachIndexed { i, s ->
-            val cx = colW * i + colW / 2
+            // A neckband: one ring in the middle, the left level (report 223).
+            if (neckband && i != 0) return@forEachIndexed
+            val cx = if (neckband) width / 2f else colW * i + colW / 2
             val isCase = i == 1 && budsKnown
             if (nothing) {
                 // One bitmap per animation step (whole percents), so an animation redraws at most 100 of them.
@@ -220,8 +228,8 @@ class BudsStatusView(context: Context) : View(context) {
             canvas.drawText(pctFor(s), cx, top + ring + dp(30f), pctPaint)
 
             if (nothing) return@forEachIndexed
-            val wear = if (i == 1 || !connected) null else wearLabel(s.status)
-            val label = wear ?: names[i]
+            val wear = if (neckband || i == 1 || !connected) null else wearLabel(s.status)
+            val label = wear ?: if (neckband) batteryName else names[i]
             val inEar = wear != null && (s.status == 3 || s.status == 7)
             labelPaint.color = if (inEar) p.text else p.textSecondary
             labelPaint.typeface = if (inEar) semibold else ThemeRes.regular(context)
