@@ -77,7 +77,11 @@ The buds are the only source of truth. The app is a remote control.
    `BudsService` (notification, chip), the activities, the widgets and the tiles.
    The Android manager reads the battery again every 5 min while the link is up, and when the lid closes.
    Some buds push no case change (issue #47). The desktop does not do this yet.
+   A connect clears the stored wear state. The wear query or the next wear event sets it, because some buds
+   (T300) have no wear query and report wear only on a change.
 6. A link that drops without our request reconnects with growing delays. The service parks when the link is idle.
+   A locked screen puts the service to sleep: it closes the link and keeps the last levels. The unlock reconnects.
+   Why: a held link costs battery. Smart pause keeps the link up. Sleep, wake and park go to the report log.
 
 The desktop link thread (`desktop-tauri/src/session.rs`) runs the same sequence and the same rules.
 
