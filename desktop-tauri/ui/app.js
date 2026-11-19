@@ -56,6 +56,11 @@ const BIG={
   budR:['0 0 176 272','<path d="M10.9 131.2a66 66 0 0 1-9-31A56 56 0 0 1 5 80.4a46 46 0 0 1 10.4-15.8 40 40 0 0 1 35-10.8 50 50 0 0 1 19 6.8 59 59 0 0 1 16.3 14 67 67 0 0 1 15.3 39.8 55 55 0 0 1-3.4 19.9A45 45 0 0 1 87.3 150a40 40 0 0 1-34.6 10.6 50 50 0 0 1-19-6.7 61 61 0 0 1-16.5-13.8 67 67 0 0 1-6.3-9m116.7 1.8c-1.2.5-2.6.5-3.9.8q-.8.7-1.1 1.7v101.1q-.5 5.3-2 10.4-1 3-2.7 5.8a33 33 0 0 1-26.7 16A33 33 0 0 1 57.4 243q-.8-3.6-.8-7.2v-66.7l1.8-2 11.8-1.4a48 48 0 0 0 19.3-9.7 47 47 0 0 0 12.9-17.5 55 55 0 0 0 4.7-22.9 68 68 0 0 0-9.5-34.9 73 73 0 0 0-24.4-25 59 59 0 0 0-21.7-8l-12.4-.4-1.4-.9-.5-1.6q3-5 6.3-9.8a84 84 0 0 1 34-25.4 93 93 0 0 1 30.3-6.5q6.4-.2 12.9.7a63 63 0 0 1 23.3 8.3 62 62 0 0 1 19.3 18.5 67 67 0 0 1 10 23.5 59 59 0 0 1-4.7 36 79 79 0 0 1-16.1 23.4q-5 5-10.4 9.4z" fill="#fff" fill-rule="evenodd"/>'],
   case:['0 0 496 400','<path d="M241 3.6a363 363 0 0 0-59.8 6.6 313 313 0 0 0-55.6 16.7 252 252 0 0 0-46.4 25.5 198 198 0 0 0-35 32.2 178 178 0 0 0-25.8 41l-6 15h471.2q-3-8-6.4-15.8a180 180 0 0 0-64.7-75.4 222 222 0 0 0-32-18 265 265 0 0 0-36.7-14 309 309 0 0 0-57.6-11.7 408 408 0 0 0-45.1-2M8.7 152.6Q6 162.9 4.3 173a174 174 0 0 0 6.6 82.5 183 183 0 0 0 29.2 55.1 182 182 0 0 0 45 41.2 229 229 0 0 0 39.8 21 281 281 0 0 0 46 14.9 332 332 0 0 0 105.5 7.6 320 320 0 0 0 98.2-24 253 253 0 0 0 40-22 190 190 0 0 0 45.3-44 185 185 0 0 0 27.3-56.8 182 182 0 0 0 4.4-76.2c-1-6.6-2.8-13.1-4.2-19.6zm247.9 163.9a9 9 0 0 1-5.6 8.3 9 9 0 0 1-6.9 0 9 9 0 0 1-4.8-4.9 9 9 0 0 1 0-6.9 9 9 0 0 1 4.8-4.9 9 9 0 0 1 7 0 9 9 0 0 1 5.5 8.4" fill="#fff" fill-rule="evenodd"/>']
 };
+// A neckband: the band, 2 pods and 2 cables up to the left bud glyph at 0.56 scale (Android ic_neckband).
+BIG.neck=['0 0 320 300','<path d="M96 270C6 258 10 206 160 202C310 206 314 258 224 270" fill="none" stroke="#fff" stroke-width="26" stroke-linecap="round"/>'
+  +'<rect x="66" y="232" width="68" height="46" rx="23" fill="#fff" transform="rotate(12 100 255)"/><rect x="186" y="232" width="68" height="46" rx="23" fill="#fff" transform="rotate(-12 220 255)"/>'
+  +'<path d="M112 246C112 190 86 176 82 150M208 246C208 190 234 176 238 150" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/>'
+  +'<g transform="translate(36 6) scale(.56)">'+BIG.budL[1]+'</g><g transform="translate(284 6) scale(-.56 .56)">'+BIG.budL[1]+'</g>'];
 const tint=s=>s.replace(/#fff/g,'currentColor');
 const ic=(k,cls='')=>{ const big=BIG[k]; return `<span class="ic ${cls}" data-ic="${k}"><svg viewBox="${big?big[0]:'0 0 24 24'}" aria-hidden="true">${tint(big?big[1]:I[k])}</svg></span>`; };
 
@@ -277,7 +282,7 @@ function pixelize(root){if(S.style!=='pixel')return;
 
 /* ================= markup builders ================= */
 function ring(g,pct,label,sub){const none=pct==null;if(none)pct=0;const len=213.6,off=(len*(1-pct/100)).toFixed(1),cs=g==='case';
-  return `<div class="ringc"><div class="ring" data-pct="${pct}" data-g="${g}"><svg viewBox="0 0 76 76" role="img" aria-label="${label} ${pct} percent"><circle class="rt" cx="38" cy="38" r="34"/><circle class="rf" cx="38" cy="38" r="34" stroke-dasharray="${len} ${len}" stroke-dashoffset="${off}"/></svg><svg viewBox="${BIG[g][0]}" class="glyph ${cs?'case':''}" style="left:${cs?26:35}%;top:${cs?30.5:27}%;width:${cs?48:30}%;height:${cs?39:46}%" aria-hidden="true">${tint(BIG[g][1])}</svg></div><div class="rtx"><div class="pct">${none?'–':pct+'%'}</div>${sub?`<div class="s">${sub}</div>`:''}</div></div>`;}
+  return `<div class="ringc"><div class="ring" data-pct="${pct}" data-g="${g}"><svg viewBox="0 0 76 76" role="img" aria-label="${label} ${pct} percent"><circle class="rt" cx="38" cy="38" r="34"/><circle class="rf" cx="38" cy="38" r="34" stroke-dasharray="${len} ${len}" stroke-dashoffset="${off}"/></svg><svg viewBox="${BIG[g][0]}" class="glyph ${cs||g==='neck'?'case':''}" style="${g==='neck'?'left:24%;top:25%;width:52%;height:49%':`left:${cs?26:35}%;top:${cs?30.5:27}%;width:${cs?48:30}%;height:${cs?39:46}%`}" aria-hidden="true">${tint(BIG[g][1])}</svg></div><div class="rtx"><div class="pct">${none?'–':pct+'%'}</div>${sub?`<div class="s">${sub}</div>`:''}</div></div>`;}
 
 function segm(key,items,extra=''){return `<div class="seg ${extra}" data-seg="${key}" role="radiogroup" style="--n:${items.length}"><span class="ind"></span>${items.map(([i,l],n)=>`<button class="cell press" role="radio" data-act="pick" data-k="${key}" data-v="${n}">${i?ic(i):''}${l}</button>`).join('')}</div>`;}
 const ancCard=()=>`<div class="card">${segm('anc',[['off',$t('anc_seg_off')],['anc',$t('anc_seg_anc')],['adaptive',$t('anc_seg_adapt')],['transp',$t('anc_seg_trans')]],'big')}${segm('level',[['low',$t('anc_mode_low')],['anc',$t('anc_mode_medium')],['high',$t('anc_mode_high')],['smart',$t('anc_mode_smart')]],'lvls big')}</div>`;
@@ -476,7 +481,7 @@ function renderBuds(){const d=window.QBLIVE?QBLIVE.buds():(BUDS[S.budState]||BUD
   const one=(g,[pct,st],name)=>`<div class="bud">${ring(g,pct,name,'')}<div class="bst"><span class="t">${esc(lab(g,st,name))}</span></div></div>`;
   document.querySelectorAll('[data-buds]').forEach(w=>{
     w.classList.toggle('one',!!d.neck);
-    if(d.neck){w.innerHTML=one('budL',[d.L[0],''],$t('problem_cat_battery'));w._built=false;return;}
+    if(d.neck){w.innerHTML=one('neck',[d.L[0],''],$t('problem_cat_battery'));w._built=false;return;}
     // A ring that exists is updated, so its arc moves to the new value; the dot style draws again.
     if(S.style!=='pixel'&&w.children.length===3&&w._built){
       [d.L,d.C,d.R].forEach(([pct,st],i)=>{const bud=w.children[i],ring=bud.querySelector('.ring'),none=pct==null,v=none?0:pct;

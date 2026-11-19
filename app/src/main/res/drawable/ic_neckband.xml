@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NECKBAND: the band at the bottom, 2 control pods on it, 2 cables up to the earbuds.
+  The earbuds are the left bud glyph (ic_bud_left) at 0.56 scale; the right one is mirrored.
+  Viewport 320 x 300. Small intrinsic size: the widgets rasterise drawables into bitmaps.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp" android:height="60dp"
+    android:viewportWidth="320" android:viewportHeight="300">
+
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="26"
+        android:strokeLineCap="round"
+        android:pathData="M96 270C6 258 10 206 160 202C310 206 314 258 224 270" />
+    <group android:rotation="12" android:pivotX="100" android:pivotY="255">
+        <path android:fillColor="#FFFFFF" android:pathData="M89 232h22a23 23 0 0 1 0 46h-22a23 23 0 0 1 0-46z" />
+    </group>
+    <group android:rotation="-12" android:pivotX="220" android:pivotY="255">
+        <path android:fillColor="#FFFFFF" android:pathData="M209 232h22a23 23 0 0 1 0 46h-22a23 23 0 0 1 0-46z" />
+    </group>
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="18"
+        android:strokeLineCap="round"
+        android:pathData="M112 246C112 190 86 176 82 150M208 246C208 190 234 176 238 150" />
+    <group android:translateX="36" android:translateY="6" android:scaleX="0.56" android:scaleY="0.56">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd" android:pathData="M165.1 131.2a66 66 0 0 0 9-31 56 56 0 0 0-3.2-19.9 46 46 0 0 0-10.4-15.8 40 40 0 0 0-35-10.8 50 50 0 0 0-19 6.8 59 59 0 0 0-16.3 14 67 67 0 0 0-15.3 39.8 55 55 0 0 0 3.4 19.9A45 45 0 0 0 88.7 150a40 40 0 0 0 34.6 10.6 50 50 0 0 0 19-6.7 61 61 0 0 0 16.4-13.8 67 67 0 0 0 6.4-9M48.4 133c1.2.5 2.6.5 3.9.8q.8.7 1.1 1.7v101.1q.5 5.3 2 10.4 1 3 2.8 5.8a33 33 0 0 0 26.6 16 33 33 0 0 0 33.8-25.7q.8-3.6.8-7.2v-66.7l-1.8-2-11.8-1.4a48 48 0 0 1-19.3-9.7 47 47 0 0 1-12.9-17.5 55 55 0 0 1-4.7-22.9 68 68 0 0 1 9.5-34.9 73 73 0 0 1 24.4-25 59 59 0 0 1 21.7-8l12.4-.4 1.3-.9.6-1.6q-3-5-6.3-9.8a84 84 0 0 0-34-25.4 93 93 0 0 0-30.3-6.5Q61.7 3 55.3 4A63 63 0 0 0 32 12.2a62 62 0 0 0-19.3 18.5 67 67 0 0 0-10 23.5 59 59 0 0 0 4.7 36 79 79 0 0 0 16.1 23.4q5 5 10.5 9.4z" />
+    </group>
+    <group android:translateX="284" android:translateY="6" android:scaleX="-0.56" android:scaleY="0.56">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd" android:pathData="M165.1 131.2a66 66 0 0 0 9-31 56 56 0 0 0-3.2-19.9 46 46 0 0 0-10.4-15.8 40 40 0 0 0-35-10.8 50 50 0 0 0-19 6.8 59 59 0 0 0-16.3 14 67 67 0 0 0-15.3 39.8 55 55 0 0 0 3.4 19.9A45 45 0 0 0 88.7 150a40 40 0 0 0 34.6 10.6 50 50 0 0 0 19-6.7 61 61 0 0 0 16.4-13.8 67 67 0 0 0 6.4-9M48.4 133c1.2.5 2.6.5 3.9.8q.8.7 1.1 1.7v101.1q.5 5.3 2 10.4 1 3 2.8 5.8a33 33 0 0 0 26.6 16 33 33 0 0 0 33.8-25.7q.8-3.6.8-7.2v-66.7l-1.8-2-11.8-1.4a48 48 0 0 1-19.3-9.7 47 47 0 0 1-12.9-17.5 55 55 0 0 1-4.7-22.9 68 68 0 0 1 9.5-34.9 73 73 0 0 1 24.4-25 59 59 0 0 1 21.7-8l12.4-.4 1.3-.9.6-1.6q-3-5-6.3-9.8a84 84 0 0 0-34-25.4 93 93 0 0 0-30.3-6.5Q61.7 3 55.3 4A63 63 0 0 0 32 12.2a62 62 0 0 0-19.3 18.5 67 67 0 0 0-10 23.5 59 59 0 0 0 4.7 36 79 79 0 0 0 16.1 23.4q5 5 10.5 9.4z" />
+    </group>
+</vector>

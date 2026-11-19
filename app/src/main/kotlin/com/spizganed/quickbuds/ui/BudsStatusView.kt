@@ -72,11 +72,16 @@ class BudsStatusView(context: Context) : View(context) {
 
     // Glyphs keep their SVG's true ratio (buds 176x272, case 496x400), fitted inside the
     // boxes (bud 42x56, case 58x42). The right bud is its own mirrored drawable.
-    private val slots = listOf(
+    private val budSlots = listOf(
         Slot(context.getDrawable(R.drawable.ic_bud_left)!!.mutate(), 176f / 272f, 42f, 56f, 31f, 42f),
         Slot(context.getDrawable(R.drawable.ic_case)!!.mutate(), 496f / 400f, 58f, 42f, 52f, 42f),
         Slot(context.getDrawable(R.drawable.ic_bud_right)!!.mutate(), 176f / 272f, 42f, 56f, 31f, 42f)
     )
+    /** A neckband: its own glyph (320 x 300) in the first slot. Only the first slot draws. */
+    private val neckSlots = listOf(
+        Slot(context.getDrawable(R.drawable.ic_neckband)!!.mutate(), 320f / 300f, 62f, 58f, 52f, 48f), budSlots[1], budSlots[2]
+    )
+    private val slots get() = if (neckband) neckSlots else budSlots
     private val names = listOf(
         context.getString(R.string.status_left),
         context.getString(R.string.status_case),
@@ -121,8 +126,9 @@ class BudsStatusView(context: Context) : View(context) {
 
     /** Feed the current store values; rings animate only when a level actually changes. */
     fun setState(left: Int, case: Int, right: Int, leftStatus: Int, rightStatus: Int) {
+        neckband = ModelCatalog.profile(context).oneButton
         val levels = intArrayOf(left, case, right)
-        slots[0].status = leftStatus
+        slots[0].status = if (neckband) -1 else leftStatus
         slots[2].status = rightStatus
         slots.forEachIndexed { i, s ->
             val target = if (levels[i] < 0) 0f else levels[i] / 100f
@@ -137,7 +143,6 @@ class BudsStatusView(context: Context) : View(context) {
                 }
             }
         }
-        neckband = ModelCatalog.profile(context).oneButton
         // The wear state is read out too: the Nothing style does not draw it.
         if (neckband) { contentDescription = "$batteryName ${pctText(left)}"; invalidate(); return }
         noWearLabel = !ModelCatalog.wearSensorSeen(context)
