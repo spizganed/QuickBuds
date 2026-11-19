@@ -386,8 +386,9 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             // Live update (Android 16+): a promoted notification needs a standard style, so no rings. The chip shows chipText.
             // "– –" while the levels are not read yet (connect) and for 1 s after a disconnect.
             if (known && !goodbye) {
-                val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
-                val text = (0..2).filter { levels[it] >= 0 }.joinToString("  ") { "${getString(names[it])} ${levels[it]}%" }
+                val neck = com.spizganed.quickbuds.protocol.ModelCatalog.profile(this).oneButton
+                val names = intArrayOf(if (neck) R.string.problem_cat_battery else R.string.status_left, R.string.status_case, R.string.status_right)
+                val text = (if (neck) listOf(0) else (0..2).toList()).filter { levels[it] >= 0 }.joinToString("  ") { "${getString(names[it])} ${levels[it]}%" }
                 b.setStyle(Notification.BigTextStyle().bigText(text)).setContentText(text)
             }
             b.setOngoing(true)
@@ -402,10 +403,15 @@ class BudsService : Service(), BudsConnectionManager.Listener {
             val v = android.widget.RemoteViews(packageName, R.layout.notification_battery)
             val rings = intArrayOf(R.id.n_ring_l, R.id.n_ring_c, R.id.n_ring_r)
             val pcts = intArrayOf(R.id.n_pct_l, R.id.n_pct_c, R.id.n_pct_r)
-            val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
-            val statuses = intArrayOf(st.leftStatus, -1, st.rightStatus)
-            for (slot in 0..2) {
-                v.setImageViewBitmap(rings[slot], com.spizganed.quickbuds.widget.QuickBudsWidget.notificationRing(this, levels[slot], slot, statuses[slot]))
+            // A neckband: one ring with its own glyph and the left level, no wear state (report 223).
+            val neck = com.spizganed.quickbuds.protocol.ModelCatalog.profile(this).oneButton
+            val names = intArrayOf(if (neck) R.string.problem_cat_battery else R.string.status_left, R.string.status_case, R.string.status_right)
+            val statuses = if (neck) intArrayOf(-1, -1, -1) else intArrayOf(st.leftStatus, -1, st.rightStatus)
+            v.setViewVisibility(R.id.n_col_c, if (neck) android.view.View.GONE else android.view.View.VISIBLE)
+            v.setViewVisibility(R.id.n_col_r, if (neck) android.view.View.GONE else android.view.View.VISIBLE)
+            for (slot in if (neck) listOf(0) else (0..2).toList()) {
+                val glyph = if (neck) com.spizganed.quickbuds.widget.QuickBudsWidget.SLOT_NECK else slot
+                v.setImageViewBitmap(rings[slot], com.spizganed.quickbuds.widget.QuickBudsWidget.notificationRing(this, levels[slot], glyph, statuses[slot]))
                 v.setTextViewText(pcts[slot], if (levels[slot] >= 0) "${levels[slot]}%" else "–")
                 v.setContentDescription(rings[slot], getString(names[slot]))
             }

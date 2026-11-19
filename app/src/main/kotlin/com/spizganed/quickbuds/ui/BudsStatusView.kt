@@ -198,9 +198,9 @@ class BudsStatusView(context: Context) : View(context) {
                 // One bitmap per animation step (whole percents), so an animation redraws at most 100 of them.
                 val level = if (s.shown > 0f || s.level >= 0) Math.round(s.shown * 100) else -1
                 val tint = androidx.core.graphics.ColorUtils.blendARGB(p.disabled, QuickBudsWidget.nothingTint(p, isCase, s.status), conn)
-                val key = "$level/$tint/${ring.toInt()}"
+                val key = "$level/$tint/${ring.toInt()}/$neckband"
                 if (s.dotsKey != key) {
-                    s.dots = QuickBudsWidget.dotRing(context, p, level, i, tint, ring.toInt().coerceAtLeast(1))
+                    s.dots = QuickBudsWidget.dotRing(context, p, level, if (neckband) QuickBudsWidget.SLOT_NECK else i, tint, ring.toInt().coerceAtLeast(1))
                     s.dotsKey = key
                 }
                 canvas.drawBitmap(s.dots!!, cx - ring / 2, top, null)

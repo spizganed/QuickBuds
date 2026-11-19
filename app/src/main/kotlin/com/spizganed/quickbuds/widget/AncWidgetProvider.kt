@@ -20,6 +20,7 @@ import android.view.View
 import android.widget.RemoteViews
 import com.spizganed.quickbuds.R
 import com.spizganed.quickbuds.protocol.AncModes
+import com.spizganed.quickbuds.protocol.ModelCatalog
 import com.spizganed.quickbuds.bluetooth.BudsService
 import com.spizganed.quickbuds.bluetooth.WidgetActions
 import com.spizganed.quickbuds.ui.BudsStatusView
@@ -620,30 +621,34 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val ringDp = if (paged) ringDp(context, fit.shape, id) else fit.ring
             // k < 1: rings drawn to k of their level and the glyphs part-way to their ghost colour.
             val levels = intArrayOf(state.leftBattery, state.caseBattery, state.rightBattery).map { if (it < 0) -1 else Math.round(it * k) }.toIntArray()
-            val statuses = intArrayOf(state.leftStatus, -1, state.rightStatus)
-            val names = intArrayOf(R.string.status_left, R.string.status_case, R.string.status_right)
+            // A neckband (`oneButton`): one panel with the neckband glyph and the left level; no wear state (report 223).
+            val neck = ModelCatalog.profile(context).oneButton
+            val statuses = if (neck) intArrayOf(-1, -1, -1) else intArrayOf(state.leftStatus, -1, state.rightStatus)
+            val names = intArrayOf(if (neck) R.string.problem_cat_battery else R.string.status_left, R.string.status_case, R.string.status_right)
             // 2x2 and TALL show the case as a bar under the two bud panels; the others have a case panel.
             val caseBar = fit.shape.caseBar
             // The sized shapes show 3 units, 2 (the buds, no case) or none (controls only).
-            val shown = (if (caseBar) listOf(0, 2) else listOf(0, 1, 2)).filter { paged || fit.units == 3 || (fit.units == 2 && it != 1) }
+            val shown = if (neck) listOf(0).filter { paged || fit.units > 0 }
+                else (if (caseBar) listOf(0, 2) else listOf(0, 1, 2)).filter { paged || fit.units == 3 || (fit.units == 2 && it != 1) }
             if (fit.bare) { val pd = ThemeRes.dp(context, 2f); v.setViewPadding(R.id.w_content, pd, pd, pd, pd) }
-            if (!paged) for (slot in 0..2) if (!caseBar || slot != 1) v.setViewVisibility(PANEL_ROOTS[slot], if (slot in shown) View.VISIBLE else View.GONE)
+            if (!paged || neck) for (slot in 0..2) if (!caseBar || slot != 1) v.setViewVisibility(PANEL_ROOTS[slot], if (slot in shown) View.VISIBLE else View.GONE)
+            if (caseBar) v.setViewVisibility(R.id.w_bar, if (neck) View.GONE else View.VISIBLE)
             for (slot in shown) {
                 val (bgId, ringId, pct, label, strokeId) = PANELS[slot].toList()
                 if (fit.bare) { v.setViewVisibility(bgId, View.GONE); v.setViewVisibility(strokeId, View.GONE) }
                 else { panelBg(context, v, bgId, p); panelOutline(context, v, strokeId, p) }
-                v.setImageViewBitmap(ringId, ring(context, p, levels[slot], slot, statuses[slot], ringDp, k).let { if (ghost && GHOST_BLUR) soften(context, it) else it })
+                v.setImageViewBitmap(ringId, ring(context, p, levels[slot], if (neck) SLOT_NECK else slot, statuses[slot], ringDp, k).let { if (ghost && GHOST_BLUR) soften(context, it) else it })
                 pctText(context, v, pct, p, levels[slot], if (paged) null else fit.font)
                 v.setViewVisibility(pct, if (fit.bare) View.GONE else if (ghost) View.INVISIBLE else View.VISIBLE)
                 val inEar = statuses[slot] == 3 || statuses[slot] == 7
-                val text = if (slot == 1) context.getString(names[slot]) else wearLabel(context, statuses[slot]) ?: context.getString(names[slot])
+                val text = if (slot == 1 || neck) context.getString(names[slot]) else wearLabel(context, statuses[slot]) ?: context.getString(names[slot])
                 // Nothing, Material and the sized shapes: no wear text, the glyph's shade says it ([nothingTint]) and the ring's content description reads it.
                 val noLabel = WidgetSettings.nothingStyle(context) || WidgetSettings.materialStyle(context) || !paged
                 v.setViewVisibility(label, if (noLabel) View.GONE else if (ghost) View.INVISIBLE else View.VISIBLE)
-                v.setContentDescription(ringId, if (slot == 1) text else context.getString(names[slot]) + ", " + text)
+                v.setContentDescription(ringId, if (slot == 1 || neck) text else context.getString(names[slot]) + ", " + text)
                 if (!noLabel) setText(context, v, label, if (inEar) semibold(text) else text, if (inEar) p.text else p.textSecondary)
             }
-            if (caseBar) {
+            if (caseBar && !neck) {
                 panelBg(context, v, R.id.w_bar_bg, p)
                 panelOutline(context, v, R.id.w_bar_stroke, p)
                 // The case icon takes all the height the rings leave ([caseRowDp]); TALL's case row is 32dp. Nothing: at the
@@ -1075,6 +1080,13 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * glyph's grid, [px] square. The same [RING_CELLS] on every size, so each ring is the 2x2's image scaled.
          * [tint] opaque, since a dot is either there or not. Also the app's home rings (BudsStatusView).
          */
+        /** The ring slot of a neckband's one level: its own glyph ([R.drawable.ic_neckband]). */
+        const val SLOT_NECK = 3
+
+        private fun glyphRes(slot: Int) = when (slot) {
+            0 -> R.drawable.ic_bud_left; 1 -> R.drawable.ic_case; SLOT_NECK -> R.drawable.ic_neckband; else -> R.drawable.ic_bud_right
+        }
+
         fun dotRing(context: Context, p: Palette, level: Int, slot: Int, tint: Int, px: Int): Bitmap {
             val n = RING_CELLS
             return matrix(n, n, px / n.toFloat(), despeckle = slot != 1) { c, size ->
@@ -1089,10 +1101,10 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             if (p.glass) {
                 // Glass: the same ring and glyph as the app's home tile.
                 GlassArt.ring(c, size / 2, size / 2, size, if (level in 1..100) level / 100f else 0f, p.accent, p.ink, p.glassLight)
-                val bud = slot != 1
-                val d = context.getDrawable(when (slot) { 0 -> R.drawable.ic_bud_left; 1 -> R.drawable.ic_case; else -> R.drawable.ic_bud_right })!!.mutate()
+                val bud = slot == 0 || slot == 2
+                val d = context.getDrawable(glyphRes(slot))!!.mutate()
                 val gw = size * (if (bud) 31f else 52f) / 90f * fill
-                val gh = size * 42f / 90f * fill
+                val gh = size * (if (slot == SLOT_NECK) 48f else 42f) / 90f * fill
                 GlassArt.Glyph(d).draw(c, size / 2, size / 2, gw, gh, tint, size / 90f, p.glassLight)
                 return android.graphics.Rect(((size - gw) / 2).toInt(), ((size - gh) / 2).toInt(), ((size + gw) / 2).toInt(), ((size + gh) / 2).toInt())
             }
@@ -1105,13 +1117,12 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
                 c.drawArc(box, -90f, 360f * level / 100f, false, paint)
             }
             val isCase = slot == 1
-            val glyph = context.getDrawable(
-                when (slot) { 0 -> R.drawable.ic_bud_left; 1 -> R.drawable.ic_case; else -> R.drawable.ic_bud_right }
-            )!!.mutate()
-            val ratio = if (isCase) 496f / 400f else 176f / 272f
+            val neck = slot == SLOT_NECK
+            val glyph = context.getDrawable(glyphRes(slot))!!.mutate()
+            val ratio = if (isCase) 496f / 400f else if (neck) 320f / 300f else 176f / 272f
             // Largest boxes whose corners still clear the ring's inner edge.
-            val boxH = size * (if (isCase) 0.46f else 0.6f) * fill
-            val boxW = size * (if (isCase) 0.62f else 0.42f) * fill
+            val boxH = size * (if (isCase) 0.46f else if (neck) 0.56f else 0.6f) * fill
+            val boxW = size * (if (isCase || neck) 0.62f else 0.42f) * fill
             val (w, h) = if (ratio < boxW / boxH) boxH * ratio to boxH else boxW to boxW / ratio
             val gl = android.graphics.Rect(((size - w) / 2).toInt(), ((size - h) / 2).toInt(), ((size + w) / 2).toInt(), ((size + h) / 2).toInt())
             glyph.setTint(tint)
