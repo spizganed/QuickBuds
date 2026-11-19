@@ -124,7 +124,7 @@ fn snapshot_json(s: &Snapshot) -> Value {
             "freqs": eq_model_freqs(s.model),
             "max": eq_max_custom(s.model),
             "bass": {
-                "has": row(r::BASS_WAVE),
+                "has": row(r::BASS_WAVE) || row(r::BASS_BANDS),
                 "level": s.bass_level,
                 "threeBands": row(r::BASS_BANDS),
                 "bands": s.bass_bands,

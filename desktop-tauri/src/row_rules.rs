@@ -177,6 +177,8 @@ pub fn ask_ids(model: Option<&Value>) -> Vec<u8> {
         ("holdVolume", 0x35), ("fastPair", 0x37), ("personalAnc", FEATURE_PERSONAL_NOISE), ("findPhone", 0x26), ("virtualBass", 0x36)] {
         if p.asks(f) { ids.insert(id); }
     }
+    // realme dynamic sound: the switch is `1D`, the same id as BassWave (report 222).
+    if p.bass_bands() == 3 { ids.insert(FEATURE_BASSWAVE); }
     ids.into_iter().collect()
 }
 
@@ -298,5 +300,7 @@ mod tests {
         assert_eq!(ask_ids(None), DEFAULT_IDS);
         let find = serde_json::json!({ "findPhone": 1 });
         assert!(ask_ids(Some(&find)).contains(&0x26));
+        let dynamic = serde_json::json!({ "statusQuery": "05", "bassBands": 3 });
+        assert!(ask_ids(Some(&dynamic)).contains(&FEATURE_BASSWAVE));
     }
 }

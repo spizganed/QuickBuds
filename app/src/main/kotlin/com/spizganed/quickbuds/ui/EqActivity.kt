@@ -285,7 +285,7 @@ class EqActivity : Activity(), BudsConnectionManager.Listener {
         bassPanel = if (hasBassBands(this)) bands else bassSlider
         root.addView(bassCard.apply {
             (layoutParams as? LinearLayout.LayoutParams)?.topMargin = dp(14f)
-            if (!hasBassWave(this@EqActivity)) visibility = View.GONE
+            if (!hasBassWave(this@EqActivity) && !hasBassBands(this@EqActivity)) visibility = View.GONE
         })
 
         customHeader = sectionLabel(R.string.eq_custom)

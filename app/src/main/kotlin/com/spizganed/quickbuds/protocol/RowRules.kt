@@ -267,6 +267,8 @@ object RowRules {
         if (p.personalAnc) out += Feature.PERSONAL_NOISE
         if (p.findPhone) out += Feature.FIND_PHONE
         if (p.virtualBass) out += Feature.VIRTUAL_BASS
+        // realme dynamic sound: the switch is `1D`, the same id as BassWave (report 222).
+        if (p.bassBands == 3) out += Feature.BASSWAVE
         return out
     }
 }

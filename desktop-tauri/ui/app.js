@@ -344,7 +344,8 @@ function buildWindow(){
       <div class="col"><div class="lbl">${$t('eq_recommended')}</div><div class="group" id="eqRec"></div></div>
       <div class="col"><div class="lbl">${$t('eq_custom')}</div><div class="group" id="eqCus"></div></div>
     </div>
-    <div class="group"><div class="row">${ic('eq')}<div class="txt"><div class="t">${$t('eq_basswave')}</div></div><input class="range short" id="bassR" type="range" min="0" max="3" step="1" aria-label="${$t('eq_basswave')}"><span class="v" id="bassV" style="width:20px;text-align:right">+2</span>${sw('bass')}</div></div>
+    <div class="group"><div class="row">${ic('eq')}<div class="txt"><div class="t">${$t('eq_basswave')}</div></div><input class="range short" id="bassR" type="range" min="0" max="3" step="1" aria-label="${$t('eq_basswave')}"><span class="v" id="bassV" style="width:20px;text-align:right">+2</span>${sw('bass')}</div>
+      <div id="bassBands" hidden>${['eq_bass_low','eq_bass_mid','eq_bass_high'].map((k,i)=>`<div class="row"><div class="txt"><div class="t">${$t(k)}</div></div><input class="range short" id="bassB${i+1}" type="range" min="-5" max="5" step="1" value="0" aria-label="${$t(k)}"><span class="v" style="width:20px;text-align:right">0</span></div>`).join('')}</div></div>
   </section>
 
   <section class="page" data-page="hearing" hidden>
@@ -515,6 +516,8 @@ function renderEq(anim){
   if(renderEq._names)document.querySelectorAll('#eqCus [data-act="eqp"]').forEach(b=>{if(!renderEq._names.has(b.dataset.v))b.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],{duration:280*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed'))||1),easing:'cubic-bezier(.34,1.4,.64,1)'});});
   renderEq._names=names;
   const brr=document.getElementById('bassR');if(brr){brr.disabled=!S.bass;brr.closest('.row').classList.toggle('bassoff',!S.bass);}
+  const bb=document.getElementById('bassBands');if(bb&&brr){const three=!!S.bassBands;brr.hidden=three;document.getElementById('bassV').hidden=three;bb.hidden=!three||!S.bass;
+    if(three)S.bassBands.forEach((v,i)=>{const r=document.getElementById('bassB'+(i+1));if(!r||r._drag)return;r.value=v??0;paintRange(r);r.nextElementSibling.textContent=(v>0?'+':'')+(v??0);});}
   pixelize(document.getElementById('eqRec'));pixelize(document.getElementById('eqCus'));
 }
 const HZ=['80 Hz','10 kHz','4.8 kHz','2.4 kHz','1.2 kHz','250 Hz'],EAR={L:[.85,.9,.8,.85,.45,.8],R:[.78,.72,.7,.88,.62,.7]};
@@ -791,7 +794,7 @@ document.addEventListener('click',ev=>{
   if(a==='wall'){S.wall=+v;reveal(ev,()=>{apply();renderColorPanel();});return;}
 });
 document.addEventListener('change',e=>{const t=e.target;
-  if(window.QBLIVE){if(t.id==='bassR'&&QBLIVE.eq)QBLIVE.send({t:'bass',level:S.bassLv,band:0});if(t.id==='alertR'&&QBLIVE.earbud)QBLIVE.send({t:'alert',v:S.alert});if(t.id==='tapR'&&QBLIVE.earbud)QBLIVE.send({t:'tap',v:stepped(t)});}
+  if(window.QBLIVE){if(t.id==='bassR'&&QBLIVE.eq)QBLIVE.send({t:'bass',level:S.bassLv,band:0});if(/^bassB[123]$/.test(t.id)&&QBLIVE.eq)QBLIVE.send({t:'bass',level:stepped(t),band:+t.id.slice(5)});if(t.id==='alertR'&&QBLIVE.earbud)QBLIVE.send({t:'alert',v:S.alert});if(t.id==='tapR'&&QBLIVE.earbud)QBLIVE.send({t:'tap',v:stepped(t)});}
   if(t.classList&&t.classList.contains('range'))glide(t);
   if(t.id==='langSel'){S.lang=+t.value;save();toast(`Language: ${LANGS[S.lang]}.`);}
   if(t.matches('select[data-act="gest"]')){S.gest[t.dataset.side][+t.dataset.i]=t.value;save();toast(`${GROWS[+t.dataset.i][1]} on the ${t.dataset.side==='L'?'left':'right'} earbud: ${ACTS[t.value]}.`);}});
@@ -804,6 +807,7 @@ function glide(t){const to=stepped(t),from=+t.value,t0=performance.now(),dur=140
 document.addEventListener('pointerdown',e=>{const t=e.target;if(t.classList&&t.classList.contains('range')&&t.tagName==='INPUT'){t._step=t.step||1;t.step='any';t._drag=true;}},true);
 document.addEventListener('input',e=>{const t=e.target;
   if(t.id==='bassT'){S.bassLv=+t.value;apply();renderEq();}
+  if(/^bassB[123]$/.test(t.id)){paintRange(t);const v=stepped(t);t.nextElementSibling.textContent=(v>0?'+':'')+v;}
   if(t.id==='bassR'){S.bassLv=stepped(t);bassUi(t);t.style.setProperty('--p',(+t.value-t.min)/(t.max-t.min)*100+'%');save();}
   if(t.id==='tapR'){t.style.setProperty('--p',(t.value-1)/4*100+'%');const v=document.getElementById('tapV');if(v)v.textContent=stepped(t);}
   if(t.id==='alertR'){S.alert=stepped(t);t.style.setProperty('--p',(+t.value-t.min)/(t.max-t.min)*100+'%');save();}});
@@ -892,6 +896,8 @@ if(window.__TAURI__){
     const cp=curEq();S.gains=cp?cp.gains.slice():new Array(n).fill(0);
     const br=document.getElementById('bassR');
     if(br){br.min=-5;br.max=5;if(eq.bass.level!=null)S.bassLv=eq.bass.level;}
+    // realme dynamic sound: three band sliders (low, medium, high) in place of the one level slider.
+    S.bassBands=eq.bass.threeBands?eq.bass.bands:null;
     renderEq(true);};
   const take=s=>{
     if(!s)return;snap=s;QBLIVE.live=true;
