@@ -1,0 +1,67 @@
+# QuickBuds for Arch Linux and its derivatives (Omarchy, Manjaro, CachyOS, EndeavourOS).
+# Not in the AUR. Each build takes the latest GitHub release and checks it against its SHA256SUMS.
+# Install or update:
+#   mkdir -p quickbuds && cd quickbuds
+#   curl -fsSLO https://raw.githubusercontent.com/spizganed/QuickBuds/main/packaging/arch/PKGBUILD
+#   makepkg -si
+pkgname=quickbuds-bin
+pkgver=0
+pkgrel=1
+pkgdesc="Control OnePlus, OPPO and realme earbuds"
+arch=('x86_64')
+url="https://github.com/spizganed/QuickBuds"
+license=('GPL-3.0-or-later')
+depends=('bluez' 'bluez-utils')
+provides=('quickbuds')
+conflicts=('quickbuds')
+# The AppImage is the whole app: makepkg must not strip it.
+options=('!strip' '!debug')
+_rel="https://github.com/spizganed/QuickBuds/releases/latest/download"
+# The release changes with each version, so makepkg checks no fixed sums. prepare() checks SHA256SUMS.
+source=("QuickBuds.AppImage::$_rel/QuickBuds-linux-x64.AppImage" "SHA256SUMS::$_rel/SHA256SUMS")
+sha256sums=('SKIP' 'SKIP')
+
+prepare() {
+  local want got
+  want=$(awk '$2 ~ /QuickBuds-linux-x64\.AppImage$/ {print $1}' SHA256SUMS)
+  got=$(sha256sum QuickBuds.AppImage | cut -d' ' -f1)
+  [ -n "$want" ] && [ "$want" = "$got" ] || { echo "The AppImage does not match SHA256SUMS." >&2; return 1; }
+}
+
+# The version comes from the file names in SHA256SUMS (QuickBuds6.2.0-windows-x64.zip).
+pkgver() {
+  grep -o 'QuickBuds[0-9][0-9.]*-windows' SHA256SUMS | head -1 | sed 's/^QuickBuds//; s/-windows$//'
+}
+
+package() {
+  install -Dm755 QuickBuds.AppImage "$pkgdir/opt/quickbuds/QuickBuds.AppImage"
+
+  # The icon comes out of the AppImage, which needs no FUSE for this.
+  chmod +x QuickBuds.AppImage
+  rm -rf squashfs-root
+  APPIMAGE_EXTRACT_AND_RUN=1 ./QuickBuds.AppImage --appimage-extract >/dev/null 2>&1 || true
+  local icon
+  icon=$(find -L squashfs-root -path '*256x256/apps/quickbuds.png' -type f 2>/dev/null | head -1)
+  [ -n "$icon" ] && install -Dm644 "$icon" "$pkgdir/usr/share/icons/hicolor/256x256/apps/quickbuds.png"
+  rm -rf squashfs-root
+
+  # Without FUSE, the AppImage runs extracted. The app cannot update itself in /opt: it opens the release page.
+  install -Dm755 /dev/stdin "$pkgdir/usr/bin/quickbuds" <<'SH'
+#!/bin/sh
+if [ -e /dev/fuse ] && { command -v fusermount3 || command -v fusermount; } >/dev/null 2>&1; then
+  exec /opt/quickbuds/QuickBuds.AppImage "$@"
+fi
+APPIMAGE_EXTRACT_AND_RUN=1 exec /opt/quickbuds/QuickBuds.AppImage "$@"
+SH
+
+  install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/quickbuds.desktop" <<'DESKTOP'
+[Desktop Entry]
+Type=Application
+Name=QuickBuds
+Comment=Control OnePlus, OPPO and realme earbuds
+Exec=quickbuds
+Icon=quickbuds
+Categories=AudioVideo;Audio;
+Terminal=false
+DESKTOP
+}

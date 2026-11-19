@@ -34,7 +34,20 @@ connect <address>
 curl -fsSL https://raw.githubusercontent.com/spizganed/QuickBuds/main/scripts/install-linux.sh | sh
 ```
 
-It needs only `curl` and BlueZ, and no administrator rights. It puts the AppImage in `~/.local/share/quickbuds` and adds a `quickbuds` command and a menu entry. The app updates itself.
+It needs only `curl`. Without BlueZ, it shows the install command and asks to run it with `sudo`. QuickBuds itself needs no administrator rights. It puts the AppImage in `~/.local/share/quickbuds` and adds a `quickbuds` command and a menu entry. The app updates itself.
+
+## Arch Linux package
+
+Arch and its derivatives (Omarchy, Manjaro, CachyOS, EndeavourOS) can install a pacman package. It is not in the AUR.
+The PKGBUILD takes the latest release, checks it against `SHA256SUMS` and adds BlueZ as a dependency.
+
+```sh
+mkdir -p quickbuds && cd quickbuds
+curl -fsSLO https://raw.githubusercontent.com/spizganed/QuickBuds/main/packaging/arch/PKGBUILD
+makepkg -si
+```
+
+Run the same commands again for an update: the app cannot replace a file in `/opt`. Remove it with `sudo pacman -R quickbuds-bin`.
 
 ## Remove it
 

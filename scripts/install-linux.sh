@@ -3,7 +3,7 @@
 #   curl -fsSL https://raw.githubusercontent.com/spizganed/QuickBuds/main/scripts/install-linux.sh | sh
 # Install a local file instead of the release: QB_APPIMAGE=/path/QuickBuds-linux-x64.AppImage sh install-linux.sh
 # Remove it again with: sh install-linux.sh uninstall
-# No root needed. Needs curl and BlueZ (bluetoothctl). Updates come from the app itself.
+# No root needed. Needs curl. Without BlueZ, it asks to install it with sudo. Updates come from the app itself.
 set -eu
 
 app="$HOME/.local/share/quickbuds"
@@ -21,7 +21,33 @@ fi
 
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = x86_64 ] || { echo "This installer needs Linux on x86_64." >&2; exit 1; }
 command -v curl >/dev/null 2>&1 || { echo "Install curl first." >&2; exit 1; }
-command -v bluetoothctl >/dev/null 2>&1 || echo "Warning: BlueZ (bluetoothctl) is missing. Install it, then pair your earbuds." >&2
+
+# BlueZ is the Bluetooth service of the system: the AppImage cannot bring it. The script asks before it uses sudo.
+bluez_cmd() {
+  if command -v pacman >/dev/null 2>&1; then echo "pacman -S --needed --noconfirm bluez bluez-utils"
+  elif command -v apt-get >/dev/null 2>&1; then echo "apt-get install -y bluez"
+  elif command -v dnf >/dev/null 2>&1; then echo "dnf install -y bluez"
+  elif command -v zypper >/dev/null 2>&1; then echo "zypper --non-interactive install bluez"
+  fi
+}
+bluez_ok() { command -v bluetoothctl >/dev/null 2>&1 && { ! command -v systemctl >/dev/null 2>&1 || systemctl is-active --quiet bluetooth; }; }
+if ! bluez_ok; then
+  pkg=$(bluez_cmd)
+  steps=""
+  command -v bluetoothctl >/dev/null 2>&1 || { [ -n "$pkg" ] && steps="sudo $pkg"; }
+  command -v systemctl >/dev/null 2>&1 && steps="${steps:+$steps && }sudo systemctl enable --now bluetooth"
+  echo "BlueZ (the Bluetooth service) is missing or not running."
+  answer=n
+  # The script often comes through a pipe: the question goes to the terminal.
+  if [ -n "$steps" ] && ( : < /dev/tty ) 2>/dev/null && command -v sudo >/dev/null 2>&1; then
+    printf "Run this now? %s [y/N] " "$steps"
+    read -r answer < /dev/tty || answer=n
+  fi
+  case "$answer" in
+    y|Y|yes) sh -c "$steps" || echo "BlueZ did not install. QuickBuds installs anyway." >&2 ;;
+    *) echo "Install BlueZ later: ${steps:-see docs/INSTALL-LINUX.md}" >&2 ;;
+  esac
+fi
 
 mkdir -p "$app" "$bin" "$menu" "$icons"
 tmp=$(mktemp)

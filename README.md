@@ -28,13 +28,13 @@ Pair your earbuds in the system's Bluetooth settings first. QuickBuds connects t
 
 - **Android 8 or later:** install `QuickBuds<version>.apk` from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest). Allow the Bluetooth permission when the app asks.
 - **Windows 10 or 11:** unzip `QuickBuds<version>-windows-x64.zip` from the [latest release](https://github.com/spizganed/QuickBuds/releases/latest) and run `quickbuds.exe`. It needs no installer.
-- **Linux (x64, any distribution):** run this command. It needs `curl`, a running BlueZ (the Bluetooth service) and no administrator rights.
+- **Linux (x64, any distribution):** run this command. It needs `curl` and no administrator rights. Without BlueZ (the Bluetooth service), it asks to install it.
 
   ```sh
   curl -fsSL https://raw.githubusercontent.com/spizganed/QuickBuds/main/scripts/install-linux.sh | sh
   ```
 
-  BlueZ per distribution, other ways and how to remove it: [INSTALL-LINUX.md](./docs/INSTALL-LINUX.md).
+  The Arch package, BlueZ per distribution, other ways and how to remove it: [INSTALL-LINUX.md](./docs/INSTALL-LINUX.md).
 
 The apps update themselves from the GitHub releases. The GitHub releases are the only official downloads.
 An APK from another site is genuine only with this signing certificate (SHA-256, see `apksigner verify --print-certs`):
