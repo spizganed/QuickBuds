@@ -631,13 +631,16 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val shown = if (neck) listOf(0).filter { paged || fit.units > 0 }
                 else (if (caseBar) listOf(0, 2) else listOf(0, 1, 2)).filter { paged || fit.units == 3 || (fit.units == 2 && it != 1) }
             if (fit.bare) { val pd = ThemeRes.dp(context, 2f); v.setViewPadding(R.id.w_content, pd, pd, pd, pd) }
-            if (!paged || neck) for (slot in 0..2) if (!caseBar || slot != 1) v.setViewVisibility(PANEL_ROOTS[slot], if (slot in shown) View.VISIBLE else View.GONE)
+            // Always set: a partial update keeps a panel that a neckband hid.
+            for (slot in 0..2) if (!caseBar || slot != 1) v.setViewVisibility(PANEL_ROOTS[slot], if (slot in shown) View.VISIBLE else View.GONE)
             if (caseBar) v.setViewVisibility(R.id.w_bar, if (neck) View.GONE else View.VISIBLE)
             for (slot in shown) {
                 val (bgId, ringId, pct, label, strokeId) = PANELS[slot].toList()
                 if (fit.bare) { v.setViewVisibility(bgId, View.GONE); v.setViewVisibility(strokeId, View.GONE) }
                 else { panelBg(context, v, bgId, p); panelOutline(context, v, strokeId, p) }
                 v.setImageViewBitmap(ringId, ring(context, p, levels[slot], if (neck) SLOT_NECK else slot, statuses[slot], ringDp, k).let { if (ghost && GHOST_BLUR) soften(context, it) else it })
+                // 2x2 neckband: the one panel is the full width, and a square ring that wide is taller than the widget.
+                if (fit.shape == Shape.PAGES_S) v.setInt(ringId, "setMaxHeight", if (neck) neckRingMaxPx(context, id) else Int.MAX_VALUE)
                 pctText(context, v, pct, p, levels[slot], if (paged) null else fit.font)
                 v.setViewVisibility(pct, if (fit.bare) View.GONE else if (ghost) View.INVISIBLE else View.VISIBLE)
                 val inEar = statuses[slot] == 3 || statuses[slot] == 7
@@ -691,6 +694,20 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
          * height), so ring and texts fill the panel as one centred group instead of a small ring
          * over a gap.
          */
+        /**
+         * 2x2 neckband: the ring's height cap. The widget height (portrait: max height, landscape: min height) less the
+         * page padding (14dp), the panel padding (7dp), the level text (25.4dp), the wear label (13.8dp, only where
+         * shown) and a 4dp margin.
+         */
+        private fun neckRingMaxPx(context: Context, id: Int): Int {
+            val land = context.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+            val h = AppWidgetManager.getInstance(context).getAppWidgetOptions(id)
+                .getInt(if (land) AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT else AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+            if (h <= 0) return ThemeRes.dp(context, 72f)
+            val label = if (WidgetSettings.nothingStyle(context) || WidgetSettings.materialStyle(context)) 0f else 13.8f
+            return ThemeRes.dp(context, (h - 14f - 7f - 25.4f - label - 4f).coerceAtLeast(24f))
+        }
+
         private fun ringDp(context: Context, shape: Shape, id: Int): Float {
             // Drawn large enough; the layout shrinks it to the panel's width.
             if (shape == Shape.PAGES_S) return 96f
@@ -1083,43 +1100,59 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
         /** The ring slot of a neckband's one level: its own glyph ([R.drawable.ic_neckband]). */
         const val SLOT_NECK = 3
 
+        /** Glass: the neckband glyph's highlight runs over its top 35%, the earbuds and the top of the cables ([GlassArt.Glyph] budZone). */
+        const val NECK_BUD_ZONE = 0.35f
+
         private fun glyphRes(slot: Int) = when (slot) {
             0 -> R.drawable.ic_bud_left; 1 -> R.drawable.ic_case; SLOT_NECK -> R.drawable.ic_neckband; else -> R.drawable.ic_bud_right
         }
 
         fun dotRing(context: Context, p: Palette, level: Int, slot: Int, tint: Int, px: Int): Bitmap {
             val n = RING_CELLS
+            val stroke = { size: Float -> size * 2.6f / n }
+            val fill = if (slot == 1) 1.22f else 1.18f
+            if (slot == SLOT_NECK) {
+                // The neckband's cables are a third of a cell wide: its glyph has its own pass, where the whole cell
+                // counts and 30% cover lights a dot. The ring keeps the normal pass, so it matches the other rings.
+                val out = matrix(n, n, px / n.toFloat(), despeckle = true) { c, size -> drawRing(context, c, size, p, level, slot, tint, stroke(size), dim(p), fill, withGlyph = false) }
+                val glyph = matrix(n, n, px / n.toFloat(), min = 76, centre = false, despeckle = true) { c, size -> drawRing(context, c, size, p, level, slot, tint, stroke(size), dim(p), fill, ring = false) }
+                Canvas(out).drawBitmap(glyph, 0f, 0f, null)
+                return out
+            }
             return matrix(n, n, px / n.toFloat(), despeckle = slot != 1) { c, size ->
-                val g = drawRing(context, c, size, p, level, slot, tint, size * 2.6f / n, dim(p), if (slot == 1) 1.22f else 1.18f)
+                val g = drawRing(context, c, size, p, level, slot, tint, stroke(size), dim(p), fill)
                 if (slot == 1) clearLed(c, g, size / n)
             }
         }
 
         /** Outline track, accent arc from 12 o'clock, and the glyph in [tint] at its true ratio, in a [size] square. */
         /** [fill] scales the glyph's box: Nothing's thin ring sits closer around a bigger glyph. */
-        private fun drawRing(context: Context, c: Canvas, size: Float, p: Palette, level: Int, slot: Int, tint: Int, stroke: Float = size * 0.085f, track: Int = p.outline, fill: Float = 1f): android.graphics.Rect {
+        /** [ring] and [withGlyph] (Classic, Material and Nothing only): draw just the ring or just the glyph, for the dot grid's separate passes. */
+        private fun drawRing(context: Context, c: Canvas, size: Float, p: Palette, level: Int, slot: Int, tint: Int, stroke: Float = size * 0.085f, track: Int = p.outline, fill: Float = 1f, ring: Boolean = true, withGlyph: Boolean = true): android.graphics.Rect {
             if (p.glass) {
                 // Glass: the same ring and glyph as the app's home tile.
                 GlassArt.ring(c, size / 2, size / 2, size, if (level in 1..100) level / 100f else 0f, p.accent, p.ink, p.glassLight)
                 val bud = slot == 0 || slot == 2
                 val d = context.getDrawable(glyphRes(slot))!!.mutate()
                 val gw = size * (if (bud) 31f else 52f) / 90f * fill
-                val gh = size * (if (slot == SLOT_NECK) 48f else 42f) / 90f * fill
-                GlassArt.Glyph(d).draw(c, size / 2, size / 2, gw, gh, tint, size / 90f, p.glassLight)
+                val gh = size * (if (slot == SLOT_NECK) 56.7f else 42f) / 90f * fill
+                GlassArt.Glyph(d, if (slot == SLOT_NECK) NECK_BUD_ZONE else 0f).draw(c, size / 2, size / 2, gw, gh, tint, size / 90f, p.glassLight)
                 return android.graphics.Rect(((size - gw) / 2).toInt(), ((size - gh) / 2).toInt(), ((size + gw) / 2).toInt(), ((size + gh) / 2).toInt())
             }
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = stroke; strokeCap = Paint.Cap.ROUND }
             val box = RectF(stroke / 2, stroke / 2, size - stroke / 2, size - stroke / 2)
-            paint.color = track
-            c.drawOval(box, paint)
-            if (level in 1..100) {
-                paint.color = p.accent
-                c.drawArc(box, -90f, 360f * level / 100f, false, paint)
+            if (ring) {
+                paint.color = track
+                c.drawOval(box, paint)
+                if (level in 1..100) {
+                    paint.color = p.accent
+                    c.drawArc(box, -90f, 360f * level / 100f, false, paint)
+                }
             }
             val isCase = slot == 1
             val neck = slot == SLOT_NECK
             val glyph = context.getDrawable(glyphRes(slot))!!.mutate()
-            val ratio = if (isCase) 496f / 400f else if (neck) 320f / 300f else 176f / 272f
+            val ratio = if (isCase) 496f / 400f else if (neck) 320f / 349f else 176f / 272f
             // Largest boxes whose corners still clear the ring's inner edge.
             val boxH = size * (if (isCase) 0.46f else if (neck) 0.56f else 0.6f) * fill
             val boxW = size * (if (isCase || neck) 0.62f else 0.42f) * fill
@@ -1127,7 +1160,7 @@ open class QuickBudsWidget(private val kind: Kind) : AppWidgetProvider() {
             val gl = android.graphics.Rect(((size - w) / 2).toInt(), ((size - h) / 2).toInt(), ((size + w) / 2).toInt(), ((size + h) / 2).toInt())
             glyph.setTint(tint)
             glyph.setBounds(gl)
-            glyph.draw(c)
+            if (withGlyph) glyph.draw(c)
             return glyph.bounds
         }
 

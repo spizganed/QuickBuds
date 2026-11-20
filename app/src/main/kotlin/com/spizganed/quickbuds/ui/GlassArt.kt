@@ -37,8 +37,13 @@ object GlassArt {
 
     private fun withA(color: Int, a: Float) = (color and 0x00FFFFFF) or ((((color ushr 24) and 0xFF) * (0.35f + 0.65f * a)).toInt() shl 24)
 
-    /** One glyph's cached masks (the shape and its blurred shadow), made again when its size changes. */
-    class Glyph(private val icon: Drawable) {
+    /**
+     * One glyph's cached masks (the shape and its blurred shadow), made again when its size changes.
+     * [budZone] > 0 (the neckband, whose earbuds fill only its top): the fade starts at 80% instead of full tint and a
+     * softer highlight (0x44) runs over the top [budZone] only, so the small earbuds get a sheen and shading instead of
+     * flat white.
+     */
+    class Glyph(private val icon: Drawable, private val budZone: Float = 0f) {
         private var mask: Bitmap? = null
         private var shadow: Bitmap? = null
         private val off = IntArray(2)
@@ -66,13 +71,14 @@ object GlassArt {
             val sp = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(((if (light) 70 else 150) * a).toInt(), 0, 0, 0) }
             c.drawBitmap(shadow!!, x + off[0], y + off[1] + 3.2f * unit, sp)
             val body = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                shader = LinearGradient(0f, y, 0f, y + ih, tint, (tint and 0x00FFFFFF) or (((tint ushr 24) * 0.42f).toInt() shl 24), Shader.TileMode.CLAMP)
+                val top = if (budZone > 0f) (tint and 0x00FFFFFF) or (((tint ushr 24) * 0.8f).toInt() shl 24) else tint
+                shader = LinearGradient(0f, y, 0f, y + ih, top, (tint and 0x00FFFFFF) or (((tint ushr 24) * 0.42f).toInt() shl 24), Shader.TileMode.CLAMP)
             }
             c.drawBitmap(mask!!, x, y, body)
             if (!light) {
                 // The highlight: white along the top edge only, through the glyph's own shape.
                 val hi = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    shader = LinearGradient(0f, y, 0f, y + ih * 0.4f, (0x66FFFFFF.toInt() and 0x00FFFFFF) or (((0x66 * a).toInt()) shl 24), 0, Shader.TileMode.CLAMP)
+                    shader = LinearGradient(0f, y, 0f, y + ih * (if (budZone > 0f) budZone else 0.4f), (0x66FFFFFF.toInt() and 0x00FFFFFF) or ((((if (budZone > 0f) 0x44 else 0x66) * a).toInt()) shl 24), 0, Shader.TileMode.CLAMP)
                 }
                 c.drawBitmap(mask!!, x, y, hi)
             }

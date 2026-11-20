@@ -31,14 +31,14 @@ import kotlin.math.min
  */
 class BudsStatusView(context: Context) : View(context) {
 
-    private class Slot(val icon: Drawable, val iconRatio: Float, val boxW: Float, val boxH: Float, val glassW: Float, val glassH: Float) {
+    private class Slot(val icon: Drawable, val iconRatio: Float, val boxW: Float, val boxH: Float, val glassW: Float, val glassH: Float, budZone: Float = 0f) {
         var level = -1
         var shown = 0f          // animated ring fraction 0..1
         var status = -1
         var anim: ValueAnimator? = null
         var dots: android.graphics.Bitmap? = null   // Nothing: the dot-matrix ring, redrawn when [dotsKey] changes
         var dotsKey = ""
-        val glyph = GlassArt.Glyph(icon)   // Glass: the glyph with depth
+        val glyph = GlassArt.Glyph(icon, budZone)   // Glass: the glyph with depth
     }
 
     private fun dp(v: Float) = ThemeRes.dp(context, v).toFloat()
@@ -77,9 +77,9 @@ class BudsStatusView(context: Context) : View(context) {
         Slot(context.getDrawable(R.drawable.ic_case)!!.mutate(), 496f / 400f, 58f, 42f, 52f, 42f),
         Slot(context.getDrawable(R.drawable.ic_bud_right)!!.mutate(), 176f / 272f, 42f, 56f, 31f, 42f)
     )
-    /** A neckband: its own glyph (320 x 300) in the first slot. Only the first slot draws. */
+    /** A neckband: its own glyph (320 x 349) in the first slot. Only the first slot draws. */
     private val neckSlots = listOf(
-        Slot(context.getDrawable(R.drawable.ic_neckband)!!.mutate(), 320f / 300f, 62f, 58f, 52f, 48f), budSlots[1], budSlots[2]
+        Slot(context.getDrawable(R.drawable.ic_neckband)!!.mutate(), 320f / 349f, 62f, 58f, 52f, 48f, QuickBudsWidget.NECK_BUD_ZONE), budSlots[1], budSlots[2]
     )
     private val slots get() = if (neckband) neckSlots else budSlots
     private val names = listOf(
