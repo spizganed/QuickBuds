@@ -71,11 +71,19 @@ Classic Bluetooth **RFCOMM / SPP**, not BLE. One long-lived socket. The buds pus
 |---|---|
 | `0000079A-D102-11E1-9B23-00025B00A5A5` | Tried first. The one that works on Buds 4 `[CAPTURE]`, as HeyMelody does `[VENDOR]` |
 | `00001107-D102-11E1-9B23-00025B00A5A5` | Tried second. Never connects on Buds 4 (~5 s timeout); kept for other models |
+| `00001101-0000-1000-8000-00805F9B34FB` | Plain SPP. Tried third, only when the buds offer neither UUID above |
 
-The connect order is both UUIDs secure first, then both insecure: `079A` secure, `1107` secure, `079A`
+The connect order is the UUIDs secure first, then insecure: `079A` secure, `1107` secure, `079A`
 insecure, `1107` insecure. Then RFCOMM channel 15 by reflection. A 12 s watchdog closes a connect that
-blocks. A connect makes 5 socket tries in total, then stops. A lost link gets 8 reconnect tries `[CAPTURE]`. The desktop app tries
-the two UUIDs in the same order and takes the channel from the buds' SDP record.
+blocks. A connect makes 5 socket tries in total (7 with `1101`), then stops. A lost link gets 8 reconnect tries `[CAPTURE]`. The desktop app tries
+the UUIDs in the same order and takes the channel from the buds' SDP record.
+
+Plain SPP `1101` is in the order only when the buds' service list has neither `079A` nor `1107`. Android reads
+the cached list; an empty list means not known, and the app skips `1101`. Linux asks the buds' SDP server per UUID. Windows
+takes WSA error 10049 on both UUIDs as "no such service": issue #49 shows 10049 where Linux finds no record. Why: realme Link picks one UUID per model
+from a per-model config. 31 of its 34 built-in configs pick `1101`; the T110, the T01 and the DIZO Buds Z Power pick `079A` `[VENDOR]`.
+realme Link talks to the T310 on a different channel from QuickBuds, with the same frames `[CAPTURE]`. The realme Buds Air Pro
+has no built-in config and offers neither vendor UUID (issue #49). OnePlus and OPPO buds list `079A`, so they never try `1101`.
 
 A case lid close ends the socket (section 13) `[CAPTURE]`.
 
@@ -83,7 +91,7 @@ A case lid close ends the socket (section 13) `[CAPTURE]`.
 - Buds 4: `079A` on channel 15, a plain SPP `1101` on channel 12, and one more SPP server on channel 29.
 - Buds Pro 3: `1101` on channel 12, `079A` on channel 15, `079B` on channel 24 (a sound-record service).
 - Nord Buds 4 Pro: `079A` takes 2 links (two phones). `1101` takes the chip maker's own tool frames, not this protocol: a write there gets no reply. `079B` is listed but has no server.
-- Only `079A` carries this protocol. A phone opens a channel only once, so a second app on the same phone cannot share it.
+- On these buds only `079A` carries this protocol. A phone opens a channel only once, so a second app on the same phone cannot share it.
 
 **Fast Pair Message Stream** (`df21fe2c-2515-4fdb-8886-f12c4d67927c`, Google's public spec). Many models list it in SDP.
 It is a separate RFCOMM service, so it opens while another app holds `079A` `[TESTED]` (Buds 4: secure works, insecure fails).

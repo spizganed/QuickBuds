@@ -7,6 +7,10 @@ const SPP_UUIDS: [u128; 2] = [
     0x00001107_D102_11E1_9B23_00025B00A5A5,
 ];
 
+/// Plain SPP. A connect tries it last, and only when the buds offer neither of [SPP_UUIDS]: some
+/// realme buds carry the protocol here (issue #49). On OnePlus and OPPO buds it carries other frames.
+const PLAIN_SPP: u128 = 0x00001101_0000_1000_8000_00805F9B34FB;
+
 pub struct Device {
     pub addr: u64,
     pub name: String,
@@ -20,7 +24,7 @@ pub use imp::{bring_up, connect, paired, Link};
 
 #[cfg(windows)]
 mod imp {
-    use super::{Device, SPP_UUIDS};
+    use super::{Device, PLAIN_SPP, SPP_UUIDS};
     use std::mem::{size_of, zeroed};
     use windows_sys::core::GUID;
     use windows_sys::Win32::Devices::Bluetooth::*;
@@ -100,17 +104,18 @@ mod imp {
         (g.data1 as u128) << 96 | (g.data2 as u128) << 80 | (g.data3 as u128) << 64 | u64::from_be_bytes(g.data4) as u128
     }
 
-    fn connect_uuid(addr: u64, uuid: u128) -> Result<Link, String> {
+    /// The error is the WSA code and the text.
+    fn connect_uuid(addr: u64, uuid: u128) -> Result<Link, (i32, String)> {
         unsafe {
             let s = socket(AF_BTH as i32, SOCK_STREAM, BTHPROTO_RFCOMM as i32);
-            if s == INVALID_SOCKET { return Err(err("socket")); }
+            if s == INVALID_SOCKET { return Err((WSAGetLastError(), err("socket"))); }
             let link = Link(s);
             let mut sa: SOCKADDR_BTH = zeroed();
             sa.addressFamily = AF_BTH;
             sa.btAddr = addr;
             sa.serviceClassId = GUID::from_u128(uuid); // port 0: Windows looks the channel up over SDP
             if windows_sys::Win32::Networking::WinSock::connect(s, &sa as *const _ as *const SOCKADDR, size_of::<SOCKADDR_BTH>() as i32) != 0 {
-                return Err(err("connect"));
+                return Err((WSAGetLastError(), err("connect")));
             }
             let timeout: u32 = 50;
             setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout as *const _ as *const u8, 4);
@@ -125,13 +130,19 @@ mod imp {
             WSAStartup(0x0202, &mut wsa);
         });
         let mut last = String::new();
+        let mut offered = false;
         for uuid in SPP_UUIDS {
             match connect_uuid(addr, uuid) {
                 Ok(l) => return Ok(l),
-                Err(e) => last = e,
+                Err((code, e)) => {
+                    // WSAEADDRNOTAVAIL: the SDP lookup found no such service on the buds.
+                    offered |= code != WSAEADDRNOTAVAIL;
+                    last = e;
+                }
             }
         }
-        Err(last)
+        if offered { return Err(last); }
+        connect_uuid(addr, PLAIN_SPP).map_err(|(_, e)| e)
     }
 }
 
@@ -140,7 +151,7 @@ mod imp {
 /// registered with bluetoothd and no daemon or async runtime is involved.
 #[cfg(not(windows))]
 mod imp {
-    use super::{Device, SPP_UUIDS};
+    use super::{Device, PLAIN_SPP, SPP_UUIDS};
     use dbus::arg::{prop_cast, PropMap};
     use dbus::blocking::stdintf::org_freedesktop_dbus::ObjectManager;
     use std::mem::size_of;
@@ -244,8 +255,8 @@ mod imp {
         }
     }
 
-    /// The RFCOMM channel of the service `uuid`, from the buds' SDP server.
-    fn sdp_channel(addr: u64, uuid: u128) -> Result<u8, String> {
+    /// The RFCOMM channel of the service `uuid`, from the buds' SDP server. None: the buds have no such service.
+    fn sdp_channel(addr: u64, uuid: u128) -> Result<Option<u8>, String> {
         let fd = unsafe { libc::socket(AF_BLUETOOTH, libc::SOCK_SEQPACKET, BTPROTO_L2CAP) };
         if fd < 0 { return Err(err("sdp socket")); }
         let _sock = Link(fd); // closes it on return
@@ -283,12 +294,10 @@ mod imp {
             cont = rest.to_vec();
         }
         // ProtocolDescriptorList holds ( RFCOMM uuid16 0x0003, uint8 channel ).
-        attrs.windows(5).find(|w| w[..4] == [0x19, 0x00, 0x03, 0x08]).map(|w| w[4])
-            .ok_or_else(|| format!("no RFCOMM service {uuid:032X}"))
+        Ok(attrs.windows(5).find(|w| w[..4] == [0x19, 0x00, 0x03, 0x08]).map(|w| w[4]))
     }
 
-    fn connect_uuid(addr: u64, uuid: u128) -> Result<Link, String> {
-        let channel = sdp_channel(addr, uuid)?;
+    fn connect_channel(addr: u64, channel: u8) -> Result<Link, String> {
         let fd = unsafe { libc::socket(AF_BLUETOOTH, libc::SOCK_STREAM, BTPROTO_RFCOMM) };
         if fd < 0 { return Err(err("socket")); }
         let link = Link(fd);
@@ -302,13 +311,26 @@ mod imp {
 
     pub fn connect(addr: u64) -> Result<Link, String> {
         let mut last = String::new();
+        // An SDP error leaves the service list unknown: it counts as offered.
+        let mut offered = false;
         for uuid in SPP_UUIDS {
-            match connect_uuid(addr, uuid) {
-                Ok(l) => return Ok(l),
-                Err(e) => last = e,
+            match sdp_channel(addr, uuid) {
+                Ok(Some(channel)) => {
+                    offered = true;
+                    match connect_channel(addr, channel) {
+                        Ok(l) => return Ok(l),
+                        Err(e) => last = e,
+                    }
+                }
+                Ok(None) => last = format!("no RFCOMM service {uuid:032X}"),
+                Err(e) => { offered = true; last = e; }
             }
         }
-        Err(last)
+        if offered { return Err(last); }
+        match sdp_channel(addr, PLAIN_SPP)? {
+            Some(channel) => connect_channel(addr, channel),
+            None => Err(format!("{last}, no plain SPP service")),
+        }
     }
 
     #[cfg(test)]

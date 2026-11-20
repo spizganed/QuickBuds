@@ -31,6 +31,10 @@ One request goes the other way: the buds ask the phone to ring. realme buds with
 on a gesture. `app/.../bluetooth/PhoneRinger.kt` plays the default ringtone on the alarm stream and posts a
 notification with a Stop action. Why: the ring needs a phone, so the desktop app has no Find phone row.
 
+A connect tries `079A`, then `1107` (`ConnectPolicy.connectUuids`, `desktop-tauri/src/bt.rs`). Plain SPP `1101` comes last,
+and only when the buds' service list has neither. Why: some realme buds carry the protocol only on `1101`, while on
+OnePlus and OPPO buds `1101` carries other frames (PROTOCOL.md section 1).
+
 A second link is a fallback. When another app holds `079A` (every try fails fast with `read ret -1`) and the buds' SDP
 lists the Fast Pair Message Stream, `app/.../bluetooth/FastPairBattery.kt` opens that stream and passes its battery
 messages (`protocol/FastPairStream.kt`) to the same listeners. A new connect or a Disconnect closes it. Why: on a

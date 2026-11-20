@@ -32,6 +32,8 @@ object OpoProtocol {
 
     const val SPP_UUID_PRIMARY = "00001107-D102-11E1-9B23-00025B00A5A5"
     const val SPP_UUID_FALLBACK = "0000079A-D102-11E1-9B23-00025B00A5A5"
+    /** Plain SPP. Some realme buds carry this protocol here and offer no vendor UUID (issue #49). */
+    const val SPP_UUID_PLAIN = "00001101-0000-1000-8000-00805F9B34FB"
 
     const val CMD_HANDSHAKE = 0x0100
     const val CMD_QUERY_PRODUCT_ID = 0x0103

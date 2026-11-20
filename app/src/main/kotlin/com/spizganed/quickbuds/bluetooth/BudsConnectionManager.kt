@@ -391,20 +391,15 @@ class BudsConnectionManager(private val context: Context) {
         Thread {
             try {
                 log("Bond state: ${ConnectDiagnostics.bondStateWord(device.bondState)}")
-                log("Cached service UUIDs: ${ConnectDiagnostics.formatUuids(device.uuids?.map { it.uuid.toString() }.orEmpty())}")
-
-                // 079A first: it is the one that works (HeyMelody connects straight to it), while
-                // 1107 never connects on the Buds 4 and burns ~5 s. 1107 stays for other models.
-                val uuids = listOf(
-                    OpoProtocol.SPP_UUID_FALLBACK,
-                    OpoProtocol.SPP_UUID_PRIMARY
-                )
+                val offered = device.uuids?.map { it.uuid.toString() }.orEmpty()
+                log("Cached service UUIDs: ${ConnectDiagnostics.formatUuids(offered)}")
+                val uuids = ConnectPolicy.connectUuids(offered)
                 // Secure first, then insecure: a stale bond or a firmware that refuses an
                 // authenticated link fails both secure tries, and the desktop app never asks for one.
                 val tries = listOf(false, true).flatMap { insecure -> uuids.map { it to insecure } }
                 var socket: BluetoothSocket? = null
                 var lastError: String? = null
-                // Every socket try counts: the 4 UUID tries and channel 15, 5 in total, then the app stops.
+                // Every socket try counts: the UUID tries (secure and insecure) and channel 15, then the app stops.
                 val totalTries = tries.size + 1
                 var failedTries = 0
                 val failures = mutableListOf<Pair<String?, Long>>()
@@ -478,7 +473,7 @@ class BudsConnectionManager(private val context: Context) {
                     log("All connection methods failed: $lastError")
                     startUuidRefresh(device, attempts = reconnectAttempts)
                     teardownLink()
-                    // One round of 5 socket tries, then stop: no automatic second round. A user
+                    // One round of socket tries, then stop: no automatic second round. A user
                     // Disconnect or a new connect raised the generation, so that attempt ends quietly.
                     if (generation == connectGeneration) {
                         log("Giving up after $totalTries connect tries. Tap CONNECT to retry manually.")
