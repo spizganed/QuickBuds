@@ -1,6 +1,6 @@
 [package]
 name = "quickbuds-tauri"
-version = "6.2.2"
+version = "6.2.3"
 edition = "2021"
 license = "GPL-3.0-or-later"
 description = "QuickBuds for Windows and Linux, Tauri UI"
