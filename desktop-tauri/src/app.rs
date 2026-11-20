@@ -202,6 +202,20 @@ pub async fn report_send(link: tauri::State<'_, crate::link::Link>, form: Value)
     Ok(if ok { json!({ "ok": true }) } else { json!({ "note": message.unwrap_or_else(|| tr("problem_failed")) }) })
 }
 
+/// The last run's crash, once: { text, path }, or null.
+#[tauri::command]
+pub fn crash_pending() -> Value {
+    crate::crash::take_pending().map_or(Value::Null, |(text, path)| json!({ "text": text, "path": path }))
+}
+
+/// Sends the crash record [text]. Answer: { ok } or { note }.
+#[tauri::command]
+pub async fn crash_send(text: String) -> Result<Value, ()> {
+    let d = crate::report::Draft { model: String::new(), categories: vec!["Other"], description: "App crash".into(), log: Some(text), crash: true };
+    let (ok, message) = tauri::async_runtime::spawn_blocking(move || crate::report::send(d)).await.unwrap_or((false, None));
+    Ok(if ok { json!({ "ok": true }) } else { json!({ "note": message.unwrap_or_else(|| tr("problem_failed")) }) })
+}
+
 /// What the test would send: { text }, or {} before the test ran.
 #[tauri::command]
 pub fn test_preview(link: tauri::State<crate::link::Link>) -> Value {

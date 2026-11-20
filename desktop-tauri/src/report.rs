@@ -25,9 +25,11 @@ pub const CATEGORY_KEYS: [&str; 6] = ["problem_cat_ui", "problem_cat_lag", "prob
 pub fn header(s: &Snapshot) -> String {
     let model = s.model.and_then(|m| m["name"].as_str()).unwrap_or(if s.name.is_empty() { "unknown buds" } else { s.name.as_str() });
     let id = s.model.and_then(|m| m["id"].as_str()).unwrap_or("?");
-    format!("QuickBuds {} | {} | {} | {model} ({id}) firmware {}", env!("CARGO_PKG_VERSION"), computer(), system(),
-        s.firmware.as_deref().unwrap_or("?"))
+    format!("{} | {model} ({id}) firmware {}", app_header(), s.firmware.as_deref().unwrap_or("?"))
 }
+
+/// App, computer and system: the first line of `log.txt` (`crash.rs`), before any buds are known.
+pub fn app_header() -> String { format!("QuickBuds {} | {} | {}", env!("CARGO_PKG_VERSION"), computer(), system()) }
 
 #[cfg(not(windows))]
 fn computer() -> String {
@@ -84,15 +86,19 @@ pub fn log_text(s: &Snapshot) -> String {
 }
 
 
-fn lines(log: &[Line]) -> String {
-    log.iter().map(|l| if device_bytes(l) {
-        format!("{} {} {} [device data removed]\n", l.at, l.dir, hex(&l.bytes[..l.bytes.len() - payload_of(&l.bytes).len()]))
+fn lines(log: &[Line]) -> String { log.iter().map(|l| line_text(l) + "\n").collect() }
+
+/// One log line as sent: a device list packet keeps only its header.
+pub fn line_text(l: &Line) -> String {
+    if device_bytes(l) {
+        format!("{} {} {} [device data removed]", l.at, l.dir, hex(&l.bytes[..l.bytes.len() - payload_of(&l.bytes).len()]))
     } else {
-        crate::devlog::raw(l) + "\n"
-    }).collect()
+        crate::devlog::raw(l)
+    }
 }
 
-fn scrub(text: String) -> String {
+/// Addresses and this computer's name out of [text].
+pub fn scrub(text: String) -> String {
     let text = scrub_macs(&text);
     match host() { Some(h) => text.replace(&h, "[this computer]"), None => text }
 }

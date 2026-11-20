@@ -106,6 +106,16 @@ waits for the first report after the reconnect.
    for each report.
 6. The developer reads the report on the Worker page with the read key and sets its status in D1.
 
+### A crash report
+
+Android: an uncaught-exception handler (`QuickBudsApp.kt`) writes the stack trace and the log. The next start shows it once
+with Send. Desktop (`desktop-tauri/src/crash.rs`): each log line also goes to `log.txt` in the settings folder. A panic writes
+its message to `crash.txt`. On Linux a fatal signal writes its name there too, with `write` only. At the next start a
+non-empty `crash.txt` and the old `log.txt` become `crash-<time>.txt`. The main window opens, also after a `--tray` start,
+and offers Send. The report goes to the Worker with `crash` set, so the model check does not apply.
+Why: the desktop log lives in memory, and a crash lost it. A log file and a marker survive every crash. A clean exit, a
+logout or a kill leaves `crash.txt` empty, so they show no dialog.
+
 ### The daily count and replies
 
 Once a day the app posts its platform, version and random install ID to `/ping`. The Worker counts the install.

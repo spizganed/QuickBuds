@@ -1151,6 +1151,12 @@ if(window.__TAURI__){
     const rp=byId('replyBox');if(rp){rp.hidden=!st.reply;if(st.reply)rp.querySelector('.prose').textContent=st.reply;}
     apply();});
   loadSettings();
+  // The last run's crash, once: the saved file, the text, and Send.
+  if(!document.documentElement.classList.contains('traywin'))T.core.invoke('crash_pending').then(c=>{if(!c)return;
+    dialog(`<h3>${esc($t('crash_title'))}</h3><div class="s" style="text-align:center;margin:0;word-break:break-all">${esc(c.path)}</div><pre class="devlog card pad" style="max-height:240px;overflow:auto;white-space:pre-wrap;margin:0">${esc(c.text)}</pre><div class="acts two"><button class="btn press" data-close>${esc($t('dialog_close'))}</button><button class="btn pri press" id="crSend">${esc($t('problem_send'))}</button></div>`,
+      (d,close)=>{const b=d.querySelector('#crSend');b.addEventListener('click',async()=>{b.disabled=true;b.textContent=$t('problem_sending');
+        const r=await T.core.invoke('crash_send',{text:c.text});
+        if(r.ok){close();toast($t('problem_sent'));}else{b.disabled=false;b.textContent=$t('problem_send');infoDialog($t('crash_title'),r.note);}});});});
   // The due card (Ko-fi or a GitHub star): Support opens the page; Later and a closed dialog bring it back in 30 days.
   QBLIVE.supportCard=()=>T.core.invoke('support_due').then(c=>{if(!c)return;
     dialog(`<h3>${esc(c.title)}</h3><div class="s" style="text-align:center;margin:0;white-space:pre-line">${esc(c.body)}</div><div class="acts two"><button class="btn press" data-close>${esc(c.later)}</button><button class="btn pri press" id="spOk">${esc(c.action)}</button></div><div class="acts"><button class="btn press" id="spNever">${esc(c.never)}</button></div>`,

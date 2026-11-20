@@ -236,7 +236,9 @@ pub static HEARING: Mutex<Vec<HearingEv>> = Mutex::new(Vec::new());
 
 pub(crate) fn log(dir: &'static str, bytes: Vec<u8>, human: Option<String>) {
     let [.., h, mi, sec, ms] = crate::local_now();
-    LOG.lock().unwrap().push(Line { at: format!("{h:02}:{mi:02}:{sec:02}.{ms:03}"), dir, bytes, human });
+    let line = Line { at: format!("{h:02}:{mi:02}:{sec:02}.{ms:03}"), dir, bytes, human };
+    crate::crash::line(&crate::report::line_text(&line));
+    LOG.lock().unwrap().push(line);
 }
 
 pub fn spawn(emit: impl Fn(Snapshot) + Send + 'static) -> Sender<Cmd> {

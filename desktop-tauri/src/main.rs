@@ -18,6 +18,7 @@ mod types;
 #[cfg(target_os = "linux")]
 mod blur;
 mod app;
+mod crash;
 mod hearing;
 mod modeltest;
 mod link;
@@ -389,13 +390,14 @@ fn serve_instance(app: AppHandle, l: instance::Listener) {
 
 fn main() {
     let instance = instance::single_instance();
+    crash::start();
     #[cfg(windows)]
     check_webview2();
     // Wayland finds the window icon through the application ID: the program name. `quickbuds.desktop` (install script, AppImage) names the icon.
     #[cfg(target_os = "linux")]
     gtk::glib::set_prgname(Some("quickbuds"));
     let app = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![fit_panel, main_size, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log, support::support_due, support::support_off])
+        .invoke_handler(tauri::generate_handler![fit_panel, main_size, main_ready, open_main, quit, link::get_snapshot, link::get_log, link::send, link::get_strings, app::get_settings, app::set_setting, app::set_language, app::reset_install_id, app::open_url, app::set_autostart, app::update_check, app::update_install, app::report_preview, app::report_send, app::test_preview, app::js_log, app::crash_pending, app::crash_send, support::support_due, support::support_off])
         .setup(move |app| {
             if let Some(l) = instance { serve_instance(app.handle().clone(), l); }
             hearing::init(app.handle());
@@ -419,7 +421,7 @@ fn main() {
             tray::start(app.handle());
 
             // `--panel` opens the quick panel at start, for tests on a desktop without tray clicks.
-            if std::env::args().any(|a| a == "--panel") { show_panel(app.handle()); } else if !std::env::args().any(|a| a == "--tray") { show_main(app.handle()); }
+            if std::env::args().any(|a| a == "--panel") { show_panel(app.handle()); } else if !std::env::args().any(|a| a == "--tray") || crash::has_pending() { show_main(app.handle()); }
             Ok(())
         })
         // The panel closes when the user clicks elsewhere: a closed window runs no web engine.
