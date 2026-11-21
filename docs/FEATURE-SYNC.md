@@ -16,7 +16,7 @@
   - `read`: after the last ack, the engine sends ONE status read with its own sequence byte. The reply to this read decides. This is the default for every on/off feature that the buds list in their status reply.
   - `push`: after the last ack, the engine waits for the buds' push for that setting. Game mode and ANC mode have pushes (`PROTOCOL.md` section 10). Spatial type pushes `0x0510` (PROTOCOL.md section 18). Use it where the buds apply late, however late. The buds can also report the new value BEFORE the ack. That fast push already confirms the write. The engine then ends the operation at the ack, because a second push does not come.
   - `ack`: the ack decides. Use it only for a setting that the buds cannot report. The control moves when the ack arrives.
-  - A model may override the game-mode confirmation with `"gameConfirm":"read"` in `models.json`. Use it when the buds apply the write and never push (realme Buds T310, reports #16 and #73). The status reply then confirms the write.
+  - A model may override the game-mode confirmation with `"gameConfirm":"read"` in `models.json`. Use it when the buds apply the write and never push (realme Buds T310, reports #16 and #73; realme Buds T100 on Windows 11, the push never came in 3 s after an ok ack). The status reply then confirms the write.
   - A model with `"seqless":1` answers with its own sequence byte, not ours (realme Buds T100, report #100). The app then pairs a reply with the newest outstanding request.
 - `restarts`: the write restarts the link (Hi-Res, power saving, codec). The wait ends with the first report after the reconnect.
 
